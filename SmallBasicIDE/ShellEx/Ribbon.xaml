@@ -1,0 +1,819 @@
+﻿<ContentControl x:Class="Microsoft.SmallBasic.Shell.Ribbon" 
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                xmlns:m="clr-namespace:Microsoft.SmallBasic.Shell" 
+                xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <FrameworkElement.Resources>
+        <ResourceDictionary>
+            <Color x:Key="DefaultColor" A="#FF" R="221" G="225" B="230" />
+            <Color x:Key="HighlightColor" A="#FF" R="252" G="227" B="140" />
+            <Color x:Key="TransparentHighlightColor" A="#A0" R="252" G="227" B="140" />
+            <Color x:Key="DefaultTransparentColor" A="#90" R="217" G="217" B="217" />
+            <Color x:Key="DefaultDarkColor" A="#FF" R="217" G="217" B="217" />
+            <Color x:Key="DefaultDarkTextColor" A="#FF" R="92" G="92" B="92" />
+            <Color x:Key="DefaultDarkBorderColor" A="#FF" R="188" G="188" B="188" />
+            <Color x:Key="DefaultDarkDarkColor" A="#FF" R="145" G="145" B="145" />
+            <Color x:Key="DefaultLightColor" A="#FF" R="247" G="247" B="248" />
+            <Color x:Key="DefaultLightHighlightColor" A="#FF" R="206" G="206" B="206" />
+            <Color x:Key="DefaultLightLightTransparentColor" A="#A0" R="231" G="231" B="231" />
+            <Color x:Key="DefaultLightLightColor" A="#FF" R="250" G="250" B="252" />
+            <SolidColorBrush x:Key="DefaultBrush" Color="{StaticResource DefaultColor}" />
+            <SolidColorBrush x:Key="DefaultTransparentBrush" Color="{StaticResource DefaultTransparentColor}" />
+            <SolidColorBrush x:Key="DefaultDarkBrush" Color="{StaticResource DefaultDarkColor}" />
+            <SolidColorBrush x:Key="DefaultDarkTextBrush" Color="{StaticResource DefaultDarkTextColor}" />
+            <SolidColorBrush x:Key="DefaultDarkBorderBrush" Color="{StaticResource DefaultDarkBorderColor}" />
+            <SolidColorBrush x:Key="DefaultDarkDarkBrush" Color="{StaticResource DefaultDarkDarkColor}" />
+            <SolidColorBrush x:Key="DefaultLightBrush" Color="{StaticResource DefaultLightColor}" />
+            <SolidColorBrush x:Key="DefaultLightLightBrush" Color="{StaticResource DefaultLightLightColor}" />
+            <SolidColorBrush x:Key="TransparentHighlightBrush" Color="{StaticResource TransparentHighlightColor}" />
+            <LinearGradientBrush x:Key="DefaultGradient" StartPoint="0,0" EndPoint="0,1">
+                <GradientBrush.GradientStops>
+                    <GradientStop Offset="0" Color="{StaticResource DefaultLightLightColor}" />
+                    <GradientStop Offset="0.7" Color="{StaticResource DefaultLightColor}" />
+                    <GradientStop Offset="1" Color="{StaticResource DefaultColor}" />
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="DefaultLightGradient" StartPoint="0,0" EndPoint="0,1">
+                <GradientBrush.GradientStops>
+                    <GradientStop Color="White" Offset="0" />
+                    <GradientStop Offset="0.75" Color="{StaticResource DefaultLightColor}" />
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="TabHighlightGradient" StartPoint="0,0" EndPoint="0,1">
+                <GradientBrush.GradientStops>
+                    <GradientStop Color="White" Offset="0" />
+                    <GradientStop Color="White" Offset="0.5" />
+                    <GradientStop Offset="0.95" Color="{StaticResource DefaultLightHighlightColor}" />
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ChunkHeaderGradient" StartPoint="0,0" EndPoint="0,1">
+                <GradientBrush.GradientStops>
+                    <GradientStop Offset="0" Color="{StaticResource DefaultColor}" />
+                    <GradientStop Offset="0.5" Color="{StaticResource DefaultColor}" />
+                    <GradientStop Offset="0.99" Color="{StaticResource DefaultLightLightColor}" />
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="MouseOverButtonBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="#FCE38C" Offset="0.0" />
+                        <GradientStop Color="#FCE68D" Offset="0.8" />
+                        <GradientStop Color="#FCE68D" Offset="0.8" />
+                        <GradientStop Color="#FFFFFF" Offset="1.0" />
+                    </GradientStopCollection>
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="PressedBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="#FBD678" Offset="0.0" />
+                        <GradientStop Color="#FFE48A" Offset="0.5" />
+                        <GradientStop Color="#FAD77A" Offset="1.0" />
+                    </GradientStopCollection>
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="CheckedBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="#FCBC7D" Offset="0.0" />
+                        <GradientStop Color="#FCBC7D" Offset="0.4" />
+                        <GradientStop Color="#F9932F" Offset="0.4" />
+                        <GradientStop Color="#FEE89E" Offset="1.0" />
+                    </GradientStopCollection>
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="PressedBorderBrush" Color="#D3913F" />
+            <SolidColorBrush x:Key="PressedInnerBorderBrush" Color="#D3913F" />
+            <SolidColorBrush x:Key="MouseOverBorderBrush" Color="#F6D74B" />
+            <SolidColorBrush x:Key="MouseOverInnerBorderBrush" Color="#F6D74B" />
+            <LinearGradientBrush x:Key="ShadowBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="#70202020" Offset="0.0" />
+                        <GradientStop Color="#00FFFFFF" Offset="0.1" />
+                    </GradientStopCollection>
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="PopupBackgroundBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="White" Offset="0.0" />
+                        <GradientStop Offset="1.0" Color="{StaticResource DefaultLightColor}" />
+                    </GradientStopCollection>
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="CheckBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="LightGray" Offset="0.0" />
+                        <GradientStop Color="White" Offset="0.75" />
+                    </GradientStopCollection>
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="CheckMouseOverBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="#F9932F" Offset="0.0" />
+                        <GradientStop Color="White" Offset="0.75" />
+                    </GradientStopCollection>
+                </GradientBrush.GradientStops>
+            </LinearGradientBrush>
+            <Style x:Key="ButtonBaseStyle" TargetType="{x:Type ButtonBase}">
+                <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+                <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="Border.CornerRadius" Value="3" />
+                <Setter Property="Border.Padding" Value="3,1,3,1" />
+                <Setter Property="Border.BorderThickness" Value="1" />
+                <Setter Property="Focusable" Value="False" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ButtonBase}">
+                            <Grid Background="{TemplateBinding Background}" ClipToBounds="True">
+                                <Grid Name="MouseOverBackground" Opacity="0">
+                                    <Border Name="Border" 
+                          CornerRadius="{TemplateBinding Border.CornerRadius}" 
+                          BorderThickness="{TemplateBinding BorderThickness}" 
+                          BorderBrush="{StaticResource MouseOverBorderBrush}">
+                                        <Border Name="InnerBorder" 
+                            BorderThickness="0" 
+                            CornerRadius="{TemplateBinding Border.CornerRadius}" 
+                            Background="{StaticResource MouseOverButtonBrush}" 
+                            BorderBrush="{StaticResource MouseOverInnerBorderBrush}" />
+                                    </Border>
+                                </Grid>
+                                <Grid Name="PressedCheckedBackground" Visibility="Hidden">
+                                    <Border CornerRadius="{TemplateBinding Border.CornerRadius}" 
+                          BorderThickness="{TemplateBinding BorderThickness}" 
+                          BorderBrush="{StaticResource PressedBorderBrush}">
+                                        <Border CornerRadius="{TemplateBinding Border.CornerRadius}" 
+                            BorderThickness="0" 
+                            BorderBrush="{StaticResource PressedInnerBorderBrush}" />
+                                    </Border>
+                                </Grid>
+                                <Border CornerRadius="{TemplateBinding Border.CornerRadius}" Padding="{TemplateBinding Padding}" BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                                    <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                                </Border>
+                                <Border Name="Shadow" Margin="1,1,1,0" CornerRadius="2,2,0,0" Visibility="Collapsed" Background="{StaticResource ShadowBrush}" />
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                    <TriggerBase.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="MouseOverBackground" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </TriggerBase.EnterActions>
+                                    <TriggerBase.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Name="ExitAnimation" Storyboard.TargetName="MouseOverBackground" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.5" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </TriggerBase.ExitActions>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="PressedCheckedBackground" Property="Panel.Background" Value="{StaticResource PressedBrush}" />
+                                    <Setter TargetName="PressedCheckedBackground" Property="Visibility" Value="Visible" />
+                                    <Setter TargetName="Shadow" Property="Visibility" Value="Visible" />
+                                </Trigger>
+                                <Trigger Property="ToggleButton.IsChecked" Value="true">
+                                    <Setter TargetName="PressedCheckedBackground" Property="Panel.Background" Value="{StaticResource CheckedBrush}" />
+                                    <Setter TargetName="PressedCheckedBackground" Property="Visibility" Value="Visible" />
+                                    <Setter TargetName="Shadow" Property="Visibility" Value="Visible" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <TriggerBase.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.3" Duration="0:0:0.5" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </TriggerBase.EnterActions>
+                                    <TriggerBase.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </TriggerBase.ExitActions>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="CommandBaseStyle" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource ButtonBaseStyle}" />
+            <Style x:Key="DefaultTextBlockStyle" TargetType="{x:Type TextBlock}">
+                <Setter Property="FontFamily" Value="Segoe UI" />
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="Foreground" Value="{StaticResource DefaultDarkTextBrush}" />
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Foreground" Value="#FF808080" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="DefaultCheckBoxStyle" TargetType="{x:Type CheckBox}">
+                <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+                <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+                <Setter Property="Margin" Value="3,4" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type CheckBox}">
+                            <BulletDecorator Background="#00FFFFFF">
+                                <BulletDecorator.Bullet>
+                                    <Border Name="OuterBorder" Width="13" Height="13" BorderThickness="1" BorderBrush="{StaticResource DefaultDarkBorderBrush}">
+                                        <Border BorderThickness="1" BorderBrush="#FFFFFFFF">
+                                            <Border Name="Border" BorderThickness="1" BorderBrush="#FFA9A9A9" Background="{StaticResource CheckBackgroundBrush}">
+                                                <TextBlock Name="CheckMark" FontFamily="Wingdings" FontSize="12" Text="" VerticalAlignment="Center" />
+                                            </Border>
+                                        </Border>
+                                    </Border>
+                                </BulletDecorator.Bullet>
+                                <ContentPresenter Margin="4,0,0,0" RecognizesAccessKey="True" />
+                            </BulletDecorator>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                    <Setter TargetName="CheckMark" Property="TextBlock.Text" Value="ü" />
+                                </Trigger>
+                                <Trigger Property="ToggleButton.IsChecked" Value="{x:Null}">
+                                    <Setter TargetName="CheckMark" Property="TextBlock.Text" Value="?" />
+                                </Trigger>
+                                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Border.Background" Value="{StaticResource CheckMouseOverBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Border" Property="Border.Background" Value="{StaticResource PressedBrush}" />
+                                    <Setter TargetName="Border" Property="Border.BorderBrush" Value="{StaticResource PressedBorderBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Border" Property="Border.Background" Value="#FFFFFFFF" />
+                                    <Setter TargetName="OuterBorder" Property="Border.BorderBrush" Value="#FFD3D3D3" />
+                                    <Setter TargetName="Border" Property="Border.BorderBrush" Value="{StaticResource DefaultLightBrush}" />
+                                    <Setter Property="Foreground" Value="#FF808080" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="ToolTipContent" TargetType="{x:Type HeaderedContentControl}">
+                <Setter Property="Foreground" Value="#FF000000" />
+                <Setter Property="Background" Value="#00FFFFFF" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type HeaderedContentControl}">
+                            <Border BorderThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="5" CornerRadius="3" BorderBrush="{StaticResource DefaultDarkDarkBrush}" Background="{StaticResource PopupBackgroundBrush}">
+                                <DockPanel>
+                                    <ContentControl DockPanel.Dock="Top" Content="{TemplateBinding Header}" />
+                                    <ContentPresenter DockPanel.Dock="Top" Margin="5,5,20,5" />
+                                </DockPanel>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="{x:Type ToolTip}" TargetType="{x:Type ToolTip}">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="{x:Null}" />
+                <Setter Property="MaxWidth" Value="200" />
+            </Style>
+            <Style x:Key="ChunkStyle" TargetType="{x:Type HeaderedContentControl}">
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Height" Value="84" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type HeaderedContentControl}">
+                            <Grid>
+                                <Border Name="Grid" CornerRadius="0" Background="#00FFFFFF" Margin="0,0,1,1" BorderThickness="0,0,1,0" BorderBrush="{StaticResource DefaultDarkBorderBrush}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Border Name="Border" Padding="2,2,2,0">
+                                            <ItemsControl HorizontalAlignment="Center" ItemsSource="{TemplateBinding Content}">
+                                                <Control.Template>
+                                                    <ControlTemplate>
+                                                        <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                                                    </ControlTemplate>
+                                                </Control.Template>
+                                            </ItemsControl>
+                                        </Border>
+                                        <Border Name="HeaderBorder" Grid.Row="1" CornerRadius="0,0,4,4" VerticalAlignment="Bottom" BorderThickness="0.5">
+                                            <TextBlock Text="{TemplateBinding Header}" FontFamily="Segoe UI" FontSize="11" FontWeight="Normal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Padding="10,0,10,0" Foreground="{StaticResource DefaultDarkDarkBrush}" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                    <TriggerBase.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation Storyboard.TargetName="Grid" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#50FFFFFF" Duration="0:0:0.33" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </TriggerBase.EnterActions>
+                                    <TriggerBase.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation Storyboard.TargetName="Grid" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.33" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </TriggerBase.ExitActions>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="CommandTabControlStyle" TargetType="{x:Type TabControl}">
+                <Setter Property="Background" Value="{StaticResource DefaultGradient}" />
+                <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TabControl}">
+                            <FrameworkTemplate.Resources>
+                                <ResourceDictionary>
+                                    <Style x:Key="TabControlScrollBarButtonStyle" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource ButtonBaseStyle}">
+                                        <Setter Property="Margin" Value="0" />
+                                        <Setter Property="Border.BorderThickness" Value="1" />
+                                        <Setter Property="Border.BorderBrush" Value="{StaticResource DefaultDarkBorderBrush}" />
+                                        <Setter Property="Background" Value="{StaticResource DefaultGradient}" />
+                                        <Setter Property="Foreground" Value="{StaticResource DefaultDarkDarkBrush}" />
+                                        <Style.Triggers>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Foreground" Value="#FFD3D3D3" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                    <Style x:Key="TabControlHorizontalScrollBar" TargetType="{x:Type ScrollBar}">
+                                        <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+                                        <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+                                        <Setter Property="Foreground" Value="{StaticResource DefaultDarkDarkBrush}" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Border Margin="0,1,0,-1">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <RepeatButton Grid.Column="0" Command="ScrollBar.PageLeftCommand" FontFamily="Wingdings 3" FontSize="6" Content="t" Style="{StaticResource TabControlScrollBarButtonStyle}" />
+                                                            <RepeatButton Grid.Column="2" Command="ScrollBar.PageRightCommand" FontFamily="Wingdings 3" FontSize="6" Content="u" Style="{StaticResource TabControlScrollBarButtonStyle}" />
+                                                        </Grid>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                    <Style x:Key="TabControlScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
+                                        <Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
+                                        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+                                        <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Grid>
+                                                        <Border>
+                                                            <ScrollContentPresenter Content="{TemplateBinding ContentControl.Content}" />
+                                                        </Border>
+                                                        <ScrollBar Name="PART_HorizontalScrollBar" 
+                                       Orientation="Horizontal" 
+                                       Minimum="0" 
+                                       Maximum="{TemplateBinding ScrollViewer.ScrollableWidth}" 
+                                       Value="{TemplateBinding ScrollViewer.HorizontalOffset}" 
+                                       ViewportSize="{TemplateBinding ScrollViewer.ViewportWidth}" 
+                                       Visibility="{TemplateBinding ScrollViewer.ComputedHorizontalScrollBarVisibility}" 
+                                       Style="{StaticResource TabControlHorizontalScrollBar}" />
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                    <Style x:Key="{x:Type TabItem}" TargetType="{x:Type TabItem}">
+                                        <Setter Property="Header" Value="{Binding Path=Name}" />
+                                        <Setter Property="FontFamily" Value="Segoe UI" />
+                                        <Setter Property="FontSize" Value="11" />
+                                        <Setter Property="Foreground" Value="{StaticResource DefaultDarkTextBrush}" />
+                                        <Setter Property="Content" Value="{Binding Path=CommandChunks}" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type TabItem}">
+                                                    <Border Margin="2,2,2,0" Padding="0">
+                                                        <Grid>
+                                                            <Border Name="Glow" Background="#00FFFFFF" BorderThickness="0" CornerRadius="3,3,0,0" BorderBrush="{StaticResource TransparentHighlightBrush}" />
+                                                            <Border Name="Border" Background="#00FFFFFF" BorderThickness="0,0,0,0" CornerRadius="3,3,0,0" BorderBrush="{StaticResource DefaultDarkBorderBrush}" />
+                                                            <ContentPresenter Name="ContentSite" ContentSource="Header" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="15,3,15,3" RecognizesAccessKey="True" TextBlock.Foreground="{TemplateBinding Foreground}" />
+                                                        </Grid>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                                            <Setter TargetName="Border" Property="UIElement.Opacity" Value="0.5" />
+                                                            <Setter TargetName="Border" Property="Border.BorderBrush" Value="{StaticResource DefaultDarkBorderBrush}" />
+                                                            <Setter TargetName="Border" Property="Border.Background" Value="{StaticResource TabHighlightGradient}" />
+                                                            <Setter TargetName="Border" Property="Border.BorderThickness" Value="1,1,1,0" />
+                                                        </Trigger>
+                                                        <Trigger Property="TabItem.IsSelected" Value="True">
+                                                            <Setter Property="Panel.ZIndex" Value="100" />
+                                                            <Setter TargetName="Border" Property="UIElement.Opacity" Value="1" />
+                                                            <Setter TargetName="Border" Property="Border.BorderBrush" Value="{StaticResource TransparentHighlightBrush}" />
+                                                            <Setter TargetName="Border" Property="Border.Background" Value="{StaticResource DefaultLightGradient}" />
+                                                            <Setter TargetName="Border" Property="Border.BorderThickness" Value="2,2,2,0" />
+                                                            <Setter TargetName="Glow" Property="Border.BorderThickness" Value="1,1,1,0" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                    <Style x:Key="CommandTabContentStyle" TargetType="{x:Type ItemsControl}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ItemsControl}">
+                                                    <StackPanel Orientation="Horizontal" IsItemsHost="True" />
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                    <DataTemplate x:Key="{DataTemplateKey {x:Type m:CommandChunkCollection}}" DataType="{x:Type m:CommandChunkCollection}">
+                                        <ItemsControl Style="{StaticResource CommandTabContentStyle}" ItemsSource="{Binding}" />
+                                    </DataTemplate>
+                                    <DataTemplate x:Key="{DataTemplateKey {x:Type m:CommandChunk}}" DataType="{x:Type m:CommandChunk}">
+                                        <HeaderedContentControl DockPanel.Dock="Left" HorizontalAlignment="Left" Style="{StaticResource ChunkStyle}" MaxWidth="{Binding Path=MaxSize}" Header="{Binding Path=Name}" Content="{Binding Path=CommandGroups}" />
+                                    </DataTemplate>
+                                </ResourceDictionary>
+                            </FrameworkTemplate.Resources>
+                            <Grid KeyboardNavigation.TabNavigation="Local">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <TabPanel Name="HeaderPanel" Grid.Row="0" ZIndex="1" Margin="4,0,4,-1" IsItemsHost="True" KeyboardNavigation.TabIndex="1" />
+                                <Border Name="Border" Grid.Row="1" Background="{TemplateBinding Background}" BorderThickness="0,0,0,1" CornerRadius="0" KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" BorderBrush="{StaticResource DefaultDarkDarkBrush}">
+                                    <ScrollViewer Style="{StaticResource TabControlScrollViewerStyle}">
+                                        <ContentPresenter Name="PART_SelectedContentHost" Margin="1" ContentSource="SelectedContent" Height="85" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="LargeCommandGroupStyle" TargetType="{x:Type ItemsControl}">
+                <Setter Property="ItemTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <Button Style="{DynamicResource LargeActionCommandStyle}" CommandParameter="{Binding Path=(m:Ribbon.Parameter)}" Command="{Binding}" AutomationProperties.AutomationId="{Binding Path=(AutomationProperties.AutomationId)}">
+                                <StackPanel>
+                                    <ContentControl HorizontalAlignment="Center" Content="{Binding Path=(m:Ribbon.LargeIcon)}" />
+                                    <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="11" Text="{Binding Path=Name}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ItemsControl}">
+                            <FrameworkTemplate.Resources>
+                                <ResourceDictionary>
+                                    <Style x:Key="LargeActionCommandStyle" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource CommandBaseStyle}" />
+                                    <Style x:Key="LargeCheckCommandStyle" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource CommandBaseStyle}" />
+                                    <Style x:Key="LargeItem" TargetType="{x:Type HeaderedContentControl}">
+                                        <Setter Property="MaxWidth" Value="48" />
+                                        <Setter Property="Height" Value="66" />
+                                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type HeaderedContentControl}">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <ContentControl Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" Content="{TemplateBinding Content}" />
+                                                        <ContentControl Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Content="{TemplateBinding Header}" />
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                    <SolidColorBrush x:Key="LargeButtonGroupLightBorder" Color="#E5EDF8" />
+                                    <Style x:Key="LargeCommandSeparatorStyle" TargetType="{x:Type Control}">
+                                        <Setter Property="Focusable" Value="False" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Height" Value="64" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <DockPanel Opacity="1" Margin="2,5,2,0">
+                                                        <Rectangle Width="1" Stroke="{StaticResource LargeButtonGroupLightBorder}" />
+                                                        <Rectangle Width="1" Stroke="{StaticResource DefaultDarkBorderBrush}" />
+                                                    </DockPanel>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ResourceDictionary>
+                            </FrameworkTemplate.Resources>
+                            <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="SmallCommandGroupStyle" TargetType="{x:Type ItemsControl}">
+                <Setter Property="ItemTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <Button Style="{DynamicResource SmallActionCommandStyle}" CommandParameter="{Binding Path=(m:Ribbon.Parameter)}" Command="{Binding}" AutomationProperties.AutomationId="{Binding Path=Name}">
+                                <StackPanel Orientation="Horizontal">
+                                    <ContentControl VerticalAlignment="Center" HorizontalAlignment="Left" Content="{Binding Path=(m:Ribbon.SmallIcon)}" />
+                                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe UI" FontSize="11" Text="{Binding Path=Name}" ToolTip="{Binding Path=Description}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ItemsControl}">
+                            <FrameworkTemplate.Resources>
+                                <ResourceDictionary>
+                                    <SolidColorBrush x:Key="SmallButtonGroupDarkBorder" Color="#98aCFD" />
+                                    <SolidColorBrush x:Key="SmallButtonGroupLightBorder" Color="#E5EDF8" />
+                                    <Style x:Key="SmallItem" TargetType="{x:Type HeaderedContentControl}">
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="HorizontalAlignment" Value="Left" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type HeaderedContentControl}">
+                                                    <Grid Margin="1,1,1,1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <ContentControl Grid.Column="0" Margin="0,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Content="{TemplateBinding Content}" />
+                                                        <ContentControl Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Content="{TemplateBinding Header}" />
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                    <Style x:Key="SmallMenuItem" TargetType="{x:Type HeaderedContentControl}">
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="HorizontalAlignment" Value="Left" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type HeaderedContentControl}">
+                                                    <Grid Margin="1,1,1,1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <ContentControl Grid.Column="0" Margin="0,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Left" Content="{TemplateBinding Content}" />
+                                                        <ContentControl Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Content="{TemplateBinding Header}" />
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                    <Style x:Key="SmallCheckCommandStyle" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource CommandBaseStyle}">
+                                        <Setter Property="Border.Padding" Value="0" />
+                                        <Setter Property="Border.CornerRadius" Value="2" />
+                                        <Setter Property="Border.BorderThickness" Value="0" />
+                                        <Setter Property="Margin" Value="-0.5,0,0,0" />
+                                    </Style>
+                                    <Style x:Key="SmallActionCommandStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CommandBaseStyle}">
+                                        <Setter Property="Border.Padding" Value="4,1,4,1" />
+                                        <Setter Property="Border.CornerRadius" Value="1" />
+                                        <Setter Property="Margin" Value="-0.5,0,0,0" />
+                                    </Style>
+                                    <Style x:Key="SmallCommandSeparatorStyle" TargetType="{x:Type Control}">
+                                        <Setter Property="Focusable" Value="False" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <DockPanel Opacity="0.33">
+                                                        <Rectangle Width="1" Margin="0,-1,0,-1" Stroke="{StaticResource SmallButtonGroupDarkBorder}" />
+                                                        <Rectangle Width="1" Stroke="{StaticResource SmallButtonGroupLightBorder}" />
+                                                    </DockPanel>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ResourceDictionary>
+                            </FrameworkTemplate.Resources>
+                            <WrapPanel ClipToBounds="True" Orientation="Vertical" IsItemsHost="True" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="SmallestCommandGroupStyle" TargetType="{x:Type ItemsControl}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ItemsControl}">
+                            <FrameworkTemplate.Resources>
+                                <ResourceDictionary>
+                                    <SolidColorBrush x:Key="SmallestButtonGroupDarkBorder" Color="#98aCFD" />
+                                    <SolidColorBrush x:Key="SmallestButtonGroupLightBorder" Color="#E5EDF8" />
+                                    <Style x:Key="SmallestActionCommandStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CommandBaseStyle}">
+                                        <Setter Property="Border.Padding" Value="4,2,4,2" />
+                                        <Setter Property="Border.CornerRadius" Value="1" />
+                                        <Setter Property="Border.BorderThickness" Value="0" />
+                                        <Setter Property="Margin" Value="-0.5,0,0,0" />
+                                    </Style>
+                                    <Style x:Key="SmallestCheckCommandStyle" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource CommandBaseStyle}">
+                                        <Setter Property="Border.Padding" Value="2,0,2,0" />
+                                        <Setter Property="Border.CornerRadius" Value="2" />
+                                        <Setter Property="Border.BorderThickness" Value="0" />
+                                        <Setter Property="Margin" Value="0,0,0,0" />
+                                    </Style>
+                                    <Style x:Key="SmallestMenuItem" TargetType="{x:Type HeaderedContentControl}">
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="HorizontalAlignment" Value="Left" />
+                                        <Setter Property="Foreground" Value="{StaticResource DefaultDarkTextBrush}" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Grid Margin="1,1,1,1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <ContentControl Grid.Column="0" Margin="0,0,0,0" 
+                                            VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                            Content="{TemplateBinding ContentControl.Content}" />
+                                                        <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontFamily="WingDings 3" FontSize="6" Text="q" Margin="2,0,0,0" />
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                    <Style x:Key="SmallestTextBlock" TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Width" Value="16" />
+                                        <Setter Property="Height" Value="16" />
+                                        <Setter Property="MinWidth" Value="0" />
+                                        <Setter Property="MinHeight" Value="0" />
+                                        <Setter Property="FontFamily" Value="WingDings" />
+                                        <Setter Property="FontSize" Value="16" />
+                                        <Setter Property="Text" Value="n" />
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="TextBlock.TextAlignment" Value="Center" />
+                                        <Setter Property="Foreground" Value="#BBB" />
+                                    </Style>
+                                    <Style x:Key="SmallestCommandSeparatorStyle" TargetType="{x:Type Control}">
+                                        <Setter Property="Focusable" Value="False" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <DockPanel Opacity="0.33">
+                                                        <Rectangle Width="1" Margin="0,-1,0,-1" Stroke="{StaticResource SmallestButtonGroupDarkBorder}" />
+                                                        <Rectangle Width="1" Stroke="{StaticResource SmallestButtonGroupLightBorder}" />
+                                                    </DockPanel>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ResourceDictionary>
+                            </FrameworkTemplate.Resources>
+                            <GroupBox Margin="0,2,0,2">
+                                <Grid Margin="2,2,2,2">
+                                    <DockPanel>
+                                        <WrapPanel Margin="2" ClipToBounds="True" Orientation="Horizontal" IsItemsHost="True" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    </DockPanel>
+                                    <Border VerticalAlignment="Stretch" BorderThickness="1" CornerRadius="3" BorderBrush="{StaticResource SmallestButtonGroupDarkBorder}">
+                                        <Border VerticalAlignment="Stretch" BorderThickness="1" CornerRadius="3" BorderBrush="{StaticResource SmallestButtonGroupLightBorder}" />
+                                    </Border>
+                                </Grid>
+                            </GroupBox>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="GalleryCommandGroupStyle" TargetType="{x:Type ItemsControl}">
+                <Setter Property="Margin" Value="1,2,1,2" />
+                <Setter Property="Height" Value="64" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ItemsControl}">
+                            <FrameworkTemplate.Resources>
+                                <ResourceDictionary>
+                                    <SolidColorBrush x:Key="GalleryBorderBrush" Color="#B3C9E2" />
+                                    <Style x:Key="GalleryScrollBarButtonStyle" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource ButtonBaseStyle}">
+                                        <Setter Property="Margin" Value="0" />
+                                        <Setter Property="Border.CornerRadius" Value="0" />
+                                        <Setter Property="Border.BorderThickness" Value="0" />
+                                        <Setter Property="Background" Value="{StaticResource DefaultGradient}" />
+                                        <Setter Property="Foreground" Value="{StaticResource DefaultDarkDarkBrush}" />
+                                        <Style.Triggers>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Foreground" Value="#FFD3D3D3" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                    <Style x:Key="GalleryActionCommandStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CommandBaseStyle}">
+                                        <Setter Property="Border.Padding" Value="4,5,4,5" />
+                                        <Setter Property="Border.BorderThickness" Value="1" />
+                                    </Style>
+                                    <Style x:Key="GalleryVerticalScrollBar" TargetType="{x:Type ScrollBar}">
+                                        <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+                                        <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
+                                        <Setter Property="Foreground" Value="{StaticResource DefaultDarkDarkBrush}" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Border BorderThickness="1,0,0,1" CornerRadius="0,3,0,0" BorderBrush="{StaticResource GalleryBorderBrush}">
+                                                        <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition />
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition />
+                                                            </Grid.RowDefinitions>
+                                                            <RepeatButton Grid.Row="0" Command="ScrollBar.PageUpCommand" FontFamily="Wingdings 3" FontSize="9" Content="p" Style="{StaticResource GalleryScrollBarButtonStyle}" />
+                                                            <RepeatButton Grid.Row="2" Command="ScrollBar.PageDownCommand" FontFamily="Wingdings 3" FontSize="9" Content="q" Style="{StaticResource GalleryScrollBarButtonStyle}" />
+                                                            <Rectangle Grid.Row="1" Height="1" Stroke="{StaticResource GalleryBorderBrush}" />
+                                                        </Grid>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                    <Style x:Key="GalleryScrollViewer" TargetType="{x:Type ScrollViewer}">
+                                        <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                        </Grid.RowDefinitions>
+                                                        <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Padding="1">
+                                                            <ScrollContentPresenter 
+                                  Content="{TemplateBinding ContentControl.Content}" />
+                                                        </Border>
+                                                        <ScrollBar Name="PART_VerticalScrollBar" 
+                                       Orientation="Vertical" 
+                                       Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" 
+                                       Minimum="0" 
+                                       Maximum="{TemplateBinding ScrollViewer.ScrollableHeight}" 
+                                       Value="{TemplateBinding ScrollViewer.VerticalOffset}" 
+                                       ViewportSize="{TemplateBinding ScrollViewer.ViewportHeight}" 
+                                       Visibility="{TemplateBinding ScrollViewer.ComputedVerticalScrollBarVisibility}" 
+                                       Style="{StaticResource GalleryVerticalScrollBar}" />
+                                                        <Border Grid.Row="3" Grid.Column="1" BorderThickness="1,0,0,0" BorderBrush="{StaticResource GalleryBorderBrush}">
+                                                            <Button FontFamily="Wingdings 3" FontSize="10" Content="È" Style="{StaticResource GalleryScrollBarButtonStyle}" />
+                                                        </Border>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ResourceDictionary>
+                            </FrameworkTemplate.Resources>
+                            <Border VerticalAlignment="Center" BorderThickness="1" Padding="0,0,0,0" CornerRadius="3" BorderBrush="{StaticResource GalleryBorderBrush}">
+                                <ScrollViewer Style="{StaticResource GalleryScrollViewer}">
+                                    <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                                </ScrollViewer>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <DataTemplate x:Key="{DataTemplateKey {x:Type m:SmallestCommandGroup}}" DataType="{x:Type m:SmallestCommandGroup}">
+                <ItemsControl Style="{StaticResource SmallestCommandGroupStyle}" MaxWidth="{Binding Path=MaxSize}" ItemsSource="{Binding Path=Commands}" />
+            </DataTemplate>
+            <DataTemplate x:Key="{DataTemplateKey {x:Type m:SmallCommandGroup}}" DataType="{x:Type m:SmallCommandGroup}">
+                <ItemsControl Style="{StaticResource SmallCommandGroupStyle}" ItemsSource="{Binding Path=Commands}" />
+            </DataTemplate>
+            <DataTemplate x:Key="{DataTemplateKey {x:Type m:LargeCommandGroup}}" DataType="{x:Type m:LargeCommandGroup}">
+                <ItemsControl Style="{StaticResource LargeCommandGroupStyle}" MaxWidth="{Binding Path=MaxSize}" ItemsSource="{Binding Path=Commands}" />
+            </DataTemplate>
+            <DataTemplate x:Key="{DataTemplateKey {x:Type m:GalleryCommandGroup}}" DataType="{x:Type m:GalleryCommandGroup}">
+                <ItemsControl Style="{StaticResource GalleryCommandGroupStyle}" Width="{Binding Path=MaxSize}" ItemsSource="{Binding Path=Commands}" />
+            </DataTemplate>
+        </ResourceDictionary>
+    </FrameworkElement.Resources>
+
+    <Control.Template>
+        <ControlTemplate  TargetType="{x:Type m:Ribbon}">
+            <TabControl ItemsSource="{TemplateBinding ContentControl.Content}" Style="{StaticResource CommandTabControlStyle}" />
+        </ControlTemplate>
+    </Control.Template>
+</ContentControl>

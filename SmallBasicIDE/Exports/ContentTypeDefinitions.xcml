@@ -1,0 +1,12 @@
+<sws:Exports 
+    xmlns:sws='clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel'
+    xmlns:mntcd="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:def="clr-namespace:Microsoft.Nautilus.Core;assembly=ToolFramework">
+    <sws:Export Name="ContentTypeDefinition">
+        <def:ContentTypeDefinition>
+            <def:ContentTypeDefinition.Name>projection</def:ContentTypeDefinition.Name>
+            <def:ContentTypeDefinition.DisplayName>Projection</def:ContentTypeDefinition.DisplayName>
+            <def:ContentTypeDefinition.DerivesFrom>text</def:ContentTypeDefinition.DerivesFrom>
+        </def:ContentTypeDefinition>
+    </sws:Export>
+</sws:Exports>

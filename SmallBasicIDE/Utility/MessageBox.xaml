@@ -1,0 +1,35 @@
+﻿<Window x:Class="Microsoft.SmallBasic.Utility.MessageBox" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" xmlns:sb="clr-namespace:Microsoft.SmallBasic" x:Name="messageBoxDialog" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False">
+  <DockPanel>
+    <Border BorderBrush="sc#0.7, 0.2, 0.2, 0.2" BorderThickness="0">
+      <StackPanel Orientation="Vertical" Background="#FFFFFFFF">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Image Name="iconImageControl" Grid.Column="0" Width="64" Height="64" VerticalAlignment="Top" Margin="8" />
+          <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" FlowDirection="{x:Static sb:App.FlowDirection}">
+            <TextBlock Margin="4" TextWrapping="WrapWithOverflow" FontFamily="Segoe UI" FontSize="16" Foreground="#002ab5" Text="{Binding ElementName=messageBoxDialog, Path=Description}" />
+            <ContentControl Name="optionalContentControl" Margin="4" FontFamily="Segoe UI" FontSize="12" Content="{Binding ElementName=messageBoxDialog, Path=OptionalContent}" />
+          </StackPanel>
+        </Grid>
+        <Border HorizontalAlignment="Stretch" Margin="0, 8, 0, 0" Padding="4" BorderBrush="sc#0.7, 0.6, 0.6, 0.6" BorderThickness="0,1,0,0" Background="sc#0.7, 0.83, 0.83, 0.83">
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Name="okButton" Width="60" Margin="4" Visibility="Collapsed" IsDefault="False" Content="{lu:Localized ButtonOK}" Click="OnButtonClick" />
+            <Button Name="yesButton" Width="60" Margin="4" Visibility="Collapsed" IsDefault="False" Content="{lu:Localized ButtonYes}" Click="OnButtonClick" />
+            <Button Name="noButton" Width="60" Margin="4" Visibility="Collapsed" IsDefault="False" Content="{lu:Localized ButtonNo}" Click="OnButtonClick" />
+            <Button Name="retryButton" Width="60" Margin="4" Visibility="Collapsed" IsDefault="False" Content="{lu:Localized ButtonRetry}" Click="OnButtonClick" />
+            <Button Name="cancelButton" Width="60" Margin="4" Visibility="Collapsed" IsDefault="False" Content="{lu:Localized ButtonCancel}" Click="OnButtonClick" />
+            <Button Name="closeButton" Width="60" Margin="4" Visibility="Collapsed" IsDefault="False" Content="{lu:Localized ButtonClose}" Click="OnButtonClick" />
+          </StackPanel>
+        </Border>
+        <StackPanel Name="footerPanel">
+          <Border HorizontalAlignment="Stretch" BorderBrush="sc#0.7, 0.3, 0.3, 0.3" BorderThickness="0,1,0,0" Background="sc#0.7, 0.83, 0.83, 0.83" />
+          <Border HorizontalAlignment="Stretch" Padding="4" BorderBrush="sc#1.0, 1.0, 1.0, 1.0" BorderThickness="0,1,0,0" Background="sc#0.7, 0.83, 0.83, 0.83">
+            <ContentControl Margin="4" FontFamily="Segoe UI" FontSize="12" Content="{Binding ElementName=messageBoxDialog, Path=Footer}" />
+          </Border>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+  </DockPanel>
+</Window>

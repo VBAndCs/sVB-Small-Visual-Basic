@@ -1,0 +1,50 @@
+﻿<Window x:Class="Microsoft.SmallBasic.Shell.ExportToVBDialog" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" 
+        x:Name="exportToVBDialog" 
+        WindowStartupLocation="CenterScreen" 
+        WindowStyle="SingleBorderWindow" 
+        ResizeMode="NoResize" SizeToContent="WidthAndHeight" 
+        ShowInTaskbar="False" 
+        xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell" 
+        Title="{lu:Localized Graduate}">
+    
+    <StackPanel Orientation="Vertical" Background="#FFFFFFFF" Width="400">
+        <Grid Height="180">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Image Name="iconImageControl" Source="pack://application:,,/SB;component/Resources/VBExport.png" Grid.Column="0" Width="64" Height="64" VerticalAlignment="Top" Margin="8" />
+            <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Top">
+                <TextBlock Margin="2,10,2,2" TextWrapping="WrapWithOverflow" FontFamily="Segoe UI" FontSize="16" Foreground="#002ab5" Text="{lu:Localized ExportToVB}" />
+                <TextBlock Name="optionalContentControl" Margin="2" FontFamily="Segoe UI" FontSize="12" TextWrapping="Wrap" Text="{lu:Localized ExportToVBDescription}" />
+                <TextBlock Margin="2,8,2,2" Text="{lu:Localized OutputLocation}" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="locationTextBox" Width="280" Margin="2,2,0,2" IsReadOnly="True" />
+                    <Button Width="20" Height="22" Click="OnClickBrowse">...</Button>
+                </StackPanel>
+                <StackPanel Name="statusPanel" Margin="0,12,4,0" Orientation="Vertical" Visibility="Collapsed">
+                    <TextBlock Name="statusText" Margin="2" />
+                    <ProgressBar Margin="2,2,8,2" Height="8" IsIndeterminate="True" />
+                </StackPanel>
+                <StackPanel Name="errorPanel" Margin="0,12,4,0" Orientation="Vertical" Visibility="Collapsed" TextBlock.Foreground="#FFFF0000">
+                    <TextBlock Margin="2" TextWrapping="Wrap" Text="{lu:Localized FoundErrorsInProgram}" />
+                </StackPanel>
+                <StackPanel Name="notInstalledPanel" Visibility="Collapsed" Margin="0,12,4,0" TextBlock.Foreground="#FFFF0000">
+                    <TextBlock TextWrapping="Wrap" Text="{lu:Localized VBNotFound}">
+            <Hyperlink Click="OnClickInstall">http://www.microsoft.com/express/vb/</Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <Border HorizontalAlignment="Stretch" Margin="0, 8, 0, 0" Padding="4" BorderBrush="sc#0.7, 0.6, 0.6, 0.6" BorderThickness="0,1,0,0" Background="sc#0.7, 0.83, 0.83, 0.83">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Name="continueButton" Width="80" Margin="4,2,0,2" IsDefault="True" IsEnabled="False" Content="{lu:Localized ButtonContinue}" 
+                        Click="OnClickContinue" />
+                <Button Name="cancelButton" Width="80" Margin="0,2,4,2" IsCancel="True" Content="{lu:Localized ButtonCancel}" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</Window>

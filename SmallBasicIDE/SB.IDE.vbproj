@@ -1,0 +1,272 @@
+﻿<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+    <ProjectGuid>{68E74CFA-5363-004D-0179-D6FBCD47FA49}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>WinExe</OutputType>
+    <LangVersion>16</LangVersion>
+    <AssemblyName>SB</AssemblyName>
+    <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <WarningLevel>4</WarningLevel>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(ProjectDir)**\*.cs</DefaultItemExcludes>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationFramework">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\PresentationFramework\v4.0_4.0.0.0__31bf3856ad364e35\PresentationFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Xaml\v4.0_4.0.0.0__b77a5c561934e089\System.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll</HintPath>
+    </Reference>
+    <Reference Include="ComponentModel">
+      <HintPath>C:\Program Files\Microsoft\Small Basic\ComponentModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration.Install">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Configuration.Install\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.Install.dll</HintPath>
+    </Reference>
+    <Reference Include="Verex, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Verex.1.2.0\lib\netstandard2.0\Verex.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\WindowsBase\v4.0_4.0.0.0__31bf3856ad364e35\WindowsBase.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Services">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Web.Services\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Web.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\PresentationCore\v4.0_4.0.0.0__31bf3856ad364e35\PresentationCore.dll</HintPath>
+    </Reference>
+    <Reference Include="SmallBasicCompiler">
+      <HintPath>C:\Program Files\Microsoft\Small Basic\SmallBasicCompiler.exe</HintPath>
+    </Reference>
+    <Reference Include="ToolFramework">
+      <HintPath>C:\Program Files\Microsoft\Small Basic\ToolFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="LanguageService">
+      <HintPath>C:\Program Files\Microsoft\Small Basic\LanguageService.dll</HintPath>
+    </Reference>
+    <Reference Include="StringResources">
+      <HintPath>C:\Program Files\Microsoft\Small Basic\StringResources.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\GetCurrentVersionCompletedEventArgs.vb" />
+    <Compile Include="Common\GetCurrentVersionCompletedEventHandler.vb" />
+    <Compile Include="Common\GetProgramDetailsCompletedEventArgs.vb" />
+    <Compile Include="Common\GetProgramDetailsCompletedEventHandler.vb" />
+    <Compile Include="Common\LoadProgramCompletedEventArgs.vb" />
+    <Compile Include="Common\LoadProgramCompletedEventHandler.vb" />
+    <Compile Include="Common\ProgramDetails.vb" />
+    <Compile Include="Common\PublishProgramDetailsCompletedEventArgs.vb" />
+    <Compile Include="Common\PublishProgramDetailsCompletedEventHandler.vb" />
+    <Compile Include="Common\SaveProgramCompletedEventArgs.vb" />
+    <Compile Include="Common\SaveProgramCompletedEventHandler.vb" />
+    <Compile Include="Common\Service.vb" />
+    <Compile Include="Common\SubmitRatingCompletedEventArgs.vb" />
+    <Compile Include="Common\SubmitRatingCompletedEventHandler.vb" />
+    <Compile Include="Documents\Body.vb" />
+    <Compile Include="Documents\DocumentTracker.vb" />
+    <Compile Include="Documents\FileDocument.vb" />
+    <Compile Include="Documents\Heading.vb" />
+    <Compile Include="Documents\ProgramDebugger.vb" />
+    <Compile Include="Documents\SubHeading.vb" />
+    <Compile Include="Documents\TextDocument.vb" />
+    <Compile Include="Documents\TextRun.vb" />
+    <Compile Include="Properties\Resources.vb" />
+    <Compile Include="Properties\Settings.vb" />
+    <Compile Include="Shell\BooleanToCollapseStateConverter.vb" />
+    <Compile Include="Shell\CommandChunk.vb" />
+    <Compile Include="Shell\CommandChunkCollection.vb" />
+    <Compile Include="Shell\CommandGroup.vb" />
+    <Compile Include="Shell\CommandGroupCollection.vb" />
+    <Compile Include="Shell\CommandRegistry.vb" />
+    <Compile Include="Shell\ErrorListControl.xaml.vb">
+      <DependentUpon>ErrorListControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shell\ExportToVBDialog.xaml.vb">
+      <DependentUpon>ExportToVBDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shell\GalleryCommandGroup.vb" />
+    <Compile Include="Shell\LargeCommandGroup.vb" />
+    <Compile Include="Shell\MdiView.vb" />
+    <Compile Include="Shell\MdiViewsControl.xaml.vb">
+      <DependentUpon>MdiViewsControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shell\NullToVisibilityConverter.vb" />
+    <Compile Include="Shell\RequestCloseEventArgs.vb" />
+    <Compile Include="ShellEx\Ribbon.xaml.vb">
+      <DependentUpon>Ribbon.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Shell\RibbonTab.vb" />
+    <Compile Include="Shell\RibbonTabCollection.vb" />
+    <Compile Include="Shell\RoutedRibbonCommand.vb" />
+    <Compile Include="Shell\SmallCommandGroup.vb" />
+    <Compile Include="Shell\SmallestCommandGroup.vb" />
+    <Compile Include="Utility\HelpPanel.xaml.vb">
+      <DependentUpon>HelpPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utility\LocalizedExtension.vb" />
+    <Compile Include="Utility\MessageBox.xaml.vb">
+      <DependentUpon>MessageBox.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utility\NativeMethods.vb" />
+    <Compile Include="Utility\NotificationButtons.vb" />
+    <Compile Include="Utility\NotificationIcon.vb" />
+    <Compile Include="Utility\PublishProgramDialog.xaml.vb">
+      <DependentUpon>PublishProgramDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utility\RatingControl.xaml.vb">
+      <DependentUpon>RatingControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App.xaml.vb">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.vb">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Ngen.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\AppWorkspace.png" />
+    <Resource Include="Resources\editcopy.png" />
+    <Resource Include="Resources\editcut.png" />
+    <Resource Include="Resources\editpaste.png" />
+    <Resource Include="Resources\editredo.png" />
+    <Resource Include="Resources\editundo.png" />
+    <Resource Include="Resources\error.png" />
+    <Resource Include="Resources\filenew.png" />
+    <Resource Include="Resources\fileopen.png" />
+    <Resource Include="Resources\filesave.png" />
+    <Resource Include="Resources\filesaveas.png" />
+    <Resource Include="Resources\glass.png" />
+    <Resource Include="Resources\information.png" />
+    <Resource Include="Resources\intellisenseevent.png" />
+    <Resource Include="Resources\intellisenseitem.png" />
+    <Resource Include="Resources\intellisensekeyword.png" />
+    <Resource Include="Resources\intellisenselabel.png" />
+    <Resource Include="Resources\intellisensemethod.png" />
+    <Resource Include="Resources\intellisenseproperty.png" />
+    <Resource Include="Resources\intellisensesubroutine.png" />
+    <Resource Include="Resources\intellisensevariable.png" />
+    <Resource Include="Resources\programbreakpoint.png" />
+    <Resource Include="Resources\programbuild.png" />
+    <Resource Include="Resources\programcheck.png" />
+    <Resource Include="Resources\programrun.png" />
+    <Resource Include="Resources\search.png" />
+    <Resource Include="Resources\shield.png" />
+    <Resource Include="Resources\splash.png" />
+    <Resource Include="Resources\vbexport.png" />
+    <Resource Include="Resources\warning.png" />
+    <Resource Include="Resources\webopen.png" />
+    <Resource Include="Resources\websave.png" />
+    <EmbeddedResource Include="smallbasic.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ShellEx\Ribbon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Shell\ErrorListControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Shell\ExportToVBDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Shell\MdiViewsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Utility\HelpPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Utility\messagebox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Utility\PublishProgramDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Utility\RatingControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Exports\ClassificationFormats.xcml" />
+    <EmbeddedResource Include="Exports\ClassificationTypeDefinitions.xcml" />
+    <EmbeddedResource Include="Exports\ClassificationTypes.xcml" />
+    <EmbeddedResource Include="Exports\ContentTypeDefinitions.xcml" />
+    <EmbeddedResource Include="Exports\EditorCommandDescriptions.xcml" />
+    <EmbeddedResource Include="Exports\EditorCommandKeyBindings.xcml" />
+    <EmbeddedResource Include="Exports\EditorFeatureSets.xcml" />
+    <EmbeddedResource Include="Exports\FileExtensionToContentTypeAssociations.xcml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="My Project\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SBControls\SB.Forms.vbproj">
+      <Project>{a15dd6e7-497a-4b81-bd7c-e5b5eb42b2d8}</Project>
+      <Name>SB.Forms</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+</Project>

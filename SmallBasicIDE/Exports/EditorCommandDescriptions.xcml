@@ -1,0 +1,281 @@
+<sws:Exports 
+    xmlns:sws='clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel'
+    xmlns:mntcd="clr-namespace:Microsoft.Nautilus.UI.CommandSystem.DataExports;assembly=ToolFramework">
+  <sws:Export Name="CommandDescriptions">
+    <mntcd:CommandDescriptions>
+      <mntcd:CommandDescriptions.Children>
+        <mntcd:CommandGroup Name='Microsoft.Editor.SelectGroup'>
+          <mntcd:CommandGroup.Children>
+            <mntcd:Command Name='Common.Edit.SelectAll'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select _All' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.Clear'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Clear Selection' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.CurrentWord'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select Current Word' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToPreviousCharacter'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To Previous Character' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToNextCharacter'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To Next Character' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToPreviousWord'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To Previous Word' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToNextWord'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To Next Word' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToStartOfLine'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To Start Of Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToEndOfLine'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To End Of Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToPreviousLine'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To Previous Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToNextLine'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To Next Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToStartOfDocument'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To Start Of Document' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.ToEndOfDocument'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select To End Of Document' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.PageUp'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select PageUp' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Select.PageDown'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Select PageDown' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+          </mntcd:CommandGroup.Children>
+        </mntcd:CommandGroup>
+        <mntcd:CommandGroup Name='Microsoft.Editor.MoveGroup'>
+          <mntcd:CommandGroup.Children>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToPreviousCharacter'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To Previous Character' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToNextCharacter'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To Next Character' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToPreviousWord'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To Previous Word' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToNextWord'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To Next Word' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToStartOfLine'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To Start Of Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToEndOfLine'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To End Of Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToPreviousLine'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To Previous Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToNextLine'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To Next Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToStartOfDocument'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To Start Of Document' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ToEndOfDocument'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move To End Of Document' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.CurrentLineToTopOfView'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move Current Line To Top Of View' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.CurrentLineToBottomOfView'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Move Current Line To Bottom Of View' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.PageUp'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='PageUp' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.PageDown'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='PageDown' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ScrollUp'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='PageUp' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Move.ScrollDown'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='PageDown' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+          </mntcd:CommandGroup.Children>
+        </mntcd:CommandGroup>
+        <mntcd:CommandGroup Name='Microsoft.Editor.InsertGroup'>
+          <mntcd:CommandGroup.Children>
+            <mntcd:Command Name='Microsoft.Editor.Insert.Newline'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Insert New Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+          </mntcd:CommandGroup.Children>
+        </mntcd:CommandGroup>
+        <mntcd:CommandGroup Name='Microsoft.Editor.DeleteGroup'>
+          <mntcd:CommandGroup.Children>
+            <mntcd:Command Name='Microsoft.Editor.Yank.CurrentLine'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Yanks Current Line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Delete.PreviousWord'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Delete Previous Word' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Delete.NextWord'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Delete Next Word' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Delete.PreviousCharacter'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Delete Previous Character' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Common.Edit.Delete'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='_Delete' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+          </mntcd:CommandGroup.Children>
+        </mntcd:CommandGroup>
+        <mntcd:CommandGroup Name='Microsoft.Editor.TabGroup'>
+          <mntcd:CommandGroup.Children>
+            <mntcd:Command Name='Microsoft.Editor.Tab.Insert'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Insert Tab' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Tab.RemovePrevious'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Remove Previous Tab' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+          </mntcd:CommandGroup.Children>
+        </mntcd:CommandGroup>
+        <mntcd:CommandGroup Name='Microsoft.Editor.ModeGroup'>
+          <mntcd:CommandGroup.Children>
+            <mntcd:Command Name='Microsoft.Editor.Mode.Overwrite'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Toggle Overwrite Mode' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+          </mntcd:CommandGroup.Children>
+        </mntcd:CommandGroup>
+        <mntcd:CommandGroup Name='Microsoft.Editor.TransposeGroup'>
+          <mntcd:CommandGroup.Children>
+            <mntcd:Command Name='Microsoft.Editor.Transpose.Character'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Transpose a character' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.Transpose.Line'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Transpose a line' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+          </mntcd:CommandGroup.Children>
+        </mntcd:CommandGroup>
+        <mntcd:CommandGroup Name='Microsoft.Editor.CharacterCaseGroup'>
+          <mntcd:CommandGroup.Children>
+            <mntcd:Command Name='Microsoft.Editor.CharacterCase.Lowercase'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Make selection lowercase' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Microsoft.Editor.CharacterCase.Uppercase'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Make selection uppercase' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+          </mntcd:CommandGroup.Children>
+        </mntcd:CommandGroup>
+        <mntcd:CommandGroup Name='Microsoft.Editor.ClipboardGroup'>
+          <mntcd:CommandGroup.Children>
+            <mntcd:Command Name='Common.Edit.Cut'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='Cu_t' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Common.Edit.Copy'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='_Copy' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+            <mntcd:Command Name='Common.Edit.Paste'>
+              <mntcd:Command.Properties>
+                <Property Name='Text' Value='_Paste' />
+              </mntcd:Command.Properties>
+            </mntcd:Command>
+          </mntcd:CommandGroup.Children>
+        </mntcd:CommandGroup>
+      </mntcd:CommandDescriptions.Children>
+    </mntcd:CommandDescriptions>
+  </sws:Export>
+</sws:Exports>

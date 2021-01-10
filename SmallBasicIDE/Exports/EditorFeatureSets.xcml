@@ -1,0 +1,12 @@
+<sws:Exports 
+    xmlns:sws='clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel'
+    xmlns:mntcd="clr-namespace:Microsoft.Nautilus.UI.InteractionContext.DataExports;assembly=ToolFramework"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <sws:Export Name="RequiredFeatureSet">
+    <mntcd:RequiredFeatureSet Name="Text View">
+        <mntcd:RequiredFeatureSet.RequiredFeatures>
+        <sys:String>Microsoft.Nautilus.Text.Editor.ITextView, ToolFramework, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</sys:String>
+      </mntcd:RequiredFeatureSet.RequiredFeatures>
+    </mntcd:RequiredFeatureSet>
+  </sws:Export>
+</sws:Exports>

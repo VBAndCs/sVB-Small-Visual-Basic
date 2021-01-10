@@ -1,0 +1,40 @@
+<sws:Exports 
+    xmlns:sws='clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel'
+    xmlns:mntcd="clr-namespace:Microsoft.Nautilus.Core.DataExports;assembly=ToolFramework">
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="txt" ContentType="text" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="xml" ContentType="xml" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="cs" ContentType="csharp" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="vb" ContentType="vb" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="proj" ContentType="proj" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="csproj" ContentType="csproj" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="vbproj" ContentType="vbproj" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="jpg" ContentType="jpeg" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="jpeg" ContentType="jpeg" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="png" ContentType="png" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="gif" ContentType="gif" />
+  </sws:Export>
+  <sws:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="bmp" ContentType="bmp" />
+  </sws:Export>
+</sws:Exports>

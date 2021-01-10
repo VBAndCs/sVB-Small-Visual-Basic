@@ -1,0 +1,41 @@
+<sws:Exports xmlns:mntcd="clr-namespace:Microsoft.Nautilus.Text.Classification.DataExports;assembly=ToolFramework"
+             xmlns:sws='clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel'
+             >
+
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Literal" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Numeric" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Identifier" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Keyword" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Unknown" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Comment" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_String" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Delimiter" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Operator" />
+  </sws:Export> 
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Type" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Member" />
+  </sws:Export>
+  <sws:Export Name="ClassificationTypeDefinition">
+    <mntcd:ClassificationTypeDefinition Name="SB_Text" />
+  </sws:Export>
+</sws:Exports>
