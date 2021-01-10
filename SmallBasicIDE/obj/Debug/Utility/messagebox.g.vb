@@ -127,7 +127,7 @@ Namespace Microsoft.SmallBasic.Utility
                 Return
             End If
             _contentLoaded = true
-            Dim resourceLocater As System.Uri = New System.Uri("/SB;component/utility/messagebox.xaml", System.UriKind.Relative)
+            Dim resourceLocater As System.Uri = New System.Uri("/sVB;component/utility/messagebox.xaml", System.UriKind.Relative)
             
             #ExternalSource("..\..\..\Utility\messagebox.xaml",1)
             System.Windows.Application.LoadComponent(Me, resourceLocater)

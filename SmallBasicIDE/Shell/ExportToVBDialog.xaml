@@ -16,7 +16,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Image Name="iconImageControl" Source="pack://application:,,/SB;component/Resources/VBExport.png" Grid.Column="0" Width="64" Height="64" VerticalAlignment="Top" Margin="8" />
+            <Image Name="iconImageControl" Source="pack://application:,,/sVB;component/Resources/VBExport.png" Grid.Column="0" Width="64" Height="64" VerticalAlignment="Top" Margin="8" />
             <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Top">
                 <TextBlock Margin="2,10,2,2" TextWrapping="WrapWithOverflow" FontFamily="Segoe UI" FontSize="16" Foreground="#002ab5" Text="{lu:Localized ExportToVB}" />
                 <TextBlock Name="optionalContentControl" Margin="2" FontFamily="Segoe UI" FontSize="12" TextWrapping="Wrap" Text="{lu:Localized ExportToVBDescription}" />

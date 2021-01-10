@@ -232,7 +232,7 @@ Namespace Microsoft.SmallBasic
             messageBox.NotificationButtons = Nf.Close Or Nf.OK
             messageBox.okButton.Content = ResourceHelper.GetString("FindCommand")
             messageBox.NotificationIcon = NotificationIcon.Custom
-            messageBox.iconImageControl.Source = New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/Search.png"))
+            messageBox.iconImageControl.Source = New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/Search.png"))
             textBox3.SelectAll()
             textBox3.Focus()
             Dim notificationButtons As NotificationButtons = messageBox.Display()

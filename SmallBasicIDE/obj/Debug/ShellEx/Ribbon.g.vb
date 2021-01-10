@@ -56,7 +56,7 @@ Namespace Microsoft.SmallBasic.Shell
                 Return
             End If
             _contentLoaded = true
-            Dim resourceLocater As System.Uri = New System.Uri("/SB;component/shellex/ribbon.xaml", System.UriKind.Relative)
+            Dim resourceLocater As System.Uri = New System.Uri("/sVB;component/shellex/ribbon.xaml", System.UriKind.Relative)
             
             #ExternalSource("..\..\..\ShellEx\Ribbon.xaml",1)
             System.Windows.Application.LoadComponent(Me, resourceLocater)

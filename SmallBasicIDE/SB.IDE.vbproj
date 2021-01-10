@@ -6,12 +6,27 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>WinExe</OutputType>
     <LangVersion>16</LangVersion>
-    <AssemblyName>SB</AssemblyName>
+    <AssemblyName>sVB</AssemblyName>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <WarningLevel>4</WarningLevel>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(ProjectDir)**\*.cs</DefaultItemExcludes>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -30,33 +45,19 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationFramework">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\PresentationFramework\v4.0_4.0.0.0__31bf3856ad364e35\PresentationFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xaml">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Xaml\v4.0_4.0.0.0__b77a5c561934e089\System.Xaml.dll</HintPath>
-    </Reference>
-    <Reference Include="System">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll</HintPath>
-    </Reference>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System" />
     <Reference Include="ComponentModel">
       <HintPath>C:\Program Files\Microsoft\Small Basic\ComponentModel.dll</HintPath>
     </Reference>
-    <Reference Include="System.Configuration.Install">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Configuration.Install\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.Install.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="Verex, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Verex.1.2.0\lib\netstandard2.0\Verex.dll</HintPath>
     </Reference>
-    <Reference Include="WindowsBase">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\WindowsBase\v4.0_4.0.0.0__31bf3856ad364e35\WindowsBase.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Services">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Web.Services\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Web.Services.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\PresentationCore\v4.0_4.0.0.0__31bf3856ad364e35\PresentationCore.dll</HintPath>
-    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="PresentationCore" />
     <Reference Include="SmallBasicCompiler">
       <HintPath>C:\Program Files\Microsoft\Small Basic\SmallBasicCompiler.exe</HintPath>
     </Reference>
@@ -69,15 +70,9 @@
     <Reference Include="StringResources">
       <HintPath>C:\Program Files\Microsoft\Small Basic\StringResources.dll</HintPath>
     </Reference>
-    <Reference Include="System.Core">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Windows.Forms\v4.0_4.0.0.0__b77a5c561934e089\System.Windows.Forms.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml">
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\GetCurrentVersionCompletedEventArgs.vb" />
@@ -102,6 +97,7 @@
     <Compile Include="Documents\SubHeading.vb" />
     <Compile Include="Documents\TextDocument.vb" />
     <Compile Include="Documents\TextRun.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Properties\Resources.vb" />
     <Compile Include="Properties\Settings.vb" />
     <Compile Include="Shell\BooleanToCollapseStateConverter.vb" />
@@ -167,7 +163,6 @@
     <Compile Include="Ngen.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.vb" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\AppWorkspace.png" />
@@ -256,7 +251,16 @@
     <EmbeddedResource Include="Exports\FileExtensionToContentTypeAssociations.xcml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="My Project\" />
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
