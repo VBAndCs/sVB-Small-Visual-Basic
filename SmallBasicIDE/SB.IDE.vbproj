@@ -33,7 +33,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>Bin\Debug\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -49,7 +49,7 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System" />
     <Reference Include="ComponentModel">
-      <HintPath>C:\Program Files\Microsoft\Small Basic\ComponentModel.dll</HintPath>
+      <HintPath>SB.Lib\ComponentModel.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration.Install" />
     <Reference Include="Verex, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -59,16 +59,16 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="PresentationCore" />
     <Reference Include="SmallBasicCompiler">
-      <HintPath>C:\Program Files\Microsoft\Small Basic\SmallBasicCompiler.exe</HintPath>
+      <HintPath>SB.Lib\SmallBasicCompiler.exe</HintPath>
     </Reference>
     <Reference Include="ToolFramework">
-      <HintPath>C:\Program Files\Microsoft\Small Basic\ToolFramework.dll</HintPath>
+      <HintPath>SB.Lib\ToolFramework.dll</HintPath>
     </Reference>
     <Reference Include="LanguageService">
-      <HintPath>C:\Program Files\Microsoft\Small Basic\LanguageService.dll</HintPath>
+      <HintPath>SB.Lib\LanguageService.dll</HintPath>
     </Reference>
     <Reference Include="StringResources">
-      <HintPath>C:\Program Files\Microsoft\Small Basic\StringResources.dll</HintPath>
+      <HintPath>SB.Lib\StringResources.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />

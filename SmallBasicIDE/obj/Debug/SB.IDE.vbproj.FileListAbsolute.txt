@@ -40,3 +40,13 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.IDE.vbproj.CopyComple
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\sVB.exe
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\sVB.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\bin\Debug\sVB.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\sVB.exe.config
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\sVB.exe
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\sVB.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\SB.WinForms.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\Verex.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\SmallBasicLibrary.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\SB.WinForms.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\SB.WinForms.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\SmallBasicLibrary.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\Verex.dll
