@@ -1,5 +1,3 @@
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\bin\Debug\sVB.exe.config
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\bin\Debug\sVB.exe
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\bin\Debug\ComponentModel.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\bin\Debug\LanguageService.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\bin\Debug\SB.WinForms.dll
@@ -23,8 +21,6 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\Utility\PublishProgramDi
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\Utility\RatingControl.g.vb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\App.g.vb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\GeneratedInternalTypeHelper.g.vb
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\sVB_MarkupCompile.cache
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\sVB_MarkupCompile.lref
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\App.baml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\MainWindow.baml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\ShellEx\Ribbon.baml
@@ -34,12 +30,8 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\Shell\MdiViewsControl.ba
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\Utility\HelpPanel.baml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\Utility\messagebox.baml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\Utility\PublishProgramDialog.baml
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\sVB.g.resources
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.IDE.vbproj.CoreCompileInputs.cache
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.IDE.vbproj.CopyComplete
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\sVB.exe
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\sVB.pdb
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\bin\Debug\sVB.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\sVB.exe.config
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\sVB.exe
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\sVB.pdb
@@ -50,3 +42,16 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\SB.WinForms.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\SB.WinForms.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\SB.Lib\SmallBasicLibrary.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\Verex.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SB.exe.config
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SB.exe
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SB.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB_MarkupCompile.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB_MarkupCompile.lref
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.g.resources
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.exe
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\WpfDialogs.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\FileAssociation.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.xml

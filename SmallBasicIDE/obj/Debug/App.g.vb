@@ -57,7 +57,7 @@ Namespace Microsoft.SmallBasic
                 Return
             End If
             _contentLoaded = true
-            Dim resourceLocater As System.Uri = New System.Uri("/sVB;component/app.xaml", System.UriKind.Relative)
+            Dim resourceLocater As System.Uri = New System.Uri("/SB;component/app.xaml", System.UriKind.Relative)
             
             #ExternalSource("..\..\App.xaml",1)
             System.Windows.Application.LoadComponent(Me, resourceLocater)

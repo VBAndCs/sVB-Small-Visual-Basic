@@ -56,7 +56,7 @@ Namespace Microsoft.SmallBasic.Utility
                 Return
             End If
             _contentLoaded = true
-            Dim resourceLocater As System.Uri = New System.Uri("/sVB;component/utility/ratingcontrol.xaml", System.UriKind.Relative)
+            Dim resourceLocater As System.Uri = New System.Uri("/SB;component/utility/ratingcontrol.xaml", System.UriKind.Relative)
             
             #ExternalSource("..\..\..\Utility\RatingControl.xaml",1)
             System.Windows.Application.LoadComponent(Me, resourceLocater)

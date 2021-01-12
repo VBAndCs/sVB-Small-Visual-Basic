@@ -23,4 +23,8 @@ F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.Forms.vbproj.CopyComplet
 F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.WinForms.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.WinForms.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.WinForms.pdb
-F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.Forms.vbprojAssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\DiagramHelper.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\WpfDialogs.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\FileAssociation.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\DiagramHelper.xml

@@ -4,6 +4,8 @@ Imports Microsoft.SmallBasic.Library
 Imports Microsoft.SmallBasic.Library.Internal
 Imports Wpf = System.Windows.Controls
 Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, System.Windows.Controls.Control)
+Imports DiagramHelper
+Imports DiagramHelper.Designer
 
 <SmallBasicType>
 Public Module Forms
@@ -16,8 +18,6 @@ Public Module Forms
                 Dim child = TryCast(VisualTreeHelper.GetChild(parent, i), UIElement)
 
                 If child IsNot Nothing Then
-                    If child.GetType.Name = "BalanceInfo" Then Continue For
-
                     Yield child
 
                     If recurse Then

@@ -49,7 +49,7 @@
   <Grid>
     <Grid>
       <Panel.Background>
-        <ImageBrush ImageSource="pack://application:,,/sVB;component/Resources/AppWorkspace.png" 
+        <ImageBrush ImageSource="pack://application:,,/SB;component/Resources/AppWorkspace.png" 
                     AlignmentX="Left" AlignmentY="Top" Stretch="Fill" />
       </Panel.Background>
         
@@ -66,25 +66,25 @@
               <shell:LargeCommandGroup>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.NewCommand}" ShowCommandText="True">
                   <shell:Ribbon.LargeIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/FileNew.png" Width="48" Height="48" />
+                    <Image Source="pack://application:,,/SB;component/Resources/FileNew.png" Width="48" Height="48" />
                   </shell:Ribbon.LargeIcon>
                 </shell:RoutedRibbonCommand>
                   
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.OpenCommand}" ShowCommandText="True">
                   <shell:Ribbon.LargeIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/FileOpen.png" Width="48" Height="48" />
+                    <Image Source="pack://application:,,/SB;component/Resources/FileOpen.png" Width="48" Height="48" />
                   </shell:Ribbon.LargeIcon>
                 </shell:RoutedRibbonCommand>
                   
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveCommand}" ShowCommandText="True">
                   <shell:Ribbon.LargeIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="48" Height="48" />
+                    <Image Source="pack://application:,,/SB;component/Resources/FileSave.png" Width="48" Height="48" />
                   </shell:Ribbon.LargeIcon>
                 </shell:RoutedRibbonCommand>
                   
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveAsCommand}" ShowCommandText="True">
                   <shell:Ribbon.LargeIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/FileSaveAs.png" Width="48" Height="48" />
+                    <Image Source="pack://application:,,/SB;component/Resources/FileSaveAs.png" Width="48" Height="48" />
                   </shell:Ribbon.LargeIcon>
                 </shell:RoutedRibbonCommand>
               </shell:LargeCommandGroup>
@@ -94,12 +94,12 @@
               <shell:SmallCommandGroup>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebLoadCommand}" ShowCommandText="True">
                   <shell:Ribbon.SmallIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/WebOpen.png" Width="28" Height="28" />
+                    <Image Source="pack://application:,,/SB;component/Resources/WebOpen.png" Width="28" Height="28" />
                   </shell:Ribbon.SmallIcon>
                 </shell:RoutedRibbonCommand>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebSaveCommand}" ShowCommandText="True">
                   <shell:Ribbon.SmallIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/WebSave.png" Width="28" Height="28" />
+                    <Image Source="pack://application:,,/SB;component/Resources/WebSave.png" Width="28" Height="28" />
                   </shell:Ribbon.SmallIcon>
                 </shell:RoutedRibbonCommand>
               </shell:SmallCommandGroup>
@@ -109,29 +109,29 @@
               <shell:LargeCommandGroup>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CutCommand}" ShowCommandText="True">
                   <shell:Ribbon.LargeIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/EditCut.png" Width="48" Height="48" />
+                    <Image Source="pack://application:,,/SB;component/Resources/EditCut.png" Width="48" Height="48" />
                   </shell:Ribbon.LargeIcon>
                 </shell:RoutedRibbonCommand>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CopyCommand}" ShowCommandText="True">
                   <shell:Ribbon.LargeIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/EditCopy.png" Width="48" Height="48" />
+                    <Image Source="pack://application:,,/SB;component/Resources/EditCopy.png" Width="48" Height="48" />
                   </shell:Ribbon.LargeIcon>
                 </shell:RoutedRibbonCommand>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.PasteCommand}" ShowCommandText="True">
                   <shell:Ribbon.LargeIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/EditPaste.png" Width="48" Height="48" />
+                    <Image Source="pack://application:,,/SB;component/Resources/EditPaste.png" Width="48" Height="48" />
                   </shell:Ribbon.LargeIcon>
                 </shell:RoutedRibbonCommand>
               </shell:LargeCommandGroup>
               <shell:SmallCommandGroup>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.UndoCommand}" ShowCommandText="True">
                   <shell:Ribbon.SmallIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/EditUndo.png" Width="24" Height="24" />
+                    <Image Source="pack://application:,,/SB;component/Resources/EditUndo.png" Width="24" Height="24" />
                   </shell:Ribbon.SmallIcon>
                 </shell:RoutedRibbonCommand>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RedoCommand}" ShowCommandText="True">
                   <shell:Ribbon.SmallIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/EditRedo.png" Width="24" Height="24" />
+                    <Image Source="pack://application:,,/SB;component/Resources/EditRedo.png" Width="24" Height="24" />
                   </shell:Ribbon.SmallIcon>
                 </shell:RoutedRibbonCommand>
               </shell:SmallCommandGroup>
@@ -141,12 +141,12 @@
               <shell:LargeCommandGroup>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RunCommand}" ShowCommandText="True">
                   <shell:Ribbon.LargeIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/ProgramRun.png" Width="48" Height="48" />
+                    <Image Source="pack://application:,,/SB;component/Resources/ProgramRun.png" Width="48" Height="48" />
                   </shell:Ribbon.LargeIcon>
                 </shell:RoutedRibbonCommand>
                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" ShowCommandText="True">
                   <shell:Ribbon.LargeIcon>
-                    <Image Source="pack://application:,,/sVB;component/Resources/VBExport.png" Width="48" Height="48" />
+                    <Image Source="pack://application:,,/SB;component/Resources/VBExport.png" Width="48" Height="48" />
                   </shell:Ribbon.LargeIcon>
                 </shell:RoutedRibbonCommand>
               </shell:LargeCommandGroup>

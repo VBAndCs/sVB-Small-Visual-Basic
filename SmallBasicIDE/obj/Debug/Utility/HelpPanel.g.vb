@@ -92,7 +92,7 @@ Namespace Microsoft.SmallBasic.Utility
                 Return
             End If
             _contentLoaded = true
-            Dim resourceLocater As System.Uri = New System.Uri("/sVB;component/utility/helppanel.xaml", System.UriKind.Relative)
+            Dim resourceLocater As System.Uri = New System.Uri("/SB;component/utility/helppanel.xaml", System.UriKind.Relative)
             
             #ExternalSource("..\..\..\Utility\HelpPanel.xaml",1)
             System.Windows.Application.LoadComponent(Me, resourceLocater)

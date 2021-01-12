@@ -47,6 +47,9 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DiagramHelper">
+      <HintPath>..\..\DiagramHelper\DiagramHelper\bin\Debug\DiagramHelper.dll</HintPath>
+    </Reference>
     <Reference Include="SmallBasicLibrary">
       <HintPath>C:\Program Files\Microsoft\Small Basic\SmallBasicLibrary.dll</HintPath>
     </Reference>

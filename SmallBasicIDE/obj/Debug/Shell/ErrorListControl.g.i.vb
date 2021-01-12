@@ -58,7 +58,7 @@ Namespace Microsoft.SmallBasic.Shell
                 Return
             End If
             _contentLoaded = true
-            Dim resourceLocater As System.Uri = New System.Uri("/sVB;component/shell/errorlistcontrol.xaml", System.UriKind.Relative)
+            Dim resourceLocater As System.Uri = New System.Uri("/SB;component/shell/errorlistcontrol.xaml", System.UriKind.Relative)
             
             #ExternalSource("..\..\..\Shell\ErrorListControl.xaml",1)
             System.Windows.Application.LoadComponent(Me, resourceLocater)
