@@ -149,6 +149,7 @@ Public Module Form
     End Function
 
     Public Sub Show(formName As Primitive)
+        TextWindow.WriteLine("Showing " & formName.ToString())
         Dispatcher.Invoke(Sub() GetForm(formName).Show())
     End Sub
 

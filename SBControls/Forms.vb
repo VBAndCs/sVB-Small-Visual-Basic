@@ -80,7 +80,7 @@ Public Module Forms
                 ' Add control names:
                 For Each ui In CType(wnd.Content, UIElement).GetChildren()
                     Dim c = TryCast(ui, Wpf.Control)
-                    If c IsNot Nothing And c.Name <> "" Then
+                    If c IsNot Nothing AndAlso c.Name <> "" Then
                         _controls.Add(c.Name, c)
                     End If
                 Next

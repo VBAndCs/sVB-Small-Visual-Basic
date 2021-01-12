@@ -45,9 +45,6 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DiagramHelper">
-      <HintPath>..\..\DiagramHelper\DiagramHelper\bin\Debug\DiagramHelper.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Xaml" />
     <Reference Include="System" />
