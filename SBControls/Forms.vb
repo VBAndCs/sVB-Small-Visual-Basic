@@ -4,8 +4,7 @@ Imports Microsoft.SmallBasic.Library
 Imports Microsoft.SmallBasic.Library.Internal
 Imports Wpf = System.Windows.Controls
 Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, System.Windows.Controls.Control)
-Imports DiagramHelper
-Imports DiagramHelper.Designer
+
 
 <SmallBasicType>
 Public Module Forms
@@ -55,6 +54,8 @@ Public Module Forms
         Return Primitive.ConvertFromMap(map)
     End Function
 
+    Public Property AppPath As Primitive
+
     Public Function LoadForm(name As Primitive, xamlPath As Primitive) As Primitive
         If CStr(name) = "" Then
             Throw New ArgumentException("Form name can't be an empty string.")
@@ -64,6 +65,17 @@ Public Module Forms
             Throw New ArgumentException($"There is already a form named `{name}`.")
         End If
 
+        If Not IO.File.Exists(xamlPath) Then
+            If IO.Path.GetPathRoot(xamlPath) = "" Then
+                Dim d = AppDomain.CurrentDomain.BaseDirectory
+                Dim xamlPath2 = IO.Path.Combine(d, xamlPath)
+                If IO.File.Exists(xamlPath2) Then
+                    xamlPath = xamlPath2
+                ElseIf AppPath.ToString() <> "" Then
+                    xamlPath = IO.Path.Combine(AppPath, xamlPath)
+                End If
+            End If
+        End If
         Dispatcher.Invoke(
             Sub()
                 Dim wnd As New Window() With {
@@ -115,7 +127,6 @@ Public Module Forms
         Return name
     End Function
 
-
     Private Function LoadContent(FileName As String) As UIElement
         Dim stream = IO.File.Open(FileName, IO.FileMode.Open)
         Dim reader As New XamlReader()
@@ -135,5 +146,7 @@ Public Module Forms
         End Get
     End Property
 
-
+    Public Sub ShowMessage(message As Primitive, title As Primitive)
+        MessageBox.Show(message.ToString(), title.ToString())
+    End Sub
 End Module
