@@ -267,7 +267,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub OnProgramRun(ByVal sender As Object, ByVal e As RoutedEventArgs)
-            RunProgram(ActiveDocument)
+            RunProgram()
         End Sub
 
         Private Sub OnProgramEnd(ByVal sender As Object, ByVal e As RoutedEventArgs)
@@ -402,15 +402,17 @@ Namespace Microsoft.SmallBasic
         End Function
 
 
-        Private Function RunProgram(ByVal document As TextDocument) As Boolean
-            Dim outputFileName As String
-
+        Private Function RunProgram() As Boolean
             Try
-                outputFileName = GetOutputFileName(document)
+                Dim outputFileName = GetOutputFileName(ActiveDocument)
+                Return RunProgram(ActiveDocument, outputFileName)
             Catch ex As Exception
                 Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
                 Return True
             End Try
+        End Function
+
+        Private Function RunProgram(ByVal document As TextDocument, outputFileName As String) As Boolean
 
             document.Errors.Clear()
 
@@ -443,7 +445,7 @@ Namespace Microsoft.SmallBasic
                 Me.endProgramButton.Focus()
 
             ElseIf document.ParseFormHints() Then
-                Return PreCompile(document)
+                Return PreCompile(document, outputFileName)
             End If
 
             Return True
@@ -453,7 +455,7 @@ Namespace Microsoft.SmallBasic
         Private ReadOnly OpenBracketRegex As New Verex(NoneOrMany(Symbols.WhiteSpace) + "(")
         Private ReadOnly MethodRegex As New Verex(Symbols.AnyWord + NoneOrMany(Symbols.WhiteSpace) + "(")
 
-        Private Function PreCompile(document As TextDocument) As Boolean
+        Private Function PreCompile(document As TextDocument, outputFileName As String) As Boolean
             Dim ReRun = False
             Dim txt = document.Text
             Dim lines = txt.Split({Environment.NewLine}, StringSplitOptions.None)
@@ -522,7 +524,7 @@ Namespace Microsoft.SmallBasic
                             End If
 
                         Else 'Property Get          
-                                match = WordRgex.Match(nextText)
+                            match = WordRgex.Match(nextText)
                             If Not match.Success OrElse match.Index > 0 Then Continue For
 
                             Dim method = $"Get{match.Value}"
@@ -542,7 +544,7 @@ Namespace Microsoft.SmallBasic
                 End If
             Next
 
-            If ReRun Then Return RunAgain(document, lines)
+            If ReRun Then Return RunAgain(document, outputFileName, lines)
 
             Return document.Errors.Count = 0
 
@@ -559,14 +561,14 @@ Namespace Microsoft.SmallBasic
             Return Nothing
         End Function
 
-        Function RunAgain(document As TextDocument, lines() As String) As Boolean
+        Function RunAgain(document As TextDocument, outputFileName As String, lines() As String) As Boolean
             Dim n = New Random().Next(1, 1000000)
             Dim filename = Path.Combine(Path.GetTempPath(), $"file{n}.sb")
             My.Computer.FileSystem.WriteAllText(filename, String.Join(Environment.NewLine, lines), False)
             Dim doc As New TextDocument(filename)
 
             document.Errors.Clear()
-            If RunProgram(doc) Then Return True
+            If RunProgram(doc, outputFileName) Then Return True
 
             For Each err In doc.Errors
                 document.Errors.Add(err)
