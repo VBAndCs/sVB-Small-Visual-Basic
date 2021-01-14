@@ -709,5 +709,44 @@ Namespace Microsoft.SmallBasic
             Process.Start("http://smallbasic.com/download.aspx")
         End Sub
 
+
+        Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
+            Dim hint As New Text.StringBuilder
+            Dim declaration As New Text.StringBuilder
+            Dim formName As String
+            Dim xamlPath As String
+            If formDesigner.FileName = "" Then
+                formName = "Form1"
+                xamlPath = Path.GetTempPath
+                formDesigner.FileName = Path.Combine(xamlPath, formName & ".xaml")
+                formDesigner.DoSave()
+            Else
+                formName = Path.GetFileNameWithoutExtension(formDesigner.FileName)
+                xamlPath = Path.GetDirectoryName(formDesigner.FileName)
+                If formDesigner.HasChanges Then formDesigner.DoSave()
+            End If
+
+            hint.AppendLine($"'#{formName}{{")
+
+            For Each c As FrameworkElement In formDesigner.Items
+                Dim name = c.Name
+                If name <> "" Then
+                    hint.AppendLine($"'    {name}: {c.GetType().Name}")
+                    declaration.AppendLine($"{name} = ""{name}""")
+                End If
+            Next
+            hint.AppendLine("'}")
+            hint.AppendLine()
+            hint.Append(declaration)
+            hint.AppendLine($"Forms.AppPath = ""{xamlPath}""")
+            hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{formName}.xaml"")")
+            hint.AppendLine($"{formName}.Width = {formDesigner.PageWidth}")
+            hint.AppendLine($"{formName}.Height = {formDesigner.PageHeight}")
+            hint.AppendLine($"Form.Show({formName})")
+
+            ActiveDocument.EditorControl.EditorOperations.SelectAll()
+            ActiveDocument.EditorControl.EditorOperations.InsertText(hint.ToString(), ActiveDocument.UndoHistory)
+
+        End Sub
     End Class
 End Namespace

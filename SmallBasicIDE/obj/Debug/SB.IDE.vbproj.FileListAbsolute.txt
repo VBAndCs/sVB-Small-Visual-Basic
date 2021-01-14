@@ -50,3 +50,7 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB_MarkupCompile.lref
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.g.resources
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.exe
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\WpfDialogs.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.xml

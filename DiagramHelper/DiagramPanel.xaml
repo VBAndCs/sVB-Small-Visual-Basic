@@ -1,0 +1,108 @@
+﻿<UserControl x:Class="DiagramPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:s="clr-namespace:DiagramHelper"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             MinHeight="1cm" MinWidth="1cm"
+             RenderTransformOrigin="0.5,0.5"
+             SnapsToDevicePixels="True"  IsTabStop = "False">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/ResizeDecorator.xaml"/>
+                <ResourceDictionary Source="Resources/RotateDecorator.xaml"/>
+                <ResourceDictionary Source="Resources/ConnectDecorator.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.Template>
+        <ControlTemplate TargetType="s:DiagramPanel">
+            <Grid>
+                <Grid>
+                    <Control Name="ResizeDecorator"  IsTabStop="False" Template="{StaticResource ResizeDecoratorTemplate}" Visibility="Collapsed"/>
+                    <ContentPresenter />
+                    <Control Name="RotateDecorator" IsTabStop="False" Template="{StaticResource RotateDecoratorTemplate}" Visibility="Collapsed"/>
+                </Grid>
+
+                <Grid>
+                    <Rectangle x:Name="PART_FocusRectangle"  Stroke="Black"
+                        StrokeThickness="0" StrokeDashArray="1,3"
+                        SnapsToDevicePixels="True" RenderTransformOrigin="0.5,0.5"/>
+                    <Grid Name="ConnectorsGrid">
+                        <TextBlock x:Name="PART_Text" IsHitTestVisible="False" TextAlignment="Center"
+                                   HorizontalAlignment="Center"  VerticalAlignment="Center" RenderTransformOrigin="0.5, 0.5"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter TargetName="ResizeDecorator" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="RotateDecorator" Property="Visibility" Value="Visible"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </UserControl.Template>
+
+    <UserControl.ContextMenu>
+        <ContextMenu Opened="ContextMenu_Opened" >
+            <MenuItem Header="Copy" InputGestureText="Ctrl+C"  Click="CopyMenuItem_Click"/>
+            <MenuItem Header="Cut" InputGestureText="Ctrl+X"  Click="CutMenuItem_Click"/>
+            <MenuItem Header="Delete" InputGestureText="Delete"  Click="DeleteMenuItem_Click"/>
+            <MenuItem x:Name="GroupMenuItem" Header="Group" InputGestureText="Ctrl+G" IsCheckable="True" Checked="GroupMenuItem_Checked" Unchecked="GroupMenuItem_Unchecked"/>
+            <MenuItem x:Name="RemoveFromGroupMenuItem" Header="Remove From Group" Click="RemoveFromGroupMenuItem_Click" Visibility="Collapsed"/>
+            <Separator/>
+            <MenuItem Header="Diagram Text">
+                <MenuItem Header="Edit Text" InputGestureText="Enter" Click="EditTextMenuItem_Click"/>
+                <MenuItem Header="Choose Font" InputGestureText="Ctrl+F" Click="TextFontMenuItem_Click"/>
+                <MenuItem Header="Decrease Size" InputGestureText="Ctrl+[" Click="DecreaseSizeMenuItem_Click"/>
+                <MenuItem Header="Increase Size" InputGestureText="Ctrl+]" Click="IncreaseSizeMenuItem_Click"/>
+                <Separator/>
+                <MenuItem Header="Bold" x:Name="BoldMenuItem" InputGestureText="Ctrl+B" IsCheckable="True" 
+                              Checked="BoldMenuItem_Checked" Unchecked="BoldMenuItem_Checked"/>
+                <MenuItem Header="Italic" x:Name="ItalicMenuItem" InputGestureText="Ctrl+I" IsCheckable="True" 
+                              Checked="ItalicMenuItem_Checked" Unchecked="ItalicMenuItem_Checked"/>
+                <MenuItem Header="Underline" x:Name="UnderlineMenuItem" InputGestureText="Ctrl+U" IsCheckable="True" 
+                              Checked="UnderlineMenuItem_Checked" Unchecked="UnderlineMenuItem_Checked"/>
+                <Separator/>
+                <MenuItem Header="Text Foreground" InputGestureText="F7" Click="TextForegroundMenuItem_Click"/>
+                <MenuItem Header="Text Background" InputGestureText="F8" Click="TextBackgroundMenuItem_Click"/>
+                <MenuItem Header="Outlined Text">
+                    <MenuItem x:Name="DrawOutlineMenuItem" Header="Draw Outline" 
+                            IsCheckable="True" IsChecked="False" 
+                            Checked ="DrawOutlineMenuItem_Checked"
+                            Unchecked="DrawOutlineMenuItem_Unchecked"/>
+                    <MenuItem Header="Decrease Outline Thickness" InputGestureText="-" Click="DecreaseOutlineThicknessMenuItem_Click"  />
+                    <MenuItem Header="Increase Outline Thickness" InputGestureText="+" Click="IicreaseOutlineThicknessMenuItem_Click"  />
+                    <MenuItem Header="Outline Fill" Click="OutlineFillMenuItem_Click"  />
+                </MenuItem>
+                <Separator/>
+                <MenuItem x:Name="ApplyRotationMenuItem" Header="Apply Rotation" IsCheckable="True" IsChecked="True" 
+                          Checked ="ApplyRotationMenuItem_Checked"
+                          Unchecked="ApplyRotationMenuItem_Unchecked"/>
+            </MenuItem>
+            <MenuItem Header="Diagram Appearance">
+                <MenuItem Header="Diagram Background" InputGestureText="F2" Click="DiagramBackgroundMenuItem_Click"  />
+                <MenuItem Header="Border Brush" InputGestureText="F3" Click="DiagramBorderBrushMenuItem_Click"  />
+                <MenuItem Header="Decrease Border Thickness" InputGestureText="F5" Click="DecreaseBorderThicknessMenuItem_Click"  />
+                <MenuItem Header="Increase Border Thickness" InputGestureText="F6" Click="IicreaseBorderThicknessMenuItem_Click"  />
+            </MenuItem>
+            <MenuItem Header="Rotation &amp; Skew">
+                <MenuItem Header="Reset To 0" InputGestureText="DblClick Rotation Thumb" Click="ZeroRotationMenuItem_Click"/>
+                <MenuItem Header="Decrease By 45" InputGestureText="F11" Click="DecreaseRotatationMenuItem_Click"/>
+                <MenuItem Header="Increase By 45" InputGestureText="F12" Click="IncreaseRotatationMenuItem_Click"/>
+                <Separator/>
+                <MenuItem Header="Skew" InputGestureText="Ctrl+K" Click="SkewMenuItem_Click"  />
+            </MenuItem>
+            <Separator/>
+            <MenuItem Header="Apply Last Change" InputGestureText="F4" Click="ApplyLastChangeMenuItem_Click"  />
+
+        </ContextMenu>
+    </UserControl.ContextMenu>
+</UserControl>

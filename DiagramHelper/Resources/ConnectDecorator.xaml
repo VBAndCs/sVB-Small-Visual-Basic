@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:DiagramHelper">
+
+    <Style TargetType="{x:Type s:ConnectorThumb}">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type s:ConnectorThumb}">
+                    <Grid>
+                        <Rectangle Width="10" Height="10" Fill="Transparent" />
+                        <Ellipse Fill="Black" Stroke="White" StrokeThickness="1" />
+                        <Grid.ContextMenu>
+                            <ContextMenu x:Name="PART_ContextMenu">
+                                 <RadioButton x:Name="RdoRightAngleLine" GroupName="LineMode" IsHitTestVisible="False" >Right-Angle Line</RadioButton>
+                                 <RadioButton x:Name="RdoStraightLine" GroupName="LineMode" IsHitTestVisible="False" >Straight Line</RadioButton>                              
+                                <Separator />
+                                <MenuItem Header="Remove Connection" InputGestureText="Delete"/>
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

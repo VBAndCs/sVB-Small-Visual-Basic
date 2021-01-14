@@ -1,0 +1,2 @@
+﻿<Path xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"     
+		 Fill="Blue" Stretch="Fill" Data="M 0,0 L 0,10 L 10,10 Z"/>
