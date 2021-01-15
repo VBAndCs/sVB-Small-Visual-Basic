@@ -52,16 +52,56 @@ Public Module Control
         Dispatcher.Invoke(Sub() GetControl(formName, controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden))
     End Sub
 
-    Public Function GetBackColor(formName As Primitive, controlName As Primitive) As Primitive
-        Dim brush = GetControl(formName, controlName).Background
 
+    Private ReadOnly BackColorProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("BackColor",
+                           GetType(String), GetType(Wpf.Control))
+
+    Public Function GetBackColor(formName As Primitive, controlName As Primitive) As Primitive
+        Dispatcher.Invoke(
+           Sub()
+               Dim c = GetControl(formName, controlName)
+               Dim brush = TryCast(c.Background, SolidColorBrush)
+               If brush IsNot Nothing Then
+                   Dim hexColor = brush.Color.ToString()
+                   If hexColor = Transparent.ToString() Then
+                       GetBackColor = Transparent
+                   ElseIf hexColor.Length = 9 AndAlso hexColor.StartsWith("#FF") Then
+                       GetBackColor = "#" & hexColor.Substring(3)
+                   Else
+                       GetBackColor = hexColor
+                   End If
+               Else
+                   GetBackColor = c.GetValue(BackColorProperty)
+               End If
+           End Sub)
     End Function
 
     Public Sub SetBackColor(formName As Primitive, controlName As Primitive, value As Primitive)
-        ' c = convert value to color
-        ' GetControl(formName, controlName).Background = New SolidColorBrush(c)
+        Dispatcher.Invoke(
+           Sub()
+               Dim c = GetControl(formName, controlName)
+               Dim _color = Color.FromString(value)
+               c.Background = New SolidColorBrush(_color)
+               c.SetValue(BackColorProperty, value.ToString())
+           End Sub)
     End Sub
 
+    Public Function GetMouseX(formName As Primitive, controlName As Primitive) As Primitive
+        Dispatcher.Invoke(
+            Sub()
+                Dim c = GetControl(formName, controlName)
+                GetMouseX = Input.Mouse.GetPosition(c).X
+            End Sub)
+    End Function
+
+    Public Function GetMouseY(formName As Primitive, controlName As Primitive) As Primitive
+        Dispatcher.Invoke(
+            Sub()
+                Dim c = GetControl(formName, controlName)
+                GetMouseY = Input.Mouse.GetPosition(c).Y
+            End Sub)
+    End Function
 
 #Region "Events"
     Public ReadOnly Property SenderForm As Primitive

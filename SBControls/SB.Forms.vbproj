@@ -51,6 +51,7 @@
       <HintPath>C:\Program Files\Microsoft\Small Basic\SmallBasicLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System" />
@@ -66,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Button.vb" />
+    <Compile Include="Color.vb" />
     <Compile Include="Control.vb" />
     <Compile Include="Form.vb" />
     <Compile Include="Forms.vb" />

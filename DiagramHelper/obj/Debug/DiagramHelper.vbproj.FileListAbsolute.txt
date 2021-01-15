@@ -100,7 +100,6 @@ F:\_VS.NET\Small Basic IDE\VB\DiagramHelper\DiagramHelper\obj\Debug\DiagramHelpe
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\bin\Debug\DiagramHelper.dll
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\bin\Debug\DiagramHelper.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\bin\Debug\DiagramHelper.xml
-F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper.vbprojAssemblyReference.cache
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Arrow.baml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\Brushes.baml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\ExpanderStyle.baml
