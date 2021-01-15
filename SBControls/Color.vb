@@ -26,290 +26,289 @@ Public Module Color
 
     End Function
 
-    Public Property AliceBlue As Primitive = "#F0F8FF"
-    Public Property AntiqueWhite As Primitive = "#FAEBD7"
-    Public Property Aqua As Primitive = "#00FFFF"
-    Public Property Aquamarine As Primitive = "#7FFFD4"
-    Public Property Azure As Primitive = "#F0FFFF"
-    Public Property Beige As Primitive = "#F5F5DC"
-    Public Property Bisque As Primitive = "#FFE4C4"
-    Public Property Black As Primitive = "#000000"
-    Public Property BlanchedAlmond As Primitive = "#FFEBCD"
-    Public Property Blue As Primitive = "#0000FF"
-    Public Property BlueViolet As Primitive = "#8A2BE2"
-    Public Property Brown As Primitive = "#A52A2A"
-    Public Property BurlyWood As Primitive = "#DEB887"
-    Public Property CadetBlue As Primitive = "#5F9EA0"
-    Public Property Chartreuse As Primitive = "#7FFF00"
-    Public Property Chocolate As Primitive = "#D2691E"
-    Public Property Coral As Primitive = "#FF7F50"
-    Public Property CornflowerBlue As Primitive = "#6495ED"
-    Public Property Cornsilk As Primitive = "#FFF8DC"
-    Public Property Crimson As Primitive = "#DC143C"
-    Public Property Cyan As Primitive = "#00FFFF"
-    Public Property DarkBlue As Primitive = "#00008B"
-    Public Property DarkCyan As Primitive = "#008B8B"
-    Public Property DarkGoldenrod As Primitive = "#B8860B"
-    Public Property DarkGray As Primitive = "#A9A9A9"
-    Public Property DarkGreen As Primitive = "#006400"
-    Public Property DarkKhaki As Primitive = "#BDB76B"
-    Public Property DarkMagenta As Primitive = "#8B008B"
-    Public Property DarkOliveGreen As Primitive = "#556B2F"
-    Public Property DarkOrange As Primitive = "#FF8C00"
-    Public Property DarkOrchid As Primitive = "#9932CC"
-    Public Property DarkRed As Primitive = "#8B0000"
-    Public Property DarkSalmon As Primitive = "#E9967A"
-    Public Property DarkSeaGreen As Primitive = "#8FBC8F"
-    Public Property DarkSlateBlue As Primitive = "#483D8B"
-    Public Property DarkSlateGray As Primitive = "#2F4F4F"
-    Public Property DarkTurquoise As Primitive = "#00CED1"
-    Public Property DarkViolet As Primitive = "#9400D3"
-    Public Property DeepPink As Primitive = "#FF1493"
-    Public Property DeepSkyBlue As Primitive = "#00BFFF"
-    Public Property DimGray As Primitive = "#696969"
-    Public Property DodgerBlue As Primitive = "#1E90FF"
-    Public Property FireBrick As Primitive = "#B22222"
-    Public Property FloralWhite As Primitive = "#FFFAF0"
-    Public Property ForestGreen As Primitive = "#228B22"
-    Public Property Fuchsia As Primitive = "#FF00FF"
-    Public Property Gainsboro As Primitive = "#DCDCDC"
-    Public Property GhostWhite As Primitive = "#F8F8FF"
-    Public Property Gold As Primitive = "#FFD700"
-    Public Property Goldenrod As Primitive = "#DAA520"
-    Public Property Gray As Primitive = "#808080"
-    Public Property Green As Primitive = "#008000"
-    Public Property GreenYellow As Primitive = "#ADFF2F"
-    Public Property Honeydew As Primitive = "#F0FFF0"
-    Public Property HotPink As Primitive = "#FF69B4"
-    Public Property IndianRed As Primitive = "#CD5C5C"
-    Public Property Indigo As Primitive = "#4B0082"
-    Public Property Ivory As Primitive = "#FFFFF0"
-    Public Property Khaki As Primitive = "#F0E68C"
-    Public Property Lavender As Primitive = "#E6E6FA"
-    Public Property LavenderBlush As Primitive = "#FFF0F5"
-    Public Property LawnGreen As Primitive = "#7CFC00"
-    Public Property LemonChiffon As Primitive = "#FFFACD"
-    Public Property LightBlue As Primitive = "#ADD8E6"
-    Public Property LightCoral As Primitive = "#F08080"
-    Public Property LightCyan As Primitive = "#E0FFFF"
-    Public Property LightGoldenrodYellow As Primitive = "#FAFAD2"
-    Public Property LightGray As Primitive = "#D3D3D3"
-    Public Property LightGreen As Primitive = "#90EE90"
-    Public Property LightPink As Primitive = "#FFB6C1"
-    Public Property LightSalmon As Primitive = "#FFA07A"
-    Public Property LightSeaGreen As Primitive = "#20B2AA"
-    Public Property LightSkyBlue As Primitive = "#87CEFA"
-    Public Property LightSlateGray As Primitive = "#778899"
-    Public Property LightSteelBlue As Primitive = "#B0C4DE"
-    Public Property LightYellow As Primitive = "#FFFFE0"
-    Public Property Lime As Primitive = "#00FF00"
-    Public Property LimeGreen As Primitive = "#32CD32"
-    Public Property Linen As Primitive = "#FAF0E6"
-    Public Property Magenta As Primitive = "#FF00FF"
-    Public Property Maroon As Primitive = "#800000"
-    Public Property MediumAquamarine As Primitive = "#66CDAA"
-    Public Property MediumBlue As Primitive = "#0000CD"
-    Public Property MediumOrchid As Primitive = "#BA55D3"
-    Public Property MediumPurple As Primitive = "#9370DB"
-    Public Property MediumSeaGreen As Primitive = "#3CB371"
-    Public Property MediumSlateBlue As Primitive = "#7B68EE"
-    Public Property MediumSpringGreen As Primitive = "#00FA9A"
-    Public Property MediumTurquoise As Primitive = "#48D1CC"
-    Public Property MediumVioletRed As Primitive = "#C71585"
-    Public Property MidnightBlue As Primitive = "#191970"
-    Public Property MintCream As Primitive = "#F5FFFA"
-    Public Property MistyRose As Primitive = "#FFE4E1"
-    Public Property Moccasin As Primitive = "#FFE4B5"
-    Public Property NavajoWhite As Primitive = "#FFDEAD"
-    Public Property Navy As Primitive = "#000080"
-    Public Property OldLace As Primitive = "#FDF5E6"
-    Public Property Olive As Primitive = "#808000"
-    Public Property OliveDrab As Primitive = "#6B8E23"
-    Public Property Orange As Primitive = "#FFA500"
-    Public Property OrangeRed As Primitive = "#FF4500"
-    Public Property Orchid As Primitive = "#DA70D6"
-    Public Property PaleGoldenrod As Primitive = "#EEE8AA"
-    Public Property PaleGreen As Primitive = "#98FB98"
-    Public Property PaleTurquoise As Primitive = "#AFEEEE"
-    Public Property PaleVioletRed As Primitive = "#DB7093"
-    Public Property PapayaWhip As Primitive = "#FFEFD5"
-    Public Property PeachPuff As Primitive = "#FFDAB9"
-    Public Property Peru As Primitive = "#CD853F"
-    Public Property Pink As Primitive = "#FFC0CB"
-    Public Property Plum As Primitive = "#DDA0DD"
-    Public Property PowderBlue As Primitive = "#B0E0E6"
-    Public Property Purple As Primitive = "#800080"
-    Public Property Red As Primitive = "#FF0000"
-    Public Property RosyBrown As Primitive = "#BC8F8F"
-    Public Property RoyalBlue As Primitive = "#4169E1"
-    Public Property SaddleBrown As Primitive = "#8B4513"
-    Public Property Salmon As Primitive = "#FA8072"
-    Public Property SandyBrown As Primitive = "#F4A460"
-    Public Property SeaGreen As Primitive = "#2E8B57"
-    Public Property Seashell As Primitive = "#FFF5EE"
-    Public Property Sienna As Primitive = "#A0522D"
-    Public Property Silver As Primitive = "#C0C0C0"
-    Public Property SkyBlue As Primitive = "#87CEEB"
-    Public Property SlateBlue As Primitive = "#6A5ACD"
-    Public Property SlateGray As Primitive = "#708090"
-    Public Property Snow As Primitive = "#FFFAFA"
-    Public Property SpringGreen As Primitive = "#00FF7F"
-    Public Property SteelBlue As Primitive = "#4682B4"
-    Public Property Tan As Primitive = "#D2B48C"
-    Public Property Teal As Primitive = "#008080"
-    Public Property Thistle As Primitive = "#D8BFD8"
-    Public Property Tomato As Primitive = "#FF6347"
-    Public Property Transparent As Primitive = "#00FFFFFF"
-    Public Property Turquoise As Primitive = "#40E0D0"
-    Public Property Violet As Primitive = "#EE82EE"
-    Public Property Wheat As Primitive = "#F5DEB3"
-    Public Property White As Primitive = "#FFFFFF"
-    Public Property WhiteSmoke As Primitive = "#F5F5F5"
-    Public Property Yellow As Primitive = "#FFFF00"
-    Public Property YellowGreen As Primitive = "#9ACD32"
+    Public ReadOnly Property AliceBlue As Primitive = "#F0F8FF"
+    Public ReadOnly Property AntiqueWhite As Primitive = "#FAEBD7"
+    Public ReadOnly Property Aqua As Primitive = "#00FFFF"
+    Public ReadOnly Property Aquamarine As Primitive = "#7FFFD4"
+    Public ReadOnly Property Azure As Primitive = "#F0FFFF"
+    Public ReadOnly Property Beige As Primitive = "#F5F5DC"
+    Public ReadOnly Property Bisque As Primitive = "#FFE4C4"
+    Public ReadOnly Property Black As Primitive = "#000000"
+    Public ReadOnly Property BlanchedAlmond As Primitive = "#FFEBCD"
+    Public ReadOnly Property Blue As Primitive = "#0000FF"
+    Public ReadOnly Property BlueViolet As Primitive = "#8A2BE2"
+    Public ReadOnly Property Brown As Primitive = "#A52A2A"
+    Public ReadOnly Property BurlyWood As Primitive = "#DEB887"
+    Public ReadOnly Property CadetBlue As Primitive = "#5F9EA0"
+    Public ReadOnly Property Chartreuse As Primitive = "#7FFF00"
+    Public ReadOnly Property Chocolate As Primitive = "#D2691E"
+    Public ReadOnly Property Coral As Primitive = "#FF7F50"
+    Public ReadOnly Property CornflowerBlue As Primitive = "#6495ED"
+    Public ReadOnly Property Cornsilk As Primitive = "#FFF8DC"
+    Public ReadOnly Property Crimson As Primitive = "#DC143C"
+    Public ReadOnly Property Cyan As Primitive = "#00FFFF"
+    Public ReadOnly Property DarkBlue As Primitive = "#00008B"
+    Public ReadOnly Property DarkCyan As Primitive = "#008B8B"
+    Public ReadOnly Property DarkGoldenrod As Primitive = "#B8860B"
+    Public ReadOnly Property DarkGray As Primitive = "#A9A9A9"
+    Public ReadOnly Property DarkGreen As Primitive = "#006400"
+    Public ReadOnly Property DarkKhaki As Primitive = "#BDB76B"
+    Public ReadOnly Property DarkMagenta As Primitive = "#8B008B"
+    Public ReadOnly Property DarkOliveGreen As Primitive = "#556B2F"
+    Public ReadOnly Property DarkOrange As Primitive = "#FF8C00"
+    Public ReadOnly Property DarkOrchid As Primitive = "#9932CC"
+    Public ReadOnly Property DarkRed As Primitive = "#8B0000"
+    Public ReadOnly Property DarkSalmon As Primitive = "#E9967A"
+    Public ReadOnly Property DarkSeaGreen As Primitive = "#8FBC8F"
+    Public ReadOnly Property DarkSlateBlue As Primitive = "#483D8B"
+    Public ReadOnly Property DarkSlateGray As Primitive = "#2F4F4F"
+    Public ReadOnly Property DarkTurquoise As Primitive = "#00CED1"
+    Public ReadOnly Property DarkViolet As Primitive = "#9400D3"
+    Public ReadOnly Property DeepPink As Primitive = "#FF1493"
+    Public ReadOnly Property DeepSkyBlue As Primitive = "#00BFFF"
+    Public ReadOnly Property DimGray As Primitive = "#696969"
+    Public ReadOnly Property DodgerBlue As Primitive = "#1E90FF"
+    Public ReadOnly Property FireBrick As Primitive = "#B22222"
+    Public ReadOnly Property FloralWhite As Primitive = "#FFFAF0"
+    Public ReadOnly Property ForestGreen As Primitive = "#228B22"
+    Public ReadOnly Property Fuchsia As Primitive = "#FF00FF"
+    Public ReadOnly Property Gainsboro As Primitive = "#DCDCDC"
+    Public ReadOnly Property GhostWhite As Primitive = "#F8F8FF"
+    Public ReadOnly Property Gold As Primitive = "#FFD700"
+    Public ReadOnly Property Goldenrod As Primitive = "#DAA520"
+    Public ReadOnly Property Gray As Primitive = "#808080"
+    Public ReadOnly Property Green As Primitive = "#008000"
+    Public ReadOnly Property GreenYellow As Primitive = "#ADFF2F"
+    Public ReadOnly Property Honeydew As Primitive = "#F0FFF0"
+    Public ReadOnly Property HotPink As Primitive = "#FF69B4"
+    Public ReadOnly Property IndianRed As Primitive = "#CD5C5C"
+    Public ReadOnly Property Indigo As Primitive = "#4B0082"
+    Public ReadOnly Property Ivory As Primitive = "#FFFFF0"
+    Public ReadOnly Property Khaki As Primitive = "#F0E68C"
+    Public ReadOnly Property Lavender As Primitive = "#E6E6FA"
+    Public ReadOnly Property LavenderBlush As Primitive = "#FFF0F5"
+    Public ReadOnly Property LawnGreen As Primitive = "#7CFC00"
+    Public ReadOnly Property LemonChiffon As Primitive = "#FFFACD"
+    Public ReadOnly Property LightBlue As Primitive = "#ADD8E6"
+    Public ReadOnly Property LightCoral As Primitive = "#F08080"
+    Public ReadOnly Property LightCyan As Primitive = "#E0FFFF"
+    Public ReadOnly Property LightGoldenrodYellow As Primitive = "#FAFAD2"
+    Public ReadOnly Property LightGray As Primitive = "#D3D3D3"
+    Public ReadOnly Property LightGreen As Primitive = "#90EE90"
+    Public ReadOnly Property LightPink As Primitive = "#FFB6C1"
+    Public ReadOnly Property LightSalmon As Primitive = "#FFA07A"
+    Public ReadOnly Property LightSeaGreen As Primitive = "#20B2AA"
+    Public ReadOnly Property LightSkyBlue As Primitive = "#87CEFA"
+    Public ReadOnly Property LightSlateGray As Primitive = "#778899"
+    Public ReadOnly Property LightSteelBlue As Primitive = "#B0C4DE"
+    Public ReadOnly Property LightYellow As Primitive = "#FFFFE0"
+    Public ReadOnly Property Lime As Primitive = "#00FF00"
+    Public ReadOnly Property LimeGreen As Primitive = "#32CD32"
+    Public ReadOnly Property Linen As Primitive = "#FAF0E6"
+    Public ReadOnly Property Magenta As Primitive = "#FF00FF"
+    Public ReadOnly Property Maroon As Primitive = "#800000"
+    Public ReadOnly Property MediumAquamarine As Primitive = "#66CDAA"
+    Public ReadOnly Property MediumBlue As Primitive = "#0000CD"
+    Public ReadOnly Property MediumOrchid As Primitive = "#BA55D3"
+    Public ReadOnly Property MediumPurple As Primitive = "#9370DB"
+    Public ReadOnly Property MediumSeaGreen As Primitive = "#3CB371"
+    Public ReadOnly Property MediumSlateBlue As Primitive = "#7B68EE"
+    Public ReadOnly Property MediumSpringGreen As Primitive = "#00FA9A"
+    Public ReadOnly Property MediumTurquoise As Primitive = "#48D1CC"
+    Public ReadOnly Property MediumVioletRed As Primitive = "#C71585"
+    Public ReadOnly Property MidnightBlue As Primitive = "#191970"
+    Public ReadOnly Property MintCream As Primitive = "#F5FFFA"
+    Public ReadOnly Property MistyRose As Primitive = "#FFE4E1"
+    Public ReadOnly Property Moccasin As Primitive = "#FFE4B5"
+    Public ReadOnly Property NavajoWhite As Primitive = "#FFDEAD"
+    Public ReadOnly Property Navy As Primitive = "#000080"
+    Public ReadOnly Property OldLace As Primitive = "#FDF5E6"
+    Public ReadOnly Property Olive As Primitive = "#808000"
+    Public ReadOnly Property OliveDrab As Primitive = "#6B8E23"
+    Public ReadOnly Property Orange As Primitive = "#FFA500"
+    Public ReadOnly Property OrangeRed As Primitive = "#FF4500"
+    Public ReadOnly Property Orchid As Primitive = "#DA70D6"
+    Public ReadOnly Property PaleGoldenrod As Primitive = "#EEE8AA"
+    Public ReadOnly Property PaleGreen As Primitive = "#98FB98"
+    Public ReadOnly Property PaleTurquoise As Primitive = "#AFEEEE"
+    Public ReadOnly Property PaleVioletRed As Primitive = "#DB7093"
+    Public ReadOnly Property PapayaWhip As Primitive = "#FFEFD5"
+    Public ReadOnly Property PeachPuff As Primitive = "#FFDAB9"
+    Public ReadOnly Property Peru As Primitive = "#CD853F"
+    Public ReadOnly Property Pink As Primitive = "#FFC0CB"
+    Public ReadOnly Property Plum As Primitive = "#DDA0DD"
+    Public ReadOnly Property PowderBlue As Primitive = "#B0E0E6"
+    Public ReadOnly Property Purple As Primitive = "#800080"
+    Public ReadOnly Property Red As Primitive = "#FF0000"
+    Public ReadOnly Property RosyBrown As Primitive = "#BC8F8F"
+    Public ReadOnly Property RoyalBlue As Primitive = "#4169E1"
+    Public ReadOnly Property SaddleBrown As Primitive = "#8B4513"
+    Public ReadOnly Property Salmon As Primitive = "#FA8072"
+    Public ReadOnly Property SandyBrown As Primitive = "#F4A460"
+    Public ReadOnly Property SeaGreen As Primitive = "#2E8B57"
+    Public ReadOnly Property Seashell As Primitive = "#FFF5EE"
+    Public ReadOnly Property Sienna As Primitive = "#A0522D"
+    Public ReadOnly Property Silver As Primitive = "#C0C0C0"
+    Public ReadOnly Property SkyBlue As Primitive = "#87CEEB"
+    Public ReadOnly Property SlateBlue As Primitive = "#6A5ACD"
+    Public ReadOnly Property SlateGray As Primitive = "#708090"
+    Public ReadOnly Property Snow As Primitive = "#FFFAFA"
+    Public ReadOnly Property SpringGreen As Primitive = "#00FF7F"
+    Public ReadOnly Property SteelBlue As Primitive = "#4682B4"
+    Public ReadOnly Property Tan As Primitive = "#D2B48C"
+    Public ReadOnly Property Teal As Primitive = "#008080"
+    Public ReadOnly Property Thistle As Primitive = "#D8BFD8"
+    Public ReadOnly Property Tomato As Primitive = "#FF6347"
+    Public ReadOnly Property Transparent As Primitive = "#00FFFFFF"
+    Public ReadOnly Property Turquoise As Primitive = "#40E0D0"
+    Public ReadOnly Property Violet As Primitive = "#EE82EE"
+    Public ReadOnly Property Wheat As Primitive = "#F5DEB3"
+    Public ReadOnly Property White As Primitive = "#FFFFFF"
+    Public ReadOnly Property WhiteSmoke As Primitive = "#F5F5F5"
+    Public ReadOnly Property Yellow As Primitive = "#FFFF00"
+    Public ReadOnly Property YellowGreen As Primitive = "#9ACD32"
 
-    Dim ColorNames As New Dictionary(Of String, String)
+    Dim ColorNames As New Dictionary(Of String, String) From {
+            {"#F0F8FF", "AliceBlue"},
+        {"#FAEBD7", "AntiqueWhite"},
+        {"#7FFFD4", "Aquamarine"},
+        {"#F0FFFF", "Azure"},
+        {"#F5F5DC", "Beige"},
+        {"#FFE4C4", "Bisque"},
+        {"#000000", "Black"},
+        {"#FFEBCD", "BlanchedAlmond"},
+        {"#0000FF", "Blue"},
+        {"#8A2BE2", "BlueViolet"},
+        {"#A52A2A", "Brown"},
+        {"#DEB887", "BurlyWood"},
+        {"#5F9EA0", "CadetBlue"},
+        {"#7FFF00", "Chartreuse"},
+        {"#D2691E", "Chocolate"},
+        {"#FF7F50", "Coral"},
+        {"#6495ED", "CornflowerBlue"},
+        {"#FFF8DC", "Cornsilk"},
+        {"#DC143C", "Crimson"},
+        {"#00FFFF", "Cyan"},
+        {"#00008B", "DarkBlue"},
+        {"#008B8B", "DarkCyan"},
+        {"#B8860B", "DarkGoldenrod"},
+        {"#A9A9A9", "DarkGray"},
+        {"#006400", "DarkGreen"},
+        {"#BDB76B", "DarkKhaki"},
+        {"#8B008B", "DarkMagenta"},
+        {"#556B2F", "DarkOliveGreen"},
+        {"#FF8C00", "DarkOrange"},
+        {"#9932CC", "DarkOrchid"},
+        {"#8B0000", "DarkRed"},
+        {"#E9967A", "DarkSalmon"},
+        {"#8FBC8F", "DarkSeaGreen"},
+        {"#483D8B", "DarkSlateBlue"},
+        {"#2F4F4F", "DarkSlateGray"},
+        {"#00CED1", "DarkTurquoise"},
+        {"#9400D3", "DarkViolet"},
+        {"#FF1493", "DeepPink"},
+        {"#00BFFF", "DeepSkyBlue"},
+        {"#696969", "DimGray"},
+        {"#1E90FF", "DodgerBlue"},
+        {"#B22222", "FireBrick"},
+        {"#FFFAF0", "FloralWhite"},
+        {"#228B22", "ForestGreen"},
+        {"#FF00FF", "Fuchsia"},
+        {"#DCDCDC", "Gainsboro"},
+        {"#F8F8FF", "GhostWhite"},
+        {"#FFD700", "Gold"},
+        {"#DAA520", "Goldenrod"},
+        {"#808080", "Gray"},
+        {"#008000", "Green"},
+        {"#ADFF2F", "GreenYellow"},
+        {"#F0FFF0", "Honeydew"},
+        {"#FF69B4", "HotPink"},
+        {"#CD5C5C", "IndianRed"},
+        {"#4B0082", "Indigo"},
+        {"#FFFFF0", "Ivory"},
+        {"#F0E68C", "Khaki"},
+        {"#E6E6FA", "Lavender"},
+        {"#FFF0F5", "LavenderBlush"},
+        {"#7CFC00", "LawnGreen"},
+        {"#FFFACD", "LemonChiffon"},
+        {"#ADD8E6", "LightBlue"},
+        {"#F08080", "LightCoral"},
+        {"#E0FFFF", "LightCyan"},
+        {"#FAFAD2", "LightGoldenrodYellow"},
+        {"#D3D3D3", "LightGray"},
+        {"#90EE90", "LightGreen"},
+        {"#FFB6C1", "LightPink"},
+        {"#FFA07A", "LightSalmon"},
+        {"#20B2AA", "LightSeaGreen"},
+        {"#87CEFA", "LightSkyBlue"},
+        {"#778899", "LightSlateGray"},
+        {"#B0C4DE", "LightSteelBlue"},
+        {"#FFFFE0", "LightYellow"},
+        {"#00FF00", "Lime"},
+        {"#32CD32", "LimeGreen"},
+        {"#FAF0E6", "Linen"},
+        {"#800000", "Maroon"},
+        {"#66CDAA", "MediumAquamarine"},
+        {"#0000CD", "MediumBlue"},
+        {"#BA55D3", "MediumOrchid"},
+        {"#9370DB", "MediumPurple"},
+        {"#3CB371", "MediumSeaGreen"},
+        {"#7B68EE", "MediumSlateBlue"},
+        {"#00FA9A", "MediumSpringGreen"},
+        {"#48D1CC", "MediumTurquoise"},
+        {"#C71585", "MediumVioletRed"},
+        {"#191970", "MidnightBlue"},
+        {"#F5FFFA", "MintCream"},
+        {"#FFE4E1", "MistyRose"},
+        {"#FFE4B5", "Moccasin"},
+        {"#FFDEAD", "NavajoWhite"},
+        {"#000080", "Navy"},
+        {"#FDF5E6", "OldLace"},
+        {"#808000", "Olive"},
+        {"#6B8E23", "OliveDrab"},
+        {"#FFA500", "Orange"},
+        {"#FF4500", "OrangeRed"},
+        {"#DA70D6", "Orchid"},
+        {"#EEE8AA", "PaleGoldenrod"},
+        {"#98FB98", "PaleGreen"},
+        {"#AFEEEE", "PaleTurquoise"},
+        {"#DB7093", "PaleVioletRed"},
+        {"#FFEFD5", "PapayaWhip"},
+        {"#FFDAB9", "PeachPuff"},
+        {"#CD853F", "Peru"},
+        {"#FFC0CB", "Pink"},
+        {"#DDA0DD", "Plum"},
+        {"#B0E0E6", "PowderBlue"},
+        {"#800080", "Purple"},
+        {"#FF0000", "Red"},
+        {"#BC8F8F", "RosyBrown"},
+        {"#4169E1", "RoyalBlue"},
+        {"#8B4513", "SaddleBrown"},
+        {"#FA8072", "Salmon"},
+        {"#F4A460", "SandyBrown"},
+        {"#2E8B57", "SeaGreen"},
+        {"#FFF5EE", "Seashell"},
+        {"#A0522D", "Sienna"},
+        {"#C0C0C0", "Silver"},
+        {"#87CEEB", "SkyBlue"},
+        {"#6A5ACD", "SlateBlue"},
+        {"#708090", "SlateGray"},
+        {"#FFFAFA", "Snow"},
+        {"#00FF7F", "SpringGreen"},
+        {"#4682B4", "SteelBlue"},
+        {"#D2B48C", "Tan"},
+        {"#008080", "Teal"},
+        {"#D8BFD8", "Thistle"},
+        {"#FF6347", "Tomato"},
+        {"#00FFFFFF", "Transparent"},
+        {"#40E0D0", "Turquoise"},
+        {"#EE82EE", "Violet"},
+        {"#F5DEB3", "Wheat"},
+        {"#FFFFFF", "White"},
+        {"#F5F5F5", "WhiteSmoke"},
+        {"#FFFF00", "Yellow"},
+        {"#9ACD32", "YellowGreen"}
+    }
 
-    Sub New()
-        ColorNames.Add("#F0F8FF", "AliceBlue")
-        ColorNames.Add("#FAEBD7", "AntiqueWhite")
-        ColorNames.Add("#7FFFD4", "Aquamarine")
-        ColorNames.Add("#F0FFFF", "Azure")
-        ColorNames.Add("#F5F5DC", "Beige")
-        ColorNames.Add("#FFE4C4", "Bisque")
-        ColorNames.Add("#000000", "Black")
-        ColorNames.Add("#FFEBCD", "BlanchedAlmond")
-        ColorNames.Add("#0000FF", "Blue")
-        ColorNames.Add("#8A2BE2", "BlueViolet")
-        ColorNames.Add("#A52A2A", "Brown")
-        ColorNames.Add("#DEB887", "BurlyWood")
-        ColorNames.Add("#5F9EA0", "CadetBlue")
-        ColorNames.Add("#7FFF00", "Chartreuse")
-        ColorNames.Add("#D2691E", "Chocolate")
-        ColorNames.Add("#FF7F50", "Coral")
-        ColorNames.Add("#6495ED", "CornflowerBlue")
-        ColorNames.Add("#FFF8DC", "Cornsilk")
-        ColorNames.Add("#DC143C", "Crimson")
-        ColorNames.Add("#00FFFF", "Cyan")
-        ColorNames.Add("#00008B", "DarkBlue")
-        ColorNames.Add("#008B8B", "DarkCyan")
-        ColorNames.Add("#B8860B", "DarkGoldenrod")
-        ColorNames.Add("#A9A9A9", "DarkGray")
-        ColorNames.Add("#006400", "DarkGreen")
-        ColorNames.Add("#BDB76B", "DarkKhaki")
-        ColorNames.Add("#8B008B", "DarkMagenta")
-        ColorNames.Add("#556B2F", "DarkOliveGreen")
-        ColorNames.Add("#FF8C00", "DarkOrange")
-        ColorNames.Add("#9932CC", "DarkOrchid")
-        ColorNames.Add("#8B0000", "DarkRed")
-        ColorNames.Add("#E9967A", "DarkSalmon")
-        ColorNames.Add("#8FBC8F", "DarkSeaGreen")
-        ColorNames.Add("#483D8B", "DarkSlateBlue")
-        ColorNames.Add("#2F4F4F", "DarkSlateGray")
-        ColorNames.Add("#00CED1", "DarkTurquoise")
-        ColorNames.Add("#9400D3", "DarkViolet")
-        ColorNames.Add("#FF1493", "DeepPink")
-        ColorNames.Add("#00BFFF", "DeepSkyBlue")
-        ColorNames.Add("#696969", "DimGray")
-        ColorNames.Add("#1E90FF", "DodgerBlue")
-        ColorNames.Add("#B22222", "FireBrick")
-        ColorNames.Add("#FFFAF0", "FloralWhite")
-        ColorNames.Add("#228B22", "ForestGreen")
-        ColorNames.Add("#FF00FF", "Fuchsia")
-        ColorNames.Add("#DCDCDC", "Gainsboro")
-        ColorNames.Add("#F8F8FF", "GhostWhite")
-        ColorNames.Add("#FFD700", "Gold")
-        ColorNames.Add("#DAA520", "Goldenrod")
-        ColorNames.Add("#808080", "Gray")
-        ColorNames.Add("#008000", "Green")
-        ColorNames.Add("#ADFF2F", "GreenYellow")
-        ColorNames.Add("#F0FFF0", "Honeydew")
-        ColorNames.Add("#FF69B4", "HotPink")
-        ColorNames.Add("#CD5C5C", "IndianRed")
-        ColorNames.Add("#4B0082", "Indigo")
-        ColorNames.Add("#FFFFF0", "Ivory")
-        ColorNames.Add("#F0E68C", "Khaki")
-        ColorNames.Add("#E6E6FA", "Lavender")
-        ColorNames.Add("#FFF0F5", "LavenderBlush")
-        ColorNames.Add("#7CFC00", "LawnGreen")
-        ColorNames.Add("#FFFACD", "LemonChiffon")
-        ColorNames.Add("#ADD8E6", "LightBlue")
-        ColorNames.Add("#F08080", "LightCoral")
-        ColorNames.Add("#E0FFFF", "LightCyan")
-        ColorNames.Add("#FAFAD2", "LightGoldenrodYellow")
-        ColorNames.Add("#D3D3D3", "LightGray")
-        ColorNames.Add("#90EE90", "LightGreen")
-        ColorNames.Add("#FFB6C1", "LightPink")
-        ColorNames.Add("#FFA07A", "LightSalmon")
-        ColorNames.Add("#20B2AA", "LightSeaGreen")
-        ColorNames.Add("#87CEFA", "LightSkyBlue")
-        ColorNames.Add("#778899", "LightSlateGray")
-        ColorNames.Add("#B0C4DE", "LightSteelBlue")
-        ColorNames.Add("#FFFFE0", "LightYellow")
-        ColorNames.Add("#00FF00", "Lime")
-        ColorNames.Add("#32CD32", "LimeGreen")
-        ColorNames.Add("#FAF0E6", "Linen")
-        ColorNames.Add("#800000", "Maroon")
-        ColorNames.Add("#66CDAA", "MediumAquamarine")
-        ColorNames.Add("#0000CD", "MediumBlue")
-        ColorNames.Add("#BA55D3", "MediumOrchid")
-        ColorNames.Add("#9370DB", "MediumPurple")
-        ColorNames.Add("#3CB371", "MediumSeaGreen")
-        ColorNames.Add("#7B68EE", "MediumSlateBlue")
-        ColorNames.Add("#00FA9A", "MediumSpringGreen")
-        ColorNames.Add("#48D1CC", "MediumTurquoise")
-        ColorNames.Add("#C71585", "MediumVioletRed")
-        ColorNames.Add("#191970", "MidnightBlue")
-        ColorNames.Add("#F5FFFA", "MintCream")
-        ColorNames.Add("#FFE4E1", "MistyRose")
-        ColorNames.Add("#FFE4B5", "Moccasin")
-        ColorNames.Add("#FFDEAD", "NavajoWhite")
-        ColorNames.Add("#000080", "Navy")
-        ColorNames.Add("#FDF5E6", "OldLace")
-        ColorNames.Add("#808000", "Olive")
-        ColorNames.Add("#6B8E23", "OliveDrab")
-        ColorNames.Add("#FFA500", "Orange")
-        ColorNames.Add("#FF4500", "OrangeRed")
-        ColorNames.Add("#DA70D6", "Orchid")
-        ColorNames.Add("#EEE8AA", "PaleGoldenrod")
-        ColorNames.Add("#98FB98", "PaleGreen")
-        ColorNames.Add("#AFEEEE", "PaleTurquoise")
-        ColorNames.Add("#DB7093", "PaleVioletRed")
-        ColorNames.Add("#FFEFD5", "PapayaWhip")
-        ColorNames.Add("#FFDAB9", "PeachPuff")
-        ColorNames.Add("#CD853F", "Peru")
-        ColorNames.Add("#FFC0CB", "Pink")
-        ColorNames.Add("#DDA0DD", "Plum")
-        ColorNames.Add("#B0E0E6", "PowderBlue")
-        ColorNames.Add("#800080", "Purple")
-        ColorNames.Add("#FF0000", "Red")
-        ColorNames.Add("#BC8F8F", "RosyBrown")
-        ColorNames.Add("#4169E1", "RoyalBlue")
-        ColorNames.Add("#8B4513", "SaddleBrown")
-        ColorNames.Add("#FA8072", "Salmon")
-        ColorNames.Add("#F4A460", "SandyBrown")
-        ColorNames.Add("#2E8B57", "SeaGreen")
-        ColorNames.Add("#FFF5EE", "Seashell")
-        ColorNames.Add("#A0522D", "Sienna")
-        ColorNames.Add("#C0C0C0", "Silver")
-        ColorNames.Add("#87CEEB", "SkyBlue")
-        ColorNames.Add("#6A5ACD", "SlateBlue")
-        ColorNames.Add("#708090", "SlateGray")
-        ColorNames.Add("#FFFAFA", "Snow")
-        ColorNames.Add("#00FF7F", "SpringGreen")
-        ColorNames.Add("#4682B4", "SteelBlue")
-        ColorNames.Add("#D2B48C", "Tan")
-        ColorNames.Add("#008080", "Teal")
-        ColorNames.Add("#D8BFD8", "Thistle")
-        ColorNames.Add("#FF6347", "Tomato")
-        ColorNames.Add("#00FFFFFF", "Transparent")
-        ColorNames.Add("#40E0D0", "Turquoise")
-        ColorNames.Add("#EE82EE", "Violet")
-        ColorNames.Add("#F5DEB3", "Wheat")
-        ColorNames.Add("#FFFFFF", "White")
-        ColorNames.Add("#F5F5F5", "WhiteSmoke")
-        ColorNames.Add("#FFFF00", "Yellow")
-        ColorNames.Add("#9ACD32", "YellowGreen")
-    End Sub
 
 End Module

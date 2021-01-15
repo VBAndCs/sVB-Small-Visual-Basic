@@ -87,6 +87,42 @@ Public Module Control
            End Sub)
     End Sub
 
+
+    Private ReadOnly ForeColorProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("ForeColor",
+                           GetType(String), GetType(Wpf.Control))
+
+    Public Function GetForeColor(formName As Primitive, controlName As Primitive) As Primitive
+        Dispatcher.Invoke(
+           Sub()
+               Dim c = GetControl(formName, controlName)
+               Dim brush = TryCast(c.Foreground, SolidColorBrush)
+               If brush IsNot Nothing Then
+                   Dim hexColor = brush.Color.ToString()
+                   If hexColor = Transparent.ToString() Then
+                       GetForeColor = Transparent
+                   ElseIf hexColor.Length = 9 AndAlso hexColor.StartsWith("#FF") Then
+                       GetForeColor = "#" & hexColor.Substring(3)
+                   Else
+                       GetForeColor = hexColor
+                   End If
+               Else
+                   GetForeColor = c.GetValue(ForeColorProperty)
+               End If
+           End Sub)
+    End Function
+
+    Public Sub SetForeColor(formName As Primitive, controlName As Primitive, value As Primitive)
+        Dispatcher.Invoke(
+           Sub()
+               Dim c = GetControl(formName, controlName)
+               Dim _color = Color.FromString(value)
+               c.Foreground = New SolidColorBrush(_color)
+               c.SetValue(ForeColorProperty, value.ToString())
+           End Sub)
+    End Sub
+
+
     Public Function GetMouseX(formName As Primitive, controlName As Primitive) As Primitive
         Dispatcher.Invoke(
             Sub()
