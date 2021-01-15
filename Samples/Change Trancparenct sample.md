@@ -12,6 +12,7 @@ Trans = 0
 Sub Click
   Trans = Trans + 10
   TextBox1.BackColor = Color.SetTransparency(Color.Red, Trans)
+  TextBox1.Text = Color.GetNameAndTransparency(TextBox1.BackColor)
 EndSub
 ```
 

@@ -63,14 +63,7 @@ Public Module Control
                Dim c = GetControl(formName, controlName)
                Dim brush = TryCast(c.Background, SolidColorBrush)
                If brush IsNot Nothing Then
-                   Dim hexColor = brush.Color.ToString()
-                   If hexColor = Transparent.ToString() Then
-                       GetBackColor = Transparent
-                   ElseIf hexColor.Length = 9 AndAlso hexColor.StartsWith("#FF") Then
-                       GetBackColor = "#" & hexColor.Substring(3)
-                   Else
-                       GetBackColor = hexColor
-                   End If
+                   GetBackColor = brush.Color.ToString()
                Else
                    GetBackColor = c.GetValue(BackColorProperty)
                End If
@@ -98,14 +91,7 @@ Public Module Control
                Dim c = GetControl(formName, controlName)
                Dim brush = TryCast(c.Foreground, SolidColorBrush)
                If brush IsNot Nothing Then
-                   Dim hexColor = brush.Color.ToString()
-                   If hexColor = Transparent.ToString() Then
-                       GetForeColor = Transparent
-                   ElseIf hexColor.Length = 9 AndAlso hexColor.StartsWith("#FF") Then
-                       GetForeColor = "#" & hexColor.Substring(3)
-                   Else
-                       GetForeColor = hexColor
-                   End If
+                   GetForeColor = brush.Color.ToString()
                Else
                    GetForeColor = c.GetValue(ForeColorProperty)
                End If

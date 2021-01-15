@@ -7,6 +7,7 @@ Public Module Color
         Dim result = System.Math.Min(value, max)
         Return System.Math.Max(result, min)
     End Function
+
     Public Function FromRGB(red As Primitive, green As Primitive, blue As Primitive) As Primitive
         Dim R = InRange(red, 0, 255)
         Dim G = InRange(green, 0, 255)
@@ -28,6 +29,11 @@ Public Module Color
         Return $"#{A:X2}{_color.R:X2}{_color.G:X2}{_color.B:X2}"
     End Function
 
+    Public Function GetTransparency(color As Primitive) As Primitive
+        Dim _color = FromString(color)
+        Return System.Math.Round(100 - _color.A * 100 / 255, 1)
+    End Function
+
     Friend Function FromString(color As String) As Media.Color
         Try
             Return CType(ColorConverter.ConvertFromString(color), Media.Color)
@@ -37,12 +43,28 @@ Public Module Color
     End Function
 
     Public Function GetName(color As Primitive) As Primitive
-        If ColorNames.ContainsKey(color) Then
-            Return ColorNames(color)
+        Return DoGetName(color, True)
+    End Function
+
+    Public Function GetNameAndTransparency(color As Primitive) As Primitive
+        Return DoGetName(color, False)
+    End Function
+
+    Private Function DoGetName(color As String, ingnoreTrans As Boolean) As String
+        If Not color.StartsWith("#") Then Return color
+        If color = Transparent.ToString Then Return "Transparent"
+
+        Dim _color = FromString(color)
+        Dim key = FromRGB(_color.R, _color.G, _color.B)
+        If ColorNames.ContainsKey(key) Then
+            If ingnoreTrans OrElse _color.A = 0 Then
+                Return ColorNames(key)
+            Else
+                Return ColorNames(key) & $" ({System.Math.Round(100 - _color.A * 100 / 255)}%)"
+            End If
         Else
             Return color
         End If
-
     End Function
 
     Public ReadOnly Property AliceBlue As Primitive = "#F0F8FF"
