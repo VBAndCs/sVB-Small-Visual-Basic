@@ -210,9 +210,10 @@ Public Class Designer
             Dim Item = Helper.GetListBoxItem(Diagram)
             Me.SelectedIndex = -1
             Connection.DeselectAll(Me)
-
-            Item.IsSelected = True
-            Item.Focus()
+            If Item IsNot Nothing Then
+                Item.IsSelected = True
+                Item.Focus()
+            End If
         End If
     End Sub
 

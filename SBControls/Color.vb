@@ -2,11 +2,30 @@
 
 <SmallBasicType>
 Public Module Color
+
+    Private Function InRange(value As Integer, min As Integer, max As Integer) As Integer
+        Dim result = System.Math.Min(value, max)
+        Return System.Math.Max(result, min)
+    End Function
     Public Function FromRGB(red As Primitive, green As Primitive, blue As Primitive) As Primitive
-        Dim num = System.Math.Abs(CInt(red) Mod 256)
-        Dim num2 = System.Math.Abs(CInt(green) Mod 256)
-        Dim num3 = System.Math.Abs(CInt(blue) Mod 256)
-        Return $"#{num:X2}{num2:X2}{num3:X2}"
+        Dim R = InRange(red, 0, 255)
+        Dim G = InRange(green, 0, 255)
+        Dim B = InRange(green, 0, 255)
+        Return $"#{R:X2}{G:X2}{B:X2}"
+    End Function
+
+    Public Function FromARGB(alpha As Primitive, red As Primitive, green As Primitive, blue As Primitive) As Primitive
+        Dim A = InRange(alpha, 0, 255)
+        Dim R = InRange(red, 0, 255)
+        Dim G = InRange(green, 0, 255)
+        Dim B = InRange(green, 0, 255)
+        Return $"#{A:X2}{R:X2}{G:X2}{B:X2}"
+    End Function
+
+    Public Function SetTransparency(color As Primitive, percentage As Primitive) As Primitive
+        Dim _color = FromString(color)
+        Dim A As Byte = System.Math.Round((100 - InRange(percentage, 0, 100)) * 255 / 100)
+        Return $"#{A:X2}{_color.R:X2}{_color.G:X2}{_color.B:X2}"
     End Function
 
     Friend Function FromString(color As String) As Media.Color
