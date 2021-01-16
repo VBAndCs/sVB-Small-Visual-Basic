@@ -4,7 +4,7 @@
 '    lblError: Label
 '}
 
-Public Class PreCompiler
+Public NotInheritable Class PreCompiler
 
     Private Shared ModuleInfo As New Dictionary(Of String, List(Of String))
 

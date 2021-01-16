@@ -2,63 +2,63 @@
 Imports Microsoft.SmallBasic.Library
 
 <SmallBasicType>
-Public Module Control
+Public NotInheritable Class Control
 
-    Public Function GetLeft(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(Sub() GetLeft = Canvas.GetLeft(GetControl(formName, controlName)))
+    Public Shared Function GetLeft(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(Sub() GetLeft = Canvas.GetLeft(GetControl(formName, controlName)))
     End Function
 
-    Public Sub SetLeft(formName As Primitive, controlName As Primitive, value As Primitive)
-        Dispatcher.Invoke(Sub() Canvas.SetLeft(GetControl(formName, controlName), value))
+    Public Shared Sub SetLeft(formName As Primitive, controlName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(Sub() Canvas.SetLeft(GetControl(formName, controlName), value))
+    End Sub
+
+    Public Shared Function GetTop(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(Sub() GetTop = Canvas.GetTop(GetControl(formName, controlName)))
+    End Function
+
+    Public Shared Sub SetTop(formName As Primitive, controlName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(Sub() Canvas.SetTop(GetControl(formName, controlName), value))
+    End Sub
+
+    Public Shared Function GetWidth(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(Sub() GetWidth = GetControl(formName, controlName).ActualWidth)
+    End Function
+
+    Public Shared Sub SetWidth(formName As Primitive, controlName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(Sub() GetControl(formName, controlName).Width = value)
+    End Sub
+
+    Public Shared Function GetHeight(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(Sub() GetHeight = GetControl(formName, controlName).ActualHeight)
+    End Function
+
+    Public Shared Sub SetHeight(formName As Primitive, controlName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(Sub() Forms.Dispatcher.Invoke(Sub() GetControl(formName, controlName).Height = value))
+    End Sub
+
+    Public Shared Function GetEnabled(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(Sub() GetEnabled = GetControl(formName, controlName).IsEnabled)
+    End Function
+
+    Public Shared Sub SetEnabled(formName As Primitive, controlName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(Sub() GetControl(formName, controlName).IsEnabled = value)
+    End Sub
+
+    Public Shared Function GetVisible(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(Sub() GetVisible = GetControl(formName, controlName).IsVisible)
+    End Function
+
+    Public Shared Sub SetVisible(formName As Primitive, controlName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(Sub() GetControl(formName, controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden))
     End Sub
 
 
-    Public Function GetTop(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(Sub() GetTop = Canvas.GetTop(GetControl(formName, controlName)))
-    End Function
-
-    Public Sub SetTop(formName As Primitive, controlName As Primitive, value As Primitive)
-        Dispatcher.Invoke(Sub() Canvas.SetTop(GetControl(formName, controlName), value))
-    End Sub
-
-    Public Function GetWidth(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(Sub() GetWidth = GetControl(formName, controlName).ActualWidth)
-    End Function
-
-    Public Sub SetWidth(formName As Primitive, controlName As Primitive, value As Primitive)
-        Dispatcher.Invoke(Sub() GetControl(formName, controlName).Width = value)
-    End Sub
-
-    Public Function GetHeight(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(Sub() GetHeight = GetControl(formName, controlName).ActualHeight)
-    End Function
-
-    Public Sub SetHeight(formName As Primitive, controlName As Primitive, value As Primitive)
-        Dispatcher.Invoke(Sub() Dispatcher.Invoke(Sub() GetControl(formName, controlName).Height = value))
-    End Sub
-    Public Function GetEnabled(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(Sub() GetEnabled = GetControl(formName, controlName).IsEnabled)
-    End Function
-
-    Public Sub SetEnabled(formName As Primitive, controlName As Primitive, value As Primitive)
-        Dispatcher.Invoke(Sub() GetControl(formName, controlName).IsEnabled = value)
-    End Sub
-
-    Public Function GetVisible(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(Sub() GetVisible = GetControl(formName, controlName).IsVisible)
-    End Function
-
-    Public Sub SetVisible(formName As Primitive, controlName As Primitive, value As Primitive)
-        Dispatcher.Invoke(Sub() GetControl(formName, controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden))
-    End Sub
-
-
-    Private ReadOnly BackColorProperty As _
+    Private Shared ReadOnly BackColorProperty As _
                            DependencyProperty = DependencyProperty.RegisterAttached("BackColor",
                            GetType(String), GetType(Wpf.Control))
 
-    Public Function GetBackColor(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(
+    Public Shared Function GetBackColor(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(
            Sub()
                Dim c = GetControl(formName, controlName)
                Dim brush = TryCast(c.Background, SolidColorBrush)
@@ -70,8 +70,8 @@ Public Module Control
            End Sub)
     End Function
 
-    Public Sub SetBackColor(formName As Primitive, controlName As Primitive, value As Primitive)
-        Dispatcher.Invoke(
+    Public Shared Sub SetBackColor(formName As Primitive, controlName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(
            Sub()
                Dim c = GetControl(formName, controlName)
                Dim _color = Color.FromString(value)
@@ -81,12 +81,12 @@ Public Module Control
     End Sub
 
 
-    Private ReadOnly ForeColorProperty As _
+    Private Shared ReadOnly ForeColorProperty As _
                            DependencyProperty = DependencyProperty.RegisterAttached("ForeColor",
                            GetType(String), GetType(Wpf.Control))
 
-    Public Function GetForeColor(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(
+    Public Shared Function GetForeColor(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(
            Sub()
                Dim c = GetControl(formName, controlName)
                Dim brush = TryCast(c.Foreground, SolidColorBrush)
@@ -98,8 +98,8 @@ Public Module Control
            End Sub)
     End Function
 
-    Public Sub SetForeColor(formName As Primitive, controlName As Primitive, value As Primitive)
-        Dispatcher.Invoke(
+    Public Shared Sub SetForeColor(formName As Primitive, controlName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(
            Sub()
                Dim c = GetControl(formName, controlName)
                Dim _color = Color.FromString(value)
@@ -109,16 +109,16 @@ Public Module Control
     End Sub
 
 
-    Public Function GetMouseX(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(
+    Public Shared Function GetMouseX(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(
             Sub()
                 Dim c = GetControl(formName, controlName)
                 GetMouseX = Input.Mouse.GetPosition(c).X
             End Sub)
     End Function
 
-    Public Function GetMouseY(formName As Primitive, controlName As Primitive) As Primitive
-        Dispatcher.Invoke(
+    Public Shared Function GetMouseY(formName As Primitive, controlName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(
             Sub()
                 Dim c = GetControl(formName, controlName)
                 GetMouseY = Input.Mouse.GetPosition(c).Y
@@ -126,16 +126,16 @@ Public Module Control
     End Function
 
 #Region "Events"
-    Public ReadOnly Property SenderForm As Primitive
-    Public ReadOnly Property SenderControl As Primitive
+    Public Shared ReadOnly Property SenderForm As Primitive
+    Public Shared ReadOnly Property SenderControl As Primitive
 
 
-    Public Sub HandleEvents(FormName As Primitive, ControlName As Primitive)
+    Public Shared Sub HandleEvents(FormName As Primitive, ControlName As Primitive)
         _SenderForm = FormName
         _SenderControl = ControlName
     End Sub
 
-    Sub EventsHandler(sender As Wpf.Control, handler As SmallBasicCallback)
+    Shared Sub EventsHandler(sender As Wpf.Control, handler As SmallBasicCallback)
         _SenderControl = sender.Name
         If TypeOf sender Is Window Then
             _SenderForm = sender.Name
@@ -145,7 +145,7 @@ Public Module Control
         handler()
     End Sub
 
-    Public Custom Event OnMouseLeftDown As SmallBasicCallback
+    Public Shared Custom Event OnMouseLeftDown As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.PreviewMouseLeftButtonDown,
@@ -159,21 +159,7 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnClick As SmallBasicCallback
-        AddHandler(handler As SmallBasicCallback)
-            Dim VisualElement = GetControl(_SenderForm, _SenderControl)
-            AddHandler VisualElement.MouseLeftButtonUp,
-                Sub(Sender As Wpf.Control, e As EventArgs) EventsHandler(Sender, handler)
-        End AddHandler
-
-        RemoveHandler(handler As SmallBasicCallback)
-        End RemoveHandler
-
-        RaiseEvent()
-        End RaiseEvent
-    End Event
-
-    Public Custom Event OnMouseLeftUp As SmallBasicCallback
+    Public Shared Custom Event OnClick As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.PreviewMouseLeftButtonUp,
@@ -187,7 +173,21 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnDoubleClick As SmallBasicCallback
+    Public Shared Custom Event OnMouseLeftUp As SmallBasicCallback
+        AddHandler(handler As SmallBasicCallback)
+            Dim VisualElement = GetControl(_SenderForm, _SenderControl)
+            AddHandler VisualElement.PreviewMouseLeftButtonUp,
+                Sub(Sender As Wpf.Control, e As EventArgs) EventsHandler(Sender, handler)
+        End AddHandler
+
+        RemoveHandler(handler As SmallBasicCallback)
+        End RemoveHandler
+
+        RaiseEvent()
+        End RaiseEvent
+    End Event
+
+    Public Shared Custom Event OnDoubleClick As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.MouseDoubleClick,
@@ -201,7 +201,7 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnMouseRightDown As SmallBasicCallback
+    Public Shared Custom Event OnMouseRightDown As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.PreviewMouseRightButtonDown,
@@ -215,7 +215,7 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnMouseRightUp As SmallBasicCallback
+    Public Shared Custom Event OnMouseRightUp As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.PreviewMouseRightButtonUp,
@@ -229,7 +229,7 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnMouseMove As SmallBasicCallback
+    Public Shared Custom Event OnMouseMove As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.PreviewMouseMove,
@@ -243,7 +243,7 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnMouseWheel As SmallBasicCallback
+    Public Shared Custom Event OnMouseWheel As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.PreviewMouseWheel,
@@ -257,7 +257,7 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnMouseEnter As SmallBasicCallback
+    Public Shared Custom Event OnMouseEnter As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.MouseEnter,
@@ -271,7 +271,7 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnMouseLeave As SmallBasicCallback
+    Public Shared Custom Event OnMouseLeave As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.MouseLeave,
@@ -285,7 +285,7 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnKeyDown As SmallBasicCallback
+    Public Shared Custom Event OnKeyDown As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.PreviewKeyDown,
@@ -299,7 +299,7 @@ Public Module Control
         End RaiseEvent
     End Event
 
-    Public Custom Event OnKeyUp As SmallBasicCallback
+    Public Shared Custom Event OnKeyUp As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
             AddHandler VisualElement.PreviewKeyUp,
@@ -317,12 +317,12 @@ Public Module Control
 #End Region
 
 
-    Friend Function GetControl(formName As String, controlName As String) As Wpf.Control
-        If Not _forms.ContainsKey(formName) Then
+    Friend Shared Function GetControl(formName As String, controlName As String) As Wpf.Control
+        If Not Forms._forms.ContainsKey(formName) Then
             Throw New ArgumentException($"There is no form named `{formName}`.")
         End If
 
-        Dim _controls = _forms(formName)
+        Dim _controls = Forms._forms(formName)
         If controlName = "" Then Return _controls(formName)
 
         If Not _controls.ContainsKey(controlName) Then
@@ -331,7 +331,7 @@ Public Module Control
         Return _controls(controlName)
     End Function
 
-    Private Function GetParent(child As DependencyObject, parentType As Type) As UIElement
+    Private Shared Function GetParent(child As DependencyObject, parentType As Type) As UIElement
         If child Is Nothing Then Return Nothing
         Dim p = child
         Do
@@ -340,6 +340,6 @@ Public Module Control
             If p.GetType Is parentType Then Return p
         Loop
     End Function
-End Module
+End Class
 
 

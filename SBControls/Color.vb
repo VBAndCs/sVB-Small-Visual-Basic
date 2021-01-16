@@ -1,21 +1,21 @@
 ﻿Imports Microsoft.SmallBasic.Library
 
 <SmallBasicType>
-Public Module Color
+Public NotInheritable Class Color
 
-    Private Function InRange(value As Integer, min As Integer, max As Integer) As Integer
+    Private Shared Function InRange(value As Integer, min As Integer, max As Integer) As Integer
         Dim result = Math.Min(value, max)
         Return Math.Max(result, min)
     End Function
 
-    Public Function FromRGB(red As Primitive, green As Primitive, blue As Primitive) As Primitive
+    Public Shared Function FromRGB(red As Primitive, green As Primitive, blue As Primitive) As Primitive
         Dim R = InRange(red, 0, 255)
         Dim G = InRange(green, 0, 255)
         Dim B = InRange(green, 0, 255)
         Return $"#{R:X2}{G:X2}{B:X2}"
     End Function
 
-    Public Function FromARGB(alpha As Primitive, red As Primitive, green As Primitive, blue As Primitive) As Primitive
+    Public Shared Function FromARGB(alpha As Primitive, red As Primitive, green As Primitive, blue As Primitive) As Primitive
         Dim A = InRange(alpha, 0, 255)
         Dim R = InRange(red, 0, 255)
         Dim G = InRange(green, 0, 255)
@@ -23,18 +23,18 @@ Public Module Color
         Return $"#{A:X2}{R:X2}{G:X2}{B:X2}"
     End Function
 
-    Public Function SetTransparency(color As Primitive, percentage As Primitive) As Primitive
+    Public Shared Function SetTransparency(color As Primitive, percentage As Primitive) As Primitive
         Dim _color = FromString(color)
         Dim A As Byte = Global.System.Math.Round((100 - InRange(percentage, 0, 100)) * 255 / 100)
         Return $"#{A:X2}{_color.R:X2}{_color.G:X2}{_color.B:X2}"
     End Function
 
-    Public Function GetTransparency(color As Primitive) As Primitive
+    Public Shared Function GetTransparency(color As Primitive) As Primitive
         Dim _color = FromString(color)
         Return Global.System.Math.Round(100 - _color.A * 100 / 255, 1)
     End Function
 
-    Friend Function FromString(color As String) As Media.Color
+    Friend Shared Function FromString(color As String) As Media.Color
         Try
             Return CType(ColorConverter.ConvertFromString(color), Media.Color)
         Catch
@@ -42,15 +42,15 @@ Public Module Color
         End Try
     End Function
 
-    Public Function GetName(color As Primitive) As Primitive
+    Public Shared Function GetName(color As Primitive) As Primitive
         Return DoGetName(color, True)
     End Function
 
-    Public Function GetNameAndTransparency(color As Primitive) As Primitive
+    Public Shared Function GetNameAndTransparency(color As Primitive) As Primitive
         Return DoGetName(color, False)
     End Function
 
-    Private Function DoGetName(color As String, ingnoreTrans As Boolean) As String
+    Private Shared Function DoGetName(color As String, ingnoreTrans As Boolean) As String
         If Not color.StartsWith("#") Then Return color
         If color = Transparent.ToString Then Return "Transparent"
 
@@ -67,150 +67,150 @@ Public Module Color
         End If
     End Function
 
-    Public ReadOnly Property AliceBlue As Primitive = "#F0F8FF"
-    Public ReadOnly Property AntiqueWhite As Primitive = "#FAEBD7"
-    Public ReadOnly Property Aqua As Primitive = "#00FFFF"
-    Public ReadOnly Property Aquamarine As Primitive = "#7FFFD4"
-    Public ReadOnly Property Azure As Primitive = "#F0FFFF"
-    Public ReadOnly Property Beige As Primitive = "#F5F5DC"
-    Public ReadOnly Property Bisque As Primitive = "#FFE4C4"
-    Public ReadOnly Property Black As Primitive = "#000000"
-    Public ReadOnly Property BlanchedAlmond As Primitive = "#FFEBCD"
-    Public ReadOnly Property Blue As Primitive = "#0000FF"
-    Public ReadOnly Property BlueViolet As Primitive = "#8A2BE2"
-    Public ReadOnly Property Brown As Primitive = "#A52A2A"
-    Public ReadOnly Property BurlyWood As Primitive = "#DEB887"
-    Public ReadOnly Property CadetBlue As Primitive = "#5F9EA0"
-    Public ReadOnly Property Chartreuse As Primitive = "#7FFF00"
-    Public ReadOnly Property Chocolate As Primitive = "#D2691E"
-    Public ReadOnly Property Coral As Primitive = "#FF7F50"
-    Public ReadOnly Property CornflowerBlue As Primitive = "#6495ED"
-    Public ReadOnly Property Cornsilk As Primitive = "#FFF8DC"
-    Public ReadOnly Property Crimson As Primitive = "#DC143C"
-    Public ReadOnly Property Cyan As Primitive = "#00FFFF"
-    Public ReadOnly Property DarkBlue As Primitive = "#00008B"
-    Public ReadOnly Property DarkCyan As Primitive = "#008B8B"
-    Public ReadOnly Property DarkGoldenrod As Primitive = "#B8860B"
-    Public ReadOnly Property DarkGray As Primitive = "#A9A9A9"
-    Public ReadOnly Property DarkGreen As Primitive = "#006400"
-    Public ReadOnly Property DarkKhaki As Primitive = "#BDB76B"
-    Public ReadOnly Property DarkMagenta As Primitive = "#8B008B"
-    Public ReadOnly Property DarkOliveGreen As Primitive = "#556B2F"
-    Public ReadOnly Property DarkOrange As Primitive = "#FF8C00"
-    Public ReadOnly Property DarkOrchid As Primitive = "#9932CC"
-    Public ReadOnly Property DarkRed As Primitive = "#8B0000"
-    Public ReadOnly Property DarkSalmon As Primitive = "#E9967A"
-    Public ReadOnly Property DarkSeaGreen As Primitive = "#8FBC8F"
-    Public ReadOnly Property DarkSlateBlue As Primitive = "#483D8B"
-    Public ReadOnly Property DarkSlateGray As Primitive = "#2F4F4F"
-    Public ReadOnly Property DarkTurquoise As Primitive = "#00CED1"
-    Public ReadOnly Property DarkViolet As Primitive = "#9400D3"
-    Public ReadOnly Property DeepPink As Primitive = "#FF1493"
-    Public ReadOnly Property DeepSkyBlue As Primitive = "#00BFFF"
-    Public ReadOnly Property DimGray As Primitive = "#696969"
-    Public ReadOnly Property DodgerBlue As Primitive = "#1E90FF"
-    Public ReadOnly Property FireBrick As Primitive = "#B22222"
-    Public ReadOnly Property FloralWhite As Primitive = "#FFFAF0"
-    Public ReadOnly Property ForestGreen As Primitive = "#228B22"
-    Public ReadOnly Property Fuchsia As Primitive = "#FF00FF"
-    Public ReadOnly Property Gainsboro As Primitive = "#DCDCDC"
-    Public ReadOnly Property GhostWhite As Primitive = "#F8F8FF"
-    Public ReadOnly Property Gold As Primitive = "#FFD700"
-    Public ReadOnly Property Goldenrod As Primitive = "#DAA520"
-    Public ReadOnly Property Gray As Primitive = "#808080"
-    Public ReadOnly Property Green As Primitive = "#008000"
-    Public ReadOnly Property GreenYellow As Primitive = "#ADFF2F"
-    Public ReadOnly Property Honeydew As Primitive = "#F0FFF0"
-    Public ReadOnly Property HotPink As Primitive = "#FF69B4"
-    Public ReadOnly Property IndianRed As Primitive = "#CD5C5C"
-    Public ReadOnly Property Indigo As Primitive = "#4B0082"
-    Public ReadOnly Property Ivory As Primitive = "#FFFFF0"
-    Public ReadOnly Property Khaki As Primitive = "#F0E68C"
-    Public ReadOnly Property Lavender As Primitive = "#E6E6FA"
-    Public ReadOnly Property LavenderBlush As Primitive = "#FFF0F5"
-    Public ReadOnly Property LawnGreen As Primitive = "#7CFC00"
-    Public ReadOnly Property LemonChiffon As Primitive = "#FFFACD"
-    Public ReadOnly Property LightBlue As Primitive = "#ADD8E6"
-    Public ReadOnly Property LightCoral As Primitive = "#F08080"
-    Public ReadOnly Property LightCyan As Primitive = "#E0FFFF"
-    Public ReadOnly Property LightGoldenrodYellow As Primitive = "#FAFAD2"
-    Public ReadOnly Property LightGray As Primitive = "#D3D3D3"
-    Public ReadOnly Property LightGreen As Primitive = "#90EE90"
-    Public ReadOnly Property LightPink As Primitive = "#FFB6C1"
-    Public ReadOnly Property LightSalmon As Primitive = "#FFA07A"
-    Public ReadOnly Property LightSeaGreen As Primitive = "#20B2AA"
-    Public ReadOnly Property LightSkyBlue As Primitive = "#87CEFA"
-    Public ReadOnly Property LightSlateGray As Primitive = "#778899"
-    Public ReadOnly Property LightSteelBlue As Primitive = "#B0C4DE"
-    Public ReadOnly Property LightYellow As Primitive = "#FFFFE0"
-    Public ReadOnly Property Lime As Primitive = "#00FF00"
-    Public ReadOnly Property LimeGreen As Primitive = "#32CD32"
-    Public ReadOnly Property Linen As Primitive = "#FAF0E6"
-    Public ReadOnly Property Magenta As Primitive = "#FF00FF"
-    Public ReadOnly Property Maroon As Primitive = "#800000"
-    Public ReadOnly Property MediumAquamarine As Primitive = "#66CDAA"
-    Public ReadOnly Property MediumBlue As Primitive = "#0000CD"
-    Public ReadOnly Property MediumOrchid As Primitive = "#BA55D3"
-    Public ReadOnly Property MediumPurple As Primitive = "#9370DB"
-    Public ReadOnly Property MediumSeaGreen As Primitive = "#3CB371"
-    Public ReadOnly Property MediumSlateBlue As Primitive = "#7B68EE"
-    Public ReadOnly Property MediumSpringGreen As Primitive = "#00FA9A"
-    Public ReadOnly Property MediumTurquoise As Primitive = "#48D1CC"
-    Public ReadOnly Property MediumVioletRed As Primitive = "#C71585"
-    Public ReadOnly Property MidnightBlue As Primitive = "#191970"
-    Public ReadOnly Property MintCream As Primitive = "#F5FFFA"
-    Public ReadOnly Property MistyRose As Primitive = "#FFE4E1"
-    Public ReadOnly Property Moccasin As Primitive = "#FFE4B5"
-    Public ReadOnly Property NavajoWhite As Primitive = "#FFDEAD"
-    Public ReadOnly Property Navy As Primitive = "#000080"
-    Public ReadOnly Property OldLace As Primitive = "#FDF5E6"
-    Public ReadOnly Property Olive As Primitive = "#808000"
-    Public ReadOnly Property OliveDrab As Primitive = "#6B8E23"
-    Public ReadOnly Property Orange As Primitive = "#FFA500"
-    Public ReadOnly Property OrangeRed As Primitive = "#FF4500"
-    Public ReadOnly Property Orchid As Primitive = "#DA70D6"
-    Public ReadOnly Property PaleGoldenrod As Primitive = "#EEE8AA"
-    Public ReadOnly Property PaleGreen As Primitive = "#98FB98"
-    Public ReadOnly Property PaleTurquoise As Primitive = "#AFEEEE"
-    Public ReadOnly Property PaleVioletRed As Primitive = "#DB7093"
-    Public ReadOnly Property PapayaWhip As Primitive = "#FFEFD5"
-    Public ReadOnly Property PeachPuff As Primitive = "#FFDAB9"
-    Public ReadOnly Property Peru As Primitive = "#CD853F"
-    Public ReadOnly Property Pink As Primitive = "#FFC0CB"
-    Public ReadOnly Property Plum As Primitive = "#DDA0DD"
-    Public ReadOnly Property PowderBlue As Primitive = "#B0E0E6"
-    Public ReadOnly Property Purple As Primitive = "#800080"
-    Public ReadOnly Property Red As Primitive = "#FF0000"
-    Public ReadOnly Property RosyBrown As Primitive = "#BC8F8F"
-    Public ReadOnly Property RoyalBlue As Primitive = "#4169E1"
-    Public ReadOnly Property SaddleBrown As Primitive = "#8B4513"
-    Public ReadOnly Property Salmon As Primitive = "#FA8072"
-    Public ReadOnly Property SandyBrown As Primitive = "#F4A460"
-    Public ReadOnly Property SeaGreen As Primitive = "#2E8B57"
-    Public ReadOnly Property Seashell As Primitive = "#FFF5EE"
-    Public ReadOnly Property Sienna As Primitive = "#A0522D"
-    Public ReadOnly Property Silver As Primitive = "#C0C0C0"
-    Public ReadOnly Property SkyBlue As Primitive = "#87CEEB"
-    Public ReadOnly Property SlateBlue As Primitive = "#6A5ACD"
-    Public ReadOnly Property SlateGray As Primitive = "#708090"
-    Public ReadOnly Property Snow As Primitive = "#FFFAFA"
-    Public ReadOnly Property SpringGreen As Primitive = "#00FF7F"
-    Public ReadOnly Property SteelBlue As Primitive = "#4682B4"
-    Public ReadOnly Property Tan As Primitive = "#D2B48C"
-    Public ReadOnly Property Teal As Primitive = "#008080"
-    Public ReadOnly Property Thistle As Primitive = "#D8BFD8"
-    Public ReadOnly Property Tomato As Primitive = "#FF6347"
-    Public ReadOnly Property Transparent As Primitive = "#00FFFFFF"
-    Public ReadOnly Property Turquoise As Primitive = "#40E0D0"
-    Public ReadOnly Property Violet As Primitive = "#EE82EE"
-    Public ReadOnly Property Wheat As Primitive = "#F5DEB3"
-    Public ReadOnly Property White As Primitive = "#FFFFFF"
-    Public ReadOnly Property WhiteSmoke As Primitive = "#F5F5F5"
-    Public ReadOnly Property Yellow As Primitive = "#FFFF00"
-    Public ReadOnly Property YellowGreen As Primitive = "#9ACD32"
+    Public Shared ReadOnly Property AliceBlue As Primitive = "#F0F8FF"
+    Public Shared ReadOnly Property AntiqueWhite As Primitive = "#FAEBD7"
+    Public Shared ReadOnly Property Aqua As Primitive = "#00FFFF"
+    Public Shared ReadOnly Property Aquamarine As Primitive = "#7FFFD4"
+    Public Shared ReadOnly Property Azure As Primitive = "#F0FFFF"
+    Public Shared ReadOnly Property Beige As Primitive = "#F5F5DC"
+    Public Shared ReadOnly Property Bisque As Primitive = "#FFE4C4"
+    Public Shared ReadOnly Property Black As Primitive = "#000000"
+    Public Shared ReadOnly Property BlanchedAlmond As Primitive = "#FFEBCD"
+    Public Shared ReadOnly Property Blue As Primitive = "#0000FF"
+    Public Shared ReadOnly Property BlueViolet As Primitive = "#8A2BE2"
+    Public Shared ReadOnly Property Brown As Primitive = "#A52A2A"
+    Public Shared ReadOnly Property BurlyWood As Primitive = "#DEB887"
+    Public Shared ReadOnly Property CadetBlue As Primitive = "#5F9EA0"
+    Public Shared ReadOnly Property Chartreuse As Primitive = "#7FFF00"
+    Public Shared ReadOnly Property Chocolate As Primitive = "#D2691E"
+    Public Shared ReadOnly Property Coral As Primitive = "#FF7F50"
+    Public Shared ReadOnly Property CornflowerBlue As Primitive = "#6495ED"
+    Public Shared ReadOnly Property Cornsilk As Primitive = "#FFF8DC"
+    Public Shared ReadOnly Property Crimson As Primitive = "#DC143C"
+    Public Shared ReadOnly Property Cyan As Primitive = "#00FFFF"
+    Public Shared ReadOnly Property DarkBlue As Primitive = "#00008B"
+    Public Shared ReadOnly Property DarkCyan As Primitive = "#008B8B"
+    Public Shared ReadOnly Property DarkGoldenrod As Primitive = "#B8860B"
+    Public Shared ReadOnly Property DarkGray As Primitive = "#A9A9A9"
+    Public Shared ReadOnly Property DarkGreen As Primitive = "#006400"
+    Public Shared ReadOnly Property DarkKhaki As Primitive = "#BDB76B"
+    Public Shared ReadOnly Property DarkMagenta As Primitive = "#8B008B"
+    Public Shared ReadOnly Property DarkOliveGreen As Primitive = "#556B2F"
+    Public Shared ReadOnly Property DarkOrange As Primitive = "#FF8C00"
+    Public Shared ReadOnly Property DarkOrchid As Primitive = "#9932CC"
+    Public Shared ReadOnly Property DarkRed As Primitive = "#8B0000"
+    Public Shared ReadOnly Property DarkSalmon As Primitive = "#E9967A"
+    Public Shared ReadOnly Property DarkSeaGreen As Primitive = "#8FBC8F"
+    Public Shared ReadOnly Property DarkSlateBlue As Primitive = "#483D8B"
+    Public Shared ReadOnly Property DarkSlateGray As Primitive = "#2F4F4F"
+    Public Shared ReadOnly Property DarkTurquoise As Primitive = "#00CED1"
+    Public Shared ReadOnly Property DarkViolet As Primitive = "#9400D3"
+    Public Shared ReadOnly Property DeepPink As Primitive = "#FF1493"
+    Public Shared ReadOnly Property DeepSkyBlue As Primitive = "#00BFFF"
+    Public Shared ReadOnly Property DimGray As Primitive = "#696969"
+    Public Shared ReadOnly Property DodgerBlue As Primitive = "#1E90FF"
+    Public Shared ReadOnly Property FireBrick As Primitive = "#B22222"
+    Public Shared ReadOnly Property FloralWhite As Primitive = "#FFFAF0"
+    Public Shared ReadOnly Property ForestGreen As Primitive = "#228B22"
+    Public Shared ReadOnly Property Fuchsia As Primitive = "#FF00FF"
+    Public Shared ReadOnly Property Gainsboro As Primitive = "#DCDCDC"
+    Public Shared ReadOnly Property GhostWhite As Primitive = "#F8F8FF"
+    Public Shared ReadOnly Property Gold As Primitive = "#FFD700"
+    Public Shared ReadOnly Property Goldenrod As Primitive = "#DAA520"
+    Public Shared ReadOnly Property Gray As Primitive = "#808080"
+    Public Shared ReadOnly Property Green As Primitive = "#008000"
+    Public Shared ReadOnly Property GreenYellow As Primitive = "#ADFF2F"
+    Public Shared ReadOnly Property Honeydew As Primitive = "#F0FFF0"
+    Public Shared ReadOnly Property HotPink As Primitive = "#FF69B4"
+    Public Shared ReadOnly Property IndianRed As Primitive = "#CD5C5C"
+    Public Shared ReadOnly Property Indigo As Primitive = "#4B0082"
+    Public Shared ReadOnly Property Ivory As Primitive = "#FFFFF0"
+    Public Shared ReadOnly Property Khaki As Primitive = "#F0E68C"
+    Public Shared ReadOnly Property Lavender As Primitive = "#E6E6FA"
+    Public Shared ReadOnly Property LavenderBlush As Primitive = "#FFF0F5"
+    Public Shared ReadOnly Property LawnGreen As Primitive = "#7CFC00"
+    Public Shared ReadOnly Property LemonChiffon As Primitive = "#FFFACD"
+    Public Shared ReadOnly Property LightBlue As Primitive = "#ADD8E6"
+    Public Shared ReadOnly Property LightCoral As Primitive = "#F08080"
+    Public Shared ReadOnly Property LightCyan As Primitive = "#E0FFFF"
+    Public Shared ReadOnly Property LightGoldenrodYellow As Primitive = "#FAFAD2"
+    Public Shared ReadOnly Property LightGray As Primitive = "#D3D3D3"
+    Public Shared ReadOnly Property LightGreen As Primitive = "#90EE90"
+    Public Shared ReadOnly Property LightPink As Primitive = "#FFB6C1"
+    Public Shared ReadOnly Property LightSalmon As Primitive = "#FFA07A"
+    Public Shared ReadOnly Property LightSeaGreen As Primitive = "#20B2AA"
+    Public Shared ReadOnly Property LightSkyBlue As Primitive = "#87CEFA"
+    Public Shared ReadOnly Property LightSlateGray As Primitive = "#778899"
+    Public Shared ReadOnly Property LightSteelBlue As Primitive = "#B0C4DE"
+    Public Shared ReadOnly Property LightYellow As Primitive = "#FFFFE0"
+    Public Shared ReadOnly Property Lime As Primitive = "#00FF00"
+    Public Shared ReadOnly Property LimeGreen As Primitive = "#32CD32"
+    Public Shared ReadOnly Property Linen As Primitive = "#FAF0E6"
+    Public Shared ReadOnly Property Magenta As Primitive = "#FF00FF"
+    Public Shared ReadOnly Property Maroon As Primitive = "#800000"
+    Public Shared ReadOnly Property MediumAquamarine As Primitive = "#66CDAA"
+    Public Shared ReadOnly Property MediumBlue As Primitive = "#0000CD"
+    Public Shared ReadOnly Property MediumOrchid As Primitive = "#BA55D3"
+    Public Shared ReadOnly Property MediumPurple As Primitive = "#9370DB"
+    Public Shared ReadOnly Property MediumSeaGreen As Primitive = "#3CB371"
+    Public Shared ReadOnly Property MediumSlateBlue As Primitive = "#7B68EE"
+    Public Shared ReadOnly Property MediumSpringGreen As Primitive = "#00FA9A"
+    Public Shared ReadOnly Property MediumTurquoise As Primitive = "#48D1CC"
+    Public Shared ReadOnly Property MediumVioletRed As Primitive = "#C71585"
+    Public Shared ReadOnly Property MidnightBlue As Primitive = "#191970"
+    Public Shared ReadOnly Property MintCream As Primitive = "#F5FFFA"
+    Public Shared ReadOnly Property MistyRose As Primitive = "#FFE4E1"
+    Public Shared ReadOnly Property Moccasin As Primitive = "#FFE4B5"
+    Public Shared ReadOnly Property NavajoWhite As Primitive = "#FFDEAD"
+    Public Shared ReadOnly Property Navy As Primitive = "#000080"
+    Public Shared ReadOnly Property OldLace As Primitive = "#FDF5E6"
+    Public Shared ReadOnly Property Olive As Primitive = "#808000"
+    Public Shared ReadOnly Property OliveDrab As Primitive = "#6B8E23"
+    Public Shared ReadOnly Property Orange As Primitive = "#FFA500"
+    Public Shared ReadOnly Property OrangeRed As Primitive = "#FF4500"
+    Public Shared ReadOnly Property Orchid As Primitive = "#DA70D6"
+    Public Shared ReadOnly Property PaleGoldenrod As Primitive = "#EEE8AA"
+    Public Shared ReadOnly Property PaleGreen As Primitive = "#98FB98"
+    Public Shared ReadOnly Property PaleTurquoise As Primitive = "#AFEEEE"
+    Public Shared ReadOnly Property PaleVioletRed As Primitive = "#DB7093"
+    Public Shared ReadOnly Property PapayaWhip As Primitive = "#FFEFD5"
+    Public Shared ReadOnly Property PeachPuff As Primitive = "#FFDAB9"
+    Public Shared ReadOnly Property Peru As Primitive = "#CD853F"
+    Public Shared ReadOnly Property Pink As Primitive = "#FFC0CB"
+    Public Shared ReadOnly Property Plum As Primitive = "#DDA0DD"
+    Public Shared ReadOnly Property PowderBlue As Primitive = "#B0E0E6"
+    Public Shared ReadOnly Property Purple As Primitive = "#800080"
+    Public Shared ReadOnly Property Red As Primitive = "#FF0000"
+    Public Shared ReadOnly Property RosyBrown As Primitive = "#BC8F8F"
+    Public Shared ReadOnly Property RoyalBlue As Primitive = "#4169E1"
+    Public Shared ReadOnly Property SaddleBrown As Primitive = "#8B4513"
+    Public Shared ReadOnly Property Salmon As Primitive = "#FA8072"
+    Public Shared ReadOnly Property SandyBrown As Primitive = "#F4A460"
+    Public Shared ReadOnly Property SeaGreen As Primitive = "#2E8B57"
+    Public Shared ReadOnly Property Seashell As Primitive = "#FFF5EE"
+    Public Shared ReadOnly Property Sienna As Primitive = "#A0522D"
+    Public Shared ReadOnly Property Silver As Primitive = "#C0C0C0"
+    Public Shared ReadOnly Property SkyBlue As Primitive = "#87CEEB"
+    Public Shared ReadOnly Property SlateBlue As Primitive = "#6A5ACD"
+    Public Shared ReadOnly Property SlateGray As Primitive = "#708090"
+    Public Shared ReadOnly Property Snow As Primitive = "#FFFAFA"
+    Public Shared ReadOnly Property SpringGreen As Primitive = "#00FF7F"
+    Public Shared ReadOnly Property SteelBlue As Primitive = "#4682B4"
+    Public Shared ReadOnly Property Tan As Primitive = "#D2B48C"
+    Public Shared ReadOnly Property Teal As Primitive = "#008080"
+    Public Shared ReadOnly Property Thistle As Primitive = "#D8BFD8"
+    Public Shared ReadOnly Property Tomato As Primitive = "#FF6347"
+    Public Shared ReadOnly Property Transparent As Primitive = "#00FFFFFF"
+    Public Shared ReadOnly Property Turquoise As Primitive = "#40E0D0"
+    Public Shared ReadOnly Property Violet As Primitive = "#EE82EE"
+    Public Shared ReadOnly Property Wheat As Primitive = "#F5DEB3"
+    Public Shared ReadOnly Property White As Primitive = "#FFFFFF"
+    Public Shared ReadOnly Property WhiteSmoke As Primitive = "#F5F5F5"
+    Public Shared ReadOnly Property Yellow As Primitive = "#FFFF00"
+    Public Shared ReadOnly Property YellowGreen As Primitive = "#9ACD32"
 
-    Dim ColorNames As New Dictionary(Of String, String) From {
-            {"#F0F8FF", "AliceBlue"},
+    Private Shared ColorNames As New Dictionary(Of String, String) From {
+        {"#F0F8FF", "AliceBlue"},
         {"#FAEBD7", "AntiqueWhite"},
         {"#7FFFD4", "Aquamarine"},
         {"#F0FFFF", "Azure"},
@@ -352,4 +352,4 @@ Public Module Color
     }
 
 
-End Module
+End Class

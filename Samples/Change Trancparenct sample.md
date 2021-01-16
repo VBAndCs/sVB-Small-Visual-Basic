@@ -3,7 +3,7 @@ Eech time a butten is clicked, encreases the trancparency of the TextBox backcol
 
 # Code:
 Use the form designer to add a textBox and a button, switch to the Form code tab, and add this code after the generated SB code:
-```
+```VB.NET
 Button1.HandleEvents()
 Control.OnMouseLeftUp = Click
 TextBox1.BackColor = Color.Red

@@ -2,10 +2,10 @@
 Imports Wpf = System.Windows.Controls
 
 <SmallBasicType>
-Public Module Label
+Public NotInheritable Class Label
 
-    Private Function GetLabel(formName As String, labelName As String) As Wpf.Label
-        Dim c = GetControl(formName, labelName)
+    Private Shared Function GetLabel(formName As String, labelName As String) As Wpf.Label
+        Dim c = Control.GetControl(formName, labelName)
         Dim t = TryCast(c, Wpf.Label)
         If t Is Nothing Then
             Throw New ArgumentException($"{labelName} is not a name of a Label.")
@@ -13,12 +13,12 @@ Public Module Label
         Return t
     End Function
 
-    Public Function GetText(formName As Primitive, labelName As Primitive) As Primitive
-        Dispatcher.Invoke(Sub() GetText = GetLabel(formName, labelName).Content.ToString())
+    Public Shared Function GetText(formName As Primitive, labelName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(Sub() GetText = GetLabel(formName, labelName).Content.ToString())
     End Function
 
 
-    Public Sub SetText(formName As Primitive, labelName As Primitive, value As Primitive)
-        Dispatcher.Invoke(Sub() GetLabel(formName, labelName).Content = CStr(value))
+    Public Shared Sub SetText(formName As Primitive, labelName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(Sub() GetLabel(formName, labelName).Content = CStr(value))
     End Sub
-End Module
+End Class

@@ -2,10 +2,10 @@
 Imports Wpf = System.Windows.Controls
 
 <SmallBasicType>
-Public Module TextBox
+Public NotInheritable Class TextBox
 
-    Private Function GetTextBox(formName As String, textBoxName As String) As Wpf.TextBox
-        Dim c = GetControl(formName, textBoxName)
+    Private Shared Function GetTextBox(formName As String, textBoxName As String) As Wpf.TextBox
+        Dim c = Control.GetControl(formName, textBoxName)
         Dim t = TryCast(c, Wpf.TextBox)
         If t Is Nothing Then
             Throw New ArgumentException($"{textBoxName} is not a name of a TextBox.")
@@ -13,12 +13,12 @@ Public Module TextBox
         Return t
     End Function
 
-    Public Function GetText(formName As Primitive, textBoxName As Primitive) As Primitive
-        Dispatcher.Invoke(Sub() GetText = GetTextBox(formName, textBoxName).Text)
+    Public Shared Function GetText(formName As Primitive, textBoxName As Primitive) As Primitive
+        Forms.Dispatcher.Invoke(Sub() GetText = GetTextBox(formName, textBoxName).Text)
     End Function
 
 
-    Public Sub SetText(formName As Primitive, textBoxName As Primitive, value As Primitive)
-        Dispatcher.Invoke(Sub() GetTextBox(formName, textBoxName).Text = value)
+    Public Shared Sub SetText(formName As Primitive, textBoxName As Primitive, value As Primitive)
+        Forms.Dispatcher.Invoke(Sub() GetTextBox(formName, textBoxName).Text = value)
     End Sub
-End Module
+End Class

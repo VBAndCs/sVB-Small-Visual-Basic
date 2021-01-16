@@ -69,6 +69,7 @@
     <Compile Include="Button.vb" />
     <Compile Include="Color.vb" />
     <Compile Include="Control.vb" />
+    <Compile Include="Extensions.vb" />
     <Compile Include="Form.vb" />
     <Compile Include="Forms.vb" />
     <Compile Include="Keys.vb" />

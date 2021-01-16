@@ -7,31 +7,11 @@ Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, Sys
 
 
 <SmallBasicType>
-Public Module Forms
-    <System.Runtime.CompilerServices.Extension()>
-    Public Iterator Function GetChildren(ByVal parent As UIElement, ByVal Optional recurse As Boolean = True) As IEnumerable(Of UIElement)
-        If parent IsNot Nothing Then
-            Dim count As Integer = VisualTreeHelper.GetChildrenCount(parent)
+Public NotInheritable Class Forms
 
-            For i As Integer = 0 To count - 1
-                Dim child = TryCast(VisualTreeHelper.GetChild(parent, i), UIElement)
+    Friend Shared _forms As New Dictionary(Of String, ControlsDictionay)
 
-                If child IsNot Nothing Then
-                    Yield child
-
-                    If recurse Then
-                        For Each grandChild In child.GetChildren(True)
-                            Yield grandChild
-                        Next
-                    End If
-                End If
-            Next
-        End If
-    End Function
-
-    Friend _forms As New Dictionary(Of String, ControlsDictionay)
-
-    Function GetForm(name As String) As System.Windows.Window
+    Shared Function GetForm(name As String) As System.Windows.Window
         If Not _forms.ContainsKey(name) Then
             Throw New ArgumentException($"There is no form named `{name}`.")
         End If
@@ -44,7 +24,7 @@ Public Module Forms
         Return wnd
     End Function
 
-    Public Function GetForms() As Primitive
+    Public Shared Function GetForms() As Primitive
         Dim map = New Dictionary(Of Primitive, Primitive)
         Dim num = 1
         For Each key In _forms.Keys
@@ -54,9 +34,9 @@ Public Module Forms
         Return Primitive.ConvertFromMap(map)
     End Function
 
-    Public Property AppPath As Primitive
+    Public Shared Property AppPath As Primitive
 
-    Public Function LoadForm(name As Primitive, xamlPath As Primitive) As Primitive
+    Public Shared Function LoadForm(name As Primitive, xamlPath As Primitive) As Primitive
         If CStr(name) = "" Then
             Throw New ArgumentException("Form name can't be an empty string.")
         End If
@@ -105,7 +85,7 @@ Public Module Forms
         Return name
     End Function
 
-    Public Function AddForm(name As Primitive) As Primitive
+    Public Shared Function AddForm(name As Primitive) As Primitive
         If CStr(name) = "" Then
             Throw New ArgumentException("Form name can't be an empty string.")
         End If
@@ -131,15 +111,15 @@ Public Module Forms
         Return name
     End Function
 
-    Private Function LoadContent(FileName As String) As UIElement
+    Private Shared Function LoadContent(FileName As String) As UIElement
         Dim stream = IO.File.Open(FileName, IO.FileMode.Open)
         Dim reader As New XamlReader()
         Return CType(reader.LoadAsync(stream), UIElement)
     End Function
 
 
-    Dim _dispatcher As Dispatcher
-    Friend ReadOnly Property Dispatcher() As Dispatcher
+    Private Shared _dispatcher As Dispatcher
+    Friend Shared ReadOnly Property Dispatcher() As Dispatcher
         Get
             If _dispatcher Is Nothing Then
                 Dim prop = GetType(SmallBasicApplication).GetProperty("Dispatcher", Reflection.BindingFlags.NonPublic Or Reflection.BindingFlags.Static)
@@ -150,7 +130,7 @@ Public Module Forms
         End Get
     End Property
 
-    Public Sub ShowMessage(message As Primitive, title As Primitive)
+    Public Shared Sub ShowMessage(message As Primitive, title As Primitive)
         MessageBox.Show(message.ToString(), title.ToString())
     End Sub
-End Module
+End Class
