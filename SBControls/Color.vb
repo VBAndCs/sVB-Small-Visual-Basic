@@ -4,8 +4,8 @@
 Public NotInheritable Class Color
 
     Private Shared Function InRange(value As Integer, min As Integer, max As Integer) As Integer
-        Dim result = Math.Min(value, max)
-        Return Math.Max(result, min)
+        Dim result = System.Math.Min(value, max)
+        Return System.Math.Max(result, min)
     End Function
 
     Public Shared Function FromRGB(red As Primitive, green As Primitive, blue As Primitive) As Primitive
@@ -25,13 +25,13 @@ Public NotInheritable Class Color
 
     Public Shared Function SetTransparency(color As Primitive, percentage As Primitive) As Primitive
         Dim _color = FromString(color)
-        Dim A As Byte = Global.System.Math.Round((100 - InRange(percentage, 0, 100)) * 255 / 100)
+        Dim A As Byte = System.Math.Round((100 - InRange(percentage, 0, 100)) * 255 / 100)
         Return $"#{A:X2}{_color.R:X2}{_color.G:X2}{_color.B:X2}"
     End Function
 
     Public Shared Function GetTransparency(color As Primitive) As Primitive
         Dim _color = FromString(color)
-        Return Global.System.Math.Round(100 - _color.A * 100 / 255, 1)
+        Return System.Math.Round(100 - _color.A * 100 / 255, 1)
     End Function
 
     Friend Shared Function FromString(color As String) As Media.Color
@@ -60,7 +60,7 @@ Public NotInheritable Class Color
             If ingnoreTrans OrElse _color.A = 0 Then
                 Return ColorNames(key)
             Else
-                Return ColorNames(key) & $" ({Global.System.Math.Round(100 - _color.A * 100 / 255)}%)"
+                Return ColorNames(key) & $" ({System.Math.Round(100 - _color.A * 100 / 255)}%)"
             End If
         Else
             Return color

@@ -113,7 +113,7 @@ Public NotInheritable Class Control
         Forms.Dispatcher.Invoke(
             Sub()
                 Dim c = GetControl(formName, controlName)
-                GetMouseX = Input.Mouse.GetPosition(c).X
+                GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X)
             End Sub)
     End Function
 
@@ -121,7 +121,7 @@ Public NotInheritable Class Control
         Forms.Dispatcher.Invoke(
             Sub()
                 Dim c = GetControl(formName, controlName)
-                GetMouseY = Input.Mouse.GetPosition(c).Y
+                GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y)
             End Sub)
     End Function
 
