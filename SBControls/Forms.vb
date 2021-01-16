@@ -98,6 +98,10 @@ Public Module Forms
                 Next
             End Sub)
 
+        ' Ensure Keyboard Module is loaded, 
+        ' to create a global hanler for the PreviewKeyDown event
+        Dim __ = Keyboard.LastKey
+
         Return name
     End Function
 

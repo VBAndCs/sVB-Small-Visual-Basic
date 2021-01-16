@@ -71,6 +71,8 @@
     <Compile Include="Control.vb" />
     <Compile Include="Form.vb" />
     <Compile Include="Forms.vb" />
+    <Compile Include="Keys.vb" />
+    <Compile Include="KeyBoard.vb" />
     <Compile Include="Label.vb" />
     <Compile Include="ListBox.vb" />
     <Compile Include="PreCompiler.vb" />
