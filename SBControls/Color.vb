@@ -4,8 +4,8 @@
 Public Module Color
 
     Private Function InRange(value As Integer, min As Integer, max As Integer) As Integer
-        Dim result = Global.System.Math.Min(value, max)
-        Return Global.System.Math.Max(result, min)
+        Dim result = Math.Min(value, max)
+        Return Math.Max(result, min)
     End Function
 
     Public Function FromRGB(red As Primitive, green As Primitive, blue As Primitive) As Primitive
