@@ -161,6 +161,10 @@ Public NotInheritable Class Form
                End Sub)
     End Function
 
+    Public Shared Sub Hide(formName As Primitive)
+        Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Hide())
+    End Sub
+
     Public Shared Sub Close(formName As Primitive)
         Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Close())
     End Sub
@@ -170,7 +174,7 @@ Public NotInheritable Class Form
         Forms.Dispatcher.Invoke(Sub() GetText = Forms.GetForm(formName).Title.ToString())
     End Function
 
-    Public Shared Sub SetText(formName As Primitive, __ As Primitive, value As Primitive)
+    Public Shared Sub SetText(formName As Primitive, value As Primitive)
         Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Title = value)
     End Sub
 End Class

@@ -417,8 +417,10 @@ Namespace Microsoft.SmallBasic
                     code = doc.Text
                 End If
 
+                doc.ParseFormHints(code)
                 doc.Errors.Clear()
                 Dim errors As List(Of [Error])
+
                 If Not RunProgram(code, errors, outputFileName) Then
                     For Each err As [Error] In errors
                         If err.Line = -1 Then
@@ -464,7 +466,7 @@ Namespace Microsoft.SmallBasic
                 Me.programRunningOverlay.Visibility = Visibility.Visible
                 Me.endProgramButton.Focus()
 
-            ElseIf doc.ParseFormHints(code) Then
+            ElseIf doc.Form <> "" Then
                 Return PreCompile(code, errors, outputFileName)
             End If
 
@@ -624,20 +626,33 @@ Namespace Microsoft.SmallBasic
                 Dim tmpPath = "UnSaved"
                 If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
 
-                Dim n = 1
                 Dim fileName = ""
-
+                Dim projectName = ""
+                Dim projectPath = ""
+                Dim n = 1
                 Do
-                    formName = "Form" & n
-                    xamlPath = Path.Combine(tmpPath, formName)
-                    If Not IO.Directory.Exists(xamlPath) Then
-                        IO.Directory.CreateDirectory(xamlPath)
+                    ProjectName = "Project" & n
+                    projectPath = Path.Combine(tmpPath, projectName)
+                    If Not IO.Directory.Exists(projectPath) Then
+                        IO.Directory.CreateDirectory(projectPath)
                         Exit Do
                     End If
                     n += 1
                 Loop
 
-                xamlPath = Path.Combine(xamlPath, formName)
+                n = 1
+                Dim formPath = ""
+                Do
+                    formName = "Form" & n
+                    formPath = Path.Combine(projectPath, formName)
+                    If Not IO.Directory.Exists(formPath) Then
+                        IO.Directory.CreateDirectory(formPath)
+                        Exit Do
+                    End If
+                    n += 1
+                Loop
+
+                xamlPath = Path.Combine(formPath, formName)
                 formDesigner.FileName = xamlPath & ".xaml"
                 formDesigner.DoSave()
                 IO.File.Create(xamlPath & ".sb").Close()
@@ -686,7 +701,7 @@ Namespace Microsoft.SmallBasic
         Private ReadOnly OpenBracketRegex As New Verex(Patterns.NoneOrMany(Patterns.Symbols.WhiteSpace) + "(")
         Private ReadOnly MethodRegex As New Verex(Patterns.Symbols.AnyWord + Patterns.NoneOrMany(Patterns.Symbols.WhiteSpace) + "(")
 
-        Private Function PreCompile(code As String, errors As List(Of [Error]), outputFileName As String) As Boolean
+        Private Function PreCompile(code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
             Dim ReRun = False
             Dim lines = code.Split(New String(0) {Environment.NewLine}, StringSplitOptions.None)
             Dim doc = ActiveDocument
@@ -703,67 +718,132 @@ Namespace Microsoft.SmallBasic
                 Dim obj As String = errMsg.Substring(pos1, errMsg.Length - pos1 - 2)
                 If Not doc.ControlsInfo.ContainsKey(obj) Then Continue For
 
-                Dim line1 = lines(lineNum)
                 Dim line = lines(lineNum)
 
                 If line.Substring(charNum, obj.Length + 1) = obj + "." Then
                     Dim prevText = If(charNum = 0, "", line.Substring(0, charNum))
-                    Dim nextText = line.Substring(charNum + obj.Length + 1)
+                    Dim methodPos = charNum + obj.Length + 1
+                    Dim nextText = line.Substring(methodPos)
 
                     Dim match = MethodRegex.Match(nextText)
                     If match.Success AndAlso match.Index = 0 Then ' Method Call
                         Dim method = nextText.Substring(0, WordRgex.Match(nextText).Length)
                         Dim contents = GetBalancedBrackets(nextText)
-                        If contents Is Nothing OrElse contents.Count = 0 Then Continue For
+                        If contents Is Nothing OrElse contents.Count = 0 Then
+                            errors(i) = New [Error](err.Line, methodPos, "Wrong brackets pairs")
+                            Continue For
+                        End If
+
                         Dim params = contents(0).Value.Trim(" "c, Convert.ToChar(8))
                         Dim RestText = If(contents(0).Index + contents(0).Length > nextText.Length - 2, "",
                                         nextText.Substring(contents(0).Index + contents(0).Length + 1))
 
-                        Dim ModuleName = sb.PreCompiler.GetModule(doc.ControlsInfo(obj), method)
-                        If ModuleName = "" Then Continue For
-
-                        If params = "" Then
-                            lines(lineNum) = prevText &
-                                    $"{ModuleName}.{method}({doc.Form}, {obj})" &
-                                    RestText
-                        Else
-                            lines(lineNum) = prevText &
-                                    $"{ModuleName}.{method}({doc.Form}, {obj}, {params})" &
-                                    RestText
+                        Dim methodInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), method)
+                        Dim ModuleName = methodInfo.Module
+                        If ModuleName = "" Then
+                            errors(i) = New [Error](err.Line, methodPos, $"`{method}` doesn't exist.")
+                            Continue For
                         End If
+
+                        Dim paramsCount = If(params = "", 0, params.Length - params.Replace(",", "").Length + 1)
+                        If methodInfo.ParamsCount = 0 OrElse methodInfo.ParamsCount <= paramsCount Then
+                            errors(i) = New [Error](err.Line, methodPos, "Wrong number of parameters.")
+                            Continue For
+                        End If
+
+                        Select Case methodInfo.ParamsCount
+                            Case 1
+                                lines(lineNum) = prevText &
+                                        $"{ModuleName}.{method}({obj})" &
+                                        RestText
+                            Case paramsCount + 1
+                                lines(lineNum) = prevText &
+                                            $"{ModuleName}.{method}({obj}, {params})" &
+                                            RestText
+                            Case 2
+                                lines(lineNum) = prevText &
+                                            $"{ModuleName}.{method}({doc.Form}, {obj})" &
+                                            RestText
+                            Case Else
+                                lines(lineNum) = prevText &
+                                            $"{ModuleName}.{method}({doc.Form}, {obj}, {params})" &
+                                            RestText
+                        End Select
 
                         errors.RemoveAt(i)
                         ReRun = True
+
                     ElseIf prevText.Trim(" "c, Convert.ToChar(8)) = "" Then 'Property Set
                         pos1 = nextText.IndexOf("="c)
-                        If pos1 = -1 Then Continue For
+                        If pos1 = -1 Then
+                            errors(i) = New [Error](err.Line, methodPos, $"Expected `=` and a value to set the property")
+                            Continue For
+                        End If
+
                         Dim result = WordRgex.Match(nextText)
-                        If Not result.Success OrElse result.Index > 0 Then Continue For
+                        If Not result.Success OrElse result.Index > 0 Then
+                            errors(i) = New [Error](err.Line, methodPos, $"Expected a property name.")
+                            Continue For
+                        End If
+
                         Dim L = pos1 - result.Length
 
                         If L = 0 OrElse nextText.Substring(result.Length, L).Trim(" "c, Convert.ToChar(8)) = "" Then
                             Dim method = $"Set{result.Value}"
-                            Dim ModuleName = sb.PreCompiler.GetModule(doc.ControlsInfo(obj), method)
-                            If ModuleName = "" Then Continue For
+                            Dim methodInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), method)
+                            Dim ModuleName = methodInfo.Module
+                            If ModuleName = "" Then
+                                errors(i) = New [Error](err.Line, methodPos, $"`{result.Value}` doesn't exist.")
+                                Continue For
+                            End If
 
-                            lines(lineNum) = prevText &
-                                    $"{ModuleName}.{method}({doc.Form}, {obj}, {nextText.Substring(pos1 + 1).Trim})"
+                            Select Case methodInfo.ParamsCount
+                                Case 2
+                                    lines(lineNum) = prevText &
+                                            $"{ModuleName}.{method}({obj}, {nextText.Substring(pos1 + 1).Trim})"
+                                Case 3
+                                    lines(lineNum) = prevText &
+                                             $"{ModuleName}.{method}({doc.Form}, {obj}, {nextText.Substring(pos1 + 1).Trim})"
+                                Case Else
+                                    errors(i) = New [Error](err.Line, methodPos, $"`{method}` definition is not supported.")
+                                    Continue For
+                            End Select
+
                             errors.RemoveAt(i)
                             ReRun = True
                         End If
 
                     Else 'Property Get          
                         match = WordRgex.Match(nextText)
-                        If Not match.Success OrElse match.Index > 0 Then Continue For
+                        If Not match.Success OrElse match.Index > 0 Then
+                            errors(i) = New [Error](err.Line, methodPos, "property name is expected.")
+                            Continue For
+                        End If
 
                         Dim method = $"Get{match.Value}"
-                        Dim ModuleName = sb.PreCompiler.GetModule(doc.ControlsInfo(obj), method)
-                        If ModuleName = "" Then Continue For
+                        Dim methodInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), method)
+                        Dim ModuleName = methodInfo.Module
+                        If ModuleName = "" Then
+                            errors(i) = New [Error](err.Line, methodPos, $"`{match.Value}` doesn't exist.")
+                            Continue For
+                        End If
 
-                        lines(lineNum) =
-                                    prevText &
-                                    $"{ModuleName}.{method}({doc.Form}, {obj})" &
-                                    nextText.Substring(match.Length)
+                        Select Case methodInfo.ParamsCount
+                            Case 1
+                                lines(lineNum) =
+                                            prevText &
+                                            $"{ModuleName}.{method}({obj})" &
+                                            nextText.Substring(match.Length)
+                            Case 2
+                                lines(lineNum) =
+                                            prevText &
+                                            $"{ModuleName}.{method}({doc.Form}, {obj})" &
+                                            nextText.Substring(match.Length)
+                            Case Else
+                                errors(i) = New [Error](err.Line, methodPos, $"`{method}` definition is not supported.")
+                                Continue For
+                        End Select
+
                         errors.RemoveAt(i)
                         ReRun = True
                     End If

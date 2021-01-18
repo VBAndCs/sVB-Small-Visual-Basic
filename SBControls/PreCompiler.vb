@@ -9,6 +9,7 @@ Public NotInheritable Class PreCompiler
     Private Shared ModuleInfo As New Dictionary(Of String, List(Of String))
 
     Shared Sub New()
+        ListModuleMembers(GetType(Forms))
         ListModuleMembers(GetType(Form))
         ListModuleMembers(GetType(Control))
         ListModuleMembers(GetType(TextBox))
@@ -24,15 +25,22 @@ Public NotInheritable Class PreCompiler
         ModuleInfo(t.Name) = members
     End Sub
 
-    Public Shared Function GetModule(controlName As String, methodName As String) As String
+    Public Shared Function GetMethodInfo(controlName As String, methodName As String) As ([Module] As String, ParamsCount As Integer)
         Dim method = methodName.ToLower
+        Dim moduleName = ""
         If ModuleInfo(controlName).Contains(method) Then
-            Return controlName
+            moduleName = controlName
         ElseIf ModuleInfo(NameOf(Control)).Contains(method) Then
-            Return NameOf(Control)
+            moduleName = NameOf(Control)
+        ElseIf ModuleInfo(NameOf(Forms)).Contains(method) Then
+            moduleName = NameOf(Forms)
         Else
-            Return ""
+            Return ("", 0)
         End If
+
+        Dim t = Type.GetType("SmallBasic.WinForms." & moduleName)
+        Dim params = t?.GetMethod(methodName)?.GetParameters()
+        Return (moduleName, If(params Is Nothing, 0, params.Length))
     End Function
 
     Public Shared Function ParseFormHints(txt As String) As FormInfo

@@ -16,5 +16,5 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\App.xaml
 19-427515888
 MainWindow.xaml;ShellEx\Ribbon.xaml;Shell\ErrorListControl.xaml;Shell\ExportToVBDialog.xaml;Shell\MdiViewsControl.xaml;Utility\HelpPanel.xaml;Utility\messagebox.xaml;Utility\PublishProgramDialog.xaml;Utility\RatingControl.xaml;
 
-True
+False
 
