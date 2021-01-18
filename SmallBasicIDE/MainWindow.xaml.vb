@@ -25,7 +25,6 @@ Imports System.Windows.Threading
 Imports System.Linq
 Imports System.ComponentModel.Composition
 Imports RegexBuilder
-Imports RegexBuilder.Patterns
 Imports sb = SmallBasic.WinForms
 
 Namespace Microsoft.SmallBasic
@@ -67,7 +66,7 @@ Namespace Microsoft.SmallBasic
         Public ReadOnly Property ActiveDocument As TextDocument
             Get
                 Dim result As TextDocument = Nothing
-                Dim selectedItem As MdiView = Me.viewsControl.SelectedItem
+                Dim selectedItem = Me.viewsControl.SelectedItem
 
                 If selectedItem IsNot Nothing Then
                     result = selectedItem.Document
@@ -89,7 +88,7 @@ Namespace Microsoft.SmallBasic
             mdiViews = New ObservableCollection(Of MdiView)()
             Me.viewsControl.ItemsSource = mdiViews
             AddHandler CompilerService.CurrentCompletionItemChanged, AddressOf OnCurrentCompletionItemChanged
-            OnFileNew(Me, Nothing)
+            'OnFileNew(Me, Nothing)
             helpUpdateTimer = New DispatcherTimer(TimeSpan.FromMilliseconds(200.0), DispatcherPriority.ApplicationIdle, AddressOf OnHelpUpdate, Dispatcher)
             ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf OnCheckVersion))
             Dim commandLineArgs As String() = Environment.GetCommandLineArgs()
@@ -102,7 +101,7 @@ Namespace Microsoft.SmallBasic
 
             If Not text.StartsWith("/") Then
                 If File.Exists(text) Then
-                    OpenFile(text)
+                    OpenDocumentIfNot(text)
                 Else
                     Utility.MessageBox.Show(String.Format(ResourceHelper.GetString("FileNotFound"), text), ResourceHelper.GetString("Title"), "", NotificationButtons.OK, NotificationIcon.Information)
                 End If
@@ -124,7 +123,7 @@ Namespace Microsoft.SmallBasic
             openFileDialog.Filter = ResourceHelper.GetString("SmallBasicFileFilter") & "|*.sb;*.smallbasic"
 
             If openFileDialog.ShowDialog() = True Then
-                OpenFile(openFileDialog.FileName)
+                OpenDocumentIfNot(openFileDialog.FileName)
             End If
         End Sub
 
@@ -339,10 +338,9 @@ Namespace Microsoft.SmallBasic
         Private Sub OpenFile(ByVal filePath As String)
             Dim document As New TextDocument(filePath)
             DocumentTracker.TrackDocument(document)
-            Dim mdiView As MdiView = New MdiView()
+            Dim mdiView As New MdiView()
             mdiView.Document = document
-            Dim item = mdiView
-            mdiViews.Add(item)
+            mdiViews.Add(mdiView)
         End Sub
 
         Private Function SaveDocument(ByVal document As TextDocument) As Boolean
@@ -402,24 +400,46 @@ Namespace Microsoft.SmallBasic
         End Function
 
 
-        Private Function RunProgram() As Boolean
+        Private Sub RunProgram()
             Try
-                Dim outputFileName = GetOutputFileName(ActiveDocument)
-                Return RunProgram(ActiveDocument, outputFileName)
+                Dim doc = ActiveDocument
+                Dim code = ""
+                Dim outputFileName = GetOutputFileName(doc)
+                Dim genCodefile = doc.FilePath
+                Dim offset = 0
+                genCodefile = genCodefile.Substring(0, genCodefile.Length - 2) + "gsb"
+
+                If IO.File.Exists(genCodefile) Then
+                    Dim gen = File.ReadAllText(genCodefile)
+                    offset = CountLines(gen) + 1
+                    code = gen & Environment.NewLine & doc.Text
+                Else
+                    code = doc.Text
+                End If
+
+                doc.Errors.Clear()
+                Dim errors As List(Of [Error])
+                If Not RunProgram(code, errors, outputFileName) Then
+                    For Each err As [Error] In errors
+                        If err.Line = -1 Then
+                            doc.Errors.Add(err.Description)
+                        Else
+                            doc.Errors.Add($"{err.Line - offset + 1},{err.Column + 1}: {err.Description}")
+                        End If
+                    Next
+                End If
             Catch ex As Exception
                 Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
-                Return True
             End Try
-        End Function
-
-        Private Function RunProgram(ByVal document As TextDocument, outputFileName As String) As Boolean
-
-            document.Errors.Clear()
-
-            If CompilerService.Compile(document.Text, outputFileName, document.Errors) Then
+        End Sub
+        Private Function RunProgram(ByVal code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
+            Dim doc = ActiveDocument
+            errors = Compile(code, outputFileName)
+            If errors.Count = 0 Then
                 Thread.Sleep(500)
                 currentProgramProcess = Process.Start(outputFileName)
                 currentProgramProcess.EnableRaisingEvents = True
+
                 AddHandler currentProgramProcess.Exited,
                     Sub()
                         Dispatcher.BeginInvoke(DispatcherPriority.Normal, CType(
@@ -427,157 +447,31 @@ Namespace Microsoft.SmallBasic
                                  Me.programRunningOverlay.Visibility = Visibility.Hidden
                                  currentProgramProcess = Nothing
 
-                                 If document.IsNew Then
+                                 If doc.IsNew Then
                                      Try
                                          File.Delete(outputFileName)
                                      Catch
                                      End Try
                                  End If
 
-                                 ActiveDocument.EditorControl.Focus()
-                                 Return Nothing
+                                 doc.EditorControl.Focus()
+                                 Return True
                              End Function,
                              DispatcherOperationCallback), Nothing)
                     End Sub
 
-                Me.processRunningMessage.Text = String.Format(ResourceHelper.GetString("ProgramRunning"), document.Title)
+                Me.processRunningMessage.Text = String.Format(ResourceHelper.GetString("ProgramRunning"), doc.Title)
                 Me.programRunningOverlay.Visibility = Visibility.Visible
                 Me.endProgramButton.Focus()
 
-            ElseIf document.ParseFormHints() Then
-                Return PreCompile(document, outputFileName)
+            ElseIf doc.ParseFormHints(code) Then
+                Return PreCompile(code, errors, outputFileName)
             End If
 
             Return True
         End Function
 
-        Private ReadOnly WordRgex As New Verex(Symbols.AnyWord)
-        Private ReadOnly OpenBracketRegex As New Verex(NoneOrMany(Symbols.WhiteSpace) + "(")
-        Private ReadOnly MethodRegex As New Verex(Symbols.AnyWord + NoneOrMany(Symbols.WhiteSpace) + "(")
 
-        Private Function PreCompile(document As TextDocument, outputFileName As String) As Boolean
-            Dim ReRun = False
-            Dim txt = document.Text
-            Dim lines = txt.Split({Environment.NewLine}, StringSplitOptions.None)
-
-            For i = document.Errors.Count - 1 To 0 Step -1
-                Dim err = document.Errors(i)
-
-                Dim pos1 = err.IndexOf(",")
-                If pos1 = -1 Then Continue For
-
-                Dim lineNum = CInt(err.Substring(0, pos1)) - 1
-                pos1 += 1
-                Dim pos2 = err.IndexOf(":", pos1)
-                Dim CharNum = CInt(err.Substring(pos1, pos2 - pos1)) - 1
-                Dim errMsg = err.Substring(pos2 + 2)
-                If errMsg.StartsWith("Cannot find object") Then
-                    pos1 = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
-                    Dim obj = errMsg.Substring(pos1, errMsg.Length - pos1 - 2)
-                    If Not document.ControlsInfo.ContainsKey(obj) Then Continue For
-                    Dim line = lines(lineNum)
-
-                    If line.Substring(CharNum, obj.Length + 1) = obj + "." Then
-                        Dim prevText = If(CharNum = 0, "", line.Substring(0, CharNum))
-                        Dim nextText = line.Substring(CharNum + obj.Length + 1)
-
-                        Dim match = MethodRegex.Match(nextText)
-                        If match.Success AndAlso match.Index = 0 Then ' Method Call
-                            Dim method = nextText.Substring(0, WordRgex.Match(nextText).Length)
-                            Dim contents = GetBalancedBrackets(nextText)
-                            If contents Is Nothing OrElse contents.Count = 0 Then Continue For
-                            Dim params = contents(0).Value.Trim(" "c, Convert.ToChar(8))
-                            Dim RestText = If(contents(0).Index + contents(0).Length > nextText.Length - 2, "",
-                                        nextText.Substring(contents(0).Index + contents(0).Length + 1))
-
-                            Dim ModuleName = sb.PreCompiler.GetModule(document.ControlsInfo(obj), method)
-                            If ModuleName = "" Then Continue For
-
-                            If params = "" Then
-                                lines(lineNum) = prevText &
-                                    $"{ModuleName}.{method}({document.Form}, {obj})" &
-                                    RestText
-                            Else
-                                lines(lineNum) = prevText &
-                                    $"{ModuleName}.{method}({document.Form}, {obj}, {params})" &
-                                    RestText
-                            End If
-
-                            document.Errors.RemoveAt(i)
-                            ReRun = True
-                        ElseIf prevText.Trim(" "c, Convert.ToChar(8)) = "" Then 'Property Set
-                            pos1 = nextText.IndexOf("="c)
-                            If pos1 = -1 Then Continue For
-                            Dim result = WordRgex.Match(nextText)
-                            If Not result.Success OrElse result.Index > 0 Then Continue For
-                            Dim L = pos1 - result.Length
-
-                            If L = 0 OrElse nextText.Substring(result.Length, L).Trim(" "c, Convert.ToChar(8)) = "" Then
-                                Dim method = $"Set{result.Value}"
-                                Dim ModuleName = sb.PreCompiler.GetModule(document.ControlsInfo(obj), method)
-                                If ModuleName = "" Then Continue For
-
-                                lines(lineNum) = prevText &
-                                    $"{ModuleName}.{method}({document.Form}, {obj}, {nextText.Substring(pos1 + 1).Trim})"
-                                document.Errors.RemoveAt(i)
-                                ReRun = True
-                            End If
-
-                        Else 'Property Get          
-                            match = WordRgex.Match(nextText)
-                            If Not match.Success OrElse match.Index > 0 Then Continue For
-
-                            Dim method = $"Get{match.Value}"
-                            Dim ModuleName = sb.PreCompiler.GetModule(document.ControlsInfo(obj), method)
-                            If ModuleName = "" Then Continue For
-
-                            lines(lineNum) =
-                                    prevText &
-                                    $"{ModuleName}.{method}({document.Form}, {obj})" &
-                                    nextText.Substring(match.Length)
-                            document.Errors.RemoveAt(i)
-                            ReRun = True
-                        End If
-
-                    End If
-
-                End If
-            Next
-
-            If ReRun Then Return RunAgain(document, outputFileName, lines)
-
-            Return document.Errors.Count = 0
-
-        End Function
-
-        Private Function GetBalancedBrackets(str As String) As List(Of Content)
-            Do
-                Dim contents = Verex.BalancedContents(str, "(", ")")
-                If contents IsNot Nothing Then Return contents
-                Dim pos = str.LastIndexOfAny({"("c, ")"c})
-                If pos = -1 Then Return Nothing
-                str = str.Substring(0, pos)
-            Loop
-            Return Nothing
-        End Function
-
-        Function RunAgain(document As TextDocument, outputFileName As String, lines() As String) As Boolean
-            Dim n = New Random().Next(1, 1000000)
-            Dim filename = Path.Combine(Path.GetTempPath(), $"file{n}.sb")
-            My.Computer.FileSystem.WriteAllText(filename, String.Join(Environment.NewLine, lines), False)
-            Dim doc As New TextDocument(filename)
-
-            document.Errors.Clear()
-            If RunProgram(doc, outputFileName) Then Return True
-
-            For Each err In doc.Errors
-                document.Errors.Add(err)
-            Next
-
-
-            Return False
-
-        End Function
         Private Sub PublishDocument(ByVal document As TextDocument)
             Try
                 Cursor = Cursors.Wait
@@ -711,6 +605,15 @@ Namespace Microsoft.SmallBasic
             Process.Start("http://smallbasic.com/download.aspx")
         End Sub
 
+        Sub OpenDocumentIfNot(FilePath As String)
+            For Each view As MdiView In Me.viewsControl.Items
+                If view.Document.FilePath = Path.GetFullPath(FilePath) Then
+                    viewsControl.ChangeSelection(view)
+                    Return
+                End If
+            Next
+            OpenFile(FilePath)
+        End Sub
 
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
             Dim hint As New Text.StringBuilder
@@ -718,13 +621,31 @@ Namespace Microsoft.SmallBasic
             Dim formName As String
             Dim xamlPath As String
             If formDesigner.FileName = "" Then
-                formName = "Form1"
-                xamlPath = Path.GetTempPath
-                formDesigner.FileName = Path.Combine(xamlPath, formName & ".xaml")
+                Dim tmpPath = "UnSaved"
+                If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
+
+                Dim n = 1
+                Dim fileName = ""
+
+                Do
+                    formName = "Form" & n
+                    xamlPath = Path.Combine(tmpPath, formName)
+                    If Not IO.Directory.Exists(xamlPath) Then
+                        IO.Directory.CreateDirectory(xamlPath)
+                        Exit Do
+                    End If
+                    n += 1
+                Loop
+
+                xamlPath = Path.Combine(xamlPath, formName)
+                formDesigner.FileName = xamlPath & ".xaml"
                 formDesigner.DoSave()
+                IO.File.Create(xamlPath & ".sb").Close()
+
             Else
                 formName = Path.GetFileNameWithoutExtension(formDesigner.FileName)
                 xamlPath = Path.GetDirectoryName(formDesigner.FileName)
+                xamlPath = Path.Combine(xamlPath, formName)
                 If formDesigner.HasChanges Then formDesigner.DoSave()
             End If
 
@@ -737,6 +658,7 @@ Namespace Microsoft.SmallBasic
                     declaration.AppendLine($"{name} = ""{name}""")
                 End If
             Next
+
             hint.AppendLine("'}")
             hint.AppendLine()
             hint.Append(declaration)
@@ -746,9 +668,167 @@ Namespace Microsoft.SmallBasic
             hint.AppendLine($"{formName}.Height = {formDesigner.PageHeight}")
             hint.AppendLine($"Form.Show({formName})")
 
-            ActiveDocument.EditorControl.EditorOperations.SelectAll()
-            ActiveDocument.EditorControl.EditorOperations.InsertText(hint.ToString(), ActiveDocument.UndoHistory)
-
+            IO.File.WriteAllText(xamlPath & ".gsb", hint.ToString())
+            OpenDocumentIfNot(xamlPath & ".sb")
         End Sub
+
+        Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
+            For Each d In IO.Directory.GetDirectories("UnSaved")
+                Try
+                    My.Computer.FileSystem.DeleteDirectory(d, VisualBasic.FileIO.DeleteDirectoryOption.DeleteAllContents)
+                Catch
+                End Try
+            Next
+        End Sub
+
+
+        Private ReadOnly WordRgex As New Verex(Patterns.Symbols.AnyWord)
+        Private ReadOnly OpenBracketRegex As New Verex(Patterns.NoneOrMany(Patterns.Symbols.WhiteSpace) + "(")
+        Private ReadOnly MethodRegex As New Verex(Patterns.Symbols.AnyWord + Patterns.NoneOrMany(Patterns.Symbols.WhiteSpace) + "(")
+
+        Private Function PreCompile(code As String, errors As List(Of [Error]), outputFileName As String) As Boolean
+            Dim ReRun = False
+            Dim lines = code.Split(New String(0) {Environment.NewLine}, StringSplitOptions.None)
+            Dim doc = ActiveDocument
+            Dim num = errors.Count - 1
+            Dim i As Integer = num
+            For i = errors.Count - 1 To 0 Step -1
+                Dim err = errors(i)
+                Dim errMsg = err.Description
+                If Not errMsg.StartsWith("Cannot find object") Then Continue For
+
+                Dim lineNum = err.Line
+                Dim charNum = err.Column
+                Dim pos1 = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
+                Dim obj As String = errMsg.Substring(pos1, errMsg.Length - pos1 - 2)
+                If Not doc.ControlsInfo.ContainsKey(obj) Then Continue For
+
+                Dim line1 = lines(lineNum)
+                Dim line = lines(lineNum)
+
+                If line.Substring(charNum, obj.Length + 1) = obj + "." Then
+                    Dim prevText = If(charNum = 0, "", line.Substring(0, charNum))
+                    Dim nextText = line.Substring(charNum + obj.Length + 1)
+
+                    Dim match = MethodRegex.Match(nextText)
+                    If match.Success AndAlso match.Index = 0 Then ' Method Call
+                        Dim method = nextText.Substring(0, WordRgex.Match(nextText).Length)
+                        Dim contents = GetBalancedBrackets(nextText)
+                        If contents Is Nothing OrElse contents.Count = 0 Then Continue For
+                        Dim params = contents(0).Value.Trim(" "c, Convert.ToChar(8))
+                        Dim RestText = If(contents(0).Index + contents(0).Length > nextText.Length - 2, "",
+                                        nextText.Substring(contents(0).Index + contents(0).Length + 1))
+
+                        Dim ModuleName = sb.PreCompiler.GetModule(doc.ControlsInfo(obj), method)
+                        If ModuleName = "" Then Continue For
+
+                        If params = "" Then
+                            lines(lineNum) = prevText &
+                                    $"{ModuleName}.{method}({doc.Form}, {obj})" &
+                                    RestText
+                        Else
+                            lines(lineNum) = prevText &
+                                    $"{ModuleName}.{method}({doc.Form}, {obj}, {params})" &
+                                    RestText
+                        End If
+
+                        errors.RemoveAt(i)
+                        ReRun = True
+                    ElseIf prevText.Trim(" "c, Convert.ToChar(8)) = "" Then 'Property Set
+                        pos1 = nextText.IndexOf("="c)
+                        If pos1 = -1 Then Continue For
+                        Dim result = WordRgex.Match(nextText)
+                        If Not result.Success OrElse result.Index > 0 Then Continue For
+                        Dim L = pos1 - result.Length
+
+                        If L = 0 OrElse nextText.Substring(result.Length, L).Trim(" "c, Convert.ToChar(8)) = "" Then
+                            Dim method = $"Set{result.Value}"
+                            Dim ModuleName = sb.PreCompiler.GetModule(doc.ControlsInfo(obj), method)
+                            If ModuleName = "" Then Continue For
+
+                            lines(lineNum) = prevText &
+                                    $"{ModuleName}.{method}({doc.Form}, {obj}, {nextText.Substring(pos1 + 1).Trim})"
+                            errors.RemoveAt(i)
+                            ReRun = True
+                        End If
+
+                    Else 'Property Get          
+                        match = WordRgex.Match(nextText)
+                        If Not match.Success OrElse match.Index > 0 Then Continue For
+
+                        Dim method = $"Get{match.Value}"
+                        Dim ModuleName = sb.PreCompiler.GetModule(doc.ControlsInfo(obj), method)
+                        If ModuleName = "" Then Continue For
+
+                        lines(lineNum) =
+                                    prevText &
+                                    $"{ModuleName}.{method}({doc.Form}, {obj})" &
+                                    nextText.Substring(match.Length)
+                        errors.RemoveAt(i)
+                        ReRun = True
+                    End If
+
+                End If
+
+            Next
+
+            If ReRun Then Return RunProgram(
+                        String.Join(Environment.NewLine, lines),
+                        errors,
+                        outputFileName)
+
+            Return errors.Count = 0
+
+        End Function
+
+        Private Function GetBalancedBrackets(str As String) As List(Of Content)
+            Do
+                Dim contents As List(Of Content) = Verex.BalancedContents(str, "(", ")")
+                If contents IsNot Nothing Then
+                    Return contents
+                End If
+                Dim pos As Integer = str.LastIndexOfAny(New Char(1) {"("c, ")"c})
+                If pos = -1 Then
+                    Exit Do
+                End If
+                str = str.Substring(0, pos)
+            Loop
+
+            Return Nothing
+        End Function
+
+
+        Private Function CountLines(str As String) As Integer
+            If str = "" Then Return 0
+
+            Dim pos As Integer = -1
+            Dim count As Integer = 0
+            Do
+                pos = str.IndexOf(Environment.NewLine, pos + 1)
+                If pos = -1 Then Exit Do
+                count += 1
+            Loop
+            Return count
+        End Function
+
+
+        Public Shared Function Compile(programText As String, outputFilePath As String) As List(Of [Error])
+            Dim errors As List(Of [Error])
+            Try
+                Dim compiler1 As New Compiler
+                compiler1.Initialize()
+                Dim fileNameWithoutExtension As String = Path.GetFileNameWithoutExtension(outputFilePath)
+                Dim directoryName As String = Path.GetDirectoryName(outputFilePath)
+                errors = compiler1.Build(New StringReader(programText), fileNameWithoutExtension, directoryName)
+            Catch ex As Exception
+                errors = New List(Of [Error])
+                errors.Add(New [Error](-1, 0, ex.Message))
+            End Try
+
+            Return errors
+        End Function
+
     End Class
+
+
 End Namespace

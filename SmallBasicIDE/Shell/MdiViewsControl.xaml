@@ -128,7 +128,7 @@
                                 <Border Name="contentBorder" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="2" Grid.Column="1" Grid.Row="2">
                                     <Border BorderBrush="#999999" BorderThickness="1" CornerRadius="2">
                                         <Grid>
-                                            <ContentControl Content="{Binding Path=Document, RelativeSource={RelativeSource TemplatedParent}}">
+                                            <ContentControl Name="DocContent" Content="{Binding Path=Document, RelativeSource={RelativeSource TemplatedParent}}">
                                                 <FrameworkElement.LayoutTransform>
                                                     <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
                                                 </FrameworkElement.LayoutTransform>

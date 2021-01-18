@@ -278,8 +278,8 @@ Namespace Microsoft.SmallBasic.Documents
         Public ReadOnly Property Form As String
         Public ReadOnly Property ControlsInfo As New Collections.Generic.Dictionary(Of String, String)
 
-        Public Function ParseFormHints() As Boolean
-            Dim info = PreCompiler.ParseFormHints(Me.Text)
+        Public Function ParseFormHints(code As String) As Boolean
+            Dim info = PreCompiler.ParseFormHints(code)
             If info Is Nothing Then Return False
 
             Me._Form = info.Form
@@ -287,7 +287,11 @@ Namespace Microsoft.SmallBasic.Documents
             Return True
         End Function
 
-
-
+        Friend Shared Function FromCode(code As String) As TextDocument
+            Dim n = New Random().Next(1, 1000000)
+            Dim filename = Path.Combine(Path.GetTempPath(), $"file{n}.sb")
+            My.Computer.FileSystem.WriteAllText(filename, code, False)
+            Return New TextDocument(filename)
+        End Function
     End Class
 End Namespace

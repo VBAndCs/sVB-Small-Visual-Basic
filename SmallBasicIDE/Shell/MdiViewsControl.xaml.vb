@@ -4,6 +4,7 @@ Imports System.Windows
 Imports System.Windows.Controls
 Imports System.Windows.Input
 Imports System.Windows.Media
+Imports System.Windows.Threading
 
 Namespace Microsoft.SmallBasic.Shell
     Public Class MdiViewsControl
@@ -26,7 +27,9 @@ Namespace Microsoft.SmallBasic.Shell
         Private lastOffsetForXOffset As Double
         Private selectionChanging As Boolean
         Private lastZIndex As Integer
+
         Public Property SelectedItem As MdiView
+
         Public Event RequestItemClose As EventHandler(Of RequestCloseEventArgs)
         Public Shared CloseViewCommand As RoutedUICommand
 
@@ -224,7 +227,7 @@ Namespace Microsoft.SmallBasic.Shell
             Return Nothing
         End Function
 
-        Private Sub ChangeSelection(ByVal selectedView As MdiView)
+        Friend Sub ChangeSelection(ByVal selectedView As MdiView)
             If selectedView Is Nothing Then
                 Dim num = 0
 
@@ -240,9 +243,8 @@ Namespace Microsoft.SmallBasic.Shell
             End If
 
             If selectedView Is Nothing Then
-                SelectedItem = Nothing
-            ElseIf selectedView IsNot SelectedItem Then
-
+                _SelectedItem = Nothing
+            ElseIf selectedView IsNot _SelectedItem Then
                 For Each item2 In Items
                     Dim mdiView2 = TryCast(item2, MdiView)
 
@@ -252,8 +254,13 @@ Namespace Microsoft.SmallBasic.Shell
                 Next
                 Panel.SetZIndex(selectedView, lastZIndex)
                 lastZIndex += 1
-                SelectedItem = selectedView
+                _SelectedItem = selectedView
                 selectedView.IsSelected = True
+                selectedView.Dispatcher.Invoke(DispatcherPriority.Render, Sub() Exit Sub)
+
+                KeepFocus = True
+                CType(selectedView.Document.EditorControl.TextView, Nautilus.Text.Editor.AvalonTextView).Focus()
+                KeepFocus = False
             End If
         End Sub
 
@@ -279,7 +286,10 @@ Namespace Microsoft.SmallBasic.Shell
             MyBase.OnItemsChanged(e)
         End Sub
 
+        Dim KeepFocus As Boolean
         Private Sub OnFocusWithinChanged(ByVal sender As Object, ByVal e As DependencyPropertyChangedEventArgs)
+            If KeepFocus Then Return
+
             Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
             ChangeSelection(selectedView)
         End Sub

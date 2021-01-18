@@ -38,7 +38,7 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public ReadOnly Property IsNew As Boolean
             Get
-                Return Equals(FilePath, Nothing)
+                Return FilePath = ""
             End Get
         End Property
 
