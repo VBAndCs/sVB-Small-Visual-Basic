@@ -58,14 +58,8 @@
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
-    <Reference Include="SmallBasicCompiler">
-      <HintPath>SB.Lib\SmallBasicCompiler.exe</HintPath>
-    </Reference>
     <Reference Include="ToolFramework">
       <HintPath>SB.Lib\ToolFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="LanguageService">
-      <HintPath>SB.Lib\LanguageService.dll</HintPath>
     </Reference>
     <Reference Include="StringResources">
       <HintPath>SB.Lib\StringResources.dll</HintPath>
@@ -270,6 +264,14 @@
     <ProjectReference Include="..\DiagramHelper\DiagramHelper.vbproj">
       <Project>{1502a593-20a7-4781-88d5-9ffc87489424}</Project>
       <Name>DiagramHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LangServices\LangServices.vbproj">
+      <Project>{a76620d4-a63c-4221-9fdc-d44c0cdd9b9f}</Project>
+      <Name>LangServices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SBCompiler\SBCompiler\SBCompiler.vbproj">
+      <Project>{c35b1c89-a93e-43ff-8608-7c8274562a87}</Project>
+      <Name>SBCompiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\SBControls\SB.Forms.vbproj">
       <Project>{a15dd6e7-497a-4b81-bd7c-e5b5eb42b2d8}</Project>

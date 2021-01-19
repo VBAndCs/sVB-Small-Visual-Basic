@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Selector x:Class="Microsoft.SmallBasic.LanguageService.CircularList" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Height="138" xmlns:languageservice="clr-namespace:Microsoft.SmallBasic.LanguageService;assembly=LanguageService">
+  <Control.Template>
+    <ControlTemplate>
+      <Grid ClipToBounds="True">
+        <Canvas Name="itemsHost" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+        <Ellipse Width="340" Height="340" Margin="-540,-100,0,0" Fill="#aFc9d3" Stroke="#8fa9b3" StrokeThickness="1" />
+        <Border Name="enabledIndicator" CornerRadius="4" BorderThickness="0" />
+      </Grid>
+      <ControlTemplate.Triggers>
+        <Trigger Property="Selector.SelectedIndex" Value="-1">
+          <Setter TargetName="enabledIndicator" Property="Border.Background" Value="#88ffffff" />
+        </Trigger>
+      </ControlTemplate.Triggers>
+    </ControlTemplate>
+  </Control.Template>
+</Selector>

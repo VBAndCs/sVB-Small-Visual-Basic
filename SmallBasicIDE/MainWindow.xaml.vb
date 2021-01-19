@@ -335,13 +335,14 @@ Namespace Microsoft.SmallBasic
             MyBase.OnClosing(e)
         End Sub
 
-        Private Sub OpenFile(ByVal filePath As String)
+        Private Function OpenFile(ByVal filePath As String) As TextDocument
             Dim document As New TextDocument(filePath)
             DocumentTracker.TrackDocument(document)
             Dim mdiView As New MdiView()
             mdiView.Document = document
             mdiViews.Add(mdiView)
-        End Sub
+            Return document
+        End Function
 
         Private Function SaveDocument(ByVal document As TextDocument) As Boolean
             If document.IsNew Then
@@ -413,11 +414,12 @@ Namespace Microsoft.SmallBasic
                     Dim gen = File.ReadAllText(genCodefile)
                     offset = CountLines(gen) + 1
                     code = gen & Environment.NewLine & doc.Text
+                    If doc.Form = "" Then doc.ParseFormHints(code)
                 Else
                     code = doc.Text
                 End If
 
-                doc.ParseFormHints(code)
+
                 doc.Errors.Clear()
                 Dim errors As List(Of [Error])
 
@@ -607,15 +609,15 @@ Namespace Microsoft.SmallBasic
             Process.Start("http://smallbasic.com/download.aspx")
         End Sub
 
-        Sub OpenDocumentIfNot(FilePath As String)
+        Function OpenDocumentIfNot(FilePath As String) As TextDocument
             For Each view As MdiView In Me.viewsControl.Items
                 If view.Document.FilePath = Path.GetFullPath(FilePath) Then
                     viewsControl.ChangeSelection(view)
-                    Return
+                    Return view.Document
                 End If
             Next
-            OpenFile(FilePath)
-        End Sub
+            Return OpenFile(FilePath)
+        End Function
 
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
             Dim hint As New Text.StringBuilder
@@ -665,11 +667,14 @@ Namespace Microsoft.SmallBasic
             End If
 
             hint.AppendLine($"'#{formName}{{")
-
+            Dim ControlsInfo As New Dictionary(Of String, String)
+            ControlsInfo(formName) = "Form"
             For Each c As FrameworkElement In formDesigner.Items
                 Dim name = c.Name
                 If name <> "" Then
-                    hint.AppendLine($"'    {name}: {c.GetType().Name}")
+                    Dim typeName = c.GetType().Name
+                    ControlsInfo(name) = typeName
+                    hint.AppendLine($"'    {name}: {typeName}")
                     declaration.AppendLine($"{name} = ""{name}""")
                 End If
             Next
@@ -684,7 +689,9 @@ Namespace Microsoft.SmallBasic
             hint.AppendLine($"Form.Show({formName})")
 
             IO.File.WriteAllText(xamlPath & ".gsb", hint.ToString())
-            OpenDocumentIfNot(xamlPath & ".sb")
+            Dim doc = OpenDocumentIfNot(xamlPath & ".sb")
+            doc.Form = formName
+            doc.ControlsInfo = ControlsInfo
         End Sub
 
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed

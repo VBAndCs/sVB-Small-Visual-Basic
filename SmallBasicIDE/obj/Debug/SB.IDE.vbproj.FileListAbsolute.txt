@@ -14,7 +14,6 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\ComponentModel.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\LanguageService.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SB.WinForms.dll
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SmallBasicCompiler.exe
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\StringResources.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\ToolFramework.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\Verex.dll
@@ -54,3 +53,9 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.IDE.vbproj.CopyComple
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.exe
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\LanguageService.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\LanguageService.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.exe
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.exe.config

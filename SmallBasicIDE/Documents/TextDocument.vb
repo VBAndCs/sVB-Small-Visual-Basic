@@ -93,11 +93,13 @@ Namespace Microsoft.SmallBasic.Documents
                     editorControlField.IsLineNumberMarginVisible = True
                     editorControlField.Focus()
                     AddHandler editorControlField.TextView.Caret.PositionChanged, AddressOf OnCaretPositionChanged
-                    editorControlField.Dispatcher.BeginInvoke(DispatcherPriority.Render, CType(Function()
-                                                                                                   editorControlField.TextView.VisualElement.Focus()
-                                                                                                   UpdateCaretPositionText()
-                                                                                                   Return Nothing
-                                                                                               End Function, DispatcherOperationCallback), Nothing)
+                    editorControlField.Dispatcher.BeginInvoke(DispatcherPriority.Render,
+                          CType(Function()
+                                    editorControlField.TextView.VisualElement.Focus()
+                                    UpdateCaretPositionText()
+                                    Return Nothing
+                                End Function,
+                                DispatcherOperationCallback), Nothing)
                 End If
 
                 Return editorControlField
@@ -274,16 +276,38 @@ Namespace Microsoft.SmallBasic.Documents
             OnBindCompleted()
         End Sub
 
+        Dim _form As String
+        Public Property Form As String
+            Get
+                Return _form
+            End Get
 
-        Public ReadOnly Property Form As String
-        Public ReadOnly Property ControlsInfo As New Collections.Generic.Dictionary(Of String, String)
+            Set(value As String)
+                _form = value
+                Dim textView = editorControlField.TextView
+                textView.Properties.AddProperty("FormName", _form)
+            End Set
+        End Property
+
+        Dim _ControlsInfo As Collections.Generic.Dictionary(Of String, String)
+        Public Property ControlsInfo As Collections.Generic.Dictionary(Of String, String)
+            Get
+                Return _ControlsInfo
+            End Get
+
+            Set(value As Collections.Generic.Dictionary(Of String, String))
+                _ControlsInfo = value
+                Dim textView = editorControlField.TextView
+                textView.Properties.AddProperty("ControlsInfo", _ControlsInfo)
+            End Set
+        End Property
 
         Public Function ParseFormHints(code As String) As Boolean
             Dim info = PreCompiler.ParseFormHints(code)
             If info Is Nothing Then Return False
 
-            Me._Form = info.Form
-            _ControlsInfo = info.ControlsInfo
+            Me.Form = info.Form
+            ControlsInfo = info.ControlsInfo
             Return True
         End Function
 

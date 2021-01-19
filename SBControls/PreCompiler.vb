@@ -18,6 +18,38 @@ Public NotInheritable Class PreCompiler
         ListModuleMembers(GetType(ListBox))
     End Sub
 
+    Public Function GetBaseTypes(name As String) As Type()
+        Select Case name
+            Case NameOf(Form)
+                Return {GetType(Form), GetType(Forms), GetType(Control)}
+            Case NameOf(Control)
+                Return {GetType(Control)}
+            Case Else
+                Dim t = Type.GetType("SmallBasic.WinForms." & name)
+                If t Is Nothing Then
+                    Return {GetType(Control)}
+                Else
+                    Return {GetType(Form), GetType(Control)}
+                End If
+        End Select
+    End Function
+
+    Dim PrimativeType = GetType(Microsoft.SmallBasic.Library.Primitive)
+
+    Public Function GetExtenstions(forType As Type, inType As Type) As List(Of Reflection.MemberInfo)
+        If forType.Name = NameOf(Form) Then
+            Return (From M In inType.GetMethods(Reflection.BindingFlags.Public)
+                    From p In M.GetParameters()
+                    Where p.ParameterType Is PrimativeType AndAlso (p.Name = "formName")
+                    Select CType(M, Reflection.MemberInfo)).ToList
+        Else
+            Return (From M In inType.GetMethods(Reflection.BindingFlags.Public)
+                    From p In M.GetParameters()
+                    Where p.ParameterType Is PrimativeType AndAlso (p.Name = "controlName")
+                    Select CType(M, Reflection.MemberInfo)).ToList
+        End If
+    End Function
+
     Private Shared Sub ListModuleMembers(t As Type)
         Dim members = (From m In t.GetMembers()
                        Select m.Name.ToLower).ToList
