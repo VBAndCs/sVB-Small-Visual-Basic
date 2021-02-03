@@ -283,6 +283,7 @@ Namespace Microsoft.SmallBasic.Documents
             End Get
 
             Set(value As String)
+                If _form = value Then Return
                 _form = value
                 Dim textView = editorControlField.TextView
                 textView.Properties.AddProperty("FormName", _form)
@@ -298,7 +299,12 @@ Namespace Microsoft.SmallBasic.Documents
             Set(value As Collections.Generic.Dictionary(Of String, String))
                 _ControlsInfo = value
                 Dim textView = editorControlField.TextView
-                textView.Properties.AddProperty("ControlsInfo", _ControlsInfo)
+                Try
+                    textView.Properties.AddProperty("ControlsInfo", _ControlsInfo)
+                Catch
+                    textView.Properties.RemoveProperty("ControlsInfo")
+                    textView.Properties.AddProperty("ControlsInfo", _ControlsInfo)
+                End Try
             End Set
         End Property
 
