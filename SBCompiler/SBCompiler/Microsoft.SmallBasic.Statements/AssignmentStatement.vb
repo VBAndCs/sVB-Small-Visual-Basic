@@ -3,7 +3,7 @@ Imports System.Reflection
 Imports System.Reflection.Emit
 Imports Microsoft.SmallBasic.Completion
 Imports Microsoft.SmallBasic.Expressions
-Imports Microsoft.SmallBasic.Library
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.Statements
     Public Class AssignmentStatement

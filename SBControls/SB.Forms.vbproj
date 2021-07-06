@@ -47,9 +47,6 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SmallBasicLibrary">
-      <HintPath>C:\Program Files\Microsoft\Small Basic\SmallBasicLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
@@ -126,6 +123,10 @@
     <ProjectReference Include="..\SBCompiler\SBCompiler\SBCompiler.vbproj">
       <Project>{c35b1c89-a93e-43ff-8608-7c8274562a87}</Project>
       <Name>SBCompiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmallBasicLibrary\SmallBasicLibrary.vbproj">
+      <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>
+      <Name>SmallBasicLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

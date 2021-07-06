@@ -24,7 +24,7 @@
         </mntcd:ClassificationFormat>
     </sws:Export>
     <sws:Export Name='ClassificationFormat'>
-        <mntcd:ClassificationFormat FontRenderingSize='14' FontFamily='Consolas' FontWeight='Bold' ForegroundBrush='#7777ff'>
+        <mntcd:ClassificationFormat FontRenderingSize='20' FontFamily='Consolas' FontWeight='Bold' ForegroundBrush='#7777ff'>
             <mntcd:ClassificationFormat.ClassificationTypes>
                 <sys:String>SB_Keyword</sys:String>
             </mntcd:ClassificationFormat.ClassificationTypes>
@@ -38,7 +38,7 @@
         </mntcd:ClassificationFormat>
     </sws:Export>
     <sws:Export Name='ClassificationFormat'>
-        <mntcd:ClassificationFormat FontRenderingSize='14' ForegroundBrush='#FF008020' FontFamily='Georgia' FontStyle='Italic'>
+        <mntcd:ClassificationFormat FontRenderingSize='20' ForegroundBrush='#FF008020' FontFamily='Georgia' FontStyle='Italic'>
             <mntcd:ClassificationFormat.ClassificationTypes>
                 <sys:String>SB_Comment</sys:String>
             </mntcd:ClassificationFormat.ClassificationTypes>

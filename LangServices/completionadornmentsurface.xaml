@@ -59,7 +59,8 @@
       </Style>
     </ResourceDictionary>
   </FrameworkElement.Resources>
-  <Popup Name="completionPopup" StaysOpen="False" Width="360" Height="140" Placement="Relative" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" Closed="OnCompletionClosed" MouseWheel="OnMouseWheel">
+
+    <Popup Name="CompletionPopup" StaysOpen="False" Width="360" Height="140" Placement="Relative" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" Closed="OnCompletionClosed" MouseWheel="CompletionPopup_MouseWheel">
     <Border Name="popupContent" BorderThickness="1" BorderBrush="#999999" CornerRadius="5">
       <Border.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -90,23 +91,35 @@
             </DrawingBrush.Drawing>
           </DrawingBrush>
         </Panel.Background>
+          
         <DockPanel>
           <Border DockPanel.Dock="Right">
-            <ContentControl Width="138" Margin="0,0,2,0" Content="{Binding Path=SelectedItem.Documentation, ElementName=completionListBox}">
+            <ContentControl Width="138" Margin="0,0,2,0" Content="{Binding Path=SelectedItem.Documentation, ElementName=CompletionListBox}">
               <ContentControl.ContentTemplate>
                 <DataTemplate DataType="{x:Type l:CompletionItemDocumentation}">
                   <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2">
                     <StackPanel HorizontalAlignment="Stretch" FlowDirection="{Binding Path=TextFlowDirection, ElementName=completionSurface}">
-                      <TextBlock FontWeight="Bold" FontSize="14" Margin="0,0,2,0" TextTrimming="CharacterEllipsis" Foreground="#346D84" Text="{Binding Path=SelectedItem.Name, ElementName=completionListBox}" />
+                      <TextBlock FontWeight="Bold" FontSize="20" 
+                                 Margin="0,0,2,0" TextTrimming="CharacterEllipsis" 
+                                 Foreground="#346D84" 
+                                 Text="{Binding Path=SelectedItem.Name, ElementName=CompletionListBox}" />
                       <Border BorderBrush="#e0e0e0" BorderThickness="0,0,0,1" HorizontalAlignment="Stretch" />
-                      <TextBlock Margin="0,4,2,0" FontSize="12" TextWrapping="Wrap" Text="{Binding Path=Summary}" />
+                      <TextBlock Margin="0,4,2,0" FontSize="16" 
+                                 TextWrapping="Wrap" 
+                                 Text="{Binding Path=Summary}" />
                     </StackPanel>
                   </ScrollViewer>
                 </DataTemplate>
               </ContentControl.ContentTemplate>
             </ContentControl>
           </Border>
-          <l:CircularList x:Name="completionListBoxField" SelectionChanged="OnCurrentCompletionItemChanged" MouseDoubleClick="OnCompletionListDoubleClicked" Focusable="False" BorderThickness="0" Background="#00FFFFFF" KeyboardNavigation.DirectionalNavigation="Contained" DockPanel.Dock="Left" Width="220" />
+          <l:CircularList x:Name="CompletionListBox" 
+               SelectionChanged="OnCurrentCompletionItemChanged" 
+               MouseDoubleClick="OnCompletionListDoubleClicked" 
+               Focusable="False" BorderThickness="0" 
+               Background="#00FFFFFF" 
+               KeyboardNavigation.DirectionalNavigation="Contained" 
+               DockPanel.Dock="Left" Width="220" />
         </DockPanel>
       </Grid>
     </Border>

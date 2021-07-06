@@ -1,5 +1,5 @@
 ﻿Imports Wpf = System.Windows.Controls
-Imports Microsoft.SmallBasic.Library
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 
 <SmallBasicType>
 Public NotInheritable Class Control
@@ -152,6 +152,7 @@ Public NotInheritable Class Control
         _SenderControl = ControlName
     End Sub
 
+
     Shared Sub EventsHandler(sender As Wpf.Control, handler As SmallBasicCallback)
         _SenderControl = sender.Name
         If TypeOf sender Is Window Then
@@ -162,7 +163,9 @@ Public NotInheritable Class Control
         handler()
     End Sub
 
-
+    ''' <summary>
+    ''' Fired when user presses the left mouse-button down
+    ''' </summary>
     Public Shared Custom Event OnMouseLeftDown As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -177,6 +180,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    ''' Fired when user releases the left mouse-button
+    ''' </summary>
     Public Shared Custom Event OnClick As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -191,6 +197,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    '''     ''' Fired when user releases the left mouse-button
+    ''' </summary>
     Public Shared Custom Event OnMouseLeftUp As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -205,6 +214,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    '''     ''' Fired when user double-clicks the mouse-button
+    ''' </summary>
     Public Shared Custom Event OnDoubleClick As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -219,6 +231,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    ''' Fired when user presses the right mouse-button down
+    ''' </summary>
     Public Shared Custom Event OnMouseRightDown As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -233,6 +248,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    ''' Fired when user releases the right mouse-button
+    ''' </summary>
     Public Shared Custom Event OnMouseRightUp As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -247,6 +265,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    ''' Fired when the mouse pointer moves over the control.
+    ''' </summary>
     Public Shared Custom Event OnMouseMove As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -261,6 +282,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    ''' Fired when user moves the mouse wheel
+    ''' </summary>
     Public Shared Custom Event OnMouseWheel As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -275,6 +299,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    ''' Fired when the mouse pointer enters the control area.
+    ''' </summary>
     Public Shared Custom Event OnMouseEnter As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -289,6 +316,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    ''' Fired when the mouse pointer leaves the control area.
+    ''' </summary>
     Public Shared Custom Event OnMouseLeave As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -303,6 +333,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    ''' Fired when the user presses a keyboard-ky down
+    ''' </summary>
     Public Shared Custom Event OnKeyDown As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)
@@ -317,6 +350,9 @@ Public NotInheritable Class Control
         End RaiseEvent
     End Event
 
+    ''' <summary>
+    ''' Fired when the user releases a keyboard-ky.
+    ''' </summary>
     Public Shared Custom Event OnKeyUp As SmallBasicCallback
         AddHandler(handler As SmallBasicCallback)
             Dim VisualElement = GetControl(_SenderForm, _SenderControl)

@@ -49,9 +49,6 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SmallBasicLibrary">
-      <HintPath>..\..\1\SmallBasicIDE\SB.Lib\SmallBasicLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="StringResources">
       <HintPath>..\..\1\SmallBasicIDE\SB.Lib\StringResources.dll</HintPath>
     </Reference>
@@ -170,6 +167,12 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SmallBasicLibrary\SmallBasicLibrary.vbproj">
+      <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>
+      <Name>SmallBasicLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

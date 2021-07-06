@@ -1,4 +1,4 @@
-﻿Imports Microsoft.SmallBasic.Library
+﻿Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 Imports Wpf = System.Windows.Controls
 
 <SmallBasicType>
@@ -43,6 +43,15 @@ Public NotInheritable Class Form
             End Sub)
     End Sub
 
+    ''' <summary>
+    ''' Adds a new Label control to the form
+    ''' </summary>
+    ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
+    ''' <param name="labelName">A unique name for the control.</param>
+    ''' <param name="left">The X-pos of the control.</param>
+    ''' <param name="top">The Y-pos of the control.</param>
+    ''' <param name="width">The width of the control.</param>
+    ''' <param name="height">The height of the control.</param>
     <ExMethod>
     Public Shared Sub AddLabel(formName As Primitive,
                          labelName As Primitive,
@@ -72,6 +81,15 @@ Public NotInheritable Class Form
             End Sub)
     End Sub
 
+    ''' <summary>
+    ''' Adds a new Button control to the form
+    ''' </summary>
+    ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
+    ''' <param name="buttonName">A unique name for the control.</param>
+    ''' <param name="left">The X-pos of the control.</param>
+    ''' <param name="top">The Y-pos of the control.</param>
+    ''' <param name="width">The width of the control.</param>
+    ''' <param name="height">The height of the control.</param>
     <ExMethod>
     Public Shared Sub AddButton(formName As Primitive,
                          buttonName As Primitive,
@@ -106,6 +124,15 @@ Public NotInheritable Class Form
         Forms._forms(FormKey.ToLower()).Add(control.Name.ToLower(), control)
     End Sub
 
+    ''' <summary>
+    ''' Adds a new Button control to the form
+    ''' </summary>
+    ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
+    ''' <param name="listBoxName">A unique name for the control.</param>
+    ''' <param name="left">The X-pos of the control.</param>
+    ''' <param name="top">The Y-pos of the control.</param>
+    ''' <param name="width">The width of the control.</param>
+    ''' <param name="height">The height of the control.</param>
     <ExMethod>
     Public Shared Sub AddListBox(formName As Primitive,
                          listBoxName As Primitive,
@@ -169,7 +196,7 @@ Public NotInheritable Class Form
 
     <ExMethod>
     Public Shared Sub Show(formName As Primitive)
-        TextWindow.WriteLine("Showing " & formName.ToString())
+        TextWindow.WriteLine($"Showing {formName}")
         Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Show())
     End Sub
 
@@ -181,6 +208,12 @@ Public NotInheritable Class Form
                    ShowDialog = wnd.ShowDialog().GetValueOrDefault
                End Sub)
     End Function
+
+    <ExMethod>
+    Public Shared Sub ShowMessage(ownerFormName As Primitive, message As Primitive, title As Primitive)
+        Forms.Dispatcher.Invoke(
+            Sub() MessageBox.Show(Forms.GetForm(ownerFormName), message.ToString(), title.ToString()))
+    End Sub
 
     <ExMethod>
     Public Shared Sub Hide(formName As Primitive)

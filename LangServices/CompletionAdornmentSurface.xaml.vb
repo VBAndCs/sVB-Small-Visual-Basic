@@ -11,7 +11,7 @@ Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.AdornmentSystem
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.SmallBasic.Completion
-Imports Microsoft.SmallBasic.Library
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.LanguageService
     Public Partial Class CompletionAdornmentSurface
@@ -42,19 +42,13 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Public ReadOnly Property IsAdornmentVisible As Boolean
             Get
-                Return Me.completionPopup.IsOpen
+                Return CompletionPopup.IsOpen
             End Get
         End Property
 
         Public ReadOnly Property Adornment As CompletionAdornment
             Get
                 Return adornmentField
-            End Get
-        End Property
-
-        Public ReadOnly Property CompletionListBox As CircularList
-            Get
-                Return Me.completionListBoxField
             End Get
         End Property
 
@@ -70,27 +64,31 @@ Namespace Microsoft.SmallBasic.LanguageService
             End Get
         End Property
 
-        Public Sub New(ByVal textView As IAvalonTextView)
+        Public Sub New(textView As IAvalonTextView)
             Me.textView = textView
             AddHandler Me.textView.TextBuffer.Changed, AddressOf OnTextChanged
-            Me.InitializeComponent()
-            AddHandler Me.completionPopup.MouseDown, Sub(sender As Object, e As MouseButtonEventArgs) e.Handled = True
+            InitializeComponent()
+            AddHandler Me.CompletionPopup.MouseDown, Sub(sender As Object, e As MouseButtonEventArgs) e.Handled = True
         End Sub
 
-        Public Sub AddAdornment(ByVal adornment As IAdornment) Implements IAdornmentSurface.AddAdornment
+        Public Sub AddAdornment(adornment As IAdornment) Implements IAdornmentSurface.AddAdornment
             adornmentField = TryCast(adornment, CompletionAdornment)
-            Dispatcher.BeginInvoke(DispatcherPriority.Normal, CType(Function()
-                                                                        DisplayListBox()
-                                                                        Return Nothing
-                                                                    End Function, DispatcherOperationCallback), Nothing)
+            Dispatcher.BeginInvoke(
+                    DispatcherPriority.Normal,
+                    CType(Function()
+                              DisplayListBox()
+                              Return Nothing
+                          End Function, DispatcherOperationCallback),
+                    Nothing
+                )
         End Sub
 
-        Public Sub RemoveAdornment(ByVal adornment As IAdornment) Implements IAdornmentSurface.RemoveAdornment
+        Public Sub RemoveAdornment(adornment As IAdornment) Implements IAdornmentSurface.RemoveAdornment
             adornmentField = Nothing
-            Me.completionPopup.IsOpen = False
+            CompletionPopup.IsOpen = False
         End Sub
 
-        Public Function GetSpaceNegotiations(ByVal textLine As ITextLine) As IList(Of SpaceNegotiation) Implements IAdornmentSurface.GetSpaceNegotiations
+        Public Function GetSpaceNegotiations(textLine As ITextLine) As IList(Of SpaceNegotiation) Implements IAdornmentSurface.GetSpaceNegotiations
             Return Nothing
         End Function
 
@@ -100,26 +98,26 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Public Sub FadeCompletionList()
             Dim animation As DoubleAnimation = New DoubleAnimation(0.3, New Duration(TimeSpan.FromMilliseconds(300.0)))
-            Me.popupContent.BeginAnimation(OpacityProperty, animation)
+            popupContent.BeginAnimation(OpacityProperty, animation)
         End Sub
 
         Public Sub UnfadeCompletionList()
             Dim animation As DoubleAnimation = New DoubleAnimation(1.0, New Duration(TimeSpan.FromMilliseconds(300.0)))
-            Me.popupContent.BeginAnimation(OpacityProperty, animation)
+            popupContent.BeginAnimation(OpacityProperty, animation)
         End Sub
 
-        Private Sub OnCompletionClosed(ByVal sender As Object, ByVal e As EventArgs)
+        Private Sub OnCompletionClosed(sender As Object, e As EventArgs)
             If adornmentField IsNot Nothing Then
                 adornmentField.Dismiss(force:=False)
             End If
         End Sub
 
-        Private Sub OnMouseWheel(ByVal sender As Object, ByVal e As MouseWheelEventArgs)
-            If Me.completionListBoxField IsNot Nothing Then
+        Private Sub CompletionPopup_MouseWheel(sender As Object, e As MouseWheelEventArgs)
+            If CompletionListBox IsNot Nothing Then
                 If e.Delta < 0 Then
-                    Me.completionListBoxField.MoveDown()
+                    CompletionListBox.MoveDown()
                 Else
-                    Me.completionListBoxField.MoveUp()
+                    CompletionListBox.MoveUp()
                 End If
 
                 e.Handled = True
@@ -134,13 +132,13 @@ Namespace Microsoft.SmallBasic.LanguageService
                 If textLineContainingPosition IsNot Nothing Then
                     Dim characterBounds = textLineContainingPosition.GetCharacterBounds(span.Start)
                     Me.completionPopup.VerticalOffset = characterBounds.Bottom
-                    Me.completionPopup.HorizontalOffset = characterBounds.Left
+                    CompletionPopup.HorizontalOffset = characterBounds.Left
                     UnfadeCompletionList()
                     BuildFilteredCompletionList()
                     Dim selectedItemIndex As Integer = GetSelectedItemIndex()
-                    Me.completionListBoxField.ItemsSource = filteredCompletionItems
-                    Me.completionPopup.IsOpen = True
-                    Me.completionListBoxField.SelectedIndex = selectedItemIndex
+                    CompletionListBox.ItemsSource = filteredCompletionItems
+                    CompletionPopup.IsOpen = True
+                    CompletionListBox.SelectedIndex = selectedItemIndex
                 End If
             End If
         End Sub
@@ -148,14 +146,14 @@ Namespace Microsoft.SmallBasic.LanguageService
         Private Sub OnTextChanged(ByVal sender As Object, ByVal e As Nautilus.Text.TextChangedEventArgs)
             If IsAdornmentVisible Then
                 Dim selectedItemIndex As Integer = GetSelectedItemIndex()
-                Me.completionListBoxField.SelectedIndex = selectedItemIndex
+                CompletionListBox.SelectedIndex = selectedItemIndex
                 UnfadeCompletionList()
             End If
         End Sub
 
         Private Sub OnCurrentCompletionItemChanged(ByVal sender As Object, ByVal e As SelectionChangedEventArgs)
-            If Me.completionListBoxField.SelectedItem IsNot Nothing Then
-                CompilerService.UpdateCurrentCompletionItem(TryCast(Me.completionListBoxField.SelectedItem, CompletionItemWrapper))
+            If CompletionListBox.SelectedItem IsNot Nothing Then
+                UpdateCurrentCompletionItem(TryCast(CompletionListBox.SelectedItem, CompletionItemWrapper))
             End If
         End Sub
 
@@ -164,16 +162,13 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim completionItems = adornmentField.CompletionBag.CompletionItems
 
             For Each item In completionItems
-
                 If CanAddItem(item) Then
                     filteredCompletionItems.Add(New CompletionItemWrapper(item))
                 End If
             Next
 
             While filteredCompletionItems.Count < 8 AndAlso completionItems.Count > 0
-
                 For Each item2 In completionItems
-
                     If CanAddItem(item2) Then
                         filteredCompletionItems.Add(New CompletionItemWrapper(item2))
                     End If
@@ -185,7 +180,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim dictionary As Dictionary(Of String, CompletionItem) = New Dictionary(Of String, CompletionItem)()
 
             For Each completionItem In completionItems
-
                 If Not dictionary.ContainsKey(completionItem.Name) Then
                     dictionary(completionItem.Name) = completionItem
                 End If
@@ -259,7 +253,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Private Sub OnCompletionListDoubleClicked(ByVal sender As Object, ByVal e As MouseButtonEventArgs)
             If adornmentField IsNot Nothing Then
-                Dim completionItemWrapper As CompletionItemWrapper = TryCast(Me.completionListBoxField.SelectedItem, CompletionItemWrapper)
+                Dim completionItemWrapper As CompletionItemWrapper = TryCast(Me.CompletionListBox.SelectedItem, CompletionItemWrapper)
 
                 If completionItemWrapper IsNot Nothing Then
                     adornmentField.AdornmentProvider.CommitItem(completionItemWrapper.CompletionItem)

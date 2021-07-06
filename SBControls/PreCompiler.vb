@@ -5,6 +5,7 @@
 '}
 
 Imports Microsoft.SmallBasic.Completion
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 
 Public NotInheritable Class PreCompiler
 
@@ -44,7 +45,7 @@ Public NotInheritable Class PreCompiler
         End Select
     End Function
 
-    Dim PrimativeType = GetType(Microsoft.SmallBasic.Library.Primitive)
+    Dim PrimativeType As Type = GetType(Primitive)
 
     Public Function GetExtenstions(forType As Type, inType As Type) As List(Of Reflection.MemberInfo)
         If forType.Name = NameOf(Form) Then
@@ -134,6 +135,7 @@ Public NotInheritable Class PreCompiler
                 Else
                     completionItem.ReplacementText = name & "()"
                 End If
+                completionItem.MemberInfo = methodInfo
                 compList.Add(completionItem)
 
             ElseIf methodInfo.Name.ToLower().StartsWith("get") AndAlso methodInfo.GetCustomAttributes(GetType(ExPropertyAttribute), inherit:=False).Count > 0 Then
@@ -148,13 +150,14 @@ Public NotInheritable Class PreCompiler
 
         Dim events = type.GetEvents(Reflection.BindingFlags.Static Or Reflection.BindingFlags.Public)
         For Each eventInfo In events
-            If eventInfo.EventHandlerType Is GetType(Microsoft.SmallBasic.Library.SmallBasicCallback) Then
+            If eventInfo.EventHandlerType Is GetType(SmallBasicCallback) Then
                 Dim name = eventInfo.Name
                 compList.Add(New CompletionItem() With {
                     .Name = name,
                     .DisplayName = name,
-                    .ItemType = CompletionItemType.MethodName,
-                    .ReplacementText = name
+                    .ItemType = CompletionItemType.EventName,
+                    .ReplacementText = name,
+                    .MemberInfo = eventInfo
                 })
             End If
         Next
@@ -189,7 +192,3 @@ Public Class ExMethodAttribute
 
 End Class
 
-Public Class ExEventAttribute
-    Inherits Attribute
-
-End Class

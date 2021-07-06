@@ -3,7 +3,7 @@ Imports System.Collections.Generic
 Imports System.Globalization
 Imports System.IO
 Imports System.Reflection
-Imports Microsoft.SmallBasic.Library
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic
     Public Class Compiler

@@ -53,9 +53,6 @@
     <Reference Include="LanguageService">
       <HintPath>..\SmallBasicIDE\SB.Lib\LanguageService.dll</HintPath>
     </Reference>
-    <Reference Include="SmallBasicLibrary">
-      <HintPath>..\SmallBasicIDE\SB.Lib\SmallBasicLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="StringResources">
       <HintPath>..\SmallBasicIDE\SB.Lib\StringResources.dll</HintPath>
     </Reference>
@@ -159,6 +156,10 @@
     <ProjectReference Include="..\SBControls\SB.Forms.vbproj">
       <Project>{a15dd6e7-497a-4b81-bd7c-e5b5eb42b2d8}</Project>
       <Name>SB.Forms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmallBasicLibrary\SmallBasicLibrary.vbproj">
+      <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>
+      <Name>SmallBasicLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

@@ -1,4 +1,4 @@
-﻿Imports Microsoft.SmallBasic.Library
+﻿Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 
 <SmallBasicType>
 Public NotInheritable Class Color

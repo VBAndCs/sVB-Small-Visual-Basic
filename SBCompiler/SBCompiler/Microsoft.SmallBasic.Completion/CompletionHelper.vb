@@ -1,6 +1,6 @@
 ﻿Imports System.IO
 Imports System.Reflection
-Imports Microsoft.SmallBasic.Library
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 Imports Microsoft.SmallBasic.Statements
 
 Namespace Microsoft.SmallBasic.Completion
@@ -134,9 +134,9 @@ Namespace Microsoft.SmallBasic.Completion
                     completionItem.DisplayName = method.Value.Name
                     completionItem.ItemType = CompletionItemType.MethodName
                     completionItem.MemberInfo = method.Value
-
+                    completionItem.ReplacementText = method.Value.Name & "("
                     If method.Value.GetParameters().Length = 0 Then
-                        completionItem.ReplacementText = method.Value.Name & "()"
+                        completionItem.ReplacementText &= ")"
                     End If
 
                     completionBag.CompletionItems.Add(completionItem)
@@ -144,7 +144,6 @@ Namespace Microsoft.SmallBasic.Completion
             Next
 
             For Each [property] In typeInfo.Properties
-
                 If Not IsHiddenFromIntellisense([property].Value) Then
                     Dim completionItem3 As CompletionItem = New CompletionItem()
                     completionItem3.Name = [property].Key
@@ -157,9 +156,8 @@ Namespace Microsoft.SmallBasic.Completion
             Next
 
             For Each [event] In typeInfo.Events
-
                 If Not IsHiddenFromIntellisense([event].Value) Then
-                    Dim completionItem4 As CompletionItem = New CompletionItem()
+                    Dim completionItem4 As New CompletionItem()
                     completionItem4.Name = [event].Key
                     completionItem4.DisplayName = [event].Value.Name
                     completionItem4.ItemType = CompletionItemType.EventName

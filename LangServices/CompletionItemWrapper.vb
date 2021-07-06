@@ -3,7 +3,7 @@ Imports System.Collections.Generic
 Imports System.Reflection
 Imports System.Text
 Imports Microsoft.SmallBasic.Completion
-Imports Microsoft.SmallBasic.Library
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.LanguageService
     Public Class CompletionItemWrapper

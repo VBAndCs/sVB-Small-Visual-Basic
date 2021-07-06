@@ -46,6 +46,7 @@
     <KeyBinding Command="{x:Static l:MainWindow.RedoCommand}" Gesture="Ctrl+Y" />
     <KeyBinding Command="{x:Static l:MainWindow.RunCommand}" Gesture="F5" />
   </UIElement.InputBindings>
+    
     <TabControl>
        
         <TabItem x:Name="tabDesigner" Header="Form Designer">

@@ -3,17 +3,30 @@ Imports System.Collections.Generic
 Imports System.Reflection
 Imports System.Threading
 Imports Microsoft.SmallBasic.Expressions
-Imports Microsoft.SmallBasic.Library
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.Engine
     Public Class ProgramEngine
         Inherits MarshalByRefObject
 
-        Private _DebuggerAppDomain As System.AppDomain, _Compiler As Microsoft.SmallBasic.Compiler, _CurrentDebuggerState As Microsoft.SmallBasic.Engine.DebuggerState, _CurrentInstruction As Microsoft.SmallBasic.Engine.Instruction, _Translator As Microsoft.SmallBasic.Engine.ProgramTranslator
+        Private _DebuggerAppDomain As AppDomain
+        Private _Compiler As Compiler
+        Private _CurrentDebuggerState As DebuggerState
+        Private _CurrentInstruction As Instruction
+        Private _Translator As ProgramTranslator
 
         <Serializable>
         Private Class ProgramRunner
-            Private _Breakpoints As System.Collections.Generic.List(Of Integer), _CurrentInstruction As Microsoft.SmallBasic.Engine.Instruction, _DebuggerCommand As Microsoft.SmallBasic.Engine.DebuggerCommand, _DebuggerExecution As System.Threading.ManualResetEvent, _DebuggerState As Microsoft.SmallBasic.Engine.DebuggerState, _Instructions As System.Collections.Generic.List(Of Microsoft.SmallBasic.Engine.Instruction), _Fields As System.Collections.Generic.Dictionary(Of String, Microsoft.SmallBasic.Library.Primitive), _LabelMap As System.Collections.Generic.Dictionary(Of String, Integer), _SubroutineInstructions As System.Collections.Generic.Dictionary(Of String, System.Collections.Generic.List(Of Microsoft.SmallBasic.Engine.Instruction)), _TypeInfoBag As Microsoft.SmallBasic.TypeInfoBag
+            Private _Breakpoints As List(Of Integer)
+            Private _CurrentInstruction As Instruction
+            Private _DebuggerCommand As DebuggerCommand
+            Private _DebuggerExecution As ManualResetEvent
+            Private _DebuggerState As DebuggerState
+            Private _Instructions As List(Of Instruction)
+            Private _Fields As Dictionary(Of String, Primitive)
+            Private _LabelMap As Dictionary(Of String, Integer)
+            Private _SubroutineInstructions As Dictionary(Of String, List(Of Instruction))
+            Private _TypeInfoBag As TypeInfoBag
             Private previousLineNumber As Integer = -1
 
             Public Property Breakpoints As List(Of Integer)

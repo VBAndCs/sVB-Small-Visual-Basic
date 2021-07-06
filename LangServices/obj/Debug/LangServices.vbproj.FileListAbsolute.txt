@@ -10,7 +10,6 @@ F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\ComponentModel.dll
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SmallBasicLibrary.dll
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\StringResources.dll
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\ToolFramework.dll
-F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SmallBasicLibrary.xml
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\completionadornmentsurface.baml
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\LanguageService.g.resources
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\Resources.resources
@@ -28,3 +27,4 @@ F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\LangServices.vbproj.Assem
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SB.WinForms.dll
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SB.WinForms.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SB.WinForms.xml
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SmallBasicLibrary.pdb

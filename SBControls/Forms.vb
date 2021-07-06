@@ -1,7 +1,7 @@
 ﻿Imports System.Windows.Markup
 Imports System.Windows.Threading
-Imports Microsoft.SmallBasic.Library
-Imports Microsoft.SmallBasic.Library.Internal
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
+Imports SmallBasicLibrary.Microsoft.SmallBasic.Library.Internal
 Imports Wpf = System.Windows.Controls
 Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, System.Windows.Controls.Control)
 
@@ -135,6 +135,6 @@ Public NotInheritable Class Forms
     End Property
 
     Public Shared Sub ShowMessage(message As Primitive, title As Primitive)
-        MessageBox.Show(message.ToString(), title.ToString())
+        Forms.Dispatcher.Invoke(Sub() MessageBox.Show(message.ToString(), title.ToString()))
     End Sub
 End Class

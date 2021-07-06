@@ -24,3 +24,6 @@ F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Debug\SBCompiler.vbpro
 F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Debug\SBCompiler.exe
 F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Debug\SBCompiler.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Debug\SBCompiler.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Debug\SBCompiler.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\bin\Debug\SmallBasicLibrary.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\bin\Debug\SmallBasicLibrary.pdb

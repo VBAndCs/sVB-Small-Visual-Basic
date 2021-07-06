@@ -58,4 +58,4 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.exe.config
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.IDE.vbproj.AssemblyReference.cache
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\LanguageService.pdb
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SmallBasicLibrary.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SmallBasicLibrary.pdb

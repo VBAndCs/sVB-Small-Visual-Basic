@@ -30,9 +30,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim num = 0
 
             For Each item In newValue
-                _itemContainerMap(num) = New CircularListItem(Me, num) With {
-                    .Content = item
-                }
+                _itemContainerMap(num) = New CircularListItem(Me, num) With {.Content = item}
                 num += 1
             Next
 
@@ -66,7 +64,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Protected Overrides Sub OnSelectionChanged(ByVal e As SelectionChangedEventArgs)
             If SelectedIndex <> -1 Then
-                Dispatcher.BeginInvoke(CType(Sub() ArrangeItems(), Action))
+                Dispatcher.BeginInvoke(Sub() ArrangeItems())
                 MyBase.OnSelectionChanged(e)
             End If
         End Sub
@@ -79,7 +77,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
 
             _oldSelectionIndex = SelectedIndex
-            Dim list As List(Of Integer) = New List(Of Integer)()
+            Dim list As New List(Of Integer)()
             Dim top = 0.0
 
             For i = -3 To 3
@@ -88,7 +86,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             Next
 
             For j = 0 To Items.Count - 1
-
                 If Not list.Contains(j) Then
                     HideItem(j, _moveDirection)
                 End If
@@ -117,7 +114,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Private Function ArrangeItem(ByVal relIndex As Integer, ByVal moveDirection As MoveDirection, ByRef top As Double) As Integer
+        Private Function ArrangeItem(relIndex As Integer, moveDirection As MoveDirection, ByRef top As Double) As Integer
             Dim num = SelectedIndex + relIndex
 
             If num < 0 Then
