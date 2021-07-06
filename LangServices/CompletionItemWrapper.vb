@@ -114,9 +114,9 @@ Namespace Microsoft.SmallBasic.LanguageService
                 result = $"{Prefix}Microsoft.SmallBasic.Library.Keywords.{_item.DisplayName}"
             ElseIf SymbolType = SymbolType.Method Then
                 Dim methodInfo As MethodInfo = TryCast(_item.MemberInfo, MethodInfo)
-                Dim parameters As ParameterInfo() = methodInfo.GetParameters()
+                Dim parameters As ParameterInfo() = methodInfo?.GetParameters()
 
-                If parameters.Length > 0 Then
+                If parameters?.Length > 0 Then
                     Dim stringBuilder As StringBuilder = New StringBuilder($"{Prefix}{methodInfo.DeclaringType.FullName}.{methodInfo.Name}")
                     stringBuilder.Append("(")
                     Dim array = parameters
@@ -129,11 +129,11 @@ Namespace Microsoft.SmallBasic.LanguageService
                     stringBuilder.Append(")")
                     result = stringBuilder.ToString()
                 Else
-                    result = $"{Prefix}{methodInfo.DeclaringType.FullName}.{methodInfo.Name}"
+                    result = $"{Prefix}{methodInfo?.DeclaringType.FullName}.{methodInfo?.Name}"
                 End If
             ElseIf SymbolType = SymbolType.Property Then
                 Dim propertyInfo As PropertyInfo = TryCast(_item.MemberInfo, PropertyInfo)
-                result = $"{Prefix}{propertyInfo.DeclaringType.FullName}.{propertyInfo.Name}"
+                result = $"{Prefix}{propertyInfo?.DeclaringType.FullName}.{propertyInfo?.Name}"
             ElseIf SymbolType = SymbolType.Event Then
                 Dim eventInfo As EventInfo = TryCast(_item.MemberInfo, EventInfo)
                 result = $"{Prefix}{eventInfo.DeclaringType.FullName}.{eventInfo.Name}"

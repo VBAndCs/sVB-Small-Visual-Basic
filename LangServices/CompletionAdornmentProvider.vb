@@ -141,19 +141,82 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Public Function GetCompletionBag(ByVal line As ITextSnapshotLine, ByVal column As Integer, <Out> ByRef currentToken As TokenInfo) As CompletionBag
+            Dim ControlsInfo As Dictionary(Of String, String) = Nothing
+            line.TextSnapshot.TextBuffer.Properties.TryGetProperty("ControlsInfo", ControlsInfo)
+
             currentToken = TokenInfo.Illegal
-            Dim completionBag = GetMemberCompletionBag(line, column, currentToken)
+            Dim lineScanner As New LineScanner()
+            Dim tokenList = lineScanner.GetTokenList(line.GetText(), line.LineNumber)
+            Dim prevToken = TokenInfo.Illegal
+            Dim b4PrevToken = TokenInfo.Illegal
 
-            If currentToken.Token = Token.StringLiteral OrElse currentToken.Token = Token.Comment Then
-                Return completionBag
+            Do
+                b4PrevToken = prevToken
+                prevToken = currentToken
+                currentToken = tokenList.Current
+
+            Loop While (column < currentToken.Column OrElse column > currentToken.EndColumn) AndAlso
+                                column >= currentToken.Column AndAlso tokenList.MoveNext()
+
+
+            Dim identifierToken = TokenInfo.Illegal
+
+            If prevToken.Token = Token.Dot Then
+                identifierToken = b4PrevToken
+            ElseIf currentToken.Token = Token.Dot Then
+                identifierToken = prevToken
+                Dim endColumn = currentToken.EndColumn
+                currentToken = TokenInfo.Illegal
+                currentToken.Column = endColumn
+                currentToken.Text = ""
             End If
 
-            If completionBag Is Nothing OrElse completionBag.CompletionItems.Count = 0 Then
-                Dim source As TextBufferReader = New TextBufferReader(line.TextSnapshot)
-                completionBag = completionHelper.GetCompletionItems(source, line.LineNumber, column)
+            Dim newCompletionBag = completionHelper.GetEmptyCompletionBag()
+            Dim addGlobals = False
+
+            If identifierToken.Token = TokenInfo.Illegal.Token Then
+                addGlobals = True
+                Dim txt = currentToken.NormalizedText
+                If txt <> "" Then
+                    Dim controlNames = From ControlInfo In ControlsInfo
+                                       Where ControlInfo.Key.StartsWith(txt)
+                                       Select ControlInfo.Key
+
+                    For Each controlName In controlNames
+                        Dim name = controlName(0).ToString().ToUpper()
+                        If controlName.Length > 1 Then name &= controlName.Substring(1)
+
+                        newCompletionBag.CompletionItems.Add(New CompletionItem With
+                                       {
+                                           .DisplayName = name,
+                                           .ItemType = CompletionItemType.Identifier,
+                                           .ReplacementText = name
+                                       }
+                                )
+                    Next
+                End If
+            Else
+                Dim value As TypeInfo = Nothing
+
+                If newCompletionBag.TypeInfoBag.Types.TryGetValue(identifierToken.NormalizedText, value) Then
+                    CompletionHelper.FillMemberNames(newCompletionBag, value)
+                End If
+
+                Dim controlName = identifierToken.NormalizedText
+                If ControlsInfo.ContainsKey(controlName) Then
+                    Global.SmallBasic.WinForms.PreCompiler.FillMemberNames(newCompletionBag, ControlsInfo(controlName))
+                End If
             End If
 
-            Return completionBag
+            If addGlobals OrElse newCompletionBag Is Nothing OrElse newCompletionBag.CompletionItems.Count = 0 Then
+                If Not (currentToken.Token = Token.StringLiteral OrElse currentToken.Token = Token.Comment) Then
+                    Dim source = New TextBufferReader(line.TextSnapshot)
+                    newCompletionBag.CompletionItems.AddRange(completionHelper.GetCompletionItems(source, line.LineNumber, column).CompletionItems)
+                End If
+            End If
+
+            newCompletionBag.CompletionItems.Sort(Function(ci1, ci2) ci1.DisplayName.CompareTo(ci2.DisplayName))
+            Return newCompletionBag
         End Function
 
         Public Sub ShowCompletionAdornment(ByVal snapshot As ITextSnapshot, ByVal caretPosition As Integer)
@@ -186,51 +249,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Private Function GetMemberCompletionBag(ByVal line As ITextSnapshotLine, ByVal column As Integer, <Out> ByRef currentToken As TokenInfo) As CompletionBag
-            currentToken = sb.TokenInfo.Illegal
-            Dim lineScanner As New LineScanner()
-            Dim tokenList = lineScanner.GetTokenList(line.GetText(), line.LineNumber)
-            Dim _tokenInfo = TokenInfo.Illegal
-            Dim illegal = TokenInfo.Illegal
-
-            Do
-                illegal = _tokenInfo
-                _tokenInfo = currentToken
-                currentToken = tokenList.Current
-
-            Loop While (column < currentToken.Column OrElse column > currentToken.EndColumn) AndAlso
-                                column >= currentToken.Column AndAlso tokenList.MoveNext()
-
-
-            Dim tokenInfo2 = TokenInfo.Illegal
-
-            If _tokenInfo.Token = Token.Dot Then
-                tokenInfo2 = illegal
-            ElseIf currentToken.Token = Token.Dot Then
-                tokenInfo2 = _tokenInfo
-                Dim endColumn = currentToken.EndColumn
-                currentToken = TokenInfo.Illegal
-                currentToken.Column = endColumn
-                currentToken.Text = ""
-            End If
-
-            If tokenInfo2.Token <> 0 Then
-                Dim value As TypeInfo = Nothing
-                Dim emptyCompletionBag As CompletionBag = completionHelper.GetEmptyCompletionBag()
-
-                If emptyCompletionBag.TypeInfoBag.Types.TryGetValue(tokenInfo2.NormalizedText, value) Then
-                    CompletionHelper.FillMemberNames(emptyCompletionBag, value)
-                Else
-
-                End If
-
-                emptyCompletionBag.CompletionItems.Sort(Function(ByVal ci1, ByVal ci2) ci1.DisplayName.CompareTo(ci2.DisplayName))
-                Return emptyCompletionBag
-            End If
-
-            Return Nothing
-        End Function
-
         Private Function GetTextSpanFromToken(ByVal line As ITextSnapshotLine, ByVal tokenInfo As TokenInfo) As ITextSpan
             If tokenInfo.Token = Token.Illegal AndAlso tokenInfo.Column = 0 Then
                 Return line.TextSnapshot.CreateTextSpan(line.End, 0, SpanTrackingMode.EdgeInclusive)
@@ -251,12 +269,5 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return TokenInfo.Illegal
         End Function
 
-        Private Class CSharpImpl
-            <Obsolete("Please refactor calling code to use normal Visual Basic assignment")>
-            Shared Function __Assign(Of T)(ByRef target As T, value As T) As T
-                target = value
-                Return value
-            End Function
-        End Class
     End Class
 End Namespace

@@ -13,6 +13,7 @@ Public NotInheritable Class ListBox
         Return t
     End Function
 
+    <ExProperty>
     Public Shared Function GetCount(formName As Primitive, ListBoxName As Primitive) As Primitive
         Forms.Dispatcher.Invoke(Sub() GetCount = GetListBox(formName, ListBoxName).Items.Count)
     End Function

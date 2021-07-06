@@ -156,6 +156,10 @@
       <Project>{c35b1c89-a93e-43ff-8608-7c8274562a87}</Project>
       <Name>SBCompiler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SBControls\SB.Forms.vbproj">
+      <Project>{a15dd6e7-497a-4b81-bd7c-e5b5eb42b2d8}</Project>
+      <Name>SB.Forms</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

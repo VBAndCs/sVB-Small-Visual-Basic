@@ -22,8 +22,6 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SmallBasicLibrary.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SB.WinForms.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SB.WinForms.xml
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SmallBasicLibrary.xml
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.IDE.vbprojAssemblyReference.cache
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\Utility\RatingControl.baml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\MainWindow.g.vb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\ShellEx\Ribbon.g.vb
@@ -53,9 +51,11 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.IDE.vbproj.CopyComple
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.exe
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\DiagramHelper.pdb
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\LanguageService.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\LanguageService.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.exe
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SBCompiler.exe.config
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\obj\Debug\SB.IDE.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\LanguageService.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicIDE\Bin\Debug\SmallBasicLibrary.xml

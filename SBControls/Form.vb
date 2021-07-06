@@ -3,8 +3,19 @@ Imports Wpf = System.Windows.Controls
 
 <SmallBasicType>
 Public NotInheritable Class Form
+
+    ''' <summary>
+    ''' Adds a new TextBox control to the form
+    ''' </summary>
+    ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
+    ''' <param name="textBoxName">A unique name for the control.</param>
+    ''' <param name="left">The X-pos of the control.</param>
+    ''' <param name="top">The Y-pos of the control.</param>
+    ''' <param name="width">The width of the control.</param>
+    ''' <param name="height">The height of the control.</param>
+    <ExMethod>
     Public Shared Sub AddTexBox(formName As Primitive,
-                         TextBoxName As Primitive,
+                         textBoxName As Primitive,
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive)
 
@@ -12,12 +23,12 @@ Public NotInheritable Class Form
             Sub()
                 Dim frm = Forms.GetForm(formName)
 
-                If ContainsControl(formName, TextBoxName) Then
-                    Throw New ArgumentException($"There is another control with the name '{TextBoxName}' on the ''{formName} form")
+                If ContainsControl(formName, textBoxName) Then
+                    Throw New ArgumentException($"There is another control with the name '{textBoxName}' on the ''{formName} form")
                 End If
 
                 Dim textBox1 As New Wpf.TextBox With {
-                       .Name = TextBoxName,
+                       .Name = textBoxName,
                        .Width = width,
                        .Height = height
                 }
@@ -27,11 +38,12 @@ Public NotInheritable Class Form
 
                 Dim cnv As Canvas = frm.Content
                 cnv.Children.Add(textBox1)
-                Forms._forms(formName).Add(TextBoxName, textBox1)
+                AddToDictionary(formName, textBox1)
 
             End Sub)
     End Sub
 
+    <ExMethod>
     Public Shared Sub AddLabel(formName As Primitive,
                          labelName As Primitive,
                          left As Primitive, top As Primitive,
@@ -56,11 +68,11 @@ Public NotInheritable Class Form
 
                 Dim cnv As Canvas = frm.Content
                 cnv.Children.Add(label1)
-                Forms._forms(formName).Add(labelName, label1)
-
+                AddToDictionary(formName, label1)
             End Sub)
     End Sub
 
+    <ExMethod>
     Public Shared Sub AddButton(formName As Primitive,
                          buttonName As Primitive,
                          left As Primitive, top As Primitive,
@@ -85,11 +97,16 @@ Public NotInheritable Class Form
 
                 Dim cnv As Canvas = frm.Content
                 cnv.Children.Add(button1)
-                Forms._forms(formName).Add(buttonName, button1)
 
+                AddToDictionary(formName, button1)
             End Sub)
     End Sub
 
+    Private Shared Sub AddToDictionary(FormKey As String, control As Wpf.Control)
+        Forms._forms(FormKey.ToLower()).Add(control.Name.ToLower(), control)
+    End Sub
+
+    <ExMethod>
     Public Shared Sub AddListBox(formName As Primitive,
                          listBoxName As Primitive,
                          left As Primitive, top As Primitive,
@@ -114,18 +131,19 @@ Public NotInheritable Class Form
 
                 Dim cnv As Canvas = frm.Content
                 cnv.Children.Add(listBox1)
-                Forms._forms(formName).Add(listBoxName, listBox1)
+                AddToDictionary(formName, listBox1)
 
             End Sub)
     End Sub
 
+    <ExMethod>
     Public Shared Function ContainsControl(formName As Primitive, controlName As Primitive) As Primitive
-        Dim frmName = CStr(formName)
+        Dim frmName = CStr(formName).ToLower()
         If frmName = "" Then
             Throw New ArgumentException("Form name can't be an empty string.")
         End If
 
-        Dim cntrName = CStr(controlName)
+        Dim cntrName = CStr(controlName).ToLower()
         If cntrName = "" Then
             Throw New ArgumentException("Control name can't be an empty string.")
         End If
@@ -134,6 +152,7 @@ Public NotInheritable Class Form
                     Forms._forms(formName).ContainsKey(cntrName)
     End Function
 
+    <ExMethod>
     Public Shared Function GetControls(formName As Primitive) As Primitive
         If Not Forms._forms.ContainsKey(formName) Then
             Throw New ArgumentException($"There is no form names `{formName}`")
@@ -148,11 +167,13 @@ Public NotInheritable Class Form
         Return Primitive.ConvertFromMap(map)
     End Function
 
+    <ExMethod>
     Public Shared Sub Show(formName As Primitive)
         TextWindow.WriteLine("Showing " & formName.ToString())
         Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Show())
     End Sub
 
+    <ExMethod>
     Public Shared Function ShowDialog(formName As Primitive) As Primitive
         Forms.Dispatcher.Invoke(
                Sub()
@@ -161,19 +182,22 @@ Public NotInheritable Class Form
                End Sub)
     End Function
 
+    <ExMethod>
     Public Shared Sub Hide(formName As Primitive)
         Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Hide())
     End Sub
 
+    <ExMethod>
     Public Shared Sub Close(formName As Primitive)
         Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Close())
     End Sub
 
-
+    <ExProperty>
     Public Shared Function GetText(formName As Primitive, __ As Primitive) As Primitive
         Forms.Dispatcher.Invoke(Sub() GetText = Forms.GetForm(formName).Title.ToString())
     End Function
 
+    <ExProperty>
     Public Shared Sub SetText(formName As Primitive, value As Primitive)
         Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Title = value)
     End Sub

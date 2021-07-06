@@ -3,7 +3,7 @@
          xmlns:sys='clr-namespace:System;assembly=mscorlib'
          xmlns:wpf='http://schemas.microsoft.com/winfx/2006/xaml/presentation'>
     <sws:Export Name='ClassificationFormat'>
-        <mntcd:ClassificationFormat FontRenderingSize='14' FontFamily='Consolas' ForegroundBrush='Black'>
+        <mntcd:ClassificationFormat FontRenderingSize='20' FontFamily='Consolas' ForegroundBrush='Black'>
             <mntcd:ClassificationFormat.ClassificationTypes>
                 <sys:String>text</sys:String>
             </mntcd:ClassificationFormat.ClassificationTypes>

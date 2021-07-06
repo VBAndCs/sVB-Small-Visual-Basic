@@ -4,9 +4,12 @@
 '    lblError: Label
 '}
 
+Imports Microsoft.SmallBasic.Completion
+
 Public NotInheritable Class PreCompiler
 
     Private Shared ModuleInfo As New Dictionary(Of String, List(Of String))
+    Private Shared CompletionItems As New Dictionary(Of String, List(Of CompletionItem))
 
     Shared Sub New()
         ListModuleMembers(GetType(Forms))
@@ -16,6 +19,13 @@ Public NotInheritable Class PreCompiler
         ListModuleMembers(GetType(Label))
         ListModuleMembers(GetType(Button))
         ListModuleMembers(GetType(ListBox))
+
+        AddCompletionList(GetType(Form))
+        AddCompletionList(GetType(Control))
+        AddCompletionList(GetType(TextBox))
+        AddCompletionList(GetType(Label))
+        AddCompletionList(GetType(Button))
+        AddCompletionList(GetType(ListBox))
     End Sub
 
     Public Function GetBaseTypes(name As String) As Type()
@@ -39,13 +49,11 @@ Public NotInheritable Class PreCompiler
     Public Function GetExtenstions(forType As Type, inType As Type) As List(Of Reflection.MemberInfo)
         If forType.Name = NameOf(Form) Then
             Return (From M In inType.GetMethods(Reflection.BindingFlags.Public)
-                    From p In M.GetParameters()
-                    Where p.ParameterType Is PrimativeType AndAlso (p.Name = "formName")
+                    Where M.GetParameters().Any(Function(p) p.ParameterType Is PrimativeType AndAlso (p.Name = "formName"))
                     Select CType(M, Reflection.MemberInfo)).ToList
         Else
             Return (From M In inType.GetMethods(Reflection.BindingFlags.Public)
-                    From p In M.GetParameters()
-                    Where p.ParameterType Is PrimativeType AndAlso (p.Name = "controlName")
+                    Where M.GetParameters().Any(Function(p) p.ParameterType Is PrimativeType AndAlso (p.Name = "controlName"))
                     Select CType(M, Reflection.MemberInfo)).ToList
         End If
     End Function
@@ -106,9 +114,82 @@ Public NotInheritable Class PreCompiler
         Loop
     End Function
 
+
+    Private Shared Sub AddCompletionList(type As Type)
+        Dim compList As New List(Of CompletionItem)
+
+        Dim methods = type.GetMethods(Reflection.BindingFlags.Static Or Reflection.BindingFlags.Public)
+        Dim extensionParams = If(type.Name = "Form", 1, 2)
+
+        For Each methodInfo In methods
+            Dim name = ""
+            Dim completionItem As New CompletionItem()
+            If methodInfo.GetCustomAttributes(GetType(ExMethodAttribute), inherit:=False).Count > 0 Then
+                name = methodInfo.Name
+                completionItem.Name = name
+                completionItem.DisplayName = name
+                completionItem.ItemType = CompletionItemType.MethodName
+                If methodInfo.GetParameters().Length > extensionParams Then
+                    completionItem.ReplacementText = name & "("
+                Else
+                    completionItem.ReplacementText = name & "()"
+                End If
+                compList.Add(completionItem)
+
+            ElseIf methodInfo.Name.ToLower().StartsWith("get") AndAlso methodInfo.GetCustomAttributes(GetType(ExPropertyAttribute), inherit:=False).Count > 0 Then
+                name = methodInfo.Name.Substring(3)
+                completionItem.Name = name
+                completionItem.DisplayName = name
+                completionItem.ItemType = CompletionItemType.PropertyName
+                completionItem.ReplacementText = name
+                compList.Add(completionItem)
+            End If
+        Next
+
+        Dim events = type.GetEvents(Reflection.BindingFlags.Static Or Reflection.BindingFlags.Public)
+        For Each eventInfo In events
+            If eventInfo.EventHandlerType Is GetType(Microsoft.SmallBasic.Library.SmallBasicCallback) Then
+                Dim name = eventInfo.Name
+                compList.Add(New CompletionItem() With {
+                    .Name = name,
+                    .DisplayName = name,
+                    .ItemType = CompletionItemType.MethodName,
+                    .ReplacementText = name
+                })
+            End If
+        Next
+
+        CompletionItems.Add(type.Name, compList)
+
+    End Sub
+
+    Public Shared Sub FillMemberNames(completionBag As CompletionBag, moduleName As String)
+        completionBag.CompletionItems.AddRange(CompletionItems("Control"))
+
+        If moduleName <> "Control" Then
+            completionBag.CompletionItems.AddRange(CompletionItems(moduleName))
+        End If
+
+    End Sub
 End Class
 
 Public Class FormInfo
     Public Form As String
     Public ControlsInfo As New Dictionary(Of String, String)
+End Class
+
+
+Public Class ExPropertyAttribute
+    Inherits Attribute
+
+End Class
+
+Public Class ExMethodAttribute
+    Inherits Attribute
+
+End Class
+
+Public Class ExEventAttribute
+    Inherits Attribute
+
 End Class

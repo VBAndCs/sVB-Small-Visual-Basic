@@ -11,7 +11,8 @@ Public NotInheritable Class Forms
 
     Friend Shared _forms As New Dictionary(Of String, ControlsDictionay)
 
-    Shared Function GetForm(name As String) As System.Windows.Window
+    Shared Function GetForm(name As String) As Window
+        name = name.ToLower()
         If Not _forms.ContainsKey(name) Then
             Throw New ArgumentException($"There is no form named `{name}`.")
         End If
@@ -36,8 +37,9 @@ Public NotInheritable Class Forms
 
     Public Shared Property AppPath As Primitive
 
-    Public Shared Function LoadForm(name As Primitive, xamlPath As Primitive) As Primitive
-        If CStr(name) = "" Then
+    Public Shared Function LoadForm(formName As Primitive, xamlPath As Primitive) As Primitive
+        Dim name = CStr(formName).ToLower()
+        If name = "" Then
             Throw New ArgumentException("Form name can't be an empty string.")
         End If
 
@@ -56,6 +58,7 @@ Public NotInheritable Class Forms
                 End If
             End If
         End If
+
         Dispatcher.Invoke(
             Sub()
                 Dim wnd As New Window() With {
@@ -73,7 +76,7 @@ Public NotInheritable Class Forms
                 For Each ui In CType(wnd.Content, UIElement).GetChildren()
                     Dim c = TryCast(ui, Wpf.Control)
                     If c IsNot Nothing AndAlso c.Name <> "" Then
-                        _controls.Add(c.Name, c)
+                        _controls.Add(c.Name.ToLower(), c)
                     End If
                 Next
             End Sub)
@@ -85,8 +88,9 @@ Public NotInheritable Class Forms
         Return name
     End Function
 
-    Public Shared Function AddForm(name As Primitive) As Primitive
-        If CStr(name) = "" Then
+    Public Shared Function AddForm(formName As Primitive) As Primitive
+        Dim name = CStr(formName).ToLower()
+        If name = "" Then
             Throw New ArgumentException("Form name can't be an empty string.")
         End If
 

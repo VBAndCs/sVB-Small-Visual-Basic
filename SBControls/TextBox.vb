@@ -13,11 +13,12 @@ Public NotInheritable Class TextBox
         Return t
     End Function
 
+    <ExProperty>
     Public Shared Function GetText(formName As Primitive, textBoxName As Primitive) As Primitive
         Forms.Dispatcher.Invoke(Sub() GetText = GetTextBox(formName, textBoxName).Text)
     End Function
 
-
+    <ExProperty>
     Public Shared Sub SetText(formName As Primitive, textBoxName As Primitive, value As Primitive)
         Forms.Dispatcher.Invoke(Sub() GetTextBox(formName, textBoxName).Text = value)
     End Sub

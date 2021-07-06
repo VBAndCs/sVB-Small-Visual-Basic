@@ -122,5 +122,11 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SBCompiler\SBCompiler\SBCompiler.vbproj">
+      <Project>{c35b1c89-a93e-43ff-8608-7c8274562a87}</Project>
+      <Name>SBCompiler</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

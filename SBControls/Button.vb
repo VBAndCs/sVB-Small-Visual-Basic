@@ -13,11 +13,12 @@ Public NotInheritable Class Button
         Return t
     End Function
 
+    <ExProperty>
     Public Shared Function GetText(formName As Primitive, buttonName As Primitive) As Primitive
         Forms.Dispatcher.Invoke(Sub() GetText = GetButton(formName, buttonName).Content.ToString())
     End Function
 
-
+    <ExProperty>
     Public Shared Sub SetText(formName As Primitive, buttonName As Primitive, value As Primitive)
         Forms.Dispatcher.Invoke(Sub() GetButton(formName, buttonName).Content = CStr(value))
     End Sub

@@ -20,8 +20,11 @@ F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\LangServices.vbproj.CopyC
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\LanguageService.dll
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\LanguageService.xml
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\LanguageService.pdb
-F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\LangServices.vbprojAssemblyReference.cache
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SBCompiler.exe
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SBCompiler.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SBCompiler.xml
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SBCompiler.exe.config
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\LangServices.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SB.WinForms.dll
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SB.WinForms.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SB.WinForms.xml

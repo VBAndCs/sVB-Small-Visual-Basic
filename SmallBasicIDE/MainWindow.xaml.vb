@@ -408,7 +408,7 @@ Namespace Microsoft.SmallBasic
                 Dim outputFileName = GetOutputFileName(doc)
                 Dim genCodefile = doc.FilePath
                 Dim offset = 0
-                genCodefile = genCodefile.Substring(0, genCodefile.Length - 2) + "gsb"
+                genCodefile = genCodefile?.Substring(0, genCodefile.Length - 2) + "gsb"
 
                 If IO.File.Exists(genCodefile) Then
                     Dim gen = File.ReadAllText(genCodefile)
@@ -624,6 +624,8 @@ Namespace Microsoft.SmallBasic
             Dim declaration As New Text.StringBuilder
             Dim formName As String
             Dim xamlPath As String
+            Dim formPath As String
+
             If formDesigner.FileName = "" Then
                 Dim tmpPath = "UnSaved"
                 If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
@@ -643,34 +645,34 @@ Namespace Microsoft.SmallBasic
                 Loop
 
                 n = 1
-                Dim formPath = ""
+                xamlPath = ""
                 Do
                     formName = "Form" & n
-                    formPath = Path.Combine(projectPath, formName)
-                    If Not IO.Directory.Exists(formPath) Then
-                        IO.Directory.CreateDirectory(formPath)
+                    xamlPath = Path.Combine(projectPath, formName)
+                    If Not IO.Directory.Exists(xamlPath) Then
+                        IO.Directory.CreateDirectory(xamlPath)
                         Exit Do
                     End If
                     n += 1
                 Loop
 
-                xamlPath = Path.Combine(formPath, formName)
-                formDesigner.FileName = xamlPath & ".xaml"
+                formPath = Path.Combine(xamlPath, formName)
+                formDesigner.FileName = formPath & ".xaml"
                 formDesigner.DoSave()
-                IO.File.Create(xamlPath & ".sb").Close()
+                IO.File.Create(formPath & ".sb").Close()
 
             Else
                 formName = Path.GetFileNameWithoutExtension(formDesigner.FileName)
                 xamlPath = Path.GetDirectoryName(formDesigner.FileName)
-                xamlPath = Path.Combine(xamlPath, formName)
+                formPath = Path.Combine(xamlPath, formName)
                 If formDesigner.HasChanges Then formDesigner.DoSave()
             End If
 
             hint.AppendLine($"'#{formName}{{")
             Dim ControlsInfo As New Dictionary(Of String, String)
-            ControlsInfo(formName) = "Form"
+            ControlsInfo(formName.ToLower) = "Form"
             For Each c As FrameworkElement In formDesigner.Items
-                Dim name = c.Name
+                Dim name = c.Name.ToLower
                 If name <> "" Then
                     Dim typeName = c.GetType().Name
                     ControlsInfo(name) = typeName
@@ -688,9 +690,9 @@ Namespace Microsoft.SmallBasic
             hint.AppendLine($"{formName}.Height = {formDesigner.PageHeight}")
             hint.AppendLine($"Form.Show({formName})")
 
-            IO.File.WriteAllText(xamlPath & ".gsb", hint.ToString())
-            Dim doc = OpenDocumentIfNot(xamlPath & ".sb")
-            doc.Form = formName
+            IO.File.WriteAllText(formPath & ".gsb", hint.ToString())
+            Dim doc = OpenDocumentIfNot(formPath & ".sb")
+            doc.Form = formName.ToLower()
             doc.ControlsInfo = ControlsInfo
         End Sub
 
@@ -710,7 +712,7 @@ Namespace Microsoft.SmallBasic
 
         Private Function PreCompile(code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
             Dim ReRun = False
-            Dim lines = code.Split(New String(0) {Environment.NewLine}, StringSplitOptions.None)
+            Dim lines = New List(Of String)(code.Split(New String(0) {Environment.NewLine}, StringSplitOptions.None))
             Dim doc = ActiveDocument
             Dim num = errors.Count - 1
             Dim i As Integer = num
@@ -722,12 +724,12 @@ Namespace Microsoft.SmallBasic
                 Dim lineNum = err.Line
                 Dim charNum = err.Column
                 Dim pos1 = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
-                Dim obj As String = errMsg.Substring(pos1, errMsg.Length - pos1 - 2)
+                Dim obj As String = errMsg.Substring(pos1, errMsg.Length - pos1 - 2).ToLower()
                 If Not doc.ControlsInfo.ContainsKey(obj) Then Continue For
 
                 Dim line = lines(lineNum)
 
-                If line.Substring(charNum, obj.Length + 1) = obj + "." Then
+                If line.Substring(charNum, obj.Length + 1).ToLower() = obj + "." Then
                     Dim prevText = If(charNum = 0, "", line.Substring(0, charNum))
                     Dim methodPos = charNum + obj.Length + 1
                     Dim nextText = line.Substring(methodPos)
@@ -796,28 +798,37 @@ Namespace Microsoft.SmallBasic
                         Dim L = pos1 - result.Length
 
                         If L = 0 OrElse nextText.Substring(result.Length, L).Trim(" "c, Convert.ToChar(8)) = "" Then
-                            Dim method = $"Set{result.Value}"
-                            Dim methodInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), method)
-                            Dim ModuleName = methodInfo.Module
-                            If ModuleName = "" Then
-                                errors(i) = New [Error](err.Line, methodPos, $"`{result.Value}` doesn't exist.")
-                                Continue For
-                            End If
-
-                            Select Case methodInfo.ParamsCount
-                                Case 2
-                                    lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({obj}, {nextText.Substring(pos1 + 1).Trim})"
-                                Case 3
-                                    lines(lineNum) = prevText &
-                                             $"{ModuleName}.{method}({doc.Form}, {obj}, {nextText.Substring(pos1 + 1).Trim})"
-                                Case Else
-                                    errors(i) = New [Error](err.Line, methodPos, $"`{method}` definition is not supported.")
+                            Dim eventInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), result.Value)
+                            If eventInfo.Module = "" Then
+                                Dim method = $"Set{result.Value}"
+                                Dim methodInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), method)
+                                Dim ModuleName = methodInfo.Module
+                                If ModuleName = "" Then
+                                    errors(i) = New [Error](err.Line, methodPos, $"`{result.Value}` doesn't exist.")
                                     Continue For
-                            End Select
+                                End If
 
-                            errors.RemoveAt(i)
-                            ReRun = True
+                                Select Case methodInfo.ParamsCount
+                                    Case 2
+                                        lines(lineNum) = prevText &
+                                            $"{ModuleName}.{method}({obj}, {nextText.Substring(pos1 + 1).Trim})"
+                                    Case 3
+                                        lines(lineNum) = prevText &
+                                             $"{ModuleName}.{method}({doc.Form}, {obj}, {nextText.Substring(pos1 + 1).Trim})"
+                                    Case Else
+                                        errors(i) = New [Error](err.Line, methodPos, $"`{method}` definition is not supported.")
+                                        Continue For
+                                End Select
+
+                                errors.RemoveAt(i)
+                                ReRun = True
+                            Else ' Event
+                                Dim ModuleName = eventInfo.Module
+                                lines.Insert(lineNum, $"Control.HandleEvents({doc.Form}, {obj})")
+                                lines(lineNum + 1) = prevText & $"{ModuleName}.{nextText}"
+                                errors.RemoveAt(i)
+                                ReRun = True
+                            End If
                         End If
 
                     Else 'Property Get          

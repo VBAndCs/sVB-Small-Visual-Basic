@@ -23,4 +23,9 @@ F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.Forms.vbproj.CopyComplet
 F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.WinForms.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.WinForms.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.WinForms.pdb
-F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.Forms.vbprojAssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\obj\Debug\SB.Forms.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\SBCompiler.exe
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\StringResources.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\SBCompiler.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\SBCompiler.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SBControls\bin\Debug\SBCompiler.exe.config

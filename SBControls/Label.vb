@@ -13,11 +13,13 @@ Public NotInheritable Class Label
         Return t
     End Function
 
+    <ExProperty>
     Public Shared Function GetText(formName As Primitive, labelName As Primitive) As Primitive
         Forms.Dispatcher.Invoke(Sub() GetText = GetLabel(formName, labelName).Content.ToString())
     End Function
 
 
+    <ExProperty>
     Public Shared Sub SetText(formName As Primitive, labelName As Primitive, value As Primitive)
         Forms.Dispatcher.Invoke(Sub() GetLabel(formName, labelName).Content = CStr(value))
     End Sub
