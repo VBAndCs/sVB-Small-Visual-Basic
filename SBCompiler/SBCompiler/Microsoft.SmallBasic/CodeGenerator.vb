@@ -1,8 +1,8 @@
 ﻿Imports System
 Imports System.Reflection
 Imports System.Reflection.Emit
-Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
-Imports SmallBasicLibrary.Microsoft.SmallBasic.Library.Internal
+Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic.Library.Internal
 
 Namespace Microsoft.SmallBasic
     Public Class CodeGenerator

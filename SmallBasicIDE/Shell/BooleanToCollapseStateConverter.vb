@@ -7,7 +7,13 @@ Namespace Microsoft.SmallBasic.Shell
     Public Class BooleanToCollapseStateConverter
         Implements IValueConverter
 
-        Public Function Convert(ByVal value As Object, ByVal targetType As Type, ByVal parameter As Object, ByVal culture As CultureInfo) As Object Implements IValueConverter.Convert
+        Public Function Convert(
+                               value As Object,
+                               targetType As Type,
+                               parameter As Object,
+                               culture As CultureInfo
+                  ) As Object Implements IValueConverter.Convert
+
             If targetType Is GetType(Visibility) AndAlso TypeOf value Is Boolean Then
                 If value Then
                     Return Visibility.Collapsed

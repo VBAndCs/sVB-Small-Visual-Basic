@@ -11,7 +11,7 @@ Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.AdornmentSystem
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.SmallBasic.Completion
-Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.LanguageService
     Public Partial Class CompletionAdornmentSurface

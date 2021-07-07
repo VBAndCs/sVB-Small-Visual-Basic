@@ -24,7 +24,5 @@ F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SBCompiler.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SBCompiler.xml
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SBCompiler.exe.config
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Debug\LangServices.vbproj.AssemblyReference.cache
-F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SB.WinForms.dll
-F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SB.WinForms.pdb
-F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SB.WinForms.xml
 F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SmallBasicLibrary.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\bin\Debug\SmallBasicLibrary.xml

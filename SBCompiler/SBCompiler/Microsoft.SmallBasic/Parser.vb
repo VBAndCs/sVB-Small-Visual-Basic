@@ -2,7 +2,7 @@
 Imports System.Collections.Generic
 Imports System.IO
 Imports Microsoft.SmallBasic.Expressions
-Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic.Library
 Imports Microsoft.SmallBasic.Statements
 Imports System.Runtime.InteropServices
 

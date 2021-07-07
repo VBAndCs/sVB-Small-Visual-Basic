@@ -6,7 +6,6 @@ Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
 Imports Microsoft.SmallBasic.Completion
 Imports System.Runtime.InteropServices
-Imports sb = Microsoft.SmallBasic
 
 Namespace Microsoft.SmallBasic.LanguageService
     Public NotInheritable Class CompletionAdornmentProvider
@@ -22,7 +21,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         Private undoHistory As UndoHistory
         Public Event AdornmentsChanged As EventHandler(Of AdornmentsChangedEventArgs) Implements IAdornmentProvider.AdornmentsChanged
 
-        Public Sub New(ByVal textView As ITextView, ByVal editorOperationsProvider As IEditorOperationsProvider, ByVal undoHistoryRegistry As IUndoHistoryRegistry)
+        Public Sub New(textView As ITextView, editorOperationsProvider As IEditorOperationsProvider, undoHistoryRegistry As IUndoHistoryRegistry)
             Me.textView = textView
             textBuffer = textView.TextBuffer
             AddHandler textBuffer.Changed, AddressOf OnTextBufferChanged
@@ -38,7 +37,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Public Sub CommitItem(ByVal item As CompletionItem)
+        Public Sub CommitItem(item As CompletionItem)
             If adornment IsNot Nothing Then
                 Dim replacementText = item.ReplacementText
                 Dim replaceSpan As Span = adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
@@ -48,7 +47,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Public Sub DismissAdornment(ByVal force As Boolean)
+        Public Sub DismissAdornment(force As Boolean)
             If adornment Is Nothing Then
                 Return
             End If
@@ -74,7 +73,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Public Function GetAdornments(ByVal span As SnapshotSpan) As IList(Of IAdornment) Implements IAdornmentProvider.GetAdornments
+        Public Function GetAdornments(span As SnapshotSpan) As IList(Of IAdornment) Implements IAdornmentProvider.GetAdornments
             Dim list As List(Of IAdornment) = New List(Of IAdornment)()
 
             If adornment IsNot Nothing AndAlso adornment.Span.GetSpan(span.Snapshot).OverlapsWith(span) Then
@@ -84,12 +83,12 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return list
         End Function
 
-        Private Sub OnLayoutChanged(ByVal sender As Object, ByVal e As TextViewLayoutChangedEventArgs)
+        Private Sub OnLayoutChanged(sender As Object, e As TextViewLayoutChangedEventArgs)
             AddHandler textView.Caret.PositionChanged, AddressOf OnCaretPositionChanged
             RemoveHandler textView.LayoutChanged, AddressOf OnLayoutChanged
         End Sub
 
-        Private Sub OnCaretPositionChanged(ByVal sender As Object, ByVal e As CaretPositionChangedEventArgs)
+        Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
             If adornment IsNot Nothing Then
                 Dim span = adornment.Span.GetSpan(textView.TextSnapshot)
                 Dim textInsertionIndex = e.NewPosition.TextInsertionIndex
@@ -102,7 +101,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Private Sub OnHelpUpdate(ByVal sender As Object, ByVal e As EventArgs)
+        Private Sub OnHelpUpdate(sender As Object, e As EventArgs)
             helpUpdateTimer.Stop()
             Dim textInsertionIndex = textView.Caret.Position.TextInsertionIndex
             Dim lineFromPosition = textView.TextSnapshot.GetLineFromPosition(textInsertionIndex)
@@ -125,7 +124,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Next
         End Sub
 
-        Private Sub OnTextBufferChanged(ByVal sender As Object, ByVal e As Nautilus.Text.TextChangedEventArgs)
+        Private Sub OnTextBufferChanged(sender As Object, e As Nautilus.Text.TextChangedEventArgs)
             Dim textChange = e.Changes(0)
             Dim newEnd = textChange.NewEnd
 
@@ -140,7 +139,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Public Function GetCompletionBag(ByVal line As ITextSnapshotLine, ByVal column As Integer, <Out> ByRef currentToken As TokenInfo) As CompletionBag
+        Public Function GetCompletionBag(line As ITextSnapshotLine, column As Integer, <Out> ByRef currentToken As TokenInfo) As CompletionBag
             Dim ControlsInfo As Dictionary(Of String, String) = Nothing
             line.TextSnapshot.TextBuffer.Properties.TryGetProperty("ControlsInfo", ControlsInfo)
 
@@ -176,24 +175,26 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             If identifierToken.Token = TokenInfo.Illegal.Token Then
                 addGlobals = True
-                Dim txt = currentToken.NormalizedText
-                If txt <> "" Then
-                    Dim controlNames = From ControlInfo In ControlsInfo
-                                       Where ControlInfo.Key.StartsWith(txt)
-                                       Select ControlInfo.Key
+                If ControlsInfo IsNot Nothing Then
+                    Dim txt = currentToken.NormalizedText
+                    If txt <> "" Then
+                        Dim controlNames = From ControlInfo In ControlsInfo
+                                           Where ControlInfo.Key.StartsWith(txt)
+                                           Select ControlInfo.Key
 
-                    For Each controlName In controlNames
-                        Dim name = controlName(0).ToString().ToUpper()
-                        If controlName.Length > 1 Then name &= controlName.Substring(1)
+                        For Each controlName In controlNames
+                            Dim name = controlName(0).ToString().ToUpper()
+                            If controlName.Length > 1 Then name &= controlName.Substring(1)
 
-                        newCompletionBag.CompletionItems.Add(New CompletionItem With
+                            newCompletionBag.CompletionItems.Add(New CompletionItem With
                                        {
                                            .DisplayName = name,
                                            .ItemType = CompletionItemType.Identifier,
                                            .ReplacementText = name
                                        }
                                 )
-                    Next
+                        Next
+                    End If
                 End If
             Else
                 Dim value As TypeInfo = Nothing
@@ -203,8 +204,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                 End If
 
                 Dim controlName = identifierToken.NormalizedText
-                If ControlsInfo.ContainsKey(controlName) Then
-                    Global.SmallBasic.WinForms.PreCompiler.FillMemberNames(newCompletionBag, ControlsInfo(controlName))
+                If ControlsInfo?.ContainsKey(controlName) Then
+                    FillMemberNames(newCompletionBag, ControlsInfo(controlName))
                 End If
             End If
 
@@ -219,7 +220,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return newCompletionBag
         End Function
 
-        Public Sub ShowCompletionAdornment(ByVal snapshot As ITextSnapshot, ByVal caretPosition As Integer)
+        Public Sub ShowCompletionAdornment(snapshot As ITextSnapshot, caretPosition As Integer)
             Dim lineFromPosition = snapshot.GetLineFromPosition(caretPosition)
             Dim currentToken As TokenInfo
             Dim completionBag = GetCompletionBag(lineFromPosition, caretPosition - lineFromPosition.Start, currentToken)
@@ -249,7 +250,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Private Function GetTextSpanFromToken(ByVal line As ITextSnapshotLine, ByVal tokenInfo As TokenInfo) As ITextSpan
+        Private Function GetTextSpanFromToken(line As ITextSnapshotLine, tokenInfo As TokenInfo) As ITextSpan
             If tokenInfo.Token = Token.Illegal AndAlso tokenInfo.Column = 0 Then
                 Return line.TextSnapshot.CreateTextSpan(line.End, 0, SpanTrackingMode.EdgeInclusive)
             End If
@@ -257,7 +258,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return line.TextSnapshot.CreateTextSpan(line.Start + tokenInfo.Column, tokenInfo.Text.Length, SpanTrackingMode.EdgeInclusive)
         End Function
 
-        Private Function GetTokenInfo(ByVal tokenEnumerator As TokenEnumerator, ByVal column As Integer) As TokenInfo
+        Private Function GetTokenInfo(tokenEnumerator As TokenEnumerator, column As Integer) As TokenInfo
             Do
                 Dim current = tokenEnumerator.Current
 
@@ -269,5 +270,78 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return TokenInfo.Illegal
         End Function
 
+
+
+        Private Shared CompletionItems As New Dictionary(Of String, List(Of CompletionItem))
+
+        Shared Sub New()
+            AddCompletionList(GetType(WinForms.Form))
+            AddCompletionList(GetType(WinForms.Control))
+            AddCompletionList(GetType(WinForms.TextBox))
+            AddCompletionList(GetType(WinForms.Label))
+            AddCompletionList(GetType(WinForms.Button))
+            AddCompletionList(GetType(WinForms.ListBox))
+        End Sub
+
+        Private Shared Sub AddCompletionList(type As Type)
+            Dim compList As New List(Of CompletionItem)
+
+            Dim methods = type.GetMethods(System.Reflection.BindingFlags.Static Or System.Reflection.BindingFlags.Public)
+            Dim extensionParams = If(type.Name = "Form", 1, 2)
+
+            For Each methodInfo In methods
+                Dim name = ""
+                Dim completionItem As New CompletionItem()
+                If methodInfo.GetCustomAttributes(GetType(WinForms.ExMethodAttribute), inherit:=False).Count > 0 Then
+                    name = methodInfo.Name
+                    completionItem.Name = name
+                    completionItem.DisplayName = name
+                    completionItem.ItemType = CompletionItemType.MethodName
+                    If methodInfo.GetParameters().Length > extensionParams Then
+                        completionItem.ReplacementText = name & "("
+                    Else
+                        completionItem.ReplacementText = name & "()"
+                    End If
+                    completionItem.MemberInfo = methodInfo
+                    compList.Add(completionItem)
+
+                ElseIf methodInfo.Name.ToLower().StartsWith("get") AndAlso methodInfo.GetCustomAttributes(GetType(WinForms.ExPropertyAttribute), inherit:=False).Count > 0 Then
+                    name = methodInfo.Name.Substring(3)
+                    completionItem.Name = name
+                    completionItem.DisplayName = name
+                    completionItem.ItemType = CompletionItemType.PropertyName
+                    completionItem.ReplacementText = name
+                    completionItem.MemberInfo = methodInfo
+                    compList.Add(completionItem)
+                End If
+            Next
+
+            Dim events = type.GetEvents(System.Reflection.BindingFlags.Static Or System.Reflection.BindingFlags.Public)
+            For Each eventInfo In events
+                If eventInfo.EventHandlerType Is GetType(Library.SmallBasicCallback) Then
+                    Dim name = eventInfo.Name
+                    compList.Add(New CompletionItem() With {
+                    .Name = name,
+                    .DisplayName = name,
+                    .ItemType = CompletionItemType.EventName,
+                    .ReplacementText = name,
+                    .MemberInfo = eventInfo
+                })
+                End If
+            Next
+
+            CompletionItems.Add(type.Name, compList)
+
+        End Sub
+
+        Private Sub FillMemberNames(completionBag As CompletionBag, moduleName As String)
+            Dim controlModule = NameOf(WinForms.Control)
+            completionBag.CompletionItems.AddRange(CompletionItems(controlModule))
+
+            If moduleName <> controlModule Then
+                completionBag.CompletionItems.AddRange(CompletionItems(moduleName))
+            End If
+
+        End Sub
     End Class
 End Namespace

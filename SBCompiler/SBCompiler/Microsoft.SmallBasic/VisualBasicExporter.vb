@@ -4,7 +4,7 @@ Imports System.IO
 Imports System.Reflection
 Imports System.Text
 Imports Microsoft.SmallBasic.Expressions
-Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic.Library
 Imports Microsoft.SmallBasic.Statements
 
 Namespace Microsoft.SmallBasic

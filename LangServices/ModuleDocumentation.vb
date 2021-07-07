@@ -8,7 +8,7 @@ Namespace Microsoft.SmallBasic.LanguageService
     Public Class ModuleDocumentation
         Private _itemDocMap As Dictionary(Of String, CompletionItemDocumentation)
 
-        Public Sub New(ByVal modulePath As String)
+        Public Sub New(modulePath As String)
             Dim localizedModuleDocPath = GetLocalizedModuleDocPath(modulePath)
 
             If File.Exists(localizedModuleDocPath) Then
@@ -16,7 +16,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Public Function GetItemDocumentation(ByVal itemName As String) As CompletionItemDocumentation
+        Public Function GetItemDocumentation(itemName As String) As CompletionItemDocumentation
             Dim value As CompletionItemDocumentation = Nothing
 
             If _itemDocMap IsNot Nothing Then
@@ -26,7 +26,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return value
         End Function
 
-        Private Function GetLocalizedModuleDocPath(ByVal modulePath As String) As String
+        Private Function GetLocalizedModuleDocPath(modulePath As String) As String
             Dim directoryName = Path.GetDirectoryName(modulePath)
             Dim fileNameWithoutExtension = Path.GetFileNameWithoutExtension(modulePath)
             Dim ietfLanguageTag = CultureInfo.CurrentUICulture.IetfLanguageTag
@@ -55,7 +55,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return Path.Combine(directoryName, fileNameWithoutExtension & ".xml")
         End Function
 
-        Private Sub ProcessDocumentation(ByVal xmlFilePath As String)
+        Private Sub ProcessDocumentation(xmlFilePath As String)
             _itemDocMap = New Dictionary(Of String, CompletionItemDocumentation)()
 
             Try

@@ -10,7 +10,7 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Property LeftHand As Expression
         Public Property Indexer As Expression
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             If LeftHand IsNot Nothing Then
                 LeftHand.AddSymbols(symbolTable)
             End If
@@ -20,7 +20,7 @@ Namespace Microsoft.SmallBasic.Expressions
             End If
         End Sub
 
-        Public Sub AddSymbolInitialization(ByVal symbolTable As SymbolTable)
+        Public Sub AddSymbolInitialization(symbolTable As SymbolTable)
             Dim arrayExpression As ArrayExpression = TryCast(LeftHand, ArrayExpression)
             Dim identifierExpression As IdentifierExpression = TryCast(LeftHand, IdentifierExpression)
 
@@ -31,13 +31,13 @@ Namespace Microsoft.SmallBasic.Expressions
             End If
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
             LeftHand.EmitIL(scope)
             Indexer.EmitIL(scope)
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.GetArrayValue, Nothing)
         End Sub
 
-        Public Sub EmitILForSetter(ByVal scope As CodeGenScope)
+        Public Sub EmitILForSetter(scope As CodeGenScope)
             LeftHand.EmitIL(scope)
             Indexer.EmitIL(scope)
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.SetArrayValue, Nothing)

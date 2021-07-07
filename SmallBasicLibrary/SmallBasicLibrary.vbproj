@@ -3,10 +3,17 @@
     <AssemblyName>SmallBasicLibrary</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <UseWPF>True</UseWPF>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
+    <RootNamespace>Microsoft.SmallBasic</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>SmallBasicLibrary.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>SmallBasicLibrary.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="resources\error.png" />
@@ -36,5 +43,8 @@
   <ItemGroup>
     <Resource Include="resources\error.png" />
     <Resource Include="resources\turtle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="My Project\" />
   </ItemGroup>
 </Project>

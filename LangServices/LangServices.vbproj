@@ -8,10 +8,11 @@
     </RootNamespace>
     <AssemblyName>LanguageService</AssemblyName>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MyType>Custom</MyType>
     <Deterministic>true</Deterministic>
     <ProjectGuid>{A76620D4-A63C-4221-9FDC-D44C0CDD9B9F}</ProjectGuid>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -152,10 +153,6 @@
     <ProjectReference Include="..\SBCompiler\SBCompiler\SBCompiler.vbproj">
       <Project>{c35b1c89-a93e-43ff-8608-7c8274562a87}</Project>
       <Name>SBCompiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SBControls\SB.Forms.vbproj">
-      <Project>{a15dd6e7-497a-4b81-bd7c-e5b5eb42b2d8}</Project>
-      <Name>SB.Forms</Name>
     </ProjectReference>
     <ProjectReference Include="..\SmallBasicLibrary\SmallBasicLibrary.vbproj">
       <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>

@@ -1,6 +1,6 @@
 ﻿Imports System.IO
 Imports System.Reflection
-Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic.Library
 Imports Microsoft.SmallBasic.Statements
 
 Namespace Microsoft.SmallBasic.Completion

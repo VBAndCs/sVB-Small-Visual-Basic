@@ -25,7 +25,7 @@ Imports System.Windows.Threading
 Imports System.Linq
 Imports System.ComponentModel.Composition
 Imports RegexBuilder
-Imports sb = SmallBasic.WinForms
+Imports sb = Microsoft.SmallBasic.WinForms
 
 Namespace Microsoft.SmallBasic
     <Export("MainWindow")>
@@ -57,6 +57,10 @@ Namespace Microsoft.SmallBasic
         Public Shared WebLoadCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("ImportProgramCommand"), ResourceHelper.GetString("ImportProgramCommand"), GetType(MainWindow))
         Public Shared ExportToVisualBasicCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("ExportToVisualBasicCommand"), ResourceHelper.GetString("ExportToVisualBasicCommand"), GetType(MainWindow))
 
+        ''' <summary>
+        ''' DocumentTracker
+        ''' </summary>
+        ''' <returns></returns>
         Public ReadOnly Property DocumentTracker As DocumentTracker
             Get
                 Return documentTrackerField
@@ -686,8 +690,8 @@ Namespace Microsoft.SmallBasic
             hint.Append(declaration)
             hint.AppendLine($"Forms.AppPath = ""{xamlPath}""")
             hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{formName}.xaml"")")
-            hint.AppendLine($"{formName}.Width = {formDesigner.PageWidth}")
-            hint.AppendLine($"{formName}.Height = {formDesigner.PageHeight}")
+            hint.AppendLine($"Control.SetWidth({formName}, {formName}, {formDesigner.PageWidth})")
+            hint.AppendLine($"Control.SetHeight({formName}, {formName}, {formDesigner.PageHeight})")
             hint.AppendLine($"Form.Show({formName})")
 
             IO.File.WriteAllText(formPath & ".gsb", hint.ToString())
@@ -699,7 +703,7 @@ Namespace Microsoft.SmallBasic
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
             For Each d In IO.Directory.GetDirectories("UnSaved")
                 Try
-                    My.Computer.FileSystem.DeleteDirectory(d, VisualBasic.FileIO.DeleteDirectoryOption.DeleteAllContents)
+                    Global.My.Computer.FileSystem.DeleteDirectory(d, VisualBasic.FileIO.DeleteDirectoryOption.DeleteAllContents)
                 Catch
                 End Try
             Next

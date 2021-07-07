@@ -3,7 +3,7 @@ Imports System.Reflection
 Imports System.Reflection.Emit
 Imports Microsoft.SmallBasic.Completion
 Imports Microsoft.SmallBasic.Expressions
-Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.Statements
     Public Class AssignmentStatement
@@ -13,7 +13,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public RightValue As Expression
         Public EqualsToken As TokenInfo
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             If LeftValue IsNot Nothing Then
                 LeftValue.AddSymbols(symbolTable)
             End If
@@ -32,7 +32,7 @@ Namespace Microsoft.SmallBasic.Statements
             End If
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
             Dim identifierExpression As IdentifierExpression = TryCast(LeftValue, IdentifierExpression)
             Dim propertyExpression As PropertyExpression = TryCast(LeftValue, PropertyExpression)
             Dim arrayExpression As ArrayExpression = TryCast(LeftValue, ArrayExpression)
@@ -65,7 +65,12 @@ Namespace Microsoft.SmallBasic.Statements
             End If
         End Sub
 
-        Public Overrides Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)
+        Public Overrides Sub PopulateCompletionItems(
+                         completionBag As CompletionBag,
+                         line As Integer,
+                         column As Integer,
+                         globalScope As Boolean)
+
             If EqualsToken.Token = Token.Illegal OrElse column <= EqualsToken.Column Then
                 CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
             Else

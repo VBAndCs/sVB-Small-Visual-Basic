@@ -14,7 +14,7 @@ Namespace Microsoft.SmallBasic
         Public Shared GlobalDomain As ComponentDomain
         Public Shared Property FlowDirection As FlowDirection
 
-        Protected Overrides Sub OnStartup(ByVal e As StartupEventArgs)
+        Protected Overrides Sub OnStartup(e As StartupEventArgs)
             Dim args = e.Args
 
             For Each txt In args
@@ -92,7 +92,7 @@ Namespace Microsoft.SmallBasic
             GlobalDomain = New ComponentDomain(New CatalogResolver(catalog))
         End Sub
 
-        Private Function GetCultureInfo(ByVal choice As String) As CultureInfo
+        Private Function GetCultureInfo(choice As String) As CultureInfo
             Try
                 Return CultureInfo.GetCultureInfo(choice)
             Catch

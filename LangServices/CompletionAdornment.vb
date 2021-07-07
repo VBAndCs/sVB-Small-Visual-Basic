@@ -37,7 +37,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             _ReplaceSpan = replaceSpan
         End Sub
 
-        Public Sub Dismiss(ByVal force As Boolean)
+        Public Sub Dismiss(force As Boolean)
             AdornmentProvider.DismissAdornment(force)
         End Sub
     End Class

@@ -4,7 +4,7 @@ Namespace Microsoft.SmallBasic
     Public Class Body
         Inherits Span
 
-        Public Sub New(ByVal text As String)
+        Public Sub New(text As String)
             FontSize = 13.0
             Inlines.Add(New Run(text))
         End Sub

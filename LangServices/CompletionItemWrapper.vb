@@ -3,12 +3,12 @@ Imports System.Collections.Generic
 Imports System.Reflection
 Imports System.Text
 Imports Microsoft.SmallBasic.Completion
-Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.LanguageService
     Public Class CompletionItemWrapper
         Private _item As CompletionItem
-        Private Shared _moduleDocMap As Dictionary(Of String, ModuleDocumentation) = New Dictionary(Of String, ModuleDocumentation)()
+        Private Shared _moduleDocMap As New Dictionary(Of String, ModuleDocumentation)()
         Private _documentation As CompletionItemDocumentation
 
         Public ReadOnly Property CompletionItem As CompletionItem
@@ -112,12 +112,36 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             If SymbolType = SymbolType.Keyword Then
                 result = $"{Prefix}Microsoft.SmallBasic.Library.Keywords.{_item.DisplayName}"
+
             ElseIf SymbolType = SymbolType.Method Then
+                result = GetMethodName()
+            ElseIf SymbolType = SymbolType.Property Then
+                Dim propertyInfo As PropertyInfo = TryCast(_item.MemberInfo, PropertyInfo)
+                If propertyInfo Is Nothing Then
+                    result = GetMethodName()
+                Else
+                    result = $"{Prefix}{propertyInfo.DeclaringType.FullName}.{propertyInfo.Name}"
+                End If
+            ElseIf SymbolType = SymbolType.Event Then
+                Dim eventInfo As EventInfo = TryCast(_item.MemberInfo, EventInfo)
+                result = $"{Prefix}{eventInfo.DeclaringType.FullName}.{eventInfo.Name}"
+
+            ElseIf SymbolType = SymbolType.Type Then
+                Dim type As Type = TryCast(_item.MemberInfo, Type)
+                result = $"{Prefix}{type.FullName}"
+            End If
+
+            Return result
+        End Function
+
+        Private Function GetMethodName() As String
+            Dim result = ""
+            Try
                 Dim methodInfo As MethodInfo = TryCast(_item.MemberInfo, MethodInfo)
                 Dim parameters As ParameterInfo() = methodInfo?.GetParameters()
 
                 If parameters?.Length > 0 Then
-                    Dim stringBuilder As StringBuilder = New StringBuilder($"{Prefix}{methodInfo.DeclaringType.FullName}.{methodInfo.Name}")
+                    Dim stringBuilder As StringBuilder = New StringBuilder($"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}")
                     stringBuilder.Append("(")
                     Dim array = parameters
 
@@ -129,18 +153,11 @@ Namespace Microsoft.SmallBasic.LanguageService
                     stringBuilder.Append(")")
                     result = stringBuilder.ToString()
                 Else
-                    result = $"{Prefix}{methodInfo?.DeclaringType.FullName}.{methodInfo?.Name}"
+                    result = $"M:{methodInfo?.DeclaringType.FullName}.{methodInfo?.Name}"
                 End If
-            ElseIf SymbolType = SymbolType.Property Then
-                Dim propertyInfo As PropertyInfo = TryCast(_item.MemberInfo, PropertyInfo)
-                result = $"{Prefix}{propertyInfo?.DeclaringType.FullName}.{propertyInfo?.Name}"
-            ElseIf SymbolType = SymbolType.Event Then
-                Dim eventInfo As EventInfo = TryCast(_item.MemberInfo, EventInfo)
-                result = $"{Prefix}{eventInfo.DeclaringType.FullName}.{eventInfo.Name}"
-            ElseIf SymbolType = SymbolType.Type Then
-                Dim type As Type = TryCast(_item.MemberInfo, Type)
-                result = $"{Prefix}{type.FullName}"
-            End If
+
+            Catch ex As Exception
+            End Try
 
             Return result
         End Function

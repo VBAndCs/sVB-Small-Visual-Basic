@@ -3,7 +3,7 @@ Imports System.Collections.Generic
 Imports System.Reflection
 Imports System.Threading
 Imports Microsoft.SmallBasic.Expressions
-Imports SmallBasicLibrary.Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.Engine
     Public Class ProgramEngine

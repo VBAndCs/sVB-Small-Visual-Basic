@@ -5,7 +5,7 @@
             Return GetValue(AngleProperty)
         End Get
 
-        Set(ByVal value As Double)
+        Set(value As Double)
             SetValue(AngleProperty, value)
             Dim Rt = CType(Me.LayoutTransform, RotateTransform)
             Rt.Angle = value

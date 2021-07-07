@@ -12,7 +12,7 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Property [Operator] As TokenInfo
         Public Property RightHandSide As Expression
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             If LeftHandSide IsNot Nothing Then
                 LeftHandSide.AddSymbols(symbolTable)
             End If
@@ -22,7 +22,7 @@ Namespace Microsoft.SmallBasic.Expressions
             End If
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
             Dim methodInfo As MethodInfo = Nothing
 
             Select Case [Operator].Token
