@@ -4,7 +4,7 @@ Namespace Microsoft.SmallBasic
     Public Class TokenEnumerator
         Private _tokenList As List(Of TokenInfo)
         Private _currentIndex As Integer
-        Private _current As TokenInfo
+
         Public Property LineNumber As Integer
 
         Public ReadOnly Property IsEndOfList As Boolean
@@ -17,7 +17,7 @@ Namespace Microsoft.SmallBasic
             Get
 
                 If _currentIndex <> _tokenList.Count Then
-                    Return _current.TokenType = TokenType.Comment
+                    Return _Current.TokenType = TokenType.Comment
                 End If
 
                 Return True
@@ -25,16 +25,12 @@ Namespace Microsoft.SmallBasic
         End Property
 
         Public ReadOnly Property Current As TokenInfo
-            Get
-                Return _current
-            End Get
-        End Property
 
-        Public Sub New(ByVal tokenList As List(Of TokenInfo))
+        Public Sub New(tokenList As List(Of TokenInfo))
             _tokenList = tokenList
 
             If tokenList.Count > 0 Then
-                _current = tokenList(0)
+                _Current = tokenList(0)
             End If
         End Sub
 
@@ -54,7 +50,7 @@ Namespace Microsoft.SmallBasic
             _currentIndex += 1
 
             If _currentIndex < _tokenList.Count Then
-                _current = _tokenList(_currentIndex)
+                _Current = _tokenList(_currentIndex)
                 Return True
             End If
 
@@ -69,7 +65,7 @@ Namespace Microsoft.SmallBasic
             _currentIndex -= 1
 
             If _currentIndex >= 0 Then
-                _current = _tokenList(_currentIndex)
+                _Current = _tokenList(_currentIndex)
                 Return True
             End If
 
@@ -78,7 +74,11 @@ Namespace Microsoft.SmallBasic
 
         Public Sub Reset()
             _currentIndex = 0
-            _current = If(_currentIndex < _tokenList.Count, _tokenList(_currentIndex), Nothing)
+            _Current = If(_currentIndex < _tokenList.Count, _tokenList(_currentIndex), Nothing)
         End Sub
+
+
     End Class
+
+
 End Namespace

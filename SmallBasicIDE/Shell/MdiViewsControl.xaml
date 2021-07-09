@@ -4,6 +4,7 @@
             <sbShell:BooleanToCollapseStateConverter x:Key="BoolToCollapseConverter" />
             <sbShell:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+   
             <Style x:Key="CloseButtonStyle" TargetType="{x:Type Button}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -62,6 +63,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+           
             <Style x:Key="{x:Type sbShell:MdiView}" TargetType="{x:Type sbShell:MdiView}">
                 <Setter Property="MinWidth" Value="172" />
                 <Setter Property="MinHeight" Value="32" />
@@ -118,12 +120,34 @@
                                         <TextBlock Margin="0,4,4,4" VerticalAlignment="Center" Foreground="#FF808080" TextTrimming="CharacterEllipsis" Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
                                         <TextBlock Margin="0.5,4.5,4,4" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
                                     </Grid>
-                                    <Expander Name="detailsExpander" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0" ExpandDirection="Down" 
+                                    <Grid Margin="10,0" HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ComboBox Name="CmbControlNames"
+                                            MinWidth="150" Margin="5,4" 
+                                            Background="#FFFFE0C0"
+                                            SelectionChanged="ControlNames_SelectionChanged"
+                                            ItemsSource="{Binding Path=Document.ControlNames, RelativeSource={RelativeSource TemplatedParent}}"
+                                            SelectedIndex="0"/>
+
+                                        <ComboBox Name="CmbEventNames" Grid.Column="1" 
+                                            MinWidth="150"  Margin="5,4"
+                                            Background="#FFFFE0C0"
+                                            SelectionChanged="EventNames_SelectionChanged"
+                                            ItemsSource="{Binding Path=Document.ControlEvents, RelativeSource={RelativeSource TemplatedParent}}"/>
+
+                                        <Expander Name="detailsExpander" Grid.Column="2"
+                                              VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0" ExpandDirection="Down" 
                                               Visibility="{Binding Path=Document.ProgramDetails, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToVisibilityConverter}}">
-                                        <HeaderedContentControl.Header>
-                                            <TextBlock VerticalAlignment="Center" Text="{lu:Localized Details}" />
-                                        </HeaderedContentControl.Header>
-                                    </Expander>
+                                               <HeaderedContentControl.Header>
+                                                    <TextBlock VerticalAlignment="Center" Text="{lu:Localized Details}" />
+                                               </HeaderedContentControl.Header>
+                                        </Expander>
+                                    </Grid>
                                 </DockPanel>
                                 <Border Name="contentBorder" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="2" Grid.Column="1" Grid.Row="2">
                                     <Border BorderBrush="#999999" BorderThickness="1" CornerRadius="2">

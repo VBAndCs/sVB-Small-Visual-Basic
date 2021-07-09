@@ -4,7 +4,7 @@ Imports System.Globalization
 Namespace Microsoft.SmallBasic
     <Serializable>
     Public Structure TokenInfo
-        Private Shared _illegal As TokenInfo = New TokenInfo With {
+        Private Shared _illegal As New TokenInfo With {
             .Line = 0,
             .Column = 0,
             .Token = Token.Illegal,
@@ -15,7 +15,6 @@ Namespace Microsoft.SmallBasic
 
         Public ReadOnly Property EndColumn As Integer
             Get
-
                 If Not Equals(Text, Nothing) Then
                     Return Column + Text.Length
                 End If

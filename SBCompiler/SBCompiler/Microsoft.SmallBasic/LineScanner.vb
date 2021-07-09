@@ -27,7 +27,7 @@ Namespace Microsoft.SmallBasic
                 list.Add(tokenInfo)
             End While
 
-            Dim tokenEnumerator As TokenEnumerator = New TokenEnumerator(list)
+            Dim tokenEnumerator As New TokenEnumerator(list)
             tokenEnumerator.LineNumber = lineNumber
             Return tokenEnumerator
         End Function

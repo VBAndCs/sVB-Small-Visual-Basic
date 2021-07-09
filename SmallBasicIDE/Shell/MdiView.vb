@@ -1,4 +1,5 @@
-﻿Imports Microsoft.SmallBasic.Documents
+﻿Imports Microsoft.Nautilus.Text.Editor
+Imports Microsoft.SmallBasic.Documents
 Imports System.Windows
 Imports System.Windows.Controls
 Imports System.Windows.Media.Animation
@@ -12,16 +13,38 @@ Namespace Microsoft.SmallBasic.Shell
         Private oldWidth As Double = Double.NaN
         Private oldHeight As Double = Double.NaN
 
+        Public ReadOnly Property CmbControlNames As ComboBox
+        Public ReadOnly Property CmbEventNames As ComboBox
+        Public Property FreezeCmbEvents As Boolean
+
+        Public Overrides Sub OnApplyTemplate()
+            MyBase.OnApplyTemplate()
+            _CmbControlNames = Me.Template.FindName("CmbControlNames", Me)
+            _CmbEventNames = Me.Template.FindName("CmbEventNames", Me)
+        End Sub
+
         Public Property CaretPositionText As String
             Get
                 Return CStr(GetValue(CaretPositionTextProperty))
             End Get
-            Set(ByVal value As String)
+
+            Set(value As String)
                 SetValue(CaretPositionTextProperty, value)
             End Set
         End Property
 
+        Dim _document As TextDocument
+
         Public Property Document As TextDocument
+            Get
+                Return _document
+            End Get
+            Set(value As TextDocument)
+                _document = value
+                _document.MdiView = Me
+            End Set
+        End Property
+
 
         Public Property IsSelected As Boolean
             Get

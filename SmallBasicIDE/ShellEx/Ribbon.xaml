@@ -119,6 +119,7 @@
                     </GradientStopCollection>
                 </GradientBrush.GradientStops>
             </LinearGradientBrush>
+
             <Style x:Key="ButtonBaseStyle" TargetType="{x:Type ButtonBase}">
                 <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
                 <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
@@ -206,7 +207,9 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
             <Style x:Key="CommandBaseStyle" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource ButtonBaseStyle}" />
+
             <Style x:Key="DefaultTextBlockStyle" TargetType="{x:Type TextBlock}">
                 <Setter Property="FontFamily" Value="Segoe UI" />
                 <Setter Property="FontSize" Value="11" />
@@ -217,6 +220,7 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+
             <Style x:Key="DefaultCheckBoxStyle" TargetType="{x:Type CheckBox}">
                 <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
                 <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
@@ -261,6 +265,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
             <Style x:Key="ToolTipContent" TargetType="{x:Type HeaderedContentControl}">
                 <Setter Property="Foreground" Value="#FF000000" />
                 <Setter Property="Background" Value="#00FFFFFF" />
@@ -277,12 +282,14 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
             <Style x:Key="{x:Type ToolTip}" TargetType="{x:Type ToolTip}">
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Padding" Value="0" />
                 <Setter Property="Background" Value="{x:Null}" />
                 <Setter Property="MaxWidth" Value="200" />
             </Style>
+
             <Style x:Key="ChunkStyle" TargetType="{x:Type HeaderedContentControl}">
                 <Setter Property="VerticalAlignment" Value="Stretch" />
                 <Setter Property="Margin" Value="0" />
@@ -334,6 +341,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+            
             <Style x:Key="CommandTabControlStyle" TargetType="{x:Type TabControl}">
                 <Setter Property="Background" Value="{StaticResource DefaultGradient}" />
                 <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
@@ -354,6 +362,7 @@
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
+
                                     <Style x:Key="TabControlHorizontalScrollBar" TargetType="{x:Type ScrollBar}">
                                         <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
                                         <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True" />
@@ -376,6 +385,7 @@
                                             </Setter.Value>
                                         </Setter>
                                     </Style>
+
                                     <Style x:Key="TabControlScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
                                         <Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
                                         <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
@@ -400,6 +410,7 @@
                                             </Setter.Value>
                                         </Setter>
                                     </Style>
+                                    
                                     <Style x:Key="{x:Type TabItem}" TargetType="{x:Type TabItem}">
                                         <Setter Property="Header" Value="{Binding Path=Name}" />
                                         <Setter Property="FontFamily" Value="Segoe UI" />
@@ -436,6 +447,7 @@
                                             </Setter.Value>
                                         </Setter>
                                     </Style>
+
                                     <Style x:Key="CommandTabContentStyle" TargetType="{x:Type ItemsControl}">
                                         <Setter Property="Template">
                                             <Setter.Value>
@@ -445,9 +457,11 @@
                                             </Setter.Value>
                                         </Setter>
                                     </Style>
+
                                     <DataTemplate x:Key="{DataTemplateKey {x:Type m:CommandChunkCollection}}" DataType="{x:Type m:CommandChunkCollection}">
                                         <ItemsControl Style="{StaticResource CommandTabContentStyle}" ItemsSource="{Binding}" />
                                     </DataTemplate>
+
                                     <DataTemplate x:Key="{DataTemplateKey {x:Type m:CommandChunk}}" DataType="{x:Type m:CommandChunk}">
                                         <HeaderedContentControl DockPanel.Dock="Left" HorizontalAlignment="Left" Style="{StaticResource ChunkStyle}" MaxWidth="{Binding Path=MaxSize}" Header="{Binding Path=Name}" Content="{Binding Path=CommandGroups}" />
                                     </DataTemplate>
@@ -469,6 +483,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
             <Style x:Key="LargeCommandGroupStyle" TargetType="{x:Type ItemsControl}">
                 <Setter Property="ItemTemplate">
                     <Setter.Value>
@@ -531,6 +546,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
             <Style x:Key="SmallCommandGroupStyle" TargetType="{x:Type ItemsControl}">
                 <Setter Property="ItemTemplate">
                     <Setter.Value>
@@ -618,6 +634,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
             <Style x:Key="SmallestCommandGroupStyle" TargetType="{x:Type ItemsControl}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -701,6 +718,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
             <Style x:Key="GalleryCommandGroupStyle" TargetType="{x:Type ItemsControl}">
                 <Setter Property="Margin" Value="1,2,1,2" />
                 <Setter Property="Height" Value="64" />
@@ -796,15 +814,19 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
             <DataTemplate x:Key="{DataTemplateKey {x:Type m:SmallestCommandGroup}}" DataType="{x:Type m:SmallestCommandGroup}">
                 <ItemsControl Style="{StaticResource SmallestCommandGroupStyle}" MaxWidth="{Binding Path=MaxSize}" ItemsSource="{Binding Path=Commands}" />
             </DataTemplate>
+            
             <DataTemplate x:Key="{DataTemplateKey {x:Type m:SmallCommandGroup}}" DataType="{x:Type m:SmallCommandGroup}">
                 <ItemsControl Style="{StaticResource SmallCommandGroupStyle}" ItemsSource="{Binding Path=Commands}" />
             </DataTemplate>
+            
             <DataTemplate x:Key="{DataTemplateKey {x:Type m:LargeCommandGroup}}" DataType="{x:Type m:LargeCommandGroup}">
                 <ItemsControl Style="{StaticResource LargeCommandGroupStyle}" MaxWidth="{Binding Path=MaxSize}" ItemsSource="{Binding Path=Commands}" />
             </DataTemplate>
+            
             <DataTemplate x:Key="{DataTemplateKey {x:Type m:GalleryCommandGroup}}" DataType="{x:Type m:GalleryCommandGroup}">
                 <ItemsControl Style="{StaticResource GalleryCommandGroupStyle}" Width="{Binding Path=MaxSize}" ItemsSource="{Binding Path=Commands}" />
             </DataTemplate>

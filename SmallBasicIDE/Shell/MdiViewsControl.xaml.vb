@@ -46,6 +46,8 @@ Namespace Microsoft.SmallBasic.Shell
             App.GlobalDomain.Bind()
         End Sub
 
+
+
         Protected Overrides Function IsItemItsOwnContainerOverride(ByVal item As Object) As Boolean
             Return TypeOf item Is MdiView
         End Function
@@ -84,10 +86,10 @@ Namespace Microsoft.SmallBasic.Shell
             Canvas.SetTop(mdiView, top)
         End Sub
 
-        Private Sub OnBeginDrag(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnBeginDrag(sender As Object, e As MouseEventArgs)
             If e.LeftButton = MouseButtonState.Pressed Then
                 isDragOn = True
-                Dim uIElement As UIElement = TryCast(sender, UIElement)
+                Dim uIElement = TryCast(sender, UIElement)
                 Dim mdiView = FindViewContainingTemplateItem(uIElement)
                 originTop = Canvas.GetTop(mdiView)
                 originLeft = Canvas.GetLeft(mdiView)
@@ -97,7 +99,7 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub OnDrag(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnDrag(sender As Object, e As MouseEventArgs)
             If isDragOn Then
                 Dim element As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
                 Dim position = e.GetPosition(Me)
@@ -109,7 +111,7 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub OnEndDrag(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnEndDrag(sender As Object, e As MouseEventArgs)
             If isDragOn Then
                 isDragOn = False
                 Dim uIElement As UIElement = TryCast(sender, UIElement)
@@ -117,7 +119,7 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub OnInitResize(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnInitResize(sender As Object, e As MouseEventArgs)
             Dim mdiView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
             resizeStartPoint = e.GetPosition(mdiView)
             resizeInProgress = True
@@ -131,12 +133,12 @@ Namespace Microsoft.SmallBasic.Shell
             mdiView.ResetOldWidthAndHeight()
         End Sub
 
-        Private Sub OnEndResize(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnEndResize(sender As Object, e As MouseEventArgs)
             Mouse.Capture(Nothing)
             resizeInProgress = False
         End Sub
 
-        Private Sub OnResizeRightEdge(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnResizeRightEdge(sender As Object, e As MouseEventArgs)
             If resizeInProgress Then
                 Dim mdiView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
                 Dim position = e.GetPosition(mdiView)
@@ -144,7 +146,7 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub OnResizeLeftEdge(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnResizeLeftEdge(sender As Object, e As MouseEventArgs)
             If resizeInProgress Then
                 Dim mdiView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
                 Dim position = e.GetPosition(mdiView)
@@ -156,7 +158,7 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub OnResizeBottomEdge(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnResizeBottomEdge(sender As Object, e As MouseEventArgs)
             If resizeInProgress Then
                 Dim mdiView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
                 Dim position = e.GetPosition(mdiView)
@@ -164,7 +166,7 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub OnResizeTopEdge(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnResizeTopEdge(sender As Object, e As MouseEventArgs)
             If resizeInProgress Then
                 Dim mdiView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
                 Dim position = e.GetPosition(mdiView)
@@ -176,35 +178,35 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub OnResizeTopLeftCorner(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnResizeTopLeftCorner(sender As Object, e As MouseEventArgs)
             If resizeInProgress Then
                 OnResizeTopEdge(sender, e)
                 OnResizeLeftEdge(sender, e)
             End If
         End Sub
 
-        Private Sub OnResizeTopRightCorner(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnResizeTopRightCorner(sender As Object, e As MouseEventArgs)
             If resizeInProgress Then
                 OnResizeTopEdge(sender, e)
                 OnResizeRightEdge(sender, e)
             End If
         End Sub
 
-        Private Sub OnResizeBottomLeftCorner(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnResizeBottomLeftCorner(sender As Object, e As MouseEventArgs)
             If resizeInProgress Then
                 OnResizeBottomEdge(sender, e)
                 OnResizeLeftEdge(sender, e)
             End If
         End Sub
 
-        Private Sub OnResizeBottomRightCorner(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Private Sub OnResizeBottomRightCorner(sender As Object, e As MouseEventArgs)
             If resizeInProgress Then
                 OnResizeBottomEdge(sender, e)
                 OnResizeRightEdge(sender, e)
             End If
         End Sub
 
-        Private Sub CloseView(ByVal sender As Object, ByVal e As ExecutedRoutedEventArgs)
+        Private Sub CloseView(sender As Object, e As ExecutedRoutedEventArgs)
             Dim mdiView As MdiView = FindViewContainingTemplateItem(TryCast(e.OriginalSource, UIElement))
 
             If mdiView IsNot Nothing AndAlso RequestItemCloseEvent IsNot Nothing Then
@@ -301,5 +303,40 @@ Namespace Microsoft.SmallBasic.Shell
             ChangeSelection(selectedView)
         End Sub
 
+        Private Sub ControlNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+            Dim cmb = CType(sender, ComboBox)
+            Dim controlName = CStr(cmb.SelectedItem)
+            If controlName = "" Then
+                cmb.SelectedIndex = 0
+                Return
+            End If
+
+            Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+            Dim events = selectedView.Document.ControlEvents
+            events.Clear()
+
+            If controlName = "(Global)" Then
+                For Each sb In selectedView.Document.GlobalSubs
+                    events.Add(sb)
+                Next
+            Else
+                Dim typeName = selectedView.Document.ControlsInfo(controlName.ToLower())
+                For Each ev In WinForms.PreCompiler.GetEvents(typeName)
+                    events.Add(ev)
+                Next
+            End If
+        End Sub
+
+        Private Sub EventNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+            Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+            If selectedView.FreezeCmbEvents Then Return
+
+            Dim cmb = CType(sender, ComboBox)
+            Dim eventName = CStr(cmb.SelectedItem)
+            If eventName = "" Then Return
+
+            selectedView.Document.AddEventHandler(selectedView.CmbControlNames.SelectedItem, eventName)
+
+        End Sub
     End Class
 End Namespace

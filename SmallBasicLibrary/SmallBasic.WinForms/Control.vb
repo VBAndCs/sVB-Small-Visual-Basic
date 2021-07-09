@@ -60,8 +60,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' When True, user can interact with the control.
-        ''' When False,  the control is disabled, and user can't interact with it.
+        ''' When its value = 1 (or True), user can interact with the control.
+        ''' When its value = 0 (or False),  the control is disabled, and user can't interact with it.
         ''' </summary>
         <ExProperty>
         Public Shared Function GetEnabled(formName As Primitive, controlName As Primitive) As Primitive
@@ -74,8 +74,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' When True, the control is shown at the form.
-        ''' When False,  the control is hidden.
+        ''' When its value = 1 (or True), the control is shown at the form.
+        ''' When its value = 0 (or False),  the control is hidden.
         ''' </summary>
         <ExProperty>
         Public Shared Function GetVisible(formName As Primitive, controlName As Primitive) As Primitive
@@ -207,7 +207,7 @@ Namespace WinForms
             AddHandler(handler As SmallBasicCallback)
                 Dim VisualElement = GetControl(_SenderForm, _SenderControl)
                 AddHandler VisualElement.PreviewMouseLeftButtonDown,
-                Sub(Sender As Wpf.Control, e As EventArgs) EventsHandler(Sender, handler)
+                       Sub(Sender As Wpf.Control, e As EventArgs) EventsHandler(Sender, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -413,13 +413,15 @@ Namespace WinForms
                 Throw New ArgumentException($"There is no form named `{formName}`.")
             End If
 
+            formName = formName.ToLower()
             Dim _controls = Forms._forms(formName)
             If controlName = "" Then Return _controls(formName)
 
-            If Not _controls.ContainsKey(controlName) Then
+            Dim name = controlName.ToLower()
+            If Not _controls.ContainsKey(name) Then
                 Throw New ArgumentException($"There is no control named `{controlName}` on form {formName}.")
             End If
-            Return _controls(controlName)
+            Return _controls(name)
         End Function
 
         Private Shared Function GetParent(child As DependencyObject, parentType As Type) As UIElement

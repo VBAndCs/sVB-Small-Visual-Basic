@@ -112,11 +112,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Return
             End If
 
-            Dim lineScanner As LineScanner = New LineScanner()
-            lineScanner.GetTokenList(lineFromPosition.GetText(), lineFromPosition.LineNumber)
-
             For Each completionItem In completionBag.CompletionItems
-
                 If String.Equals(completionItem.DisplayName, currentToken.Text, StringComparison.InvariantCultureIgnoreCase) Then
                     UpdateCurrentCompletionItem(New CompletionItemWrapper(completionItem))
                     Exit For

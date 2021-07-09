@@ -14,6 +14,8 @@ Imports System.IO
 Imports System.Windows.Media
 Imports System.Windows.Threading
 Imports Microsoft.VisualBasic
+Imports System.Collections.Generic
+Imports System.Linq
 
 Namespace Microsoft.SmallBasic.Documents
     Public Class TextDocument
@@ -40,6 +42,8 @@ Namespace Microsoft.SmallBasic.Documents
                 NotifyProperty("CaretPositionText")
             End Set
         End Property
+
+        Public Property MdiView As MdiView
 
         Public Property ContentType As String
             Get
@@ -95,7 +99,9 @@ Namespace Microsoft.SmallBasic.Documents
                     _editorControl.EditorOperations.TabSize = 2
                     _editorControl.IsLineNumberMarginVisible = True
                     _editorControl.Focus()
+
                     AddHandler _editorControl.TextView.Caret.PositionChanged, AddressOf OnCaretPositionChanged
+
                     _editorControl.Dispatcher.BeginInvoke(DispatcherPriority.Render,
                           CType(Function()
                                     _editorControl.TextView.VisualElement.Focus()
@@ -140,7 +146,7 @@ Namespace Microsoft.SmallBasic.Documents
                     Return String.Format(CultureInfo.CurrentCulture, ResourceHelper.GetString("ImportedProgram"), New Object(0) {BaseId}) & text
                 End If
 
-                Return $"{Path.GetFileName(FilePath)}{text} - {Path.GetFullPath(FilePath)}"
+                Return $"{Path.GetFileName(FilePath)}{text}"
             End Get
         End Property
 
@@ -159,16 +165,41 @@ Namespace Microsoft.SmallBasic.Documents
         <Import>
         Public Property UndoHistoryRegistry As IUndoHistoryRegistry
 
-        Public Sub New(ByVal filePath As String)
+        Public Sub New(filePath As String)
             MyBase.New(filePath)
             saveMarker = New UndoTransactionMarker()
             App.GlobalDomain.AddComponent(Me)
             App.GlobalDomain.Bind()
+            _ControlNames.Add("(Global)")
+            _GlobalSubs.Add("(Add New Sub)")
         End Sub
 
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
-            UpdateCaretPositionText()
+            If IgnoreCaretPosChange Then Return
 
+            Dim handlerName = FindCurrentEventHandler()
+
+            _MdiView.FreezeCmbEvents = True
+            If _EventHandlers.ContainsKey(handlerName) Then
+                Dim eventInfo = _EventHandlers(handlerName)
+
+                If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
+                    _MdiView.CmbControlNames.SelectedItem = eventInfo.ControlName
+                End If
+
+                _MdiView.CmbEventNames.SelectedItem = eventInfo.EventName
+            Else
+                _MdiView.CmbControlNames.SelectedIndex = 0
+                If handlerName = "" Then
+                    _MdiView.CmbEventNames.SelectedIndex = -1
+                Else
+                    _MdiView.CmbEventNames.SelectedItem = handlerName
+                End If
+            End If
+
+            _MdiView.FreezeCmbEvents = False
+
+            UpdateCaretPositionText()
         End Sub
 
         Public Overrides Sub Close()
@@ -251,7 +282,19 @@ Namespace Microsoft.SmallBasic.Documents
 
         Private Sub TextBufferChanged(sender As Object, e As TextChangedEventArgs)
             IsDirty = True
-            UpdateCaretPositionText()
+            If _IgnoreCaretPosChange Then Return
+
+            _editorControl.Dispatcher.BeginInvoke(
+                  Sub()
+                      UpdateGlobalSubsList()
+                      If CStr(_MdiView.CmbControlNames.SelectedItem) = "(Global)" Then
+                          _ControlEvents.Clear()
+                          For Each sb In _GlobalSubs
+                              _ControlEvents.Add(sb)
+                          Next
+                      End If
+                      OnCaretPositionChanged(Nothing, Nothing)
+                  End Sub, DispatcherPriority.ContextIdle)
         End Sub
 
         Private Sub AutoCompleteBlocks(sender As Object, e As System.Windows.Input.KeyEventArgs)
@@ -328,7 +371,7 @@ Namespace Microsoft.SmallBasic.Documents
             Dim text = textView.TextSnapshot
             Dim addBlockEnd = True
 
-            If endBlock <> "" Then
+            If endBlock <> "" AndAlso endBlock <> "EndSub" Then
                 For i = line.LineNumber + 1 To text.LineCount - 1
                     Dim nextLine = text.GetLineFromLineNumber(i)
                     Dim LineCode = nextLine.GetText()
@@ -410,19 +453,29 @@ Namespace Microsoft.SmallBasic.Documents
             End Set
         End Property
 
-        Dim _ControlsInfo As Collections.Generic.Dictionary(Of String, String)
-        Public Property ControlsInfo As Collections.Generic.Dictionary(Of String, String)
+        Public ReadOnly Property ControlNames As New ObservableCollection(Of String)
+
+        Public ReadOnly Property ControlEvents As New ObservableCollection(Of String)
+
+        Public Property EventHandlers As New Dictionary(Of String, (ControlName As String, EventName As String))
+
+        Public ReadOnly Property GlobalSubs As New List(Of String)
+
+
+        Dim _controlsInfo As Dictionary(Of String, String)
+        Public Property ControlsInfo As Dictionary(Of String, String)
             Get
-                Return _ControlsInfo
+                Return _controlsInfo
             End Get
 
-            Set(value As Collections.Generic.Dictionary(Of String, String))
-                _ControlsInfo = value
+            Set(value As Dictionary(Of String, String))
+                _controlsInfo = value
+
                 Try
-                    TextBuffer.Properties.AddProperty("ControlsInfo", _ControlsInfo)
+                    TextBuffer.Properties.AddProperty("ControlsInfo", _controlsInfo)
                 Catch
                     TextBuffer.Properties.RemoveProperty("ControlsInfo")
-                    TextBuffer.Properties.AddProperty("ControlsInfo", _ControlsInfo)
+                    TextBuffer.Properties.AddProperty("ControlsInfo", _controlsInfo)
                 End Try
             End Set
         End Property
@@ -432,7 +485,16 @@ Namespace Microsoft.SmallBasic.Documents
             If info Is Nothing Then Return False
 
             Me.Form = info.Form
-            ControlsInfo = info.ControlsInfo
+            Me.ControlsInfo = info.ControlsInfo
+            _EventHandlers = info.EventHandlers
+
+            info.ControlNames.Sort()
+            _ControlNames.Clear()
+            _ControlNames.Add("(Global)")
+            For Each c In info.ControlNames
+                _ControlNames.Add(c)
+            Next
+
             Return True
         End Function
 
@@ -442,5 +504,197 @@ Namespace Microsoft.SmallBasic.Documents
             Global.My.Computer.FileSystem.WriteAllText(filename, code, False)
             Return New TextDocument(filename)
         End Function
+
+        Private ReadOnly eventHandlerSub As String = vbCrLf & "
+'----------------------------
+Sub #
+   
+EndSub
+"
+
+        Public Property IgnoreCaretPosChange As Boolean
+
+        Public Sub AddEventHandler(controlName As String, eventName As String)
+            Dim isGlobal = controlName = "(Global)"
+            Dim handlerName = If(isGlobal, "", controlName & "_") & If(eventName = "(Add New Sub)", "", eventName)
+            Dim pos = -1
+            If handlerName = "" Then
+                pos = -1
+            ElseIf isGlobal AndAlso _GlobalSubs.Contains(handlerName) Then
+                pos = FindEventHandler(handlerName)
+            ElseIf _EventHandlers.ContainsKey(handlerName) Then
+                pos = FindEventHandler(handlerName)
+            Else ' Restore Broken Handler
+                pos = FindEventHandler(handlerName)
+                If pos > -1 Then
+                    _EventHandlers(handlerName) = (controlName, eventName)
+                End If
+            End If
+
+            Dim caret = _editorControl.TextView.Caret
+
+            IgnoreCaretPosChange = True
+            _editorControl.EditorOperations.ResetSelection()
+
+            If pos = -1 Then
+                caret.MoveTo(Me.Text.Length)
+                If handlerName = "" Then
+                    Dim NewName = "NewSub_"
+                    Dim n = 0
+                    Try
+                        n = Aggregate s In _GlobalSubs
+                                 Where s.StartsWith(NewName)
+                                 Let x = s.Substring(7)
+                                 Into Max(If(IsNumeric(x), CInt(x), 0))
+                    Catch ex As Exception
+                    End Try
+
+                    handlerName = NewName & n + 1
+                    Dim handler = eventHandlerSub.Replace("#", handlerName)
+                    _GlobalSubs.Add(handlerName)
+                    _editorControl.EditorOperations.InsertText(handler, _undoHistory)
+                    caret.MoveTo(Text.Length - 15)
+                    _editorControl.EditorOperations.SelectCurrentWord()
+                    _ControlEvents.Add(handlerName)
+                    MdiView.CmbEventNames.SelectedItem = handlerName
+                Else
+                    _EventHandlers(handlerName) = (controlName, eventName)
+                    Dim handler = eventHandlerSub.Replace("#", handlerName)
+                    _editorControl.EditorOperations.InsertText(handler, _undoHistory)
+                    caret.MoveTo(Text.Length - 10)
+                End If
+            Else
+                caret.MoveTo(pos)
+                _editorControl.EditorOperations.SelectCurrentWord()
+            End If
+
+            caret.EnsureVisible()
+            CType(_editorControl.TextView, System.Windows.UIElement).Focus()
+            IgnoreCaretPosChange = False
+
+        End Sub
+
+        Public Function FindCurrentEventHandler() As String
+            Dim textView = _editorControl.TextView
+            Dim text = textView.TextSnapshot
+            Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
+            Dim lineNumber = textView.TextSnapshot.GetLineFromPosition(insertionIndex).LineNumber
+
+            For i = lineNumber To 0 Step -1
+                Dim line = text.GetLineFromLineNumber(i)
+                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                Dim token = Tokens.Current.Token
+                If token = Token.Sub Then
+                    If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
+                        Return Tokens.Current.Text
+                    End If
+
+                ElseIf token = Token.EndSub AndAlso lineNumber <> i Then
+                    Return ""
+                End If
+            Next
+
+            Return ""
+        End Function
+
+        Public Function FindEventHandler(name As String) As Integer
+            Dim text = _editorControl.TextView.TextSnapshot
+
+            For Each line In text.Lines
+                Dim code = line.GetText().Trim(" "c, vbTab)
+                If code = "" Then Continue For
+
+                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), line.LineNumber)
+                If Tokens.Current.Token = Token.Sub Then
+                    If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
+                        If Tokens.Current.Text = name Then Return line.Start + Tokens.Current.Column
+                    End If
+                End If
+
+            Next
+            Return -1
+        End Function
+
+
+        Public Sub UpdateGlobalSubsList()
+            _GlobalSubs.Clear()
+            _GlobalSubs.Add("(Add New Sub)")
+
+            Dim textView = _editorControl.TextView
+            Dim text = textView.TextSnapshot
+
+            For i = 0 To text.LineCount - 1
+                Dim line = text.GetLineFromLineNumber(i)
+                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                If Tokens.Current.Token = Token.Sub Then
+                    If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
+                        Dim subName = Tokens.Current.Text
+                        If Not _EventHandlers.ContainsKey(subName) Then
+                            ' If name has the form Control_Event, add ot to EventHandlers.
+                            Dim info = IsHandlerName(subName.ToLower())
+                            If info.ComtrolName <> "" Then
+                                _EventHandlers(subName) = info
+                            Else
+                                _GlobalSubs.Add(subName)
+                            End If
+                        End If
+                    End If
+                End If
+            Next
+
+            _GlobalSubs.Sort()
+        End Sub
+
+        Public Function IsHandlerName(subName As String) As (ComtrolName As String, EventName As String)
+            If _controlsInfo Is Nothing Then Return ("", "")
+
+            For Each controlInfo In _controlsInfo
+                Dim controlName = controlInfo.Key
+                If subName.StartsWith(controlName & "_") Then
+                    Dim eventName = subName.Substring(controlName.Length + 1)
+                    Dim events = PreCompiler.GetEvents(controlInfo.Value)
+                    For Each ev In events
+                        If ev.ToLower() = eventName Then
+                            For Each name In _ControlNames
+                                If name.ToLower = controlName Then Return (name, ev)
+                            Next
+                            Return ("", "")
+                        End If
+                    Next
+                End If
+            Next
+
+            Return ("", "")
+        End Function
+
+        Public Sub RemoveBrokenHandlers()
+            If _EventHandlers.Count = 0 Then Return
+
+            Dim textView = _editorControl.TextView
+            Dim text = textView.TextSnapshot
+            Dim found As New List(Of String)
+
+            For i = 0 To text.LineCount - 1
+                Dim line = text.GetLineFromLineNumber(i)
+                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                If Tokens.Current.Token = Token.Sub Then
+                    If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
+                        Dim subName = Tokens.Current.Text
+                        If _EventHandlers.ContainsKey(subName) Then
+                            found.Add(subName)
+                        End If
+                    End If
+                End If
+            Next
+
+            If _EventHandlers.Count > found.Count Then
+                For Each ev In _EventHandlers.Keys
+                    If Not found.Contains(ev) Then
+                        _EventHandlers.Remove(ev)
+                        If _EventHandlers.Count = found.Count Then Return
+                    End If
+                Next
+            End If
+        End Sub
     End Class
 End Namespace

@@ -83,18 +83,18 @@ Namespace Microsoft.SmallBasic
         Public Sub New()
             Me.InitializeComponent()
 
-            Try
-                Dim version As Version = Assembly.GetExecutingAssembly().GetName().Version
-                Me.versionText.Text = String.Format(CultureInfo.CurrentUICulture, "Microsoft Small Basic v{0}.{1}", New Object(1) {version.Major, version.Minor})
-            Catch
-            End Try
+            'Try
+            '    Dim version As Version = Assembly.GetExecutingAssembly().GetName().Version
+            '    Me.versionText.Text = String.Format(CultureInfo.CurrentUICulture, "Microsoft Small Basic v{0}.{1}", New Object(1) {version.Major, version.Minor})
+            'Catch
+            'End Try
 
             mdiViews = New ObservableCollection(Of MdiView)()
             Me.viewsControl.ItemsSource = mdiViews
             AddHandler CompilerService.CurrentCompletionItemChanged, AddressOf OnCurrentCompletionItemChanged
             'OnFileNew(Me, Nothing)
             helpUpdateTimer = New DispatcherTimer(TimeSpan.FromMilliseconds(200.0), DispatcherPriority.ApplicationIdle, AddressOf OnHelpUpdate, Dispatcher)
-            ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf OnCheckVersion))
+            'ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf OnCheckVersion))
             Dim commandLineArgs As String() = Environment.GetCommandLineArgs()
 
             If commandLineArgs.Length <= 1 Then
@@ -269,7 +269,7 @@ Namespace Microsoft.SmallBasic
             e.CanExecute = ActiveDocument IsNot Nothing
         End Sub
 
-        Private Sub OnProgramRun(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnProgramRun(sender As Object, e As RoutedEventArgs)
             RunProgram()
         End Sub
 
@@ -408,6 +408,8 @@ Namespace Microsoft.SmallBasic
         Private Sub RunProgram()
             Try
                 Dim doc = ActiveDocument
+                If doc.Form <> "" Then SaveDesignInfo(doc)
+
                 Dim code = ""
                 Dim outputFileName = GetOutputFileName(doc)
                 Dim genCodefile = doc.FilePath
@@ -474,6 +476,8 @@ Namespace Microsoft.SmallBasic
 
             ElseIf doc.Form <> "" Then
                 Return PreCompile(code, errors, outputFileName)
+            Else
+                Return False
             End If
 
             Return True
@@ -552,8 +556,7 @@ Namespace Microsoft.SmallBasic
                         DocumentTracker.TrackDocument(newDocument)
                         Dim mdiView As MdiView = New MdiView()
                         mdiView.Document = newDocument
-                        Dim item = mdiView
-                        mdiViews.Add(item)
+                        mdiViews.Add(mdiView)
                     End If
                 End If
 
@@ -592,7 +595,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub OnCheckVersion(ByVal state As Object)
+        Private Sub OnCheckVersion(state As Object)
             Thread.Sleep(20000)
 
             Try
@@ -601,9 +604,9 @@ Namespace Microsoft.SmallBasic
                 Dim version As Version = New Version(currentVersion)
                 Dim version2 As Version = Assembly.GetExecutingAssembly().GetName().Version
 
-                If version.CompareTo(version2) > 0 Then
-                    Dispatcher.BeginInvoke(CType(Sub() Me.updateAvailable.Visibility = Visibility.Visible, Action))
-                End If
+                'If version.CompareTo(version2) > 0 Then
+                '    Dispatcher.BeginInvoke(CType(Sub() Me.updateAvailable.Visibility = Visibility.Visible, Action))
+                'End If
 
             Catch
             End Try
@@ -624,6 +627,10 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
+            SaveDesignInfo()
+        End Sub
+
+        Private Sub SaveDesignInfo(Optional doc As TextDocument = Nothing)
             Dim hint As New Text.StringBuilder
             Dim declaration As New Text.StringBuilder
             Dim formName As String
@@ -639,7 +646,7 @@ Namespace Microsoft.SmallBasic
                 Dim projectPath = ""
                 Dim n = 1
                 Do
-                    ProjectName = "Project" & n
+                    projectName = "Project" & n
                     projectPath = Path.Combine(tmpPath, projectName)
                     If Not IO.Directory.Exists(projectPath) Then
                         IO.Directory.CreateDirectory(projectPath)
@@ -674,12 +681,18 @@ Namespace Microsoft.SmallBasic
 
             hint.AppendLine($"'#{formName}{{")
             Dim ControlsInfo As New Dictionary(Of String, String)
-            ControlsInfo(formName.ToLower) = "Form"
+            Dim ControlNames As New List(Of String)
+            ControlNames.Add("(Global)")
+
+            ControlsInfo(formName.ToLower()) = "Form"
+            ControlNames.Add(formName)
+
             For Each c As FrameworkElement In formDesigner.Items
-                Dim name = c.Name.ToLower
+                Dim name = c.Name
                 If name <> "" Then
                     Dim typeName = c.GetType().Name
-                    ControlsInfo(name) = typeName
+                    ControlsInfo(name.ToLower()) = typeName
+                    ControlNames.Add(name)
                     hint.AppendLine($"'    {name}: {typeName}")
                     declaration.AppendLine($"{name} = ""{name}""")
                 End If
@@ -688,16 +701,56 @@ Namespace Microsoft.SmallBasic
             hint.AppendLine("'}")
             hint.AppendLine()
             hint.Append(declaration)
+            hint.AppendLine("True = 1")
+            hint.AppendLine("False = 0")
             hint.AppendLine($"Forms.AppPath = ""{xamlPath}""")
             hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{formName}.xaml"")")
             hint.AppendLine($"Control.SetWidth({formName}, {formName}, {formDesigner.PageWidth})")
             hint.AppendLine($"Control.SetHeight({formName}, {formName}, {formDesigner.PageHeight})")
             hint.AppendLine($"Form.Show({formName})")
 
+            If doc Is Nothing Then doc = OpenDocumentIfNot(formPath & ".sb")
+
+            doc.RemoveBrokenHandlers()
+
+            If doc.EventHandlers.Count > 0 Then
+                hint.AppendLine()
+                hint.AppendLine("'#Events{")
+                Dim sbHandlers As New Text.StringBuilder
+
+                Dim controlEvents = From eventHandler In doc.EventHandlers
+                                    Group By eventHandler.Value.ControlName
+                           Into EventInfo = Group
+
+                For Each ev In controlEvents
+                    hint.Append($"'    {ev.ControlName}:")
+                    sbHandlers.AppendLine($"' {ev.ControlName} Events:")
+                    sbHandlers.AppendLine($"Control.HandleEvents({formName}, {ev.ControlName})")
+                    For Each info In ev.EventInfo
+                        hint.Append($" {info.Value.EventName}")
+                        Dim module1 = ControlsInfo(ev.ControlName.ToLower)
+                        Dim moduleName = sb.PreCompiler.GetEventModule(module1, info.Value.EventName)
+                        sbHandlers.AppendLine($"{moduleName}.{info.Value.EventName} = {info.Key}")
+                    Next
+                    hint.AppendLine()
+                    sbHandlers.AppendLine()
+                Next
+                hint.AppendLine("'}")
+                hint.AppendLine()
+                hint.AppendLine(sbHandlers.ToString())
+            End If
+
             IO.File.WriteAllText(formPath & ".gsb", hint.ToString())
-            Dim doc = OpenDocumentIfNot(formPath & ".sb")
+
             doc.Form = formName.ToLower()
             doc.ControlsInfo = ControlsInfo
+
+            ' Note that ControlNames Property is bound to a cono box, so keep the existing collection
+            ControlNames.Sort()
+            doc.ControlNames.Clear()
+            For Each controlName In ControlNames
+                doc.ControlNames.Add(controlName)
+            Next
         End Sub
 
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed

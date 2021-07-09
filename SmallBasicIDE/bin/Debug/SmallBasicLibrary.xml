@@ -2595,14 +2595,14 @@ SmallBasicLibrary
 </member>
 <member name="M:Microsoft.SmallBasic.WinForms.Control.GetEnabled(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
  <summary>
- When True, user can interact with the control.
- When False,  the control is disabled, and user can't interact with it.
+ When its value = 1 (or True), user can interact with the control.
+ When its value = 0 (or False),  the control is disabled, and user can't interact with it.
  </summary>
 </member>
 <member name="M:Microsoft.SmallBasic.WinForms.Control.GetVisible(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
  <summary>
- When True, the control is shown at the form.
- When False,  the control is hidden.
+ When its value = 1 (or True), the control is shown at the form.
+ When its value = 0 (or False),  the control is hidden.
  </summary>
 </member>
 <member name="M:Microsoft.SmallBasic.WinForms.Control.GetBackColor(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
