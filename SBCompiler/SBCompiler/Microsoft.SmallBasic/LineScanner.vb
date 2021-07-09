@@ -11,7 +11,7 @@ Namespace Microsoft.SmallBasic
         Private _lineText As String
         Private _decimalSeparator As Char = "."c
 
-        Public Function GetTokenList(ByVal lineText As String, ByVal lineNumber As Integer) As TokenEnumerator
+        Public Function GetTokenList(lineText As String, lineNumber As Integer) As TokenEnumerator
             If Equals(lineText, Nothing) Then
                 Throw New ArgumentNullException("lineText")
             End If

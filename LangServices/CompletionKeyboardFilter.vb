@@ -14,7 +14,9 @@ Namespace Microsoft.SmallBasic.LanguageService
         <Import>
         Public Property UndoHistoryRegistry As IUndoHistoryRegistry
 
-        Public Overrides Sub KeyDown(ByVal textView As IAvalonTextView, ByVal args As KeyEventArgs)
+
+
+        Public Overrides Sub KeyDown(textView As IAvalonTextView, args As KeyEventArgs)
             Dim property2 As CompletionAdornmentProvider
             Dim [property] As CompletionAdornmentSurface = Nothing
 
@@ -46,7 +48,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Public Overrides Sub KeyUp(ByVal textView As IAvalonTextView, ByVal args As KeyEventArgs)
+        Public Overrides Sub KeyUp(textView As IAvalonTextView, args As KeyEventArgs)
             Dim [property] As CompletionAdornmentSurface = Nothing
 
             If (args.Key = Key.LeftCtrl OrElse args.Key = Key.RightCtrl) AndAlso textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), [property]) AndAlso [property].IsAdornmentVisible Then
@@ -56,22 +58,34 @@ Namespace Microsoft.SmallBasic.LanguageService
             MyBase.KeyUp(textView, args)
         End Sub
 
-        Public Overrides Sub TextInput(ByVal textView As IAvalonTextView, ByVal args As TextCompositionEventArgs)
+        Public Overrides Sub TextInput(textView As IAvalonTextView, args As TextCompositionEventArgs)
             Dim [property] As CompletionAdornmentSurface = Nothing
 
-            If textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), [property]) AndAlso [property].IsAdornmentVisible AndAlso Equals(args.Text, "(") Then
-                CommitConditionally(textView, [property])
+            If textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), [property]) AndAlso [property].IsAdornmentVisible Then
+                Select Case args.Text
+                    Case "+", "-", "*", "/", "="
+                        CommitConditionally(textView, [property], " " & args.Text & " ")
+                        args.Handled = True
+                    Case ","
+                        CommitConditionally(textView, [property], ", ")
+                        args.Handled = True
+                    Case "("
+                        CommitConditionally(textView, [property])
+                End Select
             End If
 
             MyBase.TextInputUpdate(textView, args)
         End Sub
 
-        Private Sub CommitConditionally(ByVal textView As IAvalonTextView, ByVal adornmentSurface As CompletionAdornmentSurface)
+        Private Sub CommitConditionally(textView As IAvalonTextView, adornmentSurface As CompletionAdornmentSurface, Optional extraText As String = "")
             If adornmentSurface.CompletionListBox.SelectedItem IsNot Nothing Then
                 Dim editorOperations = EditorOperationsProvider.GetEditorOperations(textView)
                 Dim name = CType(adornmentSurface.CompletionListBox.SelectedItem, CompletionItemWrapper).Name
                 Dim replaceSpan As Span = adornmentSurface.Adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
-                editorOperations.ReplaceText(replaceSpan, name, UndoHistoryRegistry.GetHistory(textView.TextBuffer))
+                editorOperations.ReplaceText(
+                    replaceSpan,
+                    name & extraText,
+                    UndoHistoryRegistry.GetHistory(textView.TextBuffer))
             End If
 
             If adornmentSurface.Adornment IsNot Nothing Then
@@ -81,7 +95,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             textView.VisualElement.Focus()
         End Sub
 
-        Private Function CommitItem(ByVal textView As IAvalonTextView, ByVal adornmentSurface As CompletionAdornmentSurface) As Boolean
+        Private Function CommitItem(textView As IAvalonTextView, adornmentSurface As CompletionAdornmentSurface) As Boolean
             Dim result = False
             Dim completionItemWrapper As CompletionItemWrapper = TryCast(adornmentSurface.CompletionListBox.SelectedItem, CompletionItemWrapper)
             Dim [property] As CompletionAdornmentProvider = Nothing

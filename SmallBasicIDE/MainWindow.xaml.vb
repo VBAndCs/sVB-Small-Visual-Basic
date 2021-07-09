@@ -685,7 +685,9 @@ Namespace Microsoft.SmallBasic
             ControlNames.Add("(Global)")
 
             ControlsInfo(formName.ToLower()) = "Form"
+            ControlsInfo("me") = "Form"
             ControlNames.Add(formName)
+            declaration.AppendLine($"Me = ""{formName}""")
 
             For Each c As FrameworkElement In formDesigner.Items
                 Dim name = c.Name

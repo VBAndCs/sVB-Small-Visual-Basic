@@ -11,60 +11,99 @@ Namespace Microsoft.SmallBasic.LanguageService
         Inherits KeyboardFilter
 
         Public completionHelper As CompletionHelper = New CompletionHelper()
+
         <Import>
         Public Property EditorOperationsProvider As IEditorOperationsProvider
+
         <Import>
         Public Property UndoHistoryRegistry As IUndoHistoryRegistry
 
-        Public Overrides Sub KeyDown(ByVal textView As IAvalonTextView, ByVal args As KeyEventArgs)
+        Public Overrides Sub KeyDown(textView As IAvalonTextView, args As KeyEventArgs)
             If args.Key = Key.Return Then
                 Dim textInsertionIndex = textView.Caret.Position.TextInsertionIndex
-                Dim lineNumberFromPosition = textView.TextSnapshot.GetLineNumberFromPosition(textInsertionIndex)
-                UpdateIndentation(textView.TextSnapshot, lineNumberFromPosition)
+                Dim lineNumber = textView.TextSnapshot.GetLineNumberFromPosition(textInsertionIndex)
+                UpdateIndentation(textView.TextSnapshot, lineNumber)
                 AddHandler textView.TextBuffer.Changed, AddressOf OnTextBufferChanged
             End If
 
             MyBase.KeyDown(textView, args)
         End Sub
 
-        Private Sub OnTextBufferChanged(ByVal sender As Object, ByVal e As TextChangedEventArgs)
-            Dim textBuffer As ITextBuffer = TryCast(sender, ITextBuffer)
+        Private Sub OnTextBufferChanged(sender As Object, e As TextChangedEventArgs)
+            Dim textBuffer = TryCast(sender, ITextBuffer)
             RemoveHandler textBuffer.Changed, AddressOf OnTextBufferChanged
 
-            If e.Changes(CInt(0)).NewText.StartsWith(VisualBasic.Constants.vbCrLf) Then
+            If e.Changes(0).NewText.StartsWith(vbCrLf) Then
                 Dim after = e.After
-                Dim lineNumberFromPosition = after.GetLineNumberFromPosition(e.Changes(0).NewEnd)
-                UpdateIndentation(after, lineNumberFromPosition)
+                Dim lineNumber = after.GetLineNumberFromPosition(e.Changes(0).NewEnd)
+                UpdateIndentation(after, lineNumber)
             End If
         End Sub
 
-        Public Sub UpdateIndentation(ByVal snapshot As ITextSnapshot, ByVal lineNumber As Integer)
-            If lineNumber <> 0 Then
-                Dim source As TextBufferReader = New TextBufferReader(snapshot)
-                Dim indentationLevel = completionHelper.GetIndentationLevel(source, lineNumber)
-                Dim indentationLevel2 = completionHelper.GetIndentationLevel(lineNumber - 1)
-                Dim lineFromLineNumber = snapshot.GetLineFromLineNumber(lineNumber)
-                Dim lineFromLineNumber2 = snapshot.GetLineFromLineNumber(lineNumber - 1)
-                Dim positionOfNextNonWhiteSpaceCharacter = lineFromLineNumber.GetPositionOfNextNonWhiteSpaceCharacter(0)
-                Dim positionOfNextNonWhiteSpaceCharacter2 = lineFromLineNumber2.GetPositionOfNextNonWhiteSpaceCharacter(0)
-                Dim num = positionOfNextNonWhiteSpaceCharacter2
+        Public Sub UpdateIndentation(snapshot As ITextSnapshot, lineNumber As Integer)
+            Dim iden = Indentation.CalculateIndentation(snapshot, lineNumber)
+            Dim line = snapshot.GetLineFromLineNumber(lineNumber)
+            Dim positionOfNextToken = line.GetPositionOfNextNonWhiteSpaceCharacter(0)
 
-                If indentationLevel > indentationLevel2 Then
-                    num += 2
-                ElseIf indentationLevel < indentationLevel2 Then
-                    num -= 2
-                End If
-
-                If num < 0 Then
-                    num = 0
-                End If
-
-                If positionOfNextNonWhiteSpaceCharacter > num Then
-                    snapshot.TextBuffer.Delete(New Span(lineFromLineNumber.Start, positionOfNextNonWhiteSpaceCharacter - num))
-                ElseIf positionOfNextNonWhiteSpaceCharacter < num Then
-                    snapshot.TextBuffer.Insert(lineFromLineNumber.Start, New String(" "c, num - positionOfNextNonWhiteSpaceCharacter))
-                End If
+            If positionOfNextToken > iden Then
+                snapshot.TextBuffer.Delete(New Span(line.Start, positionOfNextToken - iden))
+            ElseIf positionOfNextToken < iden Then
+                snapshot.TextBuffer.Insert(line.Start, New String(" "c, iden - positionOfNextToken))
             End If
+
         End Sub
+
+    End Class
+
+    Public NotInheritable Class Indentation
+        Public Shared Function CalculateIndentation(snapshot As ITextSnapshot, lineNumber As Integer) As Integer
+            Dim iden As Integer
+            Dim line = snapshot.GetLineFromLineNumber(lineNumber)
+            Dim lineText = line.GetText()
+            Dim indentationLevel = lineText.Length - lineText.TrimStart(" "c, vbTab).Length
+
+            If lineNumber > 0 Then
+                Dim positionOfNextToken = line.GetPositionOfNextNonWhiteSpaceCharacter(0)
+                Dim prevLine As ITextSnapshotLine
+                Dim n = lineNumber - 1
+                Dim prevLineText = ""
+                Dim prevLineTrimmedText = ""
+
+                ' Find last non-empty line
+                Do While n > -1
+                    prevLine = snapshot.GetLineFromLineNumber(n)
+                    prevLineText = prevLine.GetText()
+                    prevLineTrimmedText = prevLineText.Trim(" "c, vbTab)
+                    If prevLineText <> "" Then Exit Do
+                    n -= 1
+                Loop
+
+                If prevLineTrimmedText <> "" Then
+                    Dim prevIndentationLevel = prevLineText.Length - prevLineText.TrimStart(" "c, vbTab).Length
+                    Dim prevTokens = New LineScanner().GetTokenList(prevLineText, 1)
+                    Dim tokens = New LineScanner().GetTokenList(lineText, 1)
+
+                    Select Case prevTokens.Current.Token
+                        Case Token.For, Token.If, Token.Sub, Token.While
+                            iden = prevIndentationLevel + 3
+                        Case Else
+                            Select Case tokens.Current.Token
+                                Case Token.EndFor, Token.EndIf, Token.EndSub, Token.EndWhile
+                                    iden = prevIndentationLevel - 3
+                                Case Else
+                                    iden = prevIndentationLevel
+                            End Select
+                    End Select
+
+                    If iden < 0 Then iden = 0
+                Else
+                    iden = indentationLevel
+                End If
+            Else
+                iden = indentationLevel
+            End If
+            Return iden
+        End Function
+
     End Class
 End Namespace

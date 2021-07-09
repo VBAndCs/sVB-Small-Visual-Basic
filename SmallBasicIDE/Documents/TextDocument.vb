@@ -16,6 +16,7 @@ Imports System.Windows.Threading
 Imports Microsoft.VisualBasic
 Imports System.Collections.Generic
 Imports System.Linq
+Imports Microsoft.SmallBasic.LanguageService
 
 Namespace Microsoft.SmallBasic.Documents
     Public Class TextDocument
@@ -175,31 +176,36 @@ Namespace Microsoft.SmallBasic.Documents
         End Sub
 
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
-            If IgnoreCaretPosChange Then Return
+            If IgnoreCaretPosChange Or StillWorking Then Return
+            StillWorking = True
+            Try
+                Dim handlerName = FindCurrentEventHandler()
 
-            Dim handlerName = FindCurrentEventHandler()
+                _MdiView.FreezeCmbEvents = True
+                If _EventHandlers.ContainsKey(handlerName) Then
+                    Dim eventInfo = _EventHandlers(handlerName)
 
-            _MdiView.FreezeCmbEvents = True
-            If _EventHandlers.ContainsKey(handlerName) Then
-                Dim eventInfo = _EventHandlers(handlerName)
+                    If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
+                        _MdiView.CmbControlNames.SelectedItem = eventInfo.ControlName
+                    End If
 
-                If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
-                    _MdiView.CmbControlNames.SelectedItem = eventInfo.ControlName
-                End If
-
-                _MdiView.CmbEventNames.SelectedItem = eventInfo.EventName
-            Else
-                _MdiView.CmbControlNames.SelectedIndex = 0
-                If handlerName = "" Then
-                    _MdiView.CmbEventNames.SelectedIndex = -1
+                    _MdiView.CmbEventNames.SelectedItem = eventInfo.EventName
                 Else
-                    _MdiView.CmbEventNames.SelectedItem = handlerName
+                    _MdiView.CmbControlNames.SelectedIndex = 0
+                    If handlerName = "" Then
+                        _MdiView.CmbEventNames.SelectedIndex = -1
+                    Else
+                        _MdiView.CmbEventNames.SelectedItem = handlerName
+                    End If
                 End If
-            End If
 
-            _MdiView.FreezeCmbEvents = False
+                _MdiView.FreezeCmbEvents = False
 
-            UpdateCaretPositionText()
+                UpdateCaretPositionText()
+
+            Finally
+                StillWorking = False
+            End Try
         End Sub
 
         Public Overrides Sub Close()
@@ -282,10 +288,13 @@ Namespace Microsoft.SmallBasic.Documents
 
         Private Sub TextBufferChanged(sender As Object, e As TextChangedEventArgs)
             IsDirty = True
-            If _IgnoreCaretPosChange Then Return
+            If _IgnoreCaretPosChange Or StillWorking Then Return
 
-            _editorControl.Dispatcher.BeginInvoke(
+            StillWorking = True
+            Try
+                _editorControl.Dispatcher.BeginInvoke(
                   Sub()
+                      StillWorking = True
                       UpdateGlobalSubsList()
                       If CStr(_MdiView.CmbControlNames.SelectedItem) = "(Global)" Then
                           _ControlEvents.Clear()
@@ -293,8 +302,13 @@ Namespace Microsoft.SmallBasic.Documents
                               _ControlEvents.Add(sb)
                           Next
                       End If
+                      StillWorking = False
                       OnCaretPositionChanged(Nothing, Nothing)
                   End Sub, DispatcherPriority.ContextIdle)
+
+            Catch
+                StillWorking = False
+            End Try
         End Sub
 
         Private Sub AutoCompleteBlocks(sender As Object, e As System.Windows.Input.KeyEventArgs)
@@ -367,6 +381,7 @@ Namespace Microsoft.SmallBasic.Documents
                    )
             Dim start = code.IndexOf(keyword, StringComparison.InvariantCultureIgnoreCase)
             Dim leadingSpace = code.Substring(0, start)
+            Dim iden = Indentation.CalculateIndentation(textView.TextSnapshot, line.LineNumber)
             Dim L = line.Length
             Dim text = textView.TextSnapshot
             Dim addBlockEnd = True
@@ -406,11 +421,11 @@ Namespace Microsoft.SmallBasic.Documents
                 Next
             End If
 
-            Dim nl = $"{vbCrLf}{leadingSpace}"
+            Dim nl = $"{vbCrLf}{Space(iden)}"
             _editorControl.EditorOperations.ReplaceText(
-                 New Span(line.Start + start, L - start),
-                block.Replace("#", nl) & If(addBlockEnd, nl & endBlock & nl, ""), _undoHistory)
-            textView.Caret.MoveTo(line.Start + start + Len(keyword) + 1 + n)
+                 New Span(line.Start, L),
+                Space(iden) & block.Replace("#", nl) & If(addBlockEnd, nl & endBlock & nl, ""), _undoHistory)
+            textView.Caret.MoveTo(line.Start + iden + Len(keyword) + 1 + n)
         End Sub
 
         Private Sub UndoRedoHappened(sender As Object, e As UndoRedoEventArgs)
@@ -423,35 +438,24 @@ Namespace Microsoft.SmallBasic.Documents
             End If
         End Sub
 
+        Dim StillWorking As Boolean = False
+
         Private Sub UpdateCaretPositionText()
-            If _editorControl IsNot Nothing Then
-                _editorControl.Dispatcher.BeginInvoke(
-                            Sub()
-                                Dim textView = _editorControl.TextView
-                                Dim textInsertionIndex = textView.Caret.Position.TextInsertionIndex
-                                Dim line = textView.TextSnapshot.GetLineFromPosition(textInsertionIndex)
-                                CaretPositionText = $"{line.LineNumber + 1},{textInsertionIndex - line.Start + 1}"
-                            End Sub,
-                            DispatcherPriority.ContextIdle)
-            End If
+            _editorControl.Dispatcher.BeginInvoke(
+                 Sub()
+                     Dim textView = _editorControl.TextView
+                     Dim textInsertionIndex = textView.Caret.Position.TextInsertionIndex
+                     Dim line = textView.TextSnapshot.GetLineFromPosition(textInsertionIndex)
+                     CaretPositionText = $"{line.LineNumber + 1},{textInsertionIndex - line.Start + 1}"
+                 End Sub,
+                 DispatcherPriority.ContextIdle)
         End Sub
 
         Public Sub ImportCompleted() Implements INotifyImport.ImportCompleted
             OnBindCompleted()
         End Sub
 
-        Dim _form As String
         Public Property Form As String
-            Get
-                Return _form
-            End Get
-
-            Set(value As String)
-                If _form = value Then Return
-                _form = value
-                TextBuffer.Properties.AddProperty("FormName", _form)
-            End Set
-        End Property
 
         Public ReadOnly Property ControlNames As New ObservableCollection(Of String)
 
@@ -631,7 +635,7 @@ EndSub
                         Dim subName = Tokens.Current.Text
                         If Not _EventHandlers.ContainsKey(subName) Then
                             ' If name has the form Control_Event, add ot to EventHandlers.
-                            Dim info = IsHandlerName(subName.ToLower())
+                            Dim info = GetHandlerInfo(subName.ToLower())
                             If info.ComtrolName <> "" Then
                                 _EventHandlers(subName) = info
                             Else
@@ -645,7 +649,7 @@ EndSub
             _GlobalSubs.Sort()
         End Sub
 
-        Public Function IsHandlerName(subName As String) As (ComtrolName As String, EventName As String)
+        Public Function GetHandlerInfo(subName As String) As (ComtrolName As String, EventName As String)
             If _controlsInfo Is Nothing Then Return ("", "")
 
             For Each controlInfo In _controlsInfo

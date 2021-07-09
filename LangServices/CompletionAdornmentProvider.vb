@@ -62,10 +62,13 @@ Namespace Microsoft.SmallBasic.LanguageService
             adornment = Nothing
 
             If AdornmentsChangedEvent IsNot Nothing Then
-                Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, CType(Function()
-                                                                                           RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(dismissedSpan))
-                                                                                           Return Nothing
-                                                                                       End Function, DispatcherOperationCallback), Nothing)
+                Application.Current.Dispatcher.Invoke(
+                    DispatcherPriority.Normal,
+                    CType(Function()
+                              RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(dismissedSpan))
+                              Return Nothing
+                          End Function, DispatcherOperationCallback),
+                    Nothing)
             End If
 
             If Not force Then
