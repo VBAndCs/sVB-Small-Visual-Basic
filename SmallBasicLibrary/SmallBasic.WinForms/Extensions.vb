@@ -4,7 +4,7 @@ Imports System.Windows.Media
 Namespace WinForms
     Module Extentions
         <System.Runtime.CompilerServices.Extension()>
-        Public Iterator Function GetChildren(ByVal parent As UIElement, ByVal Optional recurse As Boolean = True) As IEnumerable(Of UIElement)
+        Public Iterator Function GetChildren(parent As UIElement, Optional recurse As Boolean = True) As IEnumerable(Of UIElement)
             If parent IsNot Nothing Then
                 Dim count As Integer = VisualTreeHelper.GetChildrenCount(parent)
 

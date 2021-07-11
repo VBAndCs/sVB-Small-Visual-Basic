@@ -335,8 +335,9 @@ Namespace Microsoft.SmallBasic.Shell
             Dim eventName = CStr(cmb.SelectedItem)
             If eventName = "" Then Return
 
+            selectedView.FreezeCmbEvents = True
             selectedView.Document.AddEventHandler(selectedView.CmbControlNames.SelectedItem, eventName)
-
+            selectedView.FreezeCmbEvents = False
         End Sub
     End Class
 End Namespace

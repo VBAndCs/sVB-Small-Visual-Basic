@@ -363,4 +363,9 @@ Public Class DiagramObject
         Tb.Foreground = Nothing
     End Sub
 
+    Private Sub Diagram_PreviewMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs) Handles Diagram.PreviewMouseLeftButtonDown
+        If e.ClickCount > 1 Then
+            Dsn.OnDiagramDoubleClick(Diagram)
+        End If
+    End Sub
 End Class

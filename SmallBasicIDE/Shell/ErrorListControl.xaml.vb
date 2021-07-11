@@ -54,7 +54,9 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub SetCaret(ByVal line As Integer, ByVal column As Integer)
+        Private Sub SetCaret(line As Integer, column As Integer)
+            If line < 0 Then Return
+
             Dim currentSnapshot = _document.TextBuffer.CurrentSnapshot
 
             If line < currentSnapshot.LineCount Then

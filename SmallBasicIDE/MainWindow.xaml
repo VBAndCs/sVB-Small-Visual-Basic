@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Basic">
+        Title="Small Basic" Loaded="Window_Loaded">
     
   <FrameworkElement.Resources>
     <ResourceDictionary />
@@ -46,10 +46,11 @@
     <KeyBinding Command="{x:Static l:MainWindow.RedoCommand}" Gesture="Ctrl+Y" />
     <KeyBinding Command="{x:Static l:MainWindow.RunCommand}" Gesture="F5" />
   </UIElement.InputBindings>
-    
-    <TabControl>
+    <Grid>
+        <TabControl>
        
-        <TabItem x:Name="tabDesigner" Header="Form Designer">
+        <TabItem x:Name="tabDesigner" Header="Form Designer"
+                 Selector.Selected="tabDesigner_Selected">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"/>
@@ -61,8 +62,9 @@
                 </Grid.RowDefinitions>
 
                 <DH:Designer x:Name="formDesigner" Grid.Column="1" Grid.RowSpan="2" ShowGrid="True" 
-			         PageWidth="700" PageHeight="500">
-                </DH:Designer>
+			         PageWidth="700" PageHeight="500"
+                      DiagramDoubleClick="formDesigner_DiagramDoubleClick"       />
+
 
                 <DH:ToolBox Grid.Row="1" />
                 <DH:ZoomBox Designer="{Binding ElementName=formDesigner}"  />
@@ -242,4 +244,13 @@
         </TabItem>
 
     </TabControl>
+        <Label HorizontalAlignment="Right" FontWeight="Bold"
+               Background="LightYellow" VerticalAlignment="Top"
+               Margin="0,-4,5,0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="txtTitle"/>
+                <TextBlock x:Name="txtForm" Foreground="Blue"/>
+            </StackPanel>
+        </Label>
+    </Grid>
 </Window>

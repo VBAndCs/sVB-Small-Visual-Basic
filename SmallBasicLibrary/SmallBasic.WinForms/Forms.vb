@@ -63,11 +63,12 @@ Namespace WinForms
 
             Dispatcher.Invoke(
             Sub()
+                Dim canvas = LoadContent(xamlPath)
                 Dim wnd As New Window() With {
-                   .Width = 500,
-                   .Height = 300,
+                   .Width = canvas.Width,
+                   .Height = canvas.Height,
                    .Name = name,
-                   .Content = LoadContent(xamlPath)
+                   .Content = canvas
                }
 
                 Dim _controls = New ControlsDictionay()
@@ -75,10 +76,23 @@ Namespace WinForms
                 _forms.Add(name, _controls)
 
                 ' Add control names:
-                For Each ui In CType(wnd.Content, UIElement).GetChildren()
-                    Dim c = TryCast(ui, Wpf.Control)
-                    If c IsNot Nothing AndAlso c.Name <> "" Then
-                        _controls.Add(c.Name.ToLower(), c)
+                Dim controls = canvas.GetChildren().ToList
+                For n = controls.Count - 1 To 0 Step -1
+                    Dim ui = controls(n)
+                    Dim controlName = Automation.AutomationProperties.GetName(ui)
+                    If controlName <> "" Then
+                        If TypeOf ui Is Wpf.Control Then
+                            _controls.Add(controlName.ToLower(), ui)
+                        Else
+                            Dim left = Canvas.GetLeft(ui)
+                            Dim top = Canvas.GetTop(ui)
+                            canvas.Children.Remove(ui)
+                            Dim lb As New Wpf.Label() With {.Content = ui}
+                            canvas.Children.Add(lb)
+                            Canvas.SetLeft(lb, left)
+                            canvas.SetTop(lb, top)
+                            _controls.Add(controlName.ToLower(), lb)
+                        End If
                     End If
                 Next
             End Sub)
@@ -117,10 +131,10 @@ Namespace WinForms
             Return name
         End Function
 
-        Private Shared Function LoadContent(FileName As String) As UIElement
+        Private Shared Function LoadContent(FileName As String) As Canvas
             Dim stream = IO.File.Open(FileName, IO.FileMode.Open)
             Dim reader As New XamlReader()
-            Return CType(reader.LoadAsync(stream), UIElement)
+            Return CType(reader.LoadAsync(stream), Canvas)
         End Function
 
 

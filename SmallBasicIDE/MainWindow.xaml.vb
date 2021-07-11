@@ -183,11 +183,18 @@ Namespace Microsoft.SmallBasic
             ActiveDocument.UndoHistory.Redo(1)
         End Sub
 
-        Private Sub OnCloseItem(ByVal sender As Object, ByVal e As RequestCloseEventArgs)
-            Dim mdiView As MdiView = TryCast(e.Item, MdiView)
+        Private Sub OnCloseItem(sender As Object, e As RequestCloseEventArgs)
+            Dim mdiView = TryCast(e.Item, MdiView)
 
             If mdiView IsNot Nothing AndAlso CloseDocument(mdiView.Document) Then
                 mdiViews.Remove(mdiView)
+                formDesigner.HasChanges = False
+                formDesigner.NewPage()
+                formDesigner.Name = "Form1"
+                formDesigner.PageWidth = 700
+                formDesigner.PageHeight = 500
+                DesignerDocPath = ""
+
             End If
         End Sub
 
@@ -349,17 +356,19 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Function SaveDocument(ByVal document As TextDocument) As Boolean
-            If document.IsNew Then
+            If document.IsNew OrElse (document.Form <> "" AndAlso formDesigner.FileName = "") Then
                 Return SaveDocumentAs(document)
             End If
 
             Try
-                document.Save()
+                Dim designIsDirty = document.Form <> "" AndAlso formDesigner.HasChanges
+                If designIsDirty Then SaveDesignInfo(document)
+                If document.IsDirty Then document.Save()
                 Return True
             Catch ex As Exception
                 Dim notificationButtons = Utility.MessageBox.Show(ResourceHelper.GetString("SaveFailed"), "Small Basic", String.Format(CultureInfo.CurrentCulture, ResourceHelper.GetString("SaveFailedReason"), New Object(0) {ex.Message}), Nf.No Or Nf.Yes, NotificationIcon.Information)
 
-                If notificationButtons = NotificationButtons.Yes Then
+                If notificationButtons = Nf.Yes Then
                     Return SaveDocumentAs(document)
                 End If
 
@@ -367,18 +376,39 @@ Namespace Microsoft.SmallBasic
             End Try
         End Function
 
-        Private Function SaveDocumentAs(ByVal document As TextDocument) As Boolean
+        Private Function SaveDocumentAs(document As TextDocument) As Boolean
             Dim saveFileDialog As SaveFileDialog = New SaveFileDialog()
             saveFileDialog.Filter = ResourceHelper.GetString("SmallBasicFileFilter") & "|*.sb"
+            saveFileDialog.FileName = document.Form
 
-            If saveFileDialog.ShowDialog() = True Then
+            If saveFileDialog.ShowDialog() Then
                 Try
-                    document.SaveAs(saveFileDialog.FileName)
+
+                    Dim FileName = saveFileDialog.FileName
+                    If File.Exists(FileName) Then File.Delete(FileName)
+                    document.SaveAs(FileName)
+
+                    If document.OpenedInDesigner Then
+                        Dim newFormName = Path.GetFileNameWithoutExtension(saveFileDialog.FileName)
+                        Dim newDir = Path.GetDirectoryName(saveFileDialog.FileName)
+                        Dim newFilePath = Path.Combine(newDir, newFormName)
+
+                        FileName = newFilePath & ".gsb"
+                        If File.Exists(FileName) Then File.Delete(FileName)
+
+                        FileName = newFilePath & ".xaml"
+                        If File.Exists(FileName) Then File.Delete(FileName)
+                        formDesigner.FileName = FileName
+                        DesignerDocPath = saveFileDialog.FileName
+                        formDesigner.HasChanges = True ' Force saving
+                        SaveDesignInfo(document)
+                    End If
+
                     Return True
                 Catch ex As Exception
                     Dim notificationButtons = Utility.MessageBox.Show(ResourceHelper.GetString("SaveFailed"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SaveFailedReason"), New Object(0) {ex.Message}), Nf.No Or Nf.Yes, NotificationIcon.Information)
 
-                    If notificationButtons = NotificationButtons.Yes Then
+                    If notificationButtons = Nf.Yes Then
                         Return SaveDocumentAs(document)
                     End If
 
@@ -389,12 +419,13 @@ Namespace Microsoft.SmallBasic
             Return False
         End Function
 
-        Private Function CloseDocument(ByVal document As TextDocument) As Boolean
-            If document.IsDirty Then
-                Select Case Utility.MessageBox.Show(ResourceHelper.GetString("SaveDocumentBeforeClosing"), ResourceHelper.GetString("Title"), document.Title & ResourceHelper.GetString("DocumentModified"), NotificationButtons.Cancel Or NotificationButtons.No Or NotificationButtons.Yes, NotificationIcon.Information)
-                    Case NotificationButtons.Yes
+        Private Function CloseDocument(document As TextDocument) As Boolean
+            Dim designIsDirty = document.Form <> "" AndAlso formDesigner.HasChanges
+            If document.IsDirty OrElse designIsDirty Then
+                Select Case Utility.MessageBox.Show(ResourceHelper.GetString("SaveDocumentBeforeClosing"), ResourceHelper.GetString("Title"), document.Title & ResourceHelper.GetString("DocumentModified"), Nf.Cancel Or Nf.No Or Nf.Yes, NotificationIcon.Information)
+                    Case Nf.Yes
                         Return SaveDocument(document)
-                    Case NotificationButtons.No
+                    Case Nf.No
                         Return True
                     Case Else
                         Return False
@@ -408,19 +439,20 @@ Namespace Microsoft.SmallBasic
         Private Sub RunProgram()
             Try
                 Dim doc = ActiveDocument
-                If doc.Form <> "" Then SaveDesignInfo(doc)
-
-                Dim code = ""
+                Dim code As String
                 Dim outputFileName = GetOutputFileName(doc)
-                Dim genCodefile = doc.FilePath
                 Dim offset = 0
-                genCodefile = genCodefile?.Substring(0, genCodefile.Length - 2) + "gsb"
 
-                If IO.File.Exists(genCodefile) Then
-                    Dim gen = File.ReadAllText(genCodefile)
+                Dim gen As String
+                If doc.OpenedInDesigner Then
+                    gen = doc.GenerateCodeBehind(formDesigner.Items, False)
+                Else
+                    gen = doc.GetCodeBehind()
+                End If
+
+                If gen <> "" Then
                     offset = CountLines(gen) + 1
                     code = gen & Environment.NewLine & doc.Text
-                    If doc.Form = "" Then doc.ParseFormHints(code)
                 Else
                     code = doc.Text
                 End If
@@ -567,7 +599,7 @@ Namespace Microsoft.SmallBasic
             End Try
         End Sub
 
-        Private Function GetOutputFileName(ByVal document As TextDocument) As String
+        Private Function GetOutputFileName(document As TextDocument) As String
             If document.IsNew Then
                 Dim tempFileName As String = Path.GetTempFileName()
                 File.Move(tempFileName, tempFileName & ".exe")
@@ -623,137 +655,98 @@ Namespace Microsoft.SmallBasic
                     Return view.Document
                 End If
             Next
+
             Return OpenFile(FilePath)
         End Function
 
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
             SaveDesignInfo()
+            txtTitle.Text = "Code Editor "
+            txtForm.Text = $"[{formDesigner.Name}.sb]"
         End Sub
 
+        Private Sub tabDesigner_Selected(sender As Object, e As RoutedEventArgs)
+            txtTitle.Text = "Form Designer "
+            txtForm.Text = $"[{formDesigner.Name}.xaml]"
+        End Sub
+
+
+        Dim DesignerDocPath As String
+
         Private Sub SaveDesignInfo(Optional doc As TextDocument = Nothing)
-            Dim hint As New Text.StringBuilder
-            Dim declaration As New Text.StringBuilder
             Dim formName As String
             Dim xamlPath As String
             Dim formPath As String
 
+            If DesignerDocPath <> "" AndAlso Not formDesigner.HasChanges Then
+                OpenDocumentIfNot(DesignerDocPath)
+                Return
+            End If
+
             If formDesigner.FileName = "" Then
-                Dim tmpPath = "UnSaved"
-                If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
+                If DesignerDocPath = "" Then
+                    Dim tmpPath = "UnSaved"
+                    If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
 
-                Dim fileName = ""
-                Dim projectName = ""
-                Dim projectPath = ""
-                Dim n = 1
-                Do
-                    projectName = "Project" & n
-                    projectPath = Path.Combine(tmpPath, projectName)
-                    If Not IO.Directory.Exists(projectPath) Then
-                        IO.Directory.CreateDirectory(projectPath)
-                        Exit Do
-                    End If
-                    n += 1
-                Loop
+                    Dim projectName = ""
+                    Dim projectPath = ""
+                    Dim n = 1
+                    Do
+                        projectName = "Project" & n
+                        projectPath = Path.Combine(tmpPath, projectName)
+                        If Not Directory.Exists(projectPath) Then
+                            Directory.CreateDirectory(projectPath)
+                            Exit Do
+                        End If
+                        n += 1
+                    Loop
 
-                n = 1
-                xamlPath = ""
-                Do
-                    formName = "Form" & n
-                    xamlPath = Path.Combine(projectPath, formName)
-                    If Not IO.Directory.Exists(xamlPath) Then
-                        IO.Directory.CreateDirectory(xamlPath)
-                        Exit Do
-                    End If
-                    n += 1
-                Loop
+                    n = 1
+                    xamlPath = ""
+                    Do
+                        formName = "Form" & n
+                        xamlPath = Path.Combine(projectPath, formName)
+                        If Not Directory.Exists(xamlPath) Then
+                            Directory.CreateDirectory(xamlPath)
+                            Exit Do
+                        End If
+                        n += 1
+                    Loop
 
-                formPath = Path.Combine(xamlPath, formName)
+                    formPath = Path.Combine(xamlPath, formName)
+
+                Else
+                    If doc Is Nothing Then doc = OpenDocumentIfNot(DesignerDocPath)
+                    formName = doc.Form
+                    xamlPath = Path.GetDirectoryName(DesignerDocPath)
+                    formPath = DesignerDocPath.Substring(0, DesignerDocPath.Length - 3)
+                End If
+
+                ' Set the FileName so the designer can save the xaml content
                 formDesigner.FileName = formPath & ".xaml"
+                formDesigner.Name = formName
                 formDesigner.DoSave()
+
+                ' Clear the file name as this is just a temb path
+                formDesigner.FileName = ""
+
                 IO.File.Create(formPath & ".sb").Close()
 
             Else
-                formName = Path.GetFileNameWithoutExtension(formDesigner.FileName)
                 xamlPath = Path.GetDirectoryName(formDesigner.FileName)
-                formPath = Path.Combine(xamlPath, formName)
+                formPath = formDesigner.FileName.Substring(0, formDesigner.FileName.Length - 5)
+                If doc Is Nothing Then doc = OpenDocumentIfNot(formPath & ".sb")
+                formName = doc.Form
+                formDesigner.Name = formName
                 If formDesigner.HasChanges Then formDesigner.DoSave()
             End If
 
-            hint.AppendLine($"'#{formName}{{")
-            Dim ControlsInfo As New Dictionary(Of String, String)
-            Dim ControlNames As New List(Of String)
-            ControlNames.Add("(Global)")
-
-            ControlsInfo(formName.ToLower()) = "Form"
-            ControlsInfo("me") = "Form"
-            ControlNames.Add(formName)
-            declaration.AppendLine($"Me = ""{formName}""")
-
-            For Each c As FrameworkElement In formDesigner.Items
-                Dim name = c.Name
-                If name <> "" Then
-                    Dim typeName = c.GetType().Name
-                    ControlsInfo(name.ToLower()) = typeName
-                    ControlNames.Add(name)
-                    hint.AppendLine($"'    {name}: {typeName}")
-                    declaration.AppendLine($"{name} = ""{name}""")
-                End If
-            Next
-
-            hint.AppendLine("'}")
-            hint.AppendLine()
-            hint.Append(declaration)
-            hint.AppendLine("True = 1")
-            hint.AppendLine("False = 0")
-            hint.AppendLine($"Forms.AppPath = ""{xamlPath}""")
-            hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{formName}.xaml"")")
-            hint.AppendLine($"Control.SetWidth({formName}, {formName}, {formDesigner.PageWidth})")
-            hint.AppendLine($"Control.SetHeight({formName}, {formName}, {formDesigner.PageHeight})")
-            hint.AppendLine($"Form.Show({formName})")
-
             If doc Is Nothing Then doc = OpenDocumentIfNot(formPath & ".sb")
-
-            doc.RemoveBrokenHandlers()
-
-            If doc.EventHandlers.Count > 0 Then
-                hint.AppendLine()
-                hint.AppendLine("'#Events{")
-                Dim sbHandlers As New Text.StringBuilder
-
-                Dim controlEvents = From eventHandler In doc.EventHandlers
-                                    Group By eventHandler.Value.ControlName
-                           Into EventInfo = Group
-
-                For Each ev In controlEvents
-                    hint.Append($"'    {ev.ControlName}:")
-                    sbHandlers.AppendLine($"' {ev.ControlName} Events:")
-                    sbHandlers.AppendLine($"Control.HandleEvents({formName}, {ev.ControlName})")
-                    For Each info In ev.EventInfo
-                        hint.Append($" {info.Value.EventName}")
-                        Dim module1 = ControlsInfo(ev.ControlName.ToLower)
-                        Dim moduleName = sb.PreCompiler.GetEventModule(module1, info.Value.EventName)
-                        sbHandlers.AppendLine($"{moduleName}.{info.Value.EventName} = {info.Key}")
-                    Next
-                    hint.AppendLine()
-                    sbHandlers.AppendLine()
-                Next
-                hint.AppendLine("'}")
-                hint.AppendLine()
-                hint.AppendLine(sbHandlers.ToString())
-            End If
-
-            IO.File.WriteAllText(formPath & ".gsb", hint.ToString())
-
-            doc.Form = formName.ToLower()
-            doc.ControlsInfo = ControlsInfo
-
-            ' Note that ControlNames Property is bound to a cono box, so keep the existing collection
-            ControlNames.Sort()
-            doc.ControlNames.Clear()
-            For Each controlName In ControlNames
-                doc.ControlNames.Add(controlName)
-            Next
+            doc.Form = formName
+            IO.File.WriteAllText(formPath & ".gsb", doc.GenerateCodeBehind(formDesigner.Items, True))
+            DesignerDocPath = doc.FilePath
         End Sub
+
 
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
             For Each d In IO.Directory.GetDirectories("UnSaved")
@@ -778,7 +771,7 @@ Namespace Microsoft.SmallBasic
             For i = errors.Count - 1 To 0 Step -1
                 Dim err = errors(i)
                 Dim errMsg = err.Description
-                If Not errMsg.StartsWith("Cannot find object") Then Continue For
+                If Not errMsg.StartsWith("Cannot find object", StringComparison.InvariantCultureIgnoreCase) Then Continue For
 
                 Dim lineNum = err.Line
                 Dim charNum = err.Column
@@ -985,6 +978,24 @@ Namespace Microsoft.SmallBasic
             Return errors
         End Function
 
+        Private Sub formDesigner_DiagramDoubleClick(control As UIElement)
+            tabCode.IsSelected = True
+            If DesignerDocPath <> "" Then
+                Dim doc = OpenDocumentIfNot(DesignerDocPath)
+                Dim controlName = Automation.AutomationProperties.GetName(control)
+                If doc.AddEventHandler(controlName, "OnClick") Then
+                    ' The code behind is saved before the new Handler is added.
+                    ' We must make the designer dirty, to force saving this chamge in 
+                    ' a nex call to SaveDesignInfo()
+                    formDesigner.HasChanges = True
+                End If
+            End If
+        End Sub
+
+        Private Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
+            formDesigner.Name = "Form1"
+            tabDesigner_Selected(Nothing, Nothing)
+        End Sub
     End Class
 
 

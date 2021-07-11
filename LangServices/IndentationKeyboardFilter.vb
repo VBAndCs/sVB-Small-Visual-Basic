@@ -41,14 +41,14 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Public Sub UpdateIndentation(snapshot As ITextSnapshot, lineNumber As Integer)
-            Dim iden = Indentation.CalculateIndentation(snapshot, lineNumber)
+            Dim inden = Indentation.CalculateIndentation(snapshot, lineNumber)
             Dim line = snapshot.GetLineFromLineNumber(lineNumber)
             Dim positionOfNextToken = line.GetPositionOfNextNonWhiteSpaceCharacter(0)
 
-            If positionOfNextToken > iden Then
-                snapshot.TextBuffer.Delete(New Span(line.Start, positionOfNextToken - iden))
-            ElseIf positionOfNextToken < iden Then
-                snapshot.TextBuffer.Insert(line.Start, New String(" "c, iden - positionOfNextToken))
+            If positionOfNextToken > inden Then
+                snapshot.TextBuffer.Delete(New Span(line.Start, positionOfNextToken - inden))
+            ElseIf positionOfNextToken < inden Then
+                snapshot.TextBuffer.Insert(line.Start, New String(" "c, inden - positionOfNextToken))
             End If
 
         End Sub
@@ -57,7 +57,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
     Public NotInheritable Class Indentation
         Public Shared Function CalculateIndentation(snapshot As ITextSnapshot, lineNumber As Integer) As Integer
-            Dim iden As Integer
+            Dim inden As Integer
             Dim line = snapshot.GetLineFromLineNumber(lineNumber)
             Dim lineText = line.GetText()
             Dim indentationLevel = lineText.Length - lineText.TrimStart(" "c, vbTab).Length
@@ -74,7 +74,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     prevLine = snapshot.GetLineFromLineNumber(n)
                     prevLineText = prevLine.GetText()
                     prevLineTrimmedText = prevLineText.Trim(" "c, vbTab)
-                    If prevLineText <> "" Then Exit Do
+                    If prevLineTrimmedText <> "" Then Exit Do
                     n -= 1
                 Loop
 
@@ -83,26 +83,31 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Dim prevTokens = New LineScanner().GetTokenList(prevLineText, 1)
                     Dim tokens = New LineScanner().GetTokenList(lineText, 1)
 
-                    Select Case prevTokens.Current.Token
-                        Case Token.For, Token.If, Token.Sub, Token.While
-                            iden = prevIndentationLevel + 3
-                        Case Else
-                            Select Case tokens.Current.Token
-                                Case Token.EndFor, Token.EndIf, Token.EndSub, Token.EndWhile
-                                    iden = prevIndentationLevel - 3
+                    Select Case tokens.Current.Token
+                        Case Token.EndFor, Token.Next, Token.ElseIf, Token.Else, Token.EndIf, Token.EndSub, Token.EndWhile, Token.Wend
+                            Select Case prevTokens.Current.Token
+                                Case Token.For, Token.If, Token.ElseIf, Token.Else, Token.Sub, Token.While
+                                    inden = prevIndentationLevel
                                 Case Else
-                                    iden = prevIndentationLevel
+                                    inden = prevIndentationLevel - 3
                             End Select
-                    End Select
+                        Case Else
+                                    Select Case prevTokens.Current.Token
+                                        Case Token.For, Token.If, Token.ElseIf, Token.Else, Token.Sub, Token.While
+                                            inden = prevIndentationLevel + 3
+                                        Case Else
+                                            inden = prevIndentationLevel
+                                    End Select
+                            End Select
 
-                    If iden < 0 Then iden = 0
+                            If inden < 0 Then inden = 0
                 Else
-                    iden = indentationLevel
+                    inden = indentationLevel
                 End If
             Else
-                iden = indentationLevel
+                inden = indentationLevel
             End If
-            Return iden
+            Return inden
         End Function
 
     End Class

@@ -60,7 +60,7 @@ Namespace Microsoft.SmallBasic.Statements
             Dim statementContaining = GetStatementContaining(WhileBody, line)
 
             If statementContaining IsNot Nothing Then
-                CompletionHelper.FillKeywords(completionBag, Token.EndWhile)
+                CompletionHelper.FillKeywords(completionBag, Token.EndWhile, Token.Wend)
                 statementContaining.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
             End If
         End Sub

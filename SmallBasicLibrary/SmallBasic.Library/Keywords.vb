@@ -11,7 +11,7 @@ Namespace Library
         ''' <code>
         ''' For i = 1 To 10 
         '''   TextWindow.WriteLine(i)
-        ''' EndFor
+        ''' Next
         ''' </code>
         ''' </example>
         Public Shared Sub [For]()
@@ -21,6 +21,12 @@ Namespace Library
         ''' Check the For statement for information about the EndFor keyword.
         ''' </summary>
         Public Shared Sub EndFor()
+        End Sub
+
+        ''' <summary>
+        ''' Check the For statement for information about the Next keyword.
+        ''' </summary>
+        Public Shared Sub [Next]()
         End Sub
 
         ''' <summary>
@@ -37,7 +43,7 @@ Namespace Library
         ''' <code>
         ''' For i = 1 to 10 Step 2
         '''   TextWindow.WriteLine(i)
-        ''' EndFor
+        ''' Next
         ''' </code>
         ''' </example>
         Public Shared Sub [Step]()
@@ -140,7 +146,7 @@ Namespace Library
         ''' While i &lt; 100
         '''   i = Math.GetRandomNumber(150)
         '''   TextWindow.WriteLine(i)
-        ''' EndWhile
+        ''' Wend
         ''' </code>
         ''' </example>
         Public Shared Sub [While]()
@@ -150,6 +156,12 @@ Namespace Library
         ''' Check the While statement for information about the EndWhile keyword.
         ''' </summary>
         Public Shared Sub EndWhile()
+        End Sub
+
+        ''' <summary>
+        ''' Check the While statement for information about the Wend keyword.
+        ''' </summary>
+        Public Shared Sub [Wend]()
         End Sub
 
         ''' <summary>

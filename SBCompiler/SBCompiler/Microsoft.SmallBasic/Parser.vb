@@ -53,7 +53,7 @@ Namespace Microsoft.SmallBasic
 
             While tokenEnumerator IsNot Nothing
 
-                If tokenEnumerator.Current.Token = Token.EndWhile Then
+                If tokenEnumerator.Current.Token = Token.EndWhile OrElse tokenEnumerator.Current.Token = Token.Wend Then
                     whileStatement2.EndWhileToken = tokenEnumerator.Current
                     flag = True
                     Exit While
@@ -93,7 +93,7 @@ Namespace Microsoft.SmallBasic
 
             While tokenEnumerator IsNot Nothing
 
-                If tokenEnumerator.Current.Token = Token.EndFor Then
+                If tokenEnumerator.Current.Token = Token.EndFor OrElse tokenEnumerator.Current.Token = Token.Next Then
                     forStatement2.EndForToken = tokenEnumerator.Current
                     flag = True
                     Exit While

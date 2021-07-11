@@ -22,6 +22,7 @@ Public Class DiagramPanel
         RaiseEvent ConnectorsPositionChangd()
     End Sub
 
+
     Public Overrides Sub OnApplyTemplate()
         MyBase.OnApplyTemplate()
         DesignerItem = Helper.GetListBoxItem(Me)
@@ -86,7 +87,9 @@ Public Class DiagramPanel
         Dim Id = Designer.GetGroupID(Diagram)
         If Id <> "" Then DiagramGroup.Add(Me, Date.Parse(Id))
 
-        Diagram.LayoutTransform = New SkewTransform(0, 0.000000000001, 0, 0.000000000001)
+        Dim sk = TryCast(Diagram.LayoutTransform, SkewTransform)
+        If sk Is Nothing OrElse sk.AngleY = 0 Then Diagram.LayoutTransform = New SkewTransform(0, 0.000000000001, 0, 0.000000000001)
+
         TopDpd = DependencyPropertyDescriptor.FromProperty(Canvas.TopProperty, GetType(ListBoxItem))
         TopDpd.AddValueChanged(DesignerItem, AddressOf DesignerItem_TopChanged)
 

@@ -160,7 +160,10 @@ Namespace WinForms
             End If
         End Function
 
-
+        Public Shared Function GetModuleName(name As String) As String
+            If ModuleInfo.ContainsKey(name) Then Return name
+            Return NameOf(Control)
+        End Function
     End Class
 
     Public Class FormInfo

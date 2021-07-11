@@ -2,7 +2,7 @@
     Public Property Diagrams As ArrayList
     Public Property ConnectionInfos As ArrayList
     Public Property GridPen As Pen
-    Public Property DesignerCanvas As Brush
+    Public Property DesignerCanvasBrush As Brush
     Public Property PageSize As Size
 
     Sub New()
@@ -11,7 +11,7 @@
 
     Sub New(Dsn As Designer, Diagrams As IList, Connections As Dictionary(Of UIElement, List(Of Connection)))
         Me.GridPen = Dsn.GridPen
-        Me.DesignerCanvas = Dsn.DesignerCanvas.Background
+        Me.DesignerCanvasBrush = Dsn.DesignerCanvas.Background
         Me.PageSize = New Size(Dsn.PageWidth, Dsn.PageHeight)
 
         Me.Diagrams = New ArrayList()
@@ -30,7 +30,7 @@
     Sub LoadTo(Dsn As Designer)
         Dsn.PageWidth = Me.PageSize.Width
         Dsn.PageHeight = Me.PageSize.Height
-        If Me.DesignerCanvas IsNot Nothing Then Dsn.DesignerCanvas.Background = Me.DesignerCanvas
+        If Me.DesignerCanvasBrush IsNot Nothing Then Dsn.DesignerCanvas.Background = Me.DesignerCanvasBrush
 
         If GridPen IsNot Nothing Then
             Dsn.GridPen.Thickness = Me.GridPen.Thickness

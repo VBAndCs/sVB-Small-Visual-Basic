@@ -104,8 +104,10 @@
                                         </Border.Background>
                                     </Border>
                                 </Border>
-                                <DockPanel Name="TitleElement" MinWidth="160" Background="#00FFFFFF" Grid.RowSpan="2" Grid.Column="1" 
-                                        MouseDown="OnBeginDrag" MouseMove="OnDrag" MouseUp="OnEndDrag">
+                                <DockPanel Name="TitleElement" MinWidth="160" 
+                                        Background="#00FFFFFF" Grid.RowSpan="2" Grid.Column="1" 
+                                        MouseDown="OnBeginDrag" MouseMove="OnDrag" 
+                                        MouseUp="OnEndDrag">
                                     <Border VerticalAlignment="Top" BorderThickness="1,0,1,1" 
                                             Margin="0,1,0,0" DockPanel.Dock="Right" 
                                             BorderBrush="#99e1e1e1" CornerRadius="0,0,4,4" 
@@ -117,12 +119,17 @@
                                         </Border>
                                     </Border>
                                     <Grid DockPanel.Dock="Left">
-                                        <TextBlock Margin="0,4,4,4" VerticalAlignment="Center" Foreground="#FF808080" TextTrimming="CharacterEllipsis" Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        <TextBlock Margin="0.5,4.5,4,4" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
+                                        <TextBlock Margin="0,4,4,4" VerticalAlignment="Center" 
+                                                HorizontalAlignment="Center" Width="120"
+                                                Foreground="#FF808080" TextTrimming="CharacterEllipsis" 
+                                                Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
+                                        <TextBlock Margin="0.5,4.5,4,4" 
+                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" 
+                                                   Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
                                     </Grid>
                                     <Grid Margin="10,0" HorizontalAlignment="Stretch">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="180"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>

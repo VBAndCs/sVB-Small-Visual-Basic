@@ -8,9 +8,11 @@
         [Else]
         [ElseIf]
         EndFor
+        [Next]
         [EndIf]
         EndSub
         EndWhile
+        [Wend]
         [For]
         [Goto]
         [If]

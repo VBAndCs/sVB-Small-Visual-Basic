@@ -95,11 +95,11 @@ Friend Class ResizeThumb
     End Sub
 
     Private Sub ResizeThumb_DragDelta(ByVal sender As Object, ByVal e As DragDeltaEventArgs)
-        ResizeThumb.MeasurementsVisibilty = Windows.Visibility.Visible
+        ResizeThumb.MeasurementsVisibilty = Visibility.Visible
         Dim deltaVertical, deltaHorizontal As Double
 
         Select Case HorizontalAlignment
-            Case System.Windows.HorizontalAlignment.Left
+            Case HorizontalAlignment.Left
                 deltaHorizontal = Math.Min(e.HorizontalChange, Pnl.ActualWidth - Pnl.MinWidth)
                 If Math.Abs(deltaHorizontal) * Helper.PxToCm >= 0.1 Then
                     deltaHorizontal = Helper.FixToMm(deltaHorizontal)
@@ -114,7 +114,7 @@ Friend Class ResizeThumb
                     End If
                 End If
 
-            Case System.Windows.HorizontalAlignment.Right
+            Case HorizontalAlignment.Right
                 deltaHorizontal = Math.Min(-e.HorizontalChange, Pnl.ActualWidth - Pnl.MinWidth)
 
                 If Math.Abs(deltaHorizontal) * Helper.PxToCm >= 0.1 Then
@@ -134,7 +134,7 @@ Friend Class ResizeThumb
 
 
         Select Case VerticalAlignment
-            Case System.Windows.VerticalAlignment.Top
+            Case VerticalAlignment.Top
                 deltaVertical = Math.Min(e.VerticalChange, Pnl.ActualHeight - Pnl.MinHeight)
                 If Math.Abs(deltaVertical) * Helper.PxToCm >= 0.1 Then
                     deltaVertical = Helper.FixToMm(deltaVertical)
@@ -169,7 +169,7 @@ Friend Class ResizeThumb
     End Sub
 
     Private Sub ResizeThumb_DragCompleted(ByVal sender As Object, ByVal e As DragCompletedEventArgs)
-        ResizeThumb.MeasurementsVisibilty = Windows.Visibility.Collapsed
+        ResizeThumb.MeasurementsVisibilty = Visibility.Collapsed
         Pnl.AdjustConnectors()
         ReportChanges()
     End Sub

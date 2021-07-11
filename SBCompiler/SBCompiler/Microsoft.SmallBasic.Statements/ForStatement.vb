@@ -113,7 +113,7 @@ Namespace Microsoft.SmallBasic.Statements
                 End If
             Else
                 Dim statementContaining = GetStatementContaining(ForBody, line)
-                CompletionHelper.FillKeywords(completionBag, Token.EndFor)
+                CompletionHelper.FillKeywords(completionBag, Token.EndFor, Token.Next)
                 statementContaining?.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
             End If
         End Sub

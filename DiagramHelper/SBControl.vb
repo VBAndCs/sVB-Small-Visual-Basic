@@ -1,14 +1,6 @@
 ﻿Public Class SBControl
     Inherits Image
 
-    Dim num As Integer = 0
-
-    Public Function GetDefaultName() As String
-        num += 1
-        Return Control.GetType.Name & num
-    End Function
-
-
     Public Property Control As Control
 
     Dim _displayImage As String

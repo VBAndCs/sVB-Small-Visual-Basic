@@ -74,6 +74,13 @@ Public Class Designer
         End Set
     End Property
 
+
+    Public Event DiagramDoubleClick(diagram As UIElement)
+
+    Friend Sub OnDiagramDoubleClick(diagram As UIElement)
+        RaiseEvent DiagramDoubleClick(diagram)
+    End Sub
+
 #Region "Connections"
 
     Friend Connections As New Dictionary(Of UIElement, List(Of Connection))
@@ -179,26 +186,46 @@ Public Class Designer
         Dim TbItem As ToolBoxItem = e.Data.GetData(GetType(ToolBoxItem))
         If TbItem IsNot Nothing Then
             Dim newItem = TbItem.Child
-            Dim sbControl = TryCast(newItem, SBControl)
+            Dim diagram As UIElement
             Dim defaultName = ""
-            If sbControl IsNot Nothing Then
-                newItem = sbControl.Control
-                defaultName = sbControl.GetDefaultName()
+            Dim controlType As Type
+            Dim typeName As String
+            Dim sbControl = TryCast(newItem, SBControl)
+
+            If sbControl Is Nothing Then
+                diagram = Helper.Clone(newItem)
+                controlType = GetType(Label)
+                typeName = TbItem.Name
+            Else
+                diagram = Helper.Clone(sbControl.Control)
+                controlType = diagram.GetType()
+                typeName = controlType.Name
             End If
 
-            Dim diagram As UIElement = Helper.Clone(newItem)
+            Dim num = 1
+            For Each dg In Me.Items
+                If dg.GetType() Is controlType Then
+                    Dim controlName = CStr(dg.name)
+                    If controlName.StartsWith(TypeName) Then
+                        Dim n = controlName.Substring(TypeName.Length)
+                        If IsNumeric(n) Then
+                            If CInt(n) >= num Then num = CInt(n) + 1
+                        End If
+                    End If
+                End If
+            Next
+            defaultName = typeName & num
 
             If defaultName <> "" Then
-                Dim control As Object = diagram
-                control.Name = defaultName
-                Try
-                    control.Content = defaultName
-                Catch
-                End Try
+                Automation.AutomationProperties.SetName(diagram, defaultName)
+                Dim conControl = TryCast(diagram, ContentControl)
+                If conControl IsNot Nothing AndAlso conControl.Content Is Nothing Then
+                    conControl.Content = defaultName
+                End If
             End If
 
-            Dim Fw = TryCast(Diagram, FrameworkElement)
-            If Fw IsNot Nothing Then Fw.ToolTip = Nothing
+            diagram.ClearValue(ToolTipProperty)
+
             Dim Pos = e.GetPosition(Me.DesignerCanvas)
             Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items, Diagram)
             Me.Items.Add(Diagram)
@@ -358,6 +385,10 @@ Public Class Designer
         Next
 
         Dim canvas As New Canvas
+        canvas.Name = Me.Name
+        canvas.Width = Me.PageWidth
+        canvas.Height = Me.PageHeight
+
         For Each diagram In Me.Items
             Dim diagram2 As FrameworkElement = Helper.Clone(diagram)
             ' Note: These properties are changed by code. 
@@ -384,8 +415,8 @@ Public Class Designer
 
             Dim angle = Designer.GetRotationAngle(diagram2)
             If angle <> 0 Then Helper.Rotate(diagram2, angle)
-
             diagram2.ClearValue(RotationAngleProperty)
+
             Dim skew = TryCast(diagram2.LayoutTransform, SkewTransform)
             If skew IsNot Nothing Then
                 If Math.Round(skew.AngleX, 4) = 0 AndAlso Math.Round(skew.AngleY, 4) = 0 Then
@@ -436,20 +467,55 @@ Public Class Designer
         Me.Cursor = Cursors.Wait
         Try
             Xaml = IO.File.ReadAllText(FileName)
-            Dim SaveInfo As SaveInfo = XamlReader.Load(XmlReader.Create(New IO.StringReader(Xaml)))
-            Me.Visibility = Windows.Visibility.Hidden
+            Dim canvas As Canvas = XamlReader.Load(XmlReader.Create(New IO.StringReader(Xaml)))
+            Me.Visibility = Visibility.Hidden
             Me.HasChanges = False
             Me.ClearConnections()
             Me.Items.Clear()
             Me.UndoStack.Clear()
             DiagramGroup.Clear()
 
-            SaveInfo.LoadTo(Me)
+            If Not Double.IsNaN(canvas.Width) Then Me.PageWidth = canvas.Width
+            If Not Double.IsNaN(canvas.Height) Then Me.PageHeight = canvas.Height
+            Me.Name = canvas.Name
+
+            For Each child In canvas.Children
+                Dim Diagram = TryCast(Helper.Clone(child), FrameworkElement)
+                If Diagram Is Nothing Then Continue For
+
+                Me.Items.Add(Diagram)
+
+                Designer.SetFrameWidth(Diagram, Diagram.Width)
+                Diagram.ClearValue(FrameworkElement.WidthProperty)
+
+                Designer.SetFrameHeight(Diagram, Diagram.Height)
+                Diagram.ClearValue(FrameworkElement.HeightProperty)
+
+                Designer.SetLeft(Diagram, Canvas.GetLeft(Diagram))
+                Designer.SetTop(Diagram, Canvas.GetTop(Diagram))
+
+                Dim RotateTransform = TryCast(Diagram.RenderTransform, RotateTransform)
+                If RotateTransform Is Nothing Then
+                    Designer.SetRotationAngle(Diagram, 0)
+                Else
+                    Dim angle = RotateTransform.Angle
+                    Diagram.RenderTransform = Nothing
+                    Designer.SetRotationAngle(Diagram, angle)
+                End If
+
+                Dim lt = Diagram.LayoutTransform
+                Diagram.LayoutTransform = Nothing
+                Helper.UpdateControl(Diagram)
+                Diagram.LayoutTransform = lt
+            Next
+
+            Helper.UpdateControl(Me)
+
             Me.FileName = FileName
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
-            Me.Visibility = Windows.Visibility.Visible
+            Me.Visibility = Visibility.Visible
             Me.Cursor = Nothing
         End Try
 
@@ -774,6 +840,27 @@ Public Class Designer
 #Region "Dependancy Properties"
 
     Dim ExitChange As Boolean = False
+
+    '#Region "ControlName Attached Property"
+    '    Public Shared Function GetControlName(element As DependencyObject) As String
+    '        If element Is Nothing Then
+    '            Throw New ArgumentNullException("element")
+    '        End If
+
+    '        Return element.GetValue(ControlNameProperty)
+    '    End Function
+
+    '    Public Shared Sub SetControlName(element As DependencyObject, value As String)
+    '        If element Is Nothing Then Return
+
+    '        element.SetValue(ControlNameProperty, value)
+    '    End Sub
+
+    '    Public Shared ReadOnly ControlNameProperty As _
+    '                DependencyProperty = DependencyProperty.RegisterAttached("ControlName",
+    '                           GetType(String), GetType(Designer))
+    '#End Region
+
 
 #Region "Left Attached Property"
     <TypeConverter(GetType(LengthConverter))>

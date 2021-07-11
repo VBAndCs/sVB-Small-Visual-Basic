@@ -17,6 +17,7 @@ Imports Microsoft.VisualBasic
 Imports System.Collections.Generic
 Imports System.Linq
 Imports Microsoft.SmallBasic.LanguageService
+Imports System.Windows
 
 Namespace Microsoft.SmallBasic.Documents
     Public Class TextDocument
@@ -33,6 +34,7 @@ Namespace Microsoft.SmallBasic.Documents
         Private _caretPositionText As String
         Private _programDetails As Object
         Public Property BaseId As String
+        Public OpenedInDesigner As Boolean
 
         Public Property CaretPositionText As String
             Get
@@ -50,7 +52,8 @@ Namespace Microsoft.SmallBasic.Documents
             Get
                 Return TextBuffer.ContentType
             End Get
-            Set(ByVal value As String)
+
+            Set(value As String)
                 TextBuffer.ContentType = value
                 NotifyProperty("ContentType")
             End Set
@@ -173,6 +176,7 @@ Namespace Microsoft.SmallBasic.Documents
             App.GlobalDomain.Bind()
             _ControlNames.Add("(Global)")
             _GlobalSubs.Add("(Add New Sub)")
+            ParseFormHints()
         End Sub
 
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
@@ -238,7 +242,7 @@ Namespace Microsoft.SmallBasic.Documents
 
             Try
                 Save()
-            Catch __unusedException1__ As Exception
+            Catch
                 MyBase.FilePath = filePath2
                 Throw
             End Try
@@ -355,11 +359,11 @@ Namespace Microsoft.SmallBasic.Documents
                     Case "if"
                         AutoCompleteBlock(textView, line, code, keyword, $"If {paran} Then#   ", "EndIf", paran.Length)
                     Case "elseif"
-                        AutoCompleteBlock(textView, line, code, keyword, $"ElseIf {paran} Then#   ", "EndIf", paran.Length)
+                        AutoCompleteBlock(textView, line, code, keyword, $"ElseIf {paran} Then#   ", "", paran.Length)
                     Case "for"
-                        AutoCompleteBlock(textView, line, code, keyword, $"For #   ", "EndFor", paran.Length)
+                        AutoCompleteBlock(textView, line, code, keyword, $"For #   ", "Next", paran.Length)
                     Case "while"
-                        AutoCompleteBlock(textView, line, code, keyword, $"While {paran}#   ", "EndWhile", paran.Length)
+                        AutoCompleteBlock(textView, line, code, keyword, $"While {paran}#   ", "Wend", paran.Length)
                     Case "sub"
                         AutoCompleteBlock(textView, line, code, keyword, $"Sub #   ", "EndSub", paran.Length)
                     Case Else
@@ -455,52 +459,131 @@ Namespace Microsoft.SmallBasic.Documents
             OnBindCompleted()
         End Sub
 
-        Public Property Form As String
-
-        Public ReadOnly Property ControlNames As New ObservableCollection(Of String)
-
-        Public ReadOnly Property ControlEvents As New ObservableCollection(Of String)
-
-        Public Property EventHandlers As New Dictionary(Of String, (ControlName As String, EventName As String))
-
         Public ReadOnly Property GlobalSubs As New List(Of String)
-
-
-        Dim _controlsInfo As Dictionary(Of String, String)
+        Public ReadOnly Property ControlEvents As New ObservableCollection(Of String)
+        Public ReadOnly Property ControlNames As New ObservableCollection(Of String)
+        Public Property EventHandlers As New Dictionary(Of String, (ControlName As String, EventName As String))
+        Public Property Form As String
         Public Property ControlsInfo As Dictionary(Of String, String)
-            Get
-                Return _controlsInfo
-            End Get
 
-            Set(value As Dictionary(Of String, String))
-                _controlsInfo = value
 
+        Function GenerateCodeBehind(controls As Controls.ItemCollection, updateControlInfo As Boolean) As String
+            Dim hint As New Text.StringBuilder
+            Dim declaration As New Text.StringBuilder
+            Dim formName = _Form
+
+            hint.AppendLine($"'#{formName}{{")
+            Dim controlsInfoList As New Dictionary(Of String, String)
+            Dim controlNamesList As New List(Of String)
+            controlNamesList.Add("(Global)")
+
+            controlsInfoList(formName.ToLower()) = "Form"
+            controlsInfoList("me") = "Form"
+            controlNamesList.Add(formName)
+            declaration.AppendLine($"Me = ""{formName}""")
+
+            For Each c As UIElement In controls
+                Dim name = Automation.AutomationProperties.GetName(c)
+                If name <> "" Then
+                    Dim typeName = PreCompiler.GetModuleName(c.GetType().Name)
+                    controlsInfoList(name.ToLower()) = typeName
+                    controlNamesList.Add(name)
+                    hint.AppendLine($"'    {name}: {typeName}")
+                    declaration.AppendLine($"{name} = ""{name.ToLower()}""")
+                End If
+            Next
+
+            hint.AppendLine("'}")
+            hint.AppendLine()
+            hint.Append(declaration)
+            hint.AppendLine("True = ""True""")
+            hint.AppendLine("False = ""False""")
+            'hint.AppendLine($"Forms.AppPath = ""{xamlPath}""")
+            hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{Path.GetFileNameWithoutExtension(Me.FilePath)}.xaml"")")
+            hint.AppendLine($"Form.Show({formName})")
+
+            RemoveBrokenHandlers()
+
+            If EventHandlers.Count > 0 Then
+                hint.AppendLine()
+                hint.AppendLine("'#Events{")
+                Dim sbHandlers As New Text.StringBuilder
+
+                Dim controlEvents = From eventHandler In EventHandlers
+                                    Group By eventHandler.Value.ControlName
+                           Into EventInfo = Group
+
+                For Each ev In controlEvents
+                    hint.Append($"'    {ev.ControlName}:")
+                    sbHandlers.AppendLine($"' {ev.ControlName} Events:")
+                    sbHandlers.AppendLine($"Control.HandleEvents({formName}, {ev.ControlName})")
+                    For Each info In ev.EventInfo
+                        hint.Append($" {info.Value.EventName}")
+                        Dim module1 = controlsInfoList(ev.ControlName.ToLower)
+                        Dim moduleName = PreCompiler.GetEventModule(module1, info.Value.EventName)
+                        sbHandlers.AppendLine($"{moduleName}.{info.Value.EventName} = {info.Key}")
+                    Next
+                    hint.AppendLine()
+                    sbHandlers.AppendLine()
+                Next
+                hint.AppendLine("'}")
+                hint.AppendLine()
+                hint.AppendLine(sbHandlers.ToString())
+            End If
+
+            If updateControlInfo Then
+                _Form = formName
+                _ControlsInfo = controlsInfoList
                 Try
-                    TextBuffer.Properties.AddProperty("ControlsInfo", _controlsInfo)
+                    TextBuffer.Properties.AddProperty("ControlsInfo", _ControlsInfo)
                 Catch
                     TextBuffer.Properties.RemoveProperty("ControlsInfo")
-                    TextBuffer.Properties.AddProperty("ControlsInfo", _controlsInfo)
+                    TextBuffer.Properties.AddProperty("ControlsInfo", _ControlsInfo)
                 End Try
-            End Set
-        End Property
 
-        Public Function ParseFormHints(code As String) As Boolean
+                ' Note that ControlNames Property is bound to a cono box, so keep the existing collection
+                controlNamesList.Sort()
+                _ControlNames.Clear()
+                For Each controlName In controlNamesList
+                    _ControlNames.Add(controlName)
+                Next
+            End If
+
+            OpenedInDesigner = True
+            Return hint.ToString()
+        End Function
+
+        Public Function GetCodeBehind() As String
+            Dim genCodefile = FilePath?.Substring(0, FilePath.Length - 2) + "gsb"
+            If genCodefile = "" OrElse Not File.Exists(genCodefile) Then Return ""
+            Dim code = File.ReadAllText(genCodefile)
+            Return code
+        End Function
+
+        Public Sub ParseFormHints()
+            Dim code = GetCodeBehind()
+
             Dim info = PreCompiler.ParseFormHints(code)
-            If info Is Nothing Then Return False
+            If info Is Nothing Then Return
 
             Me.Form = info.Form
             Me.ControlsInfo = info.ControlsInfo
-            _EventHandlers = info.EventHandlers
+            Me.ControlsInfo.Add("me", "Form")
+            If info.EventHandlers IsNot Nothing Then
+                _EventHandlers = info.EventHandlers
+            Else
+                _EventHandlers.Clear()
+            End If
 
             info.ControlNames.Sort()
             _ControlNames.Clear()
             _ControlNames.Add("(Global)")
+
             For Each c In info.ControlNames
                 _ControlNames.Add(c)
             Next
 
-            Return True
-        End Function
+        End Sub
 
         Friend Shared Function FromCode(code As String) As TextDocument
             Dim n = New Random().Next(1, 1000000)
@@ -518,7 +601,8 @@ EndSub
 
         Public Property IgnoreCaretPosChange As Boolean
 
-        Public Sub AddEventHandler(controlName As String, eventName As String)
+        Public Function AddEventHandler(controlName As String, eventName As String) As Boolean
+            Dim alreadyExists = False
             Dim isGlobal = controlName = "(Global)"
             Dim handlerName = If(isGlobal, "", controlName & "_") & If(eventName = "(Add New Sub)", "", eventName)
             Dim pos = -1
@@ -568,15 +652,20 @@ EndSub
                     caret.MoveTo(Text.Length - 10)
                 End If
             Else
+                alreadyExists = True
                 caret.MoveTo(pos)
                 _editorControl.EditorOperations.SelectCurrentWord()
             End If
 
             caret.EnsureVisible()
             CType(_editorControl.TextView, System.Windows.UIElement).Focus()
+
+            Me.MdiView.CmbControlNames.SelectedItem = controlName
+            Me.MdiView.CmbEventNames.SelectedItem = handlerName
             IgnoreCaretPosChange = False
 
-        End Sub
+            Return Not alreadyExists
+        End Function
 
         Public Function FindCurrentEventHandler() As String
             Dim textView = _editorControl.TextView

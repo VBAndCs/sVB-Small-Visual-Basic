@@ -1308,13 +1308,18 @@ SmallBasicLibrary
  <code>
  For i = 1 To 10 
    TextWindow.WriteLine(i)
- EndFor
+ Next
  </code>
  </example>
 </member>
 <member name="M:Microsoft.SmallBasic.Library.Keywords.EndFor">
  <summary>
  Check the For statement for information about the EndFor keyword.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallBasic.Library.Keywords.Next">
+ <summary>
+ Check the For statement for information about the Next keyword.
  </summary>
 </member>
 <member name="M:Microsoft.SmallBasic.Library.Keywords.To">
@@ -1331,7 +1336,7 @@ SmallBasicLibrary
  <code>
  For i = 1 to 10 Step 2
    TextWindow.WriteLine(i)
- EndFor
+ Next
  </code>
  </example>
 </member>
@@ -1425,13 +1430,18 @@ SmallBasicLibrary
  While i &lt; 100
    i = Math.GetRandomNumber(150)
    TextWindow.WriteLine(i)
- EndWhile
+ Wend
  </code>
  </example>
 </member>
 <member name="M:Microsoft.SmallBasic.Library.Keywords.EndWhile">
  <summary>
  Check the While statement for information about the EndWhile keyword.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallBasic.Library.Keywords.Wend">
+ <summary>
+ Check the While statement for information about the Wend keyword.
  </summary>
 </member>
 <member name="M:Microsoft.SmallBasic.Library.Keywords.And">

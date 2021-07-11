@@ -4,14 +4,21 @@
     Sub New(Diagram As UIElement, Optional FileName As String = "")
         MyBase.New()
 
+        Me.Name = IO.Path.GetFileNameWithoutExtension(FileName)
         Dim Fw = TryCast(Diagram, FrameworkElement)
+
         If Fw IsNot Nothing Then
             Me.Width = Math.Max(34, Fw.MinWidth + Fw.Margin.Left + Fw.Margin.Right + 6)
             Me.Height = Math.Max(34, Fw.MinHeight + Fw.Margin.Top + Fw.Margin.Bottom + 6)
-            If Fw.ToolTip = "" Then Fw.ToolTip = IO.Path.GetFileNameWithoutExtension(FileName)
+            If Fw.ToolTip = "" Then
+                Fw.ToolTip = Me.Name
+            Else
+                Me.Name = Fw.ToolTip
+            End If
         Else
             Me.Width = 34
             Me.Height = 34
+            If Me.Name = "" Then Me.Name = "Diagram"
         End If
 
         Me.Padding = New Thickness(2)
