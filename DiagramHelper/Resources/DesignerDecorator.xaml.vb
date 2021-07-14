@@ -1,4 +1,4 @@
-﻿Public Class DesignerMenus
+﻿Public Class DesignerDecorator
 
     Function GetDesigner(Mi As MenuItem) As Designer
         Dim Cntx As ContextMenu = Mi.Parent
@@ -29,6 +29,8 @@
                         Mi.IsEnabled = Dsn.CanUndo
                     Case "Redo"
                         Mi.IsEnabled = Dsn.CanRedo
+                    Case "Close"
+                        Mi.IsEnabled = Not Dsn.IsNew OrElse Dsn.Pages.Count > 1
                 End Select
             End If
         Next
@@ -45,7 +47,11 @@
     End Sub
 
     Private Sub NewMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        GetDesigner(sender).NewPage()
+        GetDesigner(sender).OpenNewPage()
+    End Sub
+
+    Private Sub CloseMenuItem_Click(sender As Object, e As RoutedEventArgs)
+        GetDesigner(sender).ClosePage()
     End Sub
 
     Private Sub OpenMenuItem_Click(sender As Object, e As RoutedEventArgs)

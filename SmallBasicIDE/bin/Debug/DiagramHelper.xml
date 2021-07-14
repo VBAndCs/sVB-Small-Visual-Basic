@@ -37,12 +37,12 @@ DiagramPanel
 InitializeComponent
 </summary>
 </member>
-<member name="T:DiagramHelper.DesignerMenus">
+<member name="T:DiagramHelper.DesignerDecorator">
 <summary>
-DesignerMenus
+DesignerDecorator
 </summary>
 </member>
-<member name="M:DiagramHelper.DesignerMenus.InitializeComponent">
+<member name="M:DiagramHelper.DesignerDecorator.InitializeComponent">
 <summary>
 InitializeComponent
 </summary>

@@ -108,7 +108,6 @@ F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\WndPageSetup.baml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\WndSkew.baml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Arrow.g.vb
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramPanel.g.vb
-F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\DesignerDecorator.g.vb
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\ToolBox.g.vb
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\WndPageSetup.g.vb
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\WndSkew.g.vb
@@ -117,7 +116,6 @@ F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper_MarkupComp
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper_MarkupCompile.lref
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramPanel.baml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\ConnectDecorator.baml
-F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\DesignerDecorator.baml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\ResizeDecorator.baml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\RotateDecorator.baml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\ZoomBoxDecorator.baml
@@ -129,3 +127,7 @@ F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper.vbproj.Cop
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper.dll
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper.xml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\ProjectExplorerDecorator.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\DesignerDecorator.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\DesignerDecorator.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper.vbproj.AssemblyReference.cache

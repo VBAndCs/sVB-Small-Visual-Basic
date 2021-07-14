@@ -84,44 +84,46 @@ Namespace WinForms
         End Function
 
         Public Shared Function ParseFormHints(txt As String) As FormInfo
+            '@Form Hints:
             '#Form1{
             '    TextBox1: TextBox
             '    btnOk: Button
             '    lblError: Label
             '}
 
-            If Not txt.StartsWith("'#") Then Return Nothing
+            Dim pos1 = txt.IndexOf("'@Form Hints:")
+            If pos1 = -1 Then Return Nothing
 
-            Dim pos1 = 2
-            Dim pos2 = txt.IndexOf(Environment.NewLine, pos1)
-            If pos2 = -1 Then Return Nothing
-            If txt(pos2 - 1) <> "{" Then Return Nothing
+            Dim lines = txt.Substring(pos1).Split({vbCr, vbLf}, StringSplitOptions.RemoveEmptyEntries)
+            If lines.Count < 3 Then Return Nothing
+
+
+            If Not (lines(1).StartsWith("'#") AndAlso lines(1).EndsWith("{")) Then Return Nothing
 
             Dim info As New FormInfo
-            info.Form = txt.Substring(pos1, pos2 - 1 - pos1).Trim()
+            info.Form = lines(1).Substring(2, lines(1).Length - 3).Trim()
             If info.Form = "" Then Return Nothing
-            info.ControlsInfo.Add(info.Form.ToLower(), "Form")
+            info.ControlsInfo(info.Form.ToLower()) = "Form"
             info.ControlNames.Add(info.Form)
 
-            Do
-                pos1 = pos2 + Environment.NewLine.Length
-                If txt.Substring(pos1, 5) = "'    " Then
-                    pos1 += 5
-                    pos2 = txt.IndexOf(Environment.NewLine, pos1)
-                    If pos2 = -1 Then Return Nothing
-                    Dim hint = txt.Substring(pos1, pos2 - pos1)
-                    Dim pair = hint.Split(":"c)
-                    If pair Is Nothing OrElse pair.Length <> 2 Then Return Nothing
-                    Dim cntrlName = pair(0).Trim()
-                    info.ControlsInfo.Add(cntrlName.ToLower(), pair(1).Trim)
-                    info.ControlNames.Add(cntrlName)
-                ElseIf txt.Substring(pos1, 2) = "'}" Then
+            For i = 2 To lines.Count - 1
+                If lines(i) = "'}" Then
                     info.EventHandlers = ParseEventHandlers(txt)
                     Return info
-                Else
-                    Return Nothing
                 End If
-            Loop
+
+                If Not lines(i).StartsWith("'    ") Then Return Nothing
+
+                Dim hint = lines(i).Substring(5)
+                Dim pair = hint.Split(":"c)
+                If pair Is Nothing OrElse pair.Length <> 2 Then Return Nothing
+
+                Dim cntrlName = pair(0).Trim()
+                info.ControlsInfo.Add(cntrlName.ToLower(), pair(1).Trim)
+                info.ControlNames.Add(cntrlName)
+
+            Next
+            Return Nothing
         End Function
 
         Public Shared Function ParseEventHandlers(txt As String) As Dictionary(Of String, (ControlName As String, EventName As String))

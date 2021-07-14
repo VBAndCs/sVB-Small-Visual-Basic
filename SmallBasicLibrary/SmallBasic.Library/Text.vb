@@ -6,6 +6,10 @@ Namespace Library
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class Text
+        Public Shared Function IsNumeric(value As Primitive) As Primitive
+            Return VisualBasic.IsNumeric(CStr(value))
+        End Function
+
         ''' <summary>
         ''' Appends two text inputs and returns the result as another text.  This operation is particularly useful when dealing with unknown text in variables which could accidentally be treated as numbers and get added, instead of getting appended.
         ''' </summary>

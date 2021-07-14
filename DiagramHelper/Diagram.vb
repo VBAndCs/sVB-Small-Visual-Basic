@@ -203,6 +203,7 @@ Public Class DiagramObject
         Helper.UpdateControl(Dsn)
 
         If Delay > 0 Then Helper.Delay(Delay)
+        Dsn.HasChanges = True
     End Sub
 
     Private Sub Diagram_PreviewMouseMove(sender As Object, e As MouseEventArgs) Handles Diagram.PreviewMouseMove
@@ -367,5 +368,10 @@ Public Class DiagramObject
         If e.ClickCount > 1 Then
             Dsn.OnDiagramDoubleClick(Diagram)
         End If
+    End Sub
+
+    Private Sub Diagram_PreviewMouseRightButtonUp(sender As Object, e As MouseButtonEventArgs) Handles Diagram.PreviewMouseRightButtonUp
+        Pnl.ContextMenu.IsOpen = True
+        e.Handled = True
     End Sub
 End Class

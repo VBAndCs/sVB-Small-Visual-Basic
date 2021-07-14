@@ -181,35 +181,48 @@ Namespace Microsoft.SmallBasic.Documents
 
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
             If IgnoreCaretPosChange Or StillWorking Then Return
-            StillWorking = True
-            Try
-                Dim handlerName = FindCurrentEventHandler()
+            _editorControl.Dispatcher.BeginInvoke(
+                    Sub()
+                        StillWorking = True
+                        Try
+                            Dim handlerName = FindCurrentEventHandler()
 
-                _MdiView.FreezeCmbEvents = True
-                If _EventHandlers.ContainsKey(handlerName) Then
-                    Dim eventInfo = _EventHandlers(handlerName)
+                            _MdiView.FreezeCmbEvents = True
+                            If _EventHandlers.ContainsKey(handlerName) Then
+                                UpdateCombos(_EventHandlers(handlerName))
+                            Else
+                                Dim eventInfo = GetHandlerInfo(handlerName)
+                                If eventInfo.ControlName <> "" Then
+                                    ' Restore a btoken handler. This can happen when deleting a control then restoring it.
+                                    _EventHandlers.Add(handlerName, eventInfo)
+                                    UpdateCombos(eventInfo)
+                                Else
+                                    _MdiView.CmbControlNames.SelectedIndex = 0
+                                    If handlerName = "" Then
+                                        _MdiView.CmbEventNames.SelectedIndex = -1
+                                    Else
+                                        _MdiView.CmbEventNames.SelectedItem = handlerName
+                                    End If
+                                End If
+                            End If
 
-                    If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
-                        _MdiView.CmbControlNames.SelectedItem = eventInfo.ControlName
-                    End If
+                            _MdiView.FreezeCmbEvents = False
 
-                    _MdiView.CmbEventNames.SelectedItem = eventInfo.EventName
-                Else
-                    _MdiView.CmbControlNames.SelectedIndex = 0
-                    If handlerName = "" Then
-                        _MdiView.CmbEventNames.SelectedIndex = -1
-                    Else
-                        _MdiView.CmbEventNames.SelectedItem = handlerName
-                    End If
-                End If
+                            UpdateCaretPositionText()
 
-                _MdiView.FreezeCmbEvents = False
+                        Finally
+                            StillWorking = False
+                        End Try
+                    End Sub,
+                 DispatcherPriority.ContextIdle)
 
-                UpdateCaretPositionText()
+        End Sub
 
-            Finally
-                StillWorking = False
-            End Try
+        Sub UpdateCombos(eventInfo As (ControlName As String, EventName As String))
+            If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
+                _MdiView.CmbControlNames.SelectedItem = eventInfo.ControlName
+            End If
+            _MdiView.CmbEventNames.SelectedItem = eventInfo.EventName
         End Sub
 
         Public Overrides Sub Close()
@@ -443,6 +456,7 @@ Namespace Microsoft.SmallBasic.Documents
         End Sub
 
         Dim StillWorking As Boolean = False
+        Friend PageKey As String
 
         Private Sub UpdateCaretPositionText()
             _editorControl.Dispatcher.BeginInvoke(
@@ -468,10 +482,12 @@ Namespace Microsoft.SmallBasic.Documents
 
 
         Function GenerateCodeBehind(controls As Controls.ItemCollection, updateControlInfo As Boolean) As String
+            If _Form = "" Then Return ""
+
             Dim hint As New Text.StringBuilder
             Dim declaration As New Text.StringBuilder
             Dim formName = _Form
-
+            hint.AppendLine("'@Form Hints:")
             hint.AppendLine($"'#{formName}{{")
             Dim controlsInfoList As New Dictionary(Of String, String)
             Dim controlNamesList As New List(Of String)
@@ -484,6 +500,11 @@ Namespace Microsoft.SmallBasic.Documents
 
             For Each c As UIElement In controls
                 Dim name = Automation.AutomationProperties.GetName(c)
+                If name = "" Then
+                    Dim fw = TryCast(c, FrameworkElement)
+                    If fw IsNot Nothing Then name = fw.Name
+                End If
+
                 If name <> "" Then
                     Dim typeName = PreCompiler.GetModuleName(c.GetType().Name)
                     controlsInfoList(name.ToLower()) = typeName
@@ -502,6 +523,14 @@ Namespace Microsoft.SmallBasic.Documents
             hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{Path.GetFileNameWithoutExtension(Me.FilePath)}.xaml"")")
             hint.AppendLine($"Form.Show({formName})")
 
+            ' Remove Hamdlers of deleted or renamed controls
+            For i = _EventHandlers.Count - 1 To 0 Step -1
+                If Not controlNamesList.Contains(_EventHandlers.Values(i).ControlName) Then
+                    _EventHandlers.Remove(_EventHandlers.Keys(i))
+                End If
+            Next
+
+            ' Remove handlers of renamed subs
             RemoveBrokenHandlers()
 
             If EventHandlers.Count > 0 Then
@@ -518,10 +547,13 @@ Namespace Microsoft.SmallBasic.Documents
                     sbHandlers.AppendLine($"' {ev.ControlName} Events:")
                     sbHandlers.AppendLine($"Control.HandleEvents({formName}, {ev.ControlName})")
                     For Each info In ev.EventInfo
-                        hint.Append($" {info.Value.EventName}")
-                        Dim module1 = controlsInfoList(ev.ControlName.ToLower)
-                        Dim moduleName = PreCompiler.GetEventModule(module1, info.Value.EventName)
-                        sbHandlers.AppendLine($"{moduleName}.{info.Value.EventName} = {info.Key}")
+                        Dim controlName = ev.ControlName.ToLower
+                        If controlsInfoList.ContainsKey(controlName) Then
+                            hint.Append($" {info.Value.EventName}")
+                            Dim module1 = controlsInfoList(controlName)
+                            Dim moduleName = PreCompiler.GetEventModule(module1, info.Value.EventName)
+                            sbHandlers.AppendLine($"{moduleName}.{info.Value.EventName} = {info.Key}")
+                        End If
                     Next
                     hint.AppendLine()
                     sbHandlers.AppendLine()
@@ -553,11 +585,20 @@ Namespace Microsoft.SmallBasic.Documents
             Return hint.ToString()
         End Function
 
-        Public Function GetCodeBehind() As String
-            Dim genCodefile = FilePath?.Substring(0, FilePath.Length - 2) + "gsb"
-            If genCodefile = "" OrElse Not File.Exists(genCodefile) Then Return ""
-            Dim code = File.ReadAllText(genCodefile)
-            Return code
+        Public Function GetCodeBehind(Optional ToCompile As Boolean = False) As String
+            Dim codeFileHasHints = Me.Text.Contains("'@Form Hints:")
+
+            Dim genCodefile = FilePath?.Substring(0, FilePath.Length - 2) + "sb.gen"
+            If genCodefile = "" OrElse Not File.Exists(genCodefile) Then
+                Return If(ToCompile, "", Me.Text)
+            Else
+                If ToCompile Then
+                    Return File.ReadAllText(genCodefile)
+                Else
+                    Return If(codeFileHasHints, Me.Text, File.ReadAllText(genCodefile))
+                End If
+            End If
+
         End Function
 
         Public Sub ParseFormHints()
@@ -725,7 +766,7 @@ EndSub
                         If Not _EventHandlers.ContainsKey(subName) Then
                             ' If name has the form Control_Event, add ot to EventHandlers.
                             Dim info = GetHandlerInfo(subName.ToLower())
-                            If info.ComtrolName <> "" Then
+                            If info.ControlName <> "" Then
                                 _EventHandlers(subName) = info
                             Else
                                 _GlobalSubs.Add(subName)
@@ -738,10 +779,10 @@ EndSub
             _GlobalSubs.Sort()
         End Sub
 
-        Public Function GetHandlerInfo(subName As String) As (ComtrolName As String, EventName As String)
-            If _controlsInfo Is Nothing Then Return ("", "")
-
-            For Each controlInfo In _controlsInfo
+        Public Function GetHandlerInfo(subName As String) As (ControlName As String, EventName As String)
+            If _ControlsInfo Is Nothing Then Return ("", "")
+            subName = subName.ToLower()
+            For Each controlInfo In _ControlsInfo
                 Dim controlName = controlInfo.Key
                 If subName.StartsWith(controlName & "_") Then
                     Dim eventName = subName.Substring(controlName.Length + 1)

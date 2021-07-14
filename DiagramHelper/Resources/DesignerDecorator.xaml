@@ -1,7 +1,8 @@
-﻿<ResourceDictionary x:Class="DesignerMenus"
+﻿<ResourceDictionary x:Class="DesignerDecorator"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:s="clr-namespace:DiagramHelper">
+
 
     <Pen x:Key="GridLinesPen" Thickness="0.3" Brush="LightGray"/>
 
@@ -15,7 +16,7 @@
             </GeometryDrawing>
         </DrawingBrush.Drawing>
     </DrawingBrush>
-
+   
     <Style x:Key="CanvasListBoxStyle" TargetType="ListBox">
         <Setter Property="Template">
             <Setter.Value>
@@ -25,7 +26,7 @@
                             <ScrollViewer x:Name="Scv" IsTabStop="False" Padding="{TemplateBinding Control.Padding}" Focusable="False" 
                                       HorizontalScrollBarVisibility="Auto" >
                                 <Grid ClipToBounds="True" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                    <ItemsPresenter  SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                                     <Canvas x:Name="ConnectionCanvas" ClipToBounds="True" >
                                         <Border x:Name="PART_SelectionBorder" Background="LightCyan" Opacity="0.2" Visibility="Collapsed"
                                                 BorderBrush="Gray" BorderThickness="2"/>
@@ -45,6 +46,7 @@
                                      Background="{StaticResource GridBrush}"/>
                         </Grid>
                     </Border>
+
                     <ControlTemplate.Triggers>
                         <Trigger Property="UIElement.IsEnabled">
                             <Setter Property="Panel.Background" TargetName="Bd">
@@ -83,13 +85,14 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <Canvas ClipToBounds="True"  Background="White" >
+                    <Canvas ClipToBounds="True" Background="White" >
                         <Canvas.ContextMenu>
                             <ContextMenu Opened="ContextMenu_Opened">
                                 <MenuItem Header="New" InputGestureText="Ctrl+N"  Click="NewMenuItem_Click"/>
                                 <MenuItem Header="Open" InputGestureText="Ctrl+O"  Click="OpenMenuItem_Click"/>
                                 <MenuItem Header="Save" InputGestureText="Ctrl+S"  Click="SaveMenuItem_Click"/>
                                 <MenuItem Header="Save As..." Click="SaveAsMenuItem_Click"/>
+                                <MenuItem Header="Close" InputGestureText="Ctrl+F4"  Click="CloseMenuItem_Click"/>
                                 <Separator/>
                                 <MenuItem Header="Save To Image" InputGestureText="Ctrl+M" Click="SaveImageMenuItem_Click"/>
                                 <MenuItem Header="Print" InputGestureText="Ctrl+P" Click="PrintMenuItem_Click"/>

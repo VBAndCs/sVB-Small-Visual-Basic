@@ -58,18 +58,24 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height ="Auto"/>
+                    <RowDefinition Height ="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <DH:Designer x:Name="formDesigner" Grid.Column="1" Grid.RowSpan="2" ShowGrid="True" 
-			         PageWidth="700" PageHeight="500"
-                      DiagramDoubleClick="formDesigner_DiagramDoubleClick"       />
+                    <DH:Designer x:Name="formDesigner" Grid.Column="1" Grid.RowSpan="3" ShowGrid="True" 
+			             PageWidth="700" PageHeight="500"
+                          DiagramDoubleClick="formDesigner_DiagramDoubleClick"       
+                           CurrentPageChanged="formDesigner_CurrentPageChanged"/>
 
+                    <DH:ZoomBox Background="AliceBlue"
+                        Designer="{Binding ElementName=formDesigner}"  />
+                    <DH:ProjectExplorer x:Name="ProjExplorer" Grid.Row="1" 
+                        Height="180"
+                        Designer="{Binding ElementName=formDesigner}"  
+                        MouseDoubleClick="ProjExplorer_MouseDoubleClick"                />
+                    <DH:ToolBox Grid.Row="2" />
 
-                <DH:ToolBox Grid.Row="1" />
-                <DH:ZoomBox Designer="{Binding ElementName=formDesigner}"  />
-
-            </Grid>
+                </Grid>
         </TabItem>
 
         <TabItem x:Name="tabCode" Header="Form Code"
@@ -190,7 +196,8 @@
                     </Grid.ColumnDefinitions>
                     <shell:MdiViewsControl x:Name="viewsControl" 
                         RequestItemClose="OnCloseItem" 
-                        Grid.Column="0" Grid.ColumnSpan="3" />
+                        Grid.Column="0" Grid.ColumnSpan="3" 
+                        ActiveDocumentChanged="viewsControl_ActiveDocumentChanged"/>
           
                     <lu:HelpPanel x:Name="helpPanel" Column="1" />
           

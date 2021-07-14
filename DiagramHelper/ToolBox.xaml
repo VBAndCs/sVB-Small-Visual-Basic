@@ -15,9 +15,8 @@
     </UserControl.Resources>
 
     <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1">
-        <StackPanel x:Name="ToolBoxTabs">
-            <!--<Label Background="{StaticResource NormalBrush}" Content="ToolBox" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>-->
-            
-        </StackPanel>
+        <ScrollViewer>
+             <StackPanel x:Name="ToolBoxTabs"/>
+        </ScrollViewer>
     </Border>
 </UserControl>

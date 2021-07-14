@@ -1,0 +1,58 @@
+
+'__________________________________
+Sub btnAdd_OnClick
+  Validate()
+  If AreValid Then      
+    Result = n1 + n2 
+    lblResult.Text = "Result = " + Result     
+  EndIf  
+EndSub
+
+'__________________________________
+Sub btnSubtract_OnClick
+  Validate()
+  If AreValid Then      
+    Result = n1 - n2 
+    lblResult.Text = "Result = " + Result     
+  EndIf  
+EndSub
+
+'__________________________________
+Sub btnMultply_OnClick
+  Validate()
+  If AreValid Then      
+    Result = n1 * n2 
+    lblResult.Text = "Result = " + Result     
+  EndIf 
+EndSub
+
+'__________________________________
+Sub btnDivide_OnClick
+  Validate()
+  If AreValid Then      
+    if n2 = 0 Then        
+      Result = "Can't divide by zero."
+    else
+      Result = n1 / n2      
+    endif
+    lblResult.Text = "Result = " + Result  
+  EndIf  
+EndSub
+
+'----------------------------
+
+Sub Validate
+  AreValid = False
+  n1 = txtNum1.Text   
+  If Text.IsNumeric(n1) = False Then
+    lblResult.Text = "n1 must be a number."
+  Else
+    n2 = txtNum2.Text     
+    If Text.IsNumeric(n2) = False Then         
+      lblResult.Text = "n2 must be a number."         
+    Else                     
+      n2 = txtNum2.Text
+      AreValid = True       
+    EndIf             
+  EndIf
+EndSub

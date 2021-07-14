@@ -19,6 +19,17 @@ Friend Class Helper
         Loop
     End Function
 
+    Function GetParent(Of ParentType)(child As DependencyObject) As ParentType
+        If child Is Nothing Then Return Nothing
+        Dim p = child
+        Dim t = GetType(ParentType)
+        Do
+            p = VisualTreeHelper.GetParent(p)
+            If p Is Nothing Then Return Nothing
+            If p.GetType Is t Then Return CType(CObj(p), ParentType)
+        Loop
+    End Function
+
     Shared Function GetListBoxItem(element As DependencyObject) As ListBoxItem
         If element Is Nothing Then Return Nothing
         Dim Parent = VisualTreeHelper.GetParent(element)
@@ -61,7 +72,7 @@ Friend Class Helper
     End Sub
 
     Shared Function GetDiagram(Pnl As DiagramPanel) As FrameworkElement
-        Return CType(Pnl.Content, ContentPresenter).Content
+        Return TryCast(Pnl.Content, ContentPresenter)?.Content
     End Function
 
     Shared Sub Delay(Milliseconds As Integer)
@@ -127,7 +138,11 @@ Friend Class Helper
 
     Shared Sub UpdateControl(DisObj As DispatcherObject)
         If DisObj Is Nothing Then Return
-        DisObj.Dispatcher.Invoke(DispatcherPriority.Render, Sub() Exit Sub)
+        Try
+            DisObj.Dispatcher.Invoke(DispatcherPriority.Render, Sub() Exit Sub)
+        Catch ex As Exception
+
+        End Try
     End Sub
 
 End Class

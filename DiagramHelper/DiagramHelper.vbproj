@@ -101,6 +101,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\ProjectExplorerDecorator.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Resources\ZoomBoxDecorator.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -141,6 +145,7 @@
     <Compile Include="Arrow.xaml.vb">
       <DependentUpon>Arrow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helper Classes\PageInfo.vb" />
     <Compile Include="SBControl.vb" />
     <Compile Include="Diagram.vb" />
     <Compile Include="DiagramGroup.vb" />
@@ -149,6 +154,7 @@
     <Compile Include="Helper Classes\Intersections.vb" />
     <Compile Include="Helper Classes\PropertyDictionary.vb" />
     <Compile Include="Helper Classes\SaveConnectionInfo.vb" />
+    <Compile Include="Thumbs\DsnResizeThumb.vb" />
     <Compile Include="ToolBoxItem.vb" />
     <Compile Include="Undo\CollectionState.vb" />
     <Compile Include="Undo\ConnectionState.vb" />
@@ -193,6 +199,7 @@
     <Compile Include="WndSkew.xaml.vb">
       <DependentUpon>WndSkew.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ProjectExplorer.vb" />
     <Compile Include="ZoomBox.vb" />
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>

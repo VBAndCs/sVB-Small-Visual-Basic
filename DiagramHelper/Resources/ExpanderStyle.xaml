@@ -5,8 +5,7 @@
         <ResourceDictionary Source="Brushes.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Style x:Key="ToggleButtonStyle"
-                   TargetType="ToggleButton">
+    <Style x:Key="ToggleButtonStyle" TargetType="ToggleButton">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="Template">

@@ -1,4 +1,5 @@
-﻿Imports System.ComponentModel
+﻿Imports System.Collections.ObjectModel
+Imports System.ComponentModel
 Imports System.Windows.Controls.Primitives
 Imports System.Windows.Markup
 Imports System.Xml
@@ -20,9 +21,28 @@ Public Class Designer
     Friend WithEvents UndoStack As New UndoRedoStack(Of UndoRedoUnit)
     Dim DeleteUndoUnit As UndoRedoUnit
     Dim ConnectionsOldState As ConnectionState
-    Public FileName As String
     Friend SelectedBounds As Rect
     Friend GridPen As Pen
+
+    Dim _fileName As String
+    Public Property FileName As String
+        Get
+            Return _fileName
+        End Get
+        Set(value As String)
+            _fileName = If(value = "", "", IO.Path.GetFullPath(value))
+            'If Pages.ContainsKey(PageKey) Then
+            Dim info = Pages(PageKey)
+            info.IsNew = False
+            If _fileName <> "" Then
+                _codeFilePath = _fileName.Substring(0, _fileName.Length - 5) & ".sb"
+                info.DocPath = _codeFilePath
+            End If
+            info.XamlPath = _fileName
+            Pages(PageKey) = info
+            'End If
+        End Set
+    End Property
 
     Public Sub New()
         Dim resourceLocater As Uri = New Uri("/DiagramHelper;component/Resources/designerdecorator.xaml", System.UriKind.Relative)
@@ -34,6 +54,8 @@ Public Class Designer
         Me.AllowDrop = True
     End Sub
 
+    Dim NewPageOpened As Boolean
+
     Private Sub Designer_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         Dim Brdr As Border = VisualTreeHelper.GetChild(Me, 0)
         Dim G = CType(Brdr.Child, Grid)
@@ -41,7 +63,7 @@ Public Class Designer
         GridLinesBorder = G.Children(1)
         G = ScrollViewer.Content
         Me.DesignerCanvas = VisualTreeHelper.GetChild(G.Children(0), 0)
-        DesignerGrid = VisualTreeHelper.GetParent((VisualTreeHelper.GetParent(DesignerCanvas)))
+        DesignerGrid = G
         Me.ConnectionCanvas = G.Children(1)
         Me.DesignerCanvas.Width = Me.PageWidth
         Me.DesignerCanvas.Height = Me.PageHeight
@@ -59,6 +81,11 @@ Public Class Designer
         TbTopLocation = Me.Template.FindName("PART_TopLocation", Me)
         TbLeftLocation = Me.Template.FindName("PART_LeftLocation", Me)
         Editor = Me.Template.FindName("PART_Editor", Me)
+
+        If Not NewPageOpened Then
+            Dispatcher.Invoke(Sub() OpenNewPage(False))
+            NewPageOpened = True
+        End If
         Me.Focus()
 
     End Sub
@@ -99,9 +126,9 @@ Public Class Designer
 
     Public Function GetConnectionsToTarget(Diagram As UIElement) As List(Of Connection)
         Dim Conns = From Lst In Connections.Values
-                              From C In Lst
-                              Where C.TargetDiagram Is Diagram
-                              Select C
+                    From C In Lst
+                    Where C.TargetDiagram Is Diagram
+                    Select C
 
         Return Conns.ToList
     End Function
@@ -131,9 +158,9 @@ Public Class Designer
         End If
 
         Dim Conns = From Lst In Connections.Values
-                              From C In Lst
-                              Where C.TargetDiagram Is Diagram
-                              Select C
+                    From C In Lst
+                    Where C.TargetDiagram Is Diagram
+                    Select C
 
         For i = Conns.Count - 1 To 0 Step -1
             ConnectionsOldState.Add(Conns(i))
@@ -163,6 +190,260 @@ Public Class Designer
 
 #End Region
 
+#Region "Pages"
+    Friend Pages As New Dictionary(Of String, PageInfo)
+    Public FormNames As New ObservableCollection(Of String)
+    Public FormKeys As New List(Of String)
+
+    Dim TempKeyNum As Integer = 0
+
+    Dim _codeFilePath As String
+
+    Public Property CodeFilePath As String
+        Get
+            Return _codeFilePath
+        End Get
+        Set(value As String)
+            _codeFilePath = value
+            UpdatePageInfo()
+        End Set
+    End Property
+
+    Public PageKey As String
+    Public Event CurrentPageChanged(index As Integer)
+
+    Dim _isNew As Boolean = True
+
+    Public ReadOnly Property IsNew As Boolean
+        Get
+            Return Not HasChanges AndAlso _fileName = "" AndAlso _isNew
+        End Get
+    End Property
+
+
+    Public Function GetTempFormName() As String
+        TempKeyNum += 1
+        Return "Form" & TempKeyNum
+    End Function
+
+    Private Function GetTempKey(Optional pagePath As String = "") As String
+        If pagePath <> "" Then
+            For Each p In Pages
+                If p.Value.XamlPath = pagePath Then Return p.Key
+            Next
+        End If
+
+        TempKeyNum += 1
+        Return "KEY" & TempKeyNum
+    End Function
+
+    Private Sub UpdatePageInfo(Optional updateForms As Boolean = True)
+        If PageKey = "" Then PageKey = GetTempKey()
+        Pages(PageKey) = (Me.Name, Me.IsNew, Me.HasChanges, PageToXaml(), _codeFilePath, _fileName)
+        If updateForms Then UpdateFormInfo()
+    End Sub
+
+    Private Sub UpdateFormInfo()
+        Dim displayName = " ● " & Me.Name & If(_fileName = "", " [New]", ".xaml")
+        Dim i = FormKeys.IndexOf(Me.PageKey)
+        If i = -1 Then
+            FormNames.Add(displayName)
+            FormKeys.Add(Me.PageKey)
+        ElseIf FormNames(i) <> displayName Then
+            FormNames(i) = displayName
+        End If
+    End Sub
+
+    Public Function OpenNewPage(Optional UpdateCurrentPage As Boolean = True) As String
+        If UpdateCurrentPage Then UpdatePageInfo(False)
+        _isNew = True
+        Me.ClearConnections()
+        Me.Items.Clear()
+        Me.UndoStack.Clear()
+        DiagramGroup.Clear()
+        Me.HasChanges = False
+        Me.PageKey = GetTempKey()
+        Me.Name = Me.PageKey.Replace("KEY", "Form")
+        Me.PageWidth = 700
+        Me.PageHeight = 500
+        _fileName = ""
+        _codeFilePath = ""
+        UpdatePageInfo()
+
+        Me.DesignerCanvas.Background = SystemColors.ControlBrush
+        Me.GridPen.Thickness = 0.3
+        Me.GridPen.Brush = Brushes.LightGray
+
+        RaiseEvent CurrentPageChanged(FormKeys.Count - 1)
+        Me.Focus()
+        Return Me.PageKey
+    End Function
+
+    Public Function ClosePage() As Boolean
+
+        If Me.HasChanges OrElse (_fileName = "" AndAlso CodeFilePath <> "") Then
+            If Not AskToSave() Then Return False
+        End If
+
+        Dim i As Integer
+        Pages.Remove(PageKey)
+        i = FormKeys.IndexOf(Me.PageKey)
+        If i <> -1 Then
+            FormKeys.RemoveAt(i)
+            FormNames.RemoveAt(i)
+        End If
+
+        Dim nextKey As String
+        If Pages.Count > 0 Then
+            Dim n = Pages.Count - 1
+            If i > n Then
+                nextKey = FormKeys(n)
+            Else
+                nextKey = FormKeys(i)
+            End If
+
+            _fileName = ""
+            Me.PageKey = SwitchTo(nextKey, False)
+
+        Else
+            Me.PageKey = OpenNewPage(False)
+        End If
+
+        Return True
+    End Function
+
+    Public Function SwitchTo(key As String, Optional UpdateCurrentPage As Boolean = True) As String
+        If key = "" Then Return OpenNewPage()
+        If UpdateCurrentPage Then UpdatePageInfo()
+
+        If Pages.ContainsKey(key) Then
+            Me.PageKey = key
+            Dim info = Pages(key)
+            XamlToPage(info.Xaml)
+            Me.Name = info.Name
+            Me.HasChanges = info.HasChanges
+            _isNew = info.IsNew
+            _codeFilePath = info.DocPath
+            _fileName = info.XamlPath
+        Else
+            Me.PageKey = ""
+            Dim xPath = key.ToLower()
+            Dim dPath = xPath.Substring(0, xPath.Length - 5) & ".sb"
+            For Each item In Pages
+                If item.Value.XamlPath.ToLower() = xPath OrElse
+                         item.Value.DocPath.ToLower() = dPath Then
+                    Return SwitchTo(item.Key, False)
+                End If
+            Next
+            If Me.PageKey = "" Then Open(key)
+        End If
+
+        RaiseEvent CurrentPageChanged(FormKeys.IndexOf(Me.PageKey))
+        Return Me.PageKey
+    End Function
+
+    Private Function PageToXaml() As String
+        For Each Diagram In Me.Items
+            Commands.UpdateFontProperties(Diagram)
+        Next
+
+        Dim canvas As New Canvas
+        canvas.Name = If(Me.Name = "", Me.PageKey.Replace("KEY", "Form"), Me.Name)
+        canvas.Width = Me.PageWidth
+        canvas.Height = Me.PageHeight
+
+        For Each diagram In Me.Items
+            Dim diagram2 As FrameworkElement = Helper.Clone(diagram)
+            ' Note: These properties are changed by code. 
+            ' Keep them if the user changed them in properties window.
+            diagram2.ClearValue(AllowDropProperty)
+            diagram2.ClearValue(CursorProperty)
+            diagram2.ClearValue(IsTabStopProperty)
+            diagram2.ClearValue(DiagramTextBlockPropertyKey)
+
+
+            ' Copy properties from designer to Canvas
+            Canvas.SetLeft(diagram2, Designer.GetLeft(diagram2))
+            diagram2.ClearValue(Designer.LeftProperty)
+
+            Canvas.SetTop(diagram2, Designer.GetTop(diagram2))
+            diagram2.ClearValue(Designer.TopProperty)
+
+
+            diagram2.Width = Designer.GetFrameWidth(diagram2)
+            diagram2.Height = Designer.GetFrameHeight(diagram2)
+            diagram2.ClearValue(Designer.FrameWidthProperty)
+            diagram2.ClearValue(Designer.FrameHeightProperty)
+            diagram2.ClearValue(Designer.DiagramTextFontPropsProperty)
+
+            Dim angle = Designer.GetRotationAngle(diagram2)
+            If angle <> 0 Then Helper.Rotate(diagram2, angle)
+            diagram2.ClearValue(RotationAngleProperty)
+
+            Dim skew = TryCast(diagram2.LayoutTransform, SkewTransform)
+            If skew IsNot Nothing Then
+                If Math.Round(skew.AngleX, 4) = 0 AndAlso Math.Round(skew.AngleY, 4) = 0 Then
+                    diagram2.ClearValue(LayoutTransformProperty)
+                End If
+            End If
+            canvas.Children.Add(diagram2)
+        Next
+
+        Return XamlWriter.Save(canvas)
+    End Function
+
+    Private Sub XamlToPage(xaml As String)
+        Dim canvas As Canvas = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
+        Me.Name = canvas.Name
+
+        Me.Visibility = Visibility.Hidden
+        Me.HasChanges = False
+        Me.ClearConnections()
+        Me.Items.Clear()
+        Me.UndoStack.Clear()
+        DiagramGroup.Clear()
+
+        If Not Double.IsNaN(canvas.Width) Then Me.PageWidth = canvas.Width
+        If Not Double.IsNaN(canvas.Height) Then Me.PageHeight = canvas.Height
+
+        For Each child In canvas.Children
+            Dim Diagram = TryCast(Helper.Clone(child), FrameworkElement)
+            If Diagram Is Nothing Then Continue For
+
+            Me.Items.Add(Diagram)
+
+            Designer.SetFrameWidth(Diagram, Diagram.Width)
+            Diagram.ClearValue(FrameworkElement.WidthProperty)
+
+            Designer.SetFrameHeight(Diagram, Diagram.Height)
+            Diagram.ClearValue(FrameworkElement.HeightProperty)
+
+            Designer.SetLeft(Diagram, Canvas.GetLeft(Diagram))
+            Designer.SetTop(Diagram, Canvas.GetTop(Diagram))
+
+            Dim RotateTransform = TryCast(Diagram.RenderTransform, RotateTransform)
+            If RotateTransform Is Nothing Then
+                Designer.SetRotationAngle(Diagram, 0)
+            Else
+                Dim angle = RotateTransform.Angle
+                Diagram.RenderTransform = Nothing
+                Designer.SetRotationAngle(Diagram, angle)
+            End If
+
+            Dim lt = Diagram.LayoutTransform
+            Diagram.LayoutTransform = Nothing
+            Helper.UpdateControl(Diagram)
+            Diagram.LayoutTransform = lt
+        Next
+
+        Helper.UpdateControl(Me)
+
+        Me.Visibility = Visibility.Visible
+    End Sub
+
+#End Region
+
+
     Function GetSelectionBounds() As Rect
         Dim MinX As Double = Double.MaxValue
         Dim MaxX As Double = Double.MinValue
@@ -173,7 +454,7 @@ Public Class Designer
             Dim R As New Rect(0, 0, Diagram.ActualWidth, Diagram.ActualHeight)
             R = Diagram.TransformToVisual(Me.DesignerCanvas).TransformBounds(R)
 
-            If R.TopLeft.X < MinX Then MinX = R.TopLeft.X
+            If R.TopLeft.X <MinX Then MinX= R.TopLeft.X
             If R.TopRight.X > MaxX Then MaxX = R.TopRight.X
 
             If R.TopLeft.Y < MinY Then MinY = R.TopLeft.Y
@@ -205,9 +486,9 @@ Public Class Designer
             Dim num = 1
             For Each dg In Me.Items
                 If dg.GetType() Is controlType Then
-                    Dim controlName = CStr(dg.name)
-                    If controlName.StartsWith(TypeName) Then
-                        Dim n = controlName.Substring(TypeName.Length)
+                    Dim controlName = Automation.AutomationProperties.GetName(dg)
+                    If controlName.StartsWith(typeName) Then
+                        Dim n = controlName.Substring(typeName.Length)
                         If IsNumeric(n) Then
                             If CInt(n) >= num Then num = CInt(n) + 1
                         End If
@@ -227,14 +508,14 @@ Public Class Designer
             diagram.ClearValue(ToolTipProperty)
 
             Dim Pos = e.GetPosition(Me.DesignerCanvas)
-            Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items, Diagram)
-            Me.Items.Add(Diagram)
+            Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items, diagram)
+            Me.Items.Add(diagram)
             UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
 
-            Designer.SetLeft(Diagram, Pos.X)
-            Designer.SetTop(Diagram, Pos.Y)
+            Designer.SetLeft(diagram, Pos.X)
+            Designer.SetTop(diagram, Pos.Y)
             Helper.UpdateControl(Me)
-            Dim Item = Helper.GetListBoxItem(Diagram)
+            Dim Item = Helper.GetListBoxItem(diagram)
             Me.SelectedIndex = -1
             Connection.DeselectAll(Me)
             If Item IsNot Nothing Then
@@ -352,10 +633,10 @@ Public Class Designer
 
 
     Public Function Save() As Boolean
-        If Me.FileName = "" Then
+        If _fileName = "" Then
             Return SaveAs()
         ElseIf Me.HasChanges Then
-            Return DoSave()
+            Return SavePage("")
         Else
             Return True
         End If
@@ -371,65 +652,31 @@ Public Class Designer
         Dim result? As Boolean = dlg.ShowDialog()
 
         If result = True Then
+            ' Don't use _fileName here, to update Tempkey!
             Me.FileName = dlg.FileName
-            If Not DoSave() Then Return False
+            If Not SavePage("") Then Return False
+            _isNew = False
             Me.UndoStack.Clear()
             Return True
         End If
         Return False
     End Function
 
-    Public Function DoSave() As Boolean
-        For Each Diagram In Me.Items
-            Commands.UpdateFontProperties(Diagram)
-        Next
+    Public Delegate Function SavePageDelegate(tmpPath As String) As Boolean
+    Public SavePage As SavePageDelegate = AddressOf DoSave
 
-        Dim canvas As New Canvas
-        canvas.Name = Me.Name
-        canvas.Width = Me.PageWidth
-        canvas.Height = Me.PageHeight
-
-        For Each diagram In Me.Items
-            Dim diagram2 As FrameworkElement = Helper.Clone(diagram)
-            ' Note: These properties are changed by code. 
-            ' Keep them if the user changed them in properties window.
-            diagram2.ClearValue(AllowDropProperty)
-            diagram2.ClearValue(CursorProperty)
-            diagram2.ClearValue(IsTabStopProperty)
-            diagram2.ClearValue(DiagramTextBlockPropertyKey)
-
-
-            ' Copy properties from designer to Canvas
-            Canvas.SetLeft(diagram2, Designer.GetLeft(diagram2))
-            diagram2.ClearValue(Designer.LeftProperty)
-
-            Canvas.SetTop(diagram2, Designer.GetTop(diagram2))
-            diagram2.ClearValue(Designer.TopProperty)
-
-
-            diagram2.Width = Designer.GetFrameWidth(diagram2)
-            diagram2.Height = Designer.GetFrameHeight(diagram2)
-            diagram2.ClearValue(Designer.FrameWidthProperty)
-            diagram2.ClearValue(Designer.FrameHeightProperty)
-            diagram2.ClearValue(Designer.DiagramTextFontPropsProperty)
-
-            Dim angle = Designer.GetRotationAngle(diagram2)
-            If angle <> 0 Then Helper.Rotate(diagram2, angle)
-            diagram2.ClearValue(RotationAngleProperty)
-
-            Dim skew = TryCast(diagram2.LayoutTransform, SkewTransform)
-            If skew IsNot Nothing Then
-                If Math.Round(skew.AngleX, 4) = 0 AndAlso Math.Round(skew.AngleY, 4) = 0 Then
-                    diagram2.ClearValue(LayoutTransformProperty)
-                End If
-            End If
-            canvas.Children.Add(diagram2)
-        Next
-
-        Dim xaml = XamlWriter.Save(canvas)
+    Public Function DoSave(Optional tmpPath As String = Nothing) As Boolean
         Try
-            IO.File.WriteAllText(Me.FileName, xaml)
-            Me.HasChanges = False
+            Dim xmal = PageToXaml()
+            Dim saveTo = If(tmpPath, _fileName)
+            IO.File.WriteAllText(saveTo, xmal)
+            _codeFilePath = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
+            If tmpPath = "" Then
+                UpdateFormInfo()
+                Me.HasChanges = False
+            End If
+            Pages(Me.PageKey) = New PageInfo(Me.Name, False, Me.HasChanges, xmal, _codeFilePath, saveTo)
+
         Catch ex As Exception
             MsgBox(ex.Message)
             Return False
@@ -445,110 +692,61 @@ Public Class Designer
         Me.SelectedIndex = -1
         Me.Focus()
         Dim ImgSaver As New ImageSaver
-        ImgSaver.Save(Me.DesignerGrid, Me.FileName)
+        ImgSaver.Save(Me.DesignerGrid, _fileName)
         Me.Scale = Sc
     End Sub
 
     Public Sub Open()
-        If Me.HasChanges Then
-            If Not AskToSave() Then Return
-        End If
-
         ' Configure open file dialog box 
         Dim dlg As New Microsoft.Win32.OpenFileDialog()
         dlg.DefaultExt = ".xaml" ' Default file extension
         dlg.Filter = "Diagram Pages|*.xaml"
         dlg.Title = "Open Diagram Design Page"
-        If dlg.ShowDialog() = True Then Open(dlg.FileName)
+        If dlg.ShowDialog() = True Then
+            SwitchTo(dlg.FileName)
+            Me.HasChanges = False
+        End If
     End Sub
 
-    Public Sub Open(FileName As String)
-        Dim Xaml As String
+
+    Public Sub Open(fileName As String)
+        If Not IO.File.Exists(fileName) Then
+            MsgBox($"File '{fileName}' Doesn't exist")
+            Return
+        End If
+
         Me.Cursor = Cursors.Wait
         Try
-            Xaml = IO.File.ReadAllText(FileName)
-            Dim canvas As Canvas = XamlReader.Load(XmlReader.Create(New IO.StringReader(Xaml)))
-            Me.Visibility = Visibility.Hidden
-            Me.HasChanges = False
-            Me.ClearConnections()
-            Me.Items.Clear()
-            Me.UndoStack.Clear()
-            DiagramGroup.Clear()
-
-            If Not Double.IsNaN(canvas.Width) Then Me.PageWidth = canvas.Width
-            If Not Double.IsNaN(canvas.Height) Then Me.PageHeight = canvas.Height
-            Me.Name = canvas.Name
-
-            For Each child In canvas.Children
-                Dim Diagram = TryCast(Helper.Clone(child), FrameworkElement)
-                If Diagram Is Nothing Then Continue For
-
-                Me.Items.Add(Diagram)
-
-                Designer.SetFrameWidth(Diagram, Diagram.Width)
-                Diagram.ClearValue(FrameworkElement.WidthProperty)
-
-                Designer.SetFrameHeight(Diagram, Diagram.Height)
-                Diagram.ClearValue(FrameworkElement.HeightProperty)
-
-                Designer.SetLeft(Diagram, Canvas.GetLeft(Diagram))
-                Designer.SetTop(Diagram, Canvas.GetTop(Diagram))
-
-                Dim RotateTransform = TryCast(Diagram.RenderTransform, RotateTransform)
-                If RotateTransform Is Nothing Then
-                    Designer.SetRotationAngle(Diagram, 0)
-                Else
-                    Dim angle = RotateTransform.Angle
-                    Diagram.RenderTransform = Nothing
-                    Designer.SetRotationAngle(Diagram, angle)
-                End If
-
-                Dim lt = Diagram.LayoutTransform
-                Diagram.LayoutTransform = Nothing
-                Helper.UpdateControl(Diagram)
-                Diagram.LayoutTransform = lt
-            Next
-
-            Helper.UpdateControl(Me)
-
-            Me.FileName = FileName
+            Dim xaml = IO.File.ReadAllText(fileName)
+            XamlToPage(xaml)
+            ' Don't use File Name Propery directly, because PageKey is not valid right now
+            _fileName = IO.Path.GetFullPath(fileName)
+            Me.PageKey = Me.GetTempKey(_fileName)
+            Pages(Me.PageKey) = (Me.Name, False, False, xaml, "", _fileName)
+            _isNew = False
+            HasChanges = False
+            _codeFilePath = ""
+            UpdateFormInfo()
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
-            Me.Visibility = Visibility.Visible
             Me.Cursor = Nothing
         End Try
-
     End Sub
 
     Private Function AskToSave() As Boolean
         Select Case MessageBox.Show("Do you want to save changes?", "Save Changes", MessageBoxButton.YesNoCancel)
             Case MessageBoxResult.Yes
                 Return Me.Save()
+            Case MessageBoxResult.No
+                Return True
             Case MessageBoxResult.Cancel
                 Return False
         End Select
+
         Return True
     End Function
 
-    Public Sub NewPage()
-        If Me.HasChanges Then
-            If Not AskToSave() Then Return
-        End If
-
-        Me.ClearConnections()
-        Me.Items.Clear()
-        Me.UndoStack.Clear()
-        DiagramGroup.Clear()
-        Me.HasChanges = False
-        Me.FileName = ""
-        Me.PageWidth = 21 * Helper.CmToPx
-        Me.PageHeight = 29.7 * Helper.CmToPx
-        Me.DesignerCanvas.Background = SystemColors.ControlBrush
-        Me.GridPen.Thickness = 0.3
-        Me.GridPen.Brush = Brushes.LightGray
-        Me.Focus()
-    End Sub
 
     Public Sub Print()
         Dim Sc = Me.Scale
@@ -558,7 +756,7 @@ Public Class Designer
         Me.SelectedIndex = -1
         Me.Focus()
         Dim dialog As New PrintDialog()
-        If dialog.ShowDialog() = True Then dialog.PrintVisual(Me.DesignerGrid, Me.FileName)        
+        If dialog.ShowDialog() = True Then dialog.PrintVisual(Me.DesignerGrid, _fileName)
         Me.Scale = Sc
     End Sub
 
@@ -684,11 +882,15 @@ Public Class Designer
                     e.Handled = True
                     Return
                 Case Key.N
-                    Me.NewPage()
+                    Me.OpenNewPage()
                     e.Handled = True
                     Return
                 Case Key.P
                     Me.Print()
+                    e.Handled = True
+                    Return
+                Case Key.F4
+                    Me.ClosePage()
                     e.Handled = True
                     Return
             End Select
@@ -841,27 +1043,6 @@ Public Class Designer
 
     Dim ExitChange As Boolean = False
 
-    '#Region "ControlName Attached Property"
-    '    Public Shared Function GetControlName(element As DependencyObject) As String
-    '        If element Is Nothing Then
-    '            Throw New ArgumentNullException("element")
-    '        End If
-
-    '        Return element.GetValue(ControlNameProperty)
-    '    End Function
-
-    '    Public Shared Sub SetControlName(element As DependencyObject, value As String)
-    '        If element Is Nothing Then Return
-
-    '        element.SetValue(ControlNameProperty, value)
-    '    End Sub
-
-    '    Public Shared ReadOnly ControlNameProperty As _
-    '                DependencyProperty = DependencyProperty.RegisterAttached("ControlName",
-    '                           GetType(String), GetType(Designer))
-    '#End Region
-
-
 #Region "Left Attached Property"
     <TypeConverter(GetType(LengthConverter))>
     Public Shared Function GetLeft(ByVal element As DependencyObject) As Double
@@ -895,8 +1076,8 @@ Public Class Designer
         d.ExitChange = False
     End Sub
 
-    Public Shared ReadOnly LeftProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("Left", _
+    Public Shared ReadOnly LeftProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("Left",
                            GetType(Double), GetType(Designer), New PropertyMetadata(AddressOf LeftChanged))
 #End Region
 
@@ -938,8 +1119,8 @@ Public Class Designer
         d.ExitChange = False
     End Sub
 
-    Public Shared ReadOnly RightProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("Right", _
+    Public Shared ReadOnly RightProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("Right",
                            GetType(Double), GetType(Designer), New PropertyMetadata(AddressOf RightChanged))
 #End Region
 
@@ -981,8 +1162,8 @@ Public Class Designer
         d.ExitChange = False
     End Sub
 
-    Public Shared ReadOnly TopProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("Top", _
+    Public Shared ReadOnly TopProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("Top",
                            GetType(Double), GetType(Designer), New PropertyMetadata(AddressOf TopChanged))
 #End Region
 
@@ -1023,8 +1204,8 @@ Public Class Designer
         d.ExitChange = False
     End Sub
 
-    Public Shared ReadOnly BottomProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("Bottom", _
+    Public Shared ReadOnly BottomProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("Bottom",
                            GetType(Double), GetType(Designer), New PropertyMetadata(AddressOf BottomChanged))
 #End Region
 
@@ -1114,8 +1295,8 @@ Public Class Designer
         Item.RenderTransform = New RotateTransform(e.NewValue)
     End Sub
 
-    Public Shared ReadOnly RotationAngleProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("RotationAngle", _
+    Public Shared ReadOnly RotationAngleProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("RotationAngle",
                            GetType(Double), GetType(Designer), New PropertyMetadata(0.0, AddressOf RotationAngleChanged))
 
 #End Region
@@ -1132,9 +1313,9 @@ Public Class Designer
         End Set
     End Property
 
-    Public Shared ReadOnly ScrollViewerProperty As DependencyProperty = _
-                           DependencyProperty.Register("ScrollViewer", _
-                           GetType(ScrollViewer), GetType(Designer), _
+    Public Shared ReadOnly ScrollViewerProperty As DependencyProperty =
+                           DependencyProperty.Register("ScrollViewer",
+                           GetType(ScrollViewer), GetType(Designer),
                            New PropertyMetadata(Nothing))
 
 #End Region
@@ -1150,9 +1331,9 @@ Public Class Designer
         End Set
     End Property
 
-    Public Shared ReadOnly DesignerGridProperty As DependencyProperty = _
-                           DependencyProperty.Register("DesignerGrid", _
-                           GetType(Grid), GetType(Designer), _
+    Public Shared ReadOnly DesignerGridProperty As DependencyProperty =
+                           DependencyProperty.Register("DesignerGrid",
+                           GetType(Grid), GetType(Designer),
                            New PropertyMetadata(Nothing))
 #End Region
 
@@ -1176,8 +1357,8 @@ Public Class Designer
         Designer.UpdateGrid()
     End Sub
 
-    Public Shared ReadOnly PageWidthProperty As DependencyProperty = _
-                           DependencyProperty.Register("PageWidth", _
+    Public Shared ReadOnly PageWidthProperty As DependencyProperty =
+                           DependencyProperty.Register("PageWidth",
                            GetType(Double), GetType(Designer),
                            New PropertyMetadata(21 * Helper.CmToPx, AddressOf PageWidthChanged))
 
@@ -1203,8 +1384,8 @@ Public Class Designer
         Designer.UpdateGrid()
     End Sub
 
-    Public Shared ReadOnly PageHeightProperty As DependencyProperty = _
-                           DependencyProperty.Register("PageHeight", _
+    Public Shared ReadOnly PageHeightProperty As DependencyProperty =
+                           DependencyProperty.Register("PageHeight",
                            GetType(Double), GetType(Designer),
                            New PropertyMetadata(29.7 * Helper.CmToPx, AddressOf PageHeightChanged))
 
@@ -1234,9 +1415,9 @@ Public Class Designer
         End If
     End Sub
 
-    Public Shared ReadOnly ShowGridProperty As DependencyProperty = _
-                           DependencyProperty.Register("ShowGrid", _
-                           GetType(Boolean), GetType(Designer), _
+    Public Shared ReadOnly ShowGridProperty As DependencyProperty =
+                           DependencyProperty.Register("ShowGrid",
+                           GetType(Boolean), GetType(Designer),
                            New PropertyMetadata(False, AddressOf ShowGridChanged))
 
 
@@ -1270,8 +1451,8 @@ Public Class Designer
         Return (Value > 0 AndAlso Value <= 5)
     End Function
 
-    Public Shared ReadOnly ScaleProperty As DependencyProperty = _
-                           DependencyProperty.Register("Scale", _
+    Public Shared ReadOnly ScaleProperty As DependencyProperty =
+                           DependencyProperty.Register("Scale",
                            GetType(Double), GetType(Designer),
                            New PropertyMetadata(1.0, AddressOf ScaleChanged), AddressOf VlaidateScale)
 
@@ -1321,9 +1502,9 @@ Public Class Designer
         element.SetValue(DiagramTextProperty, value)
     End Sub
 
-    Public Shared ReadOnly DiagramTextProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramText", _
-                           GetType(String), GetType(Designer), _
+    Public Shared ReadOnly DiagramTextProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramText",
+                           GetType(String), GetType(Designer),
                            New PropertyMetadata(AddressOf DiagramTextChanged))
 
     Shared Sub DiagramTextChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
@@ -1352,9 +1533,9 @@ Public Class Designer
         element.SetValue(DiagramTextFontPropsProperty, value)
     End Sub
 
-    Public Shared ReadOnly DiagramTextFontPropsProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextFontProps", _
-                           GetType(PropertyDictionary), GetType(Designer), _
+    Public Shared ReadOnly DiagramTextFontPropsProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextFontProps",
+                           GetType(PropertyDictionary), GetType(Designer),
                            New PropertyMetadata(AddressOf DiagramTextFontPropsChanged))
 
     Shared Sub DiagramTextFontPropsChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
@@ -1390,9 +1571,9 @@ Public Class Designer
         element.SetValue(DiagramTextBackgroundProperty, value)
     End Sub
 
-    Public Shared ReadOnly DiagramTextBackgroundProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextBackground", _
-                           GetType(Brush), GetType(Designer), _
+    Public Shared ReadOnly DiagramTextBackgroundProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextBackground",
+                           GetType(Brush), GetType(Designer),
                            New PropertyMetadata(AddressOf DiagramTextBackgroundChanged))
 
     Shared Sub DiagramTextBackgroundChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
@@ -1423,9 +1604,9 @@ Public Class Designer
         element.SetValue(DiagramTextForegroundProperty, value)
     End Sub
 
-    Public Shared ReadOnly DiagramTextForegroundProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextForeground", _
-                           GetType(Brush), GetType(Designer), _
+    Public Shared ReadOnly DiagramTextForegroundProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextForeground",
+                           GetType(Brush), GetType(Designer),
                            New PropertyMetadata(Brushes.Black, AddressOf DiagramTextForegroundChanged))
 
     Shared Sub DiagramTextForegroundChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
@@ -1455,9 +1636,9 @@ Public Class Designer
         element.SetValue(DiagramTextOutlinedProperty, value)
     End Sub
 
-    Public Shared ReadOnly DiagramTextOutlinedProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextOutlined", _
-                           GetType(Boolean), GetType(Designer), _
+    Public Shared ReadOnly DiagramTextOutlinedProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextOutlined",
+                           GetType(Boolean), GetType(Designer),
                            New PropertyMetadata(False, AddressOf DiagramTextOutlinedChanged))
 
     Shared Sub DiagramTextOutlinedChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
@@ -1486,9 +1667,9 @@ Public Class Designer
         element.SetValue(DiagramTextOutlineThicknessProperty, value)
     End Sub
 
-    Public Shared ReadOnly DiagramTextOutlineThicknessProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextOutlineThickness", _
-                           GetType(Double), GetType(Designer), _
+    Public Shared ReadOnly DiagramTextOutlineThicknessProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextOutlineThickness",
+                           GetType(Double), GetType(Designer),
                            New PropertyMetadata(1.0, AddressOf DiagramTextOutlineChanged))
 
 #End Region
@@ -1512,9 +1693,9 @@ Public Class Designer
         element.SetValue(DiagramTextOutlineFillProperty, value)
     End Sub
 
-    Public Shared ReadOnly DiagramTextOutlineFillProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextOutlineFill", _
-                           GetType(Brush), GetType(Designer), _
+    Public Shared ReadOnly DiagramTextOutlineFillProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextOutlineFill",
+                           GetType(Brush), GetType(Designer),
                            New PropertyMetadata(AddressOf DiagramTextOutlineChanged))
 
     Shared Sub DiagramTextOutlineChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
@@ -1543,9 +1724,9 @@ Public Class Designer
         element.SetValue(DiagramTextApplyRotationProperty, value)
     End Sub
 
-    Public Shared ReadOnly DiagramTextApplyRotationProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextApplyRotation", _
-                           GetType(Boolean), GetType(Designer), _
+    Public Shared ReadOnly DiagramTextApplyRotationProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextApplyRotation",
+                           GetType(Boolean), GetType(Designer),
                            New PropertyMetadata(True, AddressOf DiagramTextApplyRotationChanged))
 
     Shared Sub DiagramTextApplyRotationChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
@@ -1568,9 +1749,9 @@ Public Class Designer
         End Set
     End Property
 
-    Public Shared ReadOnly HasChangesProperty As DependencyProperty = _
-                           DependencyProperty.Register("HasChanges", _
-                           GetType(Boolean), GetType(Designer), _
+    Public Shared ReadOnly HasChangesProperty As DependencyProperty =
+                           DependencyProperty.Register("HasChanges",
+                           GetType(Boolean), GetType(Designer),
                            New PropertyMetadata(False))
 
 #End Region
@@ -1587,9 +1768,9 @@ Public Class Designer
         End Set
     End Property
 
-    Public Shared ReadOnly CanUndoProperty As DependencyProperty = _
-                           DependencyProperty.Register("CanUndo", _
-                           GetType(Boolean), GetType(Designer), _
+    Public Shared ReadOnly CanUndoProperty As DependencyProperty =
+                           DependencyProperty.Register("CanUndo",
+                           GetType(Boolean), GetType(Designer),
                            New PropertyMetadata(False))
 
 #End Region
@@ -1606,9 +1787,10 @@ Public Class Designer
         End Set
     End Property
 
-    Public Shared ReadOnly CanRedoProperty As DependencyProperty = _
-                           DependencyProperty.Register("CanRedo", _
-                           GetType(Boolean), GetType(Designer), _
+
+    Public Shared ReadOnly CanRedoProperty As DependencyProperty =
+                           DependencyProperty.Register("CanRedo",
+                           GetType(Boolean), GetType(Designer),
                            New PropertyMetadata(False))
 
 #End Region
@@ -1632,9 +1814,9 @@ Public Class Designer
 
     End Sub
 
-    Public Shared ReadOnly GroupIDProperty As  _
-                           DependencyProperty = DependencyProperty.RegisterAttached("GroupID", _
-                           GetType(String), GetType(Designer), _
+    Public Shared ReadOnly GroupIDProperty As _
+                           DependencyProperty = DependencyProperty.RegisterAttached("GroupID",
+                           GetType(String), GetType(Designer),
                            New PropertyMetadata(AddressOf GroupIDChanged))
 
     Shared Sub GroupIDChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)

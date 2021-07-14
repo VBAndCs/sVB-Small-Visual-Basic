@@ -23,9 +23,9 @@
                             Background="#EEE"
                             BorderBrush="DimGray">
                         <Expander Style="{StaticResource ExpanderStyle}"
-                                  x:Name="PART_ZoomExpander" IsExpanded="True"
+                                  x:Name="PART_ZoomExpander"
                                   Background="Transparent">
-                            <Border BorderBrush="DimGray"
+                            <Border BorderBrush="DimGray" Background="LightSlateGray"
                                     BorderThickness="0,1,0,0"
                                     Padding="0"
                                     Height="180">

@@ -10,6 +10,7 @@ Namespace Microsoft.SmallBasic.Shell
     Public Class MdiViewsControl
         'Inherits ItemsControl
 
+        Public Event ActiveDocumentChanged()
 
         Private isDragOn As Boolean
         Private originPosition As Point
@@ -229,7 +230,15 @@ Namespace Microsoft.SmallBasic.Shell
             Return Nothing
         End Function
 
+        Dim LastselectedView As MdiView
+
         Friend Sub ChangeSelection(ByVal selectedView As MdiView)
+            If selectedView Is LastselectedView Then
+                Return
+            Else
+                LastselectedView = selectedView
+            End If
+
             If selectedView Is Nothing Then
                 Dim num = 0
 
@@ -264,6 +273,8 @@ Namespace Microsoft.SmallBasic.Shell
                 CType(selectedView.Document.EditorControl.TextView, Nautilus.Text.Editor.AvalonTextView).Focus()
                 KeepFocus = False
             End If
+
+            RaiseEvent ActiveDocumentChanged()
         End Sub
 
         Protected Overrides Sub OnItemsChanged(ByVal e As NotifyCollectionChangedEventArgs)

@@ -165,6 +165,7 @@
     Shared Sub UpdateFontProperties(Diagram As Object)
         Dim Pnl = Helper.GetDiagramPanel(Diagram)
         Dim FontProps = Designer.GetDiagramTextFontProps(Diagram)
+        If FontProps Is Nothing Then Return
         FontProps.Add(WpfDialogs.FontDialog.FontProperties.ToArray)
         Designer.SetDiagramTextFontProps(Diagram, FontProps)
     End Sub

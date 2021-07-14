@@ -1,0 +1,44 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:DiagramHelper"
+                    xmlns:c="http://schemas.ncore.com/wpf/xaml/WpfDialogs">
+
+    <Style x:Key="ProjectExplorerStyle" TargetType="{x:Type s:ProjectExplorer}">
+
+        <Style.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="ExpanderStyle.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Style.Resources>
+
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type s:ProjectExplorer}">
+                    <Border CornerRadius="1"
+                            BorderThickness="1"
+                            Background="#EEE"
+                            BorderBrush="DimGray">
+                        <Expander Header="Opened Forms"
+                                  Style="{StaticResource ExpanderStyle}"
+                                  x:Name="PART_ProjectExpander" IsExpanded="True"
+                                  Background="Transparent">
+                            <Border BorderBrush="DimGray"
+                                    BorderThickness="0,1,0,0"
+                                    Padding="0"
+                                    MinHeight="120">
+                                <Grid >
+                                    <ListBox x:Name="PART_ListBox"/>
+                                </Grid>
+                            </Border>
+                        </Expander>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

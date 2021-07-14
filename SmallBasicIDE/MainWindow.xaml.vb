@@ -188,13 +188,6 @@ Namespace Microsoft.SmallBasic
 
             If mdiView IsNot Nothing AndAlso CloseDocument(mdiView.Document) Then
                 mdiViews.Remove(mdiView)
-                formDesigner.HasChanges = False
-                formDesigner.NewPage()
-                formDesigner.Name = "Form1"
-                formDesigner.PageWidth = 700
-                formDesigner.PageHeight = 500
-                DesignerDocPath = ""
-
             End If
         End Sub
 
@@ -352,6 +345,7 @@ Namespace Microsoft.SmallBasic
             Dim mdiView As New MdiView()
             mdiView.Document = document
             mdiViews.Add(mdiView)
+            formDesigner.CodeFilePath = filePath
             Return document
         End Function
 
@@ -393,13 +387,14 @@ Namespace Microsoft.SmallBasic
                         Dim newDir = Path.GetDirectoryName(saveFileDialog.FileName)
                         Dim newFilePath = Path.Combine(newDir, newFormName)
 
-                        FileName = newFilePath & ".gsb"
+                        FileName = newFilePath & ".sb.gen"
                         If File.Exists(FileName) Then File.Delete(FileName)
 
                         FileName = newFilePath & ".xaml"
                         If File.Exists(FileName) Then File.Delete(FileName)
+
                         formDesigner.FileName = FileName
-                        DesignerDocPath = saveFileDialog.FileName
+                        formDesigner.CodeFilePath = saveFileDialog.FileName
                         formDesigner.HasChanges = True ' Force saving
                         SaveDesignInfo(document)
                     End If
@@ -420,8 +415,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Function CloseDocument(document As TextDocument) As Boolean
-            Dim designIsDirty = document.Form <> "" AndAlso formDesigner.HasChanges
-            If document.IsDirty OrElse designIsDirty Then
+            If document.IsDirty Then
                 Select Case Utility.MessageBox.Show(ResourceHelper.GetString("SaveDocumentBeforeClosing"), ResourceHelper.GetString("Title"), document.Title & ResourceHelper.GetString("DocumentModified"), Nf.Cancel Or Nf.No Or Nf.Yes, NotificationIcon.Information)
                     Case Nf.Yes
                         Return SaveDocument(document)
@@ -441,13 +435,25 @@ Namespace Microsoft.SmallBasic
                 Dim doc = ActiveDocument
                 Dim code As String
                 Dim outputFileName = GetOutputFileName(doc)
+
+                ' We need tp pass a value to the forms module in the class library, 
+                ' but the shared fileds will not work,
+                ' because the generated exe will crated the module in another domain
+                ' sp, we will pass the value via registery
+                VisualBasic.Interaction.SaveSetting("sVb", "Designer", "CodeFilePath", outputFileName)
+
                 Dim offset = 0
 
                 Dim gen As String
                 If doc.OpenedInDesigner Then
-                    gen = doc.GenerateCodeBehind(formDesigner.Items, False)
+                    If doc.Text.Contains("'@Form Hints:") Then
+                        doc.ParseFormHints()
+                        gen = doc.GetCodeBehind(True)
+                    Else
+                        gen = doc.GenerateCodeBehind(formDesigner.Items, False)
+                    End If
                 Else
-                    gen = doc.GetCodeBehind()
+                    gen = doc.GetCodeBehind(True)
                 End If
 
                 If gen <> "" Then
@@ -472,8 +478,11 @@ Namespace Microsoft.SmallBasic
                 End If
             Catch ex As Exception
                 Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
+            Finally
+                VisualBasic.Interaction.DeleteSetting("sVb", "Designer", "CodeFilePath")
             End Try
         End Sub
+
         Private Function RunProgram(ByVal code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
             Dim doc = ActiveDocument
             errors = Compile(code, outputFileName)
@@ -649,8 +658,9 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Function OpenDocumentIfNot(FilePath As String) As TextDocument
+            Dim docPath = Path.GetFullPath(FilePath)
             For Each view As MdiView In Me.viewsControl.Items
-                If view.Document.FilePath = Path.GetFullPath(FilePath) Then
+                If view.Document.FilePath = docPath Then
                     viewsControl.ChangeSelection(view)
                     Return view.Document
                 End If
@@ -661,92 +671,104 @@ Namespace Microsoft.SmallBasic
 
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
             SaveDesignInfo()
-            txtTitle.Text = "Code Editor "
-            txtForm.Text = $"[{formDesigner.Name}.sb]"
+            ' Note this prop isn't changed yet
+            tabDesigner.IsSelected = False
+            formDesigner_CurrentPageChanged(-2)
         End Sub
 
         Private Sub tabDesigner_Selected(sender As Object, e As RoutedEventArgs)
-            txtTitle.Text = "Form Designer "
-            txtForm.Text = $"[{formDesigner.Name}.xaml]"
+            formDesigner_CurrentPageChanged(-2)
         End Sub
 
+        Dim _projectPath As String
 
-        Dim DesignerDocPath As String
+        Private Function GetProjectPath() As String
+            If _projectPath <> "" Then Return _projectPath
 
-        Private Sub SaveDesignInfo(Optional doc As TextDocument = Nothing)
+            Dim tmpPath = "UnSaved"
+            If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
+
+            Dim n = 1
+            Do
+                Dim projectName = "Project" & n
+                _projectPath = Path.Combine(tmpPath, projectName)
+                If Not Directory.Exists(_projectPath) Then
+                    Directory.CreateDirectory(_projectPath)
+                    Exit Do
+                End If
+                n += 1
+            Loop
+            Return _projectPath
+        End Function
+
+        Private Sub SaveDesignInfo(Optional doc As TextDocument = Nothing, Optional openDoc As Boolean = True)
             Dim formName As String
             Dim xamlPath As String
             Dim formPath As String
 
-            If DesignerDocPath <> "" AndAlso Not formDesigner.HasChanges Then
-                OpenDocumentIfNot(DesignerDocPath)
+            OpeningDoc = True
+
+            If openDoc AndAlso formDesigner.CodeFilePath <> "" AndAlso Not formDesigner.HasChanges Then
+                doc = OpenDocumentIfNot(formDesigner.CodeFilePath)
+                If doc.Form = "" Then doc.Form = formDesigner.Name
+                If doc.PageKey = "" Then doc.PageKey = formDesigner.PageKey
+                OpeningDoc = False
                 Return
             End If
 
             If formDesigner.FileName = "" Then
-                If DesignerDocPath = "" Then
-                    Dim tmpPath = "UnSaved"
-                    If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
-
-                    Dim projectName = ""
-                    Dim projectPath = ""
-                    Dim n = 1
-                    Do
-                        projectName = "Project" & n
-                        projectPath = Path.Combine(tmpPath, projectName)
-                        If Not Directory.Exists(projectPath) Then
-                            Directory.CreateDirectory(projectPath)
-                            Exit Do
-                        End If
-                        n += 1
-                    Loop
-
-                    n = 1
+                If formDesigner.CodeFilePath = "" Then
+                    Dim projectPath = GetProjectPath()
                     xamlPath = ""
+                    formName = formDesigner.Name
                     Do
-                        formName = "Form" & n
                         xamlPath = Path.Combine(projectPath, formName)
                         If Not Directory.Exists(xamlPath) Then
                             Directory.CreateDirectory(xamlPath)
                             Exit Do
                         End If
-                        n += 1
+                        formName = formDesigner.GetTempFormName().Replace("KEY", "Form")
                     Loop
-
                     formPath = Path.Combine(xamlPath, formName)
 
                 Else
-                    If doc Is Nothing Then doc = OpenDocumentIfNot(DesignerDocPath)
-                    formName = doc.Form
-                    xamlPath = Path.GetDirectoryName(DesignerDocPath)
-                    formPath = DesignerDocPath.Substring(0, DesignerDocPath.Length - 3)
+                    If doc Is Nothing Then doc = GetDoc(formDesigner.CodeFilePath, openDoc)
+                    formName = If(doc.Form, formDesigner.Name)
+                    xamlPath = Path.GetDirectoryName(formDesigner.CodeFilePath)
+                    formPath = formDesigner.CodeFilePath.Substring(0, formDesigner.CodeFilePath.Length - 3)
                 End If
 
-                ' Set the FileName so the designer can save the xaml content
-                formDesigner.FileName = formPath & ".xaml"
                 formDesigner.Name = formName
-                formDesigner.DoSave()
-
-                ' Clear the file name as this is just a temb path
-                formDesigner.FileName = ""
+                formDesigner.DoSave(formPath & ".xaml")
 
                 IO.File.Create(formPath & ".sb").Close()
 
             Else
                 xamlPath = Path.GetDirectoryName(formDesigner.FileName)
                 formPath = formDesigner.FileName.Substring(0, formDesigner.FileName.Length - 5)
-                If doc Is Nothing Then doc = OpenDocumentIfNot(formPath & ".sb")
-                formName = doc.Form
+
+                If doc Is Nothing Then doc = GetDoc(formPath & ".sb", openDoc)
+                formName = If(doc.Form, formDesigner.Name)
                 formDesigner.Name = formName
+
                 If formDesigner.HasChanges Then formDesigner.DoSave()
             End If
 
-            If doc Is Nothing Then doc = OpenDocumentIfNot(formPath & ".sb")
+            If doc Is Nothing Then doc = GetDoc(formPath & ".sb", openDoc)
             doc.Form = formName
-            IO.File.WriteAllText(formPath & ".gsb", doc.GenerateCodeBehind(formDesigner.Items, True))
-            DesignerDocPath = doc.FilePath
+            doc.PageKey = formDesigner.PageKey
+            formDesigner.CodeFilePath = doc.FilePath
+
+            IO.File.WriteAllText(formPath & ".sb.gen", doc.GenerateCodeBehind(formDesigner.Items, True))
+            OpeningDoc = False
         End Sub
 
+        Function GetDoc(codeFilePath As String, openDoc As Boolean) As TextDocument
+            If Not File.Exists(codeFilePath) Then File.Create(codeFilePath).Close()
+            Return If(openDoc,
+                    OpenDocumentIfNot(codeFilePath),
+                    New TextDocument(codeFilePath))
+        End Function
 
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
             For Each d In IO.Directory.GetDirectories("UnSaved")
@@ -980,10 +1002,11 @@ Namespace Microsoft.SmallBasic
 
         Private Sub formDesigner_DiagramDoubleClick(control As UIElement)
             tabCode.IsSelected = True
-            If DesignerDocPath <> "" Then
-                Dim doc = OpenDocumentIfNot(DesignerDocPath)
+            If formDesigner.CodeFilePath <> "" Then
+                Dim doc = OpenDocumentIfNot(formDesigner.CodeFilePath)
                 Dim controlName = Automation.AutomationProperties.GetName(control)
                 If doc.AddEventHandler(controlName, "OnClick") Then
+                    doc.PageKey = formDesigner.PageKey
                     ' The code behind is saved before the new Handler is added.
                     ' We must make the designer dirty, to force saving this chamge in 
                     ' a nex call to SaveDesignInfo()
@@ -992,10 +1015,93 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
+        Dim FirstTime As Boolean = True
         Private Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
-            formDesigner.Name = "Form1"
-            tabDesigner_Selected(Nothing, Nothing)
+            If FirstTime Then
+                FirstTime = False
+                formDesigner_CurrentPageChanged(0)
+
+                formDesigner.SavePage =
+                    Function()
+                        SaveDesignInfo(Nothing, False)
+                        Return True
+                    End Function
+            End If
         End Sub
+
+        Private Sub formDesigner_CurrentPageChanged(index As Integer)
+            If tabDesigner.IsSelected Then
+                txtTitle.Text = "Form Designer - "
+                txtForm.Text = $"{formDesigner.Name}{If(formDesigner.FileName = "", " [New]", ".xaml")}"
+            Else
+                txtTitle.Text = "Code Editor - "
+                txtForm.Text = $"{formDesigner.Name}.sb"
+            End If
+
+            If index > -2 AndAlso ProjExplorer.FilesList IsNot Nothing Then
+                ProjExplorer.FreezListFiles = True
+                ProjExplorer.FilesList.SelectedIndex = index
+                ProjExplorer.FreezListFiles = False
+            End If
+        End Sub
+
+        Dim OpeningDoc As Boolean
+
+        Private Sub viewsControl_ActiveDocumentChanged()
+            If OpeningDoc Then Return
+
+            Dim currentView = viewsControl.SelectedItem
+            If currentView Is Nothing Then Return
+
+            For Each view As MdiView In Me.viewsControl.Items
+                view.Document.OpenedInDesigner = view Is currentView
+            Next
+
+            Dim doc = currentView.Document
+            If doc.PageKey = "" Then
+                If doc.FilePath = "" Then
+                    ' Open new page in the designer
+                    doc.PageKey = formDesigner.OpenNewPage()
+                Else
+                    Dim pagePath = doc.FilePath.Substring(0, doc.FilePath.Length - 3) & ".xaml"
+                    If File.Exists(pagePath) Then
+                        doc.PageKey = formDesigner.SwitchTo(pagePath)
+                    Else
+                        ' Do nothing to allow opening old sb files without a form
+                        ' If you want to attach a form, comment the next line,
+                        ' ' and  umcomment the 2 lineslines after.
+
+                        doc.OpenedInDesigner = False
+
+                        ' Open new page in the designer
+                        ' doc.PageKey = formDesigner.OpenNewPage()
+                    End If
+                End If
+            Else
+                formDesigner.SwitchTo(doc.PageKey)
+            End If
+
+
+        End Sub
+
+        Private Sub ProjExplorer_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs)
+            Dim item As ListBoxItem = GetParent(Of ListBoxItem)(e.OriginalSource)
+            If item IsNot Nothing Then
+                tabCode.IsSelected = True
+            End If
+        End Sub
+
+        Function GetParent(Of ParentType)(child As DependencyObject) As ParentType
+            If child Is Nothing Then Return Nothing
+            Dim p = child
+            Dim t = GetType(ParentType)
+            Do
+                p = VisualTreeHelper.GetParent(p)
+                If p Is Nothing Then Return Nothing
+                If p.GetType Is t Then Return CType(CObj(p), ParentType)
+            Loop
+        End Function
+
     End Class
 
 

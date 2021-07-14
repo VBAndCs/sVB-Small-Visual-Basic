@@ -25,6 +25,7 @@ Namespace WinForms
                 Dim frm = Forms.GetForm(formName)
 
                 If ContainsControl(formName, textBoxName) Then
+                    Return
                     Throw New ArgumentException($"There is another control with the name '{textBoxName}' on the ''{formName} form")
                 End If
 
@@ -64,6 +65,7 @@ Namespace WinForms
                 Dim frm = Forms.GetForm(formName)
 
                 If ContainsControl(formName, labelName) Then
+                    Return
                     Throw New ArgumentException($"There is another control with the name '{labelName}' on the ''{formName} form")
                 End If
 
@@ -102,6 +104,7 @@ Namespace WinForms
                 Dim frm = Forms.GetForm(formName)
 
                 If ContainsControl(formName, buttonName) Then
+                    Return
                     Throw New ArgumentException($"There is another control with the name '{buttonName}' on the ''{formName} form")
                 End If
 
@@ -145,6 +148,7 @@ Namespace WinForms
                 Dim frm = Forms.GetForm(formName)
 
                 If ContainsControl(formName, listBoxName) Then
+                    Return
                     Throw New ArgumentException($"There is another control with the name '{listBoxName}' on the ''{formName} form")
                 End If
 
@@ -177,7 +181,7 @@ Namespace WinForms
             End If
 
             Return Forms._forms.ContainsKey(frmName) AndAlso
-                    Forms._forms(formName).ContainsKey(cntrName)
+                    Forms._forms(frmName).ContainsKey(cntrName)
         End Function
 
         <ExMethod>

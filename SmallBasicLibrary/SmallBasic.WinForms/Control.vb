@@ -409,11 +409,12 @@ Namespace WinForms
 
 
         Friend Shared Function GetControl(formName As String, controlName As String) As Wpf.Control
+            formName = formName.ToLower()
             If Not Forms._forms.ContainsKey(formName) Then
                 Throw New ArgumentException($"There is no form named `{formName}`.")
             End If
 
-            formName = formName.ToLower()
+
             Dim _controls = Forms._forms(formName)
             If controlName = "" Then Return _controls(formName)
 
