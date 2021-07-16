@@ -1,0 +1,22 @@
+TextWindow.WriteLine({"Adam", 29})
+
+x = {1, 2, 3}
+TextWindow.WriteLine(x[1])
+
+y = {4, 5, 6}
+TextWindow.WriteLine(y[2])
+
+z = {"a", "b", "c", "d"}
+TextWindow.WriteLine(z[3])
+
+TextWindow.WriteLine("W1:")
+w1 = {x, y, z}
+TextWindow.WriteLine(w1[1][1])
+TextWindow.WriteLine(w1[2][2])
+TextWindow.WriteLine(w1[3][3])
+
+TextWindow.WriteLine("W2:")
+w2 = {{1, 2, 3}, {4, 5, 6}, {"a", "b", "c", "d"}}
+TextWindow.WriteLine(w2[1][1])
+TextWindow.WriteLine(w2[2][2])
+TextWindow.WriteLine(w2[3][3])

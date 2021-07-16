@@ -97,6 +97,7 @@
     <Compile Include="Microsoft.SmallBasic.Expressions\BinaryExpression.vb" />
     <Compile Include="Microsoft.SmallBasic.Expressions\Expression.vb" />
     <Compile Include="Microsoft.SmallBasic.Expressions\IdentifierExpression.vb" />
+    <Compile Include="Microsoft.SmallBasic.Expressions\InitializerExpression.vb" />
     <Compile Include="Microsoft.SmallBasic.Expressions\LiteralExpression.vb" />
     <Compile Include="Microsoft.SmallBasic.Expressions\MethodCallExpression.vb" />
     <Compile Include="Microsoft.SmallBasic.Expressions\NegativeExpression.vb" />

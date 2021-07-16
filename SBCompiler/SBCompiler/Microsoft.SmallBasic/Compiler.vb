@@ -7,34 +7,17 @@ Imports Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic
     Public Class Compiler
-        Private _references As List(Of String) = New List(Of String)()
-        Private _typeInfoBag As TypeInfoBag
         Private _referenceAssemblies As List(Of Assembly)
-        Private _libraryFiles As List(Of String) = New List(Of String)()
-        Private _errors As List(Of [Error]) = New List(Of [Error])()
-        Private _parser As Parser
+        Private _libraryFiles As New List(Of String)()
+        Private _errors As New List(Of [Error])()
 
-        Public ReadOnly Property References As List(Of String)
-            Get
-                Return _references
-            End Get
-        End Property
-
+        Public ReadOnly Property References As New List(Of String)
         Public ReadOnly Property Parser As Parser
-            Get
-                Return _parser
-            End Get
-        End Property
-
         Public ReadOnly Property TypeInfoBag As TypeInfoBag
-            Get
-                Return _typeInfoBag
-            End Get
-        End Property
 
         Public Sub New()
-            _parser = New Parser(_errors)
-            _typeInfoBag = New TypeInfoBag()
+            _Parser = New Parser(_errors)
+            _TypeInfoBag = New TypeInfoBag()
             Initialize()
         End Sub
 
@@ -51,7 +34,8 @@ Namespace Microsoft.SmallBasic
 
             _errors.Clear()
             _parser.Parse(source)
-            Dim semanticAnalyzer As SemanticAnalyzer = New SemanticAnalyzer(_parser, _typeInfoBag)
+
+            Dim semanticAnalyzer As New SemanticAnalyzer(_parser, _typeInfoBag)
             semanticAnalyzer.Analyze()
             Return _errors
         End Function
@@ -71,11 +55,9 @@ Namespace Microsoft.SmallBasic
 
             Compile(source)
 
-            If _errors.Count > 0 Then
-                Return _errors
-            End If
+            If _errors.Count > 0 Then Return _errors
 
-            Dim codeGenerator As CodeGenerator = New CodeGenerator(_parser, _typeInfoBag, outputName, directory)
+            Dim codeGenerator As New CodeGenerator(_parser, _typeInfoBag, outputName, directory)
             codeGenerator.GenerateExecutable()
             CopyLibraryAssemblies(directory)
             Return _errors
@@ -105,7 +87,6 @@ Namespace Microsoft.SmallBasic
             _referenceAssemblies.Add(GetType(Primitive).Assembly)
 
             For Each reference In References
-
                 Try
                     Dim item = Assembly.LoadFile(reference)
                     _referenceAssemblies.Add(item)

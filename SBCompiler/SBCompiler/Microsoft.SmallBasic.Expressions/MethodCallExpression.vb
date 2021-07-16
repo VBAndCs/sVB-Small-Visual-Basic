@@ -10,15 +10,18 @@ Namespace Microsoft.SmallBasic.Expressions
     Public Class MethodCallExpression
         Inherits Expression
 
-        Private _arguments As List(Of Expression) = New List(Of Expression)()
+        Public Sub New(startToken As TokenInfo, precedence As Integer, typeName As TokenInfo, methodName As TokenInfo, arguments As List(Of Expression))
+            Me.StartToken = startToken
+            Me.Precedence = precedence
+            _TypeName = typeName
+            _MethodName = methodName
+            _Arguments = arguments
+        End Sub
+
         Public Property TypeName As TokenInfo
         Public Property MethodName As TokenInfo
 
-        Public ReadOnly Property Arguments As List(Of Expression)
-            Get
-                Return _arguments
-            End Get
-        End Property
+        Public ReadOnly Property Arguments As New List(Of Expression)
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             For Each argument In Arguments

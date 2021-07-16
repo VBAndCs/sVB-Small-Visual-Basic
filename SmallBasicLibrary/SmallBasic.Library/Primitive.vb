@@ -38,24 +38,43 @@ Namespace Library
 
         Default Public Property item(index As Primitive) As Primitive
             Get
-                If CBool(ContainsKey(index)) Then
+                ConstructArrayMap()
+                If _arrayMap.Count = 0 Then
+                    Dim s = If(CStr(_primitive), "")
+                    If index < 1 OrElse index > s.Length Then Return ""
+                    Return s(index - 1).ToString()
+
+                ElseIf CBool(ContainsKey(index)) Then
                     Return _arrayMap(index)
                 End If
 
                 Return ""
             End Get
+
             Set(Value As Primitive)
-                Dim primitive1 As Primitive = SetArrayValue(Value, Me, index)
-                _primitive = primitive1._primitive
-                _arrayMap = primitive1._arrayMap
-                _primitiveAsDecimal = primitive1._primitiveAsDecimal
+                ConstructArrayMap()
+                If _arrayMap.Count = 0 AndAlso CStr(_primitive) <> "" Then
+                    Dim s = CStr(_primitive)
+                    If index < 1 Then
+                        _primitive = CStr(Value) & Space(-index) & s
+                    ElseIf index > s.Length Then
+                        _primitive = s & Space(index - s.Length - 1) & CStr(Value)
+                    Else
+                        _primitive = s.Substring(0, index - 1) & CStr(Value) & s.Substring(index)
+                    End If
+
+                Else
+                    Dim primitive1 As Primitive = SetArrayValue(Value, Me, index)
+                    _primitive = primitive1._primitive
+                    _arrayMap = primitive1._arrayMap
+                    _primitiveAsDecimal = primitive1._primitiveAsDecimal
+                End If
             End Set
         End Property
+
         Friend ReadOnly Property AsString As String
             Get
-                If _primitive IsNot Nothing Then
-                    Return _primitive
-                End If
+                If _primitive IsNot Nothing Then Return _primitive
 
                 If _primitiveAsDecimal.HasValue Then
                     _primitive = _primitiveAsDecimal.Value.ToString()
@@ -73,6 +92,7 @@ Namespace Library
                 Return _primitive
             End Get
         End Property
+
         Friend ReadOnly Property IsArray As Boolean
             Get
                 ConstructArrayMap()
@@ -267,13 +287,11 @@ Namespace Library
         End Function
 
         Private Sub ConstructArrayMap()
-            If _arrayMap IsNot Nothing Then
-                Return
-            End If
+            If _arrayMap IsNot Nothing Then Return
+
             _arrayMap = New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
-            If IsEmpty Then
-                Return
-            End If
+            If IsEmpty Then Return
+
             Dim source As Char() = AsString.ToCharArray()
             Dim index As Integer = 0
             While True
@@ -449,24 +467,50 @@ Namespace Library
 
         Public Shared Function GetArrayValue(array As Primitive, indexer As Primitive) As Primitive
             array.ConstructArrayMap()
-            Dim value As Microsoft.SmallBasic.Library.Primitive = Nothing
-            If Not array._arrayMap.TryGetValue(indexer, value) Then
-                value = CType(Nothing, Primitive)
+            If array.GetItemCount() = 0 Then
+                ' index the string
+                Return array(indexer)
+            Else
+                Dim value As Primitive = Nothing
+                If Not array._arrayMap.TryGetValue(indexer, value) Then
+                    value = CType(Nothing, Primitive)
+                End If
+                Return value
             End If
-
-            Return value
         End Function
+
+        Public Shared Function InitializeArray(value As Primitive) As Primitive
+            Dim array As New Primitive
+            array.ConstructArrayMap()
+            Dim arrStr = CStr(value).Trim("{"c, "}"c, " "c)
+            Dim arr = arrStr.Split({",", " "}, StringSplitOptions.RemoveEmptyEntries)
+            array._arrayMap = New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
+
+            For i = 0 To arr.Length - 1
+                array._arrayMap.Add(CStr(i + 1), arr(i))
+            Next
+
+            Return array
+        End Function
+
 
         Public Shared Function SetArrayValue(value As Primitive, array As Primitive, indexer As Primitive) As Primitive
             array.ConstructArrayMap()
-            Dim dictionary1 As New Dictionary(Of Primitive, Primitive)(array._arrayMap, PrimitiveComparer.Instance)
-            If value.IsEmpty Then
-                dictionary1.Remove(indexer)
+            If array.GetItemCount = 0 AndAlso CStr(array) <> "" Then
+                ' imdex the string
+                array(indexer) = value
+                Return array
             Else
-                dictionary1(indexer) = value
+                Dim dictionary1 As New Dictionary(Of Primitive, Primitive)(array._arrayMap, PrimitiveComparer.Instance)
+                If value.IsEmpty Then
+                    dictionary1.Remove(indexer)
+                Else
+                    dictionary1(indexer) = value
+                End If
+
+                Return ConvertFromMap(dictionary1)
             End If
 
-            Return ConvertFromMap(dictionary1)
         End Function
 
         Public Shared Function ConvertFromMap(map As Dictionary(Of Primitive, Primitive)) As Primitive

@@ -7,6 +7,14 @@ Namespace Microsoft.SmallBasic.Expressions
     Public Class LiteralExpression
         Inherits Expression
 
+        Public Sub New()
+            MyBase.New()
+        End Sub
+
+        Public Sub New(literal As TokenInfo)
+            _Literal = literal
+        End Sub
+
         Public Property Literal As TokenInfo
 
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)

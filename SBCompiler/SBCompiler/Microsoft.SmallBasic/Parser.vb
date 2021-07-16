@@ -10,32 +10,15 @@ Namespace Microsoft.SmallBasic
     Public Class Parser
         Private _reader As TextReader
         Private _currentLine As Integer
-        Private _errors As List(Of [Error])
-        Private _parseTree As List(Of Statement)
-        Private _symbolTable As SymbolTable
         Private _currentLineEnumerator As TokenEnumerator
         Private _rewindRequested As Boolean
 
         Public Property Errors As List(Of [Error])
-            Get
-                Return _errors
-            End Get
-            Friend Set(ByVal value As List(Of [Error]))
-                _errors = value
-            End Set
-        End Property
 
         Public ReadOnly Property ParseTree As List(Of Statement)
-            Get
-                Return _parseTree
-            End Get
-        End Property
+
 
         Public ReadOnly Property SymbolTable As SymbolTable
-            Get
-                Return _symbolTable
-            End Get
-        End Property
 
         Private Function ConstructWhileStatement(ByVal tokenEnumerator As TokenEnumerator) As WhileStatement
             Dim whileStatement As WhileStatement = New WhileStatement()
@@ -320,7 +303,6 @@ Namespace Microsoft.SmallBasic
                 Return ConstructSubroutineCallStatement(tokenEnumerator)
             End If
 
-            Dim __ = tokenEnumerator.Current.Column
             Dim expression = BuildIdentifierTerm(tokenEnumerator)
 
             If TypeOf expression Is MethodCallExpression Then
@@ -331,15 +313,12 @@ Namespace Microsoft.SmallBasic
                 Return methodCallStatement
             End If
 
-            Dim assignmentStatement2 As AssignmentStatement = New AssignmentStatement()
-            assignmentStatement2.StartToken = current
-            assignmentStatement2.LeftValue = expression
-            Dim assignmentStatement3 = assignmentStatement2
+            Dim assignStatement As New AssignmentStatement() With {.StartToken = current, .LeftValue = expression}
 
-            If EatOptionalToken(tokenEnumerator, Token.Equals, assignmentStatement3.EqualsToken) Then
-                assignmentStatement3.RightValue = BuildArithmeticExpression(tokenEnumerator)
+            If EatOptionalToken(tokenEnumerator, Token.Equals, assignStatement.EqualsToken) Then
+                assignStatement.RightValue = BuildArithmeticExpression(tokenEnumerator)
 
-                If assignmentStatement3.RightValue Is Nothing Then
+                If assignStatement.RightValue Is Nothing Then
                     AddError(tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected"))
                 End If
 
@@ -348,7 +327,7 @@ Namespace Microsoft.SmallBasic
                 AddError(tokenEnumerator.Current, ResourceHelper.GetString("UnrecognizedStatement"))
             End If
 
-            Return assignmentStatement3
+            Return assignStatement
         End Function
 
         Private Function ConstructSubroutineCallStatement(ByVal tokenEnumerator As TokenEnumerator) As Statement
@@ -365,7 +344,7 @@ Namespace Microsoft.SmallBasic
             Return result
         End Function
 
-        Public Function BuildArithmeticExpression(ByVal tokenEnumerator As TokenEnumerator) As Expression
+        Public Function BuildArithmeticExpression(tokenEnumerator As TokenEnumerator) As Expression
             Return BuildExpression(tokenEnumerator, includeLogical:=False)
         End Function
 
@@ -379,27 +358,24 @@ Namespace Microsoft.SmallBasic
             End If
 
             Dim current = tokenEnumerator.Current
-            Dim expression = BuildTerm(tokenEnumerator, includeLogical)
 
-            If expression Is Nothing Then
-                Return Nothing
-            End If
+            Dim leftHandExpr = BuildTerm(tokenEnumerator, includeLogical)
+            If leftHandExpr Is Nothing Then Return Nothing
 
             While IsValidOperator(tokenEnumerator.Current.Token, includeLogical)
                 Dim current2 = tokenEnumerator.Current
                 tokenEnumerator.MoveNext()
-                Dim expression2 = BuildTerm(tokenEnumerator, includeLogical)
+                Dim rightHandExpr = BuildTerm(tokenEnumerator, includeLogical)
 
-                If expression2 Is Nothing Then
-                    Return Nothing
-                End If
+                If rightHandExpr Is Nothing Then Return Nothing
 
-                expression = MergeExpression(expression, expression2, current2)
+                leftHandExpr = MergeExpression(leftHandExpr, rightHandExpr, current2)
+                If leftHandExpr Is Nothing Then Return Nothing
             End While
 
-            expression.StartToken = current
-            expression.EndToken = tokenEnumerator.Current
-            Return expression
+            leftHandExpr.StartToken = current
+            leftHandExpr.EndToken = tokenEnumerator.Current
+            Return leftHandExpr
         End Function
 
         Private Function BuildTerm(ByVal tokenEnumerator As TokenEnumerator, ByVal includeLogical As Boolean) As Expression
@@ -409,92 +385,99 @@ Namespace Microsoft.SmallBasic
                 Return Nothing
             End If
 
-            Dim expression As Expression = Nothing
+            Dim expression As Expression
+            Select Case tokenEnumerator.Current.Token
+                Case Token.StringLiteral, Token.NumericLiteral
+                    expression = New LiteralExpression(tokenEnumerator.Current)
+                    expression.Precedence = 9
+                    tokenEnumerator.MoveNext()
 
-            If tokenEnumerator.Current.Token = Token.StringLiteral OrElse tokenEnumerator.Current.Token = Token.NumericLiteral Then
-                Dim literalExpression As LiteralExpression = New LiteralExpression()
-                literalExpression.Literal = tokenEnumerator.Current
-                expression = literalExpression
-                expression.Precedence = 9
-                tokenEnumerator.MoveNext()
-            ElseIf tokenEnumerator.Current.Token = Token.LeftParens Then
-                tokenEnumerator.MoveNext()
-                expression = BuildExpression(tokenEnumerator, includeLogical)
+                Case Token.LeftParens
+                    tokenEnumerator.MoveNext()
+                    expression = BuildExpression(tokenEnumerator, includeLogical)
+                    If expression Is Nothing Then Return Nothing
+                    expression.Precedence = 9
+                    If Not EatToken(tokenEnumerator, Token.RightParens) Then Return Nothing
 
-                If expression Is Nothing Then
-                    Return Nothing
-                End If
+                Case Token.LeftCurlyBracket
+                    tokenEnumerator.MoveNext()
+                    Dim initExpr As New InitializerExpression(
+                        precedence:=9,
+                        arguments:=ParseCommaSepList(tokenEnumerator, Token.RightCurlyBracket)
+                   )
 
-                expression.Precedence = 9
+                    If initExpr.Arguments.Count = 0 Then Return Nothing
+                    expression = initExpr
+                    tokenEnumerator.MoveNext() ' }
 
-                If Not EatToken(tokenEnumerator, Token.RightParens) Then
-                    Return Nothing
-                End If
-            ElseIf tokenEnumerator.Current.Token = Token.Identifier Then
-                expression = BuildIdentifierTerm(tokenEnumerator)
+                Case Token.Identifier
+                    expression = BuildIdentifierTerm(tokenEnumerator)
+                    If expression Is Nothing Then Return Nothing
 
-                If expression Is Nothing Then
-                    Return Nothing
-                End If
-            Else
+                Case Else
+                    If tokenEnumerator.Current.Token <> Token.Subtraction Then
+                        Return Nothing
+                    End If
 
-                If tokenEnumerator.Current.Token <> Token.Subtraction Then
-                    Return Nothing
-                End If
+                    tokenEnumerator.MoveNext()
+                    Dim expression2 = BuildTerm(tokenEnumerator, includeLogical)
 
-                tokenEnumerator.MoveNext()
-                Dim expression2 = BuildTerm(tokenEnumerator, includeLogical)
+                    If expression2 Is Nothing Then
+                        Return Nothing
+                    End If
 
-                If expression2 Is Nothing Then
-                    Return Nothing
-                End If
-
-                Dim negativeExpression As NegativeExpression = New NegativeExpression()
-                negativeExpression.Negation = tokenEnumerator.Current
-                negativeExpression.Expression = expression2
-                negativeExpression.Precedence = 9
-                expression = negativeExpression
-            End If
+                    Dim negativeExpression As NegativeExpression = New NegativeExpression()
+                    negativeExpression.Negation = tokenEnumerator.Current
+                    negativeExpression.Expression = expression2
+                    negativeExpression.Precedence = 9
+                    expression = negativeExpression
+            End Select
 
             expression.StartToken = current
             expression.EndToken = tokenEnumerator.Current
             Return expression
         End Function
 
-        Private Function MergeExpression(ByVal currentExpression As Expression, ByVal term As Expression, ByVal operatorToken As TokenInfo) As Expression
-            Dim operatorPriority = GetOperatorPriority(operatorToken.Token)
-            Dim binaryExpression As BinaryExpression = TryCast(currentExpression, BinaryExpression)
-
-            If operatorPriority <= currentExpression.Precedence Then
-                Dim binaryExpression2 As BinaryExpression = New BinaryExpression()
-                binaryExpression2.Operator = operatorToken
-                binaryExpression2.Precedence = operatorPriority
-                binaryExpression2.StartToken = currentExpression.StartToken
-                binaryExpression2.EndToken = term.EndToken
-                binaryExpression2.LeftHandSide = currentExpression
-                binaryExpression2.RightHandSide = term
-                Return binaryExpression2
+        Private Function MergeExpression(ByVal leftHandExpr As Expression, ByVal rightHandExpr As Expression, ByVal operatorToken As TokenInfo) As Expression
+            If TypeOf leftHandExpr Is InitializerExpression OrElse TypeOf rightHandExpr Is InitializerExpression Then
+                _Errors.Add(New [Error](operatorToken, "Array initializer can't be used as an operand in binary operations"))
+                Return Nothing
             End If
+
+            Dim operatorPriority = GetOperatorPriority(operatorToken.Token)
+
+            If operatorPriority <= leftHandExpr.Precedence Then
+                Return New BinaryExpression() With {
+                    .Operator = operatorToken,
+                    .Precedence = operatorPriority,
+                    .StartToken = leftHandExpr.StartToken,
+                    .EndToken = rightHandExpr.EndToken,
+                    .LeftHandSide = leftHandExpr,
+                    .RightHandSide = rightHandExpr
+                }
+            End If
+
+            Dim binaryExpression As BinaryExpression = TryCast(leftHandExpr, BinaryExpression)
 
             If binaryExpression IsNot Nothing Then
                 Dim rightHandSide = binaryExpression.RightHandSide
                 Dim expression As Expression = Nothing
 
                 If TypeOf rightHandSide Is BinaryExpression Then
-                    expression = MergeExpression(rightHandSide, term, operatorToken)
+                    expression = MergeExpression(rightHandSide, rightHandExpr, operatorToken)
                 Else
-                    Dim binaryExpression3 As BinaryExpression = New BinaryExpression()
-                    binaryExpression3.Operator = operatorToken
-                    binaryExpression3.Precedence = operatorPriority
-                    binaryExpression3.StartToken = rightHandSide.StartToken
-                    binaryExpression3.EndToken = term.EndToken
-                    binaryExpression3.LeftHandSide = rightHandSide
-                    binaryExpression3.RightHandSide = term
-                    expression = binaryExpression3
+                    expression = New BinaryExpression() With {
+                        .Operator = operatorToken,
+                        .Precedence = operatorPriority,
+                        .StartToken = rightHandSide.StartToken,
+                        .EndToken = rightHandExpr.EndToken,
+                        .LeftHandSide = rightHandSide,
+                        .RightHandSide = rightHandExpr
+                    }
                 End If
 
                 binaryExpression.RightHandSide = expression
-                binaryExpression.EndToken = term.EndToken
+                binaryExpression.EndToken = rightHandExpr.EndToken
                 Return binaryExpression
             End If
 
@@ -514,33 +497,17 @@ Namespace Microsoft.SmallBasic
                 End If
 
                 If EatOptionalToken(tokenEnumerator, Token.LeftParens) Then
-                    Dim methodCallExpression As MethodCallExpression = New MethodCallExpression()
-                    methodCallExpression.StartToken = current
-                    methodCallExpression.Precedence = 9
-                    methodCallExpression.TypeName = current
-                    methodCallExpression.MethodName = variable
-                    Dim methodCallExpression2 = methodCallExpression
+                    Dim methodCallExpression As New MethodCallExpression(
+                        startToken:=current,
+                        precedence:=9,
+                        typeName:=current,
+                        methodName:=variable,
+                        arguments:=ParseCommaSepList(tokenEnumerator, Token.RightParens)
+                   )
 
-                    While tokenEnumerator.Current.Token <> Token.RightParens
-                        Dim expression = BuildArithmeticExpression(tokenEnumerator)
-
-                        If expression Is Nothing Then
-                            _errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected")))
-                            Exit While
-                        End If
-
-                        methodCallExpression2.Arguments.Add(expression)
-                        EatOptionalToken(tokenEnumerator, Token.Comma)
-
-                        If tokenEnumerator.IsEndOfNonCommentList Then
-                            _errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("UnexpectedMethodCallEOL")))
-                            Exit While
-                        End If
-                    End While
-
-                    methodCallExpression2.EndToken = tokenEnumerator.Current
+                    methodCallExpression.EndToken = tokenEnumerator.Current
                     tokenEnumerator.MoveNext()
-                    Return methodCallExpression2
+                    Return methodCallExpression
                 End If
 
                 Dim propertyExpression As PropertyExpression = New PropertyExpression()
@@ -553,7 +520,7 @@ Namespace Microsoft.SmallBasic
             End If
 
             If tokenEnumerator.Current.Token = Token.LeftBracket Then
-                Dim identifierExpression As IdentifierExpression = New IdentifierExpression()
+                Dim identifierExpression As New IdentifierExpression()
                 identifierExpression.StartToken = current
                 identifierExpression.Identifier = current
                 identifierExpression.EndToken = current
@@ -566,7 +533,7 @@ Namespace Microsoft.SmallBasic
                     expression2 = BuildArithmeticExpression(tokenEnumerator)
 
                     If expression2 Is Nothing Then
-                        _errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected")))
+                        _Errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected")))
                         Exit While
                     End If
 
@@ -576,7 +543,7 @@ Namespace Microsoft.SmallBasic
                         Exit While
                     End If
 
-                    Dim arrayExpression As ArrayExpression = New ArrayExpression()
+                    Dim arrayExpression As New ArrayExpression()
                     arrayExpression.StartToken = current
                     arrayExpression.EndToken = tokenEnumerator.Current
                     arrayExpression.Precedence = 9
@@ -585,7 +552,7 @@ Namespace Microsoft.SmallBasic
                     leftHand = arrayExpression
                 End While
 
-                Dim arrayExpression2 As ArrayExpression = New ArrayExpression()
+                Dim arrayExpression2 As New ArrayExpression()
                 arrayExpression2.StartToken = current
                 arrayExpression2.EndToken = tokenEnumerator.Current
                 arrayExpression2.Precedence = 9
@@ -594,12 +561,35 @@ Namespace Microsoft.SmallBasic
                 Return arrayExpression2
             End If
 
-            Dim identifierExpression2 As IdentifierExpression = New IdentifierExpression()
+            Dim identifierExpression2 As New IdentifierExpression()
             identifierExpression2.StartToken = current
             identifierExpression2.EndToken = current
             identifierExpression2.Precedence = 9
             identifierExpression2.Identifier = current
             Return identifierExpression2
+        End Function
+
+        Private Function ParseCommaSepList(tokenEnumerator As TokenEnumerator, closingToken As Token) As List(Of Expression)
+            Dim items As New List(Of Expression)
+
+            While tokenEnumerator.Current.Token <> closingToken
+                Dim expression = BuildArithmeticExpression(tokenEnumerator)
+
+                If expression Is Nothing Then
+                    _Errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected")))
+                    Exit While
+                End If
+
+                items.Add(expression)
+                EatOptionalToken(tokenEnumerator, Token.Comma)
+
+                If tokenEnumerator.IsEndOfNonCommentList Then
+                    _Errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("UnexpectedMethodCallEOL")))
+                    Exit While
+                End If
+            End While
+
+            Return items
         End Function
 
         Private Function IsValidOperator(ByVal token As Token, ByVal includeLogical As Boolean) As Boolean
@@ -636,13 +626,13 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Public Sub New(ByVal errors As List(Of [Error]))
-            _errors = errors
+            _Errors = errors
 
-            If _errors Is Nothing Then
-                _errors = New List(Of [Error])()
+            If _Errors Is Nothing Then
+                _Errors = New List(Of [Error])()
             End If
 
-            _symbolTable = New SymbolTable(_errors)
+            _SymbolTable = New SymbolTable(_Errors)
         End Sub
 
         Public Sub Parse(ByVal reader As TextReader)
@@ -650,14 +640,29 @@ Namespace Microsoft.SmallBasic
                 Throw New ArgumentNullException("reader")
             End If
 
-            _errors.Clear()
-            _symbolTable.Reset()
+            _Errors.Clear()
+            _SymbolTable.Reset()
+            _ParseTree = New List(Of Statement)()
             _reader = reader
-            _parseTree = New List(Of Statement)()
             BuildParseTree()
 
-            For Each item In _parseTree
-                item.AddSymbols(_symbolTable)
+            For Each item In _ParseTree
+                item.AddSymbols(_SymbolTable)
+            Next
+        End Sub
+
+        Public Shared Function Parse(code As String) As Parser
+            Dim _parser As New Parser
+            _parser.Parse(New IO.StringReader(code))
+            Return _parser
+        End Function
+
+        Public Sub ParseMore(code As String)
+            _reader = New IO.StringReader(code)
+            BuildParseTree()
+
+            For Each item In _ParseTree
+                item.AddSymbols(_SymbolTable)
             Next
         End Sub
 
@@ -665,14 +670,14 @@ Namespace Microsoft.SmallBasic
             _currentLine = -1
 
             While True
-                Dim tokenEnumerator As TokenEnumerator = ReadNextLine()
+                Dim tokenEnumerator = ReadNextLine()
 
                 If tokenEnumerator Is Nothing Then
                     Exit While
                 End If
 
                 Dim statementFromTokens = GetStatementFromTokens(tokenEnumerator)
-                _parseTree.Add(statementFromTokens)
+                _ParseTree.Add(statementFromTokens)
             End While
         End Sub
 
@@ -689,7 +694,8 @@ Namespace Microsoft.SmallBasic
             End If
 
             _currentLine += 1
-            Return CSharpImpl.__Assign(_currentLineEnumerator, New LineScanner().GetTokenList(text, _currentLine))
+            _currentLineEnumerator = New LineScanner().GetTokenList(text, _currentLine)
+            Return _currentLineEnumerator
         End Function
 
         Friend Sub RewindLine()
@@ -751,11 +757,11 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Friend Sub AddError(ByVal line As Integer, ByVal column As Integer, ByVal errorDescription As String)
-            _errors.Add(New [Error](line, column, errorDescription))
+            _Errors.Add(New [Error](line, column, errorDescription))
         End Sub
 
         Friend Sub AddError(ByVal tokenInfo As TokenInfo, ByVal errorDescription As String)
-            _errors.Add(New [Error](tokenInfo, errorDescription))
+            _Errors.Add(New [Error](tokenInfo, errorDescription))
         End Sub
 
         Public Shared Function EvaluateExpression(ByVal expression As Expression) As Primitive
@@ -821,7 +827,7 @@ Namespace Microsoft.SmallBasic
             End If
 
             tokenInfo = TokenInfo.Illegal
-            _errors.Add(New [Error](tokenEnumerator.Current, String.Format(ResourceHelper.GetString("TokenExpected"), expectedToken)))
+            _Errors.Add(New [Error](tokenEnumerator.Current, String.Format(ResourceHelper.GetString("TokenExpected"), expectedToken)))
             Return False
         End Function
 
@@ -854,7 +860,7 @@ Namespace Microsoft.SmallBasic
             End If
 
             variable = TokenInfo.Illegal
-            _errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("IdentifierExpected")))
+            _Errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("IdentifierExpected")))
             Return False
         End Function
 
@@ -865,7 +871,7 @@ Namespace Microsoft.SmallBasic
                 Return True
             End If
 
-            _errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected")))
+            _Errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected")))
             Return False
         End Function
 
@@ -876,7 +882,7 @@ Namespace Microsoft.SmallBasic
                 Return True
             End If
 
-            _errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("ConditionExpected")))
+            _Errors.Add(New [Error](tokenEnumerator.Current, ResourceHelper.GetString("ConditionExpected")))
             Return False
         End Function
 
@@ -885,16 +891,9 @@ Namespace Microsoft.SmallBasic
                 Return True
             End If
 
-            _errors.Add(New [Error](tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenFound"), tokenEnumerator.Current.Text)))
+            _Errors.Add(New [Error](tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenFound"), tokenEnumerator.Current.Text)))
             Return False
         End Function
 
-        Private Class CSharpImpl
-            <Obsolete("Please refactor calling code to use normal Visual Basic assignment")>
-            Shared Function __Assign(Of T)(ByRef target As T, value As T) As T
-                target = value
-                Return value
-            End Function
-        End Class
     End Class
 End Namespace

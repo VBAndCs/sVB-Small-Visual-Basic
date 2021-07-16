@@ -208,6 +208,12 @@ Namespace Library
             Return ChrW(num).ToString()
         End Function
 
+        Public Shared Function GetCharacterAt(text As Primitive, pos As Primitive) As Primitive
+            Dim s = CStr(text)
+            If s = "" OrElse pos < 1 OrElse pos > s.Length Then Return ""
+            Return s(pos - 1)
+        End Function
+
         ''' <summary>
         ''' Given a Unicode character, gets the corresponding character code.
         ''' </summary>

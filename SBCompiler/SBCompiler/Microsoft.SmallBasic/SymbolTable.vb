@@ -3,41 +3,16 @@ Imports System.Globalization
 
 Namespace Microsoft.SmallBasic
     Public Class SymbolTable
-        Private _errors As List(Of [Error])
-        Private _initializedVariables As Dictionary(Of String, TokenInfo) = New Dictionary(Of String, TokenInfo)()
-        Private _variables As Dictionary(Of String, TokenInfo) = New Dictionary(Of String, TokenInfo)()
-        Private _subroutines As Dictionary(Of String, TokenInfo) = New Dictionary(Of String, TokenInfo)()
-        Private _labels As Dictionary(Of String, TokenInfo) = New Dictionary(Of String, TokenInfo)()
 
         Public ReadOnly Property Errors As List(Of [Error])
-            Get
-                Return _errors
-            End Get
-        End Property
 
-        Public ReadOnly Property InitializedVariables As Dictionary(Of String, TokenInfo)
-            Get
-                Return _initializedVariables
-            End Get
-        End Property
+        Public ReadOnly Property InitializedVariables As New Dictionary(Of String, TokenInfo)
 
-        Public ReadOnly Property Variables As Dictionary(Of String, TokenInfo)
-            Get
-                Return _variables
-            End Get
-        End Property
+        Public ReadOnly Property Variables As New Dictionary(Of String, TokenInfo)
 
-        Public ReadOnly Property Subroutines As Dictionary(Of String, TokenInfo)
-            Get
-                Return _subroutines
-            End Get
-        End Property
+        Public ReadOnly Property Subroutines As New Dictionary(Of String, TokenInfo)
 
-        Public ReadOnly Property Labels As Dictionary(Of String, TokenInfo)
-            Get
-                Return _labels
-            End Get
-        End Property
+        Public ReadOnly Property Labels As New Dictionary(Of String, TokenInfo)
 
         Public Sub New(ByVal errors As List(Of [Error]))
             _errors = errors
@@ -45,6 +20,19 @@ Namespace Microsoft.SmallBasic
             If _errors Is Nothing Then
                 _errors = New List(Of [Error])()
             End If
+        End Sub
+
+        Public Sub CopyFrom(symbolTable As SymbolTable)
+            Copy(symbolTable.Variables, Me.Variables)
+            Copy(symbolTable.InitializedVariables, Me.InitializedVariables)
+            Copy(symbolTable.Labels, Me.Labels)
+            Copy(symbolTable.Subroutines, Me.Subroutines)
+        End Sub
+
+        Private Sub Copy(fromDic As Dictionary(Of String, TokenInfo), toDic As Dictionary(Of String, TokenInfo))
+            For Each info In fromDic
+                toDic(info.Key) = info.Value
+            Next
         End Sub
 
         Public Sub Reset()

@@ -2583,6 +2583,12 @@ SmallBasicLibrary
  Turns the turtle 90 degrees to the left.
  </summary>
 </member>
+<member name="M:Microsoft.SmallBasic.WinForms.Control.GetName(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
+ <summary>
+ Gets the name of the control.           
+ </summary>
+ <remarks>You can't change the control name at runtime. Use the designer to change the name</remarks>
+</member>
 <member name="M:Microsoft.SmallBasic.WinForms.Control.GetLeft(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
  <summary>
  The x-pos of the control on its parent control.
@@ -2696,6 +2702,41 @@ SmallBasicLibrary
  <summary>
  Fired when the user releases a keyboard-ky.
  </summary>
+</member>
+<member name="P:Microsoft.SmallBasic.WinForms.Event.SenderForm">
+ <summary>
+ Gets or sets the name of the form that raised the event
+ </summary>
+ <remarks>
+ If you are adding an event handler manually, You must set Event.SenderForm and Event.SenderControl before adding an event handler, or just call `Event.HandleEventsOf(form, control)` to do this.
+ But it is easier to add event handlers from the upper lists in the code editor, so the designer hides all these details in the .sb.gen file.
+ If you use one sub to handle an event of more than one control, read SenderForm and SenderControl to get info about which contol is firing the event now.
+ </remarks>
+</member>
+<member name="P:Microsoft.SmallBasic.WinForms.Event.SenderControl">
+ <summary>
+ Gets or sets the name of the control that raised the event
+ </summary>
+ <remarks>
+ If you are adding an event handler manually, You must set Event.SenderForm and Event.SenderControl before adding an event handler, or just call `Event.HandleEventsOf(form, control)` to do this.
+ But it is easier to add event handlers from the upper lists in the code editor, so the designer hides all these details in the .sb.gen file.
+ If you use one sub to handle an event of more than one control, read SenderForm and SenderControl to get info about which contol is firing the event now.
+ </remarks>
+</member>
+<member name="P:Microsoft.SmallBasic.WinForms.Event.Handled">
+ <summary>
+ If you set this property to true inside an event handler sub, the event will be considered handled and will not be processed bey windows anymore.
+ For exanple, if you want to cancel writrting a key to the textbox, use `Event.Handled = True` inside OnKeyDown handler 
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:Microsoft.SmallBasic.WinForms.Event.HandleEventsOf(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
+ <summary>
+ Set the Evemt.SenderForm and Event.SenderControl. 
+ You must call this method before adding event handlers for contrl events.
+ </summary>
+ <param name="FormName"></param>
+ <param name="ControlName"></param>
 </member>
 <member name="M:Microsoft.SmallBasic.WinForms.Form.AddTexBox(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
  <summary>

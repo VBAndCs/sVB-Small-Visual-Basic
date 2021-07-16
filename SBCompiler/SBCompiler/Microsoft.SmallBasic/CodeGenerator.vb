@@ -15,13 +15,9 @@ Namespace Microsoft.SmallBasic
         Private _symbolTable As SymbolTable
 
         Public Sub New(ByVal parser As Parser, ByVal typeInfoBag As TypeInfoBag, ByVal outputName As String, ByVal directory As String)
-            If parser Is Nothing Then
-                Throw New ArgumentNullException("parser")
-            End If
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
 
-            If typeInfoBag Is Nothing Then
-                Throw New ArgumentNullException("typeInfoBag")
-            End If
+            If typeInfoBag Is Nothing Then Throw New ArgumentNullException("typeInfoBag")
 
             _parser = parser
             _symbolTable = _parser.SymbolTable
@@ -31,7 +27,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Public Function GenerateExecutable() As Boolean
-            Dim assemblyName As AssemblyName = New AssemblyName()
+            Dim assemblyName As New AssemblyName()
             assemblyName.Name = _outputName
             Dim assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Save, _directory)
             Dim moduleBuilder = assemblyBuilder.DefineDynamicModule(_outputName & ".exe", emitSymbolInfo:=True)
@@ -47,8 +43,9 @@ Namespace Microsoft.SmallBasic
 
         Private Function EmitModule(ByVal moduleBuilder As ModuleBuilder) As Boolean
             Dim typeBuilder = moduleBuilder.DefineType("_SmallBasicProgram", TypeAttributes.Sealed)
-            Dim methodBuilder = CType(CSharpImpl.__Assign(_entryPoint, typeBuilder.DefineMethod("_Main", MethodAttributes.Static)), MethodBuilder)
-            Dim iLGenerator As ILGenerator = methodBuilder.GetILGenerator()
+            _entryPoint = typeBuilder.DefineMethod("_Main", MethodAttributes.Static)
+            Dim methodBuilder = CType(_entryPoint, MethodBuilder)
+            Dim iLGenerator = methodBuilder.GetILGenerator()
             _currentScope = New CodeGenScope With {
                 .ILGenerator = iLGenerator,
                 .MethodBuilder = methodBuilder,
@@ -80,17 +77,10 @@ Namespace Microsoft.SmallBasic
                 item.PrepareForEmit(_currentScope)
             Next
 
-            For Each item2 In _parser.ParseTree
-                item2.EmitIL(_currentScope)
+            For Each item In _parser.ParseTree
+                item.EmitIL(_currentScope)
             Next
         End Sub
 
-        Private Class CSharpImpl
-            <Obsolete("Please refactor calling code to use normal Visual Basic assignment")>
-            Shared Function __Assign(Of T)(ByRef target As T, value As T) As T
-                target = value
-                Return value
-            End Function
-        End Class
     End Class
 End Namespace

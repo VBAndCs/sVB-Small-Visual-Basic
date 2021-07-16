@@ -62,6 +62,7 @@ Namespace WinForms
                 If Not events.Contains(e) Then events.Add(e)
             Next
 
+            events.Sort()
             Return events
         End Function
 

@@ -33,9 +33,9 @@ Sub btnDivide_OnClick
     if n2 = 0 Then        
       Result = "Can't divide by zero."
     else
-      Result = n1 / n2      
+      Result = "Result = " + (n1 / n2)
     endif
-    lblResult.Text = "Result = " + Result  
+    lblResult.Text = Result  
   EndIf  
 EndSub
 

@@ -21,8 +21,8 @@ Namespace Microsoft.SmallBasic.Expressions
         End Sub
 
         Public Sub AddSymbolInitialization(symbolTable As SymbolTable)
-            Dim arrayExpression As ArrayExpression = TryCast(LeftHand, ArrayExpression)
-            Dim identifierExpression As IdentifierExpression = TryCast(LeftHand, IdentifierExpression)
+            Dim arrayExpression = TryCast(LeftHand, ArrayExpression)
+            Dim identifierExpression = TryCast(LeftHand, IdentifierExpression)
 
             If arrayExpression IsNot Nothing Then
                 arrayExpression.AddSymbolInitialization(symbolTable)

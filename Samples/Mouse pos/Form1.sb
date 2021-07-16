@@ -1,3 +1,6 @@
+TextBox1.OnMouseMove = Form1_OnMouseMove
+TextBox2.OnMouseMove = Form1_OnMouseMove
+Label1.OnMouseMove = Form1_OnMouseMove
 
 '----------------------------
 Sub Form1_OnMouseMove
@@ -7,11 +10,12 @@ Sub Form1_OnMouseMove
    msg =  "Pos relative to TextBox2: ("
    TextBox2.Text =msg  + TextBox2.MouseX + "," + TextBox2.MouseY + ")"
    
-   msg = "Pos relative to Screen: ("
-   Label1.Text = msg + Mouse.MouseX + "," + Mouse.MouseY + ")"
-   
    msg = "Pos relative to Form1: (" 
    Form1.Text = msg + Form1.MouseX + "," + Form1.MouseY + ")"
+   
+   msg = "Pos relative to Screen: ("
+   Label1.Text = msg + Mouse.MouseX + "," + Mouse.MouseY + ")"
+
 EndSub
 
 

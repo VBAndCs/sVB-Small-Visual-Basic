@@ -361,6 +361,15 @@ Public Class Designer
             diagram2.ClearValue(IsTabStopProperty)
             diagram2.ClearValue(DiagramTextBlockPropertyKey)
 
+            ' GroupID will cause isuues in Small Basic, because it needs a reference to DiagramHelper
+            ' Use any wpf built-in properety to hold its value
+            Dim gID = GetGroupID(diagram2)
+            If gID <> "" Then
+                Automation.AutomationProperties.SetAutomationId(diagram2, gID)
+                diagram2.ClearValue(GroupIDProperty)
+            Else
+                diagram2.ClearValue(Automation.AutomationProperties.AutomationIdProperty)
+            End If
 
             ' Copy properties from designer to Canvas
             Canvas.SetLeft(diagram2, Designer.GetLeft(diagram2))
@@ -411,6 +420,16 @@ Public Class Designer
             If Diagram Is Nothing Then Continue For
 
             Me.Items.Add(Diagram)
+
+            ' Restore the GroupID property
+
+            Dim gId = Automation.AutomationProperties.GetAutomationId(Diagram)
+            If gId = "" Then
+                Diagram.ClearValue(GroupIDProperty)
+            Else
+                SetGroupID(Diagram, gId)
+                Diagram.ClearValue(Automation.AutomationProperties.AutomationIdProperty)
+            End If
 
             Designer.SetFrameWidth(Diagram, Diagram.Width)
             Diagram.ClearValue(FrameworkElement.WidthProperty)
@@ -649,6 +668,15 @@ Public Class Designer
         dlg.Filter = "Diagram Pages|*.xaml"
         dlg.Title = "Save Diagram Design Page"
 
+        Dim saveName As String
+        If _fileName = "" Then
+            saveName = Me.Name
+        Else
+            dlg.InitialDirectory = _fileName
+            saveName = IO.Path.GetFileNameWithoutExtension(_fileName)
+        End If
+        dlg.FileName = saveName
+
         Dim result? As Boolean = dlg.ShowDialog()
 
         If result = True Then
@@ -776,7 +804,7 @@ Public Class Designer
     End Sub
 
     Public Sub IncreaseGridThickness(Value As Single)
-        If (Value < 0 AndAlso GridPen.Thickness <= 0.1) OrElse (Value > 0 AndAlso GridPen.Thickness >= 1.5) Then Return
+        If (Value <0 AndAlso GridPen.Thickness <= 0.1) OrElse (Value > 0 AndAlso GridPen.Thickness >= 1.5) Then Return
         Dim OldState As New PropertyState(GridPen, Pen.ThicknessProperty)
         GridPen.Thickness += Value
         Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
@@ -998,7 +1026,7 @@ Public Class Designer
     Private Sub Designer_PreviewMouseWheel(sender As Object, e As MouseWheelEventArgs) Handles Me.PreviewMouseWheel
         If Keyboard.Modifiers = ModifierKeys.Control Then
             Dim Value As Integer = Me.Scale * 100 + (e.Delta / 24)
-            If Not (Value < 25 OrElse Value > 500) Then Me.Scale = Value / 100
+            If Not (Value <25 OrElse Value > 500) Then Me.Scale = Value / 100
             e.Handled = True
         End If
     End Sub

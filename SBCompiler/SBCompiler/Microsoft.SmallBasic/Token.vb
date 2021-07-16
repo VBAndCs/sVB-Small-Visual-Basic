@@ -34,6 +34,8 @@
         RightParens
         LeftBracket
         RightBracket
+        LeftCurlyBracket
+        RightCurlyBracket
         LessThan
         LessThanEqualTo
         GreaterThan

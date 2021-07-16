@@ -33,8 +33,8 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub TestParseTree()
-            Dim parser As Parser = New Parser()
-            Dim reader As StringReader = New StringReader(_text3)
+            Dim parser As New Parser()
+            Dim reader As New StringReader(_text3)
             parser.Parse(reader)
 
             For Each item In parser.ParseTree

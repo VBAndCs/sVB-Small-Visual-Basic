@@ -176,6 +176,7 @@ Namespace Microsoft.SmallBasic.Documents
             App.GlobalDomain.Bind()
             _ControlNames.Add("(Global)")
             _GlobalSubs.Add("(Add New Sub)")
+            _ControlEvents.Add("(Add New Sub)")
             ParseFormHints()
         End Sub
 
@@ -443,6 +444,10 @@ Namespace Microsoft.SmallBasic.Documents
                  New Span(line.Start, L),
                 Space(iden) & block.Replace("#", nl) & If(addBlockEnd, nl & endBlock & nl, ""), _undoHistory)
             textView.Caret.MoveTo(line.Start + iden + Len(keyword) + 1 + n)
+        End Sub
+
+        Friend Sub Focus()
+            CType(_editorControl.TextView, Controls.ContentControl).Focus()
         End Sub
 
         Private Sub UndoRedoHappened(sender As Object, e As UndoRedoEventArgs)
@@ -802,7 +807,7 @@ EndSub
         End Function
 
         Public Sub RemoveBrokenHandlers()
-            If _EventHandlers.Count = 0 Then Return
+            If _EventHandlers.Count = 0 OrElse _editorControl Is Nothing Then Return
 
             Dim textView = _editorControl.TextView
             Dim text = textView.TextSnapshot
@@ -830,5 +835,7 @@ EndSub
                 Next
             End If
         End Sub
+
+
     End Class
 End Namespace

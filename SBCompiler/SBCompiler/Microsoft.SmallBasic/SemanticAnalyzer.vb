@@ -7,17 +7,12 @@ Imports Microsoft.SmallBasic.Statements
 Namespace Microsoft.SmallBasic
     Public Class SemanticAnalyzer
         Private _parser As Parser
-        Private _symbolTable As SymbolTable
-        Private _typeInfoBag As TypeInfoBag
+        Friend _symbolTable As SymbolTable
+        Friend _typeInfoBag As TypeInfoBag
 
-        Public Sub New(ByVal parser As Parser, ByVal typeInfoBag As TypeInfoBag)
-            If parser Is Nothing Then
-                Throw New ArgumentNullException("parser")
-            End If
-
-            If typeInfoBag Is Nothing Then
-                Throw New ArgumentNullException("typeInfoBag")
-            End If
+        Public Sub New(parser As Parser, typeInfoBag As TypeInfoBag)
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
+            If typeInfoBag Is Nothing Then Throw New ArgumentNullException("typeInfoBag")
 
             _parser = parser
             _symbolTable = _parser.SymbolTable
@@ -29,12 +24,9 @@ Namespace Microsoft.SmallBasic
                 AnalyzeStatement(item)
             Next
 
-            If _parser.Errors.Count <> 0 Then
-                Return
-            End If
+            If _parser.Errors.Count <> 0 Then Return
 
             For Each variable In _symbolTable.Variables
-
                 If Not _symbolTable.InitializedVariables.ContainsKey(variable.Key) Then
                     _parser.AddError(variable.Value, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("VariableNotInitialized"), New Object(0) {variable.Value.Text}))
                 End If
@@ -128,7 +120,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub AnalyzeAssignmentStatement(ByVal assignmentStatement As AssignmentStatement)
-            Dim identifierExpression As IdentifierExpression = TryCast(assignmentStatement.RightValue, IdentifierExpression)
+            Dim identifierExpression = TryCast(assignmentStatement.RightValue, IdentifierExpression)
 
             If identifierExpression IsNot Nothing AndAlso _symbolTable.Subroutines.ContainsKey(identifierExpression.Identifier.NormalizedText) Then
                 NoteEventReference(assignmentStatement.LeftValue, identifierExpression.Identifier)

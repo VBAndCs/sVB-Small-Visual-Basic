@@ -12,6 +12,12 @@ Namespace Microsoft.SmallBasic
         Private _decimalSeparator As Char = "."c
 
         Public Function GetTokenList(lineText As String, lineNumber As Integer) As TokenEnumerator
+            Dim tokenEnumerator As New TokenEnumerator(GetTokens(lineText, lineNumber))
+            tokenEnumerator.LineNumber = lineNumber
+            Return tokenEnumerator
+        End Function
+
+        Public Function GetTokens(lineText As String, lineNumber As Integer) As List(Of TokenInfo)
             If Equals(lineText, Nothing) Then
                 Throw New ArgumentNullException("lineText")
             End If
@@ -19,17 +25,15 @@ Namespace Microsoft.SmallBasic
             _lineText = lineText
             _lineLength = _lineText.Length
             _currentIndex = 0
-            Dim list As List(Of TokenInfo) = New List(Of TokenInfo)()
-            Dim tokenInfo As TokenInfo
+            Dim list As New List(Of TokenInfo)()
+            Dim tokenInfo As New TokenInfo
 
             While ScanNextToken(tokenInfo)
                 tokenInfo.Line = lineNumber
                 list.Add(tokenInfo)
             End While
 
-            Dim tokenEnumerator As New TokenEnumerator(list)
-            tokenEnumerator.LineNumber = lineNumber
-            Return tokenEnumerator
+            Return list
         End Function
 
         Private Function ScanNextToken(<Out> ByRef tokenInfo As TokenInfo) As Boolean
@@ -67,6 +71,12 @@ Namespace Microsoft.SmallBasic
                 Case "]"c
                     tokenInfo.Token = Token.RightBracket
                     tokenInfo.Text = "]"
+                Case "{"c
+                    tokenInfo.Token = Token.LeftCurlyBracket
+                    tokenInfo.Text = "{"
+                Case "}"c
+                    tokenInfo.Token = Token.RightCurlyBracket
+                    tokenInfo.Text = "}"
                 Case ":"c
                     tokenInfo.Token = Token.Colon
                     tokenInfo.Text = ":"
@@ -106,13 +116,11 @@ Namespace Microsoft.SmallBasic
                 Case "'"c
                     _currentIndex -= 1
                     tokenInfo.Token = Token.Comment
-                    Dim text7 As String = (CSharpImpl.__Assign(tokenInfo.Text, ReadComment()))
-                    Exit Select
+                    tokenInfo.Text = ReadComment()
                 Case """"c
                     _currentIndex -= 1
                     tokenInfo.Token = Token.StringLiteral
-                    Dim text5 As String = (CSharpImpl.__Assign(tokenInfo.Text, ReadStringLiteral()))
-                    Exit Select
+                    tokenInfo.Text = ReadStringLiteral()
                 Case Else
                     Dim nextChar2 As Char = GetNextChar()
                     _currentIndex -= 1
@@ -330,12 +338,5 @@ Namespace Microsoft.SmallBasic
             End Select
         End Function
 
-        Private Class CSharpImpl
-            <Obsolete("Please refactor calling code to use normal Visual Basic assignment")>
-            Shared Function __Assign(Of T)(ByRef target As T, value As T) As T
-                target = value
-                Return value
-            End Function
-        End Class
     End Class
 End Namespace

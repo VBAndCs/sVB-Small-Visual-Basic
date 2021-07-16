@@ -126,6 +126,7 @@
     <Compile Include="Shell\RoutedRibbonCommand.vb" />
     <Compile Include="Shell\SmallCommandGroup.vb" />
     <Compile Include="Shell\SmallestCommandGroup.vb" />
+    <Compile Include="Utility\Helper.vb" />
     <Compile Include="Utility\HelpPanel.xaml.vb">
       <DependentUpon>HelpPanel.xaml</DependentUpon>
       <SubType>Code</SubType>

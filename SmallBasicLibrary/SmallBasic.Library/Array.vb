@@ -6,12 +6,20 @@ Option Strict On
 Imports System.Collections.Generic
 
 Namespace Library
+
     ''' <summary>
     ''' This object provides a way of storing more than one value for a given name. These values can be accessed by another index.
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class Array
         Private Shared _arrayMap As New Dictionary(Of Primitive, Dictionary(Of Primitive, Primitive))
+
+        Public Shared Function GetItemAt(array As Primitive, index As Primitive) As Primitive
+            Return array(index)
+        End Function
+        Public Shared Sub SetItemAt(array As Primitive, index As Primitive, value As Primitive)
+            array(index) = value
+        End Sub
 
         ''' <summary>
         ''' Gets whether or not the array contains the specified index.  This is very useful when deciding if the array's index was initialized by some value or not.
@@ -26,8 +34,8 @@ Namespace Library
         ''' "True" or "False" depending on if the index was present in the specified.
         ''' array.
         ''' </returns>
-        Public Shared Function ContainsIndex(array1 As Primitive, index As Primitive) As Primitive
-            Return array1.ContainsKey(index)
+        Public Shared Function ContainsIndex(array As Primitive, index As Primitive) As Primitive
+            Return array.ContainsKey(index)
         End Function
 
         ''' <summary>
@@ -43,8 +51,8 @@ Namespace Library
         ''' "True" or "False" depending on if the value was present in the specified.
         ''' array.
         ''' </returns>
-        Public Shared Function ContainsValue(array1 As Primitive, value As Primitive) As Primitive
-            Return array1.ContainsValue(value)
+        Public Shared Function ContainsValue(array As Primitive, value As Primitive) As Primitive
+            Return array.ContainsValue(value)
         End Function
 
         ''' <summary>
@@ -56,8 +64,8 @@ Namespace Library
         ''' <returns>
         ''' An array filled with all the indices of the specified array.  The index of the returned array starts from 1.
         ''' </returns>
-        Public Shared Function GetAllIndices(array1 As Primitive) As Primitive
-            Return array1.GetAllIndices()
+        Public Shared Function GetAllIndices(array As Primitive) As Primitive
+            Return array.GetAllIndices()
         End Function
 
         ''' <summary>
@@ -69,8 +77,8 @@ Namespace Library
         ''' <returns>
         ''' The number of items in the specified array.
         ''' </returns>
-        Public Shared Function GetItemCount(array1 As Primitive) As Primitive
-            Return array1.GetItemCount()
+        Public Shared Function GetItemCount(array As Primitive) As Primitive
+            Return array.GetItemCount()
         End Function
 
         ''' <summary>
@@ -82,8 +90,8 @@ Namespace Library
         ''' <returns>
         ''' "True" if the specified variable is an array.  "False" otherwise.
         ''' </returns>
-        Public Shared Function IsArray(array1 As Primitive) As Primitive
-            Return array1.IsArray
+        Public Shared Function IsArray(array As Primitive) As Primitive
+            Return array.IsArray
         End Function
 
         ''' <summary>

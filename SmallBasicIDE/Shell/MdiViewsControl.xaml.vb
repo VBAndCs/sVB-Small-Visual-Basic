@@ -47,8 +47,6 @@ Namespace Microsoft.SmallBasic.Shell
             App.GlobalDomain.Bind()
         End Sub
 
-
-
         Protected Overrides Function IsItemItsOwnContainerOverride(ByVal item As Object) As Boolean
             Return TypeOf item Is MdiView
         End Function
@@ -338,8 +336,13 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
+        Dim JustFocus As Boolean
+
         Private Sub EventNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+            If JustFocus Then Return
+
             Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+
             If selectedView.FreezeCmbEvents Then Return
 
             Dim cmb = CType(sender, ComboBox)
@@ -349,6 +352,73 @@ Namespace Microsoft.SmallBasic.Shell
             selectedView.FreezeCmbEvents = True
             selectedView.Document.AddEventHandler(selectedView.CmbControlNames.SelectedItem, eventName)
             selectedView.FreezeCmbEvents = False
+        End Sub
+
+        Private Sub CmbEventNames_PreviewTextInput(sender As Object, e As TextCompositionEventArgs)
+            Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+            If selectedView.CmbControlNames.SelectedIndex = 0 Then Return
+
+            Dim cmb = CType(sender, ComboBox)
+            Dim c = e.Text.ToLower()(0)
+            Dim items = cmb.Items
+
+            Dim st As Integer = cmb.SelectedIndex
+            For i = 0 To items.Count - 1
+                Dim item = CType(cmb.ItemContainerGenerator.ContainerFromIndex(i), ComboBoxItem)
+                If item.IsHighlighted Then
+                    st = i
+                    Exit For
+                End If
+            Next
+
+            For i = st + 1 To Items.Count - 1
+                Dim eventName = CStr(Items(i)).ToLower()
+                If eventName(2) = c Then
+                    HighlightItem(cmb, i)
+                    e.Handled = True
+                    Return
+                End If
+            Next
+
+            For i = 0 To st
+                Dim eventName = CStr(items(i)).ToLower()
+                If eventName(2) = c Then
+                    HighLightItem(cmb, i)
+                    e.Handled = True
+                    Return
+                End If
+            Next
+        End Sub
+
+        Dim _highLightedItem As ComboBoxItem
+
+        Private Sub HighlightItem(cmb As ComboBox, index As Integer)
+            JustFocus = True
+            cmb.SelectedIndex = -1
+            cmb.SelectedIndex = index
+            JustFocus=False 
+            _highLightedItem = CType(cmb.ItemContainerGenerator.ContainerFromIndex(index), ComboBoxItem)
+        End Sub
+
+        Private Sub CmbEventNames_KeyDown(sender As Object, e As KeyEventArgs)
+            If e.Key = Key.Enter Then
+                CmbEventNames_PreviewMouseLeftButtonDown(sender, e)
+            End If
+        End Sub
+
+        Private Sub CmbEventNames_PreviewMouseLeftButtonDown(sender As Object, e As RoutedEventArgs)
+            If _highLightedItem Is Nothing Then Return
+
+            Dim cmb = CType(sender, ComboBox)
+            If e.OriginalSource IsNot _highLightedItem AndAlso
+                GetParent(Of ComboBoxItem)(e.OriginalSource) IsNot _highLightedItem Then Return
+
+            _highLightedItem = Nothing
+            EventNames_SelectionChanged(sender, Nothing)
+
+            Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+            selectedView.Document.Focus()
+            e.Handled = True
         End Sub
     End Class
 End Namespace

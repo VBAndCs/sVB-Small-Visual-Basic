@@ -87,11 +87,15 @@ Namespace WinForms
 
                       If TypeOf ui Is Wpf.Control Then
                           _controls(controlName.ToLower()) = ui
+                          CType(ui, Wpf.Control).Name = controlName
                       Else
                           Dim left = Canvas.GetLeft(ui)
                           Dim top = Canvas.GetTop(ui)
                           canvas.Children.Remove(ui)
-                          Dim lb As New Wpf.Label() With {.Content = ui}
+                          Dim lb As New Wpf.Label() With {
+                                .Content = ui,
+                                .Name = controlName
+                          }
                           canvas.Children.Add(lb)
                           Canvas.SetLeft(lb, left)
                           Canvas.SetTop(lb, top)
