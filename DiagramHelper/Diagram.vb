@@ -119,7 +119,15 @@ Public Class DiagramObject
         End If
     End Sub
 
+
     Friend Sub MoveDiagram(HorizontalChange As Double, VerticalChange As Double, Optional IgnoreRotation As Boolean = False)
+        StartMoveUndo()
+        DoMoveDiagram(HorizontalChange, VerticalChange, IgnoreRotation)
+        ReportMoveUndo()
+    End Sub
+
+
+    Private Sub DoMoveDiagram(HorizontalChange As Double, VerticalChange As Double, Optional IgnoreRotation As Boolean = False)
 
         Dim dragDelta As New Point(HorizontalChange, VerticalChange)
         If Not IgnoreRotation Then
@@ -203,7 +211,7 @@ Public Class DiagramObject
         Helper.UpdateControl(Dsn)
 
         If Delay > 0 Then Helper.Delay(Delay)
-        Dsn.HasChanges = True
+
     End Sub
 
     Private Sub Diagram_PreviewMouseMove(sender As Object, e As MouseEventArgs) Handles Diagram.PreviewMouseMove
@@ -213,7 +221,7 @@ Public Class DiagramObject
             Dim p = e.GetPosition(Pnl)
             Dim x = p.X - DraggingStartPoint.X
             Dim y = p.Y - DraggingStartPoint.Y
-            MoveDiagram(x, y)
+            DoMoveDiagram(x, y)
 
             e.Handled = True
         End If
@@ -255,14 +263,9 @@ Public Class DiagramObject
         TmpIsSelected = Pnl.IsSelected
         DesignerItem.Focus()
         Pnl.IsSelected = False
-        OldPropertyState = New PropertyState(AddressOf AfterRestoreAction, Diagram, Designer.LeftProperty, Designer.TopProperty)
-        Unit = New UndoRedoUnit(OldPropertyState)
 
-        For Each D As FrameworkElement In Dsn.SelectedItems
-            If D Is Diagram Then Continue For
-            Dim Ps As New PropertyState(AddressOf AfterRestoreAction, D, OldPropertyState.Keys.ToArray)
-            Unit.Add(Ps)
-        Next
+        StartMoveUndo()
+
         e.Handled = True
     End Sub
 
@@ -274,6 +277,20 @@ Public Class DiagramObject
         Pnl.ExitIsSelectedChanged = False
         Dsn.LocationVisibility = Windows.Visibility.Collapsed
 
+        ReportMoveUndo()
+    End Sub
+
+    Private Sub StartMoveUndo()
+        OldPropertyState = New PropertyState(AddressOf AfterRestoreAction, Diagram, Designer.LeftProperty, Designer.TopProperty)
+        Unit = New UndoRedoUnit(OldPropertyState)
+        For Each D As FrameworkElement In Dsn.SelectedItems
+            If D Is Diagram Then Continue For
+            Dim Ps As New PropertyState(AddressOf AfterRestoreAction, D, OldPropertyState.Keys.ToArray)
+            Unit.Add(Ps)
+        Next
+    End Sub
+
+    Private Sub ReportMoveUndo()
         If OldPropertyState IsNot Nothing AndAlso OldPropertyState.HasChanges Then
             For Each State As PropertyState In Unit
                 State.SetNewValue()
@@ -281,7 +298,6 @@ Public Class DiagramObject
             Dsn.UndoStack.ReportChanges(Unit)
         End If
     End Sub
-
 
 #Region "Editor"
 

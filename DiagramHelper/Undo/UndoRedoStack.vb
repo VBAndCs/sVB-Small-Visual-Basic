@@ -1,5 +1,22 @@
-﻿
-Friend Class UndoRedoStack(Of T)
+﻿Class Stack(Of T)
+    Inherits LinkedList(Of T)
+
+    Friend Sub Push(item As T)
+        MyBase.AddLast(item)
+    End Sub
+
+    Friend Function Peek() As T
+        Return MyBase.Last.Value
+    End Function
+
+    Friend Function Pop() As T
+        Pop = MyBase.Last.Value
+        MyBase.RemoveLast()
+    End Function
+
+End Class
+
+Public Class UndoRedoStack(Of T)
     Dim pUndo As New Stack(Of T)
     Dim pRedo As New Stack(Of T)
     Property LastChange As T
@@ -36,7 +53,7 @@ Friend Class UndoRedoStack(Of T)
     Function Undo() As T
         pRedo.Push(pUndo.Peek)
         Undo = pUndo.Pop
-        RaiseEvent UndoRedoStateChanged(pUndo.Count > 0, pRedo.Count > 0)        
+        RaiseEvent UndoRedoStateChanged(pUndo.Count > 0, pRedo.Count > 0)
     End Function
 
     Function Redo() As T
@@ -50,7 +67,7 @@ Friend Class UndoRedoStack(Of T)
         pRedo.Clear()
         pUndo.Push(State)
         If pUndo.Count > MaxUndos + 1 Then
-            DropBottom(pUndo)
+            pUndo.RemoveFirst()
         End If
         RaiseEvent UndoRedoStateChanged(pUndo.Count > 0, pRedo.Count > 0)
         If HoldAsLastChange Then _LastChange = State
@@ -63,12 +80,6 @@ Friend Class UndoRedoStack(Of T)
         _LastChange = Nothing
     End Sub
 
-    Private Sub DropBottom(pUnDo As Stack(Of T))
-        Dim Lst = pUnDo.ToList
-        Lst.RemoveAt(0)
-        pUnDo.Clear()
-        pUnDo = New Stack(Of T)(Lst)
-    End Sub
 
     Function Peek() As T
         If pUndo.Count = 0 Then Return Nothing

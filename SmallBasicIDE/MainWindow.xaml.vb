@@ -83,12 +83,6 @@ Namespace Microsoft.SmallBasic
         Public Sub New()
             Me.InitializeComponent()
 
-            'Try
-            '    Dim version As Version = Assembly.GetExecutingAssembly().GetName().Version
-            '    Me.versionText.Text = String.Format(CultureInfo.CurrentUICulture, "Microsoft Small Basic v{0}.{1}", New Object(1) {version.Major, version.Minor})
-            'Catch
-            'End Try
-
             mdiViews = New ObservableCollection(Of MdiView)()
             Me.viewsControl.ItemsSource = mdiViews
             AddHandler CompilerService.CurrentCompletionItemChanged, AddressOf OnCurrentCompletionItemChanged
@@ -105,7 +99,7 @@ Namespace Microsoft.SmallBasic
 
             If Not text.StartsWith("/") Then
                 If File.Exists(text) Then
-                    OpenDocumentIfNot(text)
+                    OpenDocIfNot(text)
                 Else
                     Utility.MessageBox.Show(String.Format(ResourceHelper.GetString("FileNotFound"), text), ResourceHelper.GetString("Title"), "", NotificationButtons.OK, NotificationIcon.Information)
                 End If
@@ -127,7 +121,7 @@ Namespace Microsoft.SmallBasic
             openFileDialog.Filter = ResourceHelper.GetString("SmallBasicFileFilter") & "|*.sb;*.smallbasic"
 
             If openFileDialog.ShowDialog() = True Then
-                OpenDocumentIfNot(openFileDialog.FileName)
+                OpenDocIfNot(openFileDialog.FileName)
             End If
         End Sub
 
@@ -185,10 +179,19 @@ Namespace Microsoft.SmallBasic
 
         Private Sub OnCloseItem(sender As Object, e As RequestCloseEventArgs)
             Dim mdiView = TryCast(e.Item, MdiView)
+            DoCloseDoc(mdiView)
+        End Sub
 
+        Sub DoCloseDoc(mdiView As MdiView)
             If mdiView IsNot Nothing AndAlso CloseDocument(mdiView.Document) Then
                 mdiViews.Remove(mdiView)
+                If mdiViews.Count > 0 Then
+                    If viewsControl.SelectedItem Is Nothing Then
+                        viewsControl.ChangeSelection(mdiViews(mdiViews.Count - 1))
+                    End If
+                End If
             End If
+
         End Sub
 
         Private Sub CanExportToVisualBasic(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
@@ -223,25 +226,25 @@ Namespace Microsoft.SmallBasic
                 End If
             End If
 
-            Dim textBox As New TextBox()
-            textBox.Text = text
-            textBox.FontSize = 20.0
-            textBox.FontFamily = New FontFamily("Consolas")
-            textBox.Foreground = Brushes.DimGray
-            textBox.Margin = New Thickness(0.0, 4.0, 4.0, 4.0)
-            textBox.MinWidth = 300.0
+            Dim textBox As New TextBox() With {
+                .Text = text,
+                .FontSize = 20.0,
+                .FontFamily = New FontFamily("Consolas"),
+                .Foreground = Brushes.DimGray,
+                .Margin = New Thickness(0.0, 4.0, 4.0, 4.0),
+                .MinWidth = 300.0
+            }
             messageBox.OptionalContent = textBox
-            Dim textBox3 = textBox
             messageBox.NotificationButtons = Nf.Close Or Nf.OK
             messageBox.okButton.Content = ResourceHelper.GetString("FindCommand")
             messageBox.NotificationIcon = NotificationIcon.Custom
             messageBox.iconImageControl.Source = New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/Search.png"))
-            textBox3.SelectAll()
-            textBox3.Focus()
+            textBox.SelectAll()
+            textBox.Focus()
             Dim notificationButtons As NotificationButtons = messageBox.Display()
 
             If notificationButtons = NotificationButtons.OK Then
-                lastSearchedText = textBox3.Text
+                lastSearchedText = textBox.Text
 
                 If Not ActiveDocument.EditorControl.HighlightNextMatch(lastSearchedText, ignoreCase:=True) Then
                     Console.Beep()
@@ -327,26 +330,33 @@ Namespace Microsoft.SmallBasic
 
         Protected Overrides Sub OnClosing(ByVal e As CancelEventArgs)
             For Each item In New List(Of MdiView)(mdiViews)
-
                 If Not CloseDocument(item.Document) Then
                     e.Cancel = True
-                    Exit For
+                    Return
                 End If
 
                 mdiViews.Remove(item)
             Next
 
+            tabDesigner.IsSelected = True
+            For i = 0 To DiagramHelper.Designer.Pages.Count - 1
+                If Not DiagramHelper.Designer.ClosePage(False) Then
+                    e.Cancel = True
+                    Exit For
+                End If
+            Next
+
             MyBase.OnClosing(e)
         End Sub
 
-        Private Function OpenFile(ByVal filePath As String) As TextDocument
-            Dim document As New TextDocument(filePath)
-            DocumentTracker.TrackDocument(document)
+        Private Function OpenCodeFile(ByVal filePath As String) As TextDocument
+            Dim doc As New TextDocument(filePath)
+            DocumentTracker.TrackDocument(doc)
             Dim mdiView As New MdiView()
-            mdiView.Document = document
+            mdiView.Document = doc
             mdiViews.Add(mdiView)
             formDesigner.CodeFilePath = filePath
-            Return document
+            Return doc
         End Function
 
         Private Function SaveDocument(ByVal document As TextDocument) As Boolean
@@ -416,6 +426,7 @@ Namespace Microsoft.SmallBasic
 
         Private Function CloseDocument(document As TextDocument) As Boolean
             If document.IsDirty Then
+                tabCode.IsSelected = True
                 Select Case Utility.MessageBox.Show(ResourceHelper.GetString("SaveDocumentBeforeClosing"), ResourceHelper.GetString("Title"), document.Title & ResourceHelper.GetString("DocumentModified"), Nf.Cancel Or Nf.No Or Nf.Yes, NotificationIcon.Information)
                     Case Nf.Yes
                         Return SaveDocument(document)
@@ -505,7 +516,7 @@ Namespace Microsoft.SmallBasic
                                      End Try
                                  End If
 
-                                 doc.EditorControl.Focus()
+                                 doc.Focus()
                                  Return True
                              End Function,
                              DispatcherOperationCallback), Nothing)
@@ -548,44 +559,44 @@ Namespace Microsoft.SmallBasic
 
         Private Sub ImportDocument()
             Try
-                Dim messageBox As Utility.MessageBox = New Utility.MessageBox()
+                Dim messageBox As New Utility.MessageBox()
                 messageBox.Description = ResourceHelper.GetString("ImportFromWeb")
                 messageBox.Title = ResourceHelper.GetString("Title")
                 Dim stackPanel As StackPanel = New StackPanel()
                 stackPanel.Orientation = Orientation.Vertical
                 Dim stackPanel2 = stackPanel
-                Dim textBlock As TextBlock = New TextBlock()
+                Dim textBlock As New TextBlock()
                 textBlock.Text = ResourceHelper.GetString("ImportLocationOfProgramOnWeb")
                 textBlock.Margin = New Thickness(0.0, 0.0, 4.0, 4.0)
                 Dim element = textBlock
-                Dim textBox As TextBox = New TextBox()
-                textBox.FontSize = 32.0
-                textBox.FontWeight = FontWeights.Bold
-                textBox.FontFamily = New FontFamily("Courier New")
-                textBox.Foreground = Brushes.DimGray
-                textBox.Margin = New Thickness(0.0, 4.0, 4.0, 4.0)
-                textBox.MinWidth = 300.0
-                Dim textBox2 = textBox
+                Dim textBox As New TextBox() With {
+                    .FontSize = 32.0,
+                    .FontWeight = FontWeights.Bold,
+                    .FontFamily = New FontFamily("Courier New"),
+                    .Foreground = Brushes.DimGray,
+                    .Margin = New Thickness(0.0, 4.0, 4.0, 4.0),
+                    .MinWidth = 300.0
+                }
                 stackPanel2.Children.Add(element)
-                stackPanel2.Children.Add(textBox2)
+                stackPanel2.Children.Add(textBox)
                 messageBox.OptionalContent = stackPanel2
                 messageBox.NotificationButtons = NotificationButtons.Cancel Or NotificationButtons.OK
                 messageBox.NotificationIcon = NotificationIcon.Information
-                textBox2.Focus()
+                textBox.Focus()
 
                 If messageBox.Display() = NotificationButtons.OK Then
                     Dim service As Service = New Service()
-                    Dim text As String = textBox2.Text.Trim()
-                    Dim text2 = service.LoadProgram(text)
+                    Dim baseId As String = textBox.Text.Trim()
+                    Dim code = service.LoadProgram(baseId)
 
-                    If Equals(text2, "error") Then
+                    If Equals(code, "error") Then
                         Utility.MessageBox.Show(ResourceHelper.GetString("FailedToImportFromWeb"), ResourceHelper.GetString("Title"), ResourceHelper.GetString("ImportFromWebFailedReason"), NotificationButtons.Close, NotificationIcon.Error)
                     Else
-                        text2 = text2.Replace(VisualBasic.Constants.vbLf, VisualBasic.Constants.vbCrLf)
+                        code = code.Replace(VisualBasic.Constants.vbLf, VisualBasic.Constants.vbCrLf)
                         Dim newDocument As New TextDocument(Nothing)
                         newDocument.ContentType = "text.smallbasic"
-                        newDocument.BaseId = text
-                        newDocument.TextBuffer.Insert(0, text2)
+                        newDocument.BaseId = baseId
+                        newDocument.TextBuffer.Insert(0, code)
                         Dim service2 As Service = New Service()
                         AddHandler service2.GetProgramDetailsCompleted, Sub(ByVal o, ByVal e)
                                                                             Dim result = e.Result
@@ -593,9 +604,9 @@ Namespace Microsoft.SmallBasic
                                                                             newDocument.ProgramDetails = result
                                                                         End Sub
 
-                        service2.GetProgramDetailsAsync(text)
+                        service2.GetProgramDetailsAsync(baseId)
                         DocumentTracker.TrackDocument(newDocument)
-                        Dim mdiView As MdiView = New MdiView()
+                        Dim mdiView As New MdiView()
                         mdiView.Document = newDocument
                         mdiViews.Add(mdiView)
                     End If
@@ -657,7 +668,7 @@ Namespace Microsoft.SmallBasic
             Process.Start("http://smallbasic.com/download.aspx")
         End Sub
 
-        Function OpenDocumentIfNot(FilePath As String) As TextDocument
+        Function OpenDocIfNot(FilePath As String) As TextDocument
             Dim docPath = Path.GetFullPath(FilePath)
             For Each view As MdiView In Me.viewsControl.Items
                 If view.Document.FilePath = docPath Then
@@ -666,18 +677,19 @@ Namespace Microsoft.SmallBasic
                 End If
             Next
 
-            Return OpenFile(FilePath)
+            Return OpenCodeFile(FilePath)
         End Function
 
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
             SaveDesignInfo()
+
             ' Note this prop isn't changed yet
             tabDesigner.IsSelected = False
-            formDesigner_CurrentPageChanged(-2)
+            UpdateTitle()
         End Sub
 
         Private Sub tabDesigner_Selected(sender As Object, e As RoutedEventArgs)
-            formDesigner_CurrentPageChanged(-2)
+            UpdateTitle()
         End Sub
 
         Dim _projectPath As String
@@ -709,7 +721,7 @@ Namespace Microsoft.SmallBasic
             OpeningDoc = True
 
             If openDoc AndAlso formDesigner.CodeFilePath <> "" AndAlso Not formDesigner.HasChanges Then
-                doc = OpenDocumentIfNot(formDesigner.CodeFilePath)
+                doc = OpenDocIfNot(formDesigner.CodeFilePath)
                 If doc.Form = "" Then doc.Form = formDesigner.Name
                 If doc.PageKey = "" Then doc.PageKey = formDesigner.PageKey
                 OpeningDoc = False
@@ -727,7 +739,7 @@ Namespace Microsoft.SmallBasic
                             Directory.CreateDirectory(xamlPath)
                             Exit Do
                         End If
-                        formName = formDesigner.GetTempFormName().Replace("KEY", "Form")
+                        formName = DiagramHelper.Designer.GetTempFormName().Replace("KEY", "Form")
                     Loop
                     formPath = Path.Combine(xamlPath, formName)
 
@@ -740,7 +752,6 @@ Namespace Microsoft.SmallBasic
 
                 formDesigner.Name = formName
                 formDesigner.DoSave(formPath & ".xaml")
-
                 IO.File.Create(formPath & ".sb").Close()
 
             Else
@@ -752,6 +763,7 @@ Namespace Microsoft.SmallBasic
                 formDesigner.Name = formName
 
                 If formDesigner.HasChanges Then formDesigner.DoSave()
+
             End If
 
             If doc Is Nothing Then doc = GetDoc(formPath & ".sb", openDoc)
@@ -766,7 +778,7 @@ Namespace Microsoft.SmallBasic
         Function GetDoc(codeFilePath As String, openDoc As Boolean) As TextDocument
             If Not File.Exists(codeFilePath) Then File.Create(codeFilePath).Close()
             Return If(openDoc,
-                    OpenDocumentIfNot(codeFilePath),
+                    OpenDocIfNot(codeFilePath),
                     New TextDocument(codeFilePath))
         End Function
 
@@ -969,7 +981,6 @@ Namespace Microsoft.SmallBasic
             Return Nothing
         End Function
 
-
         Private Function CountLines(str As String) As Integer
             If str = "" Then Return 0
 
@@ -1003,8 +1014,8 @@ Namespace Microsoft.SmallBasic
         Private Sub formDesigner_DiagramDoubleClick(control As UIElement)
             tabCode.IsSelected = True
             If formDesigner.CodeFilePath <> "" Then
-                Dim doc = OpenDocumentIfNot(formDesigner.CodeFilePath)
-                Dim controlName = Automation.AutomationProperties.GetName(control)
+                Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
+                Dim controlName = formDesigner.GetControlNameOrDefault(control)
                 If doc.AddEventHandler(controlName, "OnClick") Then
                     doc.PageKey = formDesigner.PageKey
                     ' The code behind is saved before the new Handler is added.
@@ -1019,30 +1030,55 @@ Namespace Microsoft.SmallBasic
         Private Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
             If FirstTime Then
                 FirstTime = False
-                formDesigner_CurrentPageChanged(0)
+                DiagramHelper.Designer.PagesGrid = DesignerGrid
+                UpdateTitle()
 
                 formDesigner.SavePage =
                     Function()
                         SaveDesignInfo(Nothing, False)
                         Return True
                     End Function
+
+                AddHandler DiagramHelper.Designer.PageShown, AddressOf formDesigner_CurrentPageChanged
+
+
+                'DiagramHelper.Designer.SetDefaultPropertiesSub =
+                '    Sub()
+                '        DiagramHelper.Designer.SetDefaultProperties()
+                '    End Sub
+
+
             End If
         End Sub
 
         Private Sub formDesigner_CurrentPageChanged(index As Integer)
+            formDesigner = DiagramHelper.Designer.CurrentPage
+            ZoomBox.Designer = formDesigner
+            ProjExplorer.Designer = formDesigner
+
+            ' Remove the handler if exists not to be called twice
+            RemoveHandler formDesigner.DiagramDoubleClick, AddressOf formDesigner_DiagramDoubleClick
+            AddHandler formDesigner.DiagramDoubleClick, AddressOf formDesigner_DiagramDoubleClick
+
+            UpdateTitle()
+
+            If index > -1 AndAlso ProjExplorer.FilesList IsNot Nothing Then
+                ProjExplorer.FreezListFiles = True
+                ProjExplorer.FilesList.SelectedIndex = index
+                ProjExplorer.FreezListFiles = False
+            End If
+        End Sub
+
+        Private Sub UpdateTitle()
+
             If tabDesigner.IsSelected Then
                 txtTitle.Text = "Form Designer - "
-                txtForm.Text = $"{formDesigner.Name}{If(formDesigner.FileName = "", " [New]", ".xaml")}"
+                txtForm.Text = $"{formDesigner.Name}{If(formDesigner.FileName = "", " *", ".xaml")}"
             Else
                 txtTitle.Text = "Code Editor - "
                 txtForm.Text = $"{formDesigner.Name}.sb"
             End If
 
-            If index > -2 AndAlso ProjExplorer.FilesList IsNot Nothing Then
-                ProjExplorer.FreezListFiles = True
-                ProjExplorer.FilesList.SelectedIndex = index
-                ProjExplorer.FreezListFiles = False
-            End If
         End Sub
 
         Dim OpeningDoc As Boolean
@@ -1058,14 +1094,15 @@ Namespace Microsoft.SmallBasic
             Next
 
             Dim doc = currentView.Document
+
             If doc.PageKey = "" Then
                 If doc.FilePath = "" Then
                     ' Open new page in the designer
-                    doc.PageKey = formDesigner.OpenNewPage()
+                    doc.PageKey = DiagramHelper.Designer.OpenNewPage()
                 Else
                     Dim pagePath = doc.FilePath.Substring(0, doc.FilePath.Length - 3) & ".xaml"
                     If File.Exists(pagePath) Then
-                        doc.PageKey = formDesigner.SwitchTo(pagePath)
+                        doc.PageKey = DiagramHelper.Designer.SwitchTo(pagePath)
                     Else
                         ' Do nothing to allow opening old sb files without a form
                         ' If you want to attach a form, comment the next line,
@@ -1078,7 +1115,7 @@ Namespace Microsoft.SmallBasic
                     End If
                 End If
             Else
-                formDesigner.SwitchTo(doc.PageKey)
+                DiagramHelper.Designer.SwitchTo(doc.PageKey)
             End If
 
 
@@ -1091,7 +1128,14 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
+        Private Sub CloseButton_Click(sender As Object, e As RoutedEventArgs)
+            If tabCode.IsSelected Then
+                If ActiveDocument IsNot Nothing Then DoCloseDoc(ActiveDocument.MdiView)
+            Else
+                DiagramHelper.Designer.ClosePage()
+            End If
 
+        End Sub
     End Class
 
 

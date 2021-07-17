@@ -1,5 +1,6 @@
 ﻿Imports Microsoft.SmallBasic.Library
 Imports Wpf = System.Windows.Controls
+Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     <SmallBasicType>
@@ -16,12 +17,12 @@ Namespace WinForms
 
         <ExProperty>
         Public Shared Function GetText(formName As Primitive, textBoxName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetText = GetTextBox(formName, textBoxName).Text)
+            App.Invoke(Sub() GetText = GetTextBox(formName, textBoxName).Text)
         End Function
 
         <ExProperty>
         Public Shared Sub SetText(formName As Primitive, textBoxName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(Sub() GetTextBox(formName, textBoxName).Text = value)
+            App.Invoke(Sub() GetTextBox(formName, textBoxName).Text = value)
         End Sub
     End Class
 End Namespace

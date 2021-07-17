@@ -18,29 +18,23 @@ Public Class Designer
     Friend MaxZIndex As Integer = 0
     Friend Shared Editing As Boolean = False
     Friend SelectionBorder As Border
-    Friend WithEvents UndoStack As New UndoRedoStack(Of UndoRedoUnit)
+    Friend WithEvents UndoStack As New UndoRedoStack(Of UndoRedoUnit)(1000)
     Dim DeleteUndoUnit As UndoRedoUnit
     Dim ConnectionsOldState As ConnectionState
     Friend SelectedBounds As Rect
     Friend GridPen As Pen
 
-    Dim _fileName As String
+    Dim _fileName As String = ""
     Public Property FileName As String
         Get
             Return _fileName
         End Get
+
         Set(value As String)
             _fileName = If(value = "", "", IO.Path.GetFullPath(value))
-            'If Pages.ContainsKey(PageKey) Then
-            Dim info = Pages(PageKey)
-            info.IsNew = False
             If _fileName <> "" Then
                 _codeFilePath = _fileName.Substring(0, _fileName.Length - 5) & ".sb"
-                info.DocPath = _codeFilePath
             End If
-            info.XamlPath = _fileName
-            Pages(PageKey) = info
-            'End If
         End Set
     End Property
 
@@ -54,7 +48,7 @@ Public Class Designer
         Me.AllowDrop = True
     End Sub
 
-    Dim NewPageOpened As Boolean
+    Private Shared NewPageOpened As Boolean
 
     Private Sub Designer_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         Dim Brdr As Border = VisualTreeHelper.GetChild(Me, 0)
@@ -83,6 +77,7 @@ Public Class Designer
         Editor = Me.Template.FindName("PART_Editor", Me)
 
         If Not NewPageOpened Then
+            CurrentPage = Me
             Dispatcher.Invoke(Sub() OpenNewPage(False))
             NewPageOpened = True
         End If
@@ -191,45 +186,34 @@ Public Class Designer
 #End Region
 
 #Region "Pages"
-    Friend Pages As New Dictionary(Of String, PageInfo)
-    Public FormNames As New ObservableCollection(Of String)
-    Public FormKeys As New List(Of String)
+    Public Shared Pages As New Dictionary(Of String, Designer)
+    Public Shared FormNames As New ObservableCollection(Of String)
+    Public Shared FormKeys As New List(Of String)
+    Public Shared CurrentPage As Designer
+    Public Shared Property PagesGrid As Grid
+    Public Property CodeFilePath As String = ""
 
-    Dim TempKeyNum As Integer = 0
-
-    Dim _codeFilePath As String
-
-    Public Property CodeFilePath As String
-        Get
-            Return _codeFilePath
-        End Get
-        Set(value As String)
-            _codeFilePath = value
-            UpdatePageInfo()
-        End Set
-    End Property
-
+    Private Shared TempKeyNum As Integer = 0
     Public PageKey As String
-    Public Event CurrentPageChanged(index As Integer)
 
-    Dim _isNew As Boolean = True
+    Public Shared Event PageShown(index As Integer)
 
     Public ReadOnly Property IsNew As Boolean
         Get
-            Return Not HasChanges AndAlso _fileName = "" AndAlso _isNew
+            Return Not HasChanges AndAlso _fileName = ""
         End Get
     End Property
 
 
-    Public Function GetTempFormName() As String
+    Public Shared Function GetTempFormName() As String
         TempKeyNum += 1
         Return "Form" & TempKeyNum
     End Function
 
-    Private Function GetTempKey(Optional pagePath As String = "") As String
+    Private Shared Function GetTempKey(Optional pagePath As String = "") As String
         If pagePath <> "" Then
             For Each p In Pages
-                If p.Value.XamlPath = pagePath Then Return p.Key
+                If p.Value._fileName = pagePath Then Return p.Key
             Next
         End If
 
@@ -237,57 +221,68 @@ Public Class Designer
         Return "KEY" & TempKeyNum
     End Function
 
-    Private Sub UpdatePageInfo(Optional updateForms As Boolean = True)
-        If PageKey = "" Then PageKey = GetTempKey()
-        Pages(PageKey) = (Me.Name, Me.IsNew, Me.HasChanges, PageToXaml(), _codeFilePath, _fileName)
+    Private Shared Sub UpdatePageInfo(Optional updateForms As Boolean = True)
+        If CurrentPage.PageKey = "" Then CurrentPage.PageKey = GetTempKey()
+        Pages(CurrentPage.PageKey) = CurrentPage
         If updateForms Then UpdateFormInfo()
     End Sub
 
-    Private Sub UpdateFormInfo()
-        Dim displayName = " ● " & Me.Name & If(_fileName = "", " [New]", ".xaml")
-        Dim i = FormKeys.IndexOf(Me.PageKey)
+    Private Shared Sub UpdateFormInfo()
+        Dim displayName = " ● " & CurrentPage.Name & If(CurrentPage._fileName = "", " *", ".xaml")
+        Dim i = FormKeys.IndexOf(CurrentPage.PageKey)
         If i = -1 Then
             FormNames.Add(displayName)
-            FormKeys.Add(Me.PageKey)
+            FormKeys.Add(CurrentPage.PageKey)
         ElseIf FormNames(i) <> displayName Then
             FormNames(i) = displayName
         End If
     End Sub
 
-    Public Function OpenNewPage(Optional UpdateCurrentPage As Boolean = True) As String
+    Private Shared Sub CreateNewDesigner()
+        CurrentPage = New Designer()
+        PagesGrid.Children.Add(CurrentPage)
+        Helper.UpdateControl(CurrentPage)
+    End Sub
+
+    Public Shared Function OpenNewPage(Optional UpdateCurrentPage As Boolean = True) As String
         If UpdateCurrentPage Then UpdatePageInfo(False)
-        _isNew = True
-        Me.ClearConnections()
-        Me.Items.Clear()
-        Me.UndoStack.Clear()
-        DiagramGroup.Clear()
-        Me.HasChanges = False
-        Me.PageKey = GetTempKey()
-        Me.Name = Me.PageKey.Replace("KEY", "Form")
-        Me.PageWidth = 700
-        Me.PageHeight = 500
-        _fileName = ""
-        _codeFilePath = ""
+
+        If NewPageOpened Then CreateNewDesigner()
+        CurrentPage.PageKey = GetTempKey()
+        CurrentPage.Name = CurrentPage.PageKey.Replace("KEY", "Form")
         UpdatePageInfo()
 
-        Me.DesignerCanvas.Background = SystemColors.ControlBrush
-        Me.GridPen.Thickness = 0.3
-        Me.GridPen.Brush = Brushes.LightGray
+        Call SetDefaultPropertiesSub()
+        BringToFront()
+        CurrentPage.Focus()
+        RaiseEvent PageShown(FormKeys.Count - 1)
 
-        RaiseEvent CurrentPageChanged(FormKeys.Count - 1)
-        Me.Focus()
-        Return Me.PageKey
+        Return CurrentPage.PageKey
     End Function
 
-    Public Function ClosePage() As Boolean
+    Public Delegate Sub SetDefaultPropertiesHandler()
+    Public Shared SetDefaultPropertiesSub As SetDefaultPropertiesHandler = AddressOf SetDefaultProperties
 
-        If Me.HasChanges OrElse (_fileName = "" AndAlso CodeFilePath <> "") Then
-            If Not AskToSave() Then Return False
+    Public Shared Sub SetDefaultProperties()
+        CurrentPage.DesignerCanvas.Background = SystemColors.ControlBrush
+        CurrentPage.GridPen.Thickness = 0.3
+        CurrentPage.ShowGrid = True
+        CurrentPage.GridPen.Brush = Brushes.LightGray
+        CurrentPage.PageWidth = 700
+        CurrentPage.PageHeight = 500
+    End Sub
+
+    Public Shared Function ClosePage(Optional openNewPageIfLast As Boolean = True) As Boolean
+        If CurrentPage.IsNew AndAlso Pages.Count = 1 Then Return True
+
+        If CurrentPage.HasChanges OrElse (CurrentPage._fileName = "" AndAlso CurrentPage.CodeFilePath <> "") Then
+            If Not CurrentPage.AskToSave() Then Return False
         End If
 
-        Dim i As Integer
-        Pages.Remove(PageKey)
-        i = FormKeys.IndexOf(Me.PageKey)
+        Pages.Remove(CurrentPage.PageKey)
+        PagesGrid.Children.Remove(CurrentPage)
+
+        Dim i = FormKeys.IndexOf(CurrentPage.PageKey)
         If i <> -1 Then
             FormKeys.RemoveAt(i)
             FormNames.RemoveAt(i)
@@ -302,45 +297,51 @@ Public Class Designer
                 nextKey = FormKeys(i)
             End If
 
-            _fileName = ""
-            Me.PageKey = SwitchTo(nextKey, False)
+            SwitchTo(nextKey, False)
 
-        Else
-            Me.PageKey = OpenNewPage(False)
+        ElseIf openNewPageIfLast Then
+            OpenNewPage(False)
         End If
 
         Return True
     End Function
 
-    Public Function SwitchTo(key As String, Optional UpdateCurrentPage As Boolean = True) As String
+    Public Shared Function SwitchTo(key As String, Optional UpdateCurrentPage As Boolean = True) As String
         If key = "" Then Return OpenNewPage()
         If UpdateCurrentPage Then UpdatePageInfo()
 
         If Pages.ContainsKey(key) Then
-            Me.PageKey = key
-            Dim info = Pages(key)
-            XamlToPage(info.Xaml)
-            Me.Name = info.Name
-            Me.HasChanges = info.HasChanges
-            _isNew = info.IsNew
-            _codeFilePath = info.DocPath
-            _fileName = info.XamlPath
+            CurrentPage = Pages(key)
         Else
-            Me.PageKey = ""
-            Dim xPath = key.ToLower()
-            Dim dPath = xPath.Substring(0, xPath.Length - 5) & ".sb"
+            Dim xamlPath = key.ToLower()
+            Dim codePath = xamlPath.Substring(0, xamlPath.Length - 5) & ".sb"
             For Each item In Pages
-                If item.Value.XamlPath.ToLower() = xPath OrElse
-                         item.Value.DocPath.ToLower() = dPath Then
+                Dim page = item.Value
+                If page._fileName.ToLower() = xamlPath OrElse
+                         page._CodeFilePath.ToLower() = codePath Then
+
+                    ' File is already opened. Stwich to it.
                     Return SwitchTo(item.Key, False)
                 End If
             Next
-            If Me.PageKey = "" Then Open(key)
+
+            ' File is not already opened. Open it.
+            Open(key)
         End If
 
-        RaiseEvent CurrentPageChanged(FormKeys.IndexOf(Me.PageKey))
-        Return Me.PageKey
+        BringToFront()
+        RaiseEvent PageShown(FormKeys.IndexOf(CurrentPage.PageKey))
+        Return CurrentPage.PageKey
     End Function
+
+    Private Shared Sub BringToFront()
+        Dim z = 0
+        For Each item In PagesGrid.Children
+            z = Math.Max(z, Grid.GetZIndex(item))
+        Next
+
+        Grid.SetZIndex(CurrentPage, z + 1)
+    End Sub
 
     Private Function PageToXaml() As String
         For Each Diagram In Me.Items
@@ -406,13 +407,9 @@ Public Class Designer
         Me.Name = canvas.Name
 
         Me.Visibility = Visibility.Hidden
-        Me.HasChanges = False
-        Me.ClearConnections()
-        Me.Items.Clear()
-        Me.UndoStack.Clear()
-        DiagramGroup.Clear()
 
         If Not Double.IsNaN(canvas.Width) Then Me.PageWidth = canvas.Width
+
         If Not Double.IsNaN(canvas.Height) Then Me.PageHeight = canvas.Height
 
         For Each child In canvas.Children
@@ -502,19 +499,7 @@ Public Class Designer
                 typeName = controlType.Name
             End If
 
-            Dim num = 1
-            For Each dg In Me.Items
-                If dg.GetType() Is controlType Then
-                    Dim controlName = Automation.AutomationProperties.GetName(dg)
-                    If controlName.StartsWith(typeName) Then
-                        Dim n = controlName.Substring(typeName.Length)
-                        If IsNumeric(n) Then
-                            If CInt(n) >= num Then num = CInt(n) + 1
-                        End If
-                    End If
-                End If
-            Next
-            defaultName = typeName & num
+            defaultName = GetDefaultControlName(controlType, typeName)
 
             If defaultName <> "" Then
                 Automation.AutomationProperties.SetName(diagram, defaultName)
@@ -543,6 +528,22 @@ Public Class Designer
             End If
         End If
     End Sub
+
+    Private Function GetDefaultControlName(controlType As Type, typeName As String) As String
+        Dim num = 1
+        For Each dg In Me.Items
+            If dg.GetType() Is controlType Then
+                Dim controlName = GetControlName(dg)
+                If controlName.StartsWith(typeName) Then
+                    Dim n = controlName.Substring(typeName.Length)
+                    If IsNumeric(n) Then
+                        If CInt(n) >= num Then num = CInt(n) + 1
+                    End If
+                End If
+            End If
+        Next
+        Return typeName & num
+    End Function
 
     Sub RemoveDiagram(Diagram As UIElement)
         RemoveConnections(Diagram)
@@ -683,8 +684,6 @@ Public Class Designer
             ' Don't use _fileName here, to update Tempkey!
             Me.FileName = dlg.FileName
             If Not SavePage("") Then Return False
-            _isNew = False
-            Me.UndoStack.Clear()
             Return True
         End If
         Return False
@@ -696,14 +695,13 @@ Public Class Designer
     Public Function DoSave(Optional tmpPath As String = Nothing) As Boolean
         Try
             Dim xmal = PageToXaml()
-            Dim saveTo = If(tmpPath, _fileName)
+            Dim saveTo = If(tmpPath = "", _fileName, tmpPath)
             IO.File.WriteAllText(saveTo, xmal)
             _codeFilePath = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
             If tmpPath = "" Then
                 UpdateFormInfo()
                 Me.HasChanges = False
             End If
-            Pages(Me.PageKey) = New PageInfo(Me.Name, False, Me.HasChanges, xmal, _codeFilePath, saveTo)
 
         Catch ex As Exception
             MsgBox(ex.Message)
@@ -737,33 +735,31 @@ Public Class Designer
     End Sub
 
 
-    Public Sub Open(fileName As String)
+    Public Shared Sub Open(fileName As String)
         If Not IO.File.Exists(fileName) Then
-            MsgBox($"File '{fileName}' Doesn't exist")
+            MsgBox($"File '{fileName}' doesn't exist!")
             Return
         End If
 
-        Me.Cursor = Cursors.Wait
+        PagesGrid.Cursor = Cursors.Wait
         Try
             Dim xaml = IO.File.ReadAllText(fileName)
-            XamlToPage(xaml)
-            ' Don't use File Name Propery directly, because PageKey is not valid right now
-            _fileName = IO.Path.GetFullPath(fileName)
-            Me.PageKey = Me.GetTempKey(_fileName)
-            Pages(Me.PageKey) = (Me.Name, False, False, xaml, "", _fileName)
-            _isNew = False
-            HasChanges = False
-            _codeFilePath = ""
+            CreateNewDesigner()
+            CurrentPage.XamlToPage(xaml)
+            CurrentPage._fileName = IO.Path.GetFullPath(fileName)
+            CurrentPage.PageKey = GetTempKey(CurrentPage._fileName)
+            Pages(CurrentPage.PageKey) = CurrentPage
             UpdateFormInfo()
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
-            Me.Cursor = Nothing
+            PagesGrid.Cursor = Nothing
         End Try
     End Sub
 
+
     Private Function AskToSave() As Boolean
-        Select Case MessageBox.Show("Do you want to save changes?", "Save Changes", MessageBoxButton.YesNoCancel)
+        Select Case MessageBox.Show($"'{Me.Name}' has changed. Do you want to save changes?", "Save Changes", MessageBoxButton.YesNoCancel)
             Case MessageBoxResult.Yes
                 Return Me.Save()
             Case MessageBoxResult.No
@@ -1046,7 +1042,7 @@ Public Class Designer
     End Function
 
     Private Sub UndoStack_UndoRedoStateChanged(CanUndo As Boolean, CanRedo As Boolean) Handles UndoStack.UndoRedoStateChanged
-        Me.HasChanges = CanUndo OrElse CanRedo
+        Me.HasChanges = CanUndo 'OrElse CanRedo
         Me.CanUndo = CanUndo
         Me.CanRedo = CanRedo
     End Sub
@@ -1066,6 +1062,26 @@ Public Class Designer
         GridLinesBorder.Height = Math.Min(VpHeight, H)
 
     End Sub
+
+    Public Function GetControlName(control As UIElement) As String
+        Dim controlName = Automation.AutomationProperties.GetName(control)
+        If controlName = "" Then
+            Dim fw = TryCast(control, FrameworkElement)
+            controlName = fw.Name
+        End If
+        Return controlName
+    End Function
+
+    Public Function GetControlNameOrDefault(control As UIElement) As String
+        Dim controlName = GetControlName(control)
+        If controlName = "" Then
+            Dim t = GetType(Control)
+            controlName = GetDefaultControlName(t, t.Name)
+            Automation.AutomationProperties.SetName(control, controlName)
+        End If
+        Return controlName
+    End Function
+
     ' -------------------------------------------------------------------------------------------------
 #Region "Dependancy Properties"
 

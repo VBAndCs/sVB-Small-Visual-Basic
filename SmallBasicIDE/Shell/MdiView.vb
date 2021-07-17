@@ -39,6 +39,7 @@ Namespace Microsoft.SmallBasic.Shell
             Get
                 Return _document
             End Get
+
             Set(value As TextDocument)
                 _document = value
                 _document.MdiView = Me
@@ -48,8 +49,9 @@ Namespace Microsoft.SmallBasic.Shell
 
         Public Property IsSelected As Boolean
             Get
-                Return GetValue(IsSelectedProperty)
+                Return CBool(GetValue(IsSelectedProperty))
             End Get
+
             Set(ByVal value As Boolean)
                 SetValue(IsSelectedProperty, value)
             End Set

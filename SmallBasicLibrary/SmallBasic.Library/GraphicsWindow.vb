@@ -20,9 +20,10 @@ Namespace Library
             Inherits FrameworkElement
             Private _drawing As Drawing
 
-            Public Sub New(drawing1 As Drawing)
-                _drawing = drawing1
+            Public Sub New(drawing As Drawing)
+                _drawing = drawing
             End Sub
+
             Protected Overrides Sub OnRender(drawingContext1 As DrawingContext)
                 drawingContext1.DrawDrawing(_drawing)
             End Sub
@@ -32,7 +33,7 @@ Namespace Library
         Private Const _step As Integer = 20
         Friend Shared _windowVisible As Boolean = False
         Friend Shared _windowCreated As Boolean = False
-        Private Shared _window As Window
+        Friend Shared _window As Window
         Friend Shared _pen As Media.Pen
         Friend Shared _fillBrush As SolidColorBrush = System.Windows.Media.Brushes.SlateBlue
         Friend Shared _fontFamily As Media.FontFamily
@@ -54,6 +55,7 @@ Namespace Library
         Private Shared _bitmapContainer As System.Windows.Controls.Image
         Private Shared _isHidden As Boolean
         Private Shared _syncLock As New Object
+
 
         ''' <summary>
         ''' Gets or sets the Background color of the Graphics Window.
@@ -482,9 +484,8 @@ Namespace Library
         ''' Shows the Graphics window to enable interactions with it.
         ''' </summary>
         Public Shared Sub Show()
-            If Not _windowCreated Then
-                CreateWindow()
-            End If
+            If Not _windowCreated Then CreateWindow()
+
             _isHidden = False
             If Not _windowVisible Then
                 Invoke(Sub()
@@ -987,22 +988,23 @@ Namespace Library
                            If Not _isHidden Then _window.Show()
 
                            AddHandler _window.SourceInitialized,
-                           Sub()
-                               Dim handle1 As IntPtr = CType(PresentationSource.FromVisual(_window), HwndSource).Handle
-                               Dim windowLong As UInteger = NativeHelper.GetWindowLong(handle1, -16)
-                               windowLong = (windowLong And &HFFFEFFFFUI) Or &H20000UI
-                               NativeHelper.SetWindowLong(handle1, -16, windowLong)
-                               Dim rect2 As Internal.RECT = Nothing
-                               rect2.Left = 0
-                               rect2.Top = 0
-                               rect2.Right = _window.Width
-                               rect2.Bottom = _window.Height
-                               Dim lpRect As Internal.RECT = rect2
-                               NativeHelper.AdjustWindowRect(lpRect, windowLong, bMenu:=False)
-                               _window.Width = lpRect.Right - lpRect.Left
-                               _window.Height = lpRect.Bottom - lpRect.Top
-                               NativeHelper.SetForegroundWindow(handle1)
-                           End Sub
+                                  Sub()
+                                      Dim handle1 As IntPtr = CType(PresentationSource.FromVisual(_window), HwndSource).Handle
+                                      Dim windowLong As UInteger = NativeHelper.GetWindowLong(handle1, -16)
+                                      windowLong = (windowLong And &HFFFEFFFFUI) Or &H20000UI
+                                      NativeHelper.SetWindowLong(handle1, -16, windowLong)
+                                      Dim rect2 As Internal.RECT = Nothing
+                                      rect2.Left = 0
+                                      rect2.Top = 0
+                                      rect2.Right = _window.Width
+                                      rect2.Bottom = _window.Height
+                                      Dim lpRect As Internal.RECT = rect2
+                                      NativeHelper.AdjustWindowRect(lpRect, windowLong, bMenu:=False)
+                                      _window.Width = lpRect.Right - lpRect.Left
+                                      _window.Height = lpRect.Bottom - lpRect.Top
+                                      NativeHelper.SetForegroundWindow(handle1)
+                                  End Sub
+
                            SetWindowContent()
                            SignupForWindowEvents()
                            _window.UpdateLayout()
@@ -1063,7 +1065,9 @@ Namespace Library
         End Sub
 
         Private Shared Sub WindowClosing(sender As Object, e As CancelEventArgs)
-            SmallBasicApplication.End()
+            If WinForms.Forms._forms.Count = 0 AndAlso Not TextWindow._windowVisible Then
+                SmallBasicApplication.End()
+            End If
         End Sub
 
         Private Shared Sub WindowSizeChanged(sender As Object, e As SizeChangedEventArgs)

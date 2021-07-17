@@ -1,6 +1,6 @@
 ﻿Public Class DesignerDecorator
 
-    Function GetDesigner(Mi As MenuItem) As Designer
+    Function GetDesigner(Mi As Control) As Designer
         Dim Cntx As ContextMenu = Mi.Parent
         Return Helper.GetDesigner(Cntx.PlacementTarget)
     End Function

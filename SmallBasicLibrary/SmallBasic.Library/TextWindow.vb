@@ -7,7 +7,7 @@ Namespace Library
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class TextWindow
-        Private Shared _windowVisible As Boolean
+        Friend Shared _windowVisible As Boolean
 
         ''' <summary>
         ''' Gets or sets the foreground color of the text to be output in the text window.
@@ -175,7 +175,12 @@ Namespace Library
         Public Shared Sub Pause()
             VerifyAccess()
             Console.WriteLine("Press any key to continue...")
-            Console.ReadKey(intercept:=True)
+            Console.Read()
+            If WinForms.Forms._forms.Count = 0 AndAlso Not GraphicsWindow._windowVisible Then
+                SmallBasicApplication.End()
+            Else
+                TextWindow.Hide()
+            End If
         End Sub
 
         ''' <summary>

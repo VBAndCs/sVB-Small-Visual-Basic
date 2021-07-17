@@ -108,7 +108,7 @@ Namespace Microsoft.SmallBasic.Documents
 
                     _editorControl.Dispatcher.BeginInvoke(DispatcherPriority.Render,
                           CType(Function()
-                                    _editorControl.TextView.VisualElement.Focus()
+                                    Me.Focus()
                                     UpdateCaretPositionText()
                                     Return Nothing
                                 End Function,
@@ -447,6 +447,7 @@ Namespace Microsoft.SmallBasic.Documents
         End Sub
 
         Friend Sub Focus()
+            If _editorControl Is Nothing Then Return
             CType(_editorControl.TextView, Controls.ContentControl).Focus()
         End Sub
 
@@ -704,7 +705,7 @@ EndSub
             End If
 
             caret.EnsureVisible()
-            CType(_editorControl.TextView, System.Windows.UIElement).Focus()
+            Me.Focus()
 
             Me.MdiView.CmbControlNames.SelectedItem = controlName
             Me.MdiView.CmbEventNames.SelectedItem = handlerName

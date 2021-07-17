@@ -1,13 +1,14 @@
 ﻿Imports System.Windows
 Imports System.Windows.Input
 Imports Microsoft.SmallBasic.Library
+Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     <SmallBasicType>
     Public NotInheritable Class Keyboard
 
         Shared Sub New()
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
             Sub() EventManager.RegisterClassHandler(
                         GetType(Window),
                         UIElement.PreviewKeyDownEvent,
@@ -21,7 +22,7 @@ Namespace WinForms
 
         Public Shared ReadOnly Property AltPressed As Primitive
             Get
-                Forms.Dispatcher.Invoke(
+                App.Invoke(
                       Sub()
                           AltPressed = (Input.Keyboard.Modifiers And ModifierKeys.Alt) > 0
                       End Sub)
@@ -30,7 +31,7 @@ Namespace WinForms
 
         Public Shared ReadOnly Property CtrlPressed As Primitive
             Get
-                Forms.Dispatcher.Invoke(
+                App.Invoke(
                      Sub()
                          CtrlPressed = (Input.Keyboard.Modifiers And ModifierKeys.Control) > 0
                      End Sub)
@@ -39,7 +40,7 @@ Namespace WinForms
 
         Public Shared ReadOnly Property ShiftPressed As Primitive
             Get
-                Forms.Dispatcher.Invoke(
+                App.Invoke(
                        Sub()
                            ShiftPressed = (Input.Keyboard.Modifiers And ModifierKeys.Shift) > 0
                        End Sub)
@@ -48,7 +49,7 @@ Namespace WinForms
 
         Public Shared ReadOnly Property WinPressed As Primitive
             Get
-                Forms.Dispatcher.Invoke(
+                App.Invoke(
                     Sub()
                         WinPressed = (Input.Keyboard.Modifiers And ModifierKeys.Windows) > 0
                     End Sub)
@@ -57,7 +58,7 @@ Namespace WinForms
 
         Public Shared ReadOnly Property CapsLockOn As Primitive
             Get
-                Forms.Dispatcher.Invoke(
+                App.Invoke(
                      Sub()
                          CapsLockOn = Input.Keyboard.IsKeyToggled(Key.CapsLock)
                      End Sub)
@@ -66,7 +67,7 @@ Namespace WinForms
 
         Public Shared ReadOnly Property InsertOn As Primitive
             Get
-                Forms.Dispatcher.Invoke(
+                App.Invoke(
                        Sub()
                            InsertOn = Input.Keyboard.IsKeyToggled(Key.Insert)
                        End Sub)
@@ -75,7 +76,7 @@ Namespace WinForms
 
         Public Shared ReadOnly Property ScrollOn As Primitive
             Get
-                Forms.Dispatcher.Invoke(
+                App.Invoke(
                      Sub()
                          ScrollOn = Input.Keyboard.IsKeyToggled(Key.Scroll)
                      End Sub)
@@ -84,7 +85,7 @@ Namespace WinForms
 
         Public Shared ReadOnly Property NumLockOn As Primitive
             Get
-                Forms.Dispatcher.Invoke(
+                App.Invoke(
                      Sub()
                          NumLockOn = Input.Keyboard.IsKeyToggled(Key.NumLock)
                      End Sub)

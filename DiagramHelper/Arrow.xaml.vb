@@ -17,8 +17,12 @@
                            GetType(Double), GetType(Arrow), _
                            New PropertyMetadata(0.0))
 
-    Public Sub New()
+    Public Sub New(angle As Integer)
+        Me.New()
+        Me.Angle = angle
+    End Sub
 
+    Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
 

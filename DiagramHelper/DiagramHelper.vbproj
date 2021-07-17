@@ -145,7 +145,6 @@
     <Compile Include="Arrow.xaml.vb">
       <DependentUpon>Arrow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Helper Classes\PageInfo.vb" />
     <Compile Include="SBControl.vb" />
     <Compile Include="Diagram.vb" />
     <Compile Include="DiagramGroup.vb" />

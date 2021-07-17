@@ -271,23 +271,11 @@ Namespace Microsoft.SmallBasic
                         _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("ArgumentNumberMismatch"), typeName.Text, methodName.Text, methodExpression.Arguments.Count, num))
                     End If
 
-                                        ''' Cannot convert IfStatementSyntax, System.InvalidCastException: Unable to cast object of type 'Microsoft.CodeAnalysis.VisualBasic.Syntax.EmptyStatementSyntax' to type 'Microsoft.CodeAnalysis.VisualBasic.Syntax.ExpressionSyntax'.
-'''    at ICSharpCode.CodeConverter.VB.MethodBodyExecutableStatementVisitor.VisitIfStatement(IfStatementSyntax node)
-'''    at Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax.Accept[TResult](CSharpSyntaxVisitor`1 visitor)
-'''    at Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor`1.Visit(SyntaxNode node)
-'''    at ICSharpCode.CodeConverter.VB.CommentConvertingMethodBodyVisitor.DefaultVisit(SyntaxNode node)
-''' 
-''' Input:
-''' 					if (leaveValueInStack && value2.ReturnType == typeof(void))
-''' 					{
-''' 						this._parser.AddError(methodName, string.Format(System.Globalization.CultureInfo.CurrentUICulture, Microsoft.SmallBasic.ResourceHelper.GetString("ReturnValueExpectedFromVoidMethod"), new object[2]
-''' 						{
-''' 							typeName.Text,
-''' 							methodName.Text
-''' 						}));
-''' 					}
-''' 
-''' 
+                    If leaveValueInStack AndAlso value2.ReturnType Is GetType(Void) Then
+                        Me._parser.AddError(methodName, String.Format(System.Globalization.CultureInfo.CurrentUICulture, Microsoft.SmallBasic.ResourceHelper.GetString("ReturnValueExpectedFromVoidMethod"),
+                                New Object() {typeName.Text, methodName.Text}))
+                    End If
+
                 Else
                     _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("MethodNotFound"), New Object(1) {methodName.Text, typeName.Text}))
                 End If

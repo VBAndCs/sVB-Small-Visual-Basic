@@ -1,9 +1,9 @@
-﻿Interface IRestore
+﻿Public Interface IRestore
     Sub RestoreOldValue()
     Sub RestoreNewValue()
 End Interface
 
-Class UndoRedoUnit
+Public Class UndoRedoUnit
     Inherits List(Of IRestore)
 
     Sub New()

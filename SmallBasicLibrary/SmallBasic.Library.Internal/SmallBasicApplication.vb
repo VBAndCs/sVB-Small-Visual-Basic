@@ -13,7 +13,6 @@ Namespace Library.Internal
     ''' </summary>
     Public NotInheritable Class SmallBasicApplication
         Private Shared _applicationThread As Thread
-        Private Shared _dispatcher As Dispatcher
         Private Shared _application As Application
         Friend Shared mainThreadActions As Queue(Of InvokeHelper)
         Private Shared _pendingOperations As Integer
@@ -22,10 +21,6 @@ Namespace Library.Internal
         ''' Gets the dispatcher for the Small Basic application
         ''' </summary>
         Friend Shared ReadOnly Property Dispatcher As Dispatcher
-            Get
-                Return _dispatcher
-            End Get
-        End Property
 
         Friend Shared ReadOnly Property HasShutdown As Boolean
             Get
@@ -39,10 +34,10 @@ Namespace Library.Internal
             Dim autoEvent As New AutoResetEvent(initialState:=False)
             _applicationThread = New Thread(
                 Sub()
-                    Dim application1 As New Application
+                    Dim app As New Application
                     autoEvent.[Set]()
-                    _application = application1
-                    application1.Run()
+                    _application = app
+                    app.Run()
                 End Sub)
 
             _applicationThread.SetApartmentState(ApartmentState.STA)
@@ -77,7 +72,7 @@ Namespace Library.Internal
         Friend Shared Sub [End]()
             Invoke(Sub()
                        _application.Shutdown()
-                       _dispatcher.InvokeShutdown()
+                       _Dispatcher.InvokeShutdown()
                    End Sub)
             If AppDomain.CurrentDomain.FriendlyName <> "Debuggee" Then
                 Process.GetCurrentProcess().Kill()
@@ -132,6 +127,7 @@ Namespace Library.Internal
                                                            Dim stackPanel1 As New StackPanel
                                                            stackPanel1.Children.Add(New TextBlock With {
                                                                     .Text = exception1.Message,
+                                                                    .TextWrapping = TextWrapping.Wrap,
                                                                     .Margin = New Thickness(4.0),
                                                                     .FontSize = 16.0,
                                                                     .Foreground = New SolidColorBrush(Color.FromArgb(Byte.MaxValue, 0, 42, 181))
@@ -140,7 +136,7 @@ Namespace Library.Internal
                                                                     .Text = exception1.StackTrace,
                                                                     .FontFamily = New FontFamily("Consolas"),
                                                                     .IsReadOnly = True,
-                                                                    .MaxWidth = 480.0,
+                                                                    .MaxWidth = 650,
                                                                     .Margin = New Thickness(4.0),
                                                                     .HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
                                                                     .VerticalScrollBarVisibility = ScrollBarVisibility.Auto
@@ -169,6 +165,7 @@ Namespace Library.Internal
                         window1.ShowDialog()
                     End Sub)
             End If
+
         End Sub
 
         Friend Shared Sub Invoke(invokeDelegate As InvokeHelper)
@@ -188,11 +185,12 @@ Namespace Library.Internal
         End Sub
 
         Public Shared Sub EndProgram()
-            If CBool((CType((Not GraphicsWindow._windowVisible), Primitive) AndAlso Timer.Interval = 100000000)) Then
+            If Not GraphicsWindow._windowVisible AndAlso Timer.Interval = 100000000 Then
                 Invoke(Sub()
                            _application.Shutdown()
-                           _dispatcher.InvokeShutdown()
+                           _Dispatcher.InvokeShutdown()
                        End Sub)
+
                 If AppDomain.CurrentDomain.FriendlyName <> "Debuggee" Then
                     Process.GetCurrentProcess().Kill()
                 End If

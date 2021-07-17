@@ -22,7 +22,6 @@ Friend Class ResizeThumb
     Private skewTransform As SkewTransform
     Private RotateAngle As Double
     Private DeltaX, DeltaY As Double
-    Private adorner As Adorner
     Private transformOrigin As Point
     Private Dsn As Designer
     Dim Pnl As DiagramPanel

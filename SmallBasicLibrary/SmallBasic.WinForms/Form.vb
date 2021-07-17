@@ -1,5 +1,6 @@
 ﻿Imports Microsoft.SmallBasic.Library
 Imports Wpf = System.Windows.Controls
+Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     <SmallBasicType>
@@ -20,7 +21,7 @@ Namespace WinForms
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive)
 
-            Forms.Dispatcher.Invoke(
+            app.Invoke(
             Sub()
                 Dim frm = Forms.GetForm(formName)
 
@@ -60,7 +61,7 @@ Namespace WinForms
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive)
 
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
             Sub()
                 Dim frm = Forms.GetForm(formName)
 
@@ -99,7 +100,7 @@ Namespace WinForms
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive)
 
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
             Sub()
                 Dim frm = Forms.GetForm(formName)
 
@@ -143,7 +144,7 @@ Namespace WinForms
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive)
 
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
             Sub()
                 Dim frm = Forms.GetForm(formName)
 
@@ -199,15 +200,23 @@ Namespace WinForms
             Return Primitive.ConvertFromMap(map)
         End Function
 
+
         <ExMethod>
         Public Shared Sub Show(formName As Primitive)
-            TextWindow.WriteLine($"Showing {formName}")
-            Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Show())
+            'TextWindow.WriteLine($"Showing {formName}")
+
+
+            App.Invoke(
+                Sub()
+                    Dim wnd = Forms.GetForm(formName)
+                    wnd.Show()
+                    wnd.Activate()
+                End Sub)
         End Sub
 
         <ExMethod>
         Public Shared Function ShowDialog(formName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
                Sub()
                    Dim wnd = Forms.GetForm(formName)
                    ShowDialog = wnd.ShowDialog().GetValueOrDefault
@@ -216,28 +225,28 @@ Namespace WinForms
 
         <ExMethod>
         Public Shared Sub ShowMessage(ownerFormName As Primitive, message As Primitive, title As Primitive)
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
             Sub() System.Windows.MessageBox.Show(Forms.GetForm(ownerFormName), message.ToString(), title.ToString()))
         End Sub
 
         <ExMethod>
         Public Shared Sub Hide(formName As Primitive)
-            Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Hide())
+            App.Invoke(Sub() Forms.GetForm(formName).Hide())
         End Sub
 
         <ExMethod>
         Public Shared Sub Close(formName As Primitive)
-            Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Close())
+            App.Invoke(Sub() Forms.GetForm(formName).Close())
         End Sub
 
         <ExProperty>
         Public Shared Function GetText(formName As Primitive, __ As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetText = Forms.GetForm(formName).Title.ToString())
+            App.Invoke(Sub() GetText = Forms.GetForm(formName).Title.ToString())
         End Function
 
         <ExProperty>
         Public Shared Sub SetText(formName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(Sub() Forms.GetForm(formName).Title = value)
+            App.Invoke(Sub() Forms.GetForm(formName).Title = value)
         End Sub
     End Class
 End Namespace

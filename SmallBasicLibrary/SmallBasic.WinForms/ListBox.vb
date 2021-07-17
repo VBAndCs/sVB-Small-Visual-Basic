@@ -1,5 +1,6 @@
 ﻿Imports Microsoft.SmallBasic.Library
 Imports Wpf = System.Windows.Controls
+Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     <SmallBasicType>
@@ -16,12 +17,12 @@ Namespace WinForms
 
         <ExProperty>
         Public Shared Function GetCount(formName As Primitive, ListBoxName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetCount = GetListBox(formName, ListBoxName).Items.Count)
+            App.Invoke(Sub() GetCount = GetListBox(formName, ListBoxName).Items.Count)
         End Function
 
 
         Public Shared Sub Add(formName As Primitive, ListBoxName As Primitive, item As Primitive)
-            Forms.Dispatcher.Invoke(Sub() GetListBox(formName, ListBoxName).Items.Add(item))
+            App.Invoke(Sub() GetListBox(formName, ListBoxName).Items.Add(item))
         End Sub
 
     End Class

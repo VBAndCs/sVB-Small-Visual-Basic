@@ -41,8 +41,7 @@ Namespace Microsoft.SmallBasic.Shell
 
         Public Sub New()
             Me.InitializeComponent()
-            Dim x = New CommandBinding(CloseViewCommand, AddressOf CloseView)
-            CommandBindings.Add(x)
+            CommandBindings.Add(New CommandBinding(CloseViewCommand, AddressOf CloseView))
             App.GlobalDomain.AddComponent(Me)
             App.GlobalDomain.Bind()
         End Sub
@@ -58,13 +57,10 @@ Namespace Microsoft.SmallBasic.Shell
         Protected Overrides Sub PrepareContainerForItemOverride(ByVal element As DependencyObject, ByVal item As Object)
             MyBase.PrepareContainerForItemOverride(element, item)
             Dim mdiView = TryCast(element, MdiView)
+            If mdiView Is Nothing Then Return
 
-            If mdiView Is Nothing Then
-                Return
-            End If
-
-            Dim _1 = mdiView.Width
-            Dim _2 = mdiView.Height
+            Dim __ = mdiView.Width
+            __ = mdiView.Height
             Dim left = Canvas.GetLeft(mdiView)
             Dim top = Canvas.GetTop(mdiView)
 
@@ -230,7 +226,7 @@ Namespace Microsoft.SmallBasic.Shell
 
         Dim LastselectedView As MdiView
 
-        Friend Sub ChangeSelection(ByVal selectedView As MdiView)
+        Friend Sub ChangeSelection(selectedView As MdiView)
             If selectedView Is LastselectedView Then
                 Return
             Else
@@ -239,6 +235,7 @@ Namespace Microsoft.SmallBasic.Shell
 
             If selectedView Is Nothing Then
                 Dim num = 0
+                _SelectedItem = Nothing
 
                 For Each item In Items
                     Dim mdiView = TryCast(item, MdiView)
@@ -249,18 +246,13 @@ Namespace Microsoft.SmallBasic.Shell
                         selectedView = mdiView
                     End If
                 Next
-            End If
 
-            If selectedView Is Nothing Then
-                _SelectedItem = Nothing
             ElseIf selectedView IsNot _SelectedItem Then
-                For Each item2 In Items
-                    Dim mdiView2 = TryCast(item2, MdiView)
-
-                    If mdiView2 IsNot selectedView Then
-                        mdiView2.IsSelected = False
-                    End If
+                For Each item In Items
+                    Dim mdiView = TryCast(item, MdiView)
+                    mdiView.IsSelected = mdiView Is selectedView
                 Next
+
                 Panel.SetZIndex(selectedView, lastZIndex)
                 lastZIndex += 1
                 _SelectedItem = selectedView
@@ -268,7 +260,7 @@ Namespace Microsoft.SmallBasic.Shell
                 selectedView.Dispatcher.Invoke(DispatcherPriority.Render, Sub() Exit Sub)
 
                 KeepFocus = True
-                CType(selectedView.Document.EditorControl.TextView, Nautilus.Text.Editor.AvalonTextView).Focus()
+                selectedView.Document.Focus()
                 KeepFocus = False
             End If
 

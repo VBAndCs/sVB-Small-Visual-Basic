@@ -2,6 +2,7 @@
 Imports Microsoft.SmallBasic.Library
 Imports System.Windows
 Imports System.Windows.Media
+Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     <SmallBasicType>
@@ -13,7 +14,7 @@ Namespace WinForms
         ''' <remarks>You can't change the control name at runtime. Use the designer to change the name</remarks>
         <ExProperty>
         Public Shared Function GetName(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetName = GetControl(formName, controlName).Name)
+            App.Invoke(Sub() GetName = GetControl(formName, controlName).Name)
         End Function
 
         ''' <summary>
@@ -21,12 +22,12 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetLeft(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetLeft = Wpf.Canvas.GetLeft(GetControl(formName, controlName)))
+            App.Invoke(Sub() GetLeft = Wpf.Canvas.GetLeft(GetControl(formName, controlName)))
         End Function
 
         <ExProperty>
         Public Shared Sub SetLeft(formName As Primitive, controlName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(Sub() Wpf.Canvas.SetLeft(GetControl(formName, controlName), value))
+            App.Invoke(Sub() Wpf.Canvas.SetLeft(GetControl(formName, controlName), value))
         End Sub
 
         ''' <summary>
@@ -34,12 +35,12 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetTop(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetTop = Wpf.Canvas.GetTop(GetControl(formName, controlName)))
+            App.Invoke(Sub() GetTop = Wpf.Canvas.GetTop(GetControl(formName, controlName)))
         End Function
 
         <ExProperty>
         Public Shared Sub SetTop(formName As Primitive, controlName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(Sub() Wpf.Canvas.SetTop(GetControl(formName, controlName), value))
+            App.Invoke(Sub() Wpf.Canvas.SetTop(GetControl(formName, controlName), value))
         End Sub
 
         ''' <summary>
@@ -47,12 +48,32 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetWidth(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetWidth = GetControl(formName, controlName).ActualWidth)
+            App.Invoke(
+                Sub()
+                    Dim name = CStr(controlName)
+                    If name = "" OrElse name = CStr(formName) Then
+                        Dim form = Forms.GetForm(name)
+                        Dim canvas = CType(form.Content, Wpf.Canvas)
+                        GetWidth = canvas.ActualWidth
+                    Else
+                        GetWidth = GetControl(formName, controlName).ActualWidth
+                    End If
+                End Sub)
         End Function
 
         <ExProperty>
         Public Shared Sub SetWidth(formName As Primitive, controlName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(Sub() GetControl(formName, controlName).Width = value)
+            App.Invoke(
+                Sub()
+                    Dim name = CStr(controlName)
+                    If name = "" OrElse name = CStr(formName) Then
+                        Dim form = Forms.GetForm(name)
+                        Dim canvas = CType(form.Content, Wpf.Canvas)
+                        canvas.Width = value
+                    Else
+                        GetControl(formName, name).Width = value
+                    End If
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -60,12 +81,32 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetHeight(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetHeight = GetControl(formName, controlName).ActualHeight)
+            App.Invoke(
+                Sub()
+                    Dim name = CStr(controlName)
+                    If name = "" OrElse name = CStr(formName) Then
+                        Dim form = Forms.GetForm(name)
+                        Dim canvas = CType(form.Content, Wpf.Canvas)
+                        GetHeight = canvas.ActualHeight
+                    Else
+                        GetHeight = GetControl(formName, controlName).ActualHeight
+                    End If
+                End Sub)
         End Function
 
         <ExProperty>
         Public Shared Sub SetHeight(formName As Primitive, controlName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(Sub() Forms.Dispatcher.Invoke(Sub() GetControl(formName, controlName).Height = value))
+            App.Invoke(
+                Sub()
+                    Dim name = CStr(controlName)
+                    If name = "" OrElse name = CStr(formName) Then
+                        Dim form = Forms.GetForm(name)
+                        Dim canvas = CType(form.Content, Wpf.Canvas)
+                        canvas.Height = value
+                    Else
+                        GetControl(formName, name).Height = value
+                    End If
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -74,12 +115,12 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetEnabled(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetEnabled = GetControl(formName, controlName).IsEnabled)
+            App.Invoke(Sub() GetEnabled = GetControl(formName, controlName).IsEnabled)
         End Function
 
         <ExProperty>
         Public Shared Sub SetEnabled(formName As Primitive, controlName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(Sub() GetControl(formName, controlName).IsEnabled = value)
+            App.Invoke(Sub() GetControl(formName, controlName).IsEnabled = value)
         End Sub
 
         ''' <summary>
@@ -88,12 +129,12 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetVisible(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(Sub() GetVisible = GetControl(formName, controlName).IsVisible)
+            App.Invoke(Sub() GetVisible = GetControl(formName, controlName).IsVisible)
         End Function
 
         <ExProperty>
         Public Shared Sub SetVisible(formName As Primitive, controlName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(Sub() GetControl(formName, controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden))
+            App.Invoke(Sub() GetControl(formName, controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden))
         End Sub
 
 
@@ -107,7 +148,7 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetBackColor(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
            Sub()
                Dim c = GetControl(formName, controlName)
                Dim brush = TryCast(c.Background, SolidColorBrush)
@@ -121,7 +162,7 @@ Namespace WinForms
 
         <ExProperty>
         Public Shared Sub SetBackColor(formName As Primitive, controlName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
            Sub()
                Dim c = GetControl(formName, controlName)
                Dim _color = Color.FromString(value)
@@ -141,7 +182,7 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetForeColor(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
            Sub()
                Dim c = GetControl(formName, controlName)
                Dim brush = TryCast(c.Foreground, SolidColorBrush)
@@ -155,7 +196,7 @@ Namespace WinForms
 
         <ExProperty>
         Public Shared Sub SetForeColor(formName As Primitive, controlName As Primitive, value As Primitive)
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
            Sub()
                Dim c = GetControl(formName, controlName)
                Dim _color = Color.FromString(value)
@@ -169,7 +210,7 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetMouseX(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
             Sub()
                 Dim c = GetControl(formName, controlName)
                 GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X)
@@ -181,7 +222,7 @@ Namespace WinForms
         ''' </summary>
         <ExProperty>
         Public Shared Function GetMouseY(formName As Primitive, controlName As Primitive) As Primitive
-            Forms.Dispatcher.Invoke(
+            App.Invoke(
             Sub()
                 Dim c = GetControl(formName, controlName)
                 GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y)

@@ -57,7 +57,10 @@ Namespace Microsoft.SmallBasic
             iLGenerator.EmitCall(OpCodes.Call, GetType(SmallBasicApplication).GetMethod("BeginProgram", BindingFlags.Static Or BindingFlags.Public), Nothing)
             EmitIL()
             iLGenerator.EmitCall(OpCodes.Call, GetType(TextWindow).GetMethod("PauseIfVisible", BindingFlags.Static Or BindingFlags.Public), Nothing)
-            iLGenerator.EmitCall(OpCodes.Call, GetType(SmallBasicApplication).GetMethod("EndProgram", BindingFlags.Static Or BindingFlags.Public), Nothing)
+
+            ' Bad for win forms
+            'iLGenerator.EmitCall(OpCodes.Call, GetType(SmallBasicApplication).GetMethod("EndProgram", BindingFlags.Static Or BindingFlags.Public), Nothing)
+
             iLGenerator.Emit(OpCodes.Ret)
             typeBuilder.CreateType()
             Return True
