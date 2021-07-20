@@ -260,9 +260,9 @@ Public Class DiagramObject
         DraggingStartPoint = e.GetPosition(Pnl)
 
         Pnl.ExitIsSelectedChanged = True
-        TmpIsSelected = Pnl.IsSelected
+        'TmpIsSelected = Pnl.IsSelected
         DesignerItem.Focus()
-        Pnl.IsSelected = False
+        'Pnl.IsSelected = False
 
         StartMoveUndo()
 
@@ -273,7 +273,7 @@ Public Class DiagramObject
         Diagram.ReleaseMouseCapture()
         DraggingDiagram = False
         DesignerItem.Focus()
-        Pnl.IsSelected = TmpIsSelected
+        'Pnl.IsSelected = TmpIsSelected
         Pnl.ExitIsSelectedChanged = False
         Dsn.LocationVisibility = Windows.Visibility.Collapsed
 
@@ -301,56 +301,125 @@ Public Class DiagramObject
 
 #Region "Editor"
 
-    Friend Sub BeginEdit()
+    Dim rename As Boolean
+
+    Friend Sub BeginEdit(Optional rename As Boolean = False)
+        Me.rename = rename
         Designer.Editing = True
         Dim P = GetLeftTopPoint(InCm:=False)
         Dsn.Editor.Width = Diagram.ActualWidth
         Dsn.Editor.Height = Diagram.ActualHeight
-        Dsn.Editor.Text = Pnl.DiagramTextBlock.Text
+        Dsn.Editor.Text = If(rename, Automation.AutomationProperties.GetName(Diagram), Pnl.DiagramTextBlock.Text)
 
         Dim Pup As Popup = Dsn.Editor.Parent
         Pup.PlacementTarget = Diagram
         Pup.Placement = PlacementMode.Relative
+        Pup.StaysOpen = True
         Pup.IsOpen = True
         Dsn.Editor.Focus()
         Dsn.Editor.SelectAll()
 
         AddHandler Dsn.Editor.PreviewKeyDown, AddressOf Editor_PreviewKeyDown
-        AddHandler Pup.Closed, AddressOf Pup_Closed
+        AddHandler Dsn.Editor.PreviewTextInput, AddressOf Editor_PreviewTextInput
+        AddHandler Dsn.Editor.LostFocus, AddressOf Editor_LostFocus
+        AddHandler Dsn.PreviewMouseLeftButtonDown, AddressOf Dsn_LeftButtonDown
+
     End Sub
 
-    Friend Sub EndEdit(Commit As Boolean)
+    Private Sub Dsn_LeftButtonDown(sender As Object, e As MouseButtonEventArgs)
+        Dim editor = Helper.GetParent(Of TextBox)(e.OriginalSource)
+        If editor IsNot Dsn.Editor Then
+            exitLostFocus = True
+            EndEdit(True)
+            e.Handled = True
+            Dsn.Editor.Focus()
+            RunAfter.Start(100, Sub() exitLostFocus = False)
+        End If
+    End Sub
+
+    Private Sub Editor_PreviewTextInput(sender As Object, e As TextCompositionEventArgs)
+        If Not rename Then Return
+
+        Select Case e.Text.ToLower
+            Case "a" To "z", "_", "0" To "9"
+                ' allowed
+            Case Else
+                Beep()
+                e.Handled = True
+        End Select
+
+    End Sub
+
+    Friend Function EndEdit(Commit As Boolean) As Boolean
         Designer.Editing = False
-        RemoveHandler Dsn.Editor.PreviewKeyDown, AddressOf Editor_PreviewKeyDown
+
         If Commit Then
-            Dim OldState As New PropertyState(Pnl.DiagramTextBlock, TextBlock.TextProperty)
-            Pnl.DiagramTextBlock.Text = Dsn.Editor.Text
-            Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+            If rename Then
+                exitLostFocus = True
+                If Not Dsn.SetControlName(Diagram, Dsn.Editor.Text) Then
+                    exitLostFocus = False
+                    Return False
+                End If
+                exitLostFocus = False
+            Else
+                Dsn.SetControlText(Dsn.SelectedIndex, Dsn.Editor.Text)
+            End If
         End If
 
-        Dim Pup As Popup = Dsn.Editor.Parent
         RemoveHandler Dsn.Editor.PreviewKeyDown, AddressOf Editor_PreviewKeyDown
-        RemoveHandler Pup.Closed, AddressOf Pup_Closed
+        RemoveHandler Dsn.Editor.PreviewTextInput, AddressOf Editor_PreviewTextInput
+        RemoveHandler Dsn.Editor.LostFocus, AddressOf Editor_LostFocus
+        RemoveHandler Dsn.PreviewMouseLeftButtonDown, AddressOf Dsn_LeftButtonDown
+
+        Dim Pup As Popup = Dsn.Editor.Parent
         Pup.IsOpen = False
         DesignerItem.Focus()
+        Return True
+    End Function
+
+    Dim focusEditor As New RunAfter(10,
+        Sub()
+            Dsn.Editor.Focus()
+        End Sub)
+
+    Dim exitLostFocus As Boolean
+
+    Public Sub Editor_LostFocus(sender As Object, e As RoutedEventArgs)
+        If exitLostFocus Then Return
+
+        If Not EndEdit(True) Then
+            e.Handled = True
+            focusEditor.Start()
+        End If
     End Sub
+
 
     Private Sub Editor_PreviewKeyDown(sender As Object, e As KeyEventArgs)
         If e.Key = Key.Enter Then
             If Keyboard.Modifiers = ModifierKeys.Control Then
-                Dsn.Editor.SelectedText = vbCrLf
-                Dsn.Editor.SelectionLength = 0
-                Dsn.Editor.SelectionStart += 2
-            Else
-                EndEdit(True)
+                If rename Then
+                    If Not EndEdit(True) Then
+                        e.Handled = True
+                        Dsn.Editor.Focus()
+                    End If
+                Else
+                    Dsn.Editor.SelectedText = vbCrLf
+                    Dsn.Editor.SelectionLength = 0
+                    Dsn.Editor.SelectionStart += 2
+                End If
+
+            ElseIf Not EndEdit(True) Then
+                e.Handled = True
+                Dsn.Editor.Focus()
             End If
         ElseIf e.Key = Key.Escape Then
             EndEdit(False)
+        ElseIf e.Key = Key.Space Then
+            If rename Then
+                Beep()
+                e.Handled = True
+            End If
         End If
-    End Sub
-
-    Private Sub Pup_Closed(sender As Object, e As EventArgs)
-        EndEdit(True)
     End Sub
 
     Friend Sub DiagramTextBlock_TextChanged()

@@ -21,9 +21,7 @@ Namespace Microsoft.SmallBasic
                 Dim text2 As String = txt.ToLowerInvariant().Trim()
                 Dim num = text2.IndexOf(":")
 
-                If num = -1 Then
-                    Continue For
-                End If
+                If num = -1 Then Continue For
 
                 Dim text3 = text2.Substring(0, num)
                 Dim choice = text2.Substring(num + 1)
@@ -57,9 +55,14 @@ Namespace Microsoft.SmallBasic
             Dim currentUICulture = CultureInfo.CurrentUICulture
             FlowDirection = If(currentUICulture.TextInfo.IsRightToLeft, FlowDirection.RightToLeft, FlowDirection.LeftToRight)
             CreateComponentDomain()
-            'wndMain = New MainWindow
+            AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf CatchAppExceptions
             GetMainWindow().Show()
             MyBase.OnStartup(e)
+        End Sub
+
+        Private Sub CatchAppExceptions(sender As Object, e As UnhandledExceptionEventArgs)
+            Dim x = TryCast(e.ExceptionObject, Exception)
+            Console.WriteLine(If(x IsNot Nothing, x.Message, e.ExceptionObject.ToString()))
         End Sub
 
         Private Function GetMainWindow() As Window

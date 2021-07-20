@@ -461,7 +461,7 @@ Namespace Microsoft.SmallBasic
                         doc.ParseFormHints()
                         gen = doc.GetCodeBehind(True)
                     Else
-                        gen = doc.GenerateCodeBehind(formDesigner.Items, False)
+                        gen = doc.GenerateCodeBehind(formDesigner, False)
                     End If
                 Else
                     gen = doc.GetCodeBehind(True)
@@ -722,7 +722,10 @@ Namespace Microsoft.SmallBasic
 
             If openDoc AndAlso formDesigner.CodeFilePath <> "" AndAlso Not formDesigner.HasChanges Then
                 doc = OpenDocIfNot(formDesigner.CodeFilePath)
-                If doc.Form = "" Then doc.Form = formDesigner.Name
+
+                ' User may change the form name
+                doc.Form = formDesigner.Name
+
                 If doc.PageKey = "" Then doc.PageKey = formDesigner.PageKey
                 OpeningDoc = False
                 Return
@@ -745,7 +748,9 @@ Namespace Microsoft.SmallBasic
 
                 Else
                     If doc Is Nothing Then doc = GetDoc(formDesigner.CodeFilePath, openDoc)
-                    formName = If(doc.Form, formDesigner.Name)
+                    formName = formDesigner.Name
+                    doc.Form = formName
+
                     xamlPath = Path.GetDirectoryName(formDesigner.CodeFilePath)
                     formPath = formDesigner.CodeFilePath.Substring(0, formDesigner.CodeFilePath.Length - 3)
                 End If
@@ -759,8 +764,8 @@ Namespace Microsoft.SmallBasic
                 formPath = formDesigner.FileName.Substring(0, formDesigner.FileName.Length - 5)
 
                 If doc Is Nothing Then doc = GetDoc(formPath & ".sb", openDoc)
-                formName = If(doc.Form, formDesigner.Name)
-                formDesigner.Name = formName
+                formName = formDesigner.Name
+                doc.Form = formName
 
                 If formDesigner.HasChanges Then formDesigner.DoSave()
 
@@ -771,7 +776,7 @@ Namespace Microsoft.SmallBasic
             doc.PageKey = formDesigner.PageKey
             formDesigner.CodeFilePath = doc.FilePath
 
-            IO.File.WriteAllText(formPath & ".sb.gen", doc.GenerateCodeBehind(formDesigner.Items, True))
+            IO.File.WriteAllText(formPath & ".sb.gen", doc.GenerateCodeBehind(formDesigner, True))
             OpeningDoc = False
         End Sub
 
@@ -1027,6 +1032,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Dim FirstTime As Boolean = True
+
         Private Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
             If FirstTime Then
                 FirstTime = False
@@ -1060,6 +1066,8 @@ Namespace Microsoft.SmallBasic
             RemoveHandler formDesigner.DiagramDoubleClick, AddressOf formDesigner_DiagramDoubleClick
             AddHandler formDesigner.DiagramDoubleClick, AddressOf formDesigner_DiagramDoubleClick
 
+            RemoveHandler formDesigner.SelectionChanged, AddressOf formDesigner_SelectionChanged
+            AddHandler formDesigner.SelectionChanged, AddressOf formDesigner_SelectionChanged
             UpdateTitle()
 
             If index > -1 AndAlso ProjExplorer.FilesList IsNot Nothing Then
@@ -1067,18 +1075,72 @@ Namespace Microsoft.SmallBasic
                 ProjExplorer.FilesList.SelectedIndex = index
                 ProjExplorer.FreezListFiles = False
             End If
+
+            UpdateTextBoxes()
+
+        End Sub
+
+        Dim FocusTxtName As New DiagramHelper.RunAfter(10, Sub() txtControlName.Focus())
+        Dim ExitSelectionChanged As Boolean
+
+        Private Sub formDesigner_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+            If ExitSelectionChanged Then Return
+            Dim i = formDesigner.SelectedIndex
+            Dim controlIndex As Integer
+
+            If CStr(txtControlName.Tag) <> "" Then
+                controlIndex = CInt(txtControlName.Tag)
+                If txtControlName.Text <> formDesigner.GetControlName(controlIndex) Then
+                    If Not CommitName() Then
+                        ' Re-select the control. this event can fire b4 lostfocus event of the textbox
+                        ExitSelectionChanged = True
+                        If controlIndex = -1 Then
+                            formDesigner.SelectedItem = Nothing
+                        Else
+                            ' Note: setting selectedIndex doesn't work!!
+                            formDesigner.SelectedItem = formDesigner.Items(controlIndex)
+                        End If
+                        ExitSelectionChanged = False
+
+                        ' gobacl to the textbox
+                        FocusTxtName.Start()
+                        Return
+                    End If
+                End If
+
+            ElseIf CStr(txtControlText.Tag) <> "" Then
+                controlIndex = CInt(txtControlText.Tag)
+                formDesigner.SetControlText(controlIndex, txtControlText.Text)
+            End If
+
+            UpdateTextBoxes()
+
+        End Sub
+
+        Sub UpdateTextBoxes()
+            txtControlName.Tag = ""
+            txtControlText.Tag = ""
+
+            Dim controlIndex = formDesigner.SelectedIndex
+            If formDesigner.SelectedIndex = -1 Then
+                txtControlName.Text = formDesigner.Name
+                txtControlText.Text = formDesigner.Text
+            Else
+                txtControlName.Text = formDesigner.GetControlName()
+                txtControlText.Text = formDesigner.GetControlText()
+            End If
         End Sub
 
         Private Sub UpdateTitle()
-
             If tabDesigner.IsSelected Then
+                grdNameText.Visibility = Visibility.Visible
                 txtTitle.Text = "Form Designer - "
                 txtForm.Text = $"{formDesigner.Name}{If(formDesigner.FileName = "", " *", ".xaml")}"
             Else
+                grdNameText.Visibility = Visibility.Collapsed
                 txtTitle.Text = "Code Editor - "
                 txtForm.Text = $"{formDesigner.Name}.sb"
             End If
-
         End Sub
 
         Dim OpeningDoc As Boolean
@@ -1121,11 +1183,8 @@ Namespace Microsoft.SmallBasic
 
         End Sub
 
-        Private Sub ProjExplorer_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs)
-            Dim item As ListBoxItem = GetParent(Of ListBoxItem)(e.OriginalSource)
-            If item IsNot Nothing Then
-                tabCode.IsSelected = True
-            End If
+        Private Sub ProjExplorer_ItemDoubleClick(sender As Object, e As MouseButtonEventArgs)
+            tabCode.IsSelected = True
         End Sub
 
         Private Sub CloseButton_Click(sender As Object, e As RoutedEventArgs)
@@ -1135,6 +1194,84 @@ Namespace Microsoft.SmallBasic
                 DiagramHelper.Designer.ClosePage()
             End If
 
+        End Sub
+
+        Function CommitName() As Boolean
+            If CStr(txtControlName.Tag) = "" Then Return True
+
+            Dim controlIndex = CInt(txtControlName.Tag)
+            If Not formDesigner.SetControlName(controlIndex, txtControlName.Text) Then
+                VisualBasic.Beep()
+                Return False
+            End If
+
+            Return True
+        End Function
+
+        Private Sub txtControlName_PreviewKeyDown(sender As Object, e As KeyEventArgs)
+            Select Case e.Key
+                Case Key.Enter
+                    CommitName()
+                    e.Handled = True
+
+                Case Key.Escape
+                    UpdateTextBoxes()
+                    e.Handled = True
+
+                Case Key.Space
+                    VisualBasic.Beep()
+                    e.Handled = True
+            End Select
+        End Sub
+
+        Private Sub txtControlName_LostFocus(sender As Object, e As RoutedEventArgs)
+            If FocusTxtName.Started Then Return
+
+            If CommitName() Then
+                txtControlName.Tag = ""
+            Else
+                e.Handled = True
+                FocusTxtName.Start()
+            End If
+        End Sub
+
+        Private Sub txtControlName_PreviewTextInput(sender As Object, e As TextCompositionEventArgs)
+            Select Case e.Text.ToLower
+                Case "a" To "z", "_", "0" To "9"
+                    ' allowed
+                Case Else
+                    VisualBasic.Beep()
+                    e.Handled = True
+            End Select
+        End Sub
+
+        Private Sub txtControlText_PreviewKeyDown(sender As Object, e As KeyEventArgs)
+            Select Case e.Key
+                Case Key.Enter
+                    If CStr(txtControlText.Tag) <> "" Then
+                        Dim controlIndex = CInt(txtControlText.Tag)
+                        formDesigner.SetControlText(controlIndex, txtControlText.Text)
+                    End If
+                    e.Handled = True
+
+                Case Key.Escape
+                    UpdateTextBoxes()
+                    e.Handled = True
+            End Select
+
+        End Sub
+
+        Private Sub txtControlText_LostFocus(sender As Object, e As RoutedEventArgs)
+            If CStr(txtControlText.Tag) = "" Then Return
+
+            Dim controlIndex = CInt(txtControlText.Tag)
+            formDesigner.SetControlText(controlIndex, txtControlText.Text)
+            txtControlText.Tag = ""
+        End Sub
+
+        Private Sub txtControl_GotFocus(sender As Object, e As RoutedEventArgs)
+            Dim txt As TextBox = sender
+            txt.Tag = formDesigner.SelectedIndex
         End Sub
     End Class
 

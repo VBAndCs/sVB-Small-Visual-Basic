@@ -96,6 +96,89 @@ Public Class Designer
         End Set
     End Property
 
+    Public Function SetControlName(controlIndex As Integer, name As String) As Boolean
+        If controlIndex = -1 Then
+            Return ChangeFormName(name)
+        Else
+            Return SetControlName(Me.Items(controlIndex), name)
+        End If
+    End Function
+
+    Public Function SetControlName(control As UIElement, name As String) As Boolean
+        If name = "" Then Return False
+
+        Dim newName = name.ToLower()
+        If Me.GetControlName(control).ToLower() = newName Then
+            Return True
+        End If
+
+        If IsNumeric(newName(0)) Then
+            MessageBox.Show("Name can't start with a number.", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+            Return False
+        End If
+
+        For Each cnt In Me.Items
+            If Me.GetControlName(cnt).ToLower() = newName Then
+                MessageBox.Show($"There is another control named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                Return False
+            End If
+        Next
+
+        Try
+            Dim OldState As New PropertyState(
+                Sub()
+                    Me.SelectedItem = control
+                    SetControlName(control, Automation.AutomationProperties.GetName(control))
+                    RaiseEvent PageShown(-3)
+                End Sub,
+                control,
+                Automation.AutomationProperties.NameProperty)
+
+            Dim fw = TryCast(control, FrameworkElement)
+            If fw IsNot Nothing Then fw.Name = name
+            Automation.AutomationProperties.SetName(control, name)
+            Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+            RaiseEvent PageShown(-3)
+            Return True
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+        End Try
+
+        Return False
+    End Function
+
+    Public Function ChangeFormName(name As String) As Boolean
+        If name = "" Then Return False
+
+        Dim newName = name.ToLower()
+        If Me.Name.ToLower() = newName Then Return True
+
+        If IsNumeric(newName(0)) Then
+            MessageBox.Show("Name can't start with a number.", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+            Return False
+        End If
+
+        For Each page In Pages.Values
+            If page.Name.ToLower() = newName Then
+                MessageBox.Show($"There is another form named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                Return False
+            End If
+        Next
+
+        Try
+            Dim OldState As New PropertyState(AddressOf UpdateFormInfo, Me, Designer.NameProperty)
+            Me.Name = name
+            Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+            UpdateFormInfo()
+            RaiseEvent PageShown(-2)
+            Return True
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+        End Try
+
+        Return False
+
+    End Function
 
     Public Event DiagramDoubleClick(diagram As UIElement)
 
@@ -264,6 +347,7 @@ Public Class Designer
     Public Shared SetDefaultPropertiesSub As SetDefaultPropertiesHandler = AddressOf SetDefaultProperties
 
     Public Shared Sub SetDefaultProperties()
+        CurrentPage._Text = CurrentPage.Name
         CurrentPage.DesignerCanvas.Background = SystemColors.ControlBrush
         CurrentPage.GridPen.Thickness = 0.3
         CurrentPage.ShowGrid = True
@@ -308,6 +392,7 @@ Public Class Designer
 
     Public Shared Function SwitchTo(key As String, Optional UpdateCurrentPage As Boolean = True) As String
         If key = "" Then Return OpenNewPage()
+
         If UpdateCurrentPage Then UpdatePageInfo()
 
         If Pages.ContainsKey(key) Then
@@ -352,6 +437,11 @@ Public Class Designer
         canvas.Name = If(Me.Name = "", Me.PageKey.Replace("KEY", "Form"), Me.Name)
         canvas.Width = Me.PageWidth
         canvas.Height = Me.PageHeight
+        If _Text <> "" Then
+            Automation.AutomationProperties.SetHelpText(canvas, _Text)
+        Else
+            canvas.ClearValue(Automation.AutomationProperties.HelpTextProperty)
+        End If
 
         For Each diagram In Me.Items
             Dim diagram2 As FrameworkElement = Helper.Clone(diagram)
@@ -362,8 +452,16 @@ Public Class Designer
             diagram2.ClearValue(IsTabStopProperty)
             diagram2.ClearValue(DiagramTextBlockPropertyKey)
 
-            ' GroupID will cause isuues in Small Basic, because it needs a reference to DiagramHelper
-            ' Use any wpf built-in properety to hold its value
+            ' GroupID, DiagramText will cause isuues in Small Basic, because they need a reference to DiagramHelper
+            ' Use any wpf built-in properety to hold theor values
+            Dim txt = GetDiagramText(diagram2)
+            If txt <> "" Then
+                Automation.AutomationProperties.SetHelpText(diagram2, txt)
+                diagram2.ClearValue(DiagramTextProperty)
+            Else
+                diagram2.ClearValue(Automation.AutomationProperties.HelpTextProperty)
+            End If
+
             Dim gID = GetGroupID(diagram2)
             If gID <> "" Then
                 Automation.AutomationProperties.SetAutomationId(diagram2, gID)
@@ -371,6 +469,7 @@ Public Class Designer
             Else
                 diagram2.ClearValue(Automation.AutomationProperties.AutomationIdProperty)
             End If
+
 
             ' Copy properties from designer to Canvas
             Canvas.SetLeft(diagram2, Designer.GetLeft(diagram2))
@@ -400,11 +499,13 @@ Public Class Designer
         Next
 
         Return XamlWriter.Save(canvas)
+
     End Function
 
     Private Sub XamlToPage(xaml As String)
         Dim canvas As Canvas = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
         Me.Name = canvas.Name
+        _Text = Automation.AutomationProperties.GetHelpText(canvas)
 
         Me.Visibility = Visibility.Hidden
 
@@ -418,7 +519,14 @@ Public Class Designer
 
             Me.Items.Add(Diagram)
 
-            ' Restore the GroupID property
+            ' Restore the GroupID and DiagramText properties
+            Dim txt = Automation.AutomationProperties.GetHelpText(Diagram)
+            If txt = "" Then
+                Diagram.ClearValue(DiagramTextProperty)
+            Else
+                SetControlText(Diagram, txt)
+                Diagram.ClearValue(Automation.AutomationProperties.HelpTextProperty)
+            End If
 
             Dim gId = Automation.AutomationProperties.GetAutomationId(Diagram)
             If gId = "" Then
@@ -470,7 +578,7 @@ Public Class Designer
             Dim R As New Rect(0, 0, Diagram.ActualWidth, Diagram.ActualHeight)
             R = Diagram.TransformToVisual(Me.DesignerCanvas).TransformBounds(R)
 
-            If R.TopLeft.X <MinX Then MinX= R.TopLeft.X
+            If R.TopLeft.X < MinX Then MinX = R.TopLeft.X
             If R.TopRight.X > MaxX Then MaxX = R.TopRight.X
 
             If R.TopLeft.Y < MinY Then MinY = R.TopLeft.Y
@@ -503,10 +611,7 @@ Public Class Designer
 
             If defaultName <> "" Then
                 Automation.AutomationProperties.SetName(diagram, defaultName)
-                Dim conControl = TryCast(diagram, ContentControl)
-                If conControl IsNot Nothing AndAlso conControl.Content Is Nothing Then
-                    conControl.Content = defaultName
-                End If
+                SetControlText(diagram, defaultName, False)
             End If
 
             diagram.ClearValue(ToolTipProperty)
@@ -621,6 +726,8 @@ Public Class Designer
             For Each Diagram As UIElement In Lst
                 Designer.SetLeft(Diagram, Designer.GetLeft(Diagram) + 10)
                 Designer.SetTop(Diagram, Designer.GetTop(Diagram) + 10)
+                Dim name = GetControlName(Diagram)
+                SetControlName(Diagram, GetNextName(name))
                 OldState.Add(Diagram)
                 Me.Items.Add(Diagram)
                 OldState.SetNewValue()
@@ -631,7 +738,7 @@ Public Class Designer
 
             For Each Diagram As UIElement In Lst
                 Dim Item = Helper.GetListBoxItem(Diagram)
-                Item.Focus()
+                Item?.Focus()
                 Me.ScrollIntoView(Diagram)
             Next
 
@@ -642,6 +749,37 @@ Public Class Designer
 
         End Try
     End Sub
+
+    Private Function GetNextName(name As String) As String
+        Dim baseName As String
+        Dim num As Integer
+        For i = name.Length - 1 To 0 Step -1
+            If Not IsNumeric(name(i)) Then
+                If i = name.Length - 1 Then
+                    baseName = name
+                    num = 0
+                Else
+                    baseName = name.Substring(0, i + 1)
+                    num = CInt(name.Substring(i + 1))
+                End If
+                Exit For
+            End If
+        Next
+
+        For Each dg In Me.Items
+            Dim controlName = GetControlName(dg)
+            If controlName.StartsWith(baseName) Then
+                Dim n = controlName.Substring(baseName.Length)
+                If n = "" Then
+                    If num = 0 Then num = 1
+                ElseIf IsNumeric(n) Then
+                    If CInt(n) >= num Then num = CInt(n) + 1
+                    End If
+                End If
+        Next
+        Return baseName & If(num = 0, "", CStr(num))
+
+    End Function
 
     Public Function CanPaste() As Boolean
         If Not Clipboard.ContainsData(DataFormats.Xaml) Then Return False
@@ -1063,14 +1201,91 @@ Public Class Designer
 
     End Sub
 
-    Public Function GetControlName(control As UIElement) As String
+    Public Function GetControlName(index As Integer) As String
+        If index = -1 Then Return Me.Name
+        If index < Me.Items.Count Then Return GetControlName(Me.Items(index))
+        Return ""
+    End Function
+
+    Public Function GetControlName(Optional control As UIElement = Nothing) As String
+        If control Is Nothing Then control = Me.SelectedItem
         Dim controlName = Automation.AutomationProperties.GetName(control)
         If controlName = "" Then
             Dim fw = TryCast(control, FrameworkElement)
-            controlName = fw.Name
+            If fw IsNot Nothing Then controlName = fw.Name
         End If
         Return controlName
     End Function
+
+    Public Function GetControlText(Optional control As UIElement = Nothing) As String
+        If control Is Nothing Then control = Me.SelectedItem
+
+        Try
+            Return CObj(control).Text
+        Catch
+            Try
+                Dim x = CObj(control).Content
+                If x IsNot Nothing AndAlso TypeOf x Is String Then
+                    Return CStr(CObj(control).Content)
+                End If
+            Catch
+            End Try
+        End Try
+
+        Dim txt = Automation.AutomationProperties.GetHelpText(control)
+        If txt = "" Then txt = GetDiagramText(control)
+        Return If(txt, "")
+    End Function
+
+    Public Sub SetControlText(controlIndex As Integer, value As String)
+        If controlIndex = -1 Then
+            _Text = value
+        Else
+            SetControlText(Me.Items(controlIndex), value, True, True)
+        End If
+    End Sub
+
+    Friend Sub SetControlText(control As UIElement, value As String, Optional trySetText As Boolean = True, Optional reportChanges As Boolean = False)
+        If control Is Nothing Then control = Me.SelectedItem
+
+        Dim txt = GetControlText(control)
+        If txt = value Then Return
+
+        If reportChanges Then
+            Automation.AutomationProperties.SetHelpText(control, txt)
+            Dim OldState As New PropertyState(
+                    Sub()
+                        Me.SelectedItem = control
+                        SetControlText(control, Automation.AutomationProperties.GetHelpText(control))
+                        RaiseEvent PageShown(-3)
+                    End Sub,
+                    control, Automation.AutomationProperties.HelpTextProperty)
+
+            Automation.AutomationProperties.SetHelpText(control, value)
+            UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue()))
+        End If
+
+        If trySetText Then
+            Try
+                CObj(control).Text = value
+                control.ClearValue(DiagramTextProperty)
+                RaiseEvent PageShown(-3) ' To Update text
+                Return
+            Catch
+            End Try
+        End If
+
+        Try
+            Dim x = CObj(control).Content
+            If x Is Nothing OrElse TypeOf x Is String Then
+                CObj(control).Content = value
+            End If
+        Catch
+            If trySetText Then SetDiagramText(control, value)
+        End Try
+        RaiseEvent PageShown(-3) ' To Update text
+    End Sub
+
 
     Public Function GetControlNameOrDefault(control As UIElement) As String
         Dim controlName = GetControlName(control)
@@ -1831,6 +2046,7 @@ Public Class Designer
         End Set
     End Property
 
+    Public Property Text As String
 
     Public Shared ReadOnly CanRedoProperty As DependencyProperty =
                            DependencyProperty.Register("CanRedo",

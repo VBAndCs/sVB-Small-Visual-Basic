@@ -487,7 +487,7 @@ Namespace Microsoft.SmallBasic.Documents
         Public Property ControlsInfo As Dictionary(Of String, String)
 
 
-        Function GenerateCodeBehind(controls As Controls.ItemCollection, updateControlInfo As Boolean) As String
+        Function GenerateCodeBehind(formDesigner As DiagramHelper.Designer, updateControlInfo As Boolean) As String
             If _Form = "" Then Return ""
 
             Dim hint As New Text.StringBuilder
@@ -504,12 +504,8 @@ Namespace Microsoft.SmallBasic.Documents
             controlNamesList.Add(formName)
             declaration.AppendLine($"Me = ""{formName}""")
 
-            For Each c As UIElement In controls
-                Dim name = Automation.AutomationProperties.GetName(c)
-                If name = "" Then
-                    Dim fw = TryCast(c, FrameworkElement)
-                    If fw IsNot Nothing Then name = fw.Name
-                End If
+            For Each c As UIElement In formDesigner.Items
+                Dim name = formDesigner.GetControlNameOrDefault(c)
 
                 If name <> "" Then
                     Dim typeName = PreCompiler.GetModuleName(c.GetType().Name)

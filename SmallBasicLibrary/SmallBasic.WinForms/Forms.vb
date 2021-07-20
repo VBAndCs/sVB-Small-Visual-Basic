@@ -64,8 +64,6 @@ Namespace WinForms
                             canvas = LoadContent(xamlPath)
                         End If
 
-                        canvas.Margin = New Thickness(5)
-
                         Dim wnd As New Window() With {
                            .SizeToContent = SizeToContent.WidthAndHeight,
                            .WindowStartupLocation = WindowStartupLocation.CenterScreen,
@@ -84,6 +82,7 @@ Namespace WinForms
                         For n = controls.Count - 1 To 0 Step -1
                             Dim ui = controls(n)
                             Dim controlName = Automation.AutomationProperties.GetName(ui)
+
                             If controlName = "" Then
                                 Dim fw = TryCast(ui, FrameworkElement)
                                 controlName = fw.Name
@@ -106,6 +105,8 @@ Namespace WinForms
                                 Canvas.SetTop(lb, top)
                                 _controls(controlName.ToLower()) = lb
                             End If
+
+                            SetControlText(ui, GetControlText(ui))
                         Next
 
                     End Sub)
@@ -118,6 +119,39 @@ Namespace WinForms
 
             Return name
         End Function
+
+        Private Shared Sub SetControlText(control As UIElement, value As String)
+            Try
+                CObj(control).Text = value
+            Catch
+                Try
+                    Dim x = CObj(control).Content
+                    If x Is Nothing OrElse TypeOf x Is String Then
+                        CObj(control).Content = value
+                    End If
+                Catch
+                    ' TODO: Add a label to hold the text
+                End Try
+
+            End Try
+        End Sub
+
+        Public Shared Function GetControlText(control As UIElement) As String
+            Try
+                Return CObj(control).Text
+            Catch
+                Try
+                    Dim x = CObj(control).Content
+                    If x IsNot Nothing AndAlso TypeOf x Is String Then
+                        Return CStr(CObj(control).Content)
+                    End If
+                Catch
+                End Try
+            End Try
+
+            Return Automation.AutomationProperties.GetHelpText(control)
+        End Function
+
 
         Public Shared Sub AddForm(formName As Primitive)
             Dim frm = GetForm(formName)
@@ -166,7 +200,12 @@ Namespace WinForms
 
 
             Dim stream = IO.File.Open(xamlPath, IO.FileMode.Open)
-            Return CType(XamlReader.Load(stream), Canvas)
+            Dim canvas As Canvas = Nothing
+            Try
+                canvas = CType(XamlReader.Load(stream), Canvas)
+            Catch
+            End Try
+            Return canvas
         End Function
 
         Public Shared Sub ShowMessage(message As Primitive, title As Primitive)

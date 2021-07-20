@@ -231,7 +231,10 @@ Public Class DiagramPanel
         MyDesigner.SelectedBounds = MyDesigner.GetSelectionBounds
 
         Select Case e.Key
-            Case Key.F2
+            Case Key.F2 ' Rename
+                DiagramObj.BeginEdit(True)
+                e.Handled = True
+            Case Key.F9
                 Commands.ChangeBackground(Diagram)
                 ApplyLastChangeToSelected()
                 e.Handled = True
@@ -467,6 +470,10 @@ Public Class DiagramPanel
     Private Sub SkewMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Commands.Skew(Diagram)
         ApplyLastChangeToSelected()
+    End Sub
+
+    Private Sub RenameMenuItem_Click(sender As Object, e As RoutedEventArgs)
+        DiagramObj.BeginEdit(True)
     End Sub
 
     Private Sub CopyMenuItem_Click(sender As Object, e As RoutedEventArgs)

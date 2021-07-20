@@ -105,6 +105,7 @@
     <KeyBinding Command="{x:Static l:MainWindow.RedoCommand}" Gesture="Ctrl+Y" />
     <KeyBinding Command="{x:Static l:MainWindow.RunCommand}" Gesture="F5" />
   </UIElement.InputBindings>
+    
     <Grid>
         <TabControl>
        
@@ -129,7 +130,7 @@
                                     Designer="{Binding ElementName=formDesigner}"  />
                             <DH:ProjectExplorer x:Name="ProjExplorer" Grid.Row="1" MaxHeight="180"
                                     Designer="{Binding ElementName=formDesigner}"  
-                                    MouseDoubleClick="ProjExplorer_MouseDoubleClick"                />
+                                    ItemDoubleClick="ProjExplorer_ItemDoubleClick"                />
                             <DH:ToolBox Grid.Row="2" />
                 </Grid>
             </TabItem>
@@ -308,22 +309,43 @@
 
         </TabControl>
 
-        <Label FontWeight="Bold" HorizontalAlignment="Right" 
-                    VerticalAlignment="Top"
-                   Margin="0,-4,5,0">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Name="txtTitle"/>
-                            <TextBlock x:Name="txtForm" Foreground="Blue"/>
-                            <Border BorderThickness="1,1,1,1"  Margin="8,5,0,0"
-                                        VerticalAlignment="Top" HorizontalAlignment="Right"
-                                        BorderBrush="#99e1e1e1" CornerRadius="4,4,4,4" 
-                                        Width="46">
-                                <Border BorderThickness="1,0,1,1" BorderBrush="#999999" CornerRadius="4,4,4,4">
-                                    <Button Name="CloseButton"  Height="18" Click="CloseButton_Click" Style="{StaticResource CloseButtonStyle}" />
-                                </Border>
-                            </Border>
-                       </StackPanel>
-                </Label>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" 
+                    VerticalAlignment="Top"   Margin="0,0,5,0">
+            <Grid x:Name="grdNameText">
+                <Grid.ColumnDefinitions >
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Margin="0,2,5,0" Foreground="Brown" Background="LightYellow" >Name:</TextBlock>
+                <TextBox x:Name="txtControlName"  Grid.Column="1" 
+                       Width="100" Background="AliceBlue"  Margin="0,1,10,1" Padding="0"
+                       PreviewKeyDown="txtControlName_PreviewKeyDown"
+                       PreviewTextInput="txtControlName_PreviewTextInput"
+                       GotFocus="txtControl_GotFocus"
+                       LostFocus="txtControlName_LostFocus"/>
+                        
+                <TextBlock Margin="0,2,5,0"  Grid.Column="2" Foreground="Brown" Background="LightYellow" >Text:</TextBlock>
+                <TextBox x:Name="txtControlText"  Grid.Column="3" Width="100" Background="AliceBlue" Margin="0,1,15,1" Padding="0"
+                        PreviewKeyDown="txtControlText_PreviewKeyDown"
+                        GotFocus="txtControl_GotFocus"
+                        LostFocus="txtControlText_LostFocus"/>
+                
+            </Grid>
+            
+            <TextBlock x:Name="txtTitle"/>
+            <TextBlock x:Name="txtForm" FontWeight="Bold" Foreground="Blue"/>
+
+            <Border BorderThickness="1,1,1,1"  Margin="8,1,0,0" Padding="0,3"
+                    VerticalAlignment="Top" HorizontalAlignment="Right"
+                    BorderBrush="#99e1e1e1" CornerRadius="4,4,4,4" 
+                    Width="46" Height="{Binding txtControlName.ActualHeight}">
+                <Border BorderThickness="1,0,1,1" BorderBrush="#999999" CornerRadius="4,4,4,4" VerticalAlignment="Center">
+                    <Button Name="CloseButton" Height="20" Click="CloseButton_Click" Style="{StaticResource CloseButtonStyle}" />
+                </Border>
+            </Border>
+        </StackPanel>
             
     </Grid>
 </Window>

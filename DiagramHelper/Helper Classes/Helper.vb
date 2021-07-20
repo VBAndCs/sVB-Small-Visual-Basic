@@ -4,7 +4,7 @@ Imports System.IO
 Imports System.Windows.Markup
 Imports System.Windows.Threading
 
-Friend Class Helper
+Public Class Helper
 
     Friend Const MmToPx = 96 / 25.4
     Friend Const CmToPx = 96 / 2.54
@@ -19,7 +19,7 @@ Friend Class Helper
         Loop
     End Function
 
-    Function GetParent(Of ParentType)(child As DependencyObject) As ParentType
+    Shared Function GetParent(Of ParentType)(child As DependencyObject) As ParentType
         If child Is Nothing Then Return Nothing
         Dim p = child
         Dim t = GetType(ParentType)

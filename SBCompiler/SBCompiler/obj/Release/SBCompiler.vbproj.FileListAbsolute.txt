@@ -1,0 +1,4 @@
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\Resources.resources
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.vbproj.GenerateResource.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.vbproj.CoreCompileInputs.cache

@@ -1,0 +1,7 @@
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Release\LangServices.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Release\circularlist.baml
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Release\circularlist.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Release\completionadornmentsurface.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Release\GeneratedInternalTypeHelper.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Release\LanguageService_MarkupCompile.cache
+F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Release\LanguageService_MarkupCompile.lref

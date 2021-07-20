@@ -9,8 +9,8 @@ Imports System.Runtime.InteropServices
 ' Review the values of the assembly attributes
 
 <Assembly: AssemblyTitle("Small Visual Basic")>
-<Assembly: AssemblyDescription("")>
-<Assembly: AssemblyCompany("")>
+<Assembly: AssemblyDescription("Small Visual Basic: Created by Mohammed Hamdy Ghanem, based on MS Small Basic")>
+<Assembly: AssemblyCompany("msvbnet@hotnail.com")>
 <Assembly: AssemblyProduct("")>
 <Assembly: AssemblyCopyright("Copyright ©  2021")>
 <Assembly: AssemblyTrademark("")>

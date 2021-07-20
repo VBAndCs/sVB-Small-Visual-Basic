@@ -52,6 +52,7 @@
 
     <UserControl.ContextMenu>
         <ContextMenu Opened="ContextMenu_Opened" >
+            <MenuItem Header="Rename" InputGestureText="F2"  Click="RenameMenuItem_Click"/>
             <MenuItem Header="Copy" InputGestureText="Ctrl+C"  Click="CopyMenuItem_Click"/>
             <MenuItem Header="Cut" InputGestureText="Ctrl+X"  Click="CutMenuItem_Click"/>
             <MenuItem Header="Delete" InputGestureText="Delete"  Click="DeleteMenuItem_Click"/>
@@ -88,7 +89,7 @@
                           Unchecked="ApplyRotationMenuItem_Unchecked"/>
             </MenuItem>
             <MenuItem Header="Diagram Appearance">
-                <MenuItem Header="Diagram Background" InputGestureText="F2" Click="DiagramBackgroundMenuItem_Click"  />
+                <MenuItem Header="Diagram Background" InputGestureText="F9" Click="DiagramBackgroundMenuItem_Click"  />
                 <MenuItem Header="Border Brush" InputGestureText="F3" Click="DiagramBorderBrushMenuItem_Click"  />
                 <MenuItem Header="Decrease Border Thickness" InputGestureText="F5" Click="DecreaseBorderThicknessMenuItem_Click"  />
                 <MenuItem Header="Increase Border Thickness" InputGestureText="F6" Click="IicreaseBorderThicknessMenuItem_Click"  />

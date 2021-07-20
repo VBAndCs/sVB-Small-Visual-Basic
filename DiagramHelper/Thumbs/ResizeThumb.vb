@@ -217,13 +217,11 @@ Friend Class ResizeThumb
         Try
             Me.Cursor.Dispose()
         Catch
-
         End Try
 
         Try
             MyBase.Finalize()
         Catch
-
         End Try
     End Sub
 End Class

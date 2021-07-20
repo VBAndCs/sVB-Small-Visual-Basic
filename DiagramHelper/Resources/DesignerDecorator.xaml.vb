@@ -5,11 +5,6 @@
         Return Helper.GetDesigner(Cntx.PlacementTarget)
     End Function
 
-    Function GetDesigner2(Mi As MenuItem) As Designer
-        Dim Cntx As ContextMenu = CType(Mi.Parent, MenuItem).Parent
-        Return Helper.GetDesigner(Cntx.PlacementTarget)
-    End Function
-
     Friend Sub ContextMenu_Opened(sender As Object, e As RoutedEventArgs)
         Dim Cntx As ContextMenu = sender
         Dim Dsn = Helper.GetDesigner(Cntx.PlacementTarget)
@@ -47,11 +42,11 @@
     End Sub
 
     Private Sub NewMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        GetDesigner(sender).OpenNewPage()
+        Designer.OpenNewPage()
     End Sub
 
     Private Sub CloseMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        GetDesigner(sender).ClosePage()
+        Designer.ClosePage()
     End Sub
 
     Private Sub OpenMenuItem_Click(sender As Object, e As RoutedEventArgs)
@@ -83,15 +78,15 @@
     End Sub
 
     Private Sub ShowGridMenuItem_Checked(sender As Object, e As RoutedEventArgs)
-        GetDesigner2(sender).ShowGrid = True
+        GetDesigner(sender).ShowGrid = True
     End Sub
 
     Private Sub ShowGridMenuItem_Unchecked(sender As Object, e As RoutedEventArgs)
-        GetDesigner2(sender).ShowGrid = False
+        GetDesigner(sender).ShowGrid = False
     End Sub
 
     Private Sub GridBrushMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        Commands.ChangeBrush(GetDesigner2(sender).GridPen, Pen.BrushProperty)
+        Commands.ChangeBrush(GetDesigner(sender).GridPen, Pen.BrushProperty)
     End Sub
 
     Private Sub PageBackgroundMenuItem_Click(sender As Object, e As RoutedEventArgs)
@@ -99,11 +94,11 @@
     End Sub
 
     Private Sub DecreaseThicknessMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        GetDesigner2(sender).IncreaseGridThickness(-0.1)
+        GetDesigner(sender).IncreaseGridThickness(-0.1)
     End Sub
 
     Private Sub IncreaseThicknessMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        GetDesigner2(sender).IncreaseGridThickness(0.1)
+        GetDesigner(sender).IncreaseGridThickness(0.1)
     End Sub
 
     Private Sub PageSizeMenuItem_Click(sender As Object, e As RoutedEventArgs)
