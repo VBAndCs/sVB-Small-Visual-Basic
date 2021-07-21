@@ -15,7 +15,7 @@ Namespace Microsoft.SmallBasic.Shell
 
         Public ReadOnly Property CmbControlNames As ComboBox
         Public ReadOnly Property CmbEventNames As ComboBox
-        Public Property FreezeCmbEvents As Boolean
+        Friend Property FreezeCmbEvents As Boolean
 
         Public Overrides Sub OnApplyTemplate()
             MyBase.OnApplyTemplate()
@@ -95,6 +95,20 @@ Namespace Microsoft.SmallBasic.Shell
                 End Sub
 
             BeginAnimation([property], doubleAnimation2)
+        End Sub
+
+        ''' <summary>
+        ''' Select an Item in the EventNames ConboBox without executing the SelectionChanged Event
+        ''' </summary>
+        ''' <param name="name"></param>
+        Friend Sub SelectEventName(name As String)
+            _FreezeCmbEvents = True
+            If name = "-1" Then
+                _CmbEventNames.SelectedIndex = -1
+            Else
+                _CmbEventNames.SelectedItem = name
+            End If
+            _FreezeCmbEvents = False
         End Sub
     End Class
 End Namespace

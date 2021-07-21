@@ -257,11 +257,14 @@ Namespace Microsoft.SmallBasic.Shell
                 lastZIndex += 1
                 _SelectedItem = selectedView
                 selectedView.IsSelected = True
-                selectedView.Dispatcher.Invoke(DispatcherPriority.Render, Sub() Exit Sub)
 
-                KeepFocus = True
-                selectedView.Document.Focus()
-                KeepFocus = False
+                selectedView.Dispatcher.Invoke(
+                    DispatcherPriority.Render,
+                   Sub()
+                       KeepFocus = True
+                       selectedView.Document.Focus()
+                       KeepFocus = False
+                   End Sub)
             End If
 
             RaiseEvent ActiveDocumentChanged()
@@ -341,9 +344,7 @@ Namespace Microsoft.SmallBasic.Shell
             Dim eventName = CStr(cmb.SelectedItem)
             If eventName = "" Then Return
 
-            selectedView.FreezeCmbEvents = True
             selectedView.Document.AddEventHandler(selectedView.CmbControlNames.SelectedItem, eventName)
-            selectedView.FreezeCmbEvents = False
         End Sub
 
         Private Sub CmbEventNames_PreviewTextInput(sender As Object, e As TextCompositionEventArgs)

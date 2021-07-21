@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Basic" Loaded="Window_Loaded"
+        Title="Small Visual Basic (Evolved by M. H. G. based on MS SB)" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized">
     
   <FrameworkElement.Resources>
@@ -107,8 +107,8 @@
   </UIElement.InputBindings>
     
     <Grid>
-        <TabControl>
-       
+
+        <TabControl x:Name="sVBTabs">
             <TabItem x:Name="tabDesigner" Header="Form Design"
                      Selector.Selected="tabDesigner_Selected">
                 <Grid>
@@ -346,6 +346,12 @@
                 </Border>
             </Border>
         </StackPanel>
-            
+
+        <StackPanel x:Name="lblWait" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock HorizontalAlignment="Center"  FontSize="54" FontWeight="Bold" Foreground="Red">Small Visual Basic</TextBlock>
+            <TextBlock HorizontalAlignment="Center" FontSize="44" FontWeight="Bold" Foreground="Brown">Eng. Mohammad Hamdy Ghanem</TextBlock>
+            <TextBlock FontSize="36" FontWeight="Bold" Foreground="Blue"                  
+                  TextWrapping="Wrap">Please wait until the code editor is loaded. This delay happns only at the first time!</TextBlock>
+        </StackPanel>
     </Grid>
 </Window>

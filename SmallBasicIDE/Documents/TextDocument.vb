@@ -188,7 +188,6 @@ Namespace Microsoft.SmallBasic.Documents
                         Try
                             Dim handlerName = FindCurrentEventHandler()
 
-                            _MdiView.FreezeCmbEvents = True
                             If _EventHandlers.ContainsKey(handlerName) Then
                                 UpdateCombos(_EventHandlers(handlerName))
                             Else
@@ -197,17 +196,15 @@ Namespace Microsoft.SmallBasic.Documents
                                     ' Restore a btoken handler. This can happen when deleting a control then restoring it.
                                     _EventHandlers.Add(handlerName, eventInfo)
                                     UpdateCombos(eventInfo)
-                                Else
+                                Else ' Global
                                     _MdiView.CmbControlNames.SelectedIndex = 0
                                     If handlerName = "" Then
-                                        _MdiView.CmbEventNames.SelectedIndex = -1
+                                        _MdiView.SelectEventName("-1") ' Select item at index -1
                                     Else
-                                        _MdiView.CmbEventNames.SelectedItem = handlerName
+                                        _MdiView.SelectEventName(handlerName)
                                     End If
                                 End If
                             End If
-
-                            _MdiView.FreezeCmbEvents = False
 
                             UpdateCaretPositionText()
 
@@ -223,7 +220,8 @@ Namespace Microsoft.SmallBasic.Documents
             If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
                 _MdiView.CmbControlNames.SelectedItem = eventInfo.ControlName
             End If
-            _MdiView.CmbEventNames.SelectedItem = eventInfo.EventName
+
+            _MdiView.SelectEventName(eventInfo.EventName)
         End Sub
 
         Public Overrides Sub Close()
@@ -646,15 +644,18 @@ EndSub
 
         Public Function AddEventHandler(controlName As String, eventName As String) As Boolean
             Dim alreadyExists = False
-            Dim isGlobal = controlName = "(Global)"
+            Dim isGlobal = (controlName = "(Global)")
             Dim handlerName = If(isGlobal, "", controlName & "_") & If(eventName = "(Add New Sub)", "", eventName)
             Dim pos = -1
             If handlerName = "" Then
                 pos = -1
+
             ElseIf isGlobal AndAlso _GlobalSubs.Contains(handlerName) Then
                 pos = FindEventHandler(handlerName)
+
             ElseIf _EventHandlers.ContainsKey(handlerName) Then
                 pos = FindEventHandler(handlerName)
+
             Else ' Restore Broken Handler
                 pos = FindEventHandler(handlerName)
                 If pos > -1 Then
@@ -687,7 +688,6 @@ EndSub
                     caret.MoveTo(Text.Length - 15)
                     _editorControl.EditorOperations.SelectCurrentWord()
                     _ControlEvents.Add(handlerName)
-                    MdiView.CmbEventNames.SelectedItem = handlerName
                 Else
                     _EventHandlers(handlerName) = (controlName, eventName)
                     Dim handler = eventHandlerSub.Replace("#", handlerName)
@@ -704,7 +704,7 @@ EndSub
             Me.Focus()
 
             Me.MdiView.CmbControlNames.SelectedItem = controlName
-            Me.MdiView.CmbEventNames.SelectedItem = handlerName
+            Me.MdiView.SelectEventName(If(isGlobal, handlerName, eventName))
             IgnoreCaretPosChange = False
 
             Return Not alreadyExists
@@ -734,6 +734,7 @@ EndSub
         End Function
 
         Public Function FindEventHandler(name As String) As Integer
+            If _editorControl Is Nothing Then Return -1
             Dim text = _editorControl.TextView.TextSnapshot
 
             For Each line In text.Lines

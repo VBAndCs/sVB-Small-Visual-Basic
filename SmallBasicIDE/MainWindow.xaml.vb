@@ -110,7 +110,7 @@ Namespace Microsoft.SmallBasic
             Dim textDocument As New TextDocument(Nothing)
             textDocument.ContentType = "text.smallbasic"
             DocumentTracker.TrackDocument(textDocument)
-            Dim mdiView As MdiView = New MdiView()
+            Dim mdiView As New MdiView()
             mdiView.Document = textDocument
             Dim item = mdiView
             mdiViews.Add(item)
@@ -681,6 +681,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
+
             SaveDesignInfo()
 
             ' Note this prop isn't changed yet
@@ -1016,11 +1017,23 @@ Namespace Microsoft.SmallBasic
             Return errors
         End Function
 
+        Dim ShowWait As Boolean = True
+
         Private Sub formDesigner_DiagramDoubleClick(control As UIElement)
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait
+
+            If ShowWait Then
+                ShowWait = False
+                lblWait.Visibility = Visibility.Visible
+                tabDesigner.IsSelected = False
+            End If
+
             tabCode.IsSelected = True
+
             If formDesigner.CodeFilePath <> "" Then
                 Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
                 Dim controlName = formDesigner.GetControlNameOrDefault(control)
+
                 If doc.AddEventHandler(controlName, "OnClick") Then
                     doc.PageKey = formDesigner.PageKey
                     ' The code behind is saved before the new Handler is added.
@@ -1029,32 +1042,34 @@ Namespace Microsoft.SmallBasic
                     formDesigner.HasChanges = True
                 End If
             End If
+
+            lblWait.Visibility = Visibility.Collapsed
+            Mouse.OverrideCursor = Nothing
+
         End Sub
 
         Dim FirstTime As Boolean = True
 
         Private Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
-            If FirstTime Then
-                FirstTime = False
-                DiagramHelper.Designer.PagesGrid = DesignerGrid
-                UpdateTitle()
+            If Not FirstTime Then Return
+            FirstTime = False
 
-                formDesigner.SavePage =
+            DiagramHelper.Designer.PagesGrid = DesignerGrid
+            UpdateTitle()
+
+            formDesigner.SavePage =
                     Function()
                         SaveDesignInfo(Nothing, False)
                         Return True
                     End Function
 
-                AddHandler DiagramHelper.Designer.PageShown, AddressOf formDesigner_CurrentPageChanged
+            AddHandler DiagramHelper.Designer.PageShown, AddressOf formDesigner_CurrentPageChanged
 
 
-                'DiagramHelper.Designer.SetDefaultPropertiesSub =
-                '    Sub()
-                '        DiagramHelper.Designer.SetDefaultProperties()
-                '    End Sub
-
-
-            End If
+            'DiagramHelper.Designer.SetDefaultPropertiesSub =
+            '    Sub()
+            '        DiagramHelper.Designer.SetDefaultProperties()
+            '    End Sub
         End Sub
 
         Private Sub formDesigner_CurrentPageChanged(index As Integer)
@@ -1158,10 +1173,7 @@ Namespace Microsoft.SmallBasic
             Dim doc = currentView.Document
 
             If doc.PageKey = "" Then
-                If doc.FilePath = "" Then
-                    ' Open new page in the designer
-                    doc.PageKey = DiagramHelper.Designer.OpenNewPage()
-                Else
+                If doc.FilePath <> "" Then
                     Dim pagePath = doc.FilePath.Substring(0, doc.FilePath.Length - 3) & ".xaml"
                     If File.Exists(pagePath) Then
                         doc.PageKey = DiagramHelper.Designer.SwitchTo(pagePath)
