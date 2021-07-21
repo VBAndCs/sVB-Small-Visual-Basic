@@ -355,7 +355,7 @@ Namespace Microsoft.SmallBasic
             Dim mdiView As New MdiView()
             mdiView.Document = doc
             mdiViews.Add(mdiView)
-            formDesigner.CodeFilePath = filePath
+            doc.Focus(True)
             Return doc
         End Function
 
@@ -392,7 +392,7 @@ Namespace Microsoft.SmallBasic
                     If File.Exists(FileName) Then File.Delete(FileName)
                     document.SaveAs(FileName)
 
-                    If document.OpenedInDesigner Then
+                    If document.PageKey <> "" Then
                         Dim newFormName = Path.GetFileNameWithoutExtension(saveFileDialog.FileName)
                         Dim newDir = Path.GetDirectoryName(saveFileDialog.FileName)
                         Dim newFilePath = Path.Combine(newDir, newFormName)
@@ -456,7 +456,7 @@ Namespace Microsoft.SmallBasic
                 Dim offset = 0
 
                 Dim gen As String
-                If doc.OpenedInDesigner Then
+                If doc.PageKey <> "" Then
                     If doc.Text.Contains("'@Form Hints:") Then
                         doc.ParseFormHints()
                         gen = doc.GetCodeBehind(True)
@@ -609,6 +609,7 @@ Namespace Microsoft.SmallBasic
                         Dim mdiView As New MdiView()
                         mdiView.Document = newDocument
                         mdiViews.Add(mdiView)
+                        newDocument.Focus(True)
                     End If
                 End If
 
@@ -1166,10 +1167,6 @@ Namespace Microsoft.SmallBasic
             Dim currentView = viewsControl.SelectedItem
             If currentView Is Nothing Then Return
 
-            For Each view As MdiView In Me.viewsControl.Items
-                view.Document.OpenedInDesigner = view Is currentView
-            Next
-
             Dim doc = currentView.Document
 
             If doc.PageKey = "" Then
@@ -1177,21 +1174,18 @@ Namespace Microsoft.SmallBasic
                     Dim pagePath = doc.FilePath.Substring(0, doc.FilePath.Length - 3) & ".xaml"
                     If File.Exists(pagePath) Then
                         doc.PageKey = DiagramHelper.Designer.SwitchTo(pagePath)
+                        formDesigner.CodeFilePath = doc.FilePath
                     Else
                         ' Do nothing to allow opening old sb files without a form
                         ' If you want to attach a form, comment the next line,
                         ' ' and  umcomment the 2 lineslines after.
-
-                        doc.OpenedInDesigner = False
-
-                        ' Open new page in the designer
-                        ' doc.PageKey = formDesigner.OpenNewPage()
+                        doc.PageKey = ""
                     End If
                 End If
             Else
                 DiagramHelper.Designer.SwitchTo(doc.PageKey)
+                formDesigner.CodeFilePath = doc.FilePath
             End If
-
 
         End Sub
 

@@ -29,3 +29,4 @@ C:\Users\MHG\Desktop\New folder\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibr
 C:\Users\MHG\Desktop\New folder\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.dll
 C:\Users\MHG\Desktop\New folder\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.xml
 C:\Users\MHG\Desktop\New folder\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.vbproj.AssemblyReference.cache

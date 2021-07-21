@@ -34,8 +34,6 @@ Namespace Microsoft.SmallBasic.Documents
         Private _caretPositionText As String
         Private _programDetails As Object
         Public Property BaseId As String
-        Public OpenedInDesigner As Boolean
-
         Public Property CaretPositionText As String
             Get
                 Return _caretPositionText
@@ -178,11 +176,12 @@ Namespace Microsoft.SmallBasic.Documents
             _GlobalSubs.Add("(Add New Sub)")
             _ControlEvents.Add("(Add New Sub)")
             ParseFormHints()
+            UpdateGlobalSubsList()
         End Sub
 
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
             If IgnoreCaretPosChange Or StillWorking Then Return
-            _editorControl.Dispatcher.BeginInvoke(
+            EditorControl.Dispatcher.BeginInvoke(
                     Sub()
                         StillWorking = True
                         Try
@@ -307,28 +306,23 @@ Namespace Microsoft.SmallBasic.Documents
             If _IgnoreCaretPosChange Or StillWorking Then Return
 
             StillWorking = True
+
             Try
-                _editorControl.Dispatcher.BeginInvoke(
+                EditorControl.Dispatcher.BeginInvoke(
                   Sub()
                       StillWorking = True
                       UpdateGlobalSubsList()
-                      If CStr(_MdiView.CmbControlNames.SelectedItem) = "(Global)" Then
-                          _ControlEvents.Clear()
-                          For Each sb In _GlobalSubs
-                              _ControlEvents.Add(sb)
-                          Next
-                      End If
                       StillWorking = False
                       OnCaretPositionChanged(Nothing, Nothing)
                   End Sub, DispatcherPriority.ContextIdle)
 
             Catch
-                StillWorking = False
+                    StillWorking = False
             End Try
         End Sub
 
         Private Sub AutoCompleteBlocks(sender As Object, e As System.Windows.Input.KeyEventArgs)
-            Dim textView = _editorControl.TextView
+            Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
             Dim textInsertionIndex = textView.Caret.Position.TextInsertionIndex
             If textInsertionIndex = 0 Then Return
@@ -438,15 +432,18 @@ Namespace Microsoft.SmallBasic.Documents
             End If
 
             Dim nl = $"{vbCrLf}{Space(iden)}"
-            _editorControl.EditorOperations.ReplaceText(
+            EditorControl.EditorOperations.ReplaceText(
                  New Span(line.Start, L),
                 Space(iden) & block.Replace("#", nl) & If(addBlockEnd, nl & endBlock & nl, ""), _undoHistory)
             textView.Caret.MoveTo(line.Start + iden + Len(keyword) + 1 + n)
         End Sub
 
-        Friend Sub Focus()
-            If _editorControl Is Nothing Then Return
-            CType(_editorControl.TextView, Controls.ContentControl).Focus()
+        Friend Sub Focus(Optional moveToStart As Boolean = False)
+            Dim txtView = CType(EditorControl.TextView, AvalonTextView)
+            txtView.VisualElement.Focus()
+            If moveToStart Then
+                txtView.Caret.MoveTo(0)
+            End If
         End Sub
 
         Private Sub UndoRedoHappened(sender As Object, e As UndoRedoEventArgs)
@@ -463,7 +460,7 @@ Namespace Microsoft.SmallBasic.Documents
         Friend PageKey As String
 
         Private Sub UpdateCaretPositionText()
-            _editorControl.Dispatcher.BeginInvoke(
+            EditorControl.Dispatcher.BeginInvoke(
                  Sub()
                      Dim textView = _editorControl.TextView
                      Dim textInsertionIndex = textView.Caret.Position.TextInsertionIndex
@@ -580,8 +577,6 @@ Namespace Microsoft.SmallBasic.Documents
                     _ControlNames.Add(controlName)
                 Next
             End If
-
-            OpenedInDesigner = True
             Return hint.ToString()
         End Function
 
@@ -663,7 +658,7 @@ EndSub
                 End If
             End If
 
-            Dim caret = _editorControl.TextView.Caret
+            Dim caret = EditorControl.TextView.Caret
 
             IgnoreCaretPosChange = True
             _editorControl.EditorOperations.ResetSelection()
@@ -711,7 +706,7 @@ EndSub
         End Function
 
         Public Function FindCurrentEventHandler() As String
-            Dim textView = _editorControl.TextView
+            Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
             Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
             Dim lineNumber = textView.TextSnapshot.GetLineFromPosition(insertionIndex).LineNumber
@@ -734,8 +729,7 @@ EndSub
         End Function
 
         Public Function FindEventHandler(name As String) As Integer
-            If _editorControl Is Nothing Then Return -1
-            Dim text = _editorControl.TextView.TextSnapshot
+            Dim text = EditorControl.TextView.TextSnapshot
 
             For Each line In text.Lines
                 Dim code = line.GetText().Trim(" "c, vbTab)
@@ -757,7 +751,7 @@ EndSub
             _GlobalSubs.Clear()
             _GlobalSubs.Add("(Add New Sub)")
 
-            Dim textView = _editorControl.TextView
+            Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
 
             For i = 0 To text.LineCount - 1
@@ -780,6 +774,12 @@ EndSub
             Next
 
             _GlobalSubs.Sort()
+            If _MdiView Is Nothing OrElse CStr(_MdiView.CmbControlNames.SelectedItem) = "(Global)" Then
+                _ControlEvents.Clear()
+                For Each sb In _GlobalSubs
+                    _ControlEvents.Add(sb)
+                Next
+            End If
         End Sub
 
         Public Function GetHandlerInfo(subName As String) As (ControlName As String, EventName As String)
@@ -805,9 +805,9 @@ EndSub
         End Function
 
         Public Sub RemoveBrokenHandlers()
-            If _EventHandlers.Count = 0 OrElse _editorControl Is Nothing Then Return
+            If _EventHandlers.Count = 0 Then Return
 
-            Dim textView = _editorControl.TextView
+            Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
             Dim found As New List(Of String)
 

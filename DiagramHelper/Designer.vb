@@ -884,6 +884,7 @@ Public Class Designer
             Dim xaml = IO.File.ReadAllText(fileName)
             CreateNewDesigner()
             CurrentPage.XamlToPage(xaml)
+            CurrentPage.ShowGrid = True
             CurrentPage._fileName = IO.Path.GetFullPath(fileName)
             CurrentPage.PageKey = GetTempKey(CurrentPage._fileName)
             Pages(CurrentPage.PageKey) = CurrentPage
