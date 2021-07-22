@@ -15,31 +15,33 @@ Namespace Microsoft.SmallBasic
         Public Shared Property FlowDirection As FlowDirection
 
         Protected Overrides Sub OnStartup(e As StartupEventArgs)
-            Dim args = e.Args
+            For Each arg In e.Args
+                arg = arg.ToLowerInvariant().Trim()
+                If File.Exists(arg) Then
+                    Microsoft.SmallBasic.MainWindow.FilesToOpen.Add(arg)
+                    Continue For
+                End If
 
-            For Each txt In args
-                Dim text2 As String = txt.ToLowerInvariant().Trim()
-                Dim num = text2.IndexOf(":")
-
+                Dim num = arg.IndexOf(":")
                 If num = -1 Then Continue For
 
-                Dim text3 = text2.Substring(0, num)
-                Dim choice = text2.Substring(num + 1)
+                Dim command = arg.Substring(0, num)
+                Dim choice = arg.Substring(num + 1)
 
-                Select Case text3
+                Select Case command
                     Case "/l", "/lang", "/language"
                         Dim cultureInfo = GetCultureInfo(choice)
 
                         If cultureInfo.IsNeutralCulture Then
-                            Dim text4 = cultureInfo.Name
+                            Dim cultureName = cultureInfo.Name
 
-                            If Equals(text4, "zh-Hans") Then
-                                text4 = "zh-CN"
-                            ElseIf Equals(text4, "zh-Hant") Then
-                                text4 = "zh-TW"
+                            If Equals(cultureName, "zh-Hans") Then
+                                cultureName = "zh-CN"
+                            ElseIf Equals(cultureName, "zh-Hant") Then
+                                cultureName = "zh-TW"
                             End If
 
-                            cultureInfo = CultureInfo.CreateSpecificCulture(text4)
+                            cultureInfo = CultureInfo.CreateSpecificCulture(cultureName)
                         End If
 
                         Try
@@ -48,7 +50,6 @@ Namespace Microsoft.SmallBasic
                         End Try
 
                         Thread.CurrentThread.CurrentUICulture = cultureInfo
-                        Exit Select
                 End Select
             Next
 

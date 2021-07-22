@@ -6,7 +6,9 @@
         If tabsLoaded Then Return
         tabsLoaded = True
         Try
-            For Each FolderName In IO.Directory.GetDirectories("ToolBox")
+            Dim appDir = IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
+            Dim toolBoxDir = IO.Path.Combine(appDir, "ToolBox")
+            For Each FolderName In IO.Directory.GetDirectories(toolBoxDir)
                 AddTab(FolderName)
             Next
         Catch

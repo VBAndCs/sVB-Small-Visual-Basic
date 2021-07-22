@@ -195,7 +195,7 @@
     <Resource Include="Resources\warning.png" />
     <Resource Include="Resources\webopen.png" />
     <Resource Include="Resources\websave.png" />
-    <EmbeddedResource Include="smallbasic.ico" />
+    <Resource Include="smallbasic.ico" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

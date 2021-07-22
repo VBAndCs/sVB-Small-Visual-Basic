@@ -393,7 +393,7 @@ Public Class Designer
     Public Shared Function SwitchTo(key As String, Optional UpdateCurrentPage As Boolean = True) As String
         If key = "" Then Return OpenNewPage()
 
-        If UpdateCurrentPage Then UpdatePageInfo()
+        If CurrentPage IsNot Nothing AndAlso UpdateCurrentPage Then UpdatePageInfo()
 
         If Pages.ContainsKey(key) Then
             CurrentPage = Pages(key)
@@ -882,7 +882,13 @@ Public Class Designer
         PagesGrid.Cursor = Cursors.Wait
         Try
             Dim xaml = IO.File.ReadAllText(fileName)
-            CreateNewDesigner()
+            ' Ensure we don't open new page after opneing a file from command line args
+            If NewPageOpened Then
+                CreateNewDesigner()
+            Else
+                CurrentPage = PagesGrid.Children(0)
+                NewPageOpened = True
+            End If
             CurrentPage.XamlToPage(xaml)
             CurrentPage.ShowGrid = True
             CurrentPage._fileName = IO.Path.GetFullPath(fileName)

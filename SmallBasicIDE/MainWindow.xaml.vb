@@ -89,21 +89,7 @@ Namespace Microsoft.SmallBasic
             'OnFileNew(Me, Nothing)
             helpUpdateTimer = New DispatcherTimer(TimeSpan.FromMilliseconds(200.0), DispatcherPriority.ApplicationIdle, AddressOf OnHelpUpdate, Dispatcher)
             'ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf OnCheckVersion))
-            Dim commandLineArgs As String() = Environment.GetCommandLineArgs()
 
-            If commandLineArgs.Length <= 1 Then
-                Return
-            End If
-
-            Dim text = commandLineArgs(1)
-
-            If Not text.StartsWith("/") Then
-                If File.Exists(text) Then
-                    OpenDocIfNot(text)
-                Else
-                    Utility.MessageBox.Show(String.Format(ResourceHelper.GetString("FileNotFound"), text), ResourceHelper.GetString("Title"), "", NotificationButtons.OK, NotificationIcon.Information)
-                End If
-            End If
         End Sub
 
         Private Sub OnFileNew(ByVal sender As Object, ByVal e As RoutedEventArgs)
@@ -350,6 +336,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Function OpenCodeFile(ByVal filePath As String) As TextDocument
+            tabCode.IsSelected = True
             Dim doc As New TextDocument(filePath)
             DocumentTracker.TrackDocument(doc)
             Dim mdiView As New MdiView()
@@ -682,8 +669,11 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
+            ShowWait = False
 
-            SaveDesignInfo()
+            If DiagramHelper.Designer.CurrentPage IsNot Nothing Then
+                SaveDesignInfo()
+            End If
 
             ' Note this prop isn't changed yet
             tabDesigner.IsSelected = False
@@ -699,7 +689,8 @@ Namespace Microsoft.SmallBasic
         Private Function GetProjectPath() As String
             If _projectPath <> "" Then Return _projectPath
 
-            Dim tmpPath = "UnSaved"
+            Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
+            Dim tmpPath = Path.Combine(appDir, "UnSaved")
             If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
 
             Dim n = 1
@@ -790,7 +781,9 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
-            For Each d In IO.Directory.GetDirectories("UnSaved")
+            Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
+            Dim UnSaved = Path.Combine(appDir, "UnSaved")
+            For Each d In IO.Directory.GetDirectories(UnSaved)
                 Try
                     Global.My.Computer.FileSystem.DeleteDirectory(d, VisualBasic.FileIO.DeleteDirectoryOption.DeleteAllContents)
                 Catch
@@ -1066,11 +1059,25 @@ Namespace Microsoft.SmallBasic
 
             AddHandler DiagramHelper.Designer.PageShown, AddressOf formDesigner_CurrentPageChanged
 
-
+            ' Set any defaults you want
             'DiagramHelper.Designer.SetDefaultPropertiesSub =
             '    Sub()
             '        DiagramHelper.Designer.SetDefaultProperties()
+            '        Set any defaults you want here
             '    End Sub
+
+            Me.Dispatcher.Invoke(DispatcherPriority.Background,
+                      Sub()
+                          For Each fileName In FilesToOpen
+                              fileName = fileName.ToLower()
+                              If fileName.EndsWith(".sb") Then
+                                  OpenDocIfNot(fileName)
+                              ElseIf fileName.EndsWith(".xaml") Then
+                                  DiagramHelper.Designer.SwitchTo(fileName)
+                              End If
+                          Next
+                      End Sub)
+
         End Sub
 
         Private Sub formDesigner_CurrentPageChanged(index As Integer)
@@ -1160,6 +1167,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Dim OpeningDoc As Boolean
+        Friend Shared FilesToOpen As New List(Of String)
 
         Private Sub viewsControl_ActiveDocumentChanged()
             If OpeningDoc Then Return

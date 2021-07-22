@@ -7,7 +7,8 @@
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
         Title="Small Visual Basic (Evolved by M. H. G. based on MS SB)" Loaded="Window_Loaded"
-        WindowStartupLocation="CenterScreen" WindowState="Maximized">
+        WindowStartupLocation="CenterScreen" WindowState="Maximized"
+        Icon="smallbasic.ico">
     
   <FrameworkElement.Resources>
         <Style x:Key="CloseButtonStyle" TargetType="{x:Type Button}">

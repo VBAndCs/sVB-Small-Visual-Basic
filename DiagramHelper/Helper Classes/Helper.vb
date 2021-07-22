@@ -118,16 +118,22 @@ Public Class Helper
         Return mm * 96 / 25.4
     End Function
 
+    Public Shared Function LoadXaml(xamlPath As String) As Object
+        Dim stream = IO.File.Open(xamlPath, IO.FileMode.Open)
+        Dim obj As Object = Nothing
+        Try
+            obj = XamlReader.Load(stream)
+        Catch
+        End Try
+        Return obj
+    End Function
+
     Shared Function CreateDiagram(FileName As String) As UIElement
-        Dim info As StreamResourceInfo = Application.GetRemoteStream(New Uri(FileName, UriKind.Relative))
-        Dim reader As New System.Windows.Markup.XamlReader()
-        Return CType(reader.LoadAsync(info.Stream), UIElement)
+        Return CType(LoadXaml(FileName), UIElement)
     End Function
 
     Shared Function CreateWrapPanel(FileName As String) As WrapPanel
-        Dim info As StreamResourceInfo = Application.GetRemoteStream(New Uri(FileName, UriKind.Relative))
-        Dim reader As New System.Windows.Markup.XamlReader()
-        Dim Rd = CType(reader.LoadAsync(info.Stream), ResourceDictionary)
+        Dim Rd = CType(LoadXaml(FileName), ResourceDictionary)
         Return Rd("DiagramWrapPanel")
     End Function
 

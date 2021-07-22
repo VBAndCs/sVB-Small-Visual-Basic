@@ -4,7 +4,7 @@
 library
 VB
 .vb
-F:\_VS.NET\Small Basic IDE\VB\1\DiagramViewer\obj\Debug\
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramViewer\obj\Release\
 DiagramViewer
 none
 false
