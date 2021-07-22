@@ -70,7 +70,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    </FrameworkElement.Resources>
+ </FrameworkElement.Resources>
     
   <UIElement.CommandBindings>
     <CommandBinding Command="{x:Static l:MainWindow.NewCommand}" Executed="OnFileNew" />
@@ -108,7 +108,6 @@
   </UIElement.InputBindings>
     
     <Grid>
-
         <TabControl x:Name="sVBTabs">
             <TabItem x:Name="tabDesigner" Header="Form Design"
                      Selector.Selected="tabDesigner_Selected">
@@ -122,17 +121,17 @@
                         <RowDefinition Height ="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                         <Grid x:Name="DesignerGrid" Grid.Column="1" Grid.RowSpan="3">
-                            <DH:Designer x:Name="formDesigner"  
+                    <Grid x:Name="DesignerGrid" Grid.Column="1" Grid.RowSpan="3">
+                        <DH:Designer x:Name="formDesigner"  
 			                      PageWidth="700" PageHeight="500" ShowGrid="True" />
-                        </Grid>
+                    </Grid>
 
                     <DH:ZoomBox x:Name="ZoomBox" Background="AliceBlue"
                                     Designer="{Binding ElementName=formDesigner}"  />
-                            <DH:ProjectExplorer x:Name="ProjExplorer" Grid.Row="1" MaxHeight="180"
+                    <DH:ProjectExplorer x:Name="ProjExplorer" Grid.Row="1" MaxHeight="180"
                                     Designer="{Binding ElementName=formDesigner}"  
                                     ItemDoubleClick="ProjExplorer_ItemDoubleClick"                />
-                            <DH:ToolBox Grid.Row="2" />
+                    <DH:ToolBox Grid.Row="2" />
                 </Grid>
             </TabItem>
 
@@ -140,15 +139,15 @@
                      Selector.Selected="tabCode_Selected">
                 <Grid>
                     <Grid>
-                      <Panel.Background>
-                        <ImageBrush ImageSource="pack://application:,,/SB;component/Resources/AppWorkspace.png" 
+                        <Panel.Background>
+                            <ImageBrush ImageSource="pack://application:,,/SB;component/Resources/AppWorkspace.png" 
                                     AlignmentX="Left" AlignmentY="Top" Stretch="Fill" />
-                      </Panel.Background>
-        
-                      <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                      </Grid.RowDefinitions>
+                        </Panel.Background>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
                         <shell:Ribbon x:Name="rib" DockPanel.Dock="Top" Margin="0,-8,0,0">
                             <shell:RibbonTabCollection>
@@ -248,70 +247,76 @@
                         </shell:Ribbon>
 
                         <Grid Row="1">
-                        <Grid.ColumnDefinitions>
-                          <ColumnDefinition Width="*" />
-                          <ColumnDefinition Width="200" />
-                        </Grid.ColumnDefinitions>
-                        <shell:MdiViewsControl x:Name="viewsControl" 
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="200" />
+                            </Grid.ColumnDefinitions>
+                            <shell:MdiViewsControl x:Name="viewsControl" 
                             RequestItemClose="OnCloseItem" 
                             Grid.Column="0" Grid.ColumnSpan="3" 
                             ActiveDocumentChanged="viewsControl_ActiveDocumentChanged"/>
-          
-                        <lu:HelpPanel x:Name="helpPanel" Column="1" />
-          
-                        <GridSplitter Name="gridSplitter" Grid.Column="1" Width="4" Background="#cc333363" Opacity="0.05" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Left" ResizeBehavior="PreviousAndCurrent">
-                          <FrameworkElement.Triggers>
-                            <EventTrigger RoutedEvent="Mouse.MouseEnter">
-                              <BeginStoryboard>
-                                <Storyboard>
-                                  <DoubleAnimation Storyboard.TargetName="gridSplitter" Storyboard.TargetProperty="Opacity" From="0.05" To="0.3" Duration="0:0:0.2" />
-                                </Storyboard>
-                              </BeginStoryboard>
-                            </EventTrigger>
-                            <EventTrigger RoutedEvent="Mouse.MouseLeave">
-                              <BeginStoryboard>
-                                <Storyboard>
-                                  <DoubleAnimation Storyboard.TargetName="gridSplitter" Storyboard.TargetProperty="Opacity" From="0.3" To="0.05" Duration="0:0:0.2" />
-                                </Storyboard>
-                              </BeginStoryboard>
-                            </EventTrigger>
-                          </FrameworkElement.Triggers>
-                        </GridSplitter>
-                      </Grid>
-                    </Grid>
-      
-                    <Grid Name="programRunningOverlay" Visibility="Hidden">
-                      <Panel.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                          <GradientStop Color="#cc000000" Offset="0" />
-                          <GradientStop Color="#cc333363" Offset="1" />
-                        </LinearGradientBrush>
-                      </Panel.Background>
-                      <DockPanel>
-                        <StackPanel DockPanel.Dock="Bottom">
-                          <Button Name="endProgramButton" Padding="4" Margin="8" FontWeight="Bold" HorizontalAlignment="Right" Command="{x:Static l:MainWindow.EndProgramCommand}" IsDefault="True" Content="{lu:Localized EndProgramCommand}" />
-                        </StackPanel>
-                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                          <TextBlock Name="processRunningMessage" TextAlignment="Center" Margin="8" FontWeight="Bold" FontSize="32" Foreground="#649Db4" TextWrapping="WrapWithOverflow" />
-                          <TextBlock TextAlignment="Center" Margin="8" FontSize="24" Foreground="#999999" TextWrapping="WrapWithOverflow" Text="{lu:Localized WaitForProgramExit}" />
-                          <TextBlock TextAlignment="Center" Margin="8" FontSize="12" Foreground="#FFFFFFFF" FontWeight="Bold" TextWrapping="WrapWithOverflow" Text="{lu:Localized OverlayCloseAtEnd}" />
-                        </StackPanel>
-                      </DockPanel>
+
+                            <lu:HelpPanel x:Name="helpPanel" Column="1" />
+
+                            <GridSplitter Name="gridSplitter" Grid.Column="1" Width="4" Background="#cc333363" Opacity="0.05" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Left" ResizeBehavior="PreviousAndCurrent">
+                                <FrameworkElement.Triggers>
+                                    <EventTrigger RoutedEvent="Mouse.MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="gridSplitter" Storyboard.TargetProperty="Opacity" From="0.05" To="0.3" Duration="0:0:0.2" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="Mouse.MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="gridSplitter" Storyboard.TargetProperty="Opacity" From="0.3" To="0.05" Duration="0:0:0.2" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </FrameworkElement.Triggers>
+                            </GridSplitter>
+                        </Grid>
                     </Grid>
 
-                      <!--<StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2">
+                    <Grid Name="programRunningOverlay" Visibility="Hidden">
+                        <Panel.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#cc000000" Offset="0" />
+                                <GradientStop Color="#cc333363" Offset="1" />
+                            </LinearGradientBrush>
+                        </Panel.Background>
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Bottom">
+                                <Button Name="endProgramButton" Padding="4" Margin="8" FontWeight="Bold" HorizontalAlignment="Right" Command="{x:Static l:MainWindow.EndProgramCommand}" IsDefault="True" Content="{lu:Localized EndProgramCommand}" />
+                            </StackPanel>
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Name="processRunningMessage" TextAlignment="Center" Margin="8" FontWeight="Bold" FontSize="32" Foreground="#649Db4" TextWrapping="WrapWithOverflow" />
+                                <TextBlock TextAlignment="Center" Margin="8" FontSize="24" Foreground="#999999" TextWrapping="WrapWithOverflow" Text="{lu:Localized WaitForProgramExit}" />
+                                <TextBlock TextAlignment="Center" Margin="8" FontSize="12" Foreground="#FFFFFFFF" FontWeight="Bold" TextWrapping="WrapWithOverflow" Text="{lu:Localized OverlayCloseAtEnd}" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Grid>
+
+                    <!--<StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2">
                       <TextBlock Name="versionText" Margin="2" IsHitTestVisible="False" Foreground="#66ffffff" FontSize="10" FontWeight="Bold" />
                       <TextBlock Name="updateAvailable" Margin="2" Visibility="Collapsed" Foreground="#FC9E59" FontSize="11" FontWeight="Bold">
                         <TextBlock Text="{lu:Localized NewVersionAvailable}" /> <Hyperlink Foreground="#FC9E59" TextDecorations="None" Click="OnClickNewVersionAvailable"><TextBlock Text="{lu:Localized ClickHereToDownload}" /></Hyperlink></TextBlock>
                     </StackPanel>-->
 
-                  </Grid>
+                </Grid>
             </TabItem>
 
         </TabControl>
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" 
-                    VerticalAlignment="Top"   Margin="0,0,5,0">
+        <StackPanel x:Name="lblWait" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock HorizontalAlignment="Center"  FontSize="54" FontWeight="Bold" Foreground="Red">Small Visual Basic</TextBlock>
+            <TextBlock HorizontalAlignment="Center" FontSize="44" FontWeight="Bold" Foreground="Brown">Eng. Mohammad Hamdy Ghanem</TextBlock>
+            <TextBlock FontSize="36" FontWeight="Bold" Foreground="Blue"                  
+                  TextWrapping="Wrap">Please wait until the code editor is loaded. This delay happns only at the first time!</TextBlock>
+        </StackPanel>
+        <StackPanel x:Name="stkInfo"
+                    Orientation="Horizontal" HorizontalAlignment="Right" 
+                    VerticalAlignment="Center"   Margin="0,0,5,0">
             <Grid x:Name="grdNameText">
                 <Grid.ColumnDefinitions >
                     <ColumnDefinition/>
@@ -319,40 +324,35 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Margin="0,2,5,0" Foreground="Brown" Background="LightYellow" >Name:</TextBlock>
-                <TextBox x:Name="txtControlName"  Grid.Column="1" 
+                <TextBlock VerticalAlignment="Center"
+                    Margin="0,1,5,0" Foreground="Brown" Background="LightYellow" >Name:</TextBlock>
+                <TextBox x:Name="txtControlName"  Grid.Column="1" VerticalAlignment="Center"
                        Width="100" Background="AliceBlue"  Margin="0,1,10,1" Padding="0"
                        PreviewKeyDown="txtControlName_PreviewKeyDown"
                        PreviewTextInput="txtControlName_PreviewTextInput"
                        GotFocus="txtControl_GotFocus"
                        LostFocus="txtControlName_LostFocus"/>
-                        
-                <TextBlock Margin="0,2,5,0"  Grid.Column="2" Foreground="Brown" Background="LightYellow" >Text:</TextBlock>
-                <TextBox x:Name="txtControlText"  Grid.Column="3" Width="100" Background="AliceBlue" Margin="0,1,15,1" Padding="0"
+
+                <TextBlock VerticalAlignment="Center" Margin="0,1,5,0"  Grid.Column="2" Foreground="Brown" Background="LightYellow" >Text:</TextBlock>
+                <TextBox x:Name="txtControlText"  Grid.Column="3" VerticalAlignment="Center"
+                        Width="100" Background="AliceBlue" Margin="0,1,15,1" Padding="0"
                         PreviewKeyDown="txtControlText_PreviewKeyDown"
                         GotFocus="txtControl_GotFocus"
                         LostFocus="txtControlText_LostFocus"/>
-                
+
             </Grid>
-            
-            <TextBlock x:Name="txtTitle"/>
-            <TextBlock x:Name="txtForm" FontWeight="Bold" Foreground="Blue"/>
+
+            <TextBlock VerticalAlignment="Center" x:Name="txtTitle"/>
+            <TextBlock x:Name="txtForm" VerticalAlignment="Center" FontWeight="Bold" Foreground="Blue"/>
 
             <Border BorderThickness="1,1,1,1"  Margin="8,1,0,0" Padding="0,3"
-                    VerticalAlignment="Top" HorizontalAlignment="Right"
+                    VerticalAlignment="Center" HorizontalAlignment="Right"
                     BorderBrush="#99e1e1e1" CornerRadius="4,4,4,4" 
                     Width="46" Height="{Binding txtControlName.ActualHeight}">
                 <Border BorderThickness="1,0,1,1" BorderBrush="#999999" CornerRadius="4,4,4,4" VerticalAlignment="Center">
                     <Button Name="CloseButton" Height="20" Click="CloseButton_Click" Style="{StaticResource CloseButtonStyle}" />
                 </Border>
             </Border>
-        </StackPanel>
-
-        <StackPanel x:Name="lblWait" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock HorizontalAlignment="Center"  FontSize="54" FontWeight="Bold" Foreground="Red">Small Visual Basic</TextBlock>
-            <TextBlock HorizontalAlignment="Center" FontSize="44" FontWeight="Bold" Foreground="Brown">Eng. Mohammad Hamdy Ghanem</TextBlock>
-            <TextBlock FontSize="36" FontWeight="Bold" Foreground="Blue"                  
-                  TextWrapping="Wrap">Please wait until the code editor is loaded. This delay happns only at the first time!</TextBlock>
         </StackPanel>
     </Grid>
 </Window>
