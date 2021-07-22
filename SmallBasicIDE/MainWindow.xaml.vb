@@ -1043,6 +1043,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Dim FirstTime As Boolean = True
+        Dim SelectCodeTab As Boolean
 
         Private Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
             If Not FirstTime Then Return
@@ -1069,19 +1070,22 @@ Namespace Microsoft.SmallBasic
             '        Set any defaults you want here
             '    End Sub
 
+
             Me.Dispatcher.Invoke(DispatcherPriority.Background,
                       Sub()
                           For Each fileName In FilesToOpen
                               fileName = fileName.ToLower()
                               If fileName.EndsWith(".sb") Then
                                   OpenDocIfNot(fileName)
+                                  SelectCodeTab = True
                               ElseIf fileName.EndsWith(".xaml") Then
                                   DiagramHelper.Designer.SwitchTo(fileName)
+                                  SelectCodeTab = False
                               End If
                           Next
                       End Sub)
 
-        End Sub
+                      End Sub
 
         Private Sub formDesigner_CurrentPageChanged(index As Integer)
             formDesigner = DiagramHelper.Designer.CurrentPage
@@ -1289,6 +1293,12 @@ Namespace Microsoft.SmallBasic
         Private Sub txtControl_GotFocus(sender As Object, e As RoutedEventArgs)
             Dim txt As TextBox = sender
             txt.Tag = formDesigner.SelectedIndex
+        End Sub
+
+        Private Sub Window_ContentRendered(sender As Object, e As EventArgs)
+            ' Load the code edotor
+            tabCode.IsSelected = True
+            If Not SelectCodeTab Then tabDesigner.IsSelected = True
         End Sub
     End Class
 
