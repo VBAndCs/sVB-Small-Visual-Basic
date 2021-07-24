@@ -140,10 +140,10 @@ Namespace Microsoft.SmallBasic.Documents
             Get
                 Dim text = If(IsDirty, " *", "")
 
+                If _Form <> "" Then Return $"{_Form}{text}"
+
                 If IsNew Then
-                    If Equals(BaseId, Nothing) Then
-                        Return ResourceHelper.GetString("Untitled") & text
-                    End If
+                    If BaseId = "" Then Return ResourceHelper.GetString("Untitled") & text
 
                     Return String.Format(CultureInfo.CurrentCulture, ResourceHelper.GetString("ImportedProgram"), New Object(0) {BaseId}) & text
                 End If
@@ -478,7 +478,19 @@ Namespace Microsoft.SmallBasic.Documents
         Public ReadOnly Property ControlEvents As New ObservableCollection(Of String)
         Public ReadOnly Property ControlNames As New ObservableCollection(Of String)
         Public Property EventHandlers As New Dictionary(Of String, (ControlName As String, EventName As String))
+
+        Dim _form As String
         Public Property Form As String
+            Get
+                Return _form
+            End Get
+
+            Set(value As String)
+                _form = value
+                NotifyProperty("Title")
+            End Set
+        End Property
+
         Public Property ControlsInfo As Dictionary(Of String, String)
 
 
@@ -563,12 +575,8 @@ Namespace Microsoft.SmallBasic.Documents
             If updateControlInfo Then
                 _Form = formName
                 _ControlsInfo = controlsInfoList
-                Try
-                    TextBuffer.Properties.AddProperty("ControlsInfo", _ControlsInfo)
-                Catch
-                    TextBuffer.Properties.RemoveProperty("ControlsInfo")
-                    TextBuffer.Properties.AddProperty("ControlsInfo", _ControlsInfo)
-                End Try
+                AddProperty("ControlsInfo", _ControlsInfo)
+                AddProperty("ControlNames", _ControlNames)
 
                 ' Note that ControlNames Property is bound to a cono box, so keep the existing collection
                 controlNamesList.Sort()
@@ -579,6 +587,15 @@ Namespace Microsoft.SmallBasic.Documents
             End If
             Return hint.ToString()
         End Function
+
+        Sub AddProperty(name As String, value As Object)
+            Try
+                TextBuffer.Properties.AddProperty(name, value)
+            Catch
+                TextBuffer.Properties.RemoveProperty(name)
+                TextBuffer.Properties.AddProperty(name, value)
+            End Try
+        End Sub
 
         Public Function GetCodeBehind(Optional ToCompile As Boolean = False) As String
             Dim codeFileHasHints = Me.Text.Contains("'@Form Hints:")

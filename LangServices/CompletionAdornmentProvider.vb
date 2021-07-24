@@ -6,6 +6,7 @@ Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
 Imports Microsoft.SmallBasic.Completion
 Imports System.Runtime.InteropServices
+Imports System.Collections.ObjectModel
 
 Namespace Microsoft.SmallBasic.LanguageService
     Public NotInheritable Class CompletionAdornmentProvider
@@ -142,6 +143,9 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim ControlsInfo As Dictionary(Of String, String) = Nothing
             line.TextSnapshot.TextBuffer.Properties.TryGetProperty("ControlsInfo", ControlsInfo)
 
+            Dim ControlNames As New ObservableCollection(Of String)
+            line.TextSnapshot.TextBuffer.Properties.TryGetProperty("ControlNames", ControlNames)
+
             currentToken = TokenInfo.Illegal
             Dim lineScanner As New LineScanner()
             Dim tokenList = lineScanner.GetTokenList(line.GetText(), line.LineNumber)
@@ -177,16 +181,11 @@ Namespace Microsoft.SmallBasic.LanguageService
                 If ControlsInfo IsNot Nothing Then
                     Dim txt = currentToken.NormalizedText
                     If txt <> "" Then
-                        Dim controlNames = From ControlInfo In ControlsInfo
-                                           Where ControlInfo.Key.StartsWith(txt)
-                                           Select ControlInfo.Key
+                        Dim controls = From name In ControlNames
+                                       Where name.ToLower().StartsWith(txt)
 
-                        For Each controlName In controlNames
-                            Dim name = controlName(0).ToString().ToUpper()
-                            If controlName.Length > 1 Then name &= controlName.Substring(1)
-
-                            newCompletionBag.CompletionItems.Add(New CompletionItem With
-                                       {
+                        For Each name In controls
+                            newCompletionBag.CompletionItems.Add(New CompletionItem With {
                                            .DisplayName = name,
                                            .ItemType = CompletionItemType.Identifier,
                                            .ReplacementText = name

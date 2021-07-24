@@ -1,5 +1,6 @@
 ﻿Imports System
 Imports System.Collections.Specialized
+Imports System.Linq
 Imports System.Windows
 Imports System.Windows.Controls
 Imports System.Windows.Input
@@ -310,16 +311,17 @@ Namespace Microsoft.SmallBasic.Shell
         Private Sub ControlNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             Dim cmb = CType(sender, ComboBox)
             Dim controlName = CStr(cmb.SelectedItem)
+            Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+
             If controlName = "" Then
-                cmb.SelectedIndex = 0
+                SelectHandlers(selectedView, "")
                 Return
             End If
 
-            Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
             Dim events = selectedView.Document.ControlEvents
             events.Clear()
 
-            If controlName = "(Global)" Then
+            If cmb.SelectedIndex = 0 Then '  Global
                 For Each sb In selectedView.Document.GlobalSubs
                     events.Add(sb)
                 Next
@@ -328,7 +330,18 @@ Namespace Microsoft.SmallBasic.Shell
                 For Each ev In WinForms.PreCompiler.GetEvents(typeName)
                     events.Add(ev)
                 Next
+
+                SelectHandlers(selectedView, controlName)
             End If
+        End Sub
+
+        Private Sub SetItemsBold(cmb As ComboBox, events() As String)
+            Dim isGlobal = events Is Nothing
+            For i = 0 To cmb.Items.Count - 1
+                Dim item = CType(cmb.ItemContainerGenerator.ContainerFromIndex(i), ComboBoxItem)
+                If item Is Nothing Then Return
+                item.FontWeight = If((isGlobal AndAlso i > 0) OrElse (Not isGlobal AndAlso events.Contains(cmb.Items(i))), FontWeights.Bold, FontWeights.Normal)
+            Next
         End Sub
 
         Dim JustFocus As Boolean
@@ -364,8 +377,8 @@ Namespace Microsoft.SmallBasic.Shell
                 End If
             Next
 
-            For i = st + 1 To Items.Count - 1
-                Dim eventName = CStr(Items(i)).ToLower()
+            For i = st + 1 To items.Count - 1
+                Dim eventName = CStr(items(i)).ToLower()
                 If eventName(2) = c Then
                     HighlightItem(cmb, i)
                     e.Handled = True
@@ -376,7 +389,7 @@ Namespace Microsoft.SmallBasic.Shell
             For i = 0 To st
                 Dim eventName = CStr(items(i)).ToLower()
                 If eventName(2) = c Then
-                    HighLightItem(cmb, i)
+                    HighlightItem(cmb, i)
                     e.Handled = True
                     Return
                 End If
@@ -386,10 +399,12 @@ Namespace Microsoft.SmallBasic.Shell
         Dim _highLightedItem As ComboBoxItem
 
         Private Sub HighlightItem(cmb As ComboBox, index As Integer)
+            If index = -1 Then Return
+
             JustFocus = True
             cmb.SelectedIndex = -1
             cmb.SelectedIndex = index
-            JustFocus=False 
+            JustFocus = False
             _highLightedItem = CType(cmb.ItemContainerGenerator.ContainerFromIndex(index), ComboBoxItem)
         End Sub
 
@@ -412,6 +427,39 @@ Namespace Microsoft.SmallBasic.Shell
             Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
             selectedView.Document.Focus()
             e.Handled = True
+        End Sub
+
+        Private Sub CmbEventNames_DropDownOpened(sender As Object, e As EventArgs)
+            DiagramHelper.RunAfter.Start(1,
+                Sub()
+                    Dim view As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+                    Dim cmbControls = view.CmbControlNames
+                    Dim CmbEvents = view.CmbEventNames
+
+                    HighlightItem(sender, CmbEvents.SelectedIndex)
+                    If cmbControls.SelectedIndex = 0 Then ' Global
+                        SetItemsBold(CmbEvents, Nothing)
+                    Else
+                        SelectHandlers(view, cmbControls.SelectedItem)
+                    End If
+                End Sub)
+        End Sub
+
+        Sub SelectHandlers(selectedView As MdiView, controlName As String)
+            If controlName = "" Then
+                SetItemsBold(selectedView.CmbEventNames, {""})
+                Return
+            End If
+
+            Dim handlers = From h In selectedView.Document.EventHandlers
+                           Where h.Value.ControlName = controlName
+                           Order By h.Value.EventName
+                           Select h.Value.EventName
+
+            If handlers.Any Then
+                If selectedView.CmbEventNames.SelectedIndex = -1 Then selectedView.CmbEventNames.SelectedItem = handlers.First
+                SetItemsBold(selectedView.CmbEventNames, handlers.ToArray())
+            End If
         End Sub
     End Class
 End Namespace

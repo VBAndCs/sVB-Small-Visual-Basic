@@ -308,12 +308,6 @@
             </TabItem>
 
         </TabControl>
-        <StackPanel x:Name="lblWait" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock HorizontalAlignment="Center"  FontSize="54" FontWeight="Bold" Foreground="Red">Small Visual Basic</TextBlock>
-            <TextBlock HorizontalAlignment="Center" FontSize="44" FontWeight="Bold" Foreground="Brown">Eng. Mohammad Hamdy Ghanem</TextBlock>
-            <TextBlock FontSize="36" FontWeight="Bold" Foreground="Blue"                  
-                  TextWrapping="Wrap">Please wait until the code editor is loaded. This delay happns only at the first time!</TextBlock>
-        </StackPanel>
         <StackPanel x:Name="stkInfo"
                     Orientation="Horizontal" HorizontalAlignment="Right" 
                     VerticalAlignment="Center"   Margin="0,0,5,0">

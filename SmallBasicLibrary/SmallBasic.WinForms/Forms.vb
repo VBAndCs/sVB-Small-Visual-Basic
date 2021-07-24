@@ -68,6 +68,7 @@ Namespace WinForms
                            .SizeToContent = SizeToContent.WidthAndHeight,
                            .WindowStartupLocation = WindowStartupLocation.CenterScreen,
                            .Name = name,
+                           .Title = Automation.AutomationProperties.GetHelpText(canvas),
                            .Content = canvas
                        }
 

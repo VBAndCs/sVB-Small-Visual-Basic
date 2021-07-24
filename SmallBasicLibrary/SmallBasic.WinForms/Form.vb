@@ -240,7 +240,7 @@ Namespace WinForms
         End Sub
 
         <ExProperty>
-        Public Shared Function GetText(formName As Primitive, __ As Primitive) As Primitive
+        Public Shared Function GetText(formName As Primitive) As Primitive
             App.Invoke(Sub() GetText = Forms.GetForm(formName).Title.ToString())
         End Function
 

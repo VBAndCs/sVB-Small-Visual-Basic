@@ -142,10 +142,13 @@
                                             SelectedIndex="0"/>
 
                                         <ComboBox Name="CmbEventNames" Grid.Column="1" 
-                                            MinWidth="150"  Margin="5,4"
-                                            Background="#FFFFE0C0"
+                                            MinWidth="150"  Margin="5,4" Background="#FFFFE0C0"
                                             SelectionChanged="EventNames_SelectionChanged"
-                                            ItemsSource="{Binding Path=Document.ControlEvents, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                            ItemsSource="{Binding Path=Document.ControlEvents, RelativeSource={RelativeSource TemplatedParent}}"
+                                            PreviewTextInput="CmbEventNames_PreviewTextInput"
+                                            PreviewKeyDown="CmbEventNames_KeyDown"      
+                                            PreviewMouseLeftButtonDown="CmbEventNames_PreviewMouseLeftButtonDown"
+                                            DropDownOpened="CmbEventNames_DropDownOpened"      />
 
                                         <Expander Name="detailsExpander" Grid.Column="2"
                                               VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0" ExpandDirection="Down" 

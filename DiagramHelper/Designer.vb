@@ -32,8 +32,8 @@ Public Class Designer
 
         Set(value As String)
             _fileName = If(value = "", "", IO.Path.GetFullPath(value))
-            If _fileName <> "" Then
-                _codeFilePath = _fileName.Substring(0, _fileName.Length - 5) & ".sb"
+            If _fileName <> "" AndAlso _CodeFilePath = "" Then
+                _CodeFilePath = _fileName.Substring(0, _fileName.Length - 5) & ".sb"
             End If
         End Set
     End Property
@@ -1246,7 +1246,19 @@ Public Class Designer
 
     Public Sub SetControlText(controlIndex As Integer, value As String)
         If controlIndex = -1 Then
+            Automation.AutomationProperties.SetHelpText(Me, _Text)
+            Dim OldState As New PropertyState(
+                    Sub()
+                        Me.SelectedIndex = -1
+                        _Text = Automation.AutomationProperties.GetHelpText(Me)
+                        RaiseEvent PageShown(-3)
+                    End Sub,
+                    Me, Automation.AutomationProperties.HelpTextProperty)
+
             _Text = value
+            Automation.AutomationProperties.SetHelpText(Me, value)
+            UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue()))
+
         Else
             SetControlText(Me.Items(controlIndex), value, True, True)
         End If

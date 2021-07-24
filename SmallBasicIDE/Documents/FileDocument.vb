@@ -7,16 +7,17 @@ Namespace Microsoft.SmallBasic.Documents
     Public Class FileDocument
         Implements INotifyPropertyChanged
 
-        Private filePathField As String
+        Private _filePath As String
         Private isDirtyField As Boolean
-        Private propertyStoreField As Dictionary(Of Object, Object) = New Dictionary(Of Object, Object)()
+        Private _propertyStore As New Dictionary(Of Object, Object)()
 
         Public Property FilePath As String
             Get
-                Return filePathField
+                Return _filePath
             End Get
+
             Protected Set(ByVal value As String)
-                filePathField = value
+                _filePath = value
                 NotifyProperty("FilePath")
                 NotifyProperty("Title")
             End Set
@@ -44,7 +45,7 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public ReadOnly Property PropertyStore As Dictionary(Of Object, Object)
             Get
-                Return propertyStoreField
+                Return _propertyStore
             End Get
         End Property
 
@@ -68,10 +69,10 @@ Namespace Microsoft.SmallBasic.Documents
                 Throw New ArgumentException("The specified file path doesn't exist.")
             End If
 
-            filePathField = filePath
+            _filePath = filePath
 
-            If filePathField <> "" AndAlso Not Path.IsPathRooted(filePathField) Then
-                filePathField = Path.GetFullPath(filePath)
+            If _filePath <> "" AndAlso Not Path.IsPathRooted(_filePath) Then
+                _filePath = Path.GetFullPath(filePath)
             End If
         End Sub
 

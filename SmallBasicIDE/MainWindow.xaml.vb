@@ -103,11 +103,11 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub OnFileOpen(ByVal sender As Object, ByVal e As RoutedEventArgs)
-            Dim openFileDialog As OpenFileDialog = New OpenFileDialog()
+            Dim openFileDialog As New OpenFileDialog()
             openFileDialog.Filter = ResourceHelper.GetString("SmallBasicFileFilter") & "|*.sb;*.smallbasic"
 
             If openFileDialog.ShowDialog() = True Then
-                OpenDocIfNot(openFileDialog.FileName)
+                OpenDocIfNot(openFileDialog.FileName).Focus()
             End If
         End Sub
 
@@ -668,8 +668,16 @@ Namespace Microsoft.SmallBasic
             Return OpenCodeFile(FilePath)
         End Function
 
+        Function GetDocIfOpened() As TextDocument
+            For Each view As MdiView In Me.viewsControl.Items
+                If view.Document.PageKey = formDesigner.PageKey Then
+                    Return view.Document
+                End If
+            Next
+            Return Nothing
+        End Function
+
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
-            ShowWait = False
 
             If DiagramHelper.Designer.CurrentPage IsNot Nothing Then
                 SaveDesignInfo()
@@ -710,6 +718,12 @@ Namespace Microsoft.SmallBasic
             Dim formName As String
             Dim xamlPath As String
             Dim formPath As String
+
+            If CStr(txtControlName.Tag) <> "" Then
+                txtControlName_LostFocus(Nothing, Nothing)
+            ElseIf CStr(txtControlText.Tag) <> "" Then
+                txtControlText_LostFocus(Nothing, Nothing)
+            End If
 
             OpeningDoc = True
 
@@ -774,10 +788,16 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Function GetDoc(codeFilePath As String, openDoc As Boolean) As TextDocument
-            If Not File.Exists(codeFilePath) Then File.Create(codeFilePath).Close()
-            Return If(openDoc,
-                    OpenDocIfNot(codeFilePath),
-                    New TextDocument(codeFilePath))
+            If openDoc Then
+                Return OpenDocIfNot(codeFilePath)
+            Else
+                Dim doc = GetDocIfOpened()
+                If doc IsNot Nothing Then Return doc
+                If Not File.Exists(codeFilePath) Then File.Create(codeFilePath).Close()
+                Return New TextDocument(codeFilePath)
+            End If
+
+
         End Function
 
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
@@ -840,7 +860,8 @@ Namespace Microsoft.SmallBasic
                             Continue For
                         End If
 
-                        Dim paramsCount = If(params = "", 0, params.Length - params.Replace(",", "").Length + 1)
+                        Dim expressions = Parser.ParseArgumentList(params)
+                        Dim paramsCount = expressions.Count
                         If methodInfo.ParamsCount = 0 OrElse methodInfo.ParamsCount <= paramsCount Then
                             errors(i) = New [Error](err.Line, methodPos, "Wrong number of parameters.")
                             Continue For
@@ -1011,16 +1032,8 @@ Namespace Microsoft.SmallBasic
             Return errors
         End Function
 
-        Dim ShowWait As Boolean = True
-
         Private Sub formDesigner_DiagramDoubleClick(control As UIElement)
             Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait
-
-            If ShowWait Then
-                ShowWait = False
-                lblWait.Visibility = Visibility.Visible
-                tabDesigner.IsSelected = False
-            End If
 
             tabCode.IsSelected = True
 
@@ -1037,7 +1050,6 @@ Namespace Microsoft.SmallBasic
                 End If
             End If
 
-            lblWait.Visibility = Visibility.Collapsed
             Mouse.OverrideCursor = Nothing
 
         End Sub
@@ -1057,7 +1069,31 @@ Namespace Microsoft.SmallBasic
 
             formDesigner.SavePage =
                     Function()
+                        Dim newFormName = Path.GetFileNameWithoutExtension(formDesigner.FileName)
+                        Dim newDir = Path.GetDirectoryName(formDesigner.FileName)
+                        Dim newFilePath = Path.Combine(newDir, newFormName)
+                        Dim FileName = newFilePath & ".sb"
+
+                        Dim oldCodeFile = formDesigner.CodeFilePath
                         SaveDesignInfo(Nothing, False)
+                        Dim doc = GetDocIfOpened()
+
+                        If oldCodeFile.ToLower() = FileName.ToLower() Then
+                            If doc IsNot Nothing Then doc.Save()
+                        Else
+                            If File.Exists(FileName) Then File.Delete(FileName)
+                            If doc IsNot Nothing Then
+                                doc.SaveAs(FileName)
+                            Else
+                                File.Move(oldCodeFile, FileName)
+                            End If
+                            formDesigner.CodeFilePath = FileName
+
+                            FileName = newFilePath & ".sb.gen"
+                            If File.Exists(FileName) Then File.Delete(FileName)
+                            File.Move(oldCodeFile & ".gen", FileName)
+                        End If
+
                         Return True
                     End Function
 
@@ -1225,6 +1261,9 @@ Namespace Microsoft.SmallBasic
                 VisualBasic.Beep()
                 Return False
             End If
+
+            'Dim doc = GetDocIfOpened()
+            'If doc IsNot Nothing Then doc.Form = formDesigner.Name
 
             Return True
         End Function

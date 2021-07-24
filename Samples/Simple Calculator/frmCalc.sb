@@ -33,7 +33,7 @@ Sub btnDivide_OnClick
     if n2 = 0 Then        
       Result = "Can't divide by zero."
     else
-      Result = "Result = " + (n1 / n2)
+      Result = "Result = " + n1 / n2
     endif
     lblResult.Text = Result  
   EndIf  
@@ -51,7 +51,6 @@ Sub Validate
     If Text.IsNumeric(n2) = False Then         
       lblResult.Text = "n2 must be a number."         
     Else                     
-      n2 = txtNum2.Text
       AreValid = True       
     EndIf             
   EndIf

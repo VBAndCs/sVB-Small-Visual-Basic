@@ -309,7 +309,7 @@ Public Class DiagramObject
         Dim P = GetLeftTopPoint(InCm:=False)
         Dsn.Editor.Width = Diagram.ActualWidth
         Dsn.Editor.Height = Diagram.ActualHeight
-        Dsn.Editor.Text = If(rename, Automation.AutomationProperties.GetName(Diagram), Pnl.DiagramTextBlock.Text)
+        Dsn.Editor.Text = If(rename, Automation.AutomationProperties.GetName(Diagram), Dsn.GetControlText(Diagram))
 
         Dim Pup As Popup = Dsn.Editor.Parent
         Pup.PlacementTarget = Diagram

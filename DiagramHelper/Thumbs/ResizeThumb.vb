@@ -208,7 +208,7 @@ Friend Class ResizeThumb
     End Sub
 
     Sub ReportChanges()
-        If OldState.HasChanges Then
+        If OldState?.HasChanges Then
             Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
         End If
     End Sub

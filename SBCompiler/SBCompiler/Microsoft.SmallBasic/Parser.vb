@@ -569,6 +569,12 @@ Namespace Microsoft.SmallBasic
             Return identifierExpression2
         End Function
 
+        Public Shared Function ParseArgumentList(args As String) As List(Of Expression)
+            Dim tokens = New LineScanner().GetTokenList(args & ")", 1)
+            Dim parser As New Parser()
+            Return parser.ParseCommaSepList(tokens, Token.RightParens)
+        End Function
+
         Private Function ParseCommaSepList(tokenEnumerator As TokenEnumerator, closingToken As Token) As List(Of Expression)
             Dim items As New List(Of Expression)
 

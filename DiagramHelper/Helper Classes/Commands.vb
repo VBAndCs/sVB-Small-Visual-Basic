@@ -24,7 +24,7 @@
         Return B
     End Function
 
-    Shared Sub IncreaseBorderThickness(Element As FrameworkElement, Value As Integer)
+    Shared Sub IncreaseBorderThickness(Element As FrameworkElement, Value As Double)
         Dim Shape As Shape = TryCast(Element, Shape)
         Dim Dsn = Helper.GetDesigner(Element)
 
