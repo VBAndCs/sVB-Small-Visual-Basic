@@ -23,7 +23,7 @@ Namespace Microsoft.SmallBasic.Statements
                     code.AppendLine($"Stack.PushValue(""_sVB_Arguments"", {Args(i)})")
                 Next
 
-                LowerAndEmit(code.ToString(), scope)
+                CodeGenerator.LowerAndEmit(code.ToString(), scope)
             End If
 
             Dim methodInfo = scope.MethodBuilders(Name.NormalizedText)
@@ -31,23 +31,9 @@ Namespace Microsoft.SmallBasic.Statements
 
             If IsFunctionCall Then
                 MethodCallStatement.DoNotPopReturnValue = True
-                LowerAndEmit($"Stack.PopValue(""_sVB_ReturnValues"")", scope)
+                CodeGenerator.LowerAndEmit($"Stack.PopValue(""_sVB_ReturnValues"")", scope)
                 MethodCallStatement.DoNotPopReturnValue = False
             End If
-        End Sub
-
-        Private Sub LowerAndEmit(code As String, scope As CodeGenScope)
-
-            Dim _parser = Parser.Parse(code)
-
-            ' EmitIL
-            For Each item In _parser.ParseTree
-                item.PrepareForEmit(scope)
-            Next
-
-            For Each item In _parser.ParseTree
-                item.EmitIL(scope)
-            Next
         End Sub
 
         Public Overrides Function ToString() As String

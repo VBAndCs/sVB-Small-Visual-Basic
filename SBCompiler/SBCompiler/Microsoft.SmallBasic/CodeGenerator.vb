@@ -26,6 +26,20 @@ Namespace Microsoft.SmallBasic
             _directory = directory
         End Sub
 
+        Public Shared Sub LowerAndEmit(code As String, scope As CodeGenScope)
+
+            Dim _parser = Parser.Parse(code)
+
+            ' EmitIL
+            For Each item In _parser.ParseTree
+                item.PrepareForEmit(scope)
+            Next
+
+            For Each item In _parser.ParseTree
+                item.EmitIL(scope)
+            Next
+        End Sub
+
         Public Function GenerateExecutable() As Boolean
             Dim assemblyName As New AssemblyName()
             assemblyName.Name = _outputName

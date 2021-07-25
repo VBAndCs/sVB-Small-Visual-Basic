@@ -6,6 +6,18 @@ Namespace Microsoft.SmallBasic.Statements
         Inherits Statement
 
         Public ReturnExpression As Expression
+        Friend Subroutine As SubroutineStatement
+
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
+            Dim code = ""
+
+            If Subroutine.SubToken.Token = Token.Function Then
+                code = $"Stack.PushValue(""_sVB_ReturnValues"", {If(ReturnExpression, ChrW(34) & ChrW(34))})" & vbCrLf
+            End If
+
+            code &= $"GoTo _EXIT_SUB_{subroutine.Name.NormalizedText}"
+            CodeGenerator.LowerAndEmit(code, scope)
+        End Sub
 
         Public Overrides Function ToString() As String
             Return $"{StartToken} {ReturnExpression}"

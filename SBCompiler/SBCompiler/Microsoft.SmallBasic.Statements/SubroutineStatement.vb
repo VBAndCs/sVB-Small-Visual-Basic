@@ -9,6 +9,7 @@ Namespace Microsoft.SmallBasic.Statements
     Public Class SubroutineStatement
         Inherits Statement
 
+        Friend Shared Current As SubroutineStatement
         Public Name As TokenInfo
         Public Params As List(Of TokenInfo)
         Public Body As New List(Of Statement)()

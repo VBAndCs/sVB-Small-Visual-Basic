@@ -271,6 +271,7 @@ Namespace Microsoft.SmallBasic
             tokenEnumerator = ReadNextLine()
             Dim flag = False
 
+            SubroutineStatement.Current = subroutine
 
             Dim returnLabelToken = New TokenInfo() With {
                     .Text = $"_EXIT_SUB_{subroutine.Name.NormalizedText}",
@@ -298,28 +299,12 @@ Namespace Microsoft.SmallBasic
                 End If
 
                 Dim statement = GetStatementFromTokens(tokenEnumerator)
-                If TypeOf statement Is ReturnStatement Then
-                    Dim returnExpr = CType(statement, ReturnStatement).ReturnExpression
-                    Dim code = ""
-                    If subroutine.SubToken.Token = Token.Sub Then
-                        If returnExpr IsNot Nothing Then
-                            AddError("Sub routines can't return values")
-                        End If
-                    Else
-                        code = $"Stack.PushValue(""_sVB_ReturnValues"", {If(returnExpr, ChrW(34) & ChrW(34))})" & vbCrLf
-                    End If
-
-                    code &= $"GoTo {returnLabelToken.Text}"
-                    Dim _parser = Parser.Parse(code)
-                    subroutine.Body.Add(_parser._ParseTree(0))
-                    If _parser._ParseTree.Count = 2 Then subroutine.Body.Add(_parser._ParseTree(1))
-                Else
-                    subroutine.Body.Add(statement)
-                End If
+                subroutine.Body.Add(statement)
                 tokenEnumerator = ReadNextLine()
             End While
 
             subroutine.Body.Add(returnLabelStatement)
+            SubroutineStatement.Current = Nothing
 
             TokenInfo.ChangeTextFunc = Nothing
 
@@ -855,15 +840,24 @@ Namespace Microsoft.SmallBasic
                     Dim emptyStatement As New EmptyStatement()
                     emptyStatement.StartToken = tokenEnumerator.Current
                     statement2 = emptyStatement
+
                 Case Token.Return
-                    Dim Expr As Expression = Nothing
+                    Dim returnExpr As Expression = Nothing
                     Dim returnToken = tokenEnumerator.Current
                     tokenEnumerator.MoveNext()
-                    If Not tokenEnumerator.IsEndOfNonCommentList Then EatExpression(tokenEnumerator, Expr)
+                    If Not tokenEnumerator.IsEndOfNonCommentList Then EatExpression(tokenEnumerator, returnExpr)
+                    Dim subroutine = SubroutineStatement.Current
                     statement2 = New ReturnStatement With {
                         .StartToken = returnToken,
-                        .ReturnExpression = Expr
+                        .ReturnExpression = returnExpr,
+                        .Subroutine = subroutine
                     }
+
+                    If subroutine Is Nothing Then
+                        AddError(returnToken, "Return can only appear insid Sub and Function blocks")
+                    ElseIf subroutine.SubToken.Token = Token.Sub AndAlso returnExpr IsNot Nothing Then
+                        AddError(returnToken, "Sub routines can't return values")
+                    End If
             End Select
 
             If statement2 Is Nothing Then
