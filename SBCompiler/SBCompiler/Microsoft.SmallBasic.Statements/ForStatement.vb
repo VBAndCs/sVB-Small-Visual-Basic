@@ -4,6 +4,7 @@ Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallBasic.Completion
 Imports Microsoft.SmallBasic.Expressions
+Imports Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.Statements
     Public Class ForStatement
@@ -18,13 +19,9 @@ Namespace Microsoft.SmallBasic.Statements
         Public ToToken As TokenInfo
         Public StepToken As TokenInfo
         Public EndForToken As TokenInfo
+        Public Subroutine As SubroutineStatement
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
-            If Iterator.Token <> 0 Then
-                symbolTable.AddVariable(Iterator)
-                symbolTable.AddVariableInitialization(Iterator)
-            End If
-
             If InitialValue IsNot Nothing Then
                 InitialValue.AddSymbols(symbolTable)
             End If
@@ -48,42 +45,40 @@ Namespace Microsoft.SmallBasic.Statements
             Next
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Sub EmitIL2(ByVal scope As CodeGenScope)
+            Dim iteratorVar = scope.ILGenerator.DeclareLocal(GetType(Double))
+            iteratorVar.SetLocalSymInfo(Iterator.NormalizedText)
+
+            Dim loopBody = scope.ILGenerator.DefineLabel()
+            Dim loopCondition = scope.ILGenerator.DefineLabel()
+            Dim loopIterator = scope.ILGenerator.DefineLabel()
+
             InitialValue.EmitIL(scope)
-            Dim field = scope.Fields(Iterator.NormalizedText)
-            scope.ILGenerator.Emit(OpCodes.Stsfld, field)
-            Dim label As Label = scope.ILGenerator.DefineLabel()
-            Dim label2 As Label = scope.ILGenerator.DefineLabel()
-            Dim label3 As Label = scope.ILGenerator.DefineLabel()
-            Dim label4 As Label = scope.ILGenerator.DefineLabel()
-            scope.ILGenerator.MarkLabel(label2)
-            scope.ILGenerator.Emit(OpCodes.Ldsfld, field)
+            scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
+
+            scope.ILGenerator.MarkLabel(loopBody)
+            scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
             FinalValue.EmitIL(scope)
-
-            If StepValue IsNot Nothing Then
-                StepValue.EmitIL(scope)
-                scope.ILGenerator.Emit(OpCodes.Ldc_R8, 0.0)
-                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
-                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.LessThan, Nothing)
-                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)
-                scope.ILGenerator.Emit(OpCodes.Brfalse, label4)
-                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.GreaterThanOrEqualTo, Nothing)
-                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)
-                scope.ILGenerator.Emit(OpCodes.Brfalse, label)
-                scope.ILGenerator.Emit(OpCodes.Br, label3)
-            End If
-
-            scope.ILGenerator.MarkLabel(label4)
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.LessThanOrEqualTo, Nothing)
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)
-            scope.ILGenerator.Emit(OpCodes.Brfalse, label)
-            scope.ILGenerator.MarkLabel(label3)
+            scope.ILGenerator.Emit(OpCodes.Brfalse, loopIterator)
 
+            Dim iteratorKey = ""
+            If Subroutine Is Nothing Then
+                iteratorKey = Iterator.NormalizedText
+            Else
+                iteratorKey = $"{Subroutine.Name.NormalizedText}.{Iterator.NormalizedText}"
+            End If
+
+            scope.Locals(iteratorKey) = iteratorVar
             For Each item In ForBody
                 item.EmitIL(scope)
             Next
+            scope.Locals.Remove(iteratorKey)
 
-            scope.ILGenerator.Emit(OpCodes.Ldsfld, field)
+            scope.ILGenerator.MarkLabel(loopCondition)
+
+            scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
 
             If StepValue IsNot Nothing Then
                 StepValue.EmitIL(scope)
@@ -93,9 +88,71 @@ Namespace Microsoft.SmallBasic.Statements
             End If
 
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.Add, Nothing)
-            scope.ILGenerator.Emit(OpCodes.Stsfld, field)
-            scope.ILGenerator.Emit(OpCodes.Br, label2)
-            scope.ILGenerator.MarkLabel(label)
+            scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
+            scope.ILGenerator.Emit(OpCodes.Br, loopBody)
+            scope.ILGenerator.MarkLabel(loopIterator)
+        End Sub
+
+        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+            Dim iteratorVar = scope.ILGenerator.DeclareLocal(GetType(Primitive))
+            iteratorVar.SetLocalSymInfo(Iterator.NormalizedText)
+
+            InitialValue.EmitIL(scope)
+            scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
+
+            Dim lblExitLoop As Label = scope.ILGenerator.DefineLabel()
+            Dim lblLoopIf As Label = scope.ILGenerator.DefineLabel()
+            Dim loopBody As Label = scope.ILGenerator.DefineLabel()
+            Dim lblEndIf As Label = scope.ILGenerator.DefineLabel()
+
+            scope.ILGenerator.MarkLabel(lblLoopIf)
+            scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
+            FinalValue.EmitIL(scope)
+
+            If StepValue IsNot Nothing Then
+                StepValue.EmitIL(scope)
+                scope.ILGenerator.Emit(OpCodes.Ldc_R8, 0.0)
+                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
+                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.LessThan, Nothing)
+                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)
+                scope.ILGenerator.Emit(OpCodes.Brfalse, lblEndIf)
+                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.GreaterThanOrEqualTo, Nothing)
+                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)
+                scope.ILGenerator.Emit(OpCodes.Brfalse, lblExitLoop)
+                scope.ILGenerator.Emit(OpCodes.Br, loopBody)
+            End If
+
+            scope.ILGenerator.MarkLabel(lblEndIf)
+            scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.LessThanOrEqualTo, Nothing)
+            scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)
+            scope.ILGenerator.Emit(OpCodes.Brfalse, lblExitLoop)
+            scope.ILGenerator.MarkLabel(loopBody)
+
+            Dim iteratorKey = ""
+            If Subroutine Is Nothing Then
+                iteratorKey = Iterator.NormalizedText
+            Else
+                iteratorKey = $"{Subroutine.Name.NormalizedText}.{Iterator.NormalizedText}"
+            End If
+
+            scope.Locals(iteratorKey) = iteratorVar
+            For Each item In ForBody
+                item.EmitIL(scope)
+            Next
+
+            scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
+
+            If StepValue IsNot Nothing Then
+                StepValue.EmitIL(scope)
+            Else
+                scope.ILGenerator.Emit(OpCodes.Ldc_R8, 1.0)
+                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
+            End If
+
+            scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.Add, Nothing)
+            scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
+            scope.ILGenerator.Emit(OpCodes.Br, lblLoopIf)
+            scope.ILGenerator.MarkLabel(lblExitLoop)
         End Sub
 
         Public Overrides Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)

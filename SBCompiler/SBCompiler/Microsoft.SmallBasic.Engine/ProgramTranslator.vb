@@ -162,7 +162,8 @@ Namespace Microsoft.SmallBasic.Engine
                 instructions.Add(New IfGotoInstruction With {
                     .Condition = New BinaryExpression With {
                         .LeftHandSide = New IdentifierExpression With {
-                            .Identifier = statement.Iterator
+                            .Identifier = statement.Iterator,
+                            .Subroutine = SubroutineStatement.Current
                         },
                         .[Operator] = New TokenInfo With {
                             .Token = Token.LessThan
@@ -185,7 +186,8 @@ Namespace Microsoft.SmallBasic.Engine
             instructions.Add(New IfGotoInstruction With {
                 .Condition = New BinaryExpression With {
                     .LeftHandSide = New IdentifierExpression With {
-                        .Identifier = statement.Iterator
+                        .Identifier = statement.Iterator,
+                        .Subroutine = SubroutineStatement.Current
                     },
                     .[Operator] = New TokenInfo With {
                         .Token = Token.GreaterThan
@@ -204,7 +206,8 @@ Namespace Microsoft.SmallBasic.Engine
                 .FieldName = statement.Iterator.NormalizedText,
                 .RightSide = New BinaryExpression With {
                     .LeftHandSide = New IdentifierExpression With {
-                        .Identifier = statement.Iterator
+                        .Identifier = statement.Iterator,
+                        .Subroutine = SubroutineStatement.Current
                     },
                     .[Operator] = New TokenInfo With {
                         .Token = Token.Addition

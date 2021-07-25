@@ -19,6 +19,7 @@ Namespace Microsoft.SmallBasic.Statements
 
             If TypeOf LeftValue Is IdentifierExpression Then
                 Dim identifierExpression = CType(LeftValue, IdentifierExpression)
+                symbolTable.AddVariable(identifierExpression.Identifier)
                 identifierExpression.AddSymbolInitialization(symbolTable)
             ElseIf TypeOf LeftValue Is ArrayExpression Then
                 Dim arrayExpression = CType(LeftValue, ArrayExpression)

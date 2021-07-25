@@ -5,6 +5,7 @@ Imports System.Reflection.Emit
 Namespace Microsoft.SmallBasic
     Public Class CodeGenScope
         Private _fields As Dictionary(Of String, FieldInfo)
+        Private _locals As Dictionary(Of String, LocalBuilder)
         Private _methodBuilders As Dictionary(Of String, MethodBuilder)
         Private _labels As Dictionary(Of String, Label)
         Private _parent As CodeGenScope
@@ -16,6 +17,7 @@ Namespace Microsoft.SmallBasic
             Get
                 Return _parent
             End Get
+
             Set(ByVal value As CodeGenScope)
                 _parent = value
                 _fields = value.Fields
@@ -37,6 +39,16 @@ Namespace Microsoft.SmallBasic
                 End If
 
                 Return _fields
+            End Get
+        End Property
+
+        Public ReadOnly Property Locals As Dictionary(Of String, LocalBuilder)
+            Get
+                If _locals Is Nothing Then
+                    _locals = New Dictionary(Of String, LocalBuilder)()
+                End If
+
+                Return _locals
             End Get
         End Property
 

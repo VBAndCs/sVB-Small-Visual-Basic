@@ -63,13 +63,20 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Function ConstructForStatement(ByVal tokenEnumerator As TokenEnumerator) As ForStatement
-            Dim forStatement As ForStatement = New ForStatement()
-            forStatement.StartToken = tokenEnumerator.Current
-            forStatement.ForToken = tokenEnumerator.Current
-            Dim forStatement2 = forStatement
+            Dim forStatement As New ForStatement() With {
+                .StartToken = tokenEnumerator.Current,
+                .ForToken = tokenEnumerator.Current,
+                .Subroutine = SubroutineStatement.Current
+            }
             tokenEnumerator.MoveNext()
 
-            If EatSimpleIdentifier(tokenEnumerator, forStatement2.Iterator) AndAlso EatToken(tokenEnumerator, Token.Equals) AndAlso EatExpression(tokenEnumerator, forStatement2.InitialValue) AndAlso EatToken(tokenEnumerator, Token.To, forStatement2.ToToken) AndAlso EatExpression(tokenEnumerator, forStatement2.FinalValue) AndAlso (Not EatOptionalToken(tokenEnumerator, Token.Step, forStatement2.StepToken) OrElse EatExpression(tokenEnumerator, forStatement2.StepValue)) Then
+            If EatSimpleIdentifier(tokenEnumerator, forStatement.Iterator) AndAlso
+                    EatToken(tokenEnumerator, Token.Equals) AndAlso
+                    EatExpression(tokenEnumerator, forStatement.InitialValue) AndAlso
+                    EatToken(tokenEnumerator, Token.To, forStatement.ToToken) AndAlso
+                    EatExpression(tokenEnumerator, forStatement.FinalValue) AndAlso
+                    (Not EatOptionalToken(tokenEnumerator, Token.Step, forStatement.StepToken) OrElse
+                        EatExpression(tokenEnumerator, forStatement.StepValue)) Then
                 ExpectEndOfLine(tokenEnumerator)
             End If
 
@@ -79,7 +86,7 @@ Namespace Microsoft.SmallBasic
             While tokenEnumerator IsNot Nothing
 
                 If tokenEnumerator.Current.Token = Token.EndFor OrElse tokenEnumerator.Current.Token = Token.Next Then
-                    forStatement2.EndForToken = tokenEnumerator.Current
+                    forStatement.EndForToken = tokenEnumerator.Current
                     flag = True
                     Exit While
                 End If
@@ -89,7 +96,7 @@ Namespace Microsoft.SmallBasic
                     Exit While
                 End If
 
-                forStatement2.ForBody.Add(GetStatementFromTokens(tokenEnumerator))
+                forStatement.ForBody.Add(GetStatementFromTokens(tokenEnumerator))
                 tokenEnumerator = ReadNextLine()
             End While
 
@@ -100,7 +107,7 @@ Namespace Microsoft.SmallBasic
                 AddError(ResourceHelper.GetString("EndForExpected"))
             End If
 
-            Return forStatement2
+            Return forStatement
         End Function
 
         Private Function ConstructIfStatement(ByVal tokenEnumerator As TokenEnumerator) As IfStatement
@@ -581,12 +588,14 @@ Namespace Microsoft.SmallBasic
             End If
 
             If tokenEnumerator.Current.Token = Token.LeftBracket Then
-                Dim identifierExpression As New IdentifierExpression()
-                identifierExpression.StartToken = current
-                identifierExpression.Identifier = current
-                identifierExpression.EndToken = current
-                identifierExpression.Precedence = 9
-                Dim leftHand As Expression = identifierExpression
+                Dim leftHand As Expression = New IdentifierExpression() With {
+                    .StartToken = current,
+                    .Identifier = current,
+                    .EndToken = current,
+                    .Precedence = 9,
+                    .Subroutine = SubroutineStatement.Current
+                }
+
                 Dim expression2 As Expression
 
                 While True
@@ -613,13 +622,13 @@ Namespace Microsoft.SmallBasic
                     leftHand = arrayExpression
                 End While
 
-                Dim arrayExpression2 As New ArrayExpression()
-                arrayExpression2.StartToken = current
-                arrayExpression2.EndToken = tokenEnumerator.Current
-                arrayExpression2.Precedence = 9
-                arrayExpression2.LeftHand = leftHand
-                arrayExpression2.Indexer = expression2
-                Return arrayExpression2
+                Return New ArrayExpression() With {
+                    .StartToken = current,
+                    .EndToken = tokenEnumerator.Current,
+                    .Precedence = 9,
+                    .LeftHand = leftHand,
+                    .Indexer = expression2
+                }
             End If
 
             If EatOptionalToken(tokenEnumerator, Token.LeftParens) Then
@@ -637,14 +646,13 @@ Namespace Microsoft.SmallBasic
                 Return methodCallExpression
             End If
 
-
-
-            Dim identifierExpression2 As New IdentifierExpression()
-            identifierExpression2.StartToken = current
-            identifierExpression2.EndToken = current
-            identifierExpression2.Precedence = 9
-            identifierExpression2.Identifier = current
-            Return identifierExpression2
+            Return New IdentifierExpression() With {
+                .StartToken = current,
+                .EndToken = current,
+                .Precedence = 9,
+                .Identifier = current,
+                .Subroutine = SubroutineStatement.Current
+            }
         End Function
 
         Public Shared Function ParseArgumentList(args As String) As List(Of Expression)
@@ -823,19 +831,27 @@ Namespace Microsoft.SmallBasic
             Select Case tokenEnumerator.Current.Token
                 Case Token.While
                     statement2 = ConstructWhileStatement(tokenEnumerator)
+
                 Case Token.For
                     statement2 = ConstructForStatement(tokenEnumerator)
+
                 Case Token.Goto
                     statement2 = ConstructGotoStatement(tokenEnumerator)
+
                 Case Token.If
                     statement2 = ConstructIfStatement(tokenEnumerator)
+
                 Case Token.ElseIf
                     AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("ElseIfUnexpected"), tokenEnumerator.Current.Text))
                     Return New IllegalStatement()
+
                 Case Token.Sub, Token.Function
                     statement2 = ConstructSubStatement(tokenEnumerator)
+
                 Case Token.Identifier
                     statement2 = ConstructIdentifierStatement(tokenEnumerator)
+
+
                 Case Token.Comment
                     Dim emptyStatement As New EmptyStatement()
                     emptyStatement.StartToken = tokenEnumerator.Current
