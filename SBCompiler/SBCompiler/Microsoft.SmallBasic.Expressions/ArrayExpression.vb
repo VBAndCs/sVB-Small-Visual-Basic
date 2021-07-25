@@ -12,10 +12,12 @@ Namespace Microsoft.SmallBasic.Expressions
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             If LeftHand IsNot Nothing Then
+                LeftHand.Parent = Me.Parent
                 LeftHand.AddSymbols(symbolTable)
             End If
 
             If Indexer IsNot Nothing Then
+                Indexer.Parent = Me.Parent
                 Indexer.AddSymbols(symbolTable)
             End If
         End Sub

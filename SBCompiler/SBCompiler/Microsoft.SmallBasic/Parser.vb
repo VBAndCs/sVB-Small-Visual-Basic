@@ -68,6 +68,7 @@ Namespace Microsoft.SmallBasic
                 .ForToken = tokenEnumerator.Current,
                 .Subroutine = SubroutineStatement.Current
             }
+
             tokenEnumerator.MoveNext()
 
             If EatSimpleIdentifier(tokenEnumerator, forStatement.Iterator) AndAlso
@@ -741,11 +742,7 @@ Namespace Microsoft.SmallBasic
 
         Public Sub New(ByVal errors As List(Of [Error]))
             _Errors = errors
-
-            If _Errors Is Nothing Then
-                _Errors = New List(Of [Error])()
-            End If
-
+            If _Errors Is Nothing Then _Errors = New List(Of [Error])()
             _SymbolTable = New SymbolTable(_Errors)
         End Sub
 
@@ -874,6 +871,27 @@ Namespace Microsoft.SmallBasic
                     ElseIf subroutine.SubToken.Token = Token.Sub AndAlso returnExpr IsNot Nothing Then
                         AddError(returnToken, "Sub routines can't return values")
                     End If
+
+                Case Token.ExitLoop
+                    Dim ExitLoopToken = tokenEnumerator.Current
+                    tokenEnumerator.MoveNext()
+
+                    Dim upLevel = 0
+                    Do Until tokenEnumerator.IsEndOfNonCommentList
+                        If tokenEnumerator.Current.Token = Token.Subtraction Then
+                            upLevel += 1
+                        Else
+                            AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
+                            Exit Do
+                        End If
+                        tokenEnumerator.MoveNext()
+                    Loop
+
+                    statement2 = New ExitLoopStatement With {
+                        .StartToken = ExitLoopToken,
+                        .upLevel = upLevel
+                    }
+
             End Select
 
             If statement2 Is Nothing Then

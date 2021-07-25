@@ -64,7 +64,7 @@ Namespace Microsoft.SmallBasic.Completion
         End Sub
 
         Public Shared Sub FillAllKeywords(ByVal completionBag As CompletionBag)
-            FillKeywords(completionBag, Token.If, Token.For, Token.Goto, Token.While, Token.Return)
+            FillKeywords(completionBag, Token.If, Token.For, Token.Goto, Token.While, Token.Return, Token.ExitLoop)
         End Sub
 
         Public Shared Sub FillLogicalExpressionItems(ByVal completionBag As CompletionBag)

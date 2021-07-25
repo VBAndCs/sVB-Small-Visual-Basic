@@ -9,9 +9,9 @@ Namespace Microsoft.SmallBasic.Statements
     Public Class IfStatement
         Inherits Statement
 
-        Public ThenStatements As List(Of Statement) = New List(Of Statement)()
-        Public ElseIfStatements As List(Of Statement) = New List(Of Statement)()
-        Public ElseStatements As List(Of Statement) = New List(Of Statement)()
+        Public ThenStatements As New List(Of Statement)()
+        Public ElseIfStatements As New List(Of Statement)()
+        Public ElseStatements As New List(Of Statement)()
         Public Condition As Expression
         Public IfToken As TokenInfo
         Public ThenToken As TokenInfo
@@ -20,18 +20,22 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             If Condition IsNot Nothing Then
+                Condition.Parent = Me
                 Condition.AddSymbols(symbolTable)
             End If
 
             For Each thenStatement In ThenStatements
+                thenStatement.Parent = Me
                 thenStatement.AddSymbols(symbolTable)
             Next
 
             For Each elseIfStatement In ElseIfStatements
+                elseIfStatement.Parent = Me
                 elseIfStatement.AddSymbols(symbolTable)
             Next
 
             For Each elseStatement In ElseStatements
+                elseStatement.Parent = Me
                 elseStatement.AddSymbols(symbolTable)
             Next
         End Sub

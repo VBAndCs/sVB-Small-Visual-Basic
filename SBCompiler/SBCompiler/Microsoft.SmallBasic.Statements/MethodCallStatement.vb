@@ -10,6 +10,7 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             If MethodCallExpression IsNot Nothing Then
+                MethodCallExpression.Parent = Me
                 MethodCallExpression.AddSymbols(symbolTable)
             End If
         End Sub

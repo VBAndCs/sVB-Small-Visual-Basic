@@ -14,10 +14,12 @@ Namespace Microsoft.SmallBasic.Expressions
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             If LeftHandSide IsNot Nothing Then
+                LeftHandSide.Parent = Me.Parent
                 LeftHandSide.AddSymbols(symbolTable)
             End If
 
             If RightHandSide IsNot Nothing Then
+                RightHandSide.Parent = Me.Parent
                 RightHandSide.AddSymbols(symbolTable)
             End If
         End Sub

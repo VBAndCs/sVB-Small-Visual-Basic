@@ -8,6 +8,12 @@ Namespace Microsoft.SmallBasic.Statements
         Public ReturnExpression As Expression
         Friend Subroutine As SubroutineStatement
 
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            If ReturnExpression IsNot Nothing Then
+                ReturnExpression.Parent = Me
+            End If
+        End Sub
+
         Public Overrides Sub EmitIL(scope As CodeGenScope)
             Dim code = ""
 

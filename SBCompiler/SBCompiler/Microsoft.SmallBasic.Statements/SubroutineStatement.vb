@@ -10,6 +10,7 @@ Namespace Microsoft.SmallBasic.Statements
         Inherits Statement
 
         Friend Shared Current As SubroutineStatement
+
         Public Name As TokenInfo
         Public Params As List(Of TokenInfo)
         Public Body As New List(Of Statement)()
@@ -22,6 +23,7 @@ Namespace Microsoft.SmallBasic.Statements
             End If
 
             For Each item In Body
+                item.Parent = Me
                 item.AddSymbols(symbolTable)
             Next
         End Sub

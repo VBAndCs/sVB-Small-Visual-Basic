@@ -7,7 +7,7 @@ Imports Microsoft.SmallBasic.Expressions
 
 Namespace Microsoft.SmallBasic.Statements
     Public Class WhileStatement
-        Inherits Statement
+        Inherits LoopStatement
 
         Public WhileBody As List(Of Statement) = New List(Of Statement)()
         Public Condition As Expression
@@ -16,10 +16,12 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             If Condition IsNot Nothing Then
+                Condition.Parent = Me
                 Condition.AddSymbols(symbolTable)
             End If
 
             For Each item In WhileBody
+                item.Parent = Me
                 item.AddSymbols(symbolTable)
             Next
         End Sub
@@ -31,19 +33,19 @@ Namespace Microsoft.SmallBasic.Statements
         End Sub
 
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
-            Dim label As Label = scope.ILGenerator.DefineLabel()
-            Dim label2 As Label = scope.ILGenerator.DefineLabel()
-            scope.ILGenerator.MarkLabel(label2)
+            ExitLabel = scope.ILGenerator.DefineLabel()
+            ContinueLabel = scope.ILGenerator.DefineLabel()
+            scope.ILGenerator.MarkLabel(ContinueLabel)
             Condition.EmitIL(scope)
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)
-            scope.ILGenerator.Emit(OpCodes.Brfalse, label)
+            scope.ILGenerator.Emit(OpCodes.Brfalse, ExitLabel)
 
             For Each item In WhileBody
                 item.EmitIL(scope)
             Next
 
-            scope.ILGenerator.Emit(OpCodes.Br, label2)
-            scope.ILGenerator.MarkLabel(label)
+            scope.ILGenerator.Emit(OpCodes.Br, ContinueLabel)
+            scope.ILGenerator.MarkLabel(ExitLabel)
         End Sub
 
         Public Overrides Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)

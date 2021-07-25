@@ -6,6 +6,8 @@ Namespace Microsoft.SmallBasic.Statements
         Public Property StartToken As TokenInfo
         Public Property EndingComment As TokenInfo
 
+        Public Parent As Statement
+
         Public Overridable Sub AddSymbols(ByVal symbolTable As SymbolTable)
         End Sub
 

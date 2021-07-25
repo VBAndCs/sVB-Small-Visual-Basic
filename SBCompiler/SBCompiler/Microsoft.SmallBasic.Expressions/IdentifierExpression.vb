@@ -16,23 +16,17 @@ Namespace Microsoft.SmallBasic.Expressions
         End Sub
 
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
-            If scope.Fields.ContainsKey(Identifier.NormalizedText) Then
+            Dim var = scope.GetLocalBuilder(Subroutine, Identifier)
+
+            If var IsNot Nothing Then
+                scope.ILGenerator.Emit(OpCodes.Ldloc, var)
+
+            ElseIf scope.Fields.ContainsKey(Identifier.NormalizedText) Then
                 Dim field = scope.Fields(Identifier.NormalizedText)
                 scope.ILGenerator.Emit(OpCodes.Ldsfld, field)
-            Else
-                Dim localkey = ""
-                If Subroutine Is Nothing Then
-                    localkey = Identifier.NormalizedText
-                Else
-                    localkey = $"{Subroutine.Name.NormalizedText}.{Identifier.NormalizedText}"
-                End If
 
-                If scope.Locals.ContainsKey(localkey) Then
-                    Dim var = scope.Locals(localkey)
-                    scope.ILGenerator.Emit(OpCodes.Ldloc, var)
-                Else
-                    scope.SymbolTable.Errors.Add(New [Error](Identifier, $"The variable `{Identifier.Text}` is used but before beeing initialized."))
-                End If
+            Else
+                scope.SymbolTable.Errors.Add(New [Error](Identifier, $"The variable `{Identifier.Text}` is used but before beeing initialized."))
             End If
         End Sub
 

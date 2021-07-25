@@ -25,6 +25,7 @@ Namespace Microsoft.SmallBasic.Expressions
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             For Each argument In Arguments
+                argument.Parent = Me.Parent
                 argument.AddSymbols(symbolTable)
             Next
         End Sub

@@ -12,6 +12,7 @@ Namespace Microsoft.SmallBasic.Expressions
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             If Expression IsNot Nothing Then
+                Expression.Parent = Me.Parent
                 Expression.AddSymbols(symbolTable)
             End If
         End Sub

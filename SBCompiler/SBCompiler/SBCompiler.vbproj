@@ -105,11 +105,13 @@
     <Compile Include="Microsoft.SmallBasic.Statements\AssignmentStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\ElseIfStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\EmptyStatement.vb" />
+    <Compile Include="Microsoft.SmallBasic.Statements\ExitLoopStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\ForStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\GotoStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\IfStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\IllegalStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\LabelStatement.vb" />
+    <Compile Include="Microsoft.SmallBasic.Statements\LoopStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\ReturnStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\MethodCallStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\Statement.vb" />

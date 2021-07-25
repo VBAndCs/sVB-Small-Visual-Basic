@@ -14,8 +14,15 @@ Namespace Microsoft.SmallBasic.Statements
         Public EqualsToken As TokenInfo
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
-            LeftValue?.AddSymbols(symbolTable)
-            RightValue?.AddSymbols(symbolTable)
+            If LeftValue IsNot Nothing Then
+                LeftValue.Parent = Me
+                LeftValue.AddSymbols(symbolTable)
+            End If
+
+            If RightValue IsNot Nothing Then
+                RightValue.Parent = Me
+                RightValue.AddSymbols(symbolTable)
+            End If
 
             If TypeOf LeftValue Is IdentifierExpression Then
                 Dim identifierExpression = CType(LeftValue, IdentifierExpression)

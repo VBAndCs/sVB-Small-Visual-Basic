@@ -13,6 +13,7 @@
         EndSub
         EndFunction
         [Return]
+        ExitLoop
         EndWhile
         [Wend]
         [For]

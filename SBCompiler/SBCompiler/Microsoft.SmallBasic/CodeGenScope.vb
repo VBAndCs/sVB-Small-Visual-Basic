@@ -5,13 +5,47 @@ Imports System.Reflection.Emit
 Namespace Microsoft.SmallBasic
     Public Class CodeGenScope
         Private _fields As Dictionary(Of String, FieldInfo)
-        Private _locals As Dictionary(Of String, LocalBuilder)
+        Private Locals As New Dictionary(Of String, LocalBuilder)
         Private _methodBuilders As Dictionary(Of String, MethodBuilder)
         Private _labels As Dictionary(Of String, Label)
         Private _parent As CodeGenScope
         Public Property TypeBuilder As TypeBuilder
         Public Property MethodBuilder As MethodBuilder
         Public Property ILGenerator As ILGenerator
+
+        Friend Function CreateLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As TokenInfo, varType As Type) As LocalBuilder
+            Dim varBuilder = GetLocalBuilder(Subroutine, varIdentifier)
+            If varBuilder Is Nothing Then
+                varBuilder = ILGenerator.DeclareLocal(varType)
+                varBuilder.SetLocalSymInfo(varIdentifier.NormalizedText)
+                AddLocalBuilder(Subroutine, varIdentifier, varBuilder)
+            End If
+            Return varBuilder
+        End Function
+
+        Friend Function GetLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As TokenInfo) As LocalBuilder
+            Dim key = ""
+            If Subroutine Is Nothing Then
+                key = varIdentifier.NormalizedText
+            Else
+                key = $"{Subroutine.Name.NormalizedText}.{varIdentifier.NormalizedText}"
+            End If
+
+            If Not Locals.ContainsKey(key) Then Return Nothing
+            Return Locals(key)
+        End Function
+
+        Private Sub AddLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As TokenInfo, localVarBuilder As LocalBuilder)
+            Dim key = ""
+            If Subroutine Is Nothing Then
+                key = varIdentifier.NormalizedText
+            Else
+                key = $"{Subroutine.Name.NormalizedText}.{varIdentifier.NormalizedText}"
+            End If
+
+            Locals(key) = localVarBuilder
+        End Sub
+
 
         Public Property Parent As CodeGenScope
             Get
@@ -39,16 +73,6 @@ Namespace Microsoft.SmallBasic
                 End If
 
                 Return _fields
-            End Get
-        End Property
-
-        Public ReadOnly Property Locals As Dictionary(Of String, LocalBuilder)
-            Get
-                If _locals Is Nothing Then
-                    _locals = New Dictionary(Of String, LocalBuilder)()
-                End If
-
-                Return _locals
             End Get
         End Property
 

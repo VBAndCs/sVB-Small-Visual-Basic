@@ -1,0 +1,27 @@
+
+n = 1
+While n < 5
+  TextWindow.WriteLine("n = " + n)
+  For i = 1 To 1
+    TextWindow.WriteLine("i = " + i)
+    For j = 1 To 1
+       TextWindow.WriteLine("j = " + j)
+       TextWindow.WriteLine("Enter 1 to exit for j")
+       TextWindow.WriteLine("Enter 2 to exit for i")
+       TextWindow.WriteLine("Enter 3 to exit While n")
+      x = TextWindow.ReadNumber()
+      If x = 1 Then
+        ExitLoop
+      ElseIf x = 2 Then                  
+        ExitLoop -
+      ElseIf x = 3 Then   
+        ExitLoop --
+     EndIf
+     TextWindow.WriteLine("Hello j")
+  Next 
+  TextWindow.WriteLine("Hello i")
+  Next
+  n = n + 1  
+  TextWindow.WriteLine("Hello n")
+Wend
+TextWindow.WriteLine("End")  
