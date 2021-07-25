@@ -23,13 +23,10 @@ Namespace Microsoft.SmallBasic.Statements
             Return 0
         End Function
 
-        Public Shared Function GetStatementContaining(ByVal statements As List(Of Statement), ByVal line As Integer) As Statement
+        Public Shared Function GetStatementContaining(statements As List(Of Statement), line As Integer) As Statement
             For num = statements.Count - 1 To 0 Step -1
                 Dim statement = statements(num)
-
-                If line >= statement.StartToken.Line Then
-                    Return statement
-                End If
+                If line >= statement.StartToken.Line Then Return statement
             Next
 
             Return Nothing

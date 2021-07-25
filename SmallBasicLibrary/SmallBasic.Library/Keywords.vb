@@ -131,6 +131,11 @@ Namespace Library
         Public Shared Sub [Sub]()
         End Sub
 
+        Public Shared Sub [Function]()
+        End Sub
+
+        Public Shared Sub [EndFunction]()
+        End Sub
         ''' <summary>
         ''' Check the Sub statement for information about the EndSub keyword.
         ''' </summary>

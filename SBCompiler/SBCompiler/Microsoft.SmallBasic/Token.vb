@@ -11,6 +11,8 @@
         [Next]
         [EndIf]
         EndSub
+        EndFunction
+        [Return]
         EndWhile
         [Wend]
         [For]
@@ -18,6 +20,7 @@
         [If]
         [Step]
         [Sub]
+        [Function]
         [Then]
         [To]
         [True]

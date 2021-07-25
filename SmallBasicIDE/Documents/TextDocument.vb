@@ -372,6 +372,8 @@ Namespace Microsoft.SmallBasic.Documents
                         AutoCompleteBlock(textView, line, code, keyword, $"While {paran}#   ", "Wend", paran.Length)
                     Case "sub"
                         AutoCompleteBlock(textView, line, code, keyword, $"Sub #   ", "EndSub", paran.Length)
+                    Case "function"
+                        AutoCompleteBlock(textView, line, code, keyword, $"Function #   ", "EndFunction", paran.Length)
                     Case Else
                         e.Handled = False
                 End Select

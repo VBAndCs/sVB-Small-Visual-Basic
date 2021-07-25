@@ -294,14 +294,14 @@ Namespace Microsoft.SmallBasic.Engine
 
         Private Sub TranslateSubroutineStatement(ByVal statement As SubroutineStatement)
             Dim list As List(Of Instruction) = New List(Of Instruction)()
-            SubroutineInstructions(statement.SubroutineName.NormalizedText) = list
-            TranslateStatements(list, statement.SubroutineBody)
+            SubroutineInstructions(statement.Name.NormalizedText) = list
+            TranslateStatements(list, statement.Body)
         End Sub
 
         Private Sub TranslateSubroutineCallStatement(ByVal instructions As List(Of Instruction), ByVal statement As SubroutineCallStatement)
             instructions.Add(New SubroutineCallInstruction With {
                 .LineNumber = statement.StartToken.Line,
-                .SubroutineName = statement.SubroutineName.NormalizedText
+                .SubroutineName = statement.Name.NormalizedText
             })
         End Sub
 

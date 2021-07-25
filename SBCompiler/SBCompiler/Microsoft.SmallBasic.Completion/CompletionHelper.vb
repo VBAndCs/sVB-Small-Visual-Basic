@@ -58,12 +58,13 @@ Namespace Microsoft.SmallBasic.Completion
             FillSubroutines(completionBag)
 
             If inGlobalScope Then
-                FillKeywords(completionBag, Token.Sub)
+                FillKeywords(completionBag, Token.Sub, Token.Function)
+
             End If
         End Sub
 
         Public Shared Sub FillAllKeywords(ByVal completionBag As CompletionBag)
-            FillKeywords(completionBag, Token.If, Token.For, Token.Goto, Token.While)
+            FillKeywords(completionBag, Token.If, Token.For, Token.Goto, Token.While, Token.Return)
         End Sub
 
         Public Shared Sub FillLogicalExpressionItems(ByVal completionBag As CompletionBag)

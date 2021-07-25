@@ -9,24 +9,25 @@ Namespace Microsoft.SmallBasic.Statements
     Public Class SubroutineStatement
         Inherits Statement
 
-        Public SubroutineBody As List(Of Statement) = New List(Of Statement)()
-        Public SubroutineName As TokenInfo
+        Public Name As TokenInfo
+        Public Params As List(Of TokenInfo)
+        Public Body As New List(Of Statement)()
         Public SubToken As TokenInfo
         Public EndSubToken As TokenInfo
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
-            If SubroutineName.Token <> 0 Then
-                symbolTable.AddSubroutine(SubroutineName)
+            If Name.Token <> 0 Then
+                symbolTable.AddSubroutine(Name, StartToken.Token)
             End If
 
-            For Each item In SubroutineBody
+            For Each item In Body
                 item.AddSymbols(symbolTable)
             Next
         End Sub
 
         Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
-            Dim methodBuilder = scope.TypeBuilder.DefineMethod(SubroutineName.NormalizedText, MethodAttributes.Static)
-            scope.MethodBuilders.Add(SubroutineName.NormalizedText, methodBuilder)
+            Dim methodBuilder = scope.TypeBuilder.DefineMethod(Name.NormalizedText, MethodAttributes.Static)
+            scope.MethodBuilders.Add(Name.NormalizedText, methodBuilder)
             Dim codeGenScope As CodeGenScope = New CodeGenScope()
             codeGenScope.ILGenerator = methodBuilder.GetILGenerator()
             codeGenScope.TypeBuilder = scope.TypeBuilder
@@ -34,42 +35,52 @@ Namespace Microsoft.SmallBasic.Statements
             codeGenScope.Parent = scope
             Dim scope2 = codeGenScope
 
-            For Each item In SubroutineBody
+            For Each item In Body
                 item.PrepareForEmit(scope2)
             Next
         End Sub
 
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
-            Dim methodBuilder = scope.MethodBuilders(SubroutineName.NormalizedText)
-            Dim codeGenScope As CodeGenScope = New CodeGenScope()
+            Dim methodBuilder = scope.MethodBuilders(Name.NormalizedText)
+            Dim codeGenScope As New CodeGenScope()
             codeGenScope.ILGenerator = methodBuilder.GetILGenerator()
             codeGenScope.TypeBuilder = scope.TypeBuilder
             codeGenScope.MethodBuilder = methodBuilder
             codeGenScope.Parent = scope
             Dim codeGenScope2 = codeGenScope
 
-            For Each item In SubroutineBody
+            For Each item In Body
                 item.EmitIL(codeGenScope2)
             Next
 
             codeGenScope2.ILGenerator.Emit(OpCodes.Ret)
         End Sub
 
-        Public Overrides Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)
+        Public Overrides Sub PopulateCompletionItems(
+                         completionBag As CompletionBag,
+                         line As Integer,
+                         column As Integer,
+                         globalScope As Boolean)
+
             If StartToken.Line = line Then
-                If SubroutineName.Token = Token.Illegal OrElse column < SubroutineName.Column Then
+                If Name.Token = Token.Illegal OrElse column < Name.Column Then
                     CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
                 End If
 
                 Return
             End If
 
-            Dim statementContaining = GetStatementContaining(SubroutineBody, line)
+            Dim statementContaining = GetStatementContaining(Body, line)
 
             If statementContaining IsNot Nothing Then
-                CompletionHelper.FillKeywords(completionBag, Token.EndSub)
+                If StartToken.Token = Token.Sub Then
+                    CompletionHelper.FillKeywords(completionBag, Token.EndSub)
+                Else
+                    CompletionHelper.FillKeywords(completionBag, Token.EndFunction)
+                End If
+
                 statementContaining.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
-            End If
+                End If
         End Sub
 
         Public Overrides Function GetIndentationLevel(ByVal line As Integer) As Integer
@@ -81,7 +92,7 @@ Namespace Microsoft.SmallBasic.Statements
                 Return 0
             End If
 
-            Dim statementContaining = GetStatementContaining(SubroutineBody, line)
+            Dim statementContaining = GetStatementContaining(Body, line)
 
             If statementContaining IsNot Nothing Then
                 Return 1 + statementContaining.GetIndentationLevel(line)
@@ -92,9 +103,9 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public Overrides Function ToString() As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1}" & VisualBasic.Constants.vbCrLf, New Object(1) {SubToken.Text, SubroutineName.Text})
+            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1}" & VisualBasic.Constants.vbCrLf, New Object(1) {SubToken.Text, Name.Text})
 
-            For Each item In SubroutineBody
+            For Each item In Body
                 stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {item})
             Next
 

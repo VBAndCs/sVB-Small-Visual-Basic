@@ -54,7 +54,7 @@ Namespace Microsoft.SmallBasic.Statements
                     scope.ILGenerator.EmitCall(OpCodes.Call, value.GetAddMethod(), Nothing)
                 Else
                     Dim propertyInfo = typeInfo.Properties(propertyExpression.PropertyName.NormalizedText)
-                    Dim setMethod As MethodInfo = propertyInfo.GetSetMethod()
+                    Dim setMethod = propertyInfo.GetSetMethod()
                     RightValue.EmitIL(scope)
                     scope.ILGenerator.EmitCall(OpCodes.Call, setMethod, Nothing)
                 End If
@@ -85,8 +85,8 @@ Namespace Microsoft.SmallBasic.Statements
                     item.PrepareForEmit(scope)
                 Next
 
-                For Each item2 In _parser.ParseTree
-                    item2.EmitIL(scope)
+                For Each item In _parser.ParseTree
+                    item.EmitIL(scope)
                 Next
                 Return True
 

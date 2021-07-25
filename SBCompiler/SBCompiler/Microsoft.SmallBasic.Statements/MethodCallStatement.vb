@@ -6,6 +6,7 @@ Namespace Microsoft.SmallBasic.Statements
         Inherits Statement
 
         Public MethodCallExpression As MethodCallExpression
+        Public Shared DoNotPopReturnValue As Boolean
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             If MethodCallExpression IsNot Nothing Then
@@ -16,13 +17,13 @@ Namespace Microsoft.SmallBasic.Statements
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
             MethodCallExpression.EmitIL(scope)
             Dim methodInfo = MethodCallExpression.GetMethodInfo(scope)
-            If methodInfo.ReturnType IsNot GetType(Void) Then
+            If Not DoNotPopReturnValue AndAlso methodInfo.ReturnType IsNot GetType(Void) Then
                 scope.ILGenerator.Emit(System.Reflection.Emit.OpCodes.Pop)
             End If
         End Sub
 
         Public Overrides Function ToString() As String
-            Return String.Format(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {MethodCallExpression})
+            Return String.Format(CultureInfo.CurrentUICulture, "{0}" & vbCrLf, New Object(0) {MethodCallExpression})
         End Function
     End Class
 End Namespace

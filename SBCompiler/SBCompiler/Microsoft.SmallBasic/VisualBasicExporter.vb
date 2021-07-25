@@ -576,7 +576,7 @@ Namespace Microsoft.SmallBasic
 
         Private Sub EmitSubroutineCallStatement(ByVal subroutineCallStatement As SubroutineCallStatement)
             Indent()
-            writer.Write("{0}()", NormalizeVariable(subroutineCallStatement.SubroutineName.Text))
+            writer.Write("{0}()", NormalizeVariable(subroutineCallStatement.Name.Text))
 
             If subroutineCallStatement.EndingComment.Token <> 0 Then
                 writer.Write(" {0}", subroutineCallStatement.EndingComment.Text)
@@ -587,7 +587,7 @@ Namespace Microsoft.SmallBasic
 
         Private Sub EmitSubroutineStatement(ByVal subroutineStatement As SubroutineStatement)
             Indent()
-            writer.Write("Sub {0}()", NormalizeVariable(subroutineStatement.SubroutineName.Text))
+            writer.Write("Sub {0}()", NormalizeVariable(subroutineStatement.Name.Text))
 
             If subroutineStatement.EndingComment.Token <> 0 Then
                 writer.Write(" {0}", subroutineStatement.EndingComment.Text)
@@ -596,7 +596,7 @@ Namespace Microsoft.SmallBasic
             writer.WriteLine()
             indentationLevel += 1
 
-            For Each item In subroutineStatement.SubroutineBody
+            For Each item In subroutineStatement.Body
                 EmitStatement(item)
             Next
 

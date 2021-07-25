@@ -290,6 +290,10 @@ Namespace Microsoft.SmallBasic
                     Return Token.EndIf
                 Case "endsub"
                     Return Token.EndSub
+                Case "endfunction"
+                    Return Token.EndFunction
+                Case "return"
+                    Return Token.Return
                 Case "endwhile"
                     Return Token.EndWhile
                 Case "wend"
@@ -306,6 +310,8 @@ Namespace Microsoft.SmallBasic
                     Return Token.Step
                 Case "sub"
                     Return Token.Sub
+                Case "function"
+                    Return Token.Function
                 Case "then"
                     Return Token.Then
                 Case "to"
@@ -329,7 +335,7 @@ Namespace Microsoft.SmallBasic
                     Return TokenType.NumericLiteral
                 Case Token.Identifier
                     Return TokenType.Identifier
-                Case Token.Else, Token.ElseIf, Token.EndFor, Token.Next, Token.EndIf, Token.EndSub, Token.EndWhile, Token.Wend, Token.For, Token.Goto, Token.If, Token.Step, Token.Sub, Token.Then, Token.To, Token.While
+                Case Token.Else, Token.ElseIf, Token.EndFor, Token.Next, Token.EndIf, Token.EndSub, Token.EndFunction, Token.EndWhile, Token.Wend, Token.For, Token.Goto, Token.Return, Token.If, Token.Step, Token.Sub, Token.Function, Token.Then, Token.To, Token.While
                     Return TokenType.Keyword
                 Case Token.And, Token.Equals, Token.Or, Token.Dot, Token.Addition, Token.Subtraction, Token.Division, Token.Multiplication, Token.LeftParens, Token.RightParens, Token.LessThan, Token.LessThanEqualTo, Token.GreaterThan, Token.GreaterThanEqualTo, Token.NotEqualTo, Token.Comma, Token.Colon
                     Return TokenType.Operator

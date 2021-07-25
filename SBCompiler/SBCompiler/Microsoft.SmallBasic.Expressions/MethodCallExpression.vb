@@ -30,13 +30,23 @@ Namespace Microsoft.SmallBasic.Expressions
         End Sub
 
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
-            Dim methodInfo = GetMethodInfo(scope)
+            If TypeName.Token = Token.Illegal Then ' Function Call
+                Dim subroutine As New Statements.SubroutineCallStatement() With {
+                    .Name = MethodName,
+                    .Args = Arguments,
+                    .IsFunctionCall = True
+                }
+                subroutine.EmitIL(scope)
+            Else
+                Dim methodInfo = GetMethodInfo(scope)
 
-            For Each argument In Arguments
-                argument.EmitIL(scope)
-            Next
+                For Each argument In Arguments
+                    argument.EmitIL(scope)
+                Next
 
-            scope.ILGenerator.EmitCall(OpCodes.Call, methodInfo, Nothing)
+                scope.ILGenerator.EmitCall(OpCodes.Call, methodInfo, Nothing)
+            End If
+
         End Sub
 
         Public Function GetMethodInfo(ByVal scope As CodeGenScope) As MethodInfo
@@ -45,8 +55,12 @@ Namespace Microsoft.SmallBasic.Expressions
         End Function
 
         Public Overrides Function ToString() As String
-            Dim stringBuilder As StringBuilder = New StringBuilder()
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}.{1}(", New Object(1) {TypeName.Text, MethodName.Text})
+            Dim stringBuilder As New StringBuilder()
+            If TypeName.Token = Token.Illegal Then
+                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{1}(", New Object(1) {TypeName.Text, MethodName.Text})
+            Else
+                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}.{1}(", New Object(1) {TypeName.Text, MethodName.Text})
+            End If
 
             If Arguments.Count > 0 Then
                 For Each argument In Arguments

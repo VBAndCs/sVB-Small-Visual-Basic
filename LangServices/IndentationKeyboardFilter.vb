@@ -84,17 +84,17 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Dim tokens = New LineScanner().GetTokenList(lineText, 1)
 
                     Select Case tokens.Current.Token
-                        Case Token.EndFor, Token.Next, Token.ElseIf, Token.Else, Token.EndIf, Token.EndSub, Token.EndWhile, Token.Wend
+                        Case Token.EndFor, Token.Next, Token.ElseIf, Token.Else, Token.EndIf, Token.EndSub, Token.EndFunction, Token.EndWhile, Token.Wend
                             Select Case prevTokens.Current.Token
-                                Case Token.For, Token.If, Token.ElseIf, Token.Else, Token.Sub, Token.While
+                                Case Token.For, Token.If, Token.ElseIf, Token.Else, Token.Sub, Token.Function, Token.While
                                     inden = prevIndentationLevel
                                 Case Else
                                     inden = prevIndentationLevel - 3
                             End Select
                         Case Else
                                     Select Case prevTokens.Current.Token
-                                        Case Token.For, Token.If, Token.ElseIf, Token.Else, Token.Sub, Token.While
-                                            inden = prevIndentationLevel + 3
+                                Case Token.For, Token.If, Token.ElseIf, Token.Else, Token.Sub, Token.Function, Token.While
+                                    inden = prevIndentationLevel + 3
                                         Case Else
                                             inden = prevIndentationLevel
                                     End Select

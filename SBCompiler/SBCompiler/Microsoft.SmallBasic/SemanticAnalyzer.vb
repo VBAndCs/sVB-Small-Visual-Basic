@@ -51,7 +51,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzeStatement(ByVal statement As Statement)
+        Private Sub AnalyzeStatement(statement As Statement)
             Dim type As Type = statement.GetType()
 
             If type Is GetType(AssignmentStatement) Then
@@ -194,18 +194,27 @@ Namespace Microsoft.SmallBasic
 
         Private Sub AnalyzeMethodCallStatement(ByVal methodCallStatement As MethodCallStatement)
             If methodCallStatement.MethodCallExpression IsNot Nothing Then
-                AnalyzeExpression(methodCallStatement.MethodCallExpression, leaveValueInStack:=False, mustBeAssignable:=False)
+                Dim method = methodCallStatement.MethodCallExpression
+                If method.TypeName.Token = Token.Illegal Then ' Function Call
+                    If Not _symbolTable.Subroutines.ContainsKey(method.MethodName.NormalizedText) Then
+                        _parser.AddError(method.MethodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {method.MethodName.Text}))
+                    Else
+
+                    End If
+                Else
+                    AnalyzeExpression(methodCallStatement.MethodCallExpression, leaveValueInStack:=False, mustBeAssignable:=False)
+                End If
             End If
         End Sub
 
         Private Sub AnalyzeSubroutineCallStatement(ByVal subroutineCallStatement As SubroutineCallStatement)
-            If subroutineCallStatement.SubroutineName.Token <> 0 Then
-                NoteSubroutineCall(subroutineCallStatement.SubroutineName)
+            If subroutineCallStatement.Name.Token <> 0 Then
+                NoteSubroutineCall(subroutineCallStatement.Name)
             End If
         End Sub
 
         Private Sub AnalyzeSubroutineStatement(ByVal subroutineStatement As SubroutineStatement)
-            For Each item In subroutineStatement.SubroutineBody
+            For Each item In subroutineStatement.Body
                 AnalyzeStatement(item)
             Next
         End Sub
@@ -221,7 +230,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub NoteEventReference(ByVal leftValue As Expression, ByVal subroutineName As TokenInfo)
-            Dim propertyExpression As PropertyExpression = TryCast(leftValue, PropertyExpression)
+            Dim propertyExpression = TryCast(leftValue, PropertyExpression)
 
             If propertyExpression IsNot Nothing Then
                 Dim typeName = propertyExpression.TypeName

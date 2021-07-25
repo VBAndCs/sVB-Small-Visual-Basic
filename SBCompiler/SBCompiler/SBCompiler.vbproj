@@ -110,6 +110,7 @@
     <Compile Include="Microsoft.SmallBasic.Statements\IfStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\IllegalStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\LabelStatement.vb" />
+    <Compile Include="Microsoft.SmallBasic.Statements\ReturnStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\MethodCallStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\Statement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\SubroutineCallStatement.vb" />

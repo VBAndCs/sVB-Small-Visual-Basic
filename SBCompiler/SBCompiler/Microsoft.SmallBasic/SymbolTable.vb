@@ -54,8 +54,9 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Public Sub AddSubroutine(ByVal subroutineName As TokenInfo)
+        Public Sub AddSubroutine(subroutineName As TokenInfo, type As Token)
             Dim normalizedText = subroutineName.NormalizedText
+            subroutineName.Token = type
 
             If Variables.ContainsKey(normalizedText) Then
                 Variables.Remove(normalizedText)

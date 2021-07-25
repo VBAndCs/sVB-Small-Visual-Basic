@@ -800,16 +800,16 @@ Namespace Microsoft.SmallBasic
 
         End Function
 
-        Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
-            Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
-            Dim UnSaved = Path.Combine(appDir, "UnSaved")
-            For Each d In IO.Directory.GetDirectories(UnSaved)
-                Try
-                    Global.My.Computer.FileSystem.DeleteDirectory(d, VisualBasic.FileIO.DeleteDirectoryOption.DeleteAllContents)
-                Catch
-                End Try
-            Next
-        End Sub
+        'Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
+        '    Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
+        '    Dim UnSaved = Path.Combine(appDir, "UnSaved")
+        '    For Each d In IO.Directory.GetDirectories(UnSaved)
+        '        Try
+        '            Global.My.Computer.FileSystem.DeleteDirectory(d, VisualBasic.FileIO.DeleteDirectoryOption.DeleteAllContents)
+        '        Catch
+        '        End Try
+        '    Next
+        'End Sub
 
 
         Private ReadOnly WordRgex As New Verex(Patterns.Symbols.AnyWord)
