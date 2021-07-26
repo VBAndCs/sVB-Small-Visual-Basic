@@ -367,7 +367,7 @@ Namespace Microsoft.SmallBasic.Documents
                     Case "elseif"
                         AutoCompleteBlock(textView, line, code, keyword, $"ElseIf {paran} Then#   ", "", paran.Length)
                     Case "for"
-                        AutoCompleteBlock(textView, line, code, keyword, $"For #   ", "Next", paran.Length)
+                        AutoCompleteBlock(textView, line, code, keyword, $"For  = ? To ? #   ", "Next", paran.Length)
                     Case "while"
                         AutoCompleteBlock(textView, line, code, keyword, $"While {paran}#   ", "Wend", paran.Length)
                     Case "sub"

@@ -49,5 +49,6 @@
         Colon
         SingleQuote
         DoubleQuote
+        ContinueLoop
     End Enum
 End Namespace

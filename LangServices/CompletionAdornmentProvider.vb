@@ -41,7 +41,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Sub CommitItem(item As CompletionItem)
             If adornment IsNot Nothing Then
                 Dim replacementText = item.ReplacementText
-                Dim replaceSpan As Span = adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
+                Dim replaceSpan = adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
                 editorOperations.ReplaceText(replaceSpan, replacementText, undoHistory)
                 DismissAdornment(force:=True)
                 TryCast(textView, Control)?.Focus()

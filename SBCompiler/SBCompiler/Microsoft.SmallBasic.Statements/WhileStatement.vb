@@ -35,6 +35,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
             ExitLabel = scope.ILGenerator.DefineLabel()
             ContinueLabel = scope.ILGenerator.DefineLabel()
+
             scope.ILGenerator.MarkLabel(ContinueLabel)
             Condition.EmitIL(scope)
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)

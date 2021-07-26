@@ -296,6 +296,8 @@ Namespace Microsoft.SmallBasic
                     Return Token.Return
                 Case "exitloop"
                     Return Token.ExitLoop
+                Case "continueloop"
+                    Return Token.ContinueLoop
                 Case "endwhile"
                     Return Token.EndWhile
                 Case "wend"
@@ -342,7 +344,7 @@ Namespace Microsoft.SmallBasic
                 Case Token.Identifier
                     Return TokenType.Identifier
 
-                Case Token.Else, Token.ElseIf, Token.EndFor, Token.Next, Token.EndIf, Token.EndSub, Token.EndFunction, Token.EndWhile, Token.Wend, Token.For, Token.Goto, Token.Return, Token.ExitLoop, Token.If, Token.Step, Token.Sub, Token.Function, Token.Then, Token.To, Token.While
+                Case Token.Else, Token.ElseIf, Token.EndFor, Token.Next, Token.EndIf, Token.EndSub, Token.EndFunction, Token.EndWhile, Token.Wend, Token.For, Token.Goto, Token.Return, Token.ExitLoop, Token.ContinueLoop, Token.If, Token.Step, Token.Sub, Token.Function, Token.Then, Token.To, Token.While
                     Return TokenType.Keyword
 
                 Case Token.And, Token.Equals, Token.Or, Token.Dot, Token.Addition, Token.Subtraction, Token.Division, Token.Multiplication, Token.LeftParens, Token.RightParens, Token.LessThan, Token.LessThanEqualTo, Token.GreaterThan, Token.GreaterThanEqualTo, Token.NotEqualTo, Token.Comma, Token.Colon

@@ -1,8 +1,9 @@
 ﻿Imports System.Reflection.Emit
+Imports Microsoft.SmallBasic.Completion
 
 Namespace Microsoft.SmallBasic.Statements
 
-    Public Class ExitLoopStatement
+    Public Class JumbLoopStatement
         Inherits Statement
 
         Public UpLevel As Integer
@@ -20,7 +21,7 @@ Namespace Microsoft.SmallBasic.Statements
                     TypeOf parentStatement Is WhileStatement Then Return
             Loop
 
-            symbolTable.Errors.Add(New [Error](StartToken, "ExitLoop can only appear insde For and While blocks."))
+            symbolTable.Errors.Add(New [Error](StartToken, $"{StartToken.Text} can only appear insde For and While blocks."))
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
@@ -30,7 +31,13 @@ Namespace Microsoft.SmallBasic.Statements
 
             Do
                 If parentStatement.Parent Is Nothing OrElse level = 0 Then
-                    If loopStatement IsNot Nothing Then scope.ILGenerator.Emit(OpCodes.Br, loopStatement.ExitLabel)
+                    If loopStatement IsNot Nothing Then
+                        If StartToken.Token = Token.ExitLoop Then
+                            scope.ILGenerator.Emit(OpCodes.Br, loopStatement.ExitLabel)
+                        Else
+                            scope.ILGenerator.Emit(OpCodes.Br, loopStatement.ContinueLabel)
+                        End If
+                    End If
                     Return
                 End If
 
@@ -44,5 +51,6 @@ Namespace Microsoft.SmallBasic.Statements
                 End If
             Loop
         End Sub
+
     End Class
 End Namespace

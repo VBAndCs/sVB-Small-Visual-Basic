@@ -30,7 +30,6 @@ Namespace Microsoft.SmallBasic.Statements
                 Dim statement = statements(num)
                 If line >= statement.StartToken.Line Then Return statement
             Next
-
             Return Nothing
         End Function
     End Class

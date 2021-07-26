@@ -69,11 +69,11 @@ Namespace Microsoft.SmallBasic.Statements
                 If Name.Token = Token.Illegal OrElse column < Name.Column Then
                     CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
                 End If
-
                 Return
             End If
 
             Dim statementContaining = GetStatementContaining(Body, line)
+            CompletionHelper.FillLocals(completionBag, Name.NormalizedText)
 
             If statementContaining IsNot Nothing Then
                 If StartToken.Token = Token.Sub Then

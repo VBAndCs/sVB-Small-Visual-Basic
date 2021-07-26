@@ -42,8 +42,13 @@ Namespace Microsoft.SmallBasic.Statements
 
             If identifierExpression IsNot Nothing Then
                 If Not LowerAndEmitIL(scope) Then
-                    Dim field = scope.Fields(identifierExpression.Identifier.NormalizedText)
-                    scope.ILGenerator.Emit(OpCodes.Stsfld, field)
+                    Dim var = scope.GetLocalBuilder(identifierExpression.Subroutine, identifierExpression.Identifier)
+                    If var IsNot Nothing Then
+                        scope.ILGenerator.Emit(OpCodes.Stloc, var)
+                    Else
+                        Dim field = scope.Fields(identifierExpression.Identifier.NormalizedText)
+                        scope.ILGenerator.Emit(OpCodes.Stsfld, field)
+                    End If
                 End If
             ElseIf arrayExpression IsNot Nothing Then
                 If Not LowerAndEmitIL(scope) Then

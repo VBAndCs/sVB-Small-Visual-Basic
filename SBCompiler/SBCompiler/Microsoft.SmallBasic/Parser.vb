@@ -70,9 +70,8 @@ Namespace Microsoft.SmallBasic
             }
 
             tokenEnumerator.MoveNext()
-
             If EatSimpleIdentifier(tokenEnumerator, forStatement.Iterator) AndAlso
-                    EatToken(tokenEnumerator, Token.Equals) AndAlso
+                    EatToken(tokenEnumerator, Token.Equals, forStatement.EqualsToken) AndAlso
                     EatExpression(tokenEnumerator, forStatement.InitialValue) AndAlso
                     EatToken(tokenEnumerator, Token.To, forStatement.ToToken) AndAlso
                     EatExpression(tokenEnumerator, forStatement.FinalValue) AndAlso
@@ -872,26 +871,11 @@ Namespace Microsoft.SmallBasic
                         AddError(returnToken, "Sub routines can't return values")
                     End If
 
-                Case Token.ExitLoop
-                    Dim ExitLoopToken = tokenEnumerator.Current
-                    tokenEnumerator.MoveNext()
-
-                    Dim upLevel = 0
-                    Do Until tokenEnumerator.IsEndOfNonCommentList
-                        If tokenEnumerator.Current.Token = Token.Subtraction Then
-                            upLevel += 1
-                        Else
-                            AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
-                            Exit Do
-                        End If
-                        tokenEnumerator.MoveNext()
-                    Loop
-
-                    statement2 = New ExitLoopStatement With {
-                        .StartToken = ExitLoopToken,
-                        .upLevel = upLevel
+                Case Token.ExitLoop, Token.ContinueLoop
+                    statement2 = New JumbLoopStatement With {
+                        .StartToken = tokenEnumerator.Current,
+                        .UpLevel = GetLevel(tokenEnumerator)
                     }
-
             End Select
 
             If statement2 Is Nothing Then
@@ -904,6 +888,33 @@ Namespace Microsoft.SmallBasic
             End If
 
             Return statement2
+        End Function
+
+        Private Function GetLevel(tokenEnumerator As TokenEnumerator) As Integer
+            tokenEnumerator.MoveNext()
+            Dim upLevel = 0
+            Do Until tokenEnumerator.IsEndOfNonCommentList
+                If tokenEnumerator.Current.Token = Token.Subtraction Then
+                    If upLevel < 1000 Then
+                        upLevel += 1
+                    Else
+                        AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
+                        Exit Do
+                    End If
+                ElseIf tokenEnumerator.Current.Token = Token.Multiplication Then
+                    If upLevel = 0 Then
+                        upLevel = 1000
+                    Else
+                        AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
+                        Exit Do
+                    End If
+                Else
+                    AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
+                    Exit Do
+                End If
+                tokenEnumerator.MoveNext()
+            Loop
+            Return upLevel
         End Function
 
         Friend Sub AddError(ByVal errorDescription As String)

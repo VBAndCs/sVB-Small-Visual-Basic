@@ -20,9 +20,12 @@ Namespace Microsoft.SmallBasic.Statements
         Public StepToken As TokenInfo
         Public EndForToken As TokenInfo
         Public Subroutine As SubroutineStatement
-
+        Public EqualsToken As TokenInfo
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            If Iterator.Token <> Token.Illegal Then
+                symbolTable.AddVariable(Iterator, True, Subroutine)
+            End If
 
             If InitialValue IsNot Nothing Then
                 InitialValue.Parent = Me
@@ -59,10 +62,11 @@ Namespace Microsoft.SmallBasic.Statements
 
             ContinueLabel = scope.ILGenerator.DefineLabel()
             ExitLabel = scope.ILGenerator.DefineLabel()
+            Dim ConditionLabel = scope.ILGenerator.DefineLabel()
             Dim lblElseIf = scope.ILGenerator.DefineLabel()
             Dim loopBody = scope.ILGenerator.DefineLabel()
 
-            scope.ILGenerator.MarkLabel(ContinueLabel)
+            scope.ILGenerator.MarkLabel(ConditionLabel)
             scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
             FinalValue.EmitIL(scope)
 
@@ -89,6 +93,8 @@ Namespace Microsoft.SmallBasic.Statements
                 item.EmitIL(scope)
             Next
 
+            ' Increase Iterator
+            scope.ILGenerator.MarkLabel(ContinueLabel)
             scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
 
             If StepValue IsNot Nothing Then
@@ -100,23 +106,35 @@ Namespace Microsoft.SmallBasic.Statements
 
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.Add, Nothing)
             scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
-            scope.ILGenerator.Emit(OpCodes.Br, ContinueLabel)
+            scope.ILGenerator.Emit(OpCodes.Br, ConditionLabel)
             scope.ILGenerator.MarkLabel(ExitLabel)
         End Sub
 
-        Public Overrides Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)
+        Public Overrides Sub PopulateCompletionItems(
+                                 completionBag As CompletionBag,
+                                 line As Integer,
+                                 column As Integer,
+                                 globalScope As Boolean)
+
             If StartToken.Line = line Then
                 If column <= ForToken.EndColumn Then
                     CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
+
+                ElseIf EqualsToken.Token = Token.Illegal OrElse column < EqualsToken.Column Then
+                    CompletionHelper.FillLocals(completionBag, Subroutine?.Name.NormalizedText)
+
                 ElseIf ToToken.Token = Token.Illegal OrElse column < ToToken.EndColumn Then
                     CompletionHelper.FillKeywords(completionBag, Token.To)
                     CompletionHelper.FillExpressionItems(completionBag)
+
                 ElseIf StepToken.Token = Token.Illegal OrElse column < StepToken.EndColumn Then
                     CompletionHelper.FillKeywords(completionBag, Token.Step)
                     CompletionHelper.FillExpressionItems(completionBag)
+
                 Else
                     CompletionHelper.FillExpressionItems(completionBag)
                 End If
+
             Else
                 Dim statementContaining = GetStatementContaining(ForBody, line)
                 CompletionHelper.FillKeywords(completionBag, Token.EndFor, Token.Next)

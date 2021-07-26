@@ -10,6 +10,8 @@ Namespace Microsoft.SmallBasic
 
         Public ReadOnly Property Variables As New Dictionary(Of String, TokenInfo)
 
+        Public ReadOnly Property Locals As New Dictionary(Of String, TokenInfo)
+
         Public ReadOnly Property Subroutines As New Dictionary(Of String, TokenInfo)
 
         Public ReadOnly Property Labels As New Dictionary(Of String, TokenInfo)
@@ -23,7 +25,8 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Public Sub CopyFrom(symbolTable As SymbolTable)
-            Copy(symbolTable.Variables, Me.Variables)
+            Copy(symbolTable._Variables, _Variables)
+            Copy(symbolTable._locals, _locals)
             Copy(symbolTable.InitializedVariables, Me.InitializedVariables)
             Copy(symbolTable.Labels, Me.Labels)
             Copy(symbolTable.Subroutines, Me.Subroutines)
@@ -39,12 +42,24 @@ Namespace Microsoft.SmallBasic
             _errors.Clear()
             _labels.Clear()
             _subroutines.Clear()
-            _variables.Clear()
+            _Variables.Clear()
+            _locals.clear()
         End Sub
 
-        Public Sub AddVariable(ByVal variable As TokenInfo)
-            If Not Variables.ContainsKey(variable.NormalizedText) Then
-                Variables.Add(variable.NormalizedText, variable)
+        Public Sub AddVariable(ByVal variable As TokenInfo, Optional isLocal As Boolean = False, Optional Subroutine As Statements.SubroutineStatement = Nothing)
+            Dim key = ""
+            If Subroutine Is Nothing Then
+                key = variable.NormalizedText
+            Else
+                key = $"{Subroutine.Name.NormalizedText}.{variable.NormalizedText}"
+            End If
+
+            If _locals.ContainsKey(key) Then Return
+
+            If isLocal Then
+                _Locals.Add(key, variable)
+            ElseIf Not _Variables.ContainsKey(variable.NormalizedText) Then
+                _Variables.Add(variable.NormalizedText, variable)
             End If
         End Sub
 
@@ -58,8 +73,8 @@ Namespace Microsoft.SmallBasic
             Dim normalizedText = subroutineName.NormalizedText
             subroutineName.Token = type
 
-            If Variables.ContainsKey(normalizedText) Then
-                Variables.Remove(normalizedText)
+            If _Variables.ContainsKey(normalizedText) Then
+                _Variables.Remove(normalizedText)
             End If
 
             If Not Subroutines.ContainsKey(normalizedText) Then
