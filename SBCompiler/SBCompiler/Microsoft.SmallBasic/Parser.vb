@@ -242,6 +242,9 @@ Namespace Microsoft.SmallBasic
                 .StartToken = tokenEnumerator.Current,
                 .SubToken = tokenEnumerator.Current
             }
+
+            SubroutineStatement.Current = subroutine
+
             tokenEnumerator.MoveNext()
             EatSimpleIdentifier(tokenEnumerator, subroutine.Name)
 
@@ -255,22 +258,15 @@ Namespace Microsoft.SmallBasic
                           Select param.NormalizedText).ToList
 
                 If params.Count > 0 Then
+                    Dim paramDef As New System.Text.StringBuilder()
                     For Each param In params
-                        Dim paramDef = $"_{subroutine.Name.Text}_local_{param} = Stack.PopValue(""_sVB_Arguments"")"
-                        Dim _parser = Parser.Parse(paramDef)
-                        subroutine.Body.Add(_parser._ParseTree(0))
+                        paramDef.AppendLine($"{param} = Stack.PopValue(""_sVB_Arguments"")")
                     Next
 
-                    TokenInfo.ChangeTextFunc =
-                         Function(token As Token, text As String)
-                             If text = "" Then Return ""
-
-                             If token = Token.Identifier AndAlso params.Contains(text.ToLower()) Then
-                                 Return $"_{subroutine.Name.Text}_local_{text}"
-                             Else
-                                 Return text
-                             End If
-                         End Function
+                    Dim _parser = Parser.Parse(paramDef.ToString())
+                    For Each statment In _parser._ParseTree
+                        subroutine.Body.Add(statment)
+                    Next
                 End If
             End If
 
@@ -278,7 +274,6 @@ Namespace Microsoft.SmallBasic
             tokenEnumerator = ReadNextLine()
             Dim flag = False
 
-            SubroutineStatement.Current = subroutine
 
             Dim returnLabelToken = New TokenInfo() With {
                     .Text = $"_EXIT_SUB_{subroutine.Name.NormalizedText}",
@@ -312,8 +307,6 @@ Namespace Microsoft.SmallBasic
 
             subroutine.Body.Add(returnLabelStatement)
             SubroutineStatement.Current = Nothing
-
-            TokenInfo.ChangeTextFunc = Nothing
 
             If flag Then
                 tokenEnumerator.MoveNext()
@@ -356,10 +349,10 @@ Namespace Microsoft.SmallBasic
             If tokenInfo.Equals(TokenInfo.Illegal) Then
                 AddError(tokenEnumerator.Current, ResourceHelper.GetString("UnrecognizedStatement"))
                 Dim leftValue = BuildIdentifierTerm(tokenEnumerator)
-                Dim assignmentStatement As New AssignmentStatement()
-                assignmentStatement.StartToken = current
-                assignmentStatement.LeftValue = leftValue
-                Return assignmentStatement
+                Return New AssignmentStatement() With {
+                    .StartToken = current,
+                    .LeftValue = leftValue
+                }
             End If
 
             If tokenInfo.Token = Token.Colon Then
@@ -374,7 +367,7 @@ Namespace Microsoft.SmallBasic
 
             If TypeOf expression Is MethodCallExpression Then
                 ExpectEndOfLine(tokenEnumerator)
-                Dim methodCallStatement As MethodCallStatement = New MethodCallStatement()
+                Dim methodCallStatement As New MethodCallStatement()
                 methodCallStatement.StartToken = current
                 methodCallStatement.MethodCallExpression = TryCast(expression, MethodCallExpression)
                 Return methodCallStatement
@@ -578,13 +571,13 @@ Namespace Microsoft.SmallBasic
                     Return methodCallExpression
                 End If
 
-                Dim propertyExpression As PropertyExpression = New PropertyExpression()
-                propertyExpression.StartToken = current
-                propertyExpression.EndToken = variable
-                propertyExpression.Precedence = 9
-                propertyExpression.TypeName = current
-                propertyExpression.PropertyName = variable
-                Return propertyExpression
+                Return New PropertyExpression() With {
+                    .StartToken = current,
+                    .EndToken = variable,
+                    .Precedence = 9,
+                    .TypeName = current,
+                    .PropertyName = variable
+                }
             End If
 
             If tokenEnumerator.Current.Token = Token.LeftBracket Then
@@ -613,12 +606,13 @@ Namespace Microsoft.SmallBasic
                         Exit While
                     End If
 
-                    Dim arrayExpression As New ArrayExpression()
-                    arrayExpression.StartToken = current
-                    arrayExpression.EndToken = tokenEnumerator.Current
-                    arrayExpression.Precedence = 9
-                    arrayExpression.LeftHand = leftHand
-                    arrayExpression.Indexer = expression2
+                    Dim arrayExpression As New ArrayExpression() With {
+                        .StartToken = current,
+                        .EndToken = tokenEnumerator.Current,
+                        .Precedence = 9,
+                        .LeftHand = leftHand,
+                        .Indexer = expression2
+                    }
                     leftHand = arrayExpression
                 End While
 

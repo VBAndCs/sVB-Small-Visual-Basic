@@ -28,20 +28,35 @@ Namespace Microsoft.SmallBasic.Statements
             Next
         End Sub
 
-        Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
+        Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
             Dim methodBuilder = scope.TypeBuilder.DefineMethod(Name.NormalizedText, MethodAttributes.Static)
             scope.MethodBuilders.Add(Name.NormalizedText, methodBuilder)
-            Dim codeGenScope As CodeGenScope = New CodeGenScope()
-            codeGenScope.ILGenerator = methodBuilder.GetILGenerator()
-            codeGenScope.TypeBuilder = scope.TypeBuilder
-            codeGenScope.MethodBuilder = methodBuilder
-            codeGenScope.Parent = scope
-            Dim scope2 = codeGenScope
+            Dim codeGenScope As New CodeGenScope() With {
+                .ILGenerator = methodBuilder.GetILGenerator(),
+                .TypeBuilder = scope.TypeBuilder,
+                .MethodBuilder = methodBuilder,
+                .Parent = scope
+            }
 
             For Each item In Body
-                item.PrepareForEmit(scope2)
+                item.PrepareForEmit(codeGenScope)
             Next
         End Sub
+
+        'Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
+        '    Dim methodBuilder = scope.TypeBuilder.DefineMethod(Name.NormalizedText, MethodAttributes.Static)
+        '    scope.MethodBuilders.Add(Name.NormalizedText, methodBuilder)
+        '    Dim codeGenScope As CodeGenScope = New CodeGenScope()
+        '    codeGenScope.ILGenerator = methodBuilder.GetILGenerator()
+        '    codeGenScope.TypeBuilder = scope.TypeBuilder
+        '    codeGenScope.MethodBuilder = methodBuilder
+        '    codeGenScope.Parent = scope
+        '    Dim scope2 = codeGenScope
+
+        '    For Each item In Body
+        '        item.PrepareForEmit(scope2)
+        '    Next
+        'End Sub
 
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
             Dim methodBuilder = scope.MethodBuilders(Name.NormalizedText)

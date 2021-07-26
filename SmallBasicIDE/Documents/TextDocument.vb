@@ -186,13 +186,13 @@ Namespace Microsoft.SmallBasic.Documents
                         StillWorking = True
                         Try
                             Dim handlerName = FindCurrentEventHandler()
-
+                            _MdiView.FreezeCmbEvents = True
                             If _EventHandlers.ContainsKey(handlerName) Then
                                 UpdateCombos(_EventHandlers(handlerName))
                             Else
                                 Dim eventInfo = GetHandlerInfo(handlerName)
                                 If eventInfo.ControlName <> "" Then
-                                    ' Restore a btoken handler. This can happen when deleting a control then restoring it.
+                                    ' Restore a broken handler. This can happen when deleting a control then restoring it.
                                     _EventHandlers.Add(handlerName, eventInfo)
                                     UpdateCombos(eventInfo)
                                 Else ' Global
@@ -204,7 +204,7 @@ Namespace Microsoft.SmallBasic.Documents
                                     End If
                                 End If
                             End If
-
+                            _MdiView.FreezeCmbEvents = False
                             UpdateCaretPositionText()
 
                         Finally
@@ -734,12 +734,12 @@ EndSub
                 Dim line = text.GetLineFromLineNumber(i)
                 Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
                 Dim token = Tokens.Current.Token
-                If token = Token.Sub Then
+                If token = Token.Sub OrElse token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
                         Return Tokens.Current.Text
                     End If
 
-                ElseIf token = Token.EndSub AndAlso lineNumber <> i Then
+                ElseIf (token = Token.EndSub OrElse token = Token.EndFunction) AndAlso lineNumber <> i Then
                     Return ""
                 End If
             Next
@@ -755,7 +755,7 @@ EndSub
                 If code = "" Then Continue For
 
                 Dim Tokens = New LineScanner().GetTokenList(line.GetText(), line.LineNumber)
-                If Tokens.Current.Token = Token.Sub Then
+                If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
                         If Tokens.Current.Text = name Then Return line.Start + Tokens.Current.Column
                     End If
@@ -776,7 +776,7 @@ EndSub
             For i = 0 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
                 Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
-                If Tokens.Current.Token = Token.Sub Then
+                If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
                         Dim subName = Tokens.Current.Text
                         If Not _EventHandlers.ContainsKey(subName) Then
@@ -833,7 +833,7 @@ EndSub
             For i = 0 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
                 Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
-                If Tokens.Current.Token = Token.Sub Then
+                If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
                         Dim subName = Tokens.Current.Text
                         If _EventHandlers.ContainsKey(subName) Then

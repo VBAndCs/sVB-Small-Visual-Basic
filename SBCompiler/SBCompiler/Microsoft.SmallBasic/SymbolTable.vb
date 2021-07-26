@@ -10,7 +10,7 @@ Namespace Microsoft.SmallBasic
 
         Public ReadOnly Property Variables As New Dictionary(Of String, TokenInfo)
 
-        Public ReadOnly Property Locals As New Dictionary(Of String, TokenInfo)
+        Public ReadOnly Property Locals As New Dictionary(Of String, Expressions.IdentifierExpression)
 
         Public ReadOnly Property Subroutines As New Dictionary(Of String, TokenInfo)
 
@@ -25,8 +25,11 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Public Sub CopyFrom(symbolTable As SymbolTable)
+            For Each info In symbolTable._Locals
+                _Locals(info.Key) = info.Value
+            Next
+
             Copy(symbolTable._Variables, _Variables)
-            Copy(symbolTable._locals, _locals)
             Copy(symbolTable.InitializedVariables, Me.InitializedVariables)
             Copy(symbolTable.Labels, Me.Labels)
             Copy(symbolTable.Subroutines, Me.Subroutines)
@@ -46,20 +49,27 @@ Namespace Microsoft.SmallBasic
             _locals.clear()
         End Sub
 
-        Public Sub AddVariable(ByVal variable As TokenInfo, Optional isLocal As Boolean = False, Optional Subroutine As Statements.SubroutineStatement = Nothing)
+        Public Sub AddVariable(variable As Expressions.IdentifierExpression, Optional isLocal As Boolean = False)
+            Dim Subroutine = variable.Subroutine
+            Dim variableName = variable.Identifier.NormalizedText
             Dim key = ""
+
             If Subroutine Is Nothing Then
-                key = variable.NormalizedText
+                key = variableName
             Else
-                key = $"{Subroutine.Name.NormalizedText}.{variable.NormalizedText}"
+                key = $"{Subroutine.Name.NormalizedText}.{variableName}"
             End If
 
-            If _locals.ContainsKey(key) Then Return
+            If _Locals.ContainsKey(key) Then Return
 
             If isLocal Then
                 _Locals.Add(key, variable)
-            ElseIf Not _Variables.ContainsKey(variable.NormalizedText) Then
-                _Variables.Add(variable.NormalizedText, variable)
+            ElseIf Not _Variables.ContainsKey(variableName) Then
+                If Subroutine Is Nothing Then
+                    _Variables.Add(variableName, variable.Identifier)
+                Else
+                    _Locals.Add(key, variable)
+                End If
             End If
         End Sub
 

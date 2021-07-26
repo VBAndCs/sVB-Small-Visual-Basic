@@ -124,7 +124,7 @@ Namespace Microsoft.SmallBasic.Completion
                 If addToBag Then
                     completionBag.CompletionItems.Add(New CompletionItem() With {
                         .Name = variable.Key,
-                        .DisplayName = variable.Value.Text,
+                        .DisplayName = variable.Value.Identifier.Text,
                         .ItemType = CompletionItemType.Variable
                     })
                 End If

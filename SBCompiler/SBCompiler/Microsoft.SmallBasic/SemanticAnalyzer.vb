@@ -194,22 +194,44 @@ Namespace Microsoft.SmallBasic
 
         Private Sub AnalyzeMethodCallStatement(ByVal methodCallStatement As MethodCallStatement)
             If methodCallStatement.MethodCallExpression IsNot Nothing Then
-                Dim method = methodCallStatement.MethodCallExpression
-                If method.TypeName.Token = Token.Illegal Then ' Function Call
-                    If Not _symbolTable.Subroutines.ContainsKey(method.MethodName.NormalizedText) Then
-                        _parser.AddError(method.MethodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {method.MethodName.Text}))
+                Dim methodCall = methodCallStatement.MethodCallExpression
+                If methodCall.TypeName.Token = Token.Illegal Then ' Function Call
+                    Dim subName = methodCall.MethodName.NormalizedText
+                    If Not _symbolTable.Subroutines.ContainsKey(subName) Then
+                        _parser.AddError(methodCall.MethodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {methodCall.MethodName.Text}))
                     Else
-
+                        Dim pNo = GetParamNo(subName)
+                        If pNo <> methodCall.Arguments.Count Then
+                            _parser.AddError(methodCall.MethodName, $"`{methodCall.MethodName.Text}` expects {pNo} arguments.")
+                        End If
                     End If
-                Else
+                        Else
                     AnalyzeExpression(methodCallStatement.MethodCallExpression, leaveValueInStack:=False, mustBeAssignable:=False)
                 End If
             End If
         End Sub
 
-        Private Sub AnalyzeSubroutineCallStatement(ByVal subroutineCallStatement As SubroutineCallStatement)
+        Function GetParamNo(subName As String)
+            For Each statement In _parser.ParseTree
+                Dim subroutine = TryCast(statement, SubroutineStatement)
+                If subroutine IsNot Nothing AndAlso subroutine.Name.NormalizedText = subName Then
+                    Return subroutine.Params?.Count
+                End If
+            Next
+            Return 0
+        End Function
+        Private Sub AnalyzeSubroutineCallStatement(subroutineCallStatement As SubroutineCallStatement)
             If subroutineCallStatement.Name.Token <> 0 Then
-                NoteSubroutineCall(subroutineCallStatement.Name)
+                Dim subroutineName = subroutineCallStatement.Name
+                Dim subName = subroutineName.NormalizedText
+                If subroutineName.Token <> 0 AndAlso Not _symbolTable.Subroutines.ContainsKey(subName) Then
+                    _parser.AddError(subroutineName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {subroutineName.Text}))
+                Else
+                    Dim pNo = GetParamNo(subName)
+                    If pNo <> subroutineCallStatement.Args.Count Then
+                        _parser.AddError(subroutineCallStatement.Name, $"`{subroutineCallStatement.Name.Text}` expects {pNo} arguments.")
+                    End If
+                End If
             End If
         End Sub
 
@@ -322,11 +344,6 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub NoteSubroutineCall(ByVal subroutineName As TokenInfo)
-            If subroutineName.Token <> 0 AndAlso Not _symbolTable.Subroutines.ContainsKey(subroutineName.NormalizedText) Then
-                _parser.AddError(subroutineName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {subroutineName.Text}))
-            End If
-        End Sub
 
         Private Sub NoteVariableReference(ByVal variable As TokenInfo)
             If variable.Token <> 0 AndAlso Not _symbolTable.Variables.ContainsKey(variable.NormalizedText) AndAlso _symbolTable.Subroutines.ContainsKey(variable.NormalizedText) Then

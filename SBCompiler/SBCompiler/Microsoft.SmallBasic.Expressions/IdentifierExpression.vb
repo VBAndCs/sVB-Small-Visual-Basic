@@ -20,13 +20,11 @@ Namespace Microsoft.SmallBasic.Expressions
 
             If var IsNot Nothing Then
                 scope.ILGenerator.Emit(OpCodes.Ldloc, var)
-
             ElseIf scope.Fields.ContainsKey(Identifier.NormalizedText) Then
                 Dim field = scope.Fields(Identifier.NormalizedText)
                 scope.ILGenerator.Emit(OpCodes.Ldsfld, field)
-
-            Else
-                scope.SymbolTable.Errors.Add(New [Error](Identifier, $"The variable `{Identifier.Text}` is used but before beeing initialized."))
+            ElseIf Not CodeGenerator.IgnoreVarErrors Then
+                scope.SymbolTable.Errors.Add(New [Error](Identifier, $"The variable `{Identifier.Text}` is used before beeing initialized."))
             End If
         End Sub
 

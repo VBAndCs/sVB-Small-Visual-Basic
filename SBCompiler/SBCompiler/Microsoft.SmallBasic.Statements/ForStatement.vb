@@ -24,7 +24,11 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             If Iterator.Token <> Token.Illegal Then
-                symbolTable.AddVariable(Iterator, True, Subroutine)
+                Dim id As New IdentifierExpression() With {
+                    .Identifier = Iterator,
+                    .Subroutine = Subroutine
+                }
+                symbolTable.AddVariable(id, True)
             End If
 
             If InitialValue IsNot Nothing Then
@@ -55,7 +59,7 @@ Namespace Microsoft.SmallBasic.Statements
         End Sub
 
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
-            Dim iteratorVar = scope.CreateLocalBuilder(Subroutine, Iterator, GetType(Primitive))
+            Dim iteratorVar = scope.CreateLocalBuilder(Subroutine, Iterator)
 
             InitialValue.EmitIL(scope)
             scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)

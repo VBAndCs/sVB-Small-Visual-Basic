@@ -433,16 +433,9 @@ Namespace Microsoft.SmallBasic
                 Dim doc = ActiveDocument
                 Dim code As String
                 Dim outputFileName = GetOutputFileName(doc)
-
-                ' We need tp pass a value to the forms module in the class library, 
-                ' but the shared fileds will not work,
-                ' because the generated exe will crated the module in another domain
-                ' sp, we will pass the value via registery
-                VisualBasic.Interaction.SaveSetting("sVb", "Designer", "CodeFilePath", outputFileName)
-
                 Dim offset = 0
-
                 Dim gen As String
+
                 If doc.PageKey <> "" Then
                     If doc.Text.Contains("'@Form Hints:") Then
                         doc.ParseFormHints()
@@ -476,8 +469,6 @@ Namespace Microsoft.SmallBasic
                 End If
             Catch ex As Exception
                 Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
-            Finally
-                VisualBasic.Interaction.DeleteSetting("sVb", "Designer", "CodeFilePath")
             End Try
         End Sub
 
@@ -609,14 +600,15 @@ Namespace Microsoft.SmallBasic
 
         Private Function GetOutputFileName(document As TextDocument) As String
             If document.IsNew Then
-                Dim tempFileName As String = Path.GetTempFileName()
+                Dim tempFileName = Path.GetTempFileName()
                 File.Move(tempFileName, tempFileName & ".exe")
                 Return tempFileName & ".exe"
             End If
 
-            Dim fileNameWithoutExtension = Path.GetFileNameWithoutExtension(document.FilePath)
-            Dim directoryName = Path.GetDirectoryName(document.FilePath)
-            Return Path.Combine(directoryName, fileNameWithoutExtension & ".exe")
+            Dim fileName = Path.GetFileNameWithoutExtension(document.FilePath)
+            Dim directoryName = Path.GetDirectoryName(document.FilePath) & "\bin"
+            If Not Directory.Exists(directoryName) Then Directory.CreateDirectory(directoryName)
+            Return Path.Combine(directoryName, fileName & ".exe")
         End Function
 
         Private Sub OnCurrentCompletionItemChanged(ByVal sender As Object, ByVal e As CurrentCompletionItemChangedEventArgs)
@@ -701,17 +693,10 @@ Namespace Microsoft.SmallBasic
             Dim tmpPath = Path.Combine(appDir, "UnSaved")
             If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
 
-            Dim n = 1
-            Do
-                Dim projectName = "Project" & n
-                _projectPath = Path.Combine(tmpPath, projectName)
-                If Not Directory.Exists(_projectPath) Then
-                    Directory.CreateDirectory(_projectPath)
-                    Exit Do
-                End If
-                n += 1
-            Loop
-            Return _projectPath
+            Dim projectName = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss")
+            _projectPath = Path.Combine(tmpPath, projectName)
+
+                Return _projectPath
         End Function
 
         Private Sub SaveDesignInfo(Optional doc As TextDocument = Nothing, Optional openDoc As Boolean = True)
@@ -800,16 +785,19 @@ Namespace Microsoft.SmallBasic
 
         End Function
 
-        'Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
-        '    Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
-        '    Dim UnSaved = Path.Combine(appDir, "UnSaved")
-        '    For Each d In IO.Directory.GetDirectories(UnSaved)
-        '        Try
-        '            Global.My.Computer.FileSystem.DeleteDirectory(d, VisualBasic.FileIO.DeleteDirectoryOption.DeleteAllContents)
-        '        Catch
-        '        End Try
-        '    Next
-        'End Sub
+        Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
+            Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
+            Dim UnSaved = Path.Combine(appDir, "UnSaved")
+            For Each dir In IO.Directory.GetDirectories(UnSaved)
+                Try
+                    Dim d = Date.ParseExact(IO.Path.GetFileNameWithoutExtension(dir), "yy-MM-dd-HH-mm-ss", New Globalization.CultureInfo("Ar-eg"))
+                    If (Date.Now - d).TotalDays > 10 Then
+                        Global.My.Computer.FileSystem.DeleteDirectory(dir, VisualBasic.FileIO.DeleteDirectoryOption.DeleteAllContents)
+                    End If
+                Catch
+                End Try
+            Next
+        End Sub
 
 
         Private ReadOnly WordRgex As New Verex(Patterns.Symbols.AnyWord)
@@ -1018,18 +1006,18 @@ Namespace Microsoft.SmallBasic
 
         Public Shared Function Compile(programText As String, outputFilePath As String) As List(Of [Error])
             Dim errors As List(Of [Error])
-            Try
-                Dim compiler1 As New Compiler
+            'Try
+            Dim compiler1 As New Compiler
                 compiler1.Initialize()
                 Dim fileNameWithoutExtension As String = Path.GetFileNameWithoutExtension(outputFilePath)
                 Dim directoryName As String = Path.GetDirectoryName(outputFilePath)
                 errors = compiler1.Build(New StringReader(programText), fileNameWithoutExtension, directoryName)
-            Catch ex As Exception
-                errors = New List(Of [Error])
-                errors.Add(New [Error](-1, 0, ex.Message))
-            End Try
+                'Catch ex As Exception
+                'errors = New List(Of [Error])
+                'errors.Add(New [Error](-1, 0, ex.Message))
+                'End Try
 
-            Return errors
+                Return errors
         End Function
 
         Private Sub formDesigner_DiagramDoubleClick(control As UIElement)

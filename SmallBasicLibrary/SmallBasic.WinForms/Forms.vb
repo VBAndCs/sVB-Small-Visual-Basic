@@ -167,12 +167,15 @@ Namespace WinForms
         Private Shared Sub Form_Closing(sender As Object, e As CancelEventArgs)
             Dim win = CType(sender, Window)
             Dim formName = win.Name
-            Dim CodeFilePath = GetSetting("sVb", "Designer", "CodeFilePath", formName & ".exe")
+
+            Dim CodeFilePath = Environment.GetCommandLineArgs(0)
+            Dim docName = IO.Path.GetFileNameWithoutExtension(CodeFilePath) & ".xaml"
+            CodeFilePath = IO.Path.GetDirectoryName(CodeFilePath)
+            CodeFilePath = IO.Path.GetDirectoryName(CodeFilePath)
+            Dim newXamlPath = IO.Path.Combine(CodeFilePath, docName)
 
             Try
                 ' If the form is created from code, save its design to .xml file
-                Dim newXamlPath = CodeFilePath.Substring(0, CodeFilePath.Length - 4) & ".xaml"
-
                 If Not IO.File.Exists(newXamlPath) Then
                     Dim canvas = win.Content
                     IO.File.WriteAllText(newXamlPath, XamlWriter.Save(canvas))
@@ -191,14 +194,13 @@ Namespace WinForms
                 If AppPath.ToString() <> "" Then
                     xamlPath = IO.Path.Combine(AppPath, xamlPath)
                 Else
-                    Dim d = AppDomain.CurrentDomain.BaseDirectory
+                    Dim d = Environment.GetCommandLineArgs(0)
+                    d = IO.Path.GetDirectoryName(d) ' \bin
+                    d = IO.Path.GetDirectoryName(d)
                     Dim xamlPath2 = IO.Path.Combine(d, xamlPath)
-                    If IO.File.Exists(xamlPath2) Then
-                        xamlPath = xamlPath2
-                    End If
+                    If IO.File.Exists(xamlPath2) Then xamlPath = xamlPath2
                 End If
             End If
-
 
             Dim stream = IO.File.Open(xamlPath, IO.FileMode.Open)
             Dim canvas As Canvas = Nothing
