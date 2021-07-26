@@ -866,7 +866,7 @@ Namespace Microsoft.SmallBasic
                     End If
 
                 Case Token.ExitLoop, Token.ContinueLoop
-                    statement2 = New JumbLoopStatement With {
+                    statement2 = New JumpLoopStatement With {
                         .StartToken = tokenEnumerator.Current,
                         .UpLevel = GetLevel(tokenEnumerator)
                     }

@@ -105,7 +105,7 @@
     <Compile Include="Microsoft.SmallBasic.Statements\AssignmentStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\ElseIfStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\EmptyStatement.vb" />
-    <Compile Include="Microsoft.SmallBasic.Statements\ExitLoopStatement.vb" />
+    <Compile Include="Microsoft.SmallBasic.Statements\JumpLoopStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\ForStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\GotoStatement.vb" />
     <Compile Include="Microsoft.SmallBasic.Statements\IfStatement.vb" />

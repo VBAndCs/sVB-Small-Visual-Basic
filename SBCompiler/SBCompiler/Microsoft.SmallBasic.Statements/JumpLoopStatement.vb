@@ -3,7 +3,7 @@ Imports Microsoft.SmallBasic.Completion
 
 Namespace Microsoft.SmallBasic.Statements
 
-    Public Class JumbLoopStatement
+    Public Class JumpLoopStatement
         Inherits Statement
 
         Public UpLevel As Integer
