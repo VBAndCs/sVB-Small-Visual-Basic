@@ -17,7 +17,7 @@ Namespace Library
         ''' The value to push.
         ''' </param>
         Public Shared Sub PushValue(stackName As Primitive, value As Primitive)
-            Dim value2 As Collections.Generic.Stack(Of Primitive) = Nothing
+            Dim value2 As Stack(Of Primitive) = Nothing
             If Not _stackMap.TryGetValue(stackName, value2) Then
                 value2 = New Stack(Of Primitive)
                 _stackMap(stackName) = value2

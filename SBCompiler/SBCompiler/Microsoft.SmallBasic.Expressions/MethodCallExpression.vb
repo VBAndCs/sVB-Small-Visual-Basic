@@ -20,6 +20,8 @@ Namespace Microsoft.SmallBasic.Expressions
 
         Public Property TypeName As TokenInfo
         Public Property MethodName As TokenInfo
+        Public Property OuterSubRoutine As Statements.SubroutineStatement
+
 
         Public ReadOnly Property Arguments As New List(Of Expression)
 
@@ -35,7 +37,8 @@ Namespace Microsoft.SmallBasic.Expressions
                 Dim subroutine As New Statements.SubroutineCallStatement() With {
                     .Name = MethodName,
                     .Args = Arguments,
-                    .IsFunctionCall = True
+                    .IsFunctionCall = True,
+                    .OuterSubRoutine = OuterSubRoutine
                 }
                 subroutine.EmitIL(scope)
             Else

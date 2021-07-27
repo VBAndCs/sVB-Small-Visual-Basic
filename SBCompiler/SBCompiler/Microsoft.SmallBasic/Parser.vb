@@ -391,10 +391,12 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Function ConstructSubroutineCallStatement(tokenEnumerator As TokenEnumerator) As Statement
-            Dim subroutineCall As New SubroutineCallStatement()
-            subroutineCall.StartToken = tokenEnumerator.Current
-            subroutineCall.Name = tokenEnumerator.Current
-            Dim result = subroutineCall
+            Dim subroutineCall As New SubroutineCallStatement() With {
+                .StartToken = tokenEnumerator.Current,
+                .Name = tokenEnumerator.Current,
+                .OuterSubRoutine = SubroutineStatement.Current
+            }
+
             tokenEnumerator.MoveNext()
 
             If EatToken(tokenEnumerator, Token.LeftParens) Then
@@ -402,7 +404,7 @@ Namespace Microsoft.SmallBasic
                 If EatToken(tokenEnumerator, Token.RightParens) Then ExpectEndOfLine(tokenEnumerator)
             End If
 
-            Return result
+            Return subroutineCall
         End Function
 
         Public Function BuildArithmeticExpression(tokenEnumerator As TokenEnumerator) As Expression
@@ -566,6 +568,7 @@ Namespace Microsoft.SmallBasic
                         arguments:=ParseCommaSepList(tokenEnumerator, Token.RightParens)
                    )
 
+                    methodCallExpression.OuterSubRoutine = SubroutineStatement.Current
                     methodCallExpression.EndToken = tokenEnumerator.Current
                     tokenEnumerator.MoveNext()
                     Return methodCallExpression
@@ -634,6 +637,7 @@ Namespace Microsoft.SmallBasic
                         arguments:=ParseCommaSepList(tokenEnumerator, Token.RightParens)
                 )
 
+                methodCallExpression.OuterSubRoutine = SubroutineStatement.Current
                 methodCallExpression.EndToken = tokenEnumerator.Current
                 tokenEnumerator.MoveNext()
                 _FunctionsCall.Add(methodCallExpression)
@@ -758,7 +762,7 @@ Namespace Microsoft.SmallBasic
                 Dim funcName = funcCall.MethodName.NormalizedText
                 If _SymbolTable.Subroutines.ContainsKey(funcName) Then
                     Dim subInfo = _SymbolTable.Subroutines(funcName)
-                    If _SymbolTable.Subroutines(funcName).Token = Token.Sub Then
+                    If subInfo.Token = Token.Sub Then
                         AddError(funcCall.MethodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineEventAssignment"), New Object(0) {funcCall.MethodName.Text}))
                     End If
                 End If

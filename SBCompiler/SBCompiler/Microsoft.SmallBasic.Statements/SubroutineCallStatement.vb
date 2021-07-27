@@ -9,6 +9,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public Name As TokenInfo
         Public Args As List(Of Expression)
         Public IsFunctionCall As Boolean
+        Public OuterSubRoutine As SubroutineStatement
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             For Each arg In Args
@@ -24,7 +25,7 @@ Namespace Microsoft.SmallBasic.Statements
                     code.AppendLine($"Stack.PushValue(""_sVB_Arguments"", {Args(i)})")
                 Next
 
-                CodeGenerator.LowerAndEmit(code.ToString(), scope)
+                CodeGenerator.LowerAndEmit(code.ToString(), scope, OuterSubRoutine)
             End If
 
             Dim methodInfo = scope.MethodBuilders(Name.NormalizedText)
@@ -32,7 +33,7 @@ Namespace Microsoft.SmallBasic.Statements
 
             If IsFunctionCall Then
                 MethodCallStatement.DoNotPopReturnValue = True
-                CodeGenerator.LowerAndEmit($"Stack.PopValue(""_sVB_ReturnValues"")", scope)
+                CodeGenerator.LowerAndEmit($"Stack.PopValue(""_sVB_ReturnValues"")", scope, OuterSubRoutine)
                 MethodCallStatement.DoNotPopReturnValue = False
             End If
         End Sub

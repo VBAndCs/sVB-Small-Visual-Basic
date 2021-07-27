@@ -38,14 +38,19 @@ Namespace Microsoft.SmallBasic
 
             If type Is GetType(BinaryExpression) Then
                 AnalyzeBinaryExpression(TryCast(expression, BinaryExpression), leaveValueInStack, mustBeAssignable)
+
             ElseIf type Is GetType(ArrayExpression) Then
                 AnalyzeArrayExpression(TryCast(expression, ArrayExpression), leaveValueInStack, mustBeAssignable)
+
             ElseIf type Is GetType(IdentifierExpression) Then
                 AnalyzeIdentifierExpression(TryCast(expression, IdentifierExpression), leaveValueInStack, mustBeAssignable)
+
             ElseIf type Is GetType(MethodCallExpression) Then
                 AnalyzeMethodCallExpression(TryCast(expression, MethodCallExpression), leaveValueInStack, mustBeAssignable)
+
             ElseIf type Is GetType(NegativeExpression) Then
                 AnalyzeNegativeExpression(TryCast(expression, NegativeExpression), leaveValueInStack, mustBeAssignable)
+
             ElseIf type Is GetType(PropertyExpression) Then
                 AnalyzePropertyExpression(TryCast(expression, PropertyExpression), leaveValueInStack, mustBeAssignable)
             End If
@@ -55,23 +60,31 @@ Namespace Microsoft.SmallBasic
             Dim type As Type = statement.GetType()
 
             If type Is GetType(AssignmentStatement) Then
-                AnalyzeAssignmentStatement(TryCast(statement, AssignmentStatement))
+                AnalyzeAssignmentStatement(CType(statement, AssignmentStatement))
+
             ElseIf type Is GetType(ElseIfStatement) Then
-                AnalyzeElseIfStatement(TryCast(statement, ElseIfStatement))
+                AnalyzeElseIfStatement(CType(statement, ElseIfStatement))
+
             ElseIf type Is GetType(ForStatement) Then
-                AnalyzeForStatement(TryCast(statement, ForStatement))
+                AnalyzeForStatement(CType(statement, ForStatement))
+
             ElseIf type Is GetType(GotoStatement) Then
-                AnalyzeGotoStatement(TryCast(statement, GotoStatement))
+                AnalyzeGotoStatement(CType(statement, GotoStatement))
+
             ElseIf type Is GetType(IfStatement) Then
-                AnalyzeIfStatement(TryCast(statement, IfStatement))
+                AnalyzeIfStatement(CType(statement, IfStatement))
+
             ElseIf type Is GetType(MethodCallStatement) Then
-                AnalyzeMethodCallStatement(TryCast(statement, MethodCallStatement))
+                AnalyzeMethodCallStatement(CType(statement, MethodCallStatement))
+
             ElseIf type Is GetType(SubroutineCallStatement) Then
-                AnalyzeSubroutineCallStatement(TryCast(statement, SubroutineCallStatement))
+                AnalyzeSubroutineCallStatement(CType(statement, SubroutineCallStatement))
+
             ElseIf type Is GetType(SubroutineStatement) Then
-                AnalyzeSubroutineStatement(TryCast(statement, SubroutineStatement))
+                AnalyzeSubroutineStatement(CType(statement, SubroutineStatement))
+
             ElseIf type Is GetType(WhileStatement) Then
-                AnalyzeWhileStatement(TryCast(statement, WhileStatement))
+                AnalyzeWhileStatement(CType(statement, WhileStatement))
             End If
         End Sub
 
@@ -98,13 +111,29 @@ Namespace Microsoft.SmallBasic
         Private Sub AnalyzeIdentifierExpression(ByVal identifierExpression As IdentifierExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
             If identifierExpression.Identifier.Token <> 0 Then
                 NoteVariableReference(identifierExpression.Identifier)
+
+                If Not _symbolTable.IsDefined(identifierExpression) Then
+                    Dim identifier = identifierExpression.Identifier
+                    _symbolTable.Errors.Add(New [Error](identifier, $"The variable `{identifier.Text}` is used before beeing initialized."))
+                End If
             End If
         End Sub
 
-        Private Sub AnalyzeMethodCallExpression(ByVal methodCallExpression As MethodCallExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
-            NoteMethodCallReference(methodCallExpression, leaveValueInStack, mustBeAssignable)
+        Private Sub AnalyzeMethodCallExpression(methodCall As MethodCallExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
+            NoteMethodCallReference(methodCall, leaveValueInStack, mustBeAssignable)
+            If methodCall.TypeName.Token = Token.Illegal Then ' Function Call
+                Dim subName = methodCall.MethodName.NormalizedText
+                If Not _symbolTable.Subroutines.ContainsKey(subName) Then
+                    _parser.AddError(methodCall.MethodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {methodCall.MethodName.Text}))
+                Else
+                    Dim pNo = GetParamNo(subName)
+                    If pNo <> methodCall.Arguments.Count Then
+                        _parser.AddError(methodCall.MethodName, $"`{methodCall.MethodName.Text}` expects {pNo} arguments.")
+                    End If
+                End If
+            End If
 
-            For Each argument In methodCallExpression.Arguments
+            For Each argument In methodCall.Arguments
                 AnalyzeExpression(argument, leaveValueInStack, mustBeAssignable)
             Next
         End Sub
@@ -194,20 +223,7 @@ Namespace Microsoft.SmallBasic
 
         Private Sub AnalyzeMethodCallStatement(ByVal methodCallStatement As MethodCallStatement)
             If methodCallStatement.MethodCallExpression IsNot Nothing Then
-                Dim methodCall = methodCallStatement.MethodCallExpression
-                If methodCall.TypeName.Token = Token.Illegal Then ' Function Call
-                    Dim subName = methodCall.MethodName.NormalizedText
-                    If Not _symbolTable.Subroutines.ContainsKey(subName) Then
-                        _parser.AddError(methodCall.MethodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {methodCall.MethodName.Text}))
-                    Else
-                        Dim pNo = GetParamNo(subName)
-                        If pNo <> methodCall.Arguments.Count Then
-                            _parser.AddError(methodCall.MethodName, $"`{methodCall.MethodName.Text}` expects {pNo} arguments.")
-                        End If
-                    End If
-                        Else
-                    AnalyzeExpression(methodCallStatement.MethodCallExpression, leaveValueInStack:=False, mustBeAssignable:=False)
-                End If
+                AnalyzeExpression(methodCallStatement.MethodCallExpression, leaveValueInStack:=False, mustBeAssignable:=False)
             End If
         End Sub
 
@@ -220,18 +236,22 @@ Namespace Microsoft.SmallBasic
             Next
             Return 0
         End Function
-        Private Sub AnalyzeSubroutineCallStatement(subroutineCallStatement As SubroutineCallStatement)
-            If subroutineCallStatement.Name.Token <> 0 Then
-                Dim subroutineName = subroutineCallStatement.Name
+        Private Sub AnalyzeSubroutineCallStatement(subroutineCall As SubroutineCallStatement)
+            If subroutineCall.Name.Token <> 0 Then
+                Dim subroutineName = subroutineCall.Name
                 Dim subName = subroutineName.NormalizedText
-                If subroutineName.Token <> 0 AndAlso Not _symbolTable.Subroutines.ContainsKey(subName) Then
+                If Not _symbolTable.Subroutines.ContainsKey(subName) Then
                     _parser.AddError(subroutineName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {subroutineName.Text}))
                 Else
                     Dim pNo = GetParamNo(subName)
-                    If pNo <> subroutineCallStatement.Args.Count Then
-                        _parser.AddError(subroutineCallStatement.Name, $"`{subroutineCallStatement.Name.Text}` expects {pNo} arguments.")
+                    If pNo <> subroutineCall.Args.Count Then
+                        _parser.AddError(subroutineCall.Name, $"`{subroutineCall.Name.Text}` expects {pNo} arguments.")
                     End If
                 End If
+
+                For Each arg In subroutineCall.Args
+                    AnalyzeExpression(arg, False, False)
+                Next
             End If
         End Sub
 
@@ -346,7 +366,8 @@ Namespace Microsoft.SmallBasic
 
 
         Private Sub NoteVariableReference(ByVal variable As TokenInfo)
-            If variable.Token <> 0 AndAlso Not _symbolTable.Variables.ContainsKey(variable.NormalizedText) AndAlso _symbolTable.Subroutines.ContainsKey(variable.NormalizedText) Then
+            If variable.Token <> 0 AndAlso        Not _symbolTable.Variables.ContainsKey(variable.NormalizedText) AndAlso
+                       _symbolTable.Subroutines.ContainsKey(variable.NormalizedText) Then
                 _parser.AddError(variable, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineUsedAsVariable"), New Object(0) {variable.Text}))
             End If
         End Sub

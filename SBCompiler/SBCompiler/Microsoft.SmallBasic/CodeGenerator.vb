@@ -28,9 +28,11 @@ Namespace Microsoft.SmallBasic
 
         Public Shared IgnoreVarErrors As Boolean
 
-        Public Shared Sub LowerAndEmit(code As String, scope As CodeGenScope)
+        Public Shared Sub LowerAndEmit(code As String, scope As CodeGenScope, Subroutine As Statements.SubroutineStatement)
             IgnoreVarErrors = True
+            Statements.SubroutineStatement.Current = Subroutine
             Dim _parser = Parser.Parse(code)
+            Statements.SubroutineStatement.Current = Nothing
 
             ' EmitIL
             For Each item In _parser.ParseTree

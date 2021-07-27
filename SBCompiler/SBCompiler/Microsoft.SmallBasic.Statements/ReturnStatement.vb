@@ -22,7 +22,8 @@ Namespace Microsoft.SmallBasic.Statements
             End If
 
             code &= $"GoTo _EXIT_SUB_{subroutine.Name.NormalizedText}"
-            CodeGenerator.LowerAndEmit(code, scope)
+
+            CodeGenerator.LowerAndEmit(code, scope, Subroutine)
         End Sub
 
         Public Overrides Function ToString() As String

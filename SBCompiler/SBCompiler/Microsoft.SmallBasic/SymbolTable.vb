@@ -1,5 +1,6 @@
 ﻿Imports System.Collections.Generic
 Imports System.Globalization
+Imports Microsoft.SmallBasic.Expressions
 
 Namespace Microsoft.SmallBasic
     Public Class SymbolTable
@@ -17,10 +18,10 @@ Namespace Microsoft.SmallBasic
         Public ReadOnly Property Labels As New Dictionary(Of String, TokenInfo)
 
         Public Sub New(ByVal errors As List(Of [Error]))
-            _errors = errors
+            _Errors = errors
 
-            If _errors Is Nothing Then
-                _errors = New List(Of [Error])()
+            If _Errors Is Nothing Then
+                _Errors = New List(Of [Error])()
             End If
         End Sub
 
@@ -42,23 +43,17 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Public Sub Reset()
-            _errors.Clear()
-            _labels.Clear()
-            _subroutines.Clear()
+            _Errors.Clear()
+            _Labels.Clear()
+            _Subroutines.Clear()
             _Variables.Clear()
-            _locals.clear()
+            _Locals.Clear()
         End Sub
 
         Public Sub AddVariable(variable As Expressions.IdentifierExpression, Optional isLocal As Boolean = False)
-            Dim Subroutine = variable.Subroutine
             Dim variableName = variable.Identifier.NormalizedText
-            Dim key = ""
-
-            If Subroutine Is Nothing Then
-                key = variableName
-            Else
-                key = $"{Subroutine.Name.NormalizedText}.{variableName}"
-            End If
+            Dim Subroutine = variable.Subroutine
+            Dim key = GetKey(variable)
 
             If _Locals.ContainsKey(key) Then Return
 
@@ -72,6 +67,20 @@ Namespace Microsoft.SmallBasic
                 End If
             End If
         End Sub
+
+        Private Function GetKey(variable As IdentifierExpression) As Object
+            Dim variableName = variable.Identifier.NormalizedText
+            Dim Subroutine = variable.Subroutine
+
+            If Subroutine Is Nothing Then Return variableName
+            Return $"{Subroutine.Name.NormalizedText}.{variableName}"
+        End Function
+
+        Public Function IsDefined(variable As IdentifierExpression) As Boolean
+            If _Variables.ContainsKey(variable.Identifier.NormalizedText) Then Return True
+            Dim key = GetKey(variable)
+            Return _Locals.ContainsKey(key)
+        End Function
 
         Public Sub AddVariableInitialization(ByVal variable As TokenInfo)
             If Not InitializedVariables.ContainsKey(variable.NormalizedText) Then

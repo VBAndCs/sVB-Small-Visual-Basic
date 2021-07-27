@@ -130,3 +130,4 @@ F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper.pdb
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\ProjectExplorerDecorator.baml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\DesignerDecorator.g.vb
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\Resources\DesignerDecorator.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Debug\DiagramHelper.vbproj.AssemblyReference.cache
