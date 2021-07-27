@@ -7,14 +7,14 @@
 
         Public ReadOnly Property Description As String
 
-        Public Sub New(ByVal tokenInfo As TokenInfo, ByVal description As String)
+        Public Sub New(tokenInfo As TokenInfo, description As String)
             Me.New(tokenInfo.Line, tokenInfo.Column, description)
         End Sub
 
-        Public Sub New(ByVal line As Integer, ByVal column As Integer, ByVal description As String)
+        Public Sub New(line As Integer, column As Integer, description As String)
             _Line = line
             _Column = column
-            _description = description
+            _Description = description
         End Sub
 
         Public Overrides Function ToString() As String

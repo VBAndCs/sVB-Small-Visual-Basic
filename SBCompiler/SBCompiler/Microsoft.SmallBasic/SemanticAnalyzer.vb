@@ -255,10 +255,21 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzeSubroutineStatement(ByVal subroutineStatement As SubroutineStatement)
-            For Each item In subroutineStatement.Body
-                AnalyzeStatement(item)
-            Next
+        Private Sub AnalyzeSubroutineStatement(subroutine As SubroutineStatement)
+            Select Case subroutine.StartToken.Token
+                Case Token.Sub
+                    If subroutine.EndSubToken.Token <> Token.EndSub Then
+                        _parser.AddError(subroutine.EndSubToken, "Sub must end with EndSub")
+                    End If
+
+                Case Else
+                    If subroutine.EndSubToken.Token <> Token.EndFunction Then
+                        _parser.AddError(subroutine.EndSubToken, "Function must end with EndFunction")
+                    End If
+            End Select
+            For Each item In subroutine.Body
+                    AnalyzeStatement(item)
+                Next
         End Sub
 
         Private Sub AnalyzeWhileStatement(ByVal whileStatement As WhileStatement)
@@ -346,16 +357,20 @@ Namespace Microsoft.SmallBasic
             Dim value As TypeInfo = Nothing
 
             If _typeInfoBag.Types.TryGetValue(typeName.NormalizedText, value) Then
-                Dim value2 As PropertyInfo = Nothing
+                Dim prop As PropertyInfo = Nothing
+                Dim ev As EventInfo = Nothing
 
-                If value.Properties.TryGetValue(propertyName.NormalizedText, value2) Then
-                    If mustBeAssignable AndAlso Not value2.CanWrite Then
+                If value.Properties.TryGetValue(propertyName.NormalizedText, prop) Then
+                    If mustBeAssignable AndAlso Not prop.CanWrite Then
                         _parser.AddError(propertyName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsReadOnly"), New Object(1) {propertyName.Text, typeName.Text}))
                     End If
 
-                    If leaveValueInStack AndAlso Not value2.CanRead Then
+                    If leaveValueInStack AndAlso Not prop.CanRead Then
                         _parser.AddError(propertyName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsWriteOnly"), New Object(1) {propertyName.Text, typeName.Text}))
                     End If
+
+                ElseIf value.Events.TryGetValue(propertyName.NormalizedText, ev) Then
+                    _parser.AddError(propertyName, $"Event {ev.Name} can only be set to a Sub.")
                 Else
                     _parser.AddError(propertyName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyNotFound"), New Object(1) {propertyName.Text, typeName.Text}))
                 End If

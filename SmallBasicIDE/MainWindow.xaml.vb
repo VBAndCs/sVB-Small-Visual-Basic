@@ -466,13 +466,15 @@ Namespace Microsoft.SmallBasic
                             doc.Errors.Add($"{err.Line - offset + 1},{err.Column + 1}: {err.Description}")
                         End If
                     Next
+                    doc.ErrorListControl.SelectError(0)
                 End If
+
             Catch ex As Exception
                 Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
             End Try
         End Sub
 
-        Private Function RunProgram(ByVal code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
+        Private Function RunProgram(code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
             Dim doc = ActiveDocument
             errors = Compile(code, outputFileName)
             If errors.Count = 0 Then
@@ -505,7 +507,21 @@ Namespace Microsoft.SmallBasic
                 Me.endProgramButton.Focus()
 
             ElseIf doc.Form <> "" Then
+                Dim normalErrors As New List(Of [Error])
+                For Each err In errors
+                    If Not err.Description.StartsWith("Cannot find object", StringComparison.InvariantCultureIgnoreCase) Then
+                        normalErrors.Add(err)
+                    End If
+                Next
+
+                If normalErrors.Count > 0 Then
+                    ' Fix normal errors first
+                    errors = normalErrors
+                    Return False
+                End If
+
                 Return PreCompile(code, errors, outputFileName)
+
             Else
                 Return False
             End If
@@ -1005,19 +1021,20 @@ Namespace Microsoft.SmallBasic
 
 
         Public Shared Function Compile(programText As String, outputFilePath As String) As List(Of [Error])
-            Dim errors As List(Of [Error])
-            'Try
-            Dim compiler1 As New Compiler
+            Dim errors As List(Of [Error]) = Nothing
+            Try
+                Dim compiler1 As New Compiler
                 compiler1.Initialize()
                 Dim fileNameWithoutExtension As String = Path.GetFileNameWithoutExtension(outputFilePath)
                 Dim directoryName As String = Path.GetDirectoryName(outputFilePath)
                 errors = compiler1.Build(New StringReader(programText), fileNameWithoutExtension, directoryName)
-                'Catch ex As Exception
-                'errors = New List(Of [Error])
-                'errors.Add(New [Error](-1, 0, ex.Message))
-                'End Try
 
-                Return errors
+            Catch ex As Exception
+                If errors Is Nothing Then errors = New List(Of [Error])
+                errors.Add(New [Error](-1, 0, ex.Message))
+            End Try
+
+            Return errors
         End Function
 
         Private Sub formDesigner_DiagramDoubleClick(control As UIElement)

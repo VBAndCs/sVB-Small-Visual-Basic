@@ -398,7 +398,7 @@ Namespace Microsoft.SmallBasic.Documents
             Dim text = textView.TextSnapshot
             Dim addBlockEnd = True
 
-            If endBlock <> "" AndAlso endBlock <> "EndSub" Then
+            If endBlock <> "" AndAlso endBlock <> "EndSub" AndAlso endBlock <> "EndFunction" Then
                 For i = line.LineNumber + 1 To text.LineCount - 1
                     Dim nextLine = text.GetLineFromLineNumber(i)
                     Dim LineCode = nextLine.GetText()
@@ -679,7 +679,7 @@ EndSub
 
             Dim caret = EditorControl.TextView.Caret
 
-            IgnoreCaretPosChange = True
+            _IgnoreCaretPosChange = True
             _editorControl.EditorOperations.ResetSelection()
 
             If pos = -1 Then
@@ -700,7 +700,7 @@ EndSub
                     _GlobalSubs.Add(handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
                     caret.MoveTo(Text.Length - 15)
-                    _editorControl.EditorOperations.SelectCurrentWord()
+                    SelectCurrentWord()
                     _ControlEvents.Add(handlerName)
                 Else
                     _EventHandlers(handlerName) = (controlName, eventName)
@@ -711,7 +711,7 @@ EndSub
             Else
                 alreadyExists = True
                 caret.MoveTo(pos)
-                _editorControl.EditorOperations.SelectCurrentWord()
+                SelectCurrentWord()
             End If
 
             caret.EnsureVisible()
@@ -719,10 +719,39 @@ EndSub
 
             Me.MdiView.CmbControlNames.SelectedItem = controlName
             Me.MdiView.SelectEventName(If(isGlobal, handlerName, eventName))
-            IgnoreCaretPosChange = False
+            _IgnoreCaretPosChange = False
 
             Return Not alreadyExists
         End Function
+
+        Public Sub SelectWordAt(line As Integer, column As Integer)
+            If line < 0 Then Return
+
+            Dim currentSnapshot = _textBuffer.CurrentSnapshot
+            If line < currentSnapshot.LineCount Then
+                Dim lineSnap = currentSnapshot.GetLineFromLineNumber(line)
+
+                If column < lineSnap.LengthIncludingLineBreak Then
+                    Dim charIndex = lineSnap.Start + column
+                    _editorControl.EditorOperations.ResetSelection()
+                    _editorControl.TextView.Caret.MoveTo(charIndex)
+                    SelectCurrentWord()
+                End If
+            End If
+        End Sub
+
+        Public Sub SelectCurrentWord()
+            Dim caret = _editorControl.TextView.Caret
+            Dim ops = _editorControl.EditorOperations
+            Dim sv = _editorControl.TextView.ViewScroller
+            ops.ResetSelection()
+            caret.EnsureVisible()
+            sv.ScrollViewportVerticallyByPage(Nautilus.Text.Editor.ScrollDirection.Down)
+            caret.EnsureVisible()
+            sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
+            ops.SelectCurrentWord()
+            Focus()
+        End Sub
 
         Public Function FindCurrentEventHandler() As String
             Dim textView = EditorControl.TextView
@@ -745,6 +774,26 @@ EndSub
             Next
 
             Return ""
+        End Function
+
+        Public Function FindEndSub(pos As Integer) As Integer
+            Dim textView = EditorControl.TextView
+            Dim text = textView.TextSnapshot
+            Dim lineNumber = textView.TextSnapshot.GetLineFromPosition(pos).LineNumber + 1
+
+            Dim line As ITextSnapshotLine
+            For i = lineNumber To textView.TextSnapshot.LineCount - 1
+                line = text.GetLineFromLineNumber(i)
+                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                Select Case Tokens.Current.Token
+                    Case Token.Sub, Token.Function
+                        Return -1
+                    Case Token.EndSub, Token.EndFunction
+                        Return line.Start + Tokens.Current.Column
+                End Select
+            Next
+
+            Return -1
         End Function
 
         Public Function FindEventHandler(name As String) As Integer

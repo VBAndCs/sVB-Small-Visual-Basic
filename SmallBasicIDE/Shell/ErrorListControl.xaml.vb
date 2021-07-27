@@ -15,10 +15,10 @@ Namespace Microsoft.SmallBasic.Shell
 
         Private _document As TextDocument
 
-        Public Sub New(ByVal document As TextDocument)
+        Public Sub New(document As TextDocument)
             _document = document
             Me.InitializeComponent()
-            AddHandler ItemContainerGenerator.ItemsChanged, AddressOf OnItemsChanged
+            AddHandler ItemContainerGenerator.ItemsChanged, AddressOf ErrorListControl_OnItemsChanged
         End Sub
 
         Protected Overrides Sub OnKeyDown(ByVal e As KeyEventArgs)
@@ -35,43 +35,34 @@ Namespace Microsoft.SmallBasic.Shell
             MyBase.OnMouseDoubleClick(e)
         End Sub
 
+        Public Sub SelectError(index As Integer)
+            SelectedIndex = -1
+            If Items.Count > 0 Then
+                SelectedIndex = index
+                MoveToCurrentError()
+            End If
+        End Sub
+
         Private Sub MoveToCurrentError()
             If SelectedItem Is Nothing OrElse _document.EditorControl Is Nothing Then
                 Return
             End If
 
-            Dim text As String = TryCast(SelectedItem, String)
+            Dim text = TryCast(SelectedItem, String)
 
-            If Not Equals(text, Nothing) Then
-                Dim regex As Regex = New Regex("([0-9]*),([0-9]*): w*")
+            If text <> "" Then
+                Dim regex As New Regex("([0-9]*),([0-9]*): w*")
                 Dim match = regex.Match(text)
 
                 If match.Success Then
                     Dim line = Integer.Parse(match.Groups(1).Value) - 1
                     Dim column = Integer.Parse(match.Groups(2).Value) - 1
-                    SetCaret(line, column)
+                    _document.SelectWordAt(line, column)
                 End If
             End If
         End Sub
 
-        Private Sub SetCaret(line As Integer, column As Integer)
-            If line < 0 Then Return
-
-            Dim currentSnapshot = _document.TextBuffer.CurrentSnapshot
-
-            If line < currentSnapshot.LineCount Then
-                Dim lineFromLineNumber = currentSnapshot.GetLineFromLineNumber(line)
-
-                If column < lineFromLineNumber.LengthIncludingLineBreak Then
-                    Dim characterIndex = lineFromLineNumber.Start + column
-                    _document.EditorControl.TextView.Caret.MoveTo(characterIndex)
-                    _document.EditorControl.TextView.Caret.EnsureVisible()
-                    _document.EditorControl.TextView.VisualElement.Focus()
-                End If
-            End If
-        End Sub
-
-        Private Sub OnItemsChanged(ByVal sender As Object, ByVal e As ItemsChangedEventArgs)
+        Private Sub ErrorListControl_OnItemsChanged(sender As Object, e As ItemsChangedEventArgs)
             If e.ItemCount = 0 Then
                 DoubleAnimateHeight(0.0)
             Else
