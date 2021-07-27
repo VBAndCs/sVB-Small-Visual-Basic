@@ -43,21 +43,6 @@ Namespace Microsoft.SmallBasic.Statements
             Next
         End Sub
 
-        'Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
-        '    Dim methodBuilder = scope.TypeBuilder.DefineMethod(Name.NormalizedText, MethodAttributes.Static)
-        '    scope.MethodBuilders.Add(Name.NormalizedText, methodBuilder)
-        '    Dim codeGenScope As CodeGenScope = New CodeGenScope()
-        '    codeGenScope.ILGenerator = methodBuilder.GetILGenerator()
-        '    codeGenScope.TypeBuilder = scope.TypeBuilder
-        '    codeGenScope.MethodBuilder = methodBuilder
-        '    codeGenScope.Parent = scope
-        '    Dim scope2 = codeGenScope
-
-        '    For Each item In Body
-        '        item.PrepareForEmit(scope2)
-        '    Next
-        'End Sub
-
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
             Dim methodBuilder = scope.MethodBuilders(Name.NormalizedText)
             Dim codeGenScope As New CodeGenScope()

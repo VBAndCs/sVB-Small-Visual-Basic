@@ -16,7 +16,6 @@ Namespace WinForms
             ListModuleMembers(GetType(Label))
             ListModuleMembers(GetType(Button))
             ListModuleMembers(GetType(ListBox))
-
         End Sub
 
         Public Shared Function GetBaseTypes(name As String) As Type()
@@ -56,6 +55,7 @@ Namespace WinForms
             For Each e In EventsInfo(NameOf(Control))
                 events.Add(e)
             Next
+
             If controlName = NameOf(Control) Then Return events
 
             For Each e In EventsInfo(controlName)
@@ -71,10 +71,13 @@ Namespace WinForms
             Dim moduleName = ""
             If ModuleInfo(controlName).Contains(method) Then
                 moduleName = controlName
+
             ElseIf ModuleInfo(NameOf(Control)).Contains(method) Then
                 moduleName = NameOf(Control)
+
             ElseIf ModuleInfo(NameOf(Forms)).Contains(method) Then
                 moduleName = NameOf(Forms)
+
             Else
                 Return ("", 0)
             End If

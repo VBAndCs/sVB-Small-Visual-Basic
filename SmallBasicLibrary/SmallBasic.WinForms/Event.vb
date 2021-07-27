@@ -34,6 +34,24 @@ Namespace WinForms
         ''' <returns></returns>
         Public Shared Property Handled As Primitive
 
+        Public Shared ReadOnly Property LastKey As Primitive
+            Get
+                Return Keyboard.LastKey
+            End Get
+        End Property
+
+        Public Shared ReadOnly Property LastTextInput As Primitive
+            Get
+                Return Keyboard.LastTextInput
+            End Get
+        End Property
+
+        Public Shared ReadOnly Property LastKeyName As Primitive
+            Get
+                Return Keyboard.LastKeyName
+            End Get
+        End Property
+
         ''' <summary>
         ''' Set the Evemt.SenderForm and Event.SenderControl. 
         ''' You must call this method before adding event handlers for contrl events.

@@ -230,6 +230,11 @@ Namespace WinForms
         End Function
 
 
+        <ExMethod>
+        Public Shared Sub Focus(formName As Primitive, controlName As Primitive)
+            App.Invoke(Sub() GetControl(formName, controlName).Focus())
+        End Sub
+
 #Region "Events"
 
         <ExMethod>

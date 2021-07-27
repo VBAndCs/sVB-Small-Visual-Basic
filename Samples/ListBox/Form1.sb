@@ -1,0 +1,80 @@
+btnAdd.Enabled = false
+btnRemove.Enabled = false
+
+'----------------------------
+Sub btnFind_OnClick
+  srch = txtFind.Text
+  index = ListBox1.FindItem(srch)
+  if index = 0 Then
+     For i = 1 To ListBox1.ItemsCount 
+        item = ListBox1.GetItemAt(i)
+        If Text.StartsWith(item, srch) Then
+           ListBox1.SelectedIndex = i
+           Return
+        EndIf        
+     Next
+     
+     Sound.PlayBellRing()
+     ListBox1.SelectedIndex = -1
+  else
+     ListBox1.SelectedIndex = index
+  endif
+  
+EndSub
+
+
+'----------------------------
+Sub btnAdd_OnClick
+  item = txtAdd.Text
+  If item = "" Then
+     Sound.PlayBellRing()
+     Return
+  Endif
+  
+  ListBox1.AddItem(item)
+  ListBox1.SelectedItem = item
+  txtAdd.SelectAll()
+  txtAdd.Focus()
+EndSub
+  
+
+'----------------------------
+Sub ListBox1_OnSelection
+   lblSelection.Text = ListBox1.SelectedItem   
+   btnRemove.Enabled = (ListBox1.SelectedIndex > 0)
+EndSub
+
+
+'----------------------------
+Sub btnRemove_OnClick
+   index = ListBox1.SelectedIndex
+   ListBox1.RemoveItemAt(index)
+   
+  
+   If index < ListBox1.ItemsCount Then
+      ListBox1.SelectedIndex = index
+   elseIf ListBox1.ItemsCount > 0 Then
+      ListBox1.SelectedIndex = ListBox1.ItemsCount
+   endif
+   
+EndSub
+
+
+'----------------------------
+Sub txtAdd_OnTextChanged
+   If txtAdd.Text = "" Then
+      btnAdd.Enabled = False
+   else
+      btnAdd.Enabled = true
+   EndIf
+   
+EndSub
+
+
+'----------------------------
+Sub txtAdd_OnKeyDown
+   If Event.LastKey = Keys.Enter Then
+      btnAdd_OnClick()
+   EndIf
+   
+EndSub

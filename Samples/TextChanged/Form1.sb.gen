@@ -1,0 +1,26 @@
+'@Form Hints:
+'#Form1{
+'    TextBox1: TextBox
+'    Label1: Label
+'    Label2: Label
+'}
+
+Me = "Form1"
+TextBox1 = "textbox1"
+Label1 = "label1"
+Label2 = "label2"
+True = "True"
+False = "False"
+Form1 = Forms.LoadForm("Form1", "Form1.xaml")
+Form.Show(Form1)
+
+'#Events{
+'    TextBox1: OnTextInput OnTextChamged
+'}
+
+' TextBox1 Events:
+Control.HandleEvents(Form1, TextBox1)
+TextBox.OnTextInput = TextBox1_OnTextInput
+TextBox.OnTextChamged = TextBox1_OnTextChamged
+
+

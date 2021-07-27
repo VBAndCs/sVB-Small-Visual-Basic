@@ -34,7 +34,7 @@ Namespace Library
 
         Private _primitiveAsDecimal As Decimal?
 
-        Private _arrayMap As Dictionary(Of Primitive, Primitive)
+        Friend _arrayMap As Dictionary(Of Primitive, Primitive)
 
         Default Public Property item(index As Primitive) As Primitive
             Get

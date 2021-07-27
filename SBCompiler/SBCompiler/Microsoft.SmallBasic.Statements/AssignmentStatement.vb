@@ -12,6 +12,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public LeftValue As Expression
         Public RightValue As Expression
         Public EqualsToken As TokenInfo
+        Public IsLocalVariable As Boolean
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             If LeftValue IsNot Nothing Then
@@ -26,7 +27,7 @@ Namespace Microsoft.SmallBasic.Statements
 
             If TypeOf LeftValue Is IdentifierExpression Then
                 Dim identifierExpression = CType(LeftValue, IdentifierExpression)
-                symbolTable.AddVariable(identifierExpression)
+                symbolTable.AddVariable(identifierExpression, IsLocalVariable)
                 identifierExpression.AddSymbolInitialization(symbolTable)
             ElseIf TypeOf LeftValue Is ArrayExpression Then
                 Dim arrayExpression = CType(LeftValue, ArrayExpression)

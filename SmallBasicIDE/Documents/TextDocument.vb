@@ -189,13 +189,15 @@ Namespace Microsoft.SmallBasic.Documents
                             _MdiView.FreezeCmbEvents = True
                             If _EventHandlers.ContainsKey(handlerName) Then
                                 UpdateCombos(_EventHandlers(handlerName))
+
                             Else
                                 Dim eventInfo = GetHandlerInfo(handlerName)
                                 If eventInfo.ControlName <> "" Then
                                     ' Restore a broken handler. This can happen when deleting a control then restoring it.
                                     _EventHandlers.Add(handlerName, eventInfo)
                                     UpdateCombos(eventInfo)
-                                Else ' Global
+
+                                ElseIf _MdiView.CmbControlNames IsNot Nothing Then ' Global
                                     _MdiView.CmbControlNames.SelectedIndex = 0
                                     If handlerName = "" Then
                                         _MdiView.SelectEventName("-1") ' Select item at index -1

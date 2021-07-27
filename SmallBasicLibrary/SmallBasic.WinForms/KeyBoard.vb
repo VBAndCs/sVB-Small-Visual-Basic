@@ -9,11 +9,22 @@ Namespace WinForms
 
         Shared Sub New()
             App.Invoke(
-            Sub() EventManager.RegisterClassHandler(
+                Sub() EventManager.RegisterClassHandler(
                         GetType(Window),
                         UIElement.PreviewKeyDownEvent,
                         New RoutedEventHandler(AddressOf KeyDown))
-        )
+            )
+
+            App.Invoke(
+                Sub() EventManager.RegisterClassHandler(
+                        GetType(Window),
+                        UIElement.PreviewTextInputEvent,
+                        New RoutedEventHandler(AddressOf TextInput))
+            )
+        End Sub
+
+        Private Shared Sub TextInput(sender As Object, e As System.Windows.Input.TextCompositionEventArgs)
+            _LastTextInput = e.Text
         End Sub
 
         Private Shared Sub KeyDown(sender As Object, e As System.Windows.Input.KeyEventArgs)
@@ -93,6 +104,7 @@ Namespace WinForms
         End Property
 
         Public Shared ReadOnly Property LastKey As Primitive
+        Public Shared ReadOnly Property LastTextInput As Primitive
 
         Public Shared ReadOnly Property LastKeyName As Primitive
             Get

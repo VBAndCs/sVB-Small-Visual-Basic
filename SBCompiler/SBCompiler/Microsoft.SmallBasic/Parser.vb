@@ -264,7 +264,8 @@ Namespace Microsoft.SmallBasic
                     Next
 
                     Dim _parser = Parser.Parse(paramDef.ToString())
-                    For Each statment In _parser._ParseTree
+                    For Each statment As AssignmentStatement In _parser._ParseTree
+                        statment.IsLocalVariable = True
                         subroutine.Body.Add(statment)
                     Next
                 End If
@@ -408,7 +409,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Public Function BuildArithmeticExpression(tokenEnumerator As TokenEnumerator) As Expression
-            Return BuildExpression(tokenEnumerator, includeLogical:=False)
+            Return BuildExpression(tokenEnumerator, includeLogical:=True)
         End Function
 
         Public Function BuildLogicalExpression(ByVal tokenEnumerator As TokenEnumerator) As Expression
