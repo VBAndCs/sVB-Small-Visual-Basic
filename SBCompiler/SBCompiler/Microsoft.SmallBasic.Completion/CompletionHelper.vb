@@ -77,26 +77,24 @@ Namespace Microsoft.SmallBasic.Completion
             FillVariables(completionBag)
         End Sub
 
-        Public Shared Sub FillSubroutines(ByVal completionBag As CompletionBag)
-            For Each subroutine In completionBag.SymbolTable.Subroutines
-                Dim completionItem As CompletionItem = New CompletionItem()
-                completionItem.Name = subroutine.Key
-                completionItem.DisplayName = subroutine.Value.Text
-                completionItem.ReplacementText = subroutine.Value.Text & "()"
-                completionItem.ItemType = CompletionItemType.SubroutineName
-                Dim item = completionItem
-                completionBag.CompletionItems.Add(item)
+        Public Shared Sub FillSubroutines(bag As CompletionBag)
+            For Each subroutine In bag.SymbolTable.Subroutines
+                bag.CompletionItems.Add(New CompletionItem() With {
+                    .Name = subroutine.Key,
+                    .DisplayName = subroutine.Value.Text,
+                    .ReplacementText = subroutine.Value.Text & "()",
+                    .ItemType = CompletionItemType.SubroutineName
+                })
             Next
         End Sub
 
-        Public Shared Sub FillLabels(ByVal completionBag As CompletionBag)
-            For Each label In completionBag.SymbolTable.Labels
-                Dim completionItem As CompletionItem = New CompletionItem()
-                completionItem.Name = label.Key
-                completionItem.DisplayName = label.Value.Text
-                completionItem.ItemType = CompletionItemType.Label
-                Dim item = completionItem
-                completionBag.CompletionItems.Add(item)
+        Public Shared Sub FillLabels(bag As CompletionBag)
+            For Each label In bag.SymbolTable.Labels
+                bag.CompletionItems.Add(New CompletionItem() With {
+                    .Name = label.Key,
+                    .DisplayName = label.Value.Text,
+                    .ItemType = CompletionItemType.Label
+               })
             Next
         End Sub
 
@@ -132,17 +130,15 @@ Namespace Microsoft.SmallBasic.Completion
         End Sub
 
 
-        Public Shared Sub FillTypeNames(ByVal completionBag As CompletionBag)
-            For Each type In completionBag.TypeInfoBag.Types
-
+        Public Shared Sub FillTypeNames(bag As CompletionBag)
+            For Each type In bag.TypeInfoBag.Types
                 If Not type.Value.HideFromIntellisense Then
-                    Dim completionItem As CompletionItem = New CompletionItem()
-                    completionItem.Name = type.Key
-                    completionItem.DisplayName = type.Value.Type.Name
-                    completionItem.ItemType = CompletionItemType.TypeName
-                    completionItem.MemberInfo = type.Value.Type
-                    Dim item = completionItem
-                    completionBag.CompletionItems.Add(item)
+                    bag.CompletionItems.Add(New CompletionItem() With {
+                        .Name = type.Key,
+                        .DisplayName = type.Value.Type.Name,
+                        .ItemType = CompletionItemType.TypeName,
+                        .MemberInfo = type.Value.Type
+                    })
                 End If
             Next
         End Sub

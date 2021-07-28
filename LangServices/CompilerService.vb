@@ -2,6 +2,7 @@
 Imports System.Collections.Generic
 Imports System.IO
 Imports Microsoft.Nautilus.Text
+Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.SmallBasic.Completion
 
 Namespace Microsoft.SmallBasic.LanguageService
@@ -41,7 +42,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End Try
         End Function
 
-        Public Function Compile(ByVal programText As String, ByVal errors As ICollection(Of String)) As Compiler
+        Public Function Compile(programText As String, errors As ICollection(Of String)) As Compiler
             Try
                 Dim compiler As Compiler = New Compiler()
                 compiler.Initialize()
@@ -62,27 +63,96 @@ Namespace Microsoft.SmallBasic.LanguageService
             RaiseEvent CurrentCompletionItemChanged(Nothing, New CurrentCompletionItemChangedEventArgs(completionItemWrapper))
         End Sub
 
-        Public Sub FormatDocument(ByVal textBuffer As ITextBuffer)
-            Dim num = 2
+        Public Sub FormatDocument(textBuffer As ITextBuffer, Optional lineNumber As Integer = -1)
             Dim currentSnapshot = textBuffer.CurrentSnapshot
-            Dim source As TextBufferReader = New TextBufferReader(currentSnapshot)
-            Dim completionHelper As CompletionHelper = New CompletionHelper()
+            Dim source As New TextBufferReader(currentSnapshot)
+            Dim completionHelper As New CompletionHelper()
             completionHelper.GetIndentationLevel(source, 0)
-            Dim textEdit As ITextEdit = textBuffer.CreateEdit()
+            Dim textEdit = textBuffer.CreateEdit()
 
             Using textEdit
+                Dim indentationLevel = 0
+                Dim start, [end] As Integer
+                If lineNumber = -1 Then
+                    start = 0
+                    [end] = currentSnapshot.LineCount - 1
+                Else
+                    start = FindCurrentSubStart(currentSnapshot, lineNumber)
+                    [end] = FindCurrentSubEnd(currentSnapshot, lineNumber)
+                End If
 
-                For Each line In currentSnapshot.Lines
-                    Dim positionOfNextNonWhiteSpaceCharacter = line.GetPositionOfNextNonWhiteSpaceCharacter(0)
-                    Dim indentationLevel = completionHelper.GetIndentationLevel(line.LineNumber)
+                For i = start To [end]
+                    Dim line = currentSnapshot.Lines(i)
+                    Dim nextPos = line.GetPositionOfNextNonWhiteSpaceCharacter(0)
 
-                    If positionOfNextNonWhiteSpaceCharacter <> indentationLevel * num Then
-                        textEdit.Replace(line.Start, positionOfNextNonWhiteSpaceCharacter, New String(" "c, indentationLevel * num))
+                    Dim Tokens = New LineScanner().GetTokens(line.GetText(), line.LineNumber)
+                    If Tokens.Count = 0 Then
+                        AdjustIndentation(textEdit, line, indentationLevel, nextPos)
+                        Continue For
                     End If
+
+                    Select Case Tokens(0).Token
+                        Case Token.EndIf, Token.Next, Token.EndFor, Token.Wend, Token.EndWhile, Token.EndSub, Token.EndFunction
+                            indentationLevel -= 1
+                            AdjustIndentation(textEdit, line, indentationLevel, nextPos)
+
+                        Case Token.If, Token.For, Token.While, Token.Sub, Token.Function
+                            AdjustIndentation(textEdit, line, indentationLevel, nextPos)
+                            indentationLevel += 1
+
+                        Case Token.Else, Token.ElseIf
+                            indentationLevel -= 1
+                            AdjustIndentation(textEdit, line, indentationLevel, nextPos)
+                            indentationLevel += 1
+
+                        Case Else
+                            AdjustIndentation(textEdit, line, indentationLevel, nextPos)
+                    End Select
                 Next
 
                 textEdit.Apply()
             End Using
+        End Sub
+
+        Public Function FindCurrentSubStart(text As ITextSnapshot, LineNumber As Integer) As Integer
+            For i = LineNumber To 0 Step -1
+                Dim line = text.GetLineFromLineNumber(i)
+                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                Select Case Tokens.Current.Token
+                    Case Token.Sub, Token.Function
+                        Return i
+                    Case Token.EndSub, Token.EndFunction
+                        If i < LineNumber Then
+                            Return i + 1
+                        End If
+                End Select
+            Next
+
+            Return 0
+        End Function
+
+        Public Function FindCurrentSubEnd(text As ITextSnapshot, LineNumber As Integer) As Integer
+            For i = LineNumber + 1 To text.LineCount - 1
+                Dim line = text.GetLineFromLineNumber(i)
+                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                Select Case Tokens.Current.Token
+                    Case Token.Sub, Token.Function
+                        If i > LineNumber + 1 Then
+                            Return i - 1
+                        End If
+                    Case Token.EndSub, Token.EndFunction
+                        Return i
+                End Select
+            Next
+
+            Return text.LineCount - 1
+        End Function
+
+
+        Private Sub AdjustIndentation(textEdit As ITextEdit, line As ITextSnapshotLine, indentationLevel As Integer, nextPos As Integer)
+            If nextPos <> indentationLevel * 3 Then
+                textEdit.Replace(line.Start, nextPos, New String(" "c, indentationLevel * 3))
+            End If
         End Sub
     End Module
 End Namespace

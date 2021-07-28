@@ -337,8 +337,8 @@ Namespace Library
             Return result
         End Function
 
-        Public Shared Function ConvertToBoolean(primitive1 As Primitive) As Boolean
-            Return primitive1
+        Public Shared Function ConvertToBoolean(primitive As Primitive) As Boolean
+            Return primitive
         End Function
 
         Public Shared Widening Operator CType(primitive1 As Primitive) As String
@@ -361,12 +361,13 @@ Namespace Library
             Return CDbl(primitive1.GetAsDecimal())
         End Operator
 
-        Public Shared Widening Operator CType(primitive1 As Primitive) As Boolean
-            If primitive1.AsString IsNot Nothing AndAlso primitive1.AsString.Equals("true", StringComparison.InvariantCultureIgnoreCase) Then
-                Return True
-            End If
-
-            Return False
+        Public Shared Widening Operator CType(value As Primitive) As Boolean
+            Dim s = CStr(value)
+            If s Is Nothing Then Return False
+            If s.ToLower() = "true" Then Return True
+            If Not IsNumeric(s) Then Return False
+            If Double.Parse(s) = 0 Then Return False
+            Return True
         End Operator
 
         Public Shared Operator =(primitive1 As Primitive, primitive2 As Primitive) As Primitive

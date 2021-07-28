@@ -38,6 +38,7 @@ Namespace Microsoft.SmallBasic.Documents
             Get
                 Return _caretPositionText
             End Get
+
             Private Set(ByVal value As String)
                 _caretPositionText = value
                 NotifyProperty("CaretPositionText")
@@ -67,6 +68,7 @@ Namespace Microsoft.SmallBasic.Documents
             Get
                 Return _programDetails
             End Get
+
             Set(ByVal value As Object)
                 _programDetails = value
                 NotifyProperty("ProgramDetails")
@@ -185,7 +187,7 @@ Namespace Microsoft.SmallBasic.Documents
                     Sub()
                         StillWorking = True
                         Try
-                            Dim handlerName = FindCurrentEventHandler()
+                            Dim handlerName = FindCurrentSub()
                             _MdiView.FreezeCmbEvents = True
                             If _EventHandlers.ContainsKey(handlerName) Then
                                 UpdateCombos(_EventHandlers(handlerName))
@@ -319,7 +321,7 @@ Namespace Microsoft.SmallBasic.Documents
                   End Sub, DispatcherPriority.ContextIdle)
 
             Catch
-                    StillWorking = False
+                StillWorking = False
             End Try
         End Sub
 
@@ -395,7 +397,6 @@ Namespace Microsoft.SmallBasic.Documents
                    )
             Dim start = code.IndexOf(keyword, StringComparison.InvariantCultureIgnoreCase)
             Dim leadingSpace = code.Substring(0, start)
-            Dim iden = Indentation.CalculateIndentation(textView.TextSnapshot, line.LineNumber)
             Dim L = line.Length
             Dim text = textView.TextSnapshot
             Dim addBlockEnd = True
@@ -435,11 +436,14 @@ Namespace Microsoft.SmallBasic.Documents
                 Next
             End If
 
-            Dim nl = $"{vbCrLf}{Space(iden)}"
+            Dim inden = 0
+            Dim nl = $"{vbCrLf}{Space(inden)}"
             EditorControl.EditorOperations.ReplaceText(
                  New Span(line.Start, L),
-                Space(iden) & block.Replace("#", nl) & If(addBlockEnd, nl & endBlock & nl, ""), _undoHistory)
-            textView.Caret.MoveTo(line.Start + iden + Len(keyword) + 1 + n)
+                Space(inden) & block.Replace("#", nl) & If(addBlockEnd AndAlso endBlock <> "", nl & endBlock & nl, ""), _undoHistory)
+
+            textView.Caret.MoveTo(line.Start + inden + Len(keyword) + 1 + n)
+            CompilerService.FormatDocument(textView.TextBuffer, line.LineNumber)
         End Sub
 
         Friend Sub Focus(Optional moveToStart As Boolean = False)
@@ -499,11 +503,11 @@ Namespace Microsoft.SmallBasic.Documents
 
 
         Function GenerateCodeBehind(formDesigner As DiagramHelper.Designer, updateControlInfo As Boolean) As String
-            If _Form = "" Then Return ""
+            If _form = "" Then Return ""
 
             Dim hint As New Text.StringBuilder
             Dim declaration As New Text.StringBuilder
-            Dim formName = _Form
+            Dim formName = _form
             hint.AppendLine("'@Form Hints:")
             hint.AppendLine($"'#{formName}{{")
             Dim controlsInfoList As New Dictionary(Of String, String)
@@ -577,7 +581,7 @@ Namespace Microsoft.SmallBasic.Documents
             End If
 
             If updateControlInfo Then
-                _Form = formName
+                _form = formName
                 _ControlsInfo = controlsInfoList
                 AddProperty("ControlsInfo", _ControlsInfo)
                 AddProperty("ControlNames", _ControlNames)
@@ -726,7 +730,7 @@ EndSub
             Return Not alreadyExists
         End Function
 
-        Public Sub SelectWordAt(line As Integer, column As Integer)
+        Public Sub SelectWordAt(line As Integer, column As Integer, Optional viewAtTop As Boolean = True)
             If line < 0 Then Return
 
             Dim currentSnapshot = _textBuffer.CurrentSnapshot
@@ -737,12 +741,12 @@ EndSub
                     Dim charIndex = lineSnap.Start + column
                     _editorControl.EditorOperations.ResetSelection()
                     _editorControl.TextView.Caret.MoveTo(charIndex)
-                    SelectCurrentWord()
+                    SelectCurrentWord(viewAtTop)
                 End If
             End If
         End Sub
 
-        Public Sub SelectCurrentWord()
+        Public Sub SelectCurrentWord(Optional viewAtTop As Boolean = True)
             Dim caret = _editorControl.TextView.Caret
             Dim ops = _editorControl.EditorOperations
             Dim sv = _editorControl.TextView.ViewScroller
@@ -751,11 +755,16 @@ EndSub
             sv.ScrollViewportVerticallyByPage(Nautilus.Text.Editor.ScrollDirection.Down)
             caret.EnsureVisible()
             sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
+            If Not viewAtTop Then
+                sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
+                sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
+                sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
+            End If
             ops.SelectCurrentWord()
             Focus()
         End Sub
 
-        Public Function FindCurrentEventHandler() As String
+        Public Function FindCurrentSub() As String
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
             Dim insertionIndex = textView.Caret.Position.TextInsertionIndex

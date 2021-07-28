@@ -57,7 +57,7 @@ Namespace Microsoft.SmallBasic.Shell
                 If match.Success Then
                     Dim line = Integer.Parse(match.Groups(1).Value) - 1
                     Dim column = Integer.Parse(match.Groups(2).Value) - 1
-                    _document.SelectWordAt(line, column)
+                    _document.SelectWordAt(line, column, False)
                 End If
             End If
         End Sub

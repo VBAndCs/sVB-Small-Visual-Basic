@@ -92,14 +92,14 @@ Namespace Microsoft.SmallBasic
 
         End Sub
 
-        Private Sub OnFileNew(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnFileNew(sender As Object, e As RoutedEventArgs)
             Dim textDocument As New TextDocument(Nothing)
             textDocument.ContentType = "text.smallbasic"
             DocumentTracker.TrackDocument(textDocument)
             Dim mdiView As New MdiView()
             mdiView.Document = textDocument
-            Dim item = mdiView
-            mdiViews.Add(item)
+            mdiViews.Add(mdiView)
+            textDocument.Focus()
         End Sub
 
         Private Sub OnFileOpen(ByVal sender As Object, ByVal e As RoutedEventArgs)
@@ -111,7 +111,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub CanFileSave(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
+        Private Sub CanFileSave(sender As Object, e As CanExecuteRoutedEventArgs)
             e.CanExecute = ActiveDocument IsNot Nothing
         End Sub
 
