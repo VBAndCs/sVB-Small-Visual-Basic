@@ -534,8 +534,6 @@ Namespace Microsoft.SmallBasic.Documents
             hint.AppendLine("'}")
             hint.AppendLine()
             hint.Append(declaration)
-            hint.AppendLine("True = ""True""")
-            hint.AppendLine("False = ""False""")
             'hint.AppendLine($"Forms.AppPath = ""{xamlPath}""")
             hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{Path.GetFileNameWithoutExtension(Me.FilePath)}.xaml"")")
             hint.AppendLine($"Form.Show({formName})")
@@ -586,7 +584,7 @@ Namespace Microsoft.SmallBasic.Documents
                 AddProperty("ControlsInfo", _ControlsInfo)
                 AddProperty("ControlNames", _ControlNames)
 
-                ' Note that ControlNames Property is bound to a cono box, so keep the existing collection
+                ' Note that ControlNames Property is bound to a combobox, so keep the existing collection
                 controlNamesList.Sort()
                 _ControlNames.Clear()
                 For Each controlName In controlNamesList
@@ -772,7 +770,7 @@ EndSub
 
             For i = lineNumber To 0 Step -1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
                 Dim token = Tokens.Current.Token
                 If token = Token.Sub OrElse token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
@@ -795,12 +793,12 @@ EndSub
             Dim line As ITextSnapshotLine
             For i = lineNumber To textView.TextSnapshot.LineCount - 1
                 line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
-                Select Case Tokens.Current.Token
+                Dim tokenInfo = New LineScanner().GetFirstToken(line.GetText(), i)
+                Select Case tokenInfo.Token
                     Case Token.Sub, Token.Function
                         Return -1
                     Case Token.EndSub, Token.EndFunction
-                        Return line.Start + Tokens.Current.Column
+                        Return line.Start + tokenInfo.Column
                 End Select
             Next
 
@@ -814,7 +812,7 @@ EndSub
                 Dim code = line.GetText().Trim(" "c, vbTab)
                 If code = "" Then Continue For
 
-                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), line.LineNumber)
+                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), line.LineNumber)
                 If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
                         If Tokens.Current.Text = name Then Return line.Start + Tokens.Current.Column
@@ -835,7 +833,7 @@ EndSub
 
             For i = 0 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
                 If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
                         Dim subName = Tokens.Current.Text
@@ -892,7 +890,7 @@ EndSub
 
             For i = 0 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
                 If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
                         Dim subName = Tokens.Current.Text
