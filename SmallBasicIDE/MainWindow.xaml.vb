@@ -1045,8 +1045,9 @@ Namespace Microsoft.SmallBasic
             If formDesigner.CodeFilePath <> "" Then
                 Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
                 Dim controlName = formDesigner.GetControlNameOrDefault(control)
+                Dim type = doc.ControlsInfo(controlName.ToLower())
 
-                If doc.AddEventHandler(controlName, "OnClick") Then
+                If doc.AddEventHandler(controlName, sb.PreCompiler.GetDefaultEvent(type)) Then
                     doc.PageKey = formDesigner.PageKey
                     ' The code behind is saved before the new Handler is added.
                     ' We must make the designer dirty, to force saving this chamge in 

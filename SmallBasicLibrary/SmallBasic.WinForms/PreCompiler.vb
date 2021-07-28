@@ -7,6 +7,7 @@ Namespace WinForms
 
         Private Shared ModuleInfo As New Dictionary(Of String, List(Of String))
         Private Shared EventsInfo As New Dictionary(Of String, List(Of String))
+        Private Shared DeafaultControlEvents As New Dictionary(Of String, String)
 
         Shared Sub New()
             ListModuleMembers(GetType(Forms))
@@ -16,7 +17,19 @@ Namespace WinForms
             ListModuleMembers(GetType(Label))
             ListModuleMembers(GetType(Button))
             ListModuleMembers(GetType(ListBox))
+
+            DeafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
+            DeafaultControlEvents(NameOf(ListBox).ToLower()) = "OnSelection"
         End Sub
+
+        Public Shared Function GetDefaultEvent(controlName As String) As String
+            controlName = controlName.ToLower()
+            If DeafaultControlEvents.ContainsKey(controlName) Then
+                Return DeafaultControlEvents(controlName)
+            Else
+                Return "OnClick"
+            End If
+        End Function
 
         Public Shared Function GetBaseTypes(name As String) As Type()
             Select Case name
@@ -98,36 +111,36 @@ Namespace WinForms
             Dim pos1 = txt.IndexOf("'@Form Hints:")
             If pos1 = -1 Then Return Nothing
 
-            Dim lines = txt.Substring(pos1).Split({vbCr, vbLf}, StringSplitOptions.RemoveEmptyEntries)
-            If lines.Count < 3 Then Return Nothing
+                Dim lines = txt.Substring(pos1).Split({vbCr, vbLf}, StringSplitOptions.RemoveEmptyEntries)
+                If lines.Count < 3 Then Return Nothing
 
 
-            If Not (lines(1).StartsWith("'#") AndAlso lines(1).EndsWith("{")) Then Return Nothing
+                If Not (lines(1).StartsWith("'#") AndAlso lines(1).EndsWith("{")) Then Return Nothing
 
-            Dim info As New FormInfo
-            info.Form = lines(1).Substring(2, lines(1).Length - 3).Trim()
-            If info.Form = "" Then Return Nothing
-            info.ControlsInfo(info.Form.ToLower()) = "Form"
-            info.ControlNames.Add(info.Form)
+                Dim info As New FormInfo
+                info.Form = lines(1).Substring(2, lines(1).Length - 3).Trim()
+                If info.Form = "" Then Return Nothing
+                info.ControlsInfo(info.Form.ToLower()) = "Form"
+                info.ControlNames.Add(info.Form)
 
-            For i = 2 To lines.Count - 1
-                If lines(i) = "'}" Then
-                    info.EventHandlers = ParseEventHandlers(txt)
-                    Return info
-                End If
+                For i = 2 To lines.Count - 1
+                    If lines(i) = "'}" Then
+                        info.EventHandlers = ParseEventHandlers(txt)
+                        Return info
+                    End If
 
-                If Not lines(i).StartsWith("'    ") Then Return Nothing
+                    If Not lines(i).StartsWith("'    ") Then Return Nothing
 
-                Dim hint = lines(i).Substring(5)
-                Dim pair = hint.Split(":"c)
-                If pair Is Nothing OrElse pair.Length <> 2 Then Return Nothing
+                    Dim hint = lines(i).Substring(5)
+                    Dim pair = hint.Split(":"c)
+                    If pair Is Nothing OrElse pair.Length <> 2 Then Return Nothing
 
-                Dim cntrlName = pair(0).Trim()
-                info.ControlsInfo.Add(cntrlName.ToLower(), pair(1).Trim)
-                info.ControlNames.Add(cntrlName)
+                    Dim cntrlName = pair(0).Trim()
+                    info.ControlsInfo.Add(cntrlName.ToLower(), pair(1).Trim)
+                    info.ControlNames.Add(cntrlName)
 
-            Next
-            Return Nothing
+                Next
+                Return Nothing
         End Function
 
         Public Shared Function ParseEventHandlers(txt As String) As Dictionary(Of String, (ControlName As String, EventName As String))
