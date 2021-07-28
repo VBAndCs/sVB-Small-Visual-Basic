@@ -13,3 +13,4 @@ F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLi
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.dll
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.xml
 F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.vbproj.AssemblyReference.cache
