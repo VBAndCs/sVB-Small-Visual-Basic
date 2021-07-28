@@ -4,6 +4,8 @@
         Comment
         StringLiteral
         NumericLiteral
+        [True]
+        [False]
         Identifier
         [Else]
         [ElseIf]
@@ -24,7 +26,6 @@
         [Function]
         [Then]
         [To]
-        [True]
         [While]
         [And]
         Equals

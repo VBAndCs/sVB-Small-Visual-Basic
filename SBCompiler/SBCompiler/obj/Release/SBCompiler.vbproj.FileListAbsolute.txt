@@ -2,3 +2,14 @@ F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.vbp
 F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\Resources.resources
 F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.vbproj.GenerateResource.cache
 F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.vbproj.CoreCompileInputs.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\bin\Release\SBCompiler.exe.config
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\bin\Release\SBCompiler.exe
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\bin\Release\SBCompiler.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\bin\Release\SBCompiler.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\bin\Release\SmallBasicLibrary.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\bin\Release\SmallBasicLibrary.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\bin\Release\SmallBasicLibrary.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.vbproj.CopyComplete
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.exe
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SBCompiler\SBCompiler\obj\Release\SBCompiler.pdb

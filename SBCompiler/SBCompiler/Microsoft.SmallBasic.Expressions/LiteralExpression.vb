@@ -17,18 +17,34 @@ Namespace Microsoft.SmallBasic.Expressions
 
         Public Property Literal As TokenInfo
 
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            _Literal.Parent = Me.Parent
+        End Sub
+
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
-            If Literal.Token = Token.StringLiteral Then
-                scope.ILGenerator.Emit(OpCodes.Ldstr, Literal.Text.Trim(""""c))
-                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.StringToPrimitive, Nothing)
-            ElseIf Literal.Token = Token.NumericLiteral Then
-                scope.ILGenerator.Emit(OpCodes.Ldc_R8, Double.Parse(Literal.Text, CultureInfo.InvariantCulture))
-                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
-            End If
+            Select Case Literal.Token
+                Case Token.StringLiteral
+                    scope.ILGenerator.Emit(OpCodes.Ldstr, Literal.Text.Trim(""""c))
+                    scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.StringToPrimitive, Nothing)
+
+                Case Token.True
+                    scope.ILGenerator.Emit(OpCodes.Ldstr, "True")
+                    scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.StringToPrimitive, Nothing)
+
+                Case Token.False
+                    scope.ILGenerator.Emit(OpCodes.Ldstr, "False")
+                    scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.StringToPrimitive, Nothing)
+
+                Case Token.NumericLiteral
+                    scope.ILGenerator.Emit(OpCodes.Ldc_R8, Double.Parse(Literal.Text, CultureInfo.InvariantCulture))
+                    scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
+            End Select
         End Sub
 
         Public Overrides Function ToString() As String
             Return Literal.Text
         End Function
     End Class
+
 End Namespace

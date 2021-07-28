@@ -10,6 +10,10 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Property Identifier As TokenInfo
         Public Subroutine As SubroutineStatement
 
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            _Identifier.Parent = Me.Parent
+        End Sub
 
         Public Sub AddSymbolInitialization(ByVal symbolTable As SymbolTable)
             symbolTable.AddVariableInitialization(Identifier)

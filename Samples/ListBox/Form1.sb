@@ -26,11 +26,6 @@ EndSub
 '----------------------------
 Sub btnAdd_OnClick
   item = txtAdd.Text
-  If item = "" Then
-     Sound.PlayBellRing()
-     Return
-  Endif
-  
   ListBox1.AddItem(item)
   ListBox1.SelectedItem = item
   txtAdd.SelectAll()

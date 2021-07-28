@@ -9,6 +9,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public Shared DoNotPopReturnValue As Boolean
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
             If MethodCallExpression IsNot Nothing Then
                 MethodCallExpression.Parent = Me
                 MethodCallExpression.AddSymbols(symbolTable)

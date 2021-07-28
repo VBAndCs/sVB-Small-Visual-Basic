@@ -285,11 +285,11 @@ Namespace Microsoft.SmallBasic
             Dim returnLabelStatement As New LabelStatement() With {
                 .ColonToken = New TokenInfo With {.Text = ":", .Token = Token.Colon, .TokenType = TokenType.Delimiter},
                 .StartToken = returnLabelToken,
-                .LabelToken = returnLabelToken
+                .LabelToken = returnLabelToken,
+                .subroutine = subroutine
             }
 
             While tokenEnumerator IsNot Nothing
-
                 If tokenEnumerator.Current.Token = Token.EndSub OrElse tokenEnumerator.Current.Token = Token.EndFunction Then
                     subroutine.EndSubToken = tokenEnumerator.Current
                     flag = True
@@ -320,20 +320,23 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Function ConstructGotoStatement(ByVal tokenEnumerator As TokenEnumerator) As GotoStatement
-            Dim gotoStatement As GotoStatement = New GotoStatement()
-            gotoStatement.StartToken = tokenEnumerator.Current
-            gotoStatement.GotoToken = tokenEnumerator.Current
-            Dim gotoStatement2 = gotoStatement
+            Dim gotoStatement As New GotoStatement() With {
+                .StartToken = tokenEnumerator.Current,
+                .GotoToken = tokenEnumerator.Current,
+                .subroutine = SubroutineStatement.Current
+            }
             tokenEnumerator.MoveNext()
-            EatSimpleIdentifier(tokenEnumerator, gotoStatement2.Label)
+            EatSimpleIdentifier(tokenEnumerator, gotoStatement.Label)
             ExpectEndOfLine(tokenEnumerator)
-            Return gotoStatement2
+            Return gotoStatement
         End Function
 
         Private Function ConstructLabelStatement(ByVal tokenEnumerator As TokenEnumerator) As LabelStatement
-            Dim labelStatement As New LabelStatement()
-            labelStatement.StartToken = tokenEnumerator.Current
-            labelStatement.LabelToken = tokenEnumerator.Current
+            Dim labelStatement As New LabelStatement() With {
+                .StartToken = tokenEnumerator.Current,
+                .LabelToken = tokenEnumerator.Current,
+                .subroutine = SubroutineStatement.Current
+            }
             tokenEnumerator.MoveNext()
 
             If EatToken(tokenEnumerator, Token.Colon, labelStatement.ColonToken) Then
@@ -451,7 +454,7 @@ Namespace Microsoft.SmallBasic
 
             Dim expression As Expression
             Select Case tokenEnumerator.Current.Token
-                Case Token.StringLiteral, Token.NumericLiteral
+                Case Token.StringLiteral, Token.NumericLiteral, Token.True, Token.False
                     expression = New LiteralExpression(tokenEnumerator.Current)
                     expression.Precedence = 9
                     tokenEnumerator.MoveNext()
@@ -655,7 +658,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Public Shared Function ParseArgumentList(args As String) As List(Of Expression)
-            Dim tokens = New LineScanner().GetTokenList(args & ")", 1)
+            Dim tokens = New LineScanner().GetTokenEnumerator(args & ")", 1)
             Dim parser As New Parser()
             Return parser.ParseCommaSepList(tokens, Token.RightParens)
         End Function
@@ -804,7 +807,7 @@ Namespace Microsoft.SmallBasic
             End If
 
             _currentLine += 1
-            _currentLineEnumerator = New LineScanner().GetTokenList(text, _currentLine)
+            _currentLineEnumerator = New LineScanner().GetTokenEnumerator(text, _currentLine)
             Return _currentLineEnumerator
         End Function
 

@@ -116,7 +116,7 @@ Namespace Microsoft.SmallBasic
                 Console.Write("> ")
                 Dim lineText As String = Console.ReadLine()
                 Dim lineScanner As LineScanner = New LineScanner()
-                Dim tokenList = lineScanner.GetTokenList(lineText, 0)
+                Dim tokenList = lineScanner.GetTokenEnumerator(lineText, 0)
                 Dim expression = parser.BuildLogicalExpression(tokenList)
                 Console.WriteLine("= {0}", Parser.EvaluateExpression(expression))
                 Console.WriteLine(expression)

@@ -13,6 +13,10 @@ Namespace Microsoft.SmallBasic.Statements
         Public ThenToken As TokenInfo
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            ElseIfToken.Parent = Me
+            ThenToken.Parent = Me
+
             If Condition IsNot Nothing Then
                 Condition.Parent = Me
                 Condition.AddSymbols(symbolTable)

@@ -15,6 +15,9 @@ Namespace Microsoft.SmallBasic.Statements
         Public IsLocalVariable As Boolean
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            EqualsToken.Parent = Me
+
             If LeftValue IsNot Nothing Then
                 LeftValue.Parent = Me
                 LeftValue.AddSymbols(symbolTable)
@@ -29,6 +32,7 @@ Namespace Microsoft.SmallBasic.Statements
                 Dim identifierExpression = CType(LeftValue, IdentifierExpression)
                 symbolTable.AddVariable(identifierExpression, IsLocalVariable)
                 identifierExpression.AddSymbolInitialization(symbolTable)
+
             ElseIf TypeOf LeftValue Is ArrayExpression Then
                 Dim arrayExpression = CType(LeftValue, ArrayExpression)
                 arrayExpression.AddSymbolInitialization(symbolTable)

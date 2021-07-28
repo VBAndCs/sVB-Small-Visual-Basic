@@ -17,8 +17,6 @@ txtAdd = "txtadd"
 btnFind = "btnfind"
 txtFind = "txtfind"
 lblSelection = "lblselection"
-True = "True"
-False = "False"
 Form1 = Forms.LoadForm("Form1", "Form1.xaml")
 Form.Show(Form1)
 

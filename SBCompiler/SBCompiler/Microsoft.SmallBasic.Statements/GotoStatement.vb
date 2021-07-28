@@ -8,6 +8,13 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public GotoToken As TokenInfo
         Public Label As TokenInfo
+        Public subroutine As SubroutineStatement
+
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            GotoToken.Parent = Me
+            Label.Parent = Me
+        End Sub
 
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
             Dim label = scope.Labels(Me.Label.NormalizedText)
@@ -15,11 +22,7 @@ Namespace Microsoft.SmallBasic.Statements
         End Sub
 
         Public Overrides Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)
-            If Label.Token = Token.Illegal OrElse column < Label.Column Then
-                CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
-            Else
-                CompletionHelper.FillLabels(completionBag)
-            End If
+            CompletionHelper.FillLabels(completionBag)
         End Sub
 
         Public Overrides Function ToString() As String

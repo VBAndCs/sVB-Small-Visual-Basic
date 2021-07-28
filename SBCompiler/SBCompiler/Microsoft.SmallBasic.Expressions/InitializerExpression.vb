@@ -23,6 +23,8 @@ Namespace Microsoft.SmallBasic.Expressions
         Public ReadOnly Property Arguments As New List(Of Expression)
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+
             For Each argument In Arguments
                 argument.Parent = Me.Parent
                 argument.AddSymbols(symbolTable)

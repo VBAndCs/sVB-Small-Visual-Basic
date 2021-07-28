@@ -27,21 +27,27 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Select Case args.Key
                     Case Key.LeftCtrl, Key.RightCtrl
                         [property].FadeCompletionList()
+
                     Case Key.Escape
                         [property].Adornment.Dismiss(force:=True)
                         textView.VisualElement.Focus()
                         args.Handled = True
+
                     Case Key.Up
                         completionListBox.MoveUp()
                         args.Handled = True
+
                     Case Key.Down
                         completionListBox.MoveDown()
                         args.Handled = True
+
                     Case Key.Tab, Key.Return
                         args.Handled = CommitItem(textView, [property])
+
                     Case Key.Space, Key.OemPeriod, Key.Oem4
                         CommitConditionally(textView, [property])
                 End Select
+
             ElseIf textView.Properties.TryGetProperty(GetType(CompletionAdornmentProvider), property2) AndAlso args.Key = Key.Space AndAlso args.KeyboardDevice.Modifiers = ModifierKeys.Control Then
                 property2.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex)
                 args.Handled = True
@@ -66,9 +72,11 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Case "+", "-", "*", "/", "="
                         CommitConditionally(textView, [property], " " & args.Text & " ")
                         args.Handled = True
+
                     Case ","
                         CommitConditionally(textView, [property], ", ")
                         args.Handled = True
+
                     Case "("
                         CommitConditionally(textView, [property])
                 End Select

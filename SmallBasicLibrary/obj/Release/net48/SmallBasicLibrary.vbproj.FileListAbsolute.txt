@@ -1,0 +1,15 @@
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\bin\Release\net48\SmallBasicLibrary.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\bin\Release\net48\SmallBasicLibrary.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\bin\Release\net48\SmallBasicLibrary.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\bin\Release\net48\PresentationCore.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\bin\Release\net48\System.Core.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\bin\Release\net48\System.Web.Services.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\bin\Release\net48\System.Xml.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\bin\Release\net48\System.Xml.Linq.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\bin\Release\net48\WindowsBase.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.g.resources
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.vbproj.CoreCompileInputs.cache
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.vbproj.CopyComplete
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.dll
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.xml
+F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Release\net48\SmallBasicLibrary.pdb

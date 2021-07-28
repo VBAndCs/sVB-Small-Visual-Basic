@@ -11,6 +11,8 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Parent As Statement
 
         Public Overridable Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            _StartToken.Parent = Me.Parent
+            _EndToken.Parent = Me.Parent
         End Sub
 
         Public Overridable Sub EmitIL(ByVal scope As CodeGenScope)

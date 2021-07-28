@@ -11,6 +11,7 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Property Indexer As Expression
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
             If LeftHand IsNot Nothing Then
                 LeftHand.Parent = Me.Parent
                 LeftHand.AddSymbols(symbolTable)

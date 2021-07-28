@@ -197,9 +197,17 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Private Sub AnalyzeGotoStatement(ByVal gotoStatement As GotoStatement)
-            If gotoStatement.Label.Token <> 0 Then
-                NoteLabelReference(gotoStatement.Label)
+        Private Sub AnalyzeGotoStatement(gotoStatement As GotoStatement)
+            Dim label = gotoStatement.Label
+            If Label.Token <> 0 Then
+                If label.Token <> 0 AndAlso Not _symbolTable.Labels.ContainsKey(label.NormalizedText) Then
+                    _parser.AddError(label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("LabelNotFound"), New Object(0) {label.Text}))
+                Else
+                    Dim labelStatement = CType(_symbolTable.Labels(label.NormalizedText).Parent, LabelStatement)
+                    If labelStatement.subroutine.Name.NormalizedText <> gotoStatement.subroutine?.Name.NormalizedText Then
+                        _parser.SymbolTable.Errors.Add(New [Error](label, "GoTo can't jump accross subroutines."))
+                    End If
+                End If
             End If
         End Sub
 
@@ -304,12 +312,6 @@ Namespace Microsoft.SmallBasic
                 End If
             Else
                 _parser.AddError(subroutineName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineEventAssignment"), New Object(0) {subroutineName.Text}))
-            End If
-        End Sub
-
-        Private Sub NoteLabelReference(ByVal label As TokenInfo)
-            If label.Token <> 0 AndAlso Not _symbolTable.Labels.ContainsKey(label.NormalizedText) Then
-                _parser.AddError(label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("LabelNotFound"), New Object(0) {label.Text}))
             End If
         End Sub
 

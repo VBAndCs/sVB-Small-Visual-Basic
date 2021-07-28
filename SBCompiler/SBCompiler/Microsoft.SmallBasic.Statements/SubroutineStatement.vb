@@ -18,6 +18,16 @@ Namespace Microsoft.SmallBasic.Statements
         Public EndSubToken As TokenInfo
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            Name.Parent = Me
+            SubToken.Parent = Me
+            EndSubToken.Parent = Me
+
+            If Params IsNot Nothing Then
+                For Each param In Params
+                    param.Parent = Me
+                Next
+            End If
             If Name.Token <> 0 Then
                 symbolTable.AddSubroutine(Name, StartToken.Token)
             End If

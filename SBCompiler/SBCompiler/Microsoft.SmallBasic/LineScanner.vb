@@ -11,13 +11,19 @@ Namespace Microsoft.SmallBasic
         Private _lineText As String
         Private _decimalSeparator As Char = "."c
 
-        Public Function GetTokenList(lineText As String, lineNumber As Integer) As TokenEnumerator
+        Public Function GetFirstToken(lineText As String, lineNumber As Integer) As TokenInfo
+            Dim tokens = GetTokens(lineText, lineNumber, True)
+            If tokens.Count = 0 Then Return TokenInfo.Illegal
+            Return tokens(0)
+        End Function
+
+        Public Function GetTokenEnumerator(lineText As String, lineNumber As Integer) As TokenEnumerator
             Dim tokenEnumerator As New TokenEnumerator(GetTokens(lineText, lineNumber))
             tokenEnumerator.LineNumber = lineNumber
             Return tokenEnumerator
         End Function
 
-        Public Function GetTokens(lineText As String, lineNumber As Integer) As List(Of TokenInfo)
+        Public Function GetTokens(lineText As String, lineNumber As Integer, Optional firstTokenOnly As Boolean = False) As List(Of TokenInfo)
             If Equals(lineText, Nothing) Then
                 Throw New ArgumentNullException("lineText")
             End If
@@ -31,6 +37,7 @@ Namespace Microsoft.SmallBasic
             While ScanNextToken(tokenInfo)
                 tokenInfo.Line = lineNumber
                 list.Add(tokenInfo)
+                If firstTokenOnly Then Exit While
             End While
 
             Return list
@@ -322,6 +329,10 @@ Namespace Microsoft.SmallBasic
                     Return Token.To
                 Case "while"
                     Return Token.While
+                Case "true"
+                    Return Token.True
+                Case "false"
+                    Return Token.False
                 Case Else
                     Return Token.Identifier
             End Select
@@ -344,7 +355,7 @@ Namespace Microsoft.SmallBasic
                 Case Token.Identifier
                     Return TokenType.Identifier
 
-                Case Token.Else, Token.ElseIf, Token.EndFor, Token.Next, Token.EndIf, Token.EndSub, Token.EndFunction, Token.EndWhile, Token.Wend, Token.For, Token.Goto, Token.Return, Token.ExitLoop, Token.ContinueLoop, Token.If, Token.Step, Token.Sub, Token.Function, Token.Then, Token.To, Token.While
+                Case Token.Else, Token.ElseIf, Token.EndFor, Token.Next, Token.EndIf, Token.EndSub, Token.EndFunction, Token.EndWhile, Token.Wend, Token.For, Token.Goto, Token.Return, Token.ExitLoop, Token.ContinueLoop, Token.If, Token.Step, Token.Sub, Token.Function, Token.Then, Token.To, Token.While, Token.True, Token.False
                     Return TokenType.Keyword
 
                 Case Token.And, Token.Equals, Token.Or, Token.Dot, Token.Addition, Token.Subtraction, Token.Division, Token.Multiplication, Token.LeftParens, Token.RightParens, Token.LessThan, Token.LessThanEqualTo, Token.GreaterThan, Token.GreaterThanEqualTo, Token.NotEqualTo, Token.Comma, Token.Colon

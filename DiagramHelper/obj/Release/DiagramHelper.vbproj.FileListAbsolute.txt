@@ -32,4 +32,3 @@ F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.C
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.dll
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.xml
 F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.pdb
-F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.AssemblyReference.cache

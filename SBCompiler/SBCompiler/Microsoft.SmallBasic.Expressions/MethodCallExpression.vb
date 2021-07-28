@@ -22,10 +22,13 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Property MethodName As TokenInfo
         Public Property OuterSubRoutine As Statements.SubroutineStatement
 
-
         Public ReadOnly Property Arguments As New List(Of Expression)
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            _TypeName.Parent = Me.Parent
+            _MethodName.Parent = Me.Parent
+
             For Each argument In Arguments
                 argument.Parent = Me.Parent
                 argument.AddSymbols(symbolTable)

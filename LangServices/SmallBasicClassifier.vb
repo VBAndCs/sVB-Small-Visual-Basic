@@ -105,7 +105,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             For i = lineNumberFromPosition To lineNumberFromPosition2
                 Dim lineFromLineNumber = textSpan.Snapshot.GetLineFromLineNumber(i)
-                Dim tokenList As TokenEnumerator = lineScanner.GetTokenList(lineFromLineNumber.GetText(), i)
+                Dim tokenList As TokenEnumerator = lineScanner.GetTokenEnumerator(lineFromLineNumber.GetText(), i)
                 Dim tokenInfo = sb.TokenInfo.Illegal
                 Dim tokenInfo2 = sb.TokenInfo.Illegal
                 Dim illegal = TokenInfo.Illegal

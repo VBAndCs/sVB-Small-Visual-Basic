@@ -12,6 +12,9 @@ Namespace Microsoft.SmallBasic.Statements
         Public OuterSubRoutine As SubroutineStatement
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            Name.Parent = Me
+
             For Each arg In Args
                 arg.Parent = Me
                 arg.AddSymbols(symbolTable)

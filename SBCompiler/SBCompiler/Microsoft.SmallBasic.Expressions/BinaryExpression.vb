@@ -13,6 +13,9 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Property RightHandSide As Expression
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            _Operator.Parent = Me.Parent
+
             If LeftHandSide IsNot Nothing Then
                 LeftHandSide.Parent = Me.Parent
                 LeftHandSide.AddSymbols(symbolTable)

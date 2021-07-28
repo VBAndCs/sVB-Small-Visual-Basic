@@ -26,6 +26,17 @@ Namespace WinForms
             App.Invoke(Sub() GetTextBox(formName, textBoxName).Text = value)
         End Sub
 
+        <ExProperty>
+        Public Shared Function GetMuliLine(formName As Primitive, textBoxName As Primitive) As Primitive
+            App.Invoke(Sub() GetMuliLine = GetTextBox(formName, textBoxName).AcceptsReturn)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetMuliLine(formName As Primitive, textBoxName As Primitive, value As Primitive)
+            App.Invoke(Sub() GetTextBox(formName, textBoxName).AcceptsReturn = CBool(value))
+        End Sub
+
+
         <ExMethod>
         Public Shared Sub [Select](formName As Primitive, controlName As Primitive, startPos As Primitive, length As Primitive)
             App.Invoke(Sub() GetTextBox(formName, controlName).Select(startPos, length))

@@ -11,6 +11,9 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Property Expression As Expression
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            _Negation.Parent = Me.Parent
+
             If Expression IsNot Nothing Then
                 Expression.Parent = Me.Parent
                 Expression.AddSymbols(symbolTable)

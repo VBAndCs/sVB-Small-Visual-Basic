@@ -23,9 +23,9 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Public Event CurrentCompletionItemChanged As EventHandler(Of CurrentCompletionItemChangedEventArgs)
 
-        Public Function Compile(ByVal programText As String, ByVal outputFilePath As String, ByVal errors As ICollection(Of String)) As Boolean
+        Public Function Compile(programText As String, outputFilePath As String, errors As ICollection(Of String)) As Boolean
             Try
-                Dim compiler As Compiler = New Compiler()
+                Dim compiler As New Compiler()
                 compiler.Initialize()
                 Dim fileNameWithoutExtension = Path.GetFileNameWithoutExtension(outputFilePath)
                 Dim directoryName = Path.GetDirectoryName(outputFilePath)
@@ -85,13 +85,9 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Dim line = currentSnapshot.Lines(i)
                     Dim nextPos = line.GetPositionOfNextNonWhiteSpaceCharacter(0)
 
-                    Dim Tokens = New LineScanner().GetTokens(line.GetText(), line.LineNumber)
-                    If Tokens.Count = 0 Then
-                        AdjustIndentation(textEdit, line, indentationLevel, nextPos)
-                        Continue For
-                    End If
+                    Dim tokenInfo = New LineScanner().GetFirstToken(line.GetText(), line.LineNumber)
 
-                    Select Case Tokens(0).Token
+                    Select Case tokenInfo.Token
                         Case Token.EndIf, Token.Next, Token.EndFor, Token.Wend, Token.EndWhile, Token.EndSub, Token.EndFunction
                             indentationLevel -= 1
                             AdjustIndentation(textEdit, line, indentationLevel, nextPos)
@@ -117,7 +113,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Function FindCurrentSubStart(text As ITextSnapshot, LineNumber As Integer) As Integer
             For i = LineNumber To 0 Step -1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
                 Select Case Tokens.Current.Token
                     Case Token.Sub, Token.Function
                         Return i
@@ -134,7 +130,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Function FindCurrentSubEnd(text As ITextSnapshot, LineNumber As Integer) As Integer
             For i = LineNumber + 1 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenList(line.GetText(), i)
+                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
                 Select Case Tokens.Current.Token
                     Case Token.Sub, Token.Function
                         If i > LineNumber + 1 Then
@@ -150,6 +146,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
 
         Private Sub AdjustIndentation(textEdit As ITextEdit, line As ITextSnapshotLine, indentationLevel As Integer, nextPos As Integer)
+            If indentationLevel < 0 Then indentationLevel = 0
             If nextPos <> indentationLevel * 3 Then
                 textEdit.Replace(line.Start, nextPos, New String(" "c, indentationLevel * 3))
             End If

@@ -11,6 +11,12 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Property TypeName As TokenInfo
         Public Property PropertyName As TokenInfo
 
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            _TypeName.Parent = Me.Parent
+            _PropertyName.Parent = Me.Parent
+        End Sub
+
         Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
             Dim typeInfo = scope.TypeInfoBag.Types(TypeName.NormalizedText)
             Dim propertyInfo = typeInfo.Properties(PropertyName.NormalizedText)

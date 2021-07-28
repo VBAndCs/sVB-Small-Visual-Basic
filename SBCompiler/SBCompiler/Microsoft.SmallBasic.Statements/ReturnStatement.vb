@@ -9,6 +9,7 @@ Namespace Microsoft.SmallBasic.Statements
         Friend Subroutine As SubroutineStatement
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
             If ReturnExpression IsNot Nothing Then
                 ReturnExpression.Parent = Me
             End If

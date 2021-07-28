@@ -23,6 +23,14 @@ Namespace Microsoft.SmallBasic.Statements
         Public EqualsToken As TokenInfo
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            Iterator.Parent = Me
+            ForToken.Parent = Me
+            ToToken.Parent = Me
+            StepToken.Parent = Me
+            EndForToken.Parent = Me
+            EqualsToken.Parent = Me
+
             If Iterator.Token <> Token.Illegal Then
                 Dim id As New IdentifierExpression() With {
                     .Identifier = Iterator,

@@ -9,6 +9,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public UpLevel As Integer
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
             Dim parentStatement As Statement = Me
             Do
                 parentStatement = parentStatement.Parent

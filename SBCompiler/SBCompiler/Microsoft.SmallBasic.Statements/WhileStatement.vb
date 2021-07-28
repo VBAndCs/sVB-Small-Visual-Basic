@@ -9,12 +9,16 @@ Namespace Microsoft.SmallBasic.Statements
     Public Class WhileStatement
         Inherits LoopStatement
 
-        Public WhileBody As List(Of Statement) = New List(Of Statement)()
+        Public WhileBody As New List(Of Statement)()
         Public Condition As Expression
         Public WhileToken As TokenInfo
         Public EndWhileToken As TokenInfo
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            WhileToken.Parent = Me
+            EndWhileToken.Parent = Me
+
             If Condition IsNot Nothing Then
                 Condition.Parent = Me
                 Condition.AddSymbols(symbolTable)

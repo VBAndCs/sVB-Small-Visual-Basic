@@ -7,8 +7,13 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public LabelToken As TokenInfo
         Public ColonToken As TokenInfo
+        Public subroutine As SubroutineStatement
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            MyBase.AddSymbols(symbolTable)
+            LabelToken.Parent = Me
+            ColonToken.Parent = Me
+
             If LabelToken.Token <> 0 Then
                 symbolTable.AddLabelDefinition(LabelToken)
             End If

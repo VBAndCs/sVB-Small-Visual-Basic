@@ -9,6 +9,8 @@ Namespace Microsoft.SmallBasic.Statements
         Public Parent As Statement
 
         Public Overridable Sub AddSymbols(ByVal symbolTable As SymbolTable)
+            _StartToken.Parent = Me
+            _EndingComment.Parent = Me
         End Sub
 
         Public Overridable Sub PrepareForEmit(ByVal scope As CodeGenScope)

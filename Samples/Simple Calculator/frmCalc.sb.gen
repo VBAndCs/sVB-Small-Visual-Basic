@@ -21,8 +21,6 @@ btnSubtract = "btnsubtract"
 btnMultply = "btnmultply"
 btnDivide = "btndivide"
 lblResult = "lblresult"
-True = "True"
-False = "False"
 frmCalc = Forms.LoadForm("frmCalc", "frmcalc.xaml")
 Form.Show(frmCalc)
 

@@ -11,8 +11,6 @@ Elps2 = "elps2"
 Button1 = "button1"
 Label1 = "label1"
 TextBox1 = "textbox1"
-True = "True"
-False = "False"
 frmShapes = Forms.LoadForm("frmShapes", "frmShapes.xaml")
 Form.Show(frmShapes)
 

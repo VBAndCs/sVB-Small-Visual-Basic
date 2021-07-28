@@ -28,6 +28,8 @@ Namespace Microsoft.SmallBasic
 
         Public Property TokenType As TokenType
 
+        Friend Parent As Statements.Statement
+
         Public Shared ReadOnly Property Illegal As New TokenInfo With {
             .Line = 0,
             .Column = 0,

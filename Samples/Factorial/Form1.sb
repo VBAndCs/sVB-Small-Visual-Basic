@@ -1,15 +1,13 @@
 
 
 '----------------------------
-Sub Button1_OnClick
-   
+Sub Button1_OnClick   
    n = TextBox1.Text
    If Text.IsNumeric(n) and n <= 20 Then      
       TextBox2.Text = Factorial(n)
    else
       TextBox2.Text = "Value is not valid."
-   endif 
-   
+   endif    
 EndSub
 
 
@@ -18,8 +16,7 @@ function Factorial(n)
       Return 1
    else
       Return n * factorial(N - 1)
-   EndIf
-   
+   EndIf   
 EndFunction
 
 

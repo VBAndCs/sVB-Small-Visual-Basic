@@ -134,8 +134,12 @@ Namespace Microsoft.SmallBasic.LanguageService
                 If span.IsEmpty OrElse newEnd < span.Start OrElse newEnd > span.End Then
                     DismissAdornment(force:=False)
                 End If
-            ElseIf textChange.NewText.Length = 1 AndAlso (Char.IsLetter(textChange.NewText(0)) OrElse textChange.NewText(0) = "."c) Then
-                ShowCompletionAdornment(e.After, newEnd)
+
+            ElseIf textChange.NewText.Length = 1 Then
+                Dim c = textChange.NewText(0)
+                If (Char.IsLetter(c) OrElse c = "."c) Then
+                    ShowCompletionAdornment(e.After, newEnd)
+                End If
             End If
         End Sub
 
@@ -148,7 +152,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             currentToken = TokenInfo.Illegal
             Dim lineScanner As New LineScanner()
-            Dim tokenList = lineScanner.GetTokenList(line.GetText(), line.LineNumber)
+            Dim tokenList = lineScanner.GetTokenEnumerator(line.GetText(), line.LineNumber)
             Dim prevToken = TokenInfo.Illegal
             Dim b4PrevToken = TokenInfo.Illegal
 

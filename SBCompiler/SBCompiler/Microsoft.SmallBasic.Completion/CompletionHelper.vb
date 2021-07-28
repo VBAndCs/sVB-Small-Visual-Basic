@@ -72,9 +72,10 @@ Namespace Microsoft.SmallBasic.Completion
             FillKeywords(completionBag, Token.And, Token.Or)
         End Sub
 
-        Public Shared Sub FillExpressionItems(ByVal completionBag As CompletionBag)
-            FillTypeNames(completionBag)
-            FillVariables(completionBag)
+        Public Shared Sub FillExpressionItems(bag As CompletionBag)
+            FillTypeNames(bag)
+            FillVariables(bag)
+            FillBooleanLitrals(bag)
         End Sub
 
         Public Shared Sub FillSubroutines(bag As CompletionBag)
@@ -97,6 +98,21 @@ Namespace Microsoft.SmallBasic.Completion
                })
             Next
         End Sub
+
+        Public Shared Sub FillBooleanLitrals(bag As CompletionBag)
+            bag.CompletionItems.Add(New CompletionItem() With {
+                .Name = "True",
+                .DisplayName = "True",
+                .ItemType = CompletionItemType.Keyword
+            })
+
+            bag.CompletionItems.Add(New CompletionItem() With {
+                .Name = "False",
+                .DisplayName = "False",
+                .ItemType = CompletionItemType.Keyword
+            })
+        End Sub
+
 
         Public Shared Sub FillVariables(completionBag As CompletionBag)
             For Each variable In completionBag.SymbolTable.Variables

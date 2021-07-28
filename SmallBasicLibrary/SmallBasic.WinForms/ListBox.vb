@@ -77,7 +77,17 @@ Namespace WinForms
 
         <ExMethod>
         Public Shared Function AddItem(formName As Primitive, ListBoxName As Primitive, item As Primitive) As Primitive
-            App.Invoke(Sub() AddItem = GetListBox(formName, ListBoxName).Items.Add(item))
+            App.Invoke(
+                Sub()
+                    Dim lst = GetListBox(formName, ListBoxName)
+                    If item.IsArray Then
+                        For Each value In item._arrayMap.Values
+                            AddItem = lst.Items.Add(value)
+                        Next
+                    Else
+                        AddItem = lst.Items.Add(item)
+                    End If
+                End Sub)
         End Function
 
         <ExMethod>
