@@ -4,17 +4,17 @@
 library
 VB
 .vb
-F:\_VS.NET\Small Basic IDE\VB\DiagramViewer\obj\Debug\
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramViewer\obj\Debug\
 DiagramViewer
 none
 false
 
 
-51385689746
+41484115462
 
-13-1535638564
+12582574160
 11880227761
-DiagramPanel.xaml;Resources\Brushes.xaml;Resources\DesignerDecorator.xaml;Resources\ExpanderStyle.xaml;UserControl1.xaml;
+DiagramPanel.xaml;Resources\Brushes.xaml;Resources\DesignerDecorator.xaml;Resources\ExpanderStyle.xaml;
 
 True
 

@@ -1,5 +1,5 @@
 '@Form Hints:
-'#Form1{
+'#form1{
 '    ListBox1: ListBox
 '    btnAdd: Button
 '    btnRemove: Button
@@ -9,7 +9,7 @@
 '    lblSelection: Label
 '}
 
-Me = "Form1"
+Me = "form1"
 ListBox1 = "listbox1"
 btnAdd = "btnadd"
 btnRemove = "btnremove"
@@ -17,8 +17,8 @@ txtAdd = "txtadd"
 btnFind = "btnfind"
 txtFind = "txtfind"
 lblSelection = "lblselection"
-Form1 = Forms.LoadForm("Form1", "Form1.xaml")
-Form.Show(Form1)
+form1 = Forms.LoadForm("form1", "form1.xaml")
+Form.Show(form1)
 
 '#Events{
 '    btnFind: OnClick
@@ -29,23 +29,23 @@ Form.Show(Form1)
 '}
 
 ' btnFind Events:
-Control.HandleEvents(Form1, btnFind)
+Control.HandleEvents(form1, btnFind)
 Control.OnClick = btnFind_OnClick
 
 ' btnAdd Events:
-Control.HandleEvents(Form1, btnAdd)
+Control.HandleEvents(form1, btnAdd)
 Control.OnClick = btnAdd_OnClick
 
 ' ListBox1 Events:
-Control.HandleEvents(Form1, ListBox1)
+Control.HandleEvents(form1, ListBox1)
 ListBox.OnSelection = ListBox1_OnSelection
 
 ' btnRemove Events:
-Control.HandleEvents(Form1, btnRemove)
+Control.HandleEvents(form1, btnRemove)
 Control.OnClick = btnRemove_OnClick
 
 ' txtAdd Events:
-Control.HandleEvents(Form1, txtAdd)
+Control.HandleEvents(form1, txtAdd)
 TextBox.OnTextChanged = txtAdd_OnTextChanged
 Control.OnKeyDown = txtAdd_OnKeyDown
 

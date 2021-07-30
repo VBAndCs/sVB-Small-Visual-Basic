@@ -4,6 +4,7 @@ Imports System.Runtime.InteropServices
 Imports System.Globalization
 Imports System.Resources
 Imports System.Windows
+Imports System.Windows.Markup
 
 ' General Information about an assembly is controlled through the following
 ' set of attributes. Change these attribute values to modify the information
@@ -16,8 +17,8 @@ Imports System.Windows
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("DiagramViewer")>
 <Assembly: AssemblyCopyright("Copyright @  2021")>
-<Assembly: AssemblyTrademark("")> 
-<Assembly: ComVisible(false)>
+<Assembly: AssemblyTrademark("")>
+<Assembly: ComVisible(False)>
 
 'In order to begin building localizable applications, set
 '<UICulture>CultureYouAreCodingWith</UICulture> in your .vbproj file
@@ -42,7 +43,7 @@ Imports System.Windows
 
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("4db7377c-d49f-4269-85fa-f86f92bb3928")> 
+<Assembly: Guid("4db7377c-d49f-4269-85fa-f86f92bb3928")>
 
 ' Version information for an assembly consists of the following four values:
 '
@@ -57,3 +58,5 @@ Imports System.Windows
 
 <Assembly: AssemblyVersion("1.0.0.0")>
 <Assembly: AssemblyFileVersion("1.0.0.0")>
+'<Assembly: XmlnsPrefix("http://schemas.ncore.com/wpf/xaml/WpfDialogs", "c")>
+'<Assembly: XmlnsDefinition("http://schemas.ncore.com/wpf/xaml/WpfDialogs", "WpfDialogs")>

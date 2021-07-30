@@ -138,6 +138,7 @@ Public Class Helper
     End Function
 
     Shared Function Clone(Element As Object) As Object
+        If Element Is Nothing Then Return Nothing
         Dim xaml = XamlWriter.Save(Element)
         Return XamlReader.Load(XmlReader.Create(New StringReader(xaml)))
     End Function

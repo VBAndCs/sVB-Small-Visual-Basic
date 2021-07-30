@@ -15,7 +15,7 @@ Sub btnFind_OnClick
      Next
      
      Sound.PlayBellRing()
-     ListBox1.SelectedIndex = -1
+     ListBox1.SelectedIndex = 0
   else
      ListBox1.SelectedIndex = index
   endif
@@ -35,7 +35,7 @@ EndSub
 
 '----------------------------
 Sub ListBox1_OnSelection
-   lblSelection.Text = ListBox1.SelectedItem   
+   lblSelection.Text = "Selected item: " + ListBox1.SelectedItem   
    btnRemove.Enabled = (ListBox1.SelectedIndex > 0)
 EndSub
 

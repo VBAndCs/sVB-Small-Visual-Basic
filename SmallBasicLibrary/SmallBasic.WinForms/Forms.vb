@@ -171,7 +171,6 @@ Namespace WinForms
             Dim CodeFilePath = Environment.GetCommandLineArgs(0)
             Dim docName = IO.Path.GetFileNameWithoutExtension(CodeFilePath) & ".xaml"
             CodeFilePath = IO.Path.GetDirectoryName(CodeFilePath)
-            CodeFilePath = IO.Path.GetDirectoryName(CodeFilePath)
             Dim newXamlPath = IO.Path.Combine(CodeFilePath, docName)
 
             Try
@@ -195,14 +194,18 @@ Namespace WinForms
                     xamlPath = IO.Path.Combine(AppPath, xamlPath)
                 Else
                     Dim d = Environment.GetCommandLineArgs(0)
-                    d = IO.Path.GetDirectoryName(d) ' \bin
                     d = IO.Path.GetDirectoryName(d)
                     Dim xamlPath2 = IO.Path.Combine(d, xamlPath)
                     If IO.File.Exists(xamlPath2) Then xamlPath = xamlPath2
                 End If
             End If
 
-            Dim stream = IO.File.Open(xamlPath, IO.FileMode.Open)
+            Dim xaml = IO.File.ReadAllText(xamlPath, System.Text.Encoding.UTF8)
+            If xaml.Contains("wpf/xaml/WpfDialogs") Then
+                xaml = "<Canvas " & "xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006"" mc:Ignorable=""c""" & xaml.Substring(7)
+            End If
+            Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))
+
             Dim canvas As Canvas = Nothing
             Try
                 canvas = CType(XamlReader.Load(stream), Canvas)

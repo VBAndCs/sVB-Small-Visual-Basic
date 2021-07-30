@@ -622,9 +622,16 @@ Namespace Microsoft.SmallBasic
             End If
 
             Dim fileName = Path.GetFileNameWithoutExtension(document.FilePath)
-            Dim directoryName = Path.GetDirectoryName(document.FilePath) & "\bin"
-            If Not Directory.Exists(directoryName) Then Directory.CreateDirectory(directoryName)
-            Return Path.Combine(directoryName, fileName & ".exe")
+            Dim docDirectory = Path.GetDirectoryName(document.FilePath)
+            Dim binDirectory = docDirectory & "\bin"
+            If Not Directory.Exists(binDirectory) Then Directory.CreateDirectory(binDirectory)
+            Dim newFile = Path.Combine(binDirectory, fileName)
+            Dim xamlFile = Path.Combine(docDirectory, fileName + ".xaml")
+
+            If File.Exists(xamlFile) Then
+                File.Copy(xamlFile, newFile & ".xaml", True)
+            End If
+            Return newFile & ".exe"
         End Function
 
         Private Sub OnCurrentCompletionItemChanged(ByVal sender As Object, ByVal e As CurrentCompletionItemChangedEventArgs)

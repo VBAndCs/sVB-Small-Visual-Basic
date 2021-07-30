@@ -502,6 +502,8 @@ Public Class Designer
 
     End Function
 
+
+
     Private Sub XamlToPage(xaml As String)
         Dim canvas As Canvas = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
         Me.Name = canvas.Name
@@ -774,8 +776,8 @@ Public Class Designer
                     If num = 0 Then num = 1
                 ElseIf IsNumeric(n) Then
                     If CInt(n) >= num Then num = CInt(n) + 1
-                    End If
                 End If
+            End If
         Next
         Return baseName & If(num = 0, "", CStr(num))
 
@@ -834,8 +836,8 @@ Public Class Designer
         Try
             Dim xmal = PageToXaml()
             Dim saveTo = If(tmpPath = "", _fileName, tmpPath)
-            IO.File.WriteAllText(saveTo, xmal)
-            _codeFilePath = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
+            IO.File.WriteAllText(saveTo, xmal, System.Text.Encoding.UTF8)
+            _CodeFilePath = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
             If tmpPath = "" Then
                 UpdateFormInfo()
                 Me.HasChanges = False
@@ -881,7 +883,7 @@ Public Class Designer
 
         PagesGrid.Cursor = Cursors.Wait
         Try
-            Dim xaml = IO.File.ReadAllText(fileName)
+            Dim xaml = IO.File.ReadAllText(fileName, System.Text.Encoding.UTF8)
             ' Ensure we don't open new page after opneing a file from command line args
             If NewPageOpened Then
                 CreateNewDesigner()
@@ -889,12 +891,14 @@ Public Class Designer
                 CurrentPage = PagesGrid.Children(0)
                 NewPageOpened = True
             End If
+
             CurrentPage.XamlToPage(xaml)
             CurrentPage.ShowGrid = True
             CurrentPage._fileName = IO.Path.GetFullPath(fileName)
             CurrentPage.PageKey = GetTempKey(CurrentPage._fileName)
             Pages(CurrentPage.PageKey) = CurrentPage
             UpdateFormInfo()
+
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
@@ -945,7 +949,7 @@ Public Class Designer
     End Sub
 
     Public Sub IncreaseGridThickness(Value As Single)
-        If (Value <0 AndAlso GridPen.Thickness <= 0.1) OrElse (Value > 0 AndAlso GridPen.Thickness >= 1.5) Then Return
+        If (Value < 0 AndAlso GridPen.Thickness <= 0.1) OrElse (Value > 0 AndAlso GridPen.Thickness >= 1.5) Then Return
         Dim OldState As New PropertyState(GridPen, Pen.ThicknessProperty)
         GridPen.Thickness += Value
         Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
@@ -1167,7 +1171,7 @@ Public Class Designer
     Private Sub Designer_PreviewMouseWheel(sender As Object, e As MouseWheelEventArgs) Handles Me.PreviewMouseWheel
         If Keyboard.Modifiers = ModifierKeys.Control Then
             Dim Value As Integer = Me.Scale * 100 + (e.Delta / 24)
-            If Not (Value <25 OrElse Value > 500) Then Me.Scale = Value / 100
+            If Not (Value < 25 OrElse Value > 500) Then Me.Scale = Value / 100
             e.Handled = True
         End If
     End Sub

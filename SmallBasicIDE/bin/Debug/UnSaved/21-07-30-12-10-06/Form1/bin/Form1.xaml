@@ -1,0 +1,1 @@
+<Canvas Name="Form1" Width="700" Height="500" AutomationProperties.HelpText="Form1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><TextBox Width="241.889763779528" Height="41.5748031496063" Canvas.Left="257.007874015748" Canvas.Top="181.587047244094" AutomationProperties.Name="TextBox1">محمد</TextBox></Canvas>
