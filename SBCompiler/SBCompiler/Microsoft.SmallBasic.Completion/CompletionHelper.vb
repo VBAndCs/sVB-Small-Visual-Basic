@@ -157,6 +157,12 @@ Namespace Microsoft.SmallBasic.Completion
                     })
                 End If
             Next
+
+            bag.CompletionItems.Add(New CompletionItem() With {
+                        .Name = "Me",
+                        .DisplayName = "Me",
+                        .ItemType = CompletionItemType.Keyword
+            })
         End Sub
 
         Public Shared Sub FillMemberNames(ByVal completionBag As CompletionBag, ByVal typeInfo As TypeInfo)

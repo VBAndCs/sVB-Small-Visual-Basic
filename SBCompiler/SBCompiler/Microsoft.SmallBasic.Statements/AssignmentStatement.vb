@@ -55,10 +55,12 @@ Namespace Microsoft.SmallBasic.Statements
                         scope.ILGenerator.Emit(OpCodes.Stsfld, field)
                     End If
                 End If
+
             ElseIf arrayExpression IsNot Nothing Then
                 If Not LowerAndEmitIL(scope) Then
                     arrayExpression.EmitILForSetter(scope)
                 End If
+
             ElseIf propertyExpression IsNot Nothing Then
                     Dim typeInfo = scope.TypeInfoBag.Types(propertyExpression.TypeName.NormalizedText)
 
@@ -70,6 +72,7 @@ Namespace Microsoft.SmallBasic.Statements
                     scope.ILGenerator.Emit(OpCodes.Ldftn, meth)
                     scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallBasicCallback).GetConstructors()(0))
                     scope.ILGenerator.EmitCall(OpCodes.Call, value.GetAddMethod(), Nothing)
+
                 Else
                     Dim propertyInfo = typeInfo.Properties(propertyExpression.PropertyName.NormalizedText)
                     Dim setMethod = propertyInfo.GetSetMethod()

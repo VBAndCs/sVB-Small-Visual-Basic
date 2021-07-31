@@ -1,9 +1,0 @@
-'@Form Hints:
-'#Form1{
-'    TextBox1: TextBox
-'}
-
-Me = "Form1"
-TextBox1 = "textbox1"
-Form1 = Forms.LoadForm("Form1", "Form1.xaml")
-Form.Show(Form1)

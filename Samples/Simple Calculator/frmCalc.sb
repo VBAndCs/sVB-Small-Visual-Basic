@@ -1,62 +1,56 @@
 n1 = 0
 n2 = 0
-
+txtNum2.OnTextInput = txtNum1_OnTextInput
 
 '----------------------------
 Sub btnAdd_OnClick  
-  If Validate() Then      
-     Result = n1 + n2 
-     lblResult.Text = "Result = " + Result     
-  EndIf  
+   lblResult.Text = "Result = " + (txtNum1.Text + txtNum2.Text)
 EndSub
 
 '__________________________________
 Sub btnSubtract_OnClick  
-  If Validate() Then      
-     Result = n1 - n2 
-     lblResult.Text = "Result = " + Result     
-  EndIf  
+   lblResult.Text = "Result = " + (txtNum1.Text - txtNum2.Text)
 EndSub
 
 '__________________________________
 Sub btnMultply_OnClick
-  If Validate() Then      
-     Result = n1 * n2 
-     lblResult.Text = "Result = " + Result     
-  EndIf 
+   lblResult.Text = "Result = " + (txtNum1.Text * txtNum2.Text)
 EndSub
 
 '__________________________________
 Sub btnDivide_OnClick
-  If Validate() Then      
-     if n2 = 0 Then        
-        Result = "Can't divide by zero."
-     else
-        Result = "Result = " + (n1 / n2)
-     endif
-     lblResult.Text = Result  
-  EndIf  
+   
+   if txtNum2.Text = 0 Then        
+      Result = "Can't divide by zero."
+      txtNum2.SelectAll()
+      txtNum2.Focus()
+   else
+      Result = "Result = " + (txtNum1.Text / txtNum2.Text)
+   endif
+   lblResult.Text = Result
 EndSub
 
+
 '----------------------------
-
-Function Validate
-  AreValid = False
-  n1 = txtNum1.Text   
-  If Text.IsNumeric(n1) = False Then
-     lblResult.Text = "n1 must be a number."     
-     Return False       
-  EndIf
-  
-  n2 = txtNum2.Text     
-  If Text.IsNumeric(n2) = False Then         
-     lblResult.Text = "n2 must be a number."     
-     Return False            
-  EndIf
-  
-  n2 = txtNum2.Text
-  Return True                  
-  
-EndFunction
+Sub txtNum1_OnTextInput
+   If Text.IsNumeric(Event.LastTextInput) = False  Then
+      Sound.PlayBellRing()
+      Event.Handled = True
+   EndIf   
+EndSub
 
 
+'----------------------------
+Sub txtNum1_OnTextChanged
+   If txtNum1.Text = "" Then
+      txtNum1.Text = "0"
+      txtNum1.SelectAll()
+   EndIf
+EndSub
+
+Sub txtNum2_OnTextChanged
+   If txtNum2.Text = "" Then
+      txtNum2.Text = "0"
+      txtNum2.SelectAll()
+   EndIf
+EndSub

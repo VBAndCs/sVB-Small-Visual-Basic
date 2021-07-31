@@ -88,13 +88,21 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Dim tokenInfo = New LineScanner().GetFirstToken(line.GetText(), line.LineNumber)
 
                     Select Case tokenInfo.Token
-                        Case Token.EndIf, Token.Next, Token.EndFor, Token.Wend, Token.EndWhile, Token.EndSub, Token.EndFunction
+                        Case Token.EndIf, Token.Next, Token.EndFor, Token.Wend, Token.EndWhile
                             indentationLevel -= 1
                             AdjustIndentation(textEdit, line, indentationLevel, nextPos)
 
-                        Case Token.If, Token.For, Token.While, Token.Sub, Token.Function
+                        Case Token.EndSub, Token.EndFunction
+                            indentationLevel = 0
+                            AdjustIndentation(textEdit, line, indentationLevel, nextPos)
+
+                        Case Token.If, Token.For, Token.While
                             AdjustIndentation(textEdit, line, indentationLevel, nextPos)
                             indentationLevel += 1
+
+                        Case Token.Sub, Token.Function
+                            AdjustIndentation(textEdit, line, 0, nextPos)
+                            indentationLevel = 1
 
                         Case Token.Else, Token.ElseIf
                             indentationLevel -= 1
@@ -113,14 +121,17 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Function FindCurrentSubStart(text As ITextSnapshot, LineNumber As Integer) As Integer
             For i = LineNumber To 0 Step -1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
-                Select Case Tokens.Current.Token
+                Dim tokenInfo = New LineScanner().GetFirstToken(line.GetText(), i)
+
+                Select Case tokenInfo.Token
                     Case Token.Sub, Token.Function
-                        Return i
+                        Return Math.Max(0, i - 1)  ' i -1 To format prev EndSub in special case
+
                     Case Token.EndSub, Token.EndFunction
                         If i < LineNumber Then
-                            Return i + 1
+                            Return i  'not i + 1 To format prev End Sub
                         End If
+
                 End Select
             Next
 
@@ -130,12 +141,11 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Function FindCurrentSubEnd(text As ITextSnapshot, LineNumber As Integer) As Integer
             For i = LineNumber + 1 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
-                Select Case Tokens.Current.Token
+                Dim tokenInfo = New LineScanner().GetFirstToken(line.GetText(), i)
+                Select Case tokenInfo.Token
                     Case Token.Sub, Token.Function
-                        If i > LineNumber + 1 Then
-                            Return i - 1
-                        End If
+                        If i > LineNumber + 1 Then Return i - 1
+
                     Case Token.EndSub, Token.EndFunction
                         Return i
                 End Select

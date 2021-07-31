@@ -36,26 +36,26 @@ Namespace Microsoft.SmallBasic
         Private currentProgramProcess As Process
         Private mdiViews As ObservableCollection(Of MdiView)
         Private lastSearchedText As String = ""
-        Public Shared NewCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("NewCommand"), ResourceHelper.GetString("NewCommand"), GetType(MainWindow))
-        Public Shared OpenCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("OpenCommand"), ResourceHelper.GetString("OpenCommand"), GetType(MainWindow))
-        Public Shared SaveCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("SaveCommand"), ResourceHelper.GetString("SaveCommand"), GetType(MainWindow))
-        Public Shared SaveAsCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("SaveAsCommand"), ResourceHelper.GetString("SaveAsCommand"), GetType(MainWindow))
-        Public Shared CutCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("CutCommand"), ResourceHelper.GetString("CutCommand"), GetType(MainWindow))
-        Public Shared CopyCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("CopyCommand"), ResourceHelper.GetString("CopyCommand"), GetType(MainWindow))
-        Public Shared PasteCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("PasteCommand"), ResourceHelper.GetString("PasteCommand"), GetType(MainWindow))
-        Public Shared FindCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("FindCommand"), ResourceHelper.GetString("FindCommand"), GetType(MainWindow))
-        Public Shared FindNextCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("FindNextCommand"), ResourceHelper.GetString("FindNextCommand"), GetType(MainWindow))
-        Public Shared UndoCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("UndoCommand"), ResourceHelper.GetString("UndoCommand"), GetType(MainWindow))
-        Public Shared RedoCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("RedoCommand"), ResourceHelper.GetString("RedoCommand"), GetType(MainWindow))
-        Public Shared FormatCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("FormatProgramCommand"), ResourceHelper.GetString("FormatProgramCommand"), GetType(MainWindow))
-        Public Shared RunCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("RunProgramCommand"), ResourceHelper.GetString("RunProgramCommand"), GetType(MainWindow))
-        Public Shared EndProgramCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("EndProgramCommand"), ResourceHelper.GetString("EndProgramCommand"), GetType(MainWindow))
-        Public Shared StepOverCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("StepOverCommand"), ResourceHelper.GetString("StepOverCommand"), GetType(MainWindow))
-        Public Shared BreakpointCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("BreakpointCommand"), ResourceHelper.GetString("BreakpointCommand"), GetType(MainWindow))
-        Public Shared DebugCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("DebugCommand"), ResourceHelper.GetString("DebugCommand"), GetType(MainWindow))
-        Public Shared WebSaveCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("PublishProgramCommand"), ResourceHelper.GetString("PublishProgramCommand"), GetType(MainWindow))
-        Public Shared WebLoadCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("ImportProgramCommand"), ResourceHelper.GetString("ImportProgramCommand"), GetType(MainWindow))
-        Public Shared ExportToVisualBasicCommand As RoutedUICommand = New RoutedUICommand(ResourceHelper.GetString("ExportToVisualBasicCommand"), ResourceHelper.GetString("ExportToVisualBasicCommand"), GetType(MainWindow))
+        Public Shared NewCommand As New RoutedUICommand(ResourceHelper.GetString("NewCommand"), ResourceHelper.GetString("NewCommand"), GetType(MainWindow))
+        Public Shared OpenCommand As New RoutedUICommand(ResourceHelper.GetString("OpenCommand"), ResourceHelper.GetString("OpenCommand"), GetType(MainWindow))
+        Public Shared SaveCommand As New RoutedUICommand(ResourceHelper.GetString("SaveCommand"), ResourceHelper.GetString("SaveCommand"), GetType(MainWindow))
+        Public Shared SaveAsCommand As New RoutedUICommand(ResourceHelper.GetString("SaveAsCommand"), ResourceHelper.GetString("SaveAsCommand"), GetType(MainWindow))
+        Public Shared CutCommand As New RoutedUICommand(ResourceHelper.GetString("CutCommand"), ResourceHelper.GetString("CutCommand"), GetType(MainWindow))
+        Public Shared CopyCommand As New RoutedUICommand(ResourceHelper.GetString("CopyCommand"), ResourceHelper.GetString("CopyCommand"), GetType(MainWindow))
+        Public Shared PasteCommand As New RoutedUICommand(ResourceHelper.GetString("PasteCommand"), ResourceHelper.GetString("PasteCommand"), GetType(MainWindow))
+        Public Shared FindCommand As New RoutedUICommand(ResourceHelper.GetString("FindCommand"), ResourceHelper.GetString("FindCommand"), GetType(MainWindow))
+        Public Shared FindNextCommand As New RoutedUICommand(ResourceHelper.GetString("FindNextCommand"), ResourceHelper.GetString("FindNextCommand"), GetType(MainWindow))
+        Public Shared UndoCommand As New RoutedUICommand(ResourceHelper.GetString("UndoCommand"), ResourceHelper.GetString("UndoCommand"), GetType(MainWindow))
+        Public Shared RedoCommand As New RoutedUICommand(ResourceHelper.GetString("RedoCommand"), ResourceHelper.GetString("RedoCommand"), GetType(MainWindow))
+        Public Shared FormatCommand As New RoutedUICommand(ResourceHelper.GetString("FormatProgramCommand"), ResourceHelper.GetString("FormatProgramCommand"), GetType(MainWindow))
+        Public Shared RunCommand As New RoutedUICommand(ResourceHelper.GetString("RunProgramCommand"), ResourceHelper.GetString("RunProgramCommand"), GetType(MainWindow))
+        Public Shared EndProgramCommand As New RoutedUICommand(ResourceHelper.GetString("EndProgramCommand"), ResourceHelper.GetString("EndProgramCommand"), GetType(MainWindow))
+        Public Shared StepOverCommand As New RoutedUICommand(ResourceHelper.GetString("StepOverCommand"), ResourceHelper.GetString("StepOverCommand"), GetType(MainWindow))
+        Public Shared BreakpointCommand As New RoutedUICommand(ResourceHelper.GetString("BreakpointCommand"), ResourceHelper.GetString("BreakpointCommand"), GetType(MainWindow))
+        Public Shared DebugCommand As New RoutedUICommand(ResourceHelper.GetString("DebugCommand"), ResourceHelper.GetString("DebugCommand"), GetType(MainWindow))
+        Public Shared WebSaveCommand As New RoutedUICommand(ResourceHelper.GetString("PublishProgramCommand"), ResourceHelper.GetString("PublishProgramCommand"), GetType(MainWindow))
+        Public Shared WebLoadCommand As New RoutedUICommand(ResourceHelper.GetString("ImportProgramCommand"), ResourceHelper.GetString("ImportProgramCommand"), GetType(MainWindow))
+        Public Shared ExportToVisualBasicCommand As New RoutedUICommand(ResourceHelper.GetString("ExportToVisualBasicCommand"), ResourceHelper.GetString("ExportToVisualBasicCommand"), GetType(MainWindow))
 
         ''' <summary>
         ''' DocumentTracker
@@ -127,8 +127,9 @@ Namespace Microsoft.SmallBasic
             e.CanExecute = ActiveDocument IsNot Nothing AndAlso Not ActiveDocument.EditorControl.TextView.Selection.IsEmpty
         End Sub
 
-        Private Sub OnEditCut(ByVal sender As Object, ByVal e As RoutedEventArgs)
-            ActiveDocument.EditorControl.EditorOperations.CutSelection(ActiveDocument.UndoHistory)
+        Private Sub OnEditCut(sender As Object, e As RoutedEventArgs)
+            Dim doc = ActiveDocument
+            doc.EditorControl.EditorOperations.CutSelection(doc.UndoHistory)
         End Sub
 
         Private Sub CanEditCopy(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
@@ -144,7 +145,8 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub OnEditPaste(ByVal sender As Object, ByVal e As RoutedEventArgs)
-            ActiveDocument.EditorControl.EditorOperations.Paste(ActiveDocument.UndoHistory)
+            Dim doc = ActiveDocument
+            doc.EditorControl.EditorOperations.Paste(doc.UndoHistory)
         End Sub
 
         Private Sub CanEditUndo(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
@@ -449,11 +451,12 @@ Namespace Microsoft.SmallBasic
 
                 If gen <> "" Then
                     offset = CountLines(gen) + 1
-                    code = gen & Environment.NewLine & doc.Text
+                    code = gen & VisualBasic.vbLf & doc.Text
                 Else
                     code = doc.Text
                 End If
 
+                code = code.Replace(VisualBasic.vbCrLf, VisualBasic.vbLf)
 
                 doc.Errors.Clear()
                 Dim errors As List(Of [Error])
@@ -719,7 +722,7 @@ Namespace Microsoft.SmallBasic
             Dim projectName = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss")
             _projectPath = Path.Combine(tmpPath, projectName)
 
-                Return _projectPath
+            Return _projectPath
         End Function
 
         Private Sub SaveDesignInfo(Optional doc As TextDocument = Nothing, Optional openDoc As Boolean = True)
@@ -829,7 +832,7 @@ Namespace Microsoft.SmallBasic
 
         Private Function PreCompile(code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
             Dim ReRun = False
-            Dim lines = New List(Of String)(code.Split(New String(0) {Environment.NewLine}, StringSplitOptions.None))
+            Dim lines = New List(Of String)(code.Split(New String(0) {VisualBasic.vbLf}, StringSplitOptions.None))
             Dim doc = ActiveDocument
             Dim num = errors.Count - 1
             Dim i As Integer = num
@@ -989,7 +992,7 @@ Namespace Microsoft.SmallBasic
             Next
 
             If ReRun Then Return RunProgram(
-                        String.Join(Environment.NewLine, lines),
+                        String.Join(VisualBasic.vbLf, lines),
                         errors,
                         outputFileName)
 
@@ -1019,7 +1022,7 @@ Namespace Microsoft.SmallBasic
             Dim pos As Integer = -1
             Dim count As Integer = 0
             Do
-                pos = str.IndexOf(Environment.NewLine, pos + 1)
+                pos = str.IndexOf(VisualBasic.vbLf, pos + 1)
                 If pos = -1 Then Exit Do
                 count += 1
             Loop
@@ -1134,7 +1137,7 @@ Namespace Microsoft.SmallBasic
                           Next
                       End Sub)
 
-                      End Sub
+        End Sub
 
         Private Sub formDesigner_CurrentPageChanged(index As Integer)
             formDesigner = DiagramHelper.Designer.CurrentPage

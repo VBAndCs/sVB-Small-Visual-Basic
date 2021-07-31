@@ -94,6 +94,13 @@ Namespace Microsoft.SmallBasic.LanguageService
         
         <System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0"),  _
+         System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")>  _
+        Friend Function _CreateDelegate(ByVal delegateType As System.Type, ByVal handler As String) As System.[Delegate]
+            Return System.[Delegate].CreateDelegate(delegateType, Me, handler)
+        End Function
+        
+        <System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0"),  _
          System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never),  _
          System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes"),  _
          System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity"),  _
@@ -123,16 +130,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
             If (connectionId = 4) Then
                 Me.CompletionListBox = CType(target,Microsoft.SmallBasic.LanguageService.CircularList)
-                
-                #ExternalSource("..\..\completionadornmentsurface.xaml",117)
-                AddHandler Me.CompletionListBox.SelectionChanged, New System.Windows.Controls.SelectionChangedEventHandler(AddressOf Me.OnCurrentCompletionItemChanged)
-                
-                #End ExternalSource
-                
-                #ExternalSource("..\..\completionadornmentsurface.xaml",118)
-                AddHandler Me.CompletionListBox.MouseDoubleClick, New System.Windows.Input.MouseButtonEventHandler(AddressOf Me.OnCompletionListDoubleClicked)
-                
-                #End ExternalSource
                 Return
             End If
             Me._contentLoaded = true

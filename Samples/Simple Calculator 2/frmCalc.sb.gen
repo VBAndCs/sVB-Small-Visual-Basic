@@ -29,8 +29,6 @@ Form.Show(frmCalc)
 '    btnSubtract: OnClick
 '    btnMultply: OnClick
 '    btnDivide: OnClick
-'    txtNum1: OnTextInput OnTextChanged
-'    txtNum2: OnTextChanged
 '}
 
 ' btnAdd Events:
@@ -48,14 +46,5 @@ Control.OnClick = btnMultply_OnClick
 ' btnDivide Events:
 Control.HandleEvents(frmCalc, btnDivide)
 Control.OnClick = btnDivide_OnClick
-
-' txtNum1 Events:
-Control.HandleEvents(frmCalc, txtNum1)
-TextBox.OnTextInput = txtNum1_OnTextInput
-TextBox.OnTextChanged = txtNum1_OnTextChanged
-
-' txtNum2 Events:
-Control.HandleEvents(frmCalc, txtNum2)
-TextBox.OnTextChanged = txtNum2_OnTextChanged
 
 

@@ -142,7 +142,7 @@ Namespace Microsoft.SmallBasic.Documents
             Get
                 Dim text = If(IsDirty, " *", "")
 
-                If _Form <> "" Then Return $"{_Form}{text}"
+                If _form <> "" Then Return $"{_form}{text}"
 
                 If IsNew Then
                     If BaseId = "" Then Return ResourceHelper.GetString("Untitled") & text
@@ -305,6 +305,8 @@ Namespace Microsoft.SmallBasic.Documents
             textBufferUndoManager = TextBufferUndoManagerProvider.GetTextBufferUndoManager(TextBuffer)
         End Sub
 
+        Dim _formatting As Boolean
+
         Private Sub TextBufferChanged(sender As Object, e As TextChangedEventArgs)
             IsDirty = True
             If _IgnoreCaretPosChange Or StillWorking Then Return
@@ -318,11 +320,26 @@ Namespace Microsoft.SmallBasic.Documents
                       UpdateGlobalSubsList()
                       StillWorking = False
                       OnCaretPositionChanged(Nothing, Nothing)
+
+                      If _formatting Then Return
+                      For Each change In e.Changes
+                          If change.Delta > 2 AndAlso change.NewText.Contains(vbLf) AndAlso change.NewText.Trim() <> "" Then
+                              FormatSub()
+                              Exit For
+                          End If
+
+                          If change.OldText.Contains(vbLf) Then
+                              FormatSub()
+                              Exit For
+                          End If
+                      Next
                   End Sub, DispatcherPriority.ContextIdle)
 
             Catch
                 StillWorking = False
             End Try
+
+
         End Sub
 
         Private Sub AutoCompleteBlocks(sender As Object, e As System.Windows.Input.KeyEventArgs)
@@ -628,6 +645,7 @@ Namespace Microsoft.SmallBasic.Documents
             Me.Form = info.Form
             Me.ControlsInfo = info.ControlsInfo
             Me.ControlsInfo.Add("me", "Form")
+
             If info.EventHandlers IsNot Nothing Then
                 _EventHandlers = info.EventHandlers
             Else
@@ -642,6 +660,8 @@ Namespace Microsoft.SmallBasic.Documents
                 _ControlNames.Add(c)
             Next
 
+            AddProperty("ControlsInfo", _ControlsInfo)
+            AddProperty("ControlNames", _ControlNames)
         End Sub
 
         Friend Shared Function FromCode(code As String) As TextDocument
@@ -652,7 +672,7 @@ Namespace Microsoft.SmallBasic.Documents
         End Function
 
         Private ReadOnly eventHandlerSub As String = vbCrLf & "
-'----------------------------
+'------------------------------------------------
 Sub #
    
 EndSub
@@ -710,7 +730,7 @@ EndSub
                     _EventHandlers(handlerName) = (controlName, eventName)
                     Dim handler = eventHandlerSub.Replace("#", handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
-                    caret.MoveTo(Text.Length - 10)
+                    EnsureAtTop(Text.Length - 10)
                 End If
             Else
                 alreadyExists = True
@@ -718,7 +738,6 @@ EndSub
                 SelectCurrentWord()
             End If
 
-            caret.EnsureVisible()
             Me.Focus()
 
             Me.MdiView.CmbControlNames.SelectedItem = controlName
@@ -762,6 +781,18 @@ EndSub
             Focus()
         End Sub
 
+        Sub EnsureAtTop(pos As Integer)
+            Dim caret = _editorControl.TextView.Caret
+            Dim ops = _editorControl.EditorOperations
+            Dim sv = _editorControl.TextView.ViewScroller
+
+            ops.ResetSelection()
+            caret.MoveTo(pos)
+            sv.ScrollViewportVerticallyByPage(Nautilus.Text.Editor.ScrollDirection.Down)
+            caret.EnsureVisible()
+            sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
+        End Sub
+
         Public Function FindCurrentSub() As String
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
@@ -784,6 +815,15 @@ EndSub
 
             Return ""
         End Function
+
+        Sub FormatSub()
+            _formatting = True
+            Dim textView = _editorControl.TextView
+            Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
+            Dim lineNumber = textView.TextSnapshot.GetLineFromPosition(insertionIndex).LineNumber
+            CompilerService.FormatDocument(textView.TextBuffer, lineNumber)
+            _formatting = False
+        End Sub
 
         Public Function FindEndSub(pos As Integer) As Integer
             Dim textView = EditorControl.TextView
