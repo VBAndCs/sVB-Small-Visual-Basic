@@ -15,7 +15,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/ResizeDecorator.xaml"/>
                 <ResourceDictionary Source="Resources/RotateDecorator.xaml"/>
-                <ResourceDictionary Source="Resources/ConnectDecorator.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>
@@ -35,8 +34,6 @@
                         StrokeThickness="0" StrokeDashArray="1,3"
                         SnapsToDevicePixels="True" RenderTransformOrigin="0.5,0.5"/>
                     <Grid Name="ConnectorsGrid">
-                        <TextBlock x:Name="PART_Text" IsHitTestVisible="False" TextAlignment="Center"
-                                   HorizontalAlignment="Center"  VerticalAlignment="Center" RenderTransformOrigin="0.5, 0.5"/>
                     </Grid>
                 </Grid>
             </Grid>
@@ -59,6 +56,9 @@
             <MenuItem x:Name="GroupMenuItem" Header="Group" InputGestureText="Ctrl+G" IsCheckable="True" Checked="GroupMenuItem_Checked" Unchecked="GroupMenuItem_Unchecked"/>
             <MenuItem x:Name="RemoveFromGroupMenuItem" Header="Remove From Group" Click="RemoveFromGroupMenuItem_Click" Visibility="Collapsed"/>
             <Separator/>
+            <MenuItem x:Name="BringToFrontMenuItem" Header="Bring To Front" Click="BringToFrontMenuItem_Click"/>
+            <MenuItem x:Name="SendToBackMenuItem" Header="Send To Back" Click="SendToBackMenuItem_Click"/>
+            <Separator/>
             <MenuItem Header="Diagram Text">
                 <MenuItem Header="Edit Text" InputGestureText="Enter" Click="EditTextMenuItem_Click"/>
                 <MenuItem Header="Choose Font" InputGestureText="Ctrl+F" Click="TextFontMenuItem_Click"/>
@@ -72,21 +72,8 @@
                 <MenuItem Header="Underline" x:Name="UnderlineMenuItem" InputGestureText="Ctrl+U" IsCheckable="True" 
                               Checked="UnderlineMenuItem_Checked" Unchecked="UnderlineMenuItem_Checked"/>
                 <Separator/>
-                <MenuItem Header="Text Foreground" InputGestureText="F7" Click="TextForegroundMenuItem_Click"/>
-                <MenuItem Header="Text Background" InputGestureText="F8" Click="TextBackgroundMenuItem_Click"/>
-                <MenuItem Header="Outlined Text">
-                    <MenuItem x:Name="DrawOutlineMenuItem" Header="Draw Outline" 
-                            IsCheckable="True" IsChecked="False" 
-                            Checked ="DrawOutlineMenuItem_Checked"
-                            Unchecked="DrawOutlineMenuItem_Unchecked"/>
-                    <MenuItem Header="Decrease Outline Thickness" InputGestureText="-" Click="DecreaseOutlineThicknessMenuItem_Click"  />
-                    <MenuItem Header="Increase Outline Thickness" InputGestureText="+" Click="IicreaseOutlineThicknessMenuItem_Click"  />
-                    <MenuItem Header="Outline Fill" Click="OutlineFillMenuItem_Click"  />
-                </MenuItem>
+                <MenuItem Header="Foreground" InputGestureText="F7" Click="TextForegroundMenuItem_Click"/>
                 <Separator/>
-                <MenuItem x:Name="ApplyRotationMenuItem" Header="Apply Rotation" IsCheckable="True" IsChecked="True" 
-                          Checked ="ApplyRotationMenuItem_Checked"
-                          Unchecked="ApplyRotationMenuItem_Unchecked"/>
             </MenuItem>
             <MenuItem Header="Diagram Appearance">
                 <MenuItem Header="Diagram Background" InputGestureText="F9" Click="DiagramBackgroundMenuItem_Click"  />

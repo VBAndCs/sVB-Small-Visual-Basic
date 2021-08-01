@@ -5,8 +5,7 @@ Public Class DiagramPanel
 
     Friend ConnectorsGrid As Grid
     Friend FocusRectangle As Rectangle
-    Friend DiagramTextBlock As TextBlock
-    Friend MyDesigner As Designer
+    Friend Dsn As Designer
     Friend DesignerItem As ListBoxItem
     Friend Diagram As FrameworkElement
     Dim EditorShowing As Boolean
@@ -15,20 +14,12 @@ Public Class DiagramPanel
     Friend AfterRestoreSub As Action
     Friend DiagramGroup As DiagramGroup
 
-    Friend Event ConnectorsPositionChangd()
-
-    Friend Sub OnConnectorsPositionChangd()
-        Helper.UpdateControl(Me)
-        RaiseEvent ConnectorsPositionChangd()
-    End Sub
-
-
     Public Overrides Sub OnApplyTemplate()
         MyBase.OnApplyTemplate()
         DesignerItem = Helper.GetListBoxItem(Me)
 
         Scv = Helper.GetScrollViewer(DesignerItem)
-        MyDesigner = Helper.GetDesigner(Scv)
+        Dsn = Helper.GetDesigner(Scv)
 
         DesignerItem.AllowDrop = True
         Me.AllowDrop = True
@@ -55,10 +46,6 @@ Public Class DiagramPanel
 
         FocusRectangle = Me.Template.FindName("PART_FocusRectangle", Me)
 
-        DiagramTextBlock = Me.Template.FindName("PART_Text", Me)
-        ConnectorsGrid = DiagramTextBlock.Parent
-        Designer.SetDiagramTextBlock(Diagram, DiagramTextBlock)
-
         AddHandler DesignerItem.PreviewKeyDown, AddressOf DesignerItem_PreviewKeyDown
         AddHandler DesignerItem.LostFocus, AddressOf DesignerItem_LostFocus
         AddHandler DesignerItem.GotFocus, AddressOf DesignerItem_GotFocus
@@ -68,21 +55,14 @@ Public Class DiagramPanel
         DiagramObj = DiagramObject.CreateDiagramObject(Diagram)
         AfterRestoreSub = AddressOf DiagramObj.AfterRestoreAction
 
-        DiagramTextBlock.Text = Designer.GetDiagramText(Diagram)
-        DiagramTextBlock.Background = Designer.GetDiagramTextBackground(Diagram)
-        DiagramTextBlock.Foreground = Designer.GetDiagramTextForeground(Diagram)
-
         Dim FontProps = Designer.GetDiagramTextFontProps(Diagram)
         If FontProps Is Nothing Then
-            FontProps = New PropertyDictionary(DiagramTextBlock)
+            FontProps = New PropertyDictionary(Diagram)
             Designer.SetDiagramTextFontProps(Diagram, FontProps)
         Else
-            FontProps.SetDependencyObject(DiagramTextBlock)
+            FontProps.SetDependencyObject(Diagram)
             FontProps.SetValuesToObj()
         End If
-
-        ApplyRotationMenuItem.IsChecked = Designer.GetDiagramTextApplyRotation(Diagram)
-        DrawOutlineMenuItem.IsChecked = Designer.GetDiagramTextOutlined(Diagram)
 
         Dim Id = Designer.GetGroupID(Diagram)
         If Id <> "" Then DiagramGroup.Add(Me, Date.Parse(Id))
@@ -100,28 +80,11 @@ Public Class DiagramPanel
         RenderTransformDpd.AddValueChanged(DesignerItem, AddressOf DesignerItem_RenderTransformChanged)
 
         TextDpd = DependencyPropertyDescriptor.FromProperty(TextBlock.TextProperty, GetType(TextBlock))
-        TextDpd.AddValueChanged(DiagramTextBlock, AddressOf DiagramObj.DiagramTextBlock_TextChanged)
+        TextDpd.AddValueChanged(Diagram, AddressOf DiagramObj.DiagramTextBlock_TextChanged)
 
         'Dim x = DependencyPropertyDescriptor.FromProperty(TextBlock.FontWeightProperty, GetType(TextBlock))
         'x.AddValueChanged(DiagramTextBlock, AddressOf DiagramObj.DiagramTextBlock_FontWeightChanged)
 
-    End Sub
-
-    Friend Sub AdjustConnectors()
-        If Diagram Is Nothing Then Return
-        FocusRectangle.LayoutTransform = Diagram.LayoutTransform
-        FocusRectangle.Width = Diagram.ActualWidth
-        FocusRectangle.Height = Diagram.ActualHeight
-        If FocusRectangle.LayoutTransform IsNot Nothing Then
-            Dim T = FocusRectangle.LayoutTransform.Inverse
-            DiagramTextBlock.LayoutTransform = T
-            For Each C In ConnectorsGrid.Children
-                If TypeOf C Is ConnectorThumb Then
-                    C.RenderTransformOrigin = New Point(0, 0)
-                    C.LayoutTransform = T
-                End If
-            Next
-        End If
     End Sub
 
     Public Property IsSelected As Boolean
@@ -134,8 +97,8 @@ Public Class DiagramPanel
         End Set
     End Property
 
-    Public Shared ReadOnly IsSelectedProperty As DependencyProperty = _
-                           DependencyProperty.Register("IsSelected", _
+    Public Shared ReadOnly IsSelectedProperty As DependencyProperty =
+                           DependencyProperty.Register("IsSelected",
                            GetType(Boolean), GetType(DiagramPanel), New PropertyMetadata(AddressOf OnIsSelectedChanged))
 
     Public Event IsSelectedChanged(Pnl As DiagramPanel, NewValue As Boolean)
@@ -161,13 +124,12 @@ Public Class DiagramPanel
         TopDpd.RemoveValueChanged(DesignerItem, AddressOf DesignerItem_TopChanged)
         LeftDpd.RemoveValueChanged(DesignerItem, AddressOf DesignerItem_LeftChanged)
         RenderTransformDpd.RemoveValueChanged(DesignerItem, AddressOf DesignerItem_RenderTransformChanged)
-        TextDpd.RemoveValueChanged(DiagramTextBlock, AddressOf DiagramObj.DiagramTextBlock_TextChanged)
+        TextDpd.RemoveValueChanged(Diagram, AddressOf DiagramObj.DiagramTextBlock_TextChanged)
 
         Dim Cp As ContentPresenter = VisualTreeHelper.GetParent(Diagram)
         Cp.Content = Nothing
         ConnectorsGrid = Nothing
         FocusRectangle = Nothing
-        DiagramTextBlock = Nothing
         DesignerItem = Nothing
         Diagram = Nothing
         EditorShowing = Nothing
@@ -187,12 +149,12 @@ Public Class DiagramPanel
     End Sub
 
     Sub ApplyLastChangeToSelected()
-        Dim Unit = MyDesigner.UndoStack.Peek
+        Dim Unit = Dsn.UndoStack.Peek
         If Unit Is Nothing Then Return
         Dim PropState = TryCast(Unit(0), PropertyState)
         If PropState Is Nothing Then Return
 
-        For Each Obj As FrameworkElement In MyDesigner.SelectedItems
+        For Each Obj As FrameworkElement In Dsn.SelectedItems
             If Obj Is Diagram Then Continue For
             Dim NewPropState As New PropertyState(Obj, PropState.Keys.ToArray)
             For Each Pair In PropState
@@ -206,13 +168,21 @@ Public Class DiagramPanel
 #Region "DesignerItem"
 
     Private Sub DesignerItem_GotFocus(sender As Object, e As RoutedEventArgs)
-        If MyDesigner.SelectionBorder.Visibility = Windows.Visibility.Visible Then Return
+        If Dsn.SelectionBorder?.Visibility = Windows.Visibility.Visible Then Return
 
         FocusRectangle.StrokeThickness = 2
         Me.IsSelected = True
-        MyDesigner.MaxZIndex += 1
-        Canvas.SetZIndex(DesignerItem, MyDesigner.MaxZIndex)
-        MyDesigner.ScrollIntoView(Diagram)
+        Dsn.ScrollIntoView(Diagram)
+    End Sub
+
+    Public Sub BringToFront()
+        Dsn.MaxZIndex += 1
+        Canvas.SetZIndex(DesignerItem, Dsn.MaxZIndex)
+    End Sub
+
+    Public Sub SendToBack()
+        Dsn.MinZIndex -= 1
+        Canvas.SetZIndex(DesignerItem, Dsn.MinZIndex)
     End Sub
 
     Private Sub DesignerItem_LostFocus(sender As Object, e As RoutedEventArgs)
@@ -223,12 +193,12 @@ Public Class DiagramPanel
         If DesignerItem Is Nothing Then Return
 
         If Not DesignerItem.IsSelected Then
-            MyDesigner.Focus()
+            Dsn.Focus()
             Return
         End If
 
         Dim offset = If(Keyboard.Modifiers = ModifierKeys.Control, Helper.CmToPx, Helper.MmToPx)
-        MyDesigner.SelectedBounds = MyDesigner.GetSelectionBounds
+        Dsn.SelectedBounds = Dsn.GetSelectionBounds
 
         Select Case e.Key
             Case Key.F2 ' Rename
@@ -255,10 +225,7 @@ Public Class DiagramPanel
                 ApplyLastChangeToSelected()
                 e.Handled = True
             Case Key.F7
-                Commands.ChangeBrush(Diagram, Designer.DiagramTextForegroundProperty)
-                ApplyLastChangeToSelected()
-            Case Key.F8
-                Commands.ChangeBrush(Diagram, Designer.DiagramTextBackgroundProperty)
+                Commands.ChangeBrush(Diagram, Control.ForegroundProperty)
                 ApplyLastChangeToSelected()
             Case Key.F11
                 Commands.IncreaseRotationAngle(Diagram, -45)
@@ -286,12 +253,6 @@ Public Class DiagramPanel
                     Commands.IncreaseFontSize(Diagram, +1)
                     ApplyLastChangeToSelected()
                 End If
-            Case Key.OemPlus
-                Commands.IncreaseTextOutlineThickness(Diagram, 0.1)
-                ApplyLastChangeToSelected()
-            Case Key.OemMinus
-                Commands.IncreaseTextOutlineThickness(Diagram, -0.1)
-                ApplyLastChangeToSelected()
             Case Key.B
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     BoldMenuItem.IsChecked = Not BoldMenuItem.IsChecked
@@ -312,28 +273,28 @@ Public Class DiagramPanel
                 DiagramObj.BeginEdit()
                 e.Handled = True
             Case Key.Delete
-                MyDesigner.RemoveSelectedItems()
+                Dsn.RemoveSelectedItems()
             Case Key.Tab
                 If Keyboard.Modifiers = ModifierKeys.Shift Then
-                    Dim I = MyDesigner.Items.IndexOf(Diagram) - 1
+                    Dim I = Dsn.Items.IndexOf(Diagram) - 1
                     If I > -1 Then
-                        Dim Itm = Helper.GetListBoxItem(MyDesigner.Items(I))
-                        If Not Itm.IsSelected Then MyDesigner.SelectedIndex = I
+                        Dim Itm = Helper.GetListBoxItem(Dsn.Items(I))
+                        If Not Itm.IsSelected Then Dsn.SelectedIndex = I
                         Itm.Focus()
                     Else
-                        MyDesigner.MoveFocus(New TraversalRequest(FocusNavigationDirection.Previous))
+                        Dsn.MoveFocus(New TraversalRequest(FocusNavigationDirection.Previous))
                     End If
                 Else
-                    Dim I = MyDesigner.Items.IndexOf(Diagram) + 1
-                    If I < MyDesigner.Items.Count Then
-                        Dim Itm = Helper.GetListBoxItem(MyDesigner.Items(I))
-                        If Not Itm.IsSelected Then MyDesigner.SelectedIndex = I
+                    Dim I = Dsn.Items.IndexOf(Diagram) + 1
+                    If I < Dsn.Items.Count Then
+                        Dim Itm = Helper.GetListBoxItem(Dsn.Items(I))
+                        If Not Itm.IsSelected Then Dsn.SelectedIndex = I
                         Itm.Focus()
                     Else
-                        Dim g As Grid = MyDesigner.Parent
-                        MyDesigner.IsEnabled = False
-                        MyDesigner.MoveFocus(New TraversalRequest(FocusNavigationDirection.Next))
-                        MyDesigner.IsEnabled = True
+                        Dim g As Grid = Dsn.Parent
+                        Dsn.IsEnabled = False
+                        Dsn.MoveFocus(New TraversalRequest(FocusNavigationDirection.Next))
+                        Dsn.IsEnabled = True
                     End If
                 End If
                 e.Handled = True
@@ -389,7 +350,6 @@ Public Class DiagramPanel
             Designer.SetRotationAngle(Diagram, 0)
         Else
             Designer.SetRotationAngle(Diagram, RotateTransform.Angle)
-            If Not ApplyRotationMenuItem.IsChecked Then DiagramTextBlock.RenderTransform = DesignerItem.RenderTransform.Inverse
         End If
     End Sub
 
@@ -422,12 +382,7 @@ Public Class DiagramPanel
     End Sub
 
     Private Sub TextForegroundMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        Commands.ChangeBrush(Diagram, Designer.DiagramTextForegroundProperty)
-        ApplyLastChangeToSelected()
-    End Sub
-
-    Private Sub TextBackgroundMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        Commands.ChangeBrush(Diagram, Designer.DiagramTextBackgroundProperty)
+        Commands.ChangeBrush(Diagram, Control.ForegroundProperty)
         ApplyLastChangeToSelected()
     End Sub
 
@@ -446,21 +401,6 @@ Public Class DiagramPanel
         ApplyLastChangeToSelected()
     End Sub
 
-    Private Sub ApplyRotationMenuItem_Checked(sender As Object, e As RoutedEventArgs)
-        If DiagramTextBlock Is Nothing Then Return
-        Try
-            DiagramTextBlock.RenderTransform = Nothing
-            Designer.SetDiagramTextApplyRotation(Diagram, True)
-            ApplyLastChangeToSelected()
-        Catch
-        End Try
-    End Sub
-
-    Private Sub ApplyRotationMenuItem_Unchecked(sender As Object, e As RoutedEventArgs)
-        DiagramTextBlock.RenderTransform = DesignerItem.RenderTransform.Inverse
-        Designer.SetDiagramTextApplyRotation(Diagram, False)
-        ApplyLastChangeToSelected()
-    End Sub
 
     Private Sub ApplyLastChangeMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Commands.ApplyLastChangeTo(Diagram)
@@ -477,54 +417,16 @@ Public Class DiagramPanel
     End Sub
 
     Private Sub CopyMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        MyDesigner.Copy()
+        Dsn.Copy()
     End Sub
 
     Private Sub CutMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        MyDesigner.Cut()
+        Dsn.Cut()
     End Sub
 
     Private Sub DeleteMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        MyDesigner.RemoveSelectedItems()
+        Dsn.RemoveSelectedItems()
     End Sub
-
-    Private Sub DrawOutlineMenuItem_Checked(sender As Object, e As RoutedEventArgs)
-        Dim OldStare As New PropertyState(Diagram, Designer.DiagramTextOutlinedProperty)
-        Dim CanUndo As Boolean = True
-        If DrawOutlineMenuItem.Tag = "DontUndo" Then
-            DrawOutlineMenuItem.Tag = ""
-            CanUndo = False
-        End If
-        Designer.SetDiagramTextOutlined(Diagram, True)
-        DiagramObj.OutlineText()
-        If CanUndo Then MyDesigner.UndoStack.ReportChanges(New UndoRedoUnit(OldStare.SetNewValue))
-    End Sub
-
-    Private Sub DrawOutlineMenuItem_Unchecked(sender As Object, e As RoutedEventArgs)
-        Dim OldStare As New PropertyState(Diagram, Designer.DiagramTextOutlinedProperty)
-        Dim CanUndo As Boolean = True
-        If DrawOutlineMenuItem.Tag = "DontUndo" Then
-            DrawOutlineMenuItem.Tag = ""
-            CanUndo = False
-        End If
-        Designer.SetDiagramTextOutlined(Diagram, False)
-        Dim Props = Designer.GetDiagramTextFontProps(Diagram)
-        DiagramTextBlock.Background = Designer.GetDiagramTextBackground(Diagram)
-        DiagramTextBlock.Foreground = Designer.GetDiagramTextForeground(Diagram)
-        If CanUndo Then MyDesigner.UndoStack.ReportChanges(New UndoRedoUnit(OldStare.SetNewValue))
-    End Sub
-
-
-    Private Sub DecreaseOutlineThicknessMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        Commands.IncreaseTextOutlineThickness(Diagram, -0.1)
-        ApplyLastChangeToSelected()
-    End Sub
-
-    Private Sub IicreaseOutlineThicknessMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        Commands.IncreaseTextOutlineThickness(Diagram, 0.1)
-        ApplyLastChangeToSelected()
-    End Sub
-
 
     Private Sub TextFontMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Commands.ChangeFont(Diagram)
@@ -566,17 +468,12 @@ Public Class DiagramPanel
         ApplyLastChangeToSelected()
     End Sub
 
-    Private Sub OutlineFillMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        Commands.ChangeBrush(Diagram, Designer.DiagramTextOutlineFillProperty)
-        ApplyLastChangeToSelected()
-    End Sub
-
 
 #End Region
 
     Private Sub ContextMenu_Opened(sender As Object, e As RoutedEventArgs)
         If Me.DiagramGroup Is Nothing Then
-            GroupMenuItem.IsEnabled = (MyDesigner.SelectedItems.Count > 1)
+            GroupMenuItem.IsEnabled = (Dsn.SelectedItems.Count > 1)
             RemoveFromGroupMenuItem.Visibility = Windows.Visibility.Collapsed
         Else
             GroupMenuItem.IsEnabled = True
@@ -595,13 +492,13 @@ Public Class DiagramPanel
 
         Dim UndoUnit As New UndoRedoUnit
         Dim GroupTimeStamp = Now
-        For Each D As FrameworkElement In MyDesigner.SelectedItems
-            Dim A As action = AddressOf DiagramObject.Diagrams(D).AfterRestoreAction
+        For Each D As FrameworkElement In Dsn.SelectedItems
+            Dim A As Action = AddressOf DiagramObject.Diagrams(D).AfterRestoreAction
             Dim OldSate As New PropertyState(A, D, Designer.GroupIDProperty)
             Designer.SetGroupID(D, GroupTimeStamp)
             UndoUnit.Add(OldSate.SetNewValue)
         Next
-        MyDesigner.UndoStack.ReportChanges(UndoUnit)
+        Dsn.UndoStack.ReportChanges(UndoUnit)
         DiagramGroup.Select()
     End Sub
 
@@ -612,5 +509,39 @@ Public Class DiagramPanel
 
     Private Sub RemoveFromGroupMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Designer.SetGroupID(Diagram, Nothing)
+    End Sub
+
+
+    Friend Sub UpdateLocationBorder()
+        FocusRectangle.LayoutTransform = Diagram.LayoutTransform
+        FocusRectangle.Width = Diagram.ActualWidth
+        FocusRectangle.Height = Diagram.ActualHeight
+
+        FocusRectangle.StrokeThickness = 2
+        Dsn.LocationVisibility = Windows.Visibility.Visible
+        UpdateTbLocation()
+    End Sub
+
+    Sub UpdateTbLocation()
+        Dim P As Point = DiagramObj.GetLeftTopPoint()
+        Dsn.TbLeftLocation.Text = P.X.ToString("F1")
+        Dsn.TbTopLocation.Text = P.Y.ToString("F1")
+        Helper.UpdateControl(Dsn.TbLeftLocation)
+        Helper.UpdateControl(Dsn.TbTopLocation)
+
+        'Dim Location = GetLeftTopPoint(Dsn, False)
+        Dim x = P.X * Helper.CmToPx * Dsn.Scale - 5
+        Dim y = P.Y * Helper.CmToPx * Dsn.Scale - 5
+        Dsn.TbLeftLocation.Margin = New Thickness(x - Dsn.TbLeftLocation.ActualWidth * Dsn.Scale, y + 2, 0, 0)
+        Dsn.TbTopLocation.Margin = New Thickness(x + 2, y - Dsn.TbTopLocation.ActualHeight * Dsn.Scale, 0, 0)
+
+    End Sub
+
+    Private Sub BringToFrontMenuItem_Click(sender As Object, e As RoutedEventArgs)
+        BringToFront()
+    End Sub
+
+    Private Sub SendToBackMenuItem_Click(sender As Object, e As RoutedEventArgs)
+        SendToBack()
     End Sub
 End Class

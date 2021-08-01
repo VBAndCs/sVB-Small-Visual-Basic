@@ -4,7 +4,7 @@
 library
 VB
 .vb
-F:\_VS.NET\Small Basic IDE\VB\1\LangServices\obj\Release\
+F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\
 
 none
 false
@@ -13,7 +13,7 @@ false
 21354542248
 
 22-951389854
-16-2138269448
+17-389545185
 circularlist.xaml;completionadornmentsurface.xaml;
 
 True

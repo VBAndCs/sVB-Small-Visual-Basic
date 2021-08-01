@@ -20,3 +20,11 @@ w2 = {{1, 2, 3}, {4, 5, 6}, {"a", "b", "c", "d"}}
 TextWindow.WriteLine(w2[1][1])
 TextWindow.WriteLine(w2[2][2])
 TextWindow.WriteLine(w2[3][3])
+
+
+Print("Adam", 10)
+
+Sub Print(Name, Age)   
+   x = Text.Format("MyName: [1], MyAge: [2]", {Name, Age})
+   TextWindow.WriteLine(x)
+EndSub

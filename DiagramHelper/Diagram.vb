@@ -43,7 +43,6 @@ Public Class DiagramObject
 
     Friend Sub AfterRestoreAction()
         Helper.UpdateControl(Diagram)
-        Pnl.AdjustConnectors()
 
         If Keyboard.FocusedElement IsNot DesignerItem Then
             If Not DesignerItem.IsSelected Then
@@ -57,33 +56,8 @@ Public Class DiagramObject
 
         Dsn.ScrollIntoView(Diagram)
         Helper.UpdateControl(Pnl)
-        Pnl.OnConnectorsPositionChangd()
-    End Sub
-
-    Private Sub UpdateLocationBorder()
-        Pnl.ConnectorsGrid.LayoutTransform = Diagram.LayoutTransform
-        Pnl.FocusRectangle.LayoutTransform = Diagram.LayoutTransform
-        Pnl.FocusRectangle.Width = Diagram.ActualWidth
-        Pnl.FocusRectangle.Height = Diagram.ActualHeight
-
-        Pnl.FocusRectangle.StrokeThickness = 2
-        Dsn.LocationVisibility = Windows.Visibility.Visible
-        UpdateTbLocation()
-    End Sub
-
-    Sub UpdateTbLocation()
-        Dim P As Point = GetLeftTopPoint()
-        Dsn.TbLeftLocation.Text = P.X.ToString("F1")
-        Dsn.TbTopLocation.Text = P.Y.ToString("F1")
-        Helper.UpdateControl(Dsn.TbLeftLocation)
-        Helper.UpdateControl(Dsn.TbTopLocation)
-
-        'Dim Location = GetLeftTopPoint(Dsn, False)
-        Dim x = P.X * Helper.CmToPx * Dsn.Scale - 5
-        Dim y = P.Y * Helper.CmToPx * Dsn.Scale - 5
-        Dsn.TbLeftLocation.Margin = New Thickness(x - Dsn.TbLeftLocation.ActualWidth * Dsn.Scale, y + 2, 0, 0)
-        Dsn.TbTopLocation.Margin = New Thickness(x + 2, y - Dsn.TbTopLocation.ActualHeight * Dsn.Scale, 0, 0)
-
+        Pnl.DiagramGroup?.UpdateSelection()
+        Pnl.UpdateLocationBorder()
     End Sub
 
     Friend Function GetLeftTopPoint(Optional RelativeTo As FrameworkElement = Nothing, Optional InCm As Boolean = True) As Point
@@ -113,7 +87,6 @@ Public Class DiagramObject
         If Keyboard.Modifiers = ModifierKeys.Control Then
             Pnl.IsSelected = Not Pnl.IsSelected
         ElseIf Pnl.IsSelected = False Then
-            Connection.DeselectAll(Dsn)
             Dsn.SelectedIndex = -1
             Pnl.IsSelected = True
         End If
@@ -171,6 +144,7 @@ Public Class DiagramObject
         Else
             P.Y = Math.Floor(P.Y * 10) / 10 - P.Y
         End If
+
         NewTop += P.Y * Helper.CmToPx
 
         Dim DeltaX = NewLeft - OldLeft
@@ -179,14 +153,14 @@ Public Class DiagramObject
         If Not DesignerItem.IsSelected Then
             Canvas.SetLeft(DesignerItem, Canvas.GetLeft(DesignerItem) + DeltaX)
             Canvas.SetTop(DesignerItem, Canvas.GetTop(DesignerItem) + DeltaY)
-            Pnl.OnConnectorsPositionChangd()
+            Pnl.DiagramGroup?.UpdateSelection()
         End If
 
         For Each D In Dsn.SelectedItems
             Dim Item = Helper.GetListBoxItem(D)
             Canvas.SetLeft(Item, Canvas.GetLeft(Item) + DeltaX)
             Canvas.SetTop(Item, Canvas.GetTop(Item) + DeltaY)
-            Helper.GetDiagramPanel(D).OnConnectorsPositionChangd()
+            Helper.GetDiagramPanel(D).DiagramGroup?.UpdateSelection()
         Next
 
         Dim scale = TryCast(Canv.LayoutTransform, ScaleTransform)
@@ -204,10 +178,11 @@ Public Class DiagramObject
             Delay = 40
             Scv.ScrollToVerticalOffset(Scv.VerticalOffset + DeltaY * F)
         End If
+
         Dsn.SelectedBounds.X = NewLeft
         Dsn.SelectedBounds.Y = NewTop
 
-        UpdateTbLocation()
+        Pnl.UpdateTbLocation()
         Helper.UpdateControl(Dsn)
 
         If Delay > 0 Then Helper.Delay(Delay)
@@ -228,21 +203,6 @@ Public Class DiagramObject
     End Sub
 
     Private Sub Diagram_PreviewMouseDown(sender As Object, e As MouseButtonEventArgs) Handles Diagram.PreviewMouseDown
-        If Dsn.ConnectionMode = False Then Dsn.ConnectionMode = (Keyboard.Modifiers = ModifierKeys.Shift)
-
-        If Dsn.ConnectionMode Then
-            If Dsn.ConnectionSourceDiagram Is Nothing Then
-                Dsn.ConnectionSourceDiagram = Diagram
-                Dsn.SourceConnector = New ConnectorThumb(Diagram)
-                Dsn.SourceConnector.StartDrawConnection()
-            ElseIf Dsn.ConnectionSourceDiagram Is Diagram Then
-                Return
-            Else
-                Dsn.ConnectionTargetDiagram = Diagram
-                Dsn.TargetConnector = New ConnectorThumb(Diagram)
-                Dsn.SourceConnector.EndDrawConnection()
-            End If
-        End If
 
         Diagram.CaptureMouse()
         DraggingDiagram = True
@@ -255,7 +215,7 @@ Public Class DiagramObject
             Dsn.SelectedBounds = Dsn.GetSelectionBounds()
         End If
 
-        UpdateLocationBorder()
+        Pnl.UpdateLocationBorder()
 
         DraggingStartPoint = e.GetPosition(Pnl)
 
@@ -272,9 +232,9 @@ Public Class DiagramObject
     Private Sub Diagram_PreviewMouseLeftButtonUp(sender As Object, e As MouseButtonEventArgs) Handles Diagram.PreviewMouseLeftButtonUp
         Diagram.ReleaseMouseCapture()
         DraggingDiagram = False
+        Pnl.ExitIsSelectedChanged = False
         DesignerItem.Focus()
         'Pnl.IsSelected = TmpIsSelected
-        Pnl.ExitIsSelectedChanged = False
         Dsn.LocationVisibility = Windows.Visibility.Collapsed
 
         ReportMoveUndo()
@@ -423,31 +383,11 @@ Public Class DiagramObject
     End Sub
 
     Friend Sub DiagramTextBlock_TextChanged()
-        Designer.SetDiagramText(Diagram, Pnl.DiagramTextBlock.Text)
+        'Dsn.SetControlText(Diagram, Pnl.DiagramTextBlock.Text)
     End Sub
 
 #End Region
 
-
-    Sub OutlineText()
-        Dim Tb = Pnl.DiagramTextBlock
-        Dim TextForeground = Designer.GetDiagramTextforeground(Diagram)        
-        Dim TextBackground = Designer.GetDiagramTextBackground(Diagram)
-
-        Dim Gd1 As New GeometryDrawing(TextBackground, Nothing,
-                                   New RectangleGeometry(New Rect(0, 0, Tb.ActualWidth, Tb.ActualHeight)))
-
-        Dim Tf = New Typeface(Tb.FontFamily, Tb.FontStyle, Tb.FontWeight, Tb.FontStretch)
-        Dim F As New FormattedText(Tb.Text, CultureInfo.CurrentCulture, Tb.FlowDirection,
-                                   Tf, Tb.FontSize, TextForeground)
-        Dim Gd2 As New GeometryDrawing(Designer.GetDiagramTextOutlineFill(Diagram), New Pen(TextForeground, Designer.GetDiagramTextOutlineThickness(Diagram)), F.BuildGeometry(New Point))
-        Dim Dg As New DrawingGroup
-        Dg.Children.Add(Gd1)
-        Dg.Children.Add(Gd2)
-        Dim TextBursh As New DrawingBrush(Dg)
-        Tb.Background = TextBursh
-        Tb.Foreground = Nothing
-    End Sub
 
     Private Sub Diagram_PreviewMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs) Handles Diagram.PreviewMouseLeftButtonDown
         If e.ClickCount > 1 Then

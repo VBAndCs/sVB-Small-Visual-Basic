@@ -109,7 +109,8 @@ Friend Class RotateThumb
         Designer.SetRotationAngle(Diagram, RotateAngle)
 
         Item.InvalidateMeasure()
-        Pnl.OnConnectorsPositionChangd()
+        Pnl.DiagramGroup?.UpdateSelection()
+        Pnl.UpdateLocationBorder()
     End Sub
 
     Private Sub RotateThumb_DragCompleted(sender As Object, e As DragCompletedEventArgs) Handles Me.DragCompleted
@@ -121,7 +122,8 @@ Friend Class RotateThumb
         RotateAngle = 0
         Designer.SetRotationAngle(Diagram, 0)
         Item.InvalidateMeasure()
-        Pnl.OnConnectorsPositionChangd()
+        Pnl.DiagramGroup?.UpdateSelection()
+        Pnl.UpdateLocationBorder()
     End Sub
 
     Private Sub ReportChanges()

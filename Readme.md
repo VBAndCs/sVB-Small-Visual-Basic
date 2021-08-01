@@ -106,8 +106,6 @@ This is when I decides to do something, and here we are.
 # Form designer Features:
 I will write this later, but the form designer is too easy to use, so, enjoy trying it.
 
-Warning: Don't use the `Diagram Text` submenu from the context menu, because these properties are not supported yet in runtime. I am working on a fix (the Diagram Viewer you see in the source code but is not used yet).
-
 # SB Code Enhancements:
 I made many improvements to the SB compiler:
 1. Support array initializers:

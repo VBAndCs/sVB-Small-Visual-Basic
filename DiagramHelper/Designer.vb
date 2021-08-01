@@ -8,8 +8,8 @@ Public Class Designer
     Inherits ListBox
 
     Friend GridLinesBorder As Border
-    Friend ConnectionCanvas As Canvas
     Friend DesignerCanvas As Canvas
+    Friend ConnectionCanvas As Canvas
     Friend TbTopLocation As TextBlock
     Friend TbLeftLocation As TextBlock
     Friend GridBrush As DrawingBrush
@@ -20,7 +20,6 @@ Public Class Designer
     Friend SelectionBorder As Border
     Friend WithEvents UndoStack As New UndoRedoStack(Of UndoRedoUnit)(1000)
     Dim DeleteUndoUnit As UndoRedoUnit
-    Dim ConnectionsOldState As ConnectionState
     Friend SelectedBounds As Rect
     Friend GridPen As Pen
 
@@ -186,87 +185,6 @@ Public Class Designer
         RaiseEvent DiagramDoubleClick(diagram)
     End Sub
 
-#Region "Connections"
-
-    Friend Connections As New Dictionary(Of UIElement, List(Of Connection))
-    Friend ConnectionMode As Boolean
-    Friend ConnectionSourceDiagram As FrameworkElement
-    Friend ConnectionTargetDiagram As FrameworkElement
-    Friend SourceConnector As ConnectorThumb
-    Friend TargetConnector As ConnectorThumb
-
-    Public Function GetConnectionsFromSource(Diagram As UIElement) As List(Of Connection)
-        If Connections.ContainsKey(Diagram) Then Return Connections(Diagram)
-        Dim Lst As New List(Of Connection)
-        Connections.Add(Diagram, Lst)
-        Return Lst
-    End Function
-
-    Public Function GetConnectionsToTarget(Diagram As UIElement) As List(Of Connection)
-        Dim Conns = From Lst In Connections.Values
-                    From C In Lst
-                    Where C.TargetDiagram Is Diagram
-                    Select C
-
-        Return Conns.ToList
-    End Function
-
-    Public Function GetConnection(Diagram1 As UIElement, Diagram2 As UIElement) As Connection
-        If Connections.ContainsKey(Diagram1) Then
-            Dim Conns = From C In Connections(Diagram1) Where C.TargetDiagram Is Diagram2
-            If Conns.Count > 0 Then Return Conns.First
-        End If
-
-        If Connections.ContainsKey(Diagram2) Then
-            Dim Conns = From C In Connections(Diagram2) Where C.TargetDiagram Is Diagram1
-            If Conns.Count > 0 Then Return Conns.First
-        End If
-
-        Return Nothing
-    End Function
-
-    Public Sub RemoveConnections(Diagram As UIElement)
-        If Connections.ContainsKey(Diagram) Then
-            Dim OutConns = Connections(Diagram)
-            For i = OutConns.Count - 1 To 0 Step -1
-                If ConnectionsOldState Is Nothing Then ConnectionsOldState = New ConnectionState(ConnectionAction.Create)
-                ConnectionsOldState.Add(OutConns(i))
-                OutConns(i).Delete()
-            Next
-        End If
-
-        Dim Conns = From Lst In Connections.Values
-                    From C In Lst
-                    Where C.TargetDiagram Is Diagram
-                    Select C
-
-        For i = Conns.Count - 1 To 0 Step -1
-            ConnectionsOldState.Add(Conns(i))
-            Conns(i).Delete()
-        Next
-    End Sub
-
-    Public Sub RemoveSelectedConnections()
-        For Each ConList In Me.Connections.Values
-            For i = ConList.Count - 1 To 0 Step -1
-                Dim Con = ConList(i)
-                If Con.IsSelected Then
-                    ConnectionsOldState.Add(Con)
-                    Con.Delete()
-                End If
-            Next
-        Next
-    End Sub
-
-    Public Sub ClearConnections()
-        For Each ConList In Connections.Values
-            For i = ConList.Count - 1 To 0 Step -1
-                ConList(i).Delete()
-            Next
-        Next
-    End Sub
-
-#End Region
 
 #Region "Pages"
     Public Shared Pages As New Dictionary(Of String, Designer)
@@ -336,7 +254,7 @@ Public Class Designer
         UpdatePageInfo()
 
         Call SetDefaultPropertiesSub()
-        BringToFront()
+        BringPageToFront()
         CurrentPage.Focus()
         RaiseEvent PageShown(FormKeys.Count - 1)
 
@@ -414,12 +332,12 @@ Public Class Designer
             Open(key)
         End If
 
-        BringToFront()
+        BringPageToFront()
         RaiseEvent PageShown(FormKeys.IndexOf(CurrentPage.PageKey))
         Return CurrentPage.PageKey
     End Function
 
-    Private Shared Sub BringToFront()
+    Private Shared Sub BringPageToFront()
         Dim z = 0
         For Each item In PagesGrid.Children
             z = Math.Max(z, Grid.GetZIndex(item))
@@ -450,17 +368,9 @@ Public Class Designer
             diagram2.ClearValue(AllowDropProperty)
             diagram2.ClearValue(CursorProperty)
             diagram2.ClearValue(IsTabStopProperty)
-            diagram2.ClearValue(DiagramTextBlockPropertyKey)
 
             ' GroupID, DiagramText will cause isuues in Small Basic, because they need a reference to DiagramHelper
             ' Use any wpf built-in properety to hold theor values
-            Dim txt = GetDiagramText(diagram2)
-            If txt <> "" Then
-                Automation.AutomationProperties.SetHelpText(diagram2, txt)
-                diagram2.ClearValue(DiagramTextProperty)
-            Else
-                diagram2.ClearValue(Automation.AutomationProperties.HelpTextProperty)
-            End If
 
             Dim gID = GetGroupID(diagram2)
             If gID <> "" Then
@@ -523,9 +433,7 @@ Public Class Designer
 
             ' Restore the GroupID and DiagramText properties
             Dim txt = Automation.AutomationProperties.GetHelpText(Diagram)
-            If txt = "" Then
-                Diagram.ClearValue(DiagramTextProperty)
-            Else
+            If txt <> "" Then
                 SetControlText(Diagram, txt)
                 Diagram.ClearValue(Automation.AutomationProperties.HelpTextProperty)
             End If
@@ -628,7 +536,6 @@ Public Class Designer
             Helper.UpdateControl(Me)
             Dim Item = Helper.GetListBoxItem(diagram)
             Me.SelectedIndex = -1
-            Connection.DeselectAll(Me)
             If Item IsNot Nothing Then
                 Item.IsSelected = True
                 Item.Focus()
@@ -653,7 +560,6 @@ Public Class Designer
     End Function
 
     Sub RemoveDiagram(Diagram As UIElement)
-        RemoveConnections(Diagram)
         Dim Pnl = Helper.GetDiagramPanel(Diagram)
         DiagramGroup.RemovePanelOnly(Pnl)
         Me.Items.Remove(Diagram)
@@ -674,13 +580,8 @@ Public Class Designer
 
     Public Sub RemoveSelectedItems()
         DeleteUndoUnit = New UndoRedoUnit
-        ConnectionsOldState = New ConnectionState(ConnectionAction.Create)
-        Me.RemoveSelectedConnections()
         Me.RemoveSelectedDiagrams()
-
-        If ConnectionsOldState.Count > 0 Then DeleteUndoUnit.Add(ConnectionsOldState)
         Me.UndoStack.ReportChanges(DeleteUndoUnit)
-
         DeleteUndoUnit = Nothing
         Me.Focus()
     End Sub
@@ -708,13 +609,9 @@ Public Class Designer
 
     Public Sub Cut()
         DeleteUndoUnit = New UndoRedoUnit
-        ConnectionsOldState = New ConnectionState(ConnectionAction.Create)
         Me.Copy()
         Me.RemoveSelectedDiagrams()
-
-        If ConnectionsOldState.Count > 0 Then DeleteUndoUnit.Add(ConnectionsOldState)
         Me.UndoStack.ReportChanges(DeleteUndoUnit)
-
         DeleteUndoUnit = Nothing
         Me.Focus()
     End Sub
@@ -943,7 +840,6 @@ Public Class Designer
 
     Public Shadows Sub SelectAll()
         MyBase.SelectAll()
-        Connection.SelectAll(Me)
         Dim Item = Helper.GetListBoxItem(Me.SelectedItem)
         If Item IsNot Nothing Then Item.Focus()
     End Sub
@@ -978,7 +874,6 @@ Public Class Designer
     Private Sub Designer_MouseDown(sender As Object, e As MouseButtonEventArgs) Handles Me.MouseDown
         If Not Editing AndAlso e.Source Is Me AndAlso Keyboard.Modifiers <> ModifierKeys.Control Then
             Me.SelectedIndex = -1
-            Connection.DeselectAll(Me)
             Me.Focus()
         End If
 
@@ -1002,11 +897,7 @@ Public Class Designer
         If e.OriginalSource Is Editor Then Return
 
         If e.Key = Input.Key.Escape Then
-            If ConnectionMode Then
-                SourceConnector.CancelDrawConnection()
-            Else
-                Me.SelectedIndex = -1
-            End If
+            Me.SelectedIndex = -1
             Return
         End If
 
@@ -1126,21 +1017,17 @@ Public Class Designer
     Dim SelStartPoint As Point
 
     Private Sub Designer_MouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs) Handles Me.MouseLeftButtonDown
-        If Not ConnectionMode Then
-            Me.CaptureMouse()
-            SelStartPoint = e.GetPosition(Me.ConnectionCanvas)
-            Canvas.SetLeft(SelectionBorder, SelStartPoint.X)
-            Canvas.SetTop(SelectionBorder, SelStartPoint.Y)
-            SelectionBorder.Width = 0
-            SelectionBorder.Height = 0
-            SelectionBorder.Visibility = Windows.Visibility.Visible
-        End If
+        Me.CaptureMouse()
+        SelStartPoint = e.GetPosition(Me.ConnectionCanvas)
+        Canvas.SetLeft(SelectionBorder, SelStartPoint.X)
+        Canvas.SetTop(SelectionBorder, SelStartPoint.Y)
+        SelectionBorder.Width = 0
+        SelectionBorder.Height = 0
+        SelectionBorder.Visibility = Windows.Visibility.Visible
     End Sub
 
     Private Sub Designer_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
-        If ConnectionMode Then
-            If SourceConnector IsNot Nothing Then SourceConnector.UpdateConnection()
-        ElseIf e.LeftButton = MouseButtonState.Pressed Then
+        If e.LeftButton = MouseButtonState.Pressed Then
             Dim R As New Rect(SelStartPoint, e.GetPosition(Me.ConnectionCanvas))
             Canvas.SetLeft(SelectionBorder, R.Left)
             Canvas.SetTop(SelectionBorder, R.Top)
@@ -1162,7 +1049,6 @@ Public Class Designer
                     New GeometryHitTestParameters(New RectangleGeometry(R))
             )
 
-            Connection.SelectIntersection(Me, R)
         End If
 
         Me.ReleaseMouseCapture()
@@ -1244,7 +1130,6 @@ Public Class Designer
         End Try
 
         Dim txt = Automation.AutomationProperties.GetHelpText(control)
-        If txt = "" Then txt = GetDiagramText(control)
         Return If(txt, "")
     End Function
 
@@ -1291,7 +1176,6 @@ Public Class Designer
         If trySetText Then
             Try
                 CObj(control).Text = value
-                control.ClearValue(DiagramTextProperty)
                 RaiseEvent PageShown(-3) ' To Update text
                 Return
             Catch
@@ -1304,7 +1188,6 @@ Public Class Designer
                 CObj(control).Content = value
             End If
         Catch
-            If trySetText Then SetDiagramText(control, value)
         End Try
         RaiseEvent PageShown(-3) ' To Update text
     End Sub
@@ -1324,6 +1207,7 @@ Public Class Designer
 #Region "Dependancy Properties"
 
     Dim ExitChange As Boolean = False
+    Friend MinZIndex As Integer
 
 #Region "Left Attached Property"
     <TypeConverter(GetType(LengthConverter))>
@@ -1740,63 +1624,7 @@ Public Class Designer
 
 #End Region
 
-#Region "DiagramTextBlock"
 
-    Public Shared Function GetDiagramTextBlock(ByVal element As DependencyObject) As TextBlock
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        Return element.GetValue(DiagramTextBlockProperty)
-    End Function
-
-    Friend Shared Sub SetDiagramTextBlock(ByVal element As DependencyObject, value As TextBlock)
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        element.SetValue(DiagramTextBlockPropertyKey, value)
-    End Sub
-
-    Private Shared ReadOnly DiagramTextBlockPropertyKey As DependencyPropertyKey =
-                        DependencyProperty.RegisterAttachedReadOnly("DiagramTextBlock",
-                        GetType(TextBlock), GetType(Designer), New PropertyMetadata())
-
-    Public Shared ReadOnly DiagramTextBlockProperty = DiagramTextBlockPropertyKey.DependencyProperty
-
-
-#End Region
-
-#Region "DiagramText"
-    Public Shared Function GetDiagramText(ByVal element As DependencyObject) As String
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        Return element.GetValue(DiagramTextProperty)
-    End Function
-
-    Public Shared Sub SetDiagramText(ByVal element As DependencyObject, ByVal value As String)
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        element.SetValue(DiagramTextProperty, value)
-    End Sub
-
-    Public Shared ReadOnly DiagramTextProperty As _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramText",
-                           GetType(String), GetType(Designer),
-                           New PropertyMetadata(AddressOf DiagramTextChanged))
-
-    Shared Sub DiagramTextChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
-        Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        If Pnl Is Nothing Then Return
-        Pnl.DiagramTextBlock.Text = e.NewValue
-        If Pnl.DrawOutlineMenuItem.IsChecked Then Pnl.DiagramObj.OutlineText()
-    End Sub
-
-#End Region
 
 #Region "DiagramTextFontProps"
     Public Shared Function GetDiagramTextFontProps(ByVal element As DependencyObject) As PropertyDictionary
@@ -1821,203 +1649,15 @@ Public Class Designer
                            New PropertyMetadata(AddressOf DiagramTextFontPropsChanged))
 
     Shared Sub DiagramTextFontPropsChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
-        Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        If Pnl Is Nothing Then Return
-
         Dim FontProps As PropertyDictionary = e.NewValue
         If FontProps Is Nothing Then Return
 
-        FontProps.SetDependencyObject(Pnl.DiagramTextBlock)
+        FontProps.SetDependencyObject(Diagram)
         FontProps.SetValuesToObj()
-
-        If Pnl.DrawOutlineMenuItem.IsChecked Then Pnl.DiagramObj.OutlineText()
     End Sub
 
 #End Region
 
-#Region "DiagramTextBackground"
-
-    Public Shared Function GetDiagramTextBackground(ByVal element As DependencyObject) As Brush
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        Return element.GetValue(DiagramTextBackgroundProperty)
-    End Function
-
-    Public Shared Sub SetDiagramTextBackground(ByVal element As DependencyObject, ByVal value As Brush)
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        element.SetValue(DiagramTextBackgroundProperty, value)
-    End Sub
-
-    Public Shared ReadOnly DiagramTextBackgroundProperty As _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextBackground",
-                           GetType(Brush), GetType(Designer),
-                           New PropertyMetadata(AddressOf DiagramTextBackgroundChanged))
-
-    Shared Sub DiagramTextBackgroundChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
-        Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        If Pnl Is Nothing Then Return
-
-        Pnl.DiagramTextBlock.Background = e.NewValue
-        If Pnl.DrawOutlineMenuItem.IsChecked Then Pnl.DiagramObj.OutlineText()
-    End Sub
-
-#End Region
-
-#Region "DiagramTextForeground"
-
-    Public Shared Function GetDiagramTextForeground(ByVal element As DependencyObject) As Brush
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        Return element.GetValue(DiagramTextForegroundProperty)
-    End Function
-
-    Public Shared Sub SetDiagramTextForeground(ByVal element As DependencyObject, ByVal value As Brush)
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        element.SetValue(DiagramTextForegroundProperty, value)
-    End Sub
-
-    Public Shared ReadOnly DiagramTextForegroundProperty As _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextForeground",
-                           GetType(Brush), GetType(Designer),
-                           New PropertyMetadata(Brushes.Black, AddressOf DiagramTextForegroundChanged))
-
-    Shared Sub DiagramTextForegroundChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
-        Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        If Pnl Is Nothing Then Return
-
-        Pnl.DiagramTextBlock.Foreground = e.NewValue
-        If Pnl.DrawOutlineMenuItem.IsChecked Then Pnl.DiagramObj.OutlineText()
-    End Sub
-
-#End Region
-
-#Region "DiagramTextOutlined"
-    Public Shared Function GetDiagramTextOutlined(ByVal element As DependencyObject) As Boolean
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        Return element.GetValue(DiagramTextOutlinedProperty)
-    End Function
-
-    Public Shared Sub SetDiagramTextOutlined(ByVal element As DependencyObject, ByVal value As Boolean)
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        element.SetValue(DiagramTextOutlinedProperty, value)
-    End Sub
-
-    Public Shared ReadOnly DiagramTextOutlinedProperty As _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextOutlined",
-                           GetType(Boolean), GetType(Designer),
-                           New PropertyMetadata(False, AddressOf DiagramTextOutlinedChanged))
-
-    Shared Sub DiagramTextOutlinedChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
-        Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        If Pnl Is Nothing Then Return
-        Pnl.DrawOutlineMenuItem.Tag = "DontUndo"
-        Pnl.DrawOutlineMenuItem.IsChecked = e.NewValue
-    End Sub
-
-#End Region
-
-#Region "DiagramTextOutlineThickness"
-    Public Shared Function GetDiagramTextOutlineThickness(ByVal element As DependencyObject) As Double
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        Return element.GetValue(DiagramTextOutlineThicknessProperty)
-    End Function
-
-    Public Shared Sub SetDiagramTextOutlineThickness(ByVal element As DependencyObject, ByVal value As Double)
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        element.SetValue(DiagramTextOutlineThicknessProperty, value)
-    End Sub
-
-    Public Shared ReadOnly DiagramTextOutlineThicknessProperty As _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextOutlineThickness",
-                           GetType(Double), GetType(Designer),
-                           New PropertyMetadata(1.0, AddressOf DiagramTextOutlineChanged))
-
-#End Region
-
-#Region "DiagramTextOutlineFill"
-
-
-    Public Shared Function GetDiagramTextOutlineFill(ByVal element As DependencyObject) As Brush
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        Return element.GetValue(DiagramTextOutlineFillProperty)
-    End Function
-
-    Public Shared Sub SetDiagramTextOutlineFill(ByVal element As DependencyObject, ByVal value As Brush)
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        element.SetValue(DiagramTextOutlineFillProperty, value)
-    End Sub
-
-    Public Shared ReadOnly DiagramTextOutlineFillProperty As _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextOutlineFill",
-                           GetType(Brush), GetType(Designer),
-                           New PropertyMetadata(AddressOf DiagramTextOutlineChanged))
-
-    Shared Sub DiagramTextOutlineChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
-        Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        If Pnl Is Nothing Then Return
-        If Pnl.DrawOutlineMenuItem.IsChecked Then Pnl.DiagramObj.OutlineText()
-
-    End Sub
-
-#End Region
-
-#Region "DiagramTextApplyRotation"
-    Public Shared Function GetDiagramTextApplyRotation(ByVal element As DependencyObject) As Boolean
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        Return element.GetValue(DiagramTextApplyRotationProperty)
-    End Function
-
-    Public Shared Sub SetDiagramTextApplyRotation(ByVal element As DependencyObject, ByVal value As Boolean)
-        If element Is Nothing Then
-            Throw New ArgumentNullException("element")
-        End If
-
-        element.SetValue(DiagramTextApplyRotationProperty, value)
-    End Sub
-
-    Public Shared ReadOnly DiagramTextApplyRotationProperty As _
-                           DependencyProperty = DependencyProperty.RegisterAttached("DiagramTextApplyRotation",
-                           GetType(Boolean), GetType(Designer),
-                           New PropertyMetadata(True, AddressOf DiagramTextApplyRotationChanged))
-
-    Shared Sub DiagramTextApplyRotationChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
-        Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        If Pnl Is Nothing Then Return
-        Pnl.ApplyRotationMenuItem.IsChecked = e.NewValue
-    End Sub
-
-#End Region
 
 #Region "HasChanges"
 

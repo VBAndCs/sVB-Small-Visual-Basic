@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "F:\\_VS.NET\\Small Basic IDE\\VB\\1\\SmallBasicLibrary\\SmallBasicLibrary.vbproj": {}
+    "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\SmallBasicLibrary\\SmallBasicLibrary.vbproj": {}
   },
   "projects": {
-    "F:\\_VS.NET\\Small Basic IDE\\VB\\1\\SmallBasicLibrary\\SmallBasicLibrary.vbproj": {
+    "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\SmallBasicLibrary\\SmallBasicLibrary.vbproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\_VS.NET\\Small Basic IDE\\VB\\1\\SmallBasicLibrary\\SmallBasicLibrary.vbproj",
+        "projectUniqueName": "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\SmallBasicLibrary\\SmallBasicLibrary.vbproj",
         "projectName": "SmallBasicLibrary",
-        "projectPath": "F:\\_VS.NET\\Small Basic IDE\\VB\\1\\SmallBasicLibrary\\SmallBasicLibrary.vbproj",
+        "projectPath": "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\SmallBasicLibrary\\SmallBasicLibrary.vbproj",
         "packagesPath": "C:\\Users\\MHG\\.nuget\\packages\\",
-        "outputPath": "F:\\_VS.NET\\Small Basic IDE\\VB\\1\\SmallBasicLibrary\\obj\\",
+        "outputPath": "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\SmallBasicLibrary\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

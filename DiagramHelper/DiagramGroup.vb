@@ -3,7 +3,7 @@
 Friend Class DiagramGroup
     Private Shared Groups As New Dictionary(Of Date, DiagramGroup)
 
-    Dim Panels As New List(Of DiagramPanel)
+    Friend Panels As New List(Of DiagramPanel)
     Dim SelectionBorder As Border
     Dim Canvas As Canvas
 
@@ -25,7 +25,7 @@ Friend Class DiagramGroup
         If GroupTimeStamp Is Nothing Then
             If Pnl.DiagramGroup IsNot Nothing Then Pnl.DiagramGroup.DoRemove(Pnl)
         Else
-            Dim G = GetGroup(GroupTimeStamp, Pnl.MyDesigner.ConnectionCanvas)
+            Dim G = GetGroup(GroupTimeStamp, Pnl.Dsn.ConnectionCanvas)
             G.Add(Pnl)
             Pnl.ExitGroupChecked = True
             Pnl.GroupMenuItem.IsChecked = True
@@ -73,13 +73,11 @@ Friend Class DiagramGroup
         If Pnl.DiagramGroup IsNot Nothing Then Pnl.DiagramGroup.DoRemove(Pnl)
         Pnl.DiagramGroup = Me
         AddHandler Pnl.IsSelectedChanged, AddressOf Pnl_IsSelectedChanged
-        AddHandler Pnl.ConnectorsPositionChangd, AddressOf Pnl_ConnectorsPositionChangd
         UpdateSelection()
     End Sub
 
     Private Sub DoRemove(Pnl As DiagramPanel, Optional RemoveLastItem As Boolean = True)
         RemoveHandler Pnl.IsSelectedChanged, AddressOf Pnl_IsSelectedChanged
-        RemoveHandler Pnl.ConnectorsPositionChangd, AddressOf Pnl_ConnectorsPositionChangd
 
         Panels.Remove(Pnl)
         Pnl.ExitGroupChecked = True
@@ -120,7 +118,7 @@ Friend Class DiagramGroup
         End If
     End Sub
 
-    Private Sub UpdateSelection()
+    Friend Sub UpdateSelection()
         Dim MinX = Double.MaxValue
         Dim MinY = Double.MaxValue
         Dim MaxX = Double.MinValue
@@ -138,12 +136,9 @@ Friend Class DiagramGroup
         Canvas.SetLeft(SelectionBorder, MinX - 30)
         Canvas.SetTop(SelectionBorder, MinY - 30)
         SelectionBorder.Width = MaxX - MinX + 60
-        SelectionBorder.Height = MaxY - MinY + 60        
+        SelectionBorder.Height = MaxY - MinY + 60
     End Sub
 
-    Private Sub Pnl_ConnectorsPositionChangd()
-        UpdateSelection()
-    End Sub
 
     Sub [Select]()
         SelectionBorder.Visibility = Visibility.Visible
@@ -159,13 +154,13 @@ Friend Class DiagramGroup
         Dim UndoUnit As New UndoRedoUnit
         Do Until Panels.Count = 0
             Dim Diagram = Panels(0).Diagram
-            Dim A As action = AddressOf DiagramObject.Diagrams(Diagram).AfterRestoreAction
+            Dim A As Action = AddressOf DiagramObject.Diagrams(Diagram).AfterRestoreAction
             Dim OldSate As New PropertyState(A, Diagram, Designer.GroupIDProperty)
             Designer.SetGroupID(Diagram, Nothing)
             UndoUnit.Add(OldSate.SetNewValue)
         Loop
         Dim Dsn = Helper.GetDesigner(Canvas)
-        dsn.UndoStack.ReportChanges(UndoUnit)
+        Dsn.UndoStack.ReportChanges(UndoUnit)
     End Sub
 
 End Class

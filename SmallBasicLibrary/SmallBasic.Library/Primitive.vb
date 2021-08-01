@@ -183,12 +183,12 @@ Namespace Library
         End Function
 
         Public Function Add(addend As Primitive) As Primitive
-            Dim num As Decimal? = TryGetAsDecimal()
-            Dim num2 As Decimal? = addend.TryGetAsDecimal()
-            If num.HasValue AndAlso num2.HasValue Then
-                Return num.Value + num2.Value
+            Dim n1 = TryGetAsDecimal()
+            Dim n2 = addend.TryGetAsDecimal()
+            If n1.HasValue AndAlso n2.HasValue Then
+                Return n1.Value + n2.Value
             End If
-            Return AsString & addend.AsString
+            Return AsString() & addend.AsString()
         End Function
 
         Public Function ContainsKey(key1 As Primitive) As Primitive

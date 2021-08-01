@@ -47,6 +47,9 @@
   <PropertyGroup>
     <StartupObject>Microsoft.SmallBasic.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>smallbasic.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Web.Services" />

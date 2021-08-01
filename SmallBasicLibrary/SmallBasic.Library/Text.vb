@@ -6,8 +6,40 @@ Namespace Library
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class Text
-        Public Shared Function IsNumeric(value As Primitive) As Primitive
-            Return VisualBasic.IsNumeric(CStr(value))
+
+        ''' <summary>
+        ''' Formats the string by replacing [1], [2], ... [n] by items from the values array.
+        ''' </summary>
+        ''' <param name="text">The string to Format. Use [1], [2],... [n] in the string, to refer the values[1], values[2], ... values[n]</param>
+        ''' <param name="values">An array its elements will be used to replace [1], [2],... [n] strings if found in the text</param>
+        ''' <returns>The formated string after substituting [1], [2],... [n] with elements from the values array</returns>
+        Public Shared Function Format(text As Primitive, values As Primitive) As Primitive
+            Dim str = CStr(text)
+            If str.Trim() = "" Then Return str
+
+            Dim arr() As Primitive
+            If values.IsArray Then
+                arr = values._arrayMap.Values.ToArray()
+            Else
+                arr = {values}
+            End If
+
+            Dim sb As New System.Text.StringBuilder(Str)
+            For i = 0 To arr.Count - 1
+                sb.Replace($"[{i + 1}]", arr(i))
+            Next
+
+            Return sb.ToString()
+        End Function
+
+
+        ''' <summary>
+        ''' Checks if the string contains a numeric value
+        ''' </summary>
+        ''' <param name="text">the string to check its value</param>
+        ''' <returns>True if text is a number, False otherwise</returns>
+        Public Shared Function IsNumeric(text As Primitive) As Primitive
+            Return VisualBasic.IsNumeric(CStr(text))
         End Function
 
         ''' <summary>

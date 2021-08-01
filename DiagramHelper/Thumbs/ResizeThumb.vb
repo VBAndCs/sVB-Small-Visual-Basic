@@ -162,14 +162,13 @@ Friend Class ResizeThumb
                 End If
         End Select
 
-        Pnl.AdjustConnectors()
-        Pnl.OnConnectorsPositionChangd()
+        Pnl.DiagramGroup?.UpdateSelection()
+        Pnl.UpdateLocationBorder()
         e.Handled = True
     End Sub
 
     Private Sub ResizeThumb_DragCompleted(ByVal sender As Object, ByVal e As DragCompletedEventArgs)
         ResizeThumb.MeasurementsVisibilty = Visibility.Collapsed
-        Pnl.AdjustConnectors()
         ReportChanges()
     End Sub
 
@@ -202,8 +201,8 @@ Friend Class ResizeThumb
             Pnl.Height = Pnl.Width
         End If
         Helper.UpdateControl(Pnl)
-        Pnl.OnConnectorsPositionChangd()
-
+        Pnl.DiagramGroup?.UpdateSelection()
+        Pnl.UpdateLocationBorder()
         ReportChanges()
     End Sub
 

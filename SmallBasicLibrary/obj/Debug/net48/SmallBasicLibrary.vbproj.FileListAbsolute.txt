@@ -29,4 +29,19 @@ C:\Users\MHG\Desktop\New folder\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibr
 C:\Users\MHG\Desktop\New folder\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.dll
 C:\Users\MHG\Desktop\New folder\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.xml
 C:\Users\MHG\Desktop\New folder\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.pdb
-F:\_VS.NET\Small Basic IDE\VB\1\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\bin\Debug\net48\SmallBasicLibrary.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\bin\Debug\net48\SmallBasicLibrary.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\bin\Debug\net48\SmallBasicLibrary.xml
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\bin\Debug\net48\PresentationCore.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\bin\Debug\net48\System.Core.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\bin\Debug\net48\System.Web.Services.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\bin\Debug\net48\System.Xml.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\bin\Debug\net48\System.Xml.Linq.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\bin\Debug\net48\WindowsBase.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.g.resources
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.vbproj.CoreCompileInputs.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.vbproj.CopyComplete
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.xml
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\obj\Debug\net48\SmallBasicLibrary.pdb

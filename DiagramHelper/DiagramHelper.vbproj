@@ -81,10 +81,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\ConnectDecorator.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Resources\ExpanderStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -153,14 +149,11 @@
     <Compile Include="Helper Classes\ImageSaver.vb" />
     <Compile Include="Helper Classes\Intersections.vb" />
     <Compile Include="Helper Classes\PropertyDictionary.vb" />
-    <Compile Include="Helper Classes\SaveConnectionInfo.vb" />
     <Compile Include="Thumbs\DsnResizeThumb.vb" />
     <Compile Include="ToolBoxItem.vb" />
     <Compile Include="Undo\CollectionState.vb" />
-    <Compile Include="Undo\ConnectionState.vb" />
     <Compile Include="Helper Classes\CursorHelper.vb" />
     <Compile Include="Designer.vb" />
-    <Compile Include="Helper Classes\PathFinder.vb" />
     <Compile Include="Undo\UndoRedoStack.vb" />
     <Compile Include="Undo\UndoUnit.vb" />
     <Compile Include="Undo\PropertyState.vb" />
@@ -184,8 +177,6 @@
     <Compile Include="Resources\DesignerDecorator.xaml.vb">
       <DependentUpon>DesignerDecorator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Thumbs\Connection.vb" />
-    <Compile Include="Thumbs\ConnectThunb.vb" />
     <Compile Include="Helper Classes\DoubleFormatConverter.vb" />
     <Compile Include="Helper Classes\Helper.vb" />
     <Compile Include="Thumbs\ResizeThumb.vb" />

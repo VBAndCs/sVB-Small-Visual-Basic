@@ -431,8 +431,8 @@ Namespace Microsoft.SmallBasic
 
 
         Private Sub RunProgram()
-            Try
-                Dim doc = ActiveDocument
+            'Try
+            Dim doc = ActiveDocument
                 Dim code As String
                 Dim outputFileName = GetOutputFileName(doc)
                 Dim offset = 0
@@ -472,9 +472,9 @@ Namespace Microsoft.SmallBasic
                     doc.ErrorListControl.SelectError(0)
                 End If
 
-            Catch ex As Exception
-                Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
-            End Try
+            'Catch ex As Exception
+            '    Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
+            'End Try
         End Sub
 
         Private Function RunProgram(code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
@@ -1032,17 +1032,17 @@ Namespace Microsoft.SmallBasic
 
         Public Shared Function Compile(programText As String, outputFilePath As String) As List(Of [Error])
             Dim errors As List(Of [Error]) = Nothing
-            Try
-                Dim compiler1 As New Compiler
+            ' Try
+            Dim compiler1 As New Compiler
                 compiler1.Initialize()
                 Dim fileNameWithoutExtension As String = Path.GetFileNameWithoutExtension(outputFilePath)
                 Dim directoryName As String = Path.GetDirectoryName(outputFilePath)
                 errors = compiler1.Build(New StringReader(programText), fileNameWithoutExtension, directoryName)
 
-            Catch ex As Exception
-                If errors Is Nothing Then errors = New List(Of [Error])
-                errors.Add(New [Error](-1, 0, ex.Message))
-            End Try
+            'Catch ex As Exception
+            '    If errors Is Nothing Then errors = New List(Of [Error])
+            '    errors.Add(New [Error](-1, 0, ex.Message))
+            'End Try
 
             Return errors
         End Function

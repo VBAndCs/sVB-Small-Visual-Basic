@@ -2205,6 +2205,21 @@ SmallBasicLibrary
  The Text object provides helpful operations for working with Text.
  </summary>
 </member>
+<member name="M:Microsoft.SmallBasic.Library.Text.Format(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
+ <summary>
+ Formats the string by replacing [1], [2], ... [n] by items from the values array.
+ </summary>
+ <param name="text">The string to Format. Use [1], [2],... [n] in the string, to refer the values[1], values[2], ... values[n]</param>
+ <param name="values">An array its elements will be used to replace [1], [2],... [n] strings if found in the text</param>
+ <returns>The formated string after substituting [1], [2],... [n] with elements from the values array</returns>
+</member>
+<member name="M:Microsoft.SmallBasic.Library.Text.IsNumeric(Microsoft.SmallBasic.Library.Primitive)">
+ <summary>
+ Checks if the string contains a numeric value
+ </summary>
+ <param name="text">the string to check its value</param>
+ <returns>True if text is a number, False otherwise</returns>
+</member>
 <member name="M:Microsoft.SmallBasic.Library.Text.Append(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
  <summary>
  Appends two text inputs and returns the result as another text.  This operation is particularly useful when dealing with unknown text in variables which could accidentally be treated as numbers and get added, instead of getting appended.

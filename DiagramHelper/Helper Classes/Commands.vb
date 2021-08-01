@@ -106,44 +106,47 @@
 
             Helper.UpdateControl(Element)
             Dim Pnl = Helper.GetDiagramPanel(Element)
-            Pnl.AdjustConnectors()
-            Pnl.OnConnectorsPositionChangd()
+            Pnl.DiagramGroup?.UpdateSelection()
+            Pnl.UpdateLocationBorder()
 
             If OldState.HasChanges Then
-                Dim Dsn = Pnl.MyDesigner
-                Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+                Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
             End If
         End If
     End Sub
 
     Shared Sub ChangeTextBrush(Diagram As FrameworkElement, Prop As DependencyProperty)
-        Dim Tb As TextBlock = Designer.GetDiagramTextBlock(Diagram)
-        If WpfDialogs.ColorDialog.Show(Tb.GetValue(Prop)) Then
+        If WpfDialogs.ColorDialog.Show(Diagram.GetValue(Prop)) Then
             Dim OldState As New PropertyState(Diagram, Designer.DiagramTextFontPropsProperty)
             Diagram.SetValue(Prop, WpfDialogs.ColorDialog.Brush)
             If OldState.HasChanges Then
                 Dim Dsn = Helper.GetDesigner(Diagram)
-                dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+                Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
             End If
         End If
     End Sub
 
     Shared Sub ChangeFont(Diagram As FrameworkElement)
+        If TypeOf Diagram IsNot Control Then Return
+
         Dim Pnl = Helper.GetDiagramPanel(Diagram)
         Dim FontProps = Designer.GetDiagramTextFontProps(Diagram)
         FontProps.Add(WpfDialogs.FontDialog.FontProperties.ToArray)
         Dim OldState As New PropertyState(Diagram, Designer.DiagramTextFontPropsProperty)
-        If WpfDialogs.FontDialog.Show(Pnl.DiagramTextBlock) Then
+        If WpfDialogs.FontDialog.Show(Diagram) Then
             FontProps.UpdateValuesFromObj()
             If OldState.HasChanges Then
-                Pnl.MyDesigner.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+                Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
             End If
         End If
     End Sub
 
     Shared Sub IncreaseFontSize(Diagram As FrameworkElement, Value As Integer)
+        Dim control = TryCast(Diagram, Control)
+        If control Is Nothing Then Return
+
         Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        Dim Sz = Pnl.DiagramTextBlock.FontSize
+        Dim Sz = control.FontSize
         If (Value > 0 AndAlso Sz + Value <= 100) OrElse (Value < 0 AndAlso Sz + Value >= 1) Then
             ChangeFontProperty(Diagram, TextBlock.FontSizeProperty, Sz + Value)
         End If
@@ -151,14 +154,17 @@
     End Sub
 
     Shared Sub ChangeFontProperty(Diagram As FrameworkElement, Prop As DependencyProperty, Value As Object)
+        Dim control = TryCast(Diagram, Control)
+        If control Is Nothing Then Return
+
         Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        Dim Tb As TextBlock = Pnl.DiagramTextBlock
-        Dim A As action = AddressOf Pnl.DiagramObj.AfterRestoreAction
-        Dim FontProps As New PropertyDictionary(Pnl.DiagramTextBlock, Prop)
+
+        Dim A As Action = AddressOf Pnl.DiagramObj.AfterRestoreAction
+        Dim FontProps As New PropertyDictionary(control, Prop)
         Designer.SetDiagramTextFontProps(Diagram, FontProps)
         Dim OldState As New PropertyState(A, Diagram, Designer.DiagramTextFontPropsProperty)
         FontProps(Prop) = Value
-        Pnl.MyDesigner.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+        Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
 
     End Sub
 
@@ -170,18 +176,12 @@
         Designer.SetDiagramTextFontProps(Diagram, FontProps)
     End Sub
 
-    Shared Sub IncreaseTextOutlineThickness(Diagram As FrameworkElement, Value As Double)
-        Dim Sz = Designer.GetDiagramTextOutlineThickness(Diagram) + Value
-        If Sz >= 0 Then
-            ChangeProperty(Diagram, Designer.DiagramTextOutlineThicknessProperty, Sz)
-        End If
-    End Sub
 
     Shared Sub ChangeProperty(Diagram As FrameworkElement, Prop As DependencyProperty, Value As Object)
         Dim Pnl = Helper.GetDiagramPanel(Diagram)
-        Dim A As action = AddressOf Pnl.DiagramObj.AfterRestoreAction
+        Dim A As Action = AddressOf Pnl.DiagramObj.AfterRestoreAction
         Dim OldState As New PropertyState(A, Diagram, Prop)
         Diagram.SetValue(Prop, Value)
-        Pnl.MyDesigner.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+        Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
     End Sub
 End Class
