@@ -67,7 +67,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim currentSnapshot = textBuffer.CurrentSnapshot
             Dim source As New TextBufferReader(currentSnapshot)
             Dim completionHelper As New CompletionHelper()
-            completionHelper.GetIndentationLevel(source, 0)
             Dim textEdit = textBuffer.CreateEdit()
 
             Using textEdit

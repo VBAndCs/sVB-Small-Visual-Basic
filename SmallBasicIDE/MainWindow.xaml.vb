@@ -835,7 +835,7 @@ Namespace Microsoft.SmallBasic
             Dim lines = New List(Of String)(code.Split(New String(0) {VisualBasic.vbLf}, StringSplitOptions.None))
             Dim doc = ActiveDocument
             Dim num = errors.Count - 1
-            Dim i As Integer = num
+
             For i = errors.Count - 1 To 0 Step -1
                 Dim err = errors(i)
                 Dim errMsg = err.Description

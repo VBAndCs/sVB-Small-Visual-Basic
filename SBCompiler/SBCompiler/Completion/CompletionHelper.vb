@@ -39,16 +39,7 @@ Namespace Microsoft.SmallBasic.Completion
             Return emptyCompletionBag
         End Function
 
-        Public Function GetIndentationLevel(ByVal source As TextReader, ByVal lineNumber As Integer) As Integer
-            _compiler.Compile(source)
-            Return GetIndentationLevel(lineNumber)
-        End Function
-
-        Public Function GetIndentationLevel(ByVal lineNumber As Integer) As Integer
-            Return If(Statement.GetStatementContaining(_compiler.Parser.ParseTree, lineNumber)?.GetIndentationLevel(lineNumber), 0)
-        End Function
-
-        Private Sub FillCompletionItemsFromStatement(ByVal statement As Statement, ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer)
+        Private Sub FillCompletionItemsFromStatement(statement As Statement, completionBag As CompletionBag, line As Integer, column As Integer)
             statement.PopulateCompletionItems(completionBag, line, column, globalScope:=True)
         End Sub
 

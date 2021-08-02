@@ -20,7 +20,7 @@ Namespace WinForms
 
             Dim wnd = _forms(name)(name)
             If wnd Is Nothing Then
-                Throw New ArgumentException($"`{name}` is not a form or it is closed")
+                MsgBox($"`{name}` is not a form or it is closed")
             End If
 
             Return wnd
@@ -45,7 +45,7 @@ Namespace WinForms
 
             Dim name = CStr(formName).ToLower()
             If name = "" Then
-                Throw New ArgumentException("Form name can't be an empty string.")
+                MsgBox("Form name can't be an empty string.")
             End If
 
             If _forms.ContainsKey(name) Then Return name

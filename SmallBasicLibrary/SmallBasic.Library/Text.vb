@@ -124,6 +124,23 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Gets whether or not a given text starts with the specified subText.
+        ''' </summary>
+        ''' <param name="text">
+        ''' The larger text to search within.
+        ''' </param>
+        ''' <param name="subText">
+        ''' The sub-text to search for.
+        ''' </param>
+        ''' <returns>
+        ''' True if the subtext was found at any posision in the given text.
+        ''' </returns>
+        Public Shared Function Contains(text As Primitive, subText As Primitive) As Primitive
+            If text.IsEmpty OrElse subText.IsEmpty Then Return False
+            Return CStr(text).Contains(subText)
+        End Function
+
+        ''' <summary>
         ''' Gets a sub-text from the given text.
         ''' </summary>
         ''' <param name="text">
@@ -240,6 +257,12 @@ Namespace Library
             Return ChrW(num).ToString()
         End Function
 
+        ''' <summary>
+        ''' returns the char existing in the given posision in the text
+        ''' </summary>
+        ''' <param name="text">The input text</param>
+        ''' <param name="pos">The posision of the char</param>
+        ''' <returns>The char exusted in the given position</returns>
         Public Shared Function GetCharacterAt(text As Primitive, pos As Primitive) As Primitive
             Dim s = CStr(text)
             If s = "" OrElse pos < 1 OrElse pos > s.Length Then Return ""

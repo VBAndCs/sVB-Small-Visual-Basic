@@ -11,7 +11,7 @@ Namespace WinForms
             Dim c = Control.GetControl(formName, textBoxName)
             Dim t = TryCast(c, Wpf.TextBox)
             If t Is Nothing Then
-                Throw New ArgumentException($"{textBoxName} is not a name of a TextBox.")
+                MsgBox($"{textBoxName} is not a name of a TextBox.")
             End If
             Return t
         End Function
@@ -39,7 +39,15 @@ Namespace WinForms
 
         <ExMethod>
         Public Shared Sub [Select](formName As Primitive, controlName As Primitive, startPos As Primitive, length As Primitive)
-            App.Invoke(Sub() GetTextBox(formName, controlName).Select(startPos, length))
+            App.Invoke(Sub()
+                           Dim txt = GetTextBox(formName, controlName)
+                           Dim st = Math.Max(0, startPos - 1)
+                           Dim en = 0
+                           If length > 0 Then
+                               en = Math.Min(length, txt.Text.Length - st)
+                           End If
+                           txt.Select(st, en)
+                       End Sub)
         End Sub
 
         <ExMethod>
@@ -63,6 +71,17 @@ Namespace WinForms
         Public Shared Custom Event OnTextInput As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Dim VisualElement = GetTextBox([Event].SenderForm, [Event].SenderControl)
+
+                ' Wpf doesn't raise TextInput when space is pressed!
+                ' We will fix this by raising this special case from the KeyDown event
+                AddHandler VisualElement.PreviewKeyDown,
+                    Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
+                        If e.Key = Keys.Space Then
+                            Keyboard._lastTextInput = " "
+                            [Event].EventsHandler(Sender, e, handler)
+                        End If
+                    End Sub
+
                 AddHandler VisualElement.PreviewTextInput, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 

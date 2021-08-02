@@ -1,5 +1,3 @@
-n1 = 0
-n2 = 0
 txtNum2.OnTextInput = txtNum1_OnTextInput
 
 '----------------------------

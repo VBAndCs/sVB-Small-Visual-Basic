@@ -10,7 +10,7 @@ Namespace WinForms
             Dim c = Control.GetControl(formName, labelName)
             Dim t = TryCast(c, Wpf.Label)
             If t Is Nothing Then
-                Throw New ArgumentException($"{labelName} is not a name of a Label.")
+                MsgBox($"{labelName} is not a name of a Label.")
             End If
             Return t
         End Function

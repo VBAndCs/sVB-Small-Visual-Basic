@@ -86,6 +86,9 @@ Namespace Microsoft.SmallBasic
             ElseIf type Is GetType(SubroutineStatement) Then
                 AnalyzeSubroutineStatement(CType(statement, SubroutineStatement))
 
+            ElseIf type Is GetType(returnStatement) Then
+                AnalyzeReturnStatement(CType(statement, ReturnStatement))
+
             ElseIf type Is GetType(WhileStatement) Then
                 AnalyzeWhileStatement(CType(statement, WhileStatement))
             End If
@@ -116,6 +119,12 @@ Namespace Microsoft.SmallBasic
                 For Each expr In initExpression.Arguments
                     AnalyzeExpression(expr, leaveValueInStack, mustBeAssignable)
                 Next
+            End If
+        End Sub
+
+        Private Sub AnalyzeReturnStatement(returnStatement As ReturnStatement)
+            If returnStatement.ReturnExpression IsNot Nothing Then
+                AnalyzeExpression(returnStatement.ReturnExpression, False, False)
             End If
         End Sub
 

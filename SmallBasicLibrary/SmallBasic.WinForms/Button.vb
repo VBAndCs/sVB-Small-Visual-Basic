@@ -10,7 +10,7 @@ Namespace WinForms
             Dim c = Control.GetControl(formName, buttonName)
             Dim t = TryCast(c, Wpf.Button)
             If t Is Nothing Then
-                Throw New ArgumentException($"{buttonName} is not a name of a Button.")
+                MsgBox($"{buttonName} is not a name of a Button.")
             End If
             Return t
         End Function

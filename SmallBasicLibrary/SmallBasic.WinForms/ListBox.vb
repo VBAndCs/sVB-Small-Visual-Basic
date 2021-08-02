@@ -11,7 +11,7 @@ Namespace WinForms
             Dim c = Control.GetControl(formName, ListBoxName)
             Dim t = TryCast(c, Wpf.ListBox)
             If t Is Nothing Then
-                Throw New ArgumentException($"{ListBoxName} is not a name of a ListBox.")
+                MsgBox($"{ListBoxName} is not a name of a ListBox.")
             End If
             Return t
         End Function

@@ -154,24 +154,6 @@ Namespace Microsoft.SmallBasic.Statements
             End If
         End Sub
 
-        Public Overrides Function GetIndentationLevel(ByVal line As Integer) As Integer
-            If line = ForToken.Line Then
-                Return 0
-            End If
-
-            If EndForToken.Token <> 0 AndAlso line = EndForToken.Line Then
-                Return 0
-            End If
-
-            Dim statementContaining = GetStatementContaining(ForBody, line)
-
-            If statementContaining IsNot Nothing Then
-                Return 1 + statementContaining.GetIndentationLevel(line)
-            End If
-
-            Return 1
-        End Function
-
         Public Overrides Function ToString() As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
             stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1} = {2} To {3}", ForToken.Text, Iterator.Text, InitialValue, FinalValue)

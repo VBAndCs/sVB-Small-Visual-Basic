@@ -62,7 +62,6 @@ F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\bin\Release\Verex.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\bin\Release\WpfDialogs.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\bin\Release\DiagramHelper.pdb
 F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\bin\Release\DiagramHelper.xml
-F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\bin\Release\LanguageService.pdb
 F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\bin\Release\LanguageService.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\bin\Release\SBCompiler.pdb
 F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\bin\Release\SBCompiler.xml
@@ -98,3 +97,4 @@ F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\obj\Release\sVB.IDE.vbproj.CoreCo
 F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\obj\Release\sVB.IDE.vbproj.CopyComplete
 F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\obj\Release\SB.exe
 F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\obj\Release\SB.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicIDE\bin\Release\LanguageService.pdb

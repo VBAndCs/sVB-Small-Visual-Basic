@@ -104,7 +104,13 @@ Namespace WinForms
         End Property
 
         Public Shared ReadOnly Property LastKey As Primitive
+
+        Friend Shared _lastTextInput As Primitive
         Public Shared ReadOnly Property LastTextInput As Primitive
+            Get
+                Return _lastTextInput
+            End Get
+        End Property
 
         Public Shared ReadOnly Property LastKeyName As Primitive
             Get

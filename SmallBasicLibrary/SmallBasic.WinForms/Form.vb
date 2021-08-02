@@ -27,7 +27,7 @@ Namespace WinForms
 
                 If ContainsControl(formName, textBoxName) Then
                     Return
-                    Throw New ArgumentException($"There is another control with the name '{textBoxName}' on the ''{formName} form")
+                    MsgBox($"There is another control with the name '{textBoxName}' on the ''{formName} form")
                 End If
 
                 Dim textBox1 As New Wpf.TextBox With {
@@ -67,7 +67,7 @@ Namespace WinForms
 
                 If ContainsControl(formName, labelName) Then
                     Return
-                    Throw New ArgumentException($"There is another control with the name '{labelName}' on the ''{formName} form")
+                    MsgBox($"There is another control with the name '{labelName}' on the ''{formName} form")
                 End If
 
                 Dim label1 As New Wpf.Label With {
@@ -106,7 +106,7 @@ Namespace WinForms
 
                 If ContainsControl(formName, buttonName) Then
                     Return
-                    Throw New ArgumentException($"There is another control with the name '{buttonName}' on the ''{formName} form")
+                    MsgBox($"There is another control with the name '{buttonName}' on the ''{formName} form")
                 End If
 
                 Dim button1 As New Wpf.Button With {
@@ -150,7 +150,7 @@ Namespace WinForms
 
                 If ContainsControl(formName, listBoxName) Then
                     Return
-                    Throw New ArgumentException($"There is another control with the name '{listBoxName}' on the ''{formName} form")
+                    MsgBox($"There is another control with the name '{listBoxName}' on the ''{formName} form")
                 End If
 
                 Dim listBox1 As New Wpf.ListBox With {
@@ -173,12 +173,12 @@ Namespace WinForms
         Public Shared Function ContainsControl(formName As Primitive, controlName As Primitive) As Primitive
             Dim frmName = CStr(formName).ToLower()
             If frmName = "" Then
-                Throw New ArgumentException("Form name can't be an empty string.")
+                MsgBox("Form name can't be an empty string.")
             End If
 
             Dim cntrName = CStr(controlName).ToLower()
             If cntrName = "" Then
-                Throw New ArgumentException("Control name can't be an empty string.")
+                MsgBox("Control name can't be an empty string.")
             End If
 
             Return Forms._forms.ContainsKey(frmName) AndAlso
@@ -188,7 +188,7 @@ Namespace WinForms
         <ExMethod>
         Public Shared Function GetControls(formName As Primitive) As Primitive
             If Not Forms._forms.ContainsKey(formName) Then
-                Throw New ArgumentException($"There is no form names `{formName}`")
+                MsgBox($"There is no form names `{formName}`")
             End If
 
             Dim map = New Dictionary(Of Primitive, Primitive)
