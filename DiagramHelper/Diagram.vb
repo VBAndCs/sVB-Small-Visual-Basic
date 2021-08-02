@@ -58,6 +58,7 @@ Public Class DiagramObject
         Helper.UpdateControl(Pnl)
         Pnl.DiagramGroup?.UpdateSelection()
         Pnl.UpdateLocationBorder()
+        Dsn.LocationVisibility = Windows.Visibility.Collapsed
     End Sub
 
     Friend Function GetLeftTopPoint(Optional RelativeTo As FrameworkElement = Nothing, Optional InCm As Boolean = True) As Point
@@ -234,9 +235,7 @@ Public Class DiagramObject
         DraggingDiagram = False
         Pnl.ExitIsSelectedChanged = False
         DesignerItem.Focus()
-        'Pnl.IsSelected = TmpIsSelected
         Dsn.LocationVisibility = Windows.Visibility.Collapsed
-
         ReportMoveUndo()
     End Sub
 

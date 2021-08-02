@@ -111,6 +111,7 @@ Public Class DiagramPanel
 
     Shared Sub OnIsSelectedChanged(Pnl As DiagramPanel, e As DependencyPropertyChangedEventArgs)
         If Pnl.ExitIsSelectedChanged Then Return
+        If e.NewValue = False Then Pnl.Dsn.LocationVisibility = Windows.Visibility.Collapsed
         Pnl.OnIsSelectedChanged(e.NewValue)
     End Sub
 

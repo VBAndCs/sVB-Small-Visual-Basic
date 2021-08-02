@@ -1,6 +1,7 @@
 ﻿Imports Microsoft.SmallBasic.Library
 Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
+Imports System.Windows.Media
 
 Namespace WinForms
     <SmallBasicType>
@@ -21,7 +22,7 @@ Namespace WinForms
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive)
 
-            app.Invoke(
+            App.Invoke(
             Sub()
                 Dim frm = Forms.GetForm(formName)
 
@@ -203,14 +204,16 @@ Namespace WinForms
 
         <ExMethod>
         Public Shared Sub Show(formName As Primitive)
-            'TextWindow.WriteLine($"Showing {formName}")
-
-
             App.Invoke(
                 Sub()
-                    Dim wnd = Forms.GetForm(formName)
-                    wnd.Show()
-                    wnd.Activate()
+                    Try
+                        Dim wnd = Forms.GetForm(formName)
+                        wnd.Show()
+                        wnd.Activate()
+                    Catch ex As Exception
+                        MsgBox(ex.Message)
+                    End Try
+
                 End Sub)
         End Sub
 
@@ -241,12 +244,32 @@ Namespace WinForms
 
         <ExProperty>
         Public Shared Function GetText(formName As Primitive) As Primitive
-            App.Invoke(Sub() GetText = Forms.GetForm(formName).Title.ToString())
+            App.Invoke(Sub() GetText = Forms.GetForm(formName).Title)
         End Function
 
         <ExProperty>
         Public Shared Sub SetText(formName As Primitive, value As Primitive)
             App.Invoke(Sub() Forms.GetForm(formName).Title = value)
+        End Sub
+
+        <ExMethod>
+        Public Shared Sub AllowTransparency(formName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim frm = Forms.GetForm(formName)
+                        frm.ResizeMode = System.Windows.ResizeMode.NoResize
+                        frm.WindowStyle = System.Windows.WindowStyle.None
+                        frm.AllowsTransparency = True
+                        frm.Background = Brushes.Transparent
+                        Dim canvas = CType(frm.Content, Wpf.Canvas)
+                        canvas.Focusable = True
+                        AddHandler canvas.PreviewMouseDown, Sub() canvas.Focus()
+                    Catch ex As Exception
+                        MsgBox(ex.Message)
+                    End Try
+
+                End Sub)
         End Sub
     End Class
 End Namespace

@@ -8,6 +8,7 @@ Namespace WinForms
         Private Shared ModuleInfo As New Dictionary(Of String, List(Of String))
         Private Shared EventsInfo As New Dictionary(Of String, List(Of String))
         Private Shared DeafaultControlEvents As New Dictionary(Of String, String)
+        Private Shared Types As New List(Of Type)
 
         Shared Sub New()
             ListModuleMembers(GetType(Forms))
@@ -51,8 +52,10 @@ Namespace WinForms
         Private Const WinFormsNS As String = "Microsoft.SmallBasic.WinForms."
 
         Private Shared Sub ListModuleMembers(t As Type)
+            Types.Add(t)
+
             Dim members = (From m In t.GetMembers()
-                           Select m.Name.ToLower).ToList
+                           Select m.Name.ToLower()).ToList
 
             ModuleInfo(t.Name) = members
 
@@ -80,7 +83,7 @@ Namespace WinForms
         End Function
 
         Public Shared Function GetMethodInfo(controlName As String, methodName As String) As ([Module] As String, ParamsCount As Integer)
-            Dim method = methodName.ToLower
+            Dim method = methodName.ToLower()
             Dim moduleName = ""
             If ModuleInfo(controlName).Contains(method) Then
                 moduleName = controlName
@@ -96,7 +99,7 @@ Namespace WinForms
             End If
 
             Dim t = Type.GetType(WinFormsNS & moduleName)
-            Dim params = t?.GetMethod(methodName)?.GetParameters()
+            Dim params = t?.GetMethods.Where(Function(m) m.Name.ToLower() = method).FirstOrDefault?.GetParameters()
             Return (moduleName, If(params Is Nothing, 0, params.Length))
         End Function
 
@@ -182,6 +185,21 @@ Namespace WinForms
         Public Shared Function GetModuleName(name As String) As String
             If ModuleInfo.ContainsKey(name) Then Return name
             Return NameOf(Control)
+        End Function
+
+        Public Shared Function GetModuleFromVarName(varName As String) As String
+            varName = varName.ToLower
+            For Each key In ModuleInfo.Keys
+                Dim controlName = key.ToLower
+                If varName.StartsWith(controlName) OrElse varName.EndsWith(controlName) Then
+                    Return key
+                End If
+            Next
+            Return ""
+        End Function
+
+        Public Shared Function GetTypes() As List(Of Type)
+            Return Types
         End Function
     End Class
 

@@ -1,0 +1,25 @@
+
+
+'------------------------------------------------
+
+lastX = 0
+lastY = 0
+
+Sub Form1_OnMouseMove
+   If Event.IsLeftButtonDown Then
+      Me.Left = Me.Left + Event.MouseX - lastX
+      Me.Top = Me.Top + Event.MouseY - lastY
+   EndIf
+   lastX = Event.MouseX
+   lastY = Event.MouseY
+EndSub
+
+
+
+'------------------------------------------------
+Sub Form1_OnPreviewKeyDown
+   If Event.LastKey = Keys.Escape Then
+      Me.Close()
+   EndIf
+EndSub
+

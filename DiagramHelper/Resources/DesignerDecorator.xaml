@@ -49,6 +49,7 @@
                                             <MenuItem Header="Grid Lines Brush" InputGestureText="Ctrl+L"  Click="GridBrushMenuItem_Click"/>
                                         </MenuItem>
                                         <MenuItem Header="Page Background" Click="PageBackgroundMenuItem_Click"/>
+                                        <MenuItem Name="AllowTransparencyMenuItem" Header="Allow Transoarency" InputGestureText="Ctrl+T" IsCheckable="True" Checked="AllowTransparencyMenuItem_Checked" Unchecked="AllowTransparencyMenuItem_Checked"/>
                                         <MenuItem Header="Page Size" Click="PageSizeMenuItem_Click"/>
                                     </ContextMenu>
                                 </Border.ContextMenu>
@@ -143,7 +144,7 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <Canvas ClipToBounds="True" Background="White" />
+                    <Canvas Name="DesignerCanvas" ClipToBounds="True" Background="White" />
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>

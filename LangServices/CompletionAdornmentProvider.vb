@@ -198,6 +198,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                         Next
                     End If
                 End If
+
             Else
                 Dim value As TypeInfo = Nothing
 
@@ -208,6 +209,9 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Dim controlName = identifierToken.NormalizedText
                 If ControlsInfo?.ContainsKey(controlName) Then
                     FillMemberNames(newCompletionBag, ControlsInfo(controlName))
+                Else
+                    Dim moduleName = WinForms.PreCompiler.GetModuleFromVarName(controlName)
+                    If moduleName <> "" Then FillMemberNames(newCompletionBag, moduleName)
                 End If
             End If
 
@@ -277,12 +281,9 @@ Namespace Microsoft.SmallBasic.LanguageService
         Private Shared CompletionItems As New Dictionary(Of String, List(Of CompletionItem))
 
         Shared Sub New()
-            AddCompletionList(GetType(WinForms.Form))
-            AddCompletionList(GetType(WinForms.Control))
-            AddCompletionList(GetType(WinForms.TextBox))
-            AddCompletionList(GetType(WinForms.Label))
-            AddCompletionList(GetType(WinForms.Button))
-            AddCompletionList(GetType(WinForms.ListBox))
+            For Each t In WinForms.PreCompiler.GetTypes()
+                AddCompletionList(t)
+            Next
         End Sub
 
         Private Shared Sub AddCompletionList(type As Type)

@@ -14,6 +14,7 @@ Public Class Designer
     Friend TbLeftLocation As TextBlock
     Friend GridBrush As DrawingBrush
     Friend Editor As TextBox
+    Friend AllowTransparencyMenuItem As MenuItem
     Friend ZoomBox As ZoomBox
     Friend MaxZIndex As Integer = 0
     Friend Shared Editing As Boolean = False
@@ -22,6 +23,17 @@ Public Class Designer
     Dim DeleteUndoUnit As UndoRedoUnit
     Friend SelectedBounds As Rect
     Friend GridPen As Pen
+
+
+    Public ReadOnly Property AllowTransparency As Boolean
+        Get
+            If AllowTransparencyMenuItem Is Nothing Then
+                Return OpenFileCanvas IsNot Nothing AndAlso CBool(OpenFileCanvas.Tag)
+            End If
+            Return AllowTransparencyMenuItem.IsChecked
+        End Get
+    End Property
+
 
     Dim _fileName As String = ""
     Public Property FileName As String
@@ -62,7 +74,6 @@ Public Class Designer
         Me.DesignerCanvas.Height = Me.PageHeight
         Me.ConnectionCanvas.Width = Me.PageWidth
         Me.ConnectionCanvas.Height = Me.PageHeight
-        Me.DesignerCanvas.Background = SystemColors.ControlBrush
         Me.SelectionBorder = ConnectionCanvas.Children(0)
 
         ShowGridChanged(Me, New DependencyPropertyChangedEventArgs(ShowGridProperty, False, Me.ShowGrid))
@@ -74,12 +85,21 @@ Public Class Designer
         TbTopLocation = Me.Template.FindName("PART_TopLocation", Me)
         TbLeftLocation = Me.Template.FindName("PART_LeftLocation", Me)
         Editor = Me.Template.FindName("PART_Editor", Me)
+        AllowTransparencyMenuItem = Me.Template.FindName("AllowTransparencyMenuItem", Me)
+
 
         If Not NewPageOpened Then
             CurrentPage = Me
             Dispatcher.Invoke(Sub() OpenNewPage(False))
             NewPageOpened = True
         End If
+
+        If OpenFileCanvas IsNot Nothing Then
+            DesignerCanvas.Background = OpenFileCanvas.Background
+            AllowTransparencyMenuItem.IsChecked = CBool(OpenFileCanvas.Tag)
+            OpenFileCanvas = Nothing
+        End If
+
         Me.Focus()
 
     End Sub
@@ -204,7 +224,6 @@ Public Class Designer
             Return Not HasChanges AndAlso _fileName = ""
         End Get
     End Property
-
 
     Public Shared Function GetTempFormName() As String
         TempKeyNum += 1
@@ -355,6 +374,9 @@ Public Class Designer
         canvas.Name = If(Me.Name = "", Me.PageKey.Replace("KEY", "Form"), Me.Name)
         canvas.Width = Me.PageWidth
         canvas.Height = Me.PageHeight
+        canvas.Background = DesignerCanvas.Background
+        canvas.Tag = AllowTransparencyMenuItem.IsChecked
+
         If _Text <> "" Then
             Automation.AutomationProperties.SetHelpText(canvas, _Text)
         Else
@@ -413,17 +435,23 @@ Public Class Designer
     End Function
 
 
-
+    Dim OpenFileCanvas As Canvas
     Private Sub XamlToPage(xaml As String)
         Dim canvas As Canvas = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
+
         Me.Name = canvas.Name
         _Text = Automation.AutomationProperties.GetHelpText(canvas)
 
         Me.Visibility = Visibility.Hidden
-
         If Not Double.IsNaN(canvas.Width) Then Me.PageWidth = canvas.Width
-
         If Not Double.IsNaN(canvas.Height) Then Me.PageHeight = canvas.Height
+
+        If DesignerCanvas Is Nothing Then
+            OpenFileCanvas = canvas
+        Else
+            DesignerCanvas.Background = canvas.Background
+            AllowTransparencyMenuItem.IsChecked = CBool(canvas.Tag)
+        End If
 
         For Each child In canvas.Children
             Dim Diagram = TryCast(Helper.Clone(child), FrameworkElement)

@@ -25,7 +25,7 @@
                     Case "Redo"
                         Mi.IsEnabled = Dsn.CanRedo
                     Case "Close"
-                        Mi.IsEnabled = Not Dsn.IsNew OrElse Dsn.Pages.Count > 1
+                        Mi.IsEnabled = Not Dsn.IsNew OrElse Designer.Pages.Count > 1
                 End Select
             End If
         Next
@@ -90,7 +90,8 @@
     End Sub
 
     Private Sub PageBackgroundMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        Commands.ChangeBrush(GetDesigner(sender).DesignerCanvas, Border.BackgroundProperty)
+        Dim dsn = GetDesigner(sender)
+        Commands.ChangeBrush(dsn.DesignerCanvas, Canvas.BackgroundProperty)
     End Sub
 
     Private Sub DecreaseThicknessMenuItem_Click(sender As Object, e As RoutedEventArgs)
@@ -115,4 +116,16 @@
             End If
         End If
     End Sub
+
+    Private Sub AllowTransparencyMenuItem_Checked(sender As Object, e As RoutedEventArgs)
+        Dim dsn = GetDesigner(sender)
+        If dsn Is Nothing Then Return
+
+        Dim m = CType(sender, MenuItem)
+        Dim propertyState As New PropertyState(m)
+        propertyState.Add(MenuItem.IsCheckedProperty, New ValuePair(Of Object)(Not m.IsChecked, m.IsChecked))
+        Dim Unit As New UndoRedoUnit(propertyState)
+        dsn.UndoStack.ReportChanges(Unit)
+    End Sub
+
 End Class

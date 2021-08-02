@@ -1,66 +1,95 @@
-n1 = 0
-n2 = 0
-
-
-
-'----------------------------
-
-Function Validate
-   n1 = txtNum1.Text
-   If Text.IsNumeric(n1) = False Then
-      lblResult.Text = "num1 must be a number."
-      txtNum1.SelectAll()
-      txtNum1.Focus()
-      Return False  
-   EndIf
-   
-   n2 = txtNum2.Text
-   If Text.IsNumeric(n2) = False Then
-      lblResult.Text = "num2 must be a number."
-      txtNum2.SelectAll()
-      txtNum2.Focus()
-      Return False       
-   EndIf
-   
-   Return True                    
-EndFunction
-
 
 '----------------------------
 Sub btnAdd_OnClick  
-  If Validate() Then      
-     lblResult.Text = "Result = " + (n1 + n2)     
-  EndIf  
+   lblResult.Text = "Result = " + (txtNum1.Text + txtNum2.Text)
 EndSub
 
 '__________________________________
 Sub btnSubtract_OnClick  
-  If Validate() Then      
-     Result = n1 - n2 
-     lblResult.Text = "Result = " + (n1 - n2)     
-  EndIf  
+   lblResult.Text = "Result = " + (txtNum1.Text - txtNum2.Text)
 EndSub
 
 '__________________________________
 Sub btnMultply_OnClick
-  If Validate() Then      
-     Result = n1 * n2 
-     lblResult.Text = "Result = " + (n1 * n2)
-  EndIf 
+   lblResult.Text = "Result = " + (txtNum1.Text * txtNum2.Text)
 EndSub
 
 '__________________________________
-Sub btnDivide_OnClick
-   If Validate() Then      
-      if n2 = 0 Then        
-         Result = "Can't divide by zero."
-         txtNum2.SelectAll()
-         txtNum2.Focus()
-      else
-         Result = "Result = " + (n1 / n2)
-      endif
-      lblResult.Text = Result
-   EndIf  
+Sub btnDivide_OnClick   
+   if txtNum2.Text = 0 Then        
+      Result = "Can't divide by zero."
+      txtNum2.SelectAll()
+      txtNum2.Focus()
+      
+   else
+      Result = "Result = " + (txtNum1.Text / txtNum2.Text)
+   endif
+   
+   lblResult.Text = Result
 EndSub
 
 
+'----------------------------
+Sub txtNum1_OnTextInput
+   Validate(txtNum1)
+EndSub
+
+'------------------------------------------------
+Sub txtNum2_OnTextInput
+   Validate(txtNum2)
+EndSub
+
+
+'------------------------------------------------
+Sub Validate(numTextBox)
+   c = Event.LastTextInput
+   If Text.IsNumeric(c) = False Then
+      If c = "-" Then
+         If Text.StartsWith(numTextBox.Text, "-") Then
+            Sound.PlayBellRing()
+            Event.Handled = True
+         Else
+            numTextBox.Select(1, 0)
+         EndIf
+         
+      elseIf c = "." Then
+         If Text.Contains(numTextBox.Text, ".") Then
+            Sound.PlayBellRing()
+            Event.Handled = True
+         EndIf
+         
+      Else
+         Sound.PlayBellRing()
+         Event.Handled = True         
+      EndIf      
+   EndIf   
+EndSub
+
+'------------------------------------------------
+lastN1 = 0
+
+Sub txtNum1_OnTextChanged
+   lastN1 = Reject(txtNum1, lastN1)
+EndSub
+
+'------------------------------------------------
+lastN2 = 0
+
+Sub txtNum2_OnTextChanged
+   lastN2 = Reject(txtNum2, lastN2)
+EndSub
+
+'------------------------------------------------
+Function Reject(numTextBox, lastN)
+   If numTextBox.Text = "" Then
+      numTextBox.Text = "0"
+      numTextBox.SelectAll()
+      
+   ElseIf Text.IsNumeric(numTextBox.Text) = False Then
+      numTextBox.Text = lastN
+      Sound.PlayBellRing()
+      numTextBox.SelectAll()
+   EndIf
+   
+   Return numTextBox.Text
+EndFunction

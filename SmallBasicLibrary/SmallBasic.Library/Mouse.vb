@@ -7,6 +7,7 @@ Namespace Library
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class Mouse
+
         ''' <summary>
         ''' Gets or sets the mouse cursor's x co-ordinate.
         ''' </summary>

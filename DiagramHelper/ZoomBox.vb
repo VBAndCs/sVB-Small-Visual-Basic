@@ -21,7 +21,6 @@ Public Class ZoomBox
     End Sub
 
     Private Sub ZoomBox_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
-        ScrollViewer = Designer.ScrollViewer
         Me.DesignerCanvas = Designer.DesignerCanvas
         Me.zoomThumb = TryCast(Template.FindName("PART_ZoomThumb", Me), Thumb)
         Me.zoomCanvas = TryCast(Template.FindName("PART_ZoomCanvas", Me), Canvas)
@@ -30,7 +29,6 @@ Public Class ZoomBox
 
         If Designer IsNot Nothing Then Designer.ZoomBox = Me
 
-        AddHandler ScrollViewer.ScrollChanged, AddressOf ScrollViewer_ScrollChanged
         AddHandler zoomThumb.DragDelta, AddressOf Thumb_DragDelta
         AddHandler zoomSlider.ValueChanged, AddressOf ZoomSlider_ValueChanged
     End Sub
@@ -43,6 +41,9 @@ Public Class ZoomBox
         Set(ByVal value As Designer)
             SetValue(DesignerProperty, value)
             Designer.ZoomBox = Me
+
+            Refresh()
+
         End Set
     End Property
 
@@ -84,6 +85,8 @@ Public Class ZoomBox
     Private Sub InvalidateScale(ByRef scale As Double, ByRef xOffset As Double, ByRef yOffset As Double)
         Dim scaleX, scaleY As Double
 
+        If Me.DesignerCanvas Is Nothing Then Return
+
         ' designer canvas size
         Dim w As Double = Me.DesignerCanvas.ActualWidth * Me.Scale
         Dim h As Double = Me.DesignerCanvas.ActualHeight * Me.Scale
@@ -106,6 +109,11 @@ Public Class ZoomBox
 
     Private Sub ScrollViewer_ScrollChanged(sender As Object, e As ScrollChangedEventArgs)
         If ExitScrollChanged Then Return
+        If ScrollViewer Is Nothing Then
+            Refresh()
+            Exit Sub
+        End If
+
         ExitScrollChanged = True
 
         Dim scale, xOffset, yOffset As Double
@@ -136,4 +144,12 @@ Public Class ZoomBox
         ExitScrollChanged = False
     End Sub
 
+    Public Sub Refresh()
+        ScrollViewer = Designer.ScrollViewer
+        If ScrollViewer IsNot Nothing Then
+            RemoveHandler ScrollViewer.ScrollChanged, AddressOf ScrollViewer_ScrollChanged
+            AddHandler ScrollViewer.ScrollChanged, AddressOf ScrollViewer_ScrollChanged
+            ScrollViewer_ScrollChanged(Nothing, Nothing)
+        End If
+    End Sub
 End Class

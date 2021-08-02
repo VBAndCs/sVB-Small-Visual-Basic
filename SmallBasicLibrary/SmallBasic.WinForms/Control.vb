@@ -243,14 +243,29 @@ Namespace WinForms
             [Event].SenderControl = ControlName
         End Sub
 
+        Shared Function GetVisualElemet() As FrameworkElement
+            Dim VisualElement = CType(GetControl([Event].SenderForm, [Event].SenderControl), FrameworkElement)
+            App.Invoke(
+                  Sub()
+                      If TypeOf VisualElement Is Window Then
+                          Dim win = CType(VisualElement, Window)
+                          If win.AllowsTransparency Then
+                              ' Use the camvas events ibstead of the form, because form events will not fire if it is transperent
+                              VisualElement = win.Content
+                          End If
+                      End If
+                  End Sub)
+            Return VisualElement
+        End Function
+
 
         ''' <summary>
         ''' Fired when user presses the left mouse-button down
         ''' </summary>
         Public Shared Custom Event OnMouseLeftDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.PreviewMouseLeftButtonDown, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewMouseLeftButtonDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -265,8 +280,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnClick As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.PreviewMouseLeftButtonUp, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewMouseLeftButtonUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -281,8 +296,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseLeftUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.PreviewMouseLeftButtonUp, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewMouseLeftButtonUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -297,8 +312,11 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnDoubleClick As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.MouseDoubleClick, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewMouseLeftButtonUp,
+                      Sub(Sender As Object, e As Input.MouseButtonEventArgs)
+                          If e.ClickCount > 1 Then [Event].EventsHandler(Sender, e, handler)
+                      End Sub
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -313,8 +331,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseRightDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.PreviewMouseRightButtonDown, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewMouseRightButtonDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -329,8 +347,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseRightUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.PreviewMouseRightButtonUp, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewMouseRightButtonUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -345,8 +363,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseMove As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.PreviewMouseMove, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewMouseMove, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -361,8 +379,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseWheel As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.PreviewMouseWheel, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewMouseWheel, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -377,8 +395,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseEnter As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.MouseEnter, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.MouseEnter, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -393,8 +411,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseLeave As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.MouseLeave, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.MouseLeave, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -409,8 +427,24 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnKeyDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.PreviewKeyDown, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewKeyDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+            End AddHandler
+
+            RemoveHandler(handler As SmallBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
+        ''' <summary>
+        ''' Fired when the user presses a keyboard-ky down on a control or any of its cjild controls.
+        ''' </summary>
+        Public Shared Custom Event OnPreviewKeyDown As SmallBasicCallback
+            AddHandler(handler As SmallBasicCallback)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewKeyDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler, True)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -425,8 +459,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnKeyUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetControl([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.PreviewKeyUp, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewKeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -436,7 +470,21 @@ Namespace WinForms
             End RaiseEvent
         End Event
 
+        ''' <summary>
+        ''' Fired when the user releases a keyboard-ky on the control or any of its child controls.
+        ''' </summary>
+        Public Shared Custom Event OnPreviewKeyUp As SmallBasicCallback
+            AddHandler(handler As SmallBasicCallback)
+                Dim VisualElement = GetVisualElemet()
+                AddHandler VisualElement.PreviewKeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler, True)
+            End AddHandler
 
+            RemoveHandler(handler As SmallBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
 #End Region
 
 

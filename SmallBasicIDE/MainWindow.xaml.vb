@@ -835,6 +835,7 @@ Namespace Microsoft.SmallBasic
             Dim lines = New List(Of String)(code.Split(New String(0) {VisualBasic.vbLf}, StringSplitOptions.None))
             Dim doc = ActiveDocument
             Dim num = errors.Count - 1
+            Dim controlNamesList As New Dictionary(Of String, String)
 
             For i = errors.Count - 1 To 0 Step -1
                 Dim err = errors(i)
@@ -845,7 +846,17 @@ Namespace Microsoft.SmallBasic
                 Dim charNum = err.Column
                 Dim pos1 = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
                 Dim obj As String = errMsg.Substring(pos1, errMsg.Length - pos1 - 2).ToLower()
-                If Not doc.ControlsInfo.ContainsKey(obj) Then Continue For
+
+                Dim controlName As String
+                If doc.ControlsInfo.ContainsKey(obj) Then
+                    controlName = doc.ControlsInfo(obj)
+                ElseIf controlNamesList.ContainsKey(obj) Then
+                    controlName = controlNamesList(obj)
+                Else
+                    controlName = sb.PreCompiler.GetModuleFromVarName(obj)
+                    If controlName = "" Then Continue For
+                    controlNamesList.Add(obj, controlName)
+                End If
 
                 Dim line = lines(lineNum)
 
@@ -867,7 +878,7 @@ Namespace Microsoft.SmallBasic
                         Dim RestText = If(contents(0).Index + contents(0).Length > nextText.Length - 2, "",
                                         nextText.Substring(contents(0).Index + contents(0).Length + 1))
 
-                        Dim methodInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), method)
+                        Dim methodInfo = sb.PreCompiler.GetMethodInfo(controlName, method)
                         Dim ModuleName = methodInfo.Module
                         If ModuleName = "" Then
                             errors(i) = New [Error](err.Line, methodPos, $"`{method}` doesn't exist.")
@@ -919,10 +930,10 @@ Namespace Microsoft.SmallBasic
                         Dim L = pos1 - result.Length
 
                         If L = 0 OrElse nextText.Substring(result.Length, L).Trim(" "c, Convert.ToChar(8)) = "" Then
-                            Dim eventInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), result.Value)
+                            Dim eventInfo = sb.PreCompiler.GetMethodInfo(controlName, result.Value)
                             If eventInfo.Module = "" Then
                                 Dim method = $"Set{result.Value}"
-                                Dim methodInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), method)
+                                Dim methodInfo = sb.PreCompiler.GetMethodInfo(controlName, method)
                                 Dim ModuleName = methodInfo.Module
                                 If ModuleName = "" Then
                                     errors(i) = New [Error](err.Line, methodPos, $"`{result.Value}` doesn't exist.")
@@ -960,7 +971,7 @@ Namespace Microsoft.SmallBasic
                         End If
 
                         Dim method = $"Get{match.Value}"
-                        Dim methodInfo = sb.PreCompiler.GetMethodInfo(doc.ControlsInfo(obj), method)
+                        Dim methodInfo = sb.PreCompiler.GetMethodInfo(controlName, method)
                         Dim ModuleName = methodInfo.Module
                         If ModuleName = "" Then
                             errors(i) = New [Error](err.Line, methodPos, $"`{match.Value}` doesn't exist.")

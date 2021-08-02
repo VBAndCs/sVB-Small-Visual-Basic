@@ -2735,9 +2735,19 @@ SmallBasicLibrary
  Fired when the user presses a keyboard-ky down
  </summary>
 </member>
+<member name="E:Microsoft.SmallBasic.WinForms.Control.OnPreviewKeyDown">
+ <summary>
+ Fired when the user presses a keyboard-ky down on a control or any of its cjild controls.
+ </summary>
+</member>
 <member name="E:Microsoft.SmallBasic.WinForms.Control.OnKeyUp">
  <summary>
  Fired when the user releases a keyboard-ky.
+ </summary>
+</member>
+<member name="E:Microsoft.SmallBasic.WinForms.Control.OnPreviewKeyUp">
+ <summary>
+ Fired when the user releases a keyboard-ky on the control or any of its child controls.
  </summary>
 </member>
 <member name="P:Microsoft.SmallBasic.WinForms.Event.SenderForm">
@@ -2774,6 +2784,26 @@ SmallBasicLibrary
  </summary>
  <param name="FormName"></param>
  <param name="ControlName"></param>
+</member>
+<member name="P:Microsoft.SmallBasic.WinForms.Event.MouseX">
+ <summary>
+ Gets or sets the mouse cursor's x co-ordinate.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallBasic.WinForms.Event.MouseY">
+ <summary>
+ Gets or sets the mouse cursor's y co-ordinate.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallBasic.WinForms.Event.IsLeftButtonDown">
+ <summary>
+ Gets whether or not the left button is pressed.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallBasic.WinForms.Event.IsRightButtonDown">
+ <summary>
+ Gets whether or not the right button is pressed.
+ </summary>
 </member>
 <member name="M:Microsoft.SmallBasic.WinForms.Form.AddTexBox(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
  <summary>

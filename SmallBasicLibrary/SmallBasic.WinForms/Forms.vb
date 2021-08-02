@@ -53,18 +53,19 @@ Namespace WinForms
             SyncLock _syncLock
                 SmallBasicApplication.Invoke(
                     Sub()
-                        Dim canvas As Canvas
-                        Dim xaml = CStr(xamlPath)
+                        Try
+                            Dim canvas As Canvas
+                            Dim xaml = CStr(xamlPath)
 
-                        If xaml = "" Then
-                            canvas = LoadContent(name & ".xaml")
-                        ElseIf xaml.StartsWith("<") Then
-                            canvas = XamlReader.Load(Xml.XmlReader.Create(New IO.StringReader(xaml)))
-                        Else
-                            canvas = LoadContent(xamlPath)
-                        End If
+                            If xaml = "" Then
+                                canvas = LoadContent(name & ".xaml")
+                            ElseIf xaml.StartsWith("<") Then
+                                canvas = XamlReader.Load(Xml.XmlReader.Create(New IO.StringReader(xaml)))
+                            Else
+                                canvas = LoadContent(xamlPath)
+                            End If
 
-                        Dim wnd As New Window() With {
+                            Dim wnd As New Window() With {
                            .SizeToContent = SizeToContent.WidthAndHeight,
                            .WindowStartupLocation = WindowStartupLocation.CenterScreen,
                            .Name = name,
@@ -72,44 +73,46 @@ Namespace WinForms
                            .Content = canvas
                        }
 
-                        AddHandler wnd.Closing, AddressOf Form_Closing
+                            AddHandler wnd.Closing, AddressOf Form_Closing
 
-                        Dim _controls = New ControlsDictionay()
-                        _controls(name) = wnd
-                        _forms(name) = _controls
+                            Dim _controls = New ControlsDictionay()
+                            _controls(name) = wnd
+                            _forms(name) = _controls
 
-                        ' Add control names:
-                        Dim controls = canvas.GetChildren().ToList()
-                        For n = controls.Count - 1 To 0 Step -1
-                            Dim ui = controls(n)
-                            Dim controlName = Automation.AutomationProperties.GetName(ui)
+                            ' Add control names:
+                            Dim controls = canvas.GetChildren().ToList()
+                            For n = controls.Count - 1 To 0 Step -1
+                                Dim ui = controls(n)
+                                Dim controlName = Automation.AutomationProperties.GetName(ui)
 
-                            If controlName = "" Then
-                                Dim fw = TryCast(ui, FrameworkElement)
-                                controlName = fw.Name
-                                If controlName = "" Then Continue For
-                            End If
+                                If controlName = "" Then
+                                    Dim fw = TryCast(ui, FrameworkElement)
+                                    controlName = fw.Name
+                                    If controlName = "" Then Continue For
+                                End If
 
-                            If TypeOf ui Is Wpf.Control Then
-                                _controls(controlName.ToLower()) = ui
-                                CType(ui, Wpf.Control).Name = controlName
-                            Else
-                                Dim left = Canvas.GetLeft(ui)
-                                Dim top = Canvas.GetTop(ui)
-                                canvas.Children.Remove(ui)
-                                Dim lb As New Wpf.Label() With {
+                                If TypeOf ui Is Wpf.Control Then
+                                    _controls(controlName.ToLower()) = ui
+                                    CType(ui, Wpf.Control).Name = controlName
+                                Else
+                                    Dim left = Canvas.GetLeft(ui)
+                                    Dim top = Canvas.GetTop(ui)
+                                    canvas.Children.Remove(ui)
+                                    Dim lb As New Wpf.Label() With {
                                     .Content = ui,
                                     .Name = controlName
                               }
-                                canvas.Children.Add(lb)
-                                Canvas.SetLeft(lb, left)
-                                Canvas.SetTop(lb, top)
-                                _controls(controlName.ToLower()) = lb
-                            End If
+                                    canvas.Children.Add(lb)
+                                    Canvas.SetLeft(lb, left)
+                                    Canvas.SetTop(lb, top)
+                                    _controls(controlName.ToLower()) = lb
+                                End If
 
-                            SetControlText(ui, GetControlText(ui))
-                        Next
-
+                                SetControlText(ui, GetControlText(ui))
+                            Next
+                        Catch ex As Exception
+                            MsgBox(ex.Message)
+                        End Try
                     End Sub)
 
             End SyncLock

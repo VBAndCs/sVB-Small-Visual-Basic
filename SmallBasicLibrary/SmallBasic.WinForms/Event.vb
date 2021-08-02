@@ -63,8 +63,8 @@ Namespace WinForms
             _SenderControl = ControlName
         End Sub
 
-        Shared Sub EventsHandler(Sender As Wpf.Control, e As RoutedEventArgs, userEventHandler As SmallBasicCallback)
-            If e.Source IsNot Sender Then Return
+        Shared Sub EventsHandler(Sender As FrameworkElement, e As RoutedEventArgs, userEventHandler As SmallBasicCallback, Optional allowTunneling As Boolean = False)
+            If Not allowTunneling AndAlso e.Source IsNot Sender Then Return
 
             _SenderControl = Sender.Name
             If TypeOf Sender Is Window Then
@@ -79,6 +79,43 @@ Namespace WinForms
             e.Handled = _Handled
             _Handled = False
         End Sub
+
+
+        ''' <summary>
+        ''' Gets or sets the mouse cursor's x co-ordinate.
+        ''' </summary>
+        Public Shared ReadOnly Property MouseX As Primitive
+            Get
+                Return Mouse.MouseX
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets or sets the mouse cursor's y co-ordinate.
+        ''' </summary>
+        Public Shared ReadOnly Property MouseY As Primitive
+            Get
+                Return Mouse.MouseY
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets whether or not the left button is pressed.
+        ''' </summary>
+        Public Shared ReadOnly Property IsLeftButtonDown As Primitive
+            Get
+                Return Mouse.IsLeftButtonDown
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets whether or not the right button is pressed.
+        ''' </summary>
+        Public Shared ReadOnly Property IsRightButtonDown As Primitive
+            Get
+                Return Mouse.IsRightButtonDown
+            End Get
+        End Property
 
     End Class
 

@@ -40,6 +40,9 @@ Public Class Helper
     End Function
 
     Shared Function GetDesigner(element As DependencyObject) As Designer
+
+        If element Is Nothing OrElse TypeOf (element) Is Designer Then Return element
+
         Dim Parent = VisualTreeHelper.GetParent(element)
         Do
             If Parent Is Nothing OrElse TypeOf (Parent) Is Designer Then Return Parent

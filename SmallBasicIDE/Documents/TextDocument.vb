@@ -553,6 +553,9 @@ Namespace Microsoft.SmallBasic.Documents
             hint.Append(declaration)
             'hint.AppendLine($"Forms.AppPath = ""{xamlPath}""")
             hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{Path.GetFileNameWithoutExtension(Me.FilePath)}.xaml"")")
+            If formDesigner.AllowTransparency Then
+                hint.AppendLine($"Form.AllowTransparency({formName})")
+            End If
             hint.AppendLine($"Form.Show({formName})")
 
             ' Remove Hamdlers of deleted or renamed controls
