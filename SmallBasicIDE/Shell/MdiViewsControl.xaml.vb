@@ -457,7 +457,16 @@ Namespace Microsoft.SmallBasic.Shell
                            Select h.Value.EventName
 
             If handlers.Any Then
-                If selectedView.CmbEventNames.SelectedIndex = -1 Then selectedView.CmbEventNames.SelectedItem = handlers.First
+                If selectedView.CmbEventNames.SelectedIndex = -1 Then
+                    Dim h = controlName & "_" & handlers.First
+                    If selectedView.Document.FindEventHandler(h) = -1 Then
+                        selectedView.Document.EventHandlers.Remove(h)
+                        SelectHandlers(selectedView, controlName)
+                        Return
+                    Else
+                        selectedView.CmbEventNames.SelectedItem = handlers.First
+                    End If
+                End If
                 SetItemsBold(selectedView.CmbEventNames, handlers.ToArray())
             End If
         End Sub

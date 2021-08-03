@@ -850,7 +850,7 @@ EndSub
 
         Public Function FindEventHandler(name As String) As Integer
             Dim text = EditorControl.TextView.TextSnapshot
-
+            name = name.ToLower()
             For Each line In text.Lines
                 Dim code = line.GetText().Trim(" "c, vbTab)
                 If code = "" Then Continue For
@@ -858,7 +858,7 @@ EndSub
                 Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), line.LineNumber)
                 If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
-                        If Tokens.Current.Text = name Then Return line.Start + Tokens.Current.Column
+                        If Tokens.Current.NormalizedText = name Then Return line.Start + Tokens.Current.Column
                     End If
                 End If
 
@@ -895,10 +895,12 @@ EndSub
 
             _GlobalSubs.Sort()
             If _MdiView Is Nothing OrElse CStr(_MdiView.CmbControlNames.SelectedItem) = "(Global)" Then
+                If _MdiView IsNot Nothing Then _MdiView.FreezeCmbEvents = True
                 _ControlEvents.Clear()
                 For Each sb In _GlobalSubs
                     _ControlEvents.Add(sb)
                 Next
+                If _MdiView IsNot Nothing Then _MdiView.FreezeCmbEvents = False
             End If
         End Sub
 
@@ -945,9 +947,11 @@ EndSub
             Next
 
             If _EventHandlers.Count > found.Count Then
-                For Each ev In _EventHandlers.Keys
-                    If Not found.Contains(ev) Then
-                        _EventHandlers.Remove(ev)
+                Dim handlers = _EventHandlers.Keys
+                For i = handlers.Count - 1 To 0 Step -1
+                    Dim h = handlers(i)
+                    If Not found.Contains(h) Then
+                        _EventHandlers.Remove(h)
                         If _EventHandlers.Count = found.Count Then Return
                     End If
                 Next

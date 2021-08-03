@@ -159,6 +159,13 @@ Namespace Microsoft.SmallBasic.LanguageService
             If nextPos <> indentationLevel * 3 Then
                 textEdit.Replace(line.Start, nextPos, New String(" "c, indentationLevel * 3))
             End If
+
+            ' Trim line end
+            Dim x = line.GetText()
+            Dim L = x.Length - x.TrimEnd().Length
+            If L > 0 AndAlso L < x.Length Then
+                textEdit.Delete(New Span(line.Start + line.Length - L, L))
+            End If
         End Sub
     End Module
 End Namespace
