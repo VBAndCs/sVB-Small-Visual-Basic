@@ -37,6 +37,7 @@ Namespace Library.Internal
                     Dim app As New Application
                     autoEvent.[Set]()
                     _application = app
+                    app.ShutdownMode = ShutdownMode.OnLastWindowClose
                     app.Run()
                 End Sub)
 

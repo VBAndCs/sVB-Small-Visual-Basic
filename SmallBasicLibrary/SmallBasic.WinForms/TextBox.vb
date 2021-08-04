@@ -11,54 +11,98 @@ Namespace WinForms
             Dim c = Control.GetControl(formName, textBoxName)
             Dim t = TryCast(c, Wpf.TextBox)
             If t Is Nothing Then
-                MsgBox($"{textBoxName} is not a name of a TextBox.")
+                Throw New Exception($"{textBoxName} is not a name of a TextBox.")
             End If
             Return t
         End Function
 
         <ExProperty>
         Public Shared Function GetText(formName As Primitive, textBoxName As Primitive) As Primitive
-            App.Invoke(Sub() GetText = GetTextBox(formName, textBoxName).Text)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetText = GetTextBox(formName, textBoxName).Text
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(formName, textBoxName, "Text", ex.Message)
+                    End Try
+                End Sub)
         End Function
 
         <ExProperty>
         Public Shared Sub SetText(formName As Primitive, textBoxName As Primitive, value As Primitive)
-            App.Invoke(Sub() GetTextBox(formName, textBoxName).Text = value)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTextBox(formName, textBoxName).Text = value
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(formName, textBoxName, "Text", value, ex.Message)
+                    End Try
+                End Sub)
         End Sub
 
         <ExProperty>
         Public Shared Function GetMuliLine(formName As Primitive, textBoxName As Primitive) As Primitive
-            App.Invoke(Sub() GetMuliLine = GetTextBox(formName, textBoxName).AcceptsReturn)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetMuliLine = GetTextBox(formName, textBoxName).AcceptsReturn
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(formName, textBoxName, "MuliLine", ex.Message)
+                    End Try
+                End Sub)
         End Function
 
         <ExProperty>
         Public Shared Sub SetMuliLine(formName As Primitive, textBoxName As Primitive, value As Primitive)
-            App.Invoke(Sub() GetTextBox(formName, textBoxName).AcceptsReturn = CBool(value))
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTextBox(formName, textBoxName).AcceptsReturn = CBool(value)
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(formName, textBoxName, "MuliLine", value, ex.Message)
+                    End Try
+                End Sub)
         End Sub
 
 
         <ExMethod>
-        Public Shared Sub [Select](formName As Primitive, controlName As Primitive, startPos As Primitive, length As Primitive)
-            App.Invoke(Sub()
-                           Dim txt = GetTextBox(formName, controlName)
-                           Dim st = Math.Max(0, startPos - 1)
-                           Dim en = 0
-                           If length > 0 Then
-                               en = Math.Min(length, txt.Text.Length - st)
-                           End If
-                           txt.Select(st, en)
-                       End Sub)
+        Public Shared Sub [Select](formName As Primitive, textBoxName As Primitive, startPos As Primitive, length As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim txt = GetTextBox(formName, textBoxName)
+                        Dim st = Math.Max(0, startPos - 1)
+                        Dim en = 0
+                        If length > 0 Then
+                            en = Math.Min(length, txt.Text.Length - st)
+                        End If
+                        txt.Select(st, en)
+                    Catch ex As Exception
+                        Control.ShowSubError(formName, textBoxName, "Select", ex.Message)
+                    End Try
+                End Sub)
         End Sub
 
         <ExMethod>
-        Public Shared Sub SelectAll(formName As Primitive, controlName As Primitive)
-            App.Invoke(Sub() GetTextBox(formName, controlName).SelectAll())
+        Public Shared Sub SelectAll(formName As Primitive, textBoxName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTextBox(formName, textBoxName).SelectAll()
+                    Catch ex As Exception
+                        Control.ShowSubError(formName, textBoxName, "SelectAll", ex.Message)
+                    End Try
+                End Sub)
         End Sub
 
         Public Shared Custom Event OnTextChanged As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetTextBox([Event].SenderForm, [Event].SenderControl)
-                AddHandler VisualElement.TextChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Try
+                    Dim VisualElement = GetTextBox([Event].SenderForm, [Event].SenderControl)
+                    AddHandler VisualElement.TextChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Catch ex As Exception
+                    [Event].ShowErrorMessage(NameOf(OnTextChanged), ex.Message)
+                End Try
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -70,19 +114,23 @@ Namespace WinForms
 
         Public Shared Custom Event OnTextInput As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetTextBox([Event].SenderForm, [Event].SenderControl)
+                Try
+                    Dim VisualElement = GetTextBox([Event].SenderForm, [Event].SenderControl)
 
-                ' Wpf doesn't raise TextInput when space is pressed!
-                ' We will fix this by raising this special case from the KeyDown event
-                AddHandler VisualElement.PreviewKeyDown,
-                    Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
-                        If e.Key = Keys.Space Then
-                            Keyboard._lastTextInput = " "
-                            [Event].EventsHandler(Sender, e, handler)
-                        End If
-                    End Sub
+                    ' Wpf doesn't raise TextInput when space is pressed!
+                    ' We will fix this by raising this special case from the KeyDown event
+                    AddHandler VisualElement.PreviewKeyDown,
+                        Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
+                            If e.Key = Keys.Space Then
+                                Keyboard._lastTextInput = " "
+                                [Event].EventsHandler(Sender, e, handler)
+                            End If
+                        End Sub
 
-                AddHandler VisualElement.PreviewTextInput, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                    AddHandler VisualElement.PreviewTextInput, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                Catch ex As Exception
+                    [Event].ShowErrorMessage(NameOf(OnTextInput), ex.Message)
+                End Try
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)

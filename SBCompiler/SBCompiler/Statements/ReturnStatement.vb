@@ -10,9 +10,14 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
-            If ReturnExpression IsNot Nothing Then
+            If ReturnExpression Is Nothing Then
+                If Subroutine?.SubToken.Token = Token.Function Then
+                    symbolTable.Errors.Add(New [Error](StartToken, "Function must return a value"))
+                End If
+            Else
                 ReturnExpression.Parent = Me
             End If
+            If Subroutine IsNot Nothing Then Subroutine.HasAReturnStatement = True
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)

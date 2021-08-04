@@ -17,12 +17,26 @@ Namespace WinForms
 
         <ExProperty>
         Public Shared Function GetText(formName As Primitive, buttonName As Primitive) As Primitive
-            App.Invoke(Sub() GetText = GetButton(formName, buttonName).Content.ToString())
+            App.Invoke(
+                Sub()
+                    Try
+                        GetText = GetButton(formName, buttonName).Content.ToString()
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(formName, buttonName, "Text", ex.Message)
+                    End Try
+                End Sub)
         End Function
 
         <ExProperty>
         Public Shared Sub SetText(formName As Primitive, buttonName As Primitive, value As Primitive)
-            App.Invoke(Sub() GetButton(formName, buttonName).Content = CStr(value))
+            App.Invoke(
+                Sub()
+                    Try
+                        GetButton(formName, buttonName).Content = CStr(value)
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(formName, buttonName, "Text", value, ex.Message)
+                    End Try
+                End Sub)
         End Sub
     End Class
 End Namespace

@@ -6,6 +6,9 @@ Namespace WinForms
 
     <SmallBasicType>
     Public NotInheritable Class [Event]
+        Shared Sub ShowErrorMessage(eventName As String, msg As String)
+            MsgBox($"Setting the handler for {[Event].SenderForm}.{[Event].SenderControl}.{eventName} caused an error: {vbCrLf}{msg}")
+        End Sub
 
         ''' <summary>
         ''' Gets or sets the name of the form that raised the event
@@ -64,20 +67,24 @@ Namespace WinForms
         End Sub
 
         Shared Sub EventsHandler(Sender As FrameworkElement, e As RoutedEventArgs, userEventHandler As SmallBasicCallback, Optional allowTunneling As Boolean = False)
-            If Not allowTunneling AndAlso e.Source IsNot Sender Then Return
+            Try
+                If Not allowTunneling AndAlso e.Source IsNot Sender Then Return
 
-            _SenderControl = Sender.Name
-            If TypeOf Sender Is Window Then
-                _SenderForm = Sender.Name
-            Else
-                _SenderForm = CType(Control.GetParent(Sender, GetType(Window)), Window).Name
-            End If
+                _SenderControl = Sender.Name
+                If TypeOf Sender Is Window Then
+                    _SenderForm = Sender.Name
+                Else
+                    _SenderForm = CType(Control.GetParent(Sender, GetType(Window)), Window).Name
+                End If
 
-            Call userEventHandler()
+                Call userEventHandler()
 
-            ' the handler may set the Handled property. We will use it and reset it.
-            e.Handled = _Handled
-            _Handled = False
+                ' the handler may set the Handled property. We will use it and reset it.
+                e.Handled = _Handled
+                _Handled = False
+            Catch ex As Exception
+                MsgBox($"The event handler sub `{userEventHandler.Method.Name}` caused this error: {ex.Message}")
+            End Try
         End Sub
 
 

@@ -295,6 +295,9 @@ Namespace Microsoft.SmallBasic
                     If subroutine.EndSubToken.Token <> Token.EndFunction Then
                         _parser.AddError(subroutine.EndSubToken, "Function must end with EndFunction")
                     End If
+                    If Not subroutine.HasAReturnStatement Then
+                        _parser.AddError(subroutine.SubToken, "Function must return a value")
+                    End If
             End Select
 
             For Each item In subroutine.Body

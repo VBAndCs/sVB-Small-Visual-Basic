@@ -66,14 +66,15 @@ Namespace WinForms
                             End If
 
                             Dim wnd As New Window() With {
-                           .SizeToContent = SizeToContent.WidthAndHeight,
-                           .WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                           .Name = name,
-                           .Title = Automation.AutomationProperties.GetHelpText(canvas),
-                           .Content = canvas
-                       }
+                                   .SizeToContent = SizeToContent.WidthAndHeight,
+                                   .WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                                   .Name = name,
+                                   .Title = Automation.AutomationProperties.GetHelpText(canvas),
+                                   .Content = canvas
+                            }
 
                             AddHandler wnd.Closing, AddressOf Form_Closing
+                            AddHandler wnd.Closed, AddressOf Form_Closed
 
                             Dim _controls = New ControlsDictionay()
                             _controls(name) = wnd
@@ -99,9 +100,9 @@ Namespace WinForms
                                     Dim top = Canvas.GetTop(ui)
                                     canvas.Children.Remove(ui)
                                     Dim lb As New Wpf.Label() With {
-                                    .Content = ui,
-                                    .Name = controlName
-                              }
+                                            .Content = ui,
+                                            .Name = controlName
+                                    }
                                     canvas.Children.Add(lb)
                                     Canvas.SetLeft(lb, left)
                                     Canvas.SetTop(lb, top)
@@ -111,7 +112,7 @@ Namespace WinForms
                                 SetControlText(ui, GetControlText(ui))
                             Next
                         Catch ex As Exception
-                            MsgBox(ex.Message)
+                            MsgBox("LoadForm caused an error: " & ex.Message)
                         End Try
                     End Sub)
 
@@ -123,6 +124,8 @@ Namespace WinForms
 
             Return name
         End Function
+
+
 
         Private Shared Sub SetControlText(control As UIElement, value As String)
             Try
@@ -140,7 +143,7 @@ Namespace WinForms
             End Try
         End Sub
 
-        Public Shared Function GetControlText(control As UIElement) As String
+        Shared Function GetControlText(control As UIElement) As String
             Try
                 Return CObj(control).Text
             Catch
@@ -156,16 +159,24 @@ Namespace WinForms
             Return Automation.AutomationProperties.GetHelpText(control)
         End Function
 
-
         Public Shared Sub AddForm(formName As Primitive)
-            Dim frm = GetForm(formName)
-            If frm Is Nothing Then
-                Dim xaml As String = $"<Canvas Name=""{formName}"" Width=""700"" Height=""500"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""/>"
-                LoadForm(formName, xaml)
-            End If
+            Try
+                Dim frm = GetForm(formName)
+                If frm Is Nothing Then
+                    Dim xaml As String = $"<Canvas Name=""{formName}"" Width=""700"" Height=""500"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""/>"
+                    LoadForm(formName, xaml)
+                End If
 
+            Catch ex As Exception
+                MsgBox("AddForm cuased this error: " & ex.Message)
+            End Try
         End Sub
 
+        Private Shared Sub Form_Closed(sender As Object, e As EventArgs)
+            Dim win = CType(sender, Window)
+            Dim formName = win.Name
+            _forms.Remove(formName)
+        End Sub
 
         Private Shared Sub Form_Closing(sender As Object, e As CancelEventArgs)
             Dim win = CType(sender, Window)
@@ -183,10 +194,6 @@ Namespace WinForms
                     IO.File.WriteAllText(newXamlPath, XamlWriter.Save(canvas))
                 End If
             Finally
-                _forms.Remove(formName)
-                If _forms.Count = 0 AndAlso Not TextWindow._windowVisible AndAlso Not GraphicsWindow._windowVisible Then
-                    SmallBasicApplication.End()
-                End If
             End Try
 
         End Sub
@@ -210,15 +217,18 @@ Namespace WinForms
             Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))
 
             Dim canvas As Canvas = Nothing
-            Try
-                canvas = CType(XamlReader.Load(stream), Canvas)
-            Catch
-            End Try
+
+            canvas = CType(XamlReader.Load(stream), Canvas)
+
             Return canvas
         End Function
 
         Public Shared Sub ShowMessage(message As Primitive, title As Primitive)
-            SmallBasicApplication.Invoke(Sub() System.Windows.MessageBox.Show(message.ToString(), title.ToString()))
+            Try
+                SmallBasicApplication.Invoke(Sub() System.Windows.MessageBox.Show(message.ToString(), title.ToString()))
+            Catch ex As Exception
+                MsgBox("ShowMessage caused this error: " & ex.Message)
+            End Try
         End Sub
     End Class
 End Namespace

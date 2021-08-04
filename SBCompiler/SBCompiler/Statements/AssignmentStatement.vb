@@ -35,9 +35,11 @@ Namespace Microsoft.SmallBasic.Statements
 
             ElseIf TypeOf LeftValue Is ArrayExpression Then
                 Dim arrayExpression = CType(LeftValue, ArrayExpression)
-                symbolTable.AddVariable(arrayExpression.LeftHand, IsLocalVariable)
+                If TypeOf arrayExpression.LeftHand Is IdentifierExpression Then
+                    symbolTable.AddVariable(arrayExpression.LeftHand, IsLocalVariable)
+                End If
                 arrayExpression.AddSymbolInitialization(symbolTable)
-            End If
+                End If
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)

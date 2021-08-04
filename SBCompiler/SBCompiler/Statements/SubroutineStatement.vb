@@ -16,6 +16,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public Body As New List(Of Statement)()
         Public SubToken As TokenInfo
         Public EndSubToken As TokenInfo
+        Friend HasAReturnStatement As Boolean
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)

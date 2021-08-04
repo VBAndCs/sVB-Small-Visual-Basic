@@ -10,20 +10,34 @@ Namespace WinForms
             Dim c = Control.GetControl(formName, labelName)
             Dim t = TryCast(c, Wpf.Label)
             If t Is Nothing Then
-                MsgBox($"{labelName} is not a name of a Label.")
+                Throw New Exception($"{labelName} is not a name of a Label.")
             End If
             Return t
         End Function
 
         <ExProperty>
         Public Shared Function GetText(formName As Primitive, labelName As Primitive) As Primitive
-            App.Invoke(Sub() GetText = GetLabel(formName, labelName).Content.ToString())
+            App.Invoke(
+                Sub()
+                    Try
+                        GetText = GetLabel(formName, labelName).Content.ToString()
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(formName, labelName, "Text", ex.Message)
+                    End Try
+                End Sub)
         End Function
 
 
         <ExProperty>
         Public Shared Sub SetText(formName As Primitive, labelName As Primitive, value As Primitive)
-            App.Invoke(Sub() GetLabel(formName, labelName).Content = CStr(value))
+            App.Invoke(
+                Sub()
+                    Try
+                        GetLabel(formName, labelName).Content = CStr(value)
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(formName, labelName, "Text", value, ex.Message)
+                    End Try
+                End Sub)
         End Sub
     End Class
 End Namespace

@@ -164,7 +164,11 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim x = line.GetText()
             Dim L = x.Length - x.TrimEnd().Length
             If L > 0 AndAlso L < x.Length Then
-                textEdit.Delete(New Span(line.Start + line.Length - L, L))
+                Select Case x.Trim().ToLower()
+                    Case "sub", "function", "while"
+                    Case Else
+                        textEdit.Delete(New Span(line.Start + line.Length - L, L))
+                End Select
             End If
         End Sub
     End Module
