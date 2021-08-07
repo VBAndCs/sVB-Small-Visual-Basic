@@ -1,0 +1,19 @@
+'@Form Hints:
+'#Form1{
+'}
+
+Me = "Form1"
+Form1 = Forms.LoadForm("Form1", "Form1.xaml")
+Form.Show(Form1)
+
+'#Events{
+'    Form1: OnKeyDown OnKeyUp OnClosing
+'}
+
+' Form1 Events:
+Control.HandleEvents(Form1, Form1)
+Control.OnKeyDown = Form1_OnKeyDown
+Control.OnKeyUp = Form1_OnKeyUp
+Form.OnClosing = Form1_OnClosing
+
+

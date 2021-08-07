@@ -40,5 +40,6 @@ Namespace Microsoft.SmallBasic
         Public Overrides Function ToString() As String
             Return $"{Line},{Column}: {Text}, {Token}"
         End Function
+
     End Structure
 End Namespace

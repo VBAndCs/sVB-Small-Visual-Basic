@@ -30,11 +30,12 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
+        ''' <returns>The neame of the textBox</returns>
         <ExMethod>
-        Public Shared Sub AddTexBox(formName As Primitive,
+        Public Shared Function AddTexBox(formName As Primitive,
                          textBoxName As Primitive,
                          left As Primitive, top As Primitive,
-                         width As Primitive, height As Primitive)
+                         width As Primitive, height As Primitive) As Primitive
 
             App.Invoke(
                  Sub()
@@ -62,7 +63,9 @@ Namespace WinForms
                          ShowSubError(formName, "AddTexBox", ex.Message)
                      End Try
                  End Sub)
-        End Sub
+
+            Return textBoxName
+        End Function
 
         ''' <summary>
         ''' Adds a new Label control to the form
@@ -73,11 +76,12 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
+        ''' <returns>The neame of the label</returns>
         <ExMethod>
-        Public Shared Sub AddLabel(formName As Primitive,
+        Public Shared Function AddLabel(formName As Primitive,
                          labelName As Primitive,
                          left As Primitive, top As Primitive,
-                         width As Primitive, height As Primitive)
+                         width As Primitive, height As Primitive) As Primitive
 
             App.Invoke(
                     Sub()
@@ -105,7 +109,64 @@ Namespace WinForms
                             ShowSubError(formName, "AddLabel", ex.Message)
                         End Try
                     End Sub)
-        End Sub
+
+            Return labelName
+        End Function
+
+        ''' <summary>
+        ''' Adds a new IamgeBox control to the form
+        ''' </summary>
+        ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
+        ''' <param name="imageBoxName">A unique name for the control.</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control.</param>
+        ''' <param name="height">The height of the control.</param>
+        ''' <returns>The neame of the ImageBox</returns>
+        <ExMethod>
+        Public Shared Function AddImageBox(formName As Primitive,
+                         imageBoxName As Primitive,
+                         left As Primitive, top As Primitive,
+                         width As Primitive, height As Primitive,
+                         fileName As Primitive) As Primitive
+
+            App.Invoke(
+                    Sub()
+                        Try
+                            Dim frm = Forms.GetForm(formName)
+
+                            If ContainsControl(formName, imageBoxName) Then
+                                MsgBox($"There is another control with the name '{imageBoxName}' on the ''{formName} form")
+                                Return
+                            End If
+
+                            Dim img As New Wpf.Image With {
+                               .Name = imageBoxName,
+                               .Width = width,
+                               .Height = height
+                            }
+
+                            If Not IO.Path.IsPathRooted(fileName) Then
+                                Dim path = Environment.GetCommandLineArgs()(0)
+                                path = IO.Path.GetDirectoryName(path)
+                                fileName = IO.Path.Combine(path, fileName)
+                            End If
+                            img.Source = New Imaging.BitmapImage(New Uri(fileName))
+
+                            Wpf.Canvas.SetLeft(img, left)
+                            Wpf.Canvas.SetTop(img, top)
+
+                            Dim cnv As Wpf.Canvas = frm.Content
+                            cnv.Children.Add(img)
+                            AddToDictionary(formName, img)
+
+                        Catch ex As Exception
+                            ShowSubError(formName, "AddImageBox", ex.Message)
+                        End Try
+                    End Sub)
+
+            Return imageBoxName
+        End Function
 
         ''' <summary>
         ''' Adds a new Button control to the form
@@ -116,11 +177,12 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
+        ''' <returns>The neame of the button</returns>
         <ExMethod>
-        Public Shared Sub AddButton(formName As Primitive,
+        Public Shared Function AddButton(formName As Primitive,
                          buttonName As Primitive,
                          left As Primitive, top As Primitive,
-                         width As Primitive, height As Primitive)
+                         width As Primitive, height As Primitive) As Primitive
 
             App.Invoke(
                   Sub()
@@ -149,9 +211,11 @@ Namespace WinForms
                           ShowSubError(formName, "AddButton", ex.Message)
                       End Try
                   End Sub)
-        End Sub
 
-        Private Shared Sub AddToDictionary(FormKey As String, control As Wpf.Control)
+            Return buttonName
+        End Function
+
+        Private Shared Sub AddToDictionary(FormKey As String, control As System.Windows.FrameworkElement)
             Forms._forms(FormKey.ToLower()).Add(control.Name.ToLower(), control)
         End Sub
 
@@ -164,11 +228,12 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
+        ''' <returns>The neame of the listBox</returns>
         <ExMethod>
-        Public Shared Sub AddListBox(formName As Primitive,
+        Public Shared Function AddListBox(formName As Primitive,
                          listBoxName As Primitive,
                          left As Primitive, top As Primitive,
-                         width As Primitive, height As Primitive)
+                         width As Primitive, height As Primitive) As Primitive
 
             App.Invoke(
                   Sub()
@@ -196,7 +261,9 @@ Namespace WinForms
                           ShowSubError(formName, "AddListBox", ex.Message)
                       End Try
                   End Sub)
-        End Sub
+
+            Return listBoxName
+        End Function
 
         <ExMethod>
         Public Shared Function ContainsControl(formName As Primitive, controlName As Primitive) As Primitive

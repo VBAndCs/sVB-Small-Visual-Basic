@@ -5,6 +5,22 @@ Namespace WinForms
     <SmallBasicType>
     Public NotInheritable Class Color
 
+        Private Shared _random As Random
+
+        ''' <summary>
+        ''' Gets a valid random color.
+        ''' </summary>
+        ''' <returns>
+        ''' A valid random color.
+        ''' </returns>
+        Public Shared Function GetRandomColor() As Primitive
+            If _random Is Nothing Then
+                _random = New Random(Now.Ticks Mod Integer.MaxValue)
+            End If
+
+            Return $"#{_random.[Next](256):X2}{_random.[Next](256):X2}{_random.[Next](256):X2}"
+        End Function
+
         Private Shared Function InRange(value As Integer, min As Integer, max As Integer) As Integer
             Dim result = System.Math.Min(value, max)
             Return System.Math.Max(result, min)

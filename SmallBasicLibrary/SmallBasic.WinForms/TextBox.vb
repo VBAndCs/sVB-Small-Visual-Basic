@@ -99,7 +99,7 @@ Namespace WinForms
             AddHandler(handler As SmallBasicCallback)
                 Try
                     Dim VisualElement = GetTextBox([Event].SenderForm, [Event].SenderControl)
-                    AddHandler VisualElement.TextChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                    AddHandler VisualElement.TextChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnTextChanged), ex.Message)
                 End Try
@@ -123,11 +123,11 @@ Namespace WinForms
                         Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
                             If e.Key = Keys.Space Then
                                 Keyboard._lastTextInput = " "
-                                [Event].EventsHandler(Sender, e, handler)
+                                [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                             End If
                         End Sub
 
-                    AddHandler VisualElement.PreviewTextInput, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                    AddHandler VisualElement.PreviewTextInput, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnTextInput), ex.Message)
                 End Try

@@ -17,7 +17,7 @@ Namespace Microsoft.SmallBasic.Completion
 
         Public Function GetCompletionItems(ByVal source As TextReader, ByVal line As Integer, ByVal column As Integer) As CompletionBag
             _compiler.Compile(source)
-            Dim emptyCompletionBag As CompletionBag = GetEmptyCompletionBag()
+            Dim emptyCompletionBag = GetEmptyCompletionBag()
             Dim statement As Statement = Nothing
 
             For num = _compiler.Parser.ParseTree.Count - 1 To 0 Step -1
@@ -104,12 +104,17 @@ Namespace Microsoft.SmallBasic.Completion
             })
         End Sub
 
+        Public Shared CurrentLine As Integer
+        Public Shared CurrentColumn As Integer
 
         Public Shared Sub FillVariables(completionBag As CompletionBag)
             For Each variable In completionBag.SymbolTable.Variables
+                Dim tokenInfo = variable.Value
+                If tokenInfo.Line = CurrentLine AndAlso tokenInfo.EndColumn = CurrentColumn Then Continue For
+
                 completionBag.CompletionItems.Add(New CompletionItem() With {
                     .Name = variable.Key,
-                    .DisplayName = variable.Value.Text,
+                    .DisplayName = tokenInfo.Text,
                     .ItemType = CompletionItemType.Variable
                 })
             Next
@@ -127,9 +132,12 @@ Namespace Microsoft.SmallBasic.Completion
                 End If
 
                 If addToBag Then
+                    Dim tokenInfo = variable.Value.Identifier
+                    If tokenInfo.Line = CurrentLine AndAlso tokenInfo.EndColumn = CurrentColumn Then Continue For
+
                     completionBag.CompletionItems.Add(New CompletionItem() With {
                         .Name = variable.Key,
-                        .DisplayName = variable.Value.Identifier.Text,
+                        .DisplayName = tokenInfo.Text,
                         .ItemType = CompletionItemType.Variable
                     })
                 End If

@@ -892,6 +892,7 @@ Namespace Microsoft.SmallBasic
                             Continue For
                         End If
 
+
                         Select Case methodInfo.ParamsCount
                             Case 1
                                 lines(lineNum) = prevText &
@@ -902,12 +903,15 @@ Namespace Microsoft.SmallBasic
                                             $"{ModuleName}.{method}({obj}, {params})" &
                                             RestText
                             Case 2
+                                Dim secondParam = If(methodInfo.secondIsControl, obj, params)
                                 lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({doc.Form}, {obj})" &
+                                            $"{ModuleName}.{method}({doc.Form}, {secondParam})" &
                                             RestText
                             Case Else
+                                Dim secondParam = If(methodInfo.secondIsControl, ", " & obj, "")
+
                                 lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({doc.Form}, {obj}, {params})" &
+                                            $"{ModuleName}.{method}({doc.Form}{secondParam}, {params})" &
                                             RestText
                         End Select
 

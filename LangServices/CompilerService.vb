@@ -84,7 +84,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Dim line = currentSnapshot.Lines(i)
                     Dim nextPos = line.GetPositionOfNextNonWhiteSpaceCharacter(0)
 
-                    Dim tokenInfo = New LineScanner().GetFirstToken(line.GetText(), line.LineNumber)
+                    Dim tokenInfo = LineScanner.GetFirstToken(line.GetText(), line.LineNumber)
 
                     Select Case tokenInfo.Token
                         Case Token.EndIf, Token.Next, Token.EndFor, Token.Wend, Token.EndWhile
@@ -120,7 +120,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Function FindCurrentSubStart(text As ITextSnapshot, LineNumber As Integer) As Integer
             For i = LineNumber To 0 Step -1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim tokenInfo = New LineScanner().GetFirstToken(line.GetText(), i)
+                Dim tokenInfo = LineScanner.GetFirstToken(line.GetText(), i)
 
                 Select Case tokenInfo.Token
                     Case Token.Sub, Token.Function
@@ -140,7 +140,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Function FindCurrentSubEnd(text As ITextSnapshot, LineNumber As Integer) As Integer
             For i = LineNumber + 1 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim tokenInfo = New LineScanner().GetFirstToken(line.GetText(), i)
+                Dim tokenInfo = LineScanner.GetFirstToken(line.GetText(), i)
                 Select Case tokenInfo.Token
                     Case Token.Sub, Token.Function
                         If i > LineNumber + 1 Then Return i - 1

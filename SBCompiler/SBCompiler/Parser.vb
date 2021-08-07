@@ -658,7 +658,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Public Shared Function ParseArgumentList(args As String) As List(Of Expression)
-            Dim tokens = New LineScanner().GetTokenEnumerator(args & ")", 1)
+            Dim tokens = LineScanner.GetTokenEnumerator(args & ")", 1)
             Dim parser As New Parser()
             Return parser.ParseCommaSepList(tokens, Token.RightParens, False)
         End Function
@@ -825,7 +825,7 @@ Namespace Microsoft.SmallBasic
             If Equals(text, Nothing) Then Return Nothing
 
             _currentLine += 1
-            _currentLineEnumerator = New LineScanner().GetTokenEnumerator(text, _currentLine)
+            _currentLineEnumerator = LineScanner.GetTokenEnumerator(text, _currentLine)
             Return _currentLineEnumerator
         End Function
 

@@ -144,6 +144,9 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Public Function GetCompletionBag(line As ITextSnapshotLine, column As Integer, <Out> ByRef currentToken As TokenInfo) As CompletionBag
+            CompletionHelper.CurrentLine = line.LineNumber
+            CompletionHelper.CurrentColumn = column
+
             Dim ControlsInfo As Dictionary(Of String, String) = Nothing
             line.TextSnapshot.TextBuffer.Properties.TryGetProperty("ControlsInfo", ControlsInfo)
 
@@ -151,8 +154,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             line.TextSnapshot.TextBuffer.Properties.TryGetProperty("ControlNames", ControlNames)
 
             currentToken = TokenInfo.Illegal
-            Dim lineScanner As New LineScanner()
-            Dim tokenList = lineScanner.GetTokenEnumerator(line.GetText(), line.LineNumber)
+            Dim tokenList = LineScanner.GetTokenEnumerator(line.GetText(), line.LineNumber)
             Dim prevToken = TokenInfo.Illegal
             Dim b4PrevToken = TokenInfo.Illegal
 
@@ -169,6 +171,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             If prevToken.Token = Token.Dot Then
                 identifierToken = b4PrevToken
+
             ElseIf currentToken.Token = Token.Dot Then
                 identifierToken = prevToken
                 Dim endColumn = currentToken.EndColumn
@@ -339,7 +342,12 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Private Sub FillMemberNames(completionBag As CompletionBag, moduleName As String)
             Dim controlModule = NameOf(WinForms.Control)
-            completionBag.CompletionItems.AddRange(CompletionItems(controlModule))
+            Select Case moduleName
+                Case NameOf(WinForms.ImageBox), NameOf(WinForms.Forms)
+                Case Else
+                    completionBag.CompletionItems.AddRange(CompletionItems(controlModule))
+
+            End Select
 
             If moduleName <> controlModule Then
                 completionBag.CompletionItems.AddRange(CompletionItems(moduleName))

@@ -119,60 +119,58 @@ Namespace Microsoft.SmallBasic.Utility
                 End If
 
                 stringBuilder.Append(")")
-                Dim span As Span = New Span()
+                Dim span As New Span()
                 span.FlowDirection = FlowDirection.LeftToRight
-                Dim span2 = span
-                span2.Inlines.Add(New TextRun With {
+                Dim inlines = span.Inlines
+                inlines.Add(New TextRun With {
                     .Text = name & ".",
                     .Style = _typeStyle
                 })
-                span2.Inlines.Add(New LineBreak())
-                span2.Inlines.Add(New TextRun With {
+                inlines.Add(New LineBreak())
+                inlines.Add(New TextRun With {
                     .Text = stringBuilder.ToString(),
                     .Style = _usageStyle
                 })
-                span2.Inlines.Add(New LineBreak())
-                span2.Inlines.Add(New LineBreak())
+                inlines.Add(New LineBreak())
+                inlines.Add(New LineBreak())
 
                 For Each key2 In CompletionItemWrapper.Documentation.ParamsDoc.Keys
-                    Dim textRun As TextRun = New TextRun()
-                    textRun.Text = key2
-                    textRun.Style = _paramsNameStyle
-                    Dim item = textRun
-                    span2.Inlines.Add(item)
-                    span2.Inlines.Add(New LineBreak())
-                    Dim textRun2 As TextRun = New TextRun()
-                    textRun2.Text = CompletionItemWrapper.Documentation.ParamsDoc(key2)
-                    textRun2.Style = _paramsDescriptionStyle
-                    item = textRun2
-                    span2.Inlines.Add(item)
-                    span2.Inlines.Add(New LineBreak())
+                    inlines.Add(New TextRun() With {
+                        .Text = key2,
+                        .Style = _paramsNameStyle
+                    })
+                    inlines.Add(New LineBreak())
+                    inlines.Add(New TextRun() With {
+                        .Text = CompletionItemWrapper.Documentation.ParamsDoc(key2),
+                        .Style = _paramsDescriptionStyle
+                    })
+                    inlines.Add(New LineBreak())
                 Next
 
-                span2.Inlines.Add(New Separator With {
+                inlines.Add(New Separator With {
                     .Width = 800.0,
                     .Margin = New Thickness(0.0, 4.0, 0.0, 4.0)
                 })
-                span2.Inlines.Add(New TextRun With {
+                inlines.Add(New TextRun With {
                     .Text = ResourceHelper.GetString("Returns"),
                     .Style = _paramsNameStyle
                 })
-                span2.Inlines.Add(New LineBreak())
+                inlines.Add(New LineBreak())
 
                 If Equals(CompletionItemWrapper.Documentation.Returns, Nothing) OrElse CompletionItemWrapper.Documentation.Returns.Length = 0 Then
-                    span2.Inlines.Add(New TextRun With {
+                    inlines.Add(New TextRun With {
                         .Text = ResourceHelper.GetString("Nothing"),
                         .Style = _paramsDescriptionStyle
                     })
                 Else
-                    span2.Inlines.Add(New TextRun With {
+                    inlines.Add(New TextRun With {
                         .Text = CompletionItemWrapper.Documentation.Returns,
                         .Style = _paramsDescriptionStyle
                     })
                 End If
 
-                span2.Inlines.Add(New LineBreak())
-                Me.detailsParagraph.Inlines.Add(span2)
+                inlines.Add(New LineBreak())
+                Me.detailsParagraph.Inlines.Add(span)
             End If
         End Sub
 

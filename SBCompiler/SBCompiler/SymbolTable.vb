@@ -79,7 +79,18 @@ Namespace Microsoft.SmallBasic
         Public Function IsDefined(variable As IdentifierExpression) As Boolean
             If _Variables.ContainsKey(variable.Identifier.NormalizedText) Then Return True
             Dim key = GetKey(variable)
-            Return _Locals.ContainsKey(key)
+            If _Locals.ContainsKey(key) Then
+                Dim varUse = variable.Identifier
+                Dim varDeclaration = _Locals(key).Identifier
+                Select Case varUse.Line
+                    Case varDeclaration.Line
+                        Return varUse.Column = varDeclaration.Column
+                    Case Else
+                        Return varUse.Line > varDeclaration.Line
+                End Select
+            End If
+
+            Return False
         End Function
 
         Public Sub AddVariableInitialization(ByVal variable As TokenInfo)

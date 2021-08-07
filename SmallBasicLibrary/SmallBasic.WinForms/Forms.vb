@@ -3,7 +3,7 @@ Imports System.Windows.Threading
 Imports Microsoft.SmallBasic.Library
 Imports Microsoft.SmallBasic.Library.Internal
 Imports Wpf = System.Windows.Controls
-Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, System.Windows.Controls.Control)
+Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, System.Windows.FrameworkElement)
 Imports System.Windows.Controls
 Imports System.Windows
 Imports System.ComponentModel
@@ -159,7 +159,7 @@ Namespace WinForms
             Return Automation.AutomationProperties.GetHelpText(control)
         End Function
 
-        Public Shared Sub AddForm(formName As Primitive)
+        Public Shared Function AddForm(formName As Primitive) As Primitive
             Try
                 Dim frm = GetForm(formName)
                 If frm Is Nothing Then
@@ -170,7 +170,8 @@ Namespace WinForms
             Catch ex As Exception
                 MsgBox("AddForm cuased this error: " & ex.Message)
             End Try
-        End Sub
+            Return formName
+        End Function
 
         Private Shared Sub Form_Closed(sender As Object, e As EventArgs)
             Dim win = CType(sender, Window)

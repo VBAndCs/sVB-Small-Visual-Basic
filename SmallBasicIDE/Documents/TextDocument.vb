@@ -77,18 +77,13 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public ReadOnly Property TextBuffer As ITextBuffer
             Get
-
-                If _textBuffer Is Nothing Then
-                    CreateBuffer()
-                End If
-
+                If _textBuffer Is Nothing Then CreateBuffer()
                 Return _textBuffer
             End Get
         End Property
 
         Public ReadOnly Property EditorControl As CodeEditorControl
             Get
-
                 If _editorControl Is Nothing Then
                     _editorControl = New CodeEditorControl With {
                         .TextBuffer = TextBuffer
@@ -309,19 +304,16 @@ Namespace Microsoft.SmallBasic.Documents
 
         Private Sub TextBufferChanged(sender As Object, e As TextChangedEventArgs)
             IsDirty = True
-            If _IgnoreCaretPosChange Or StillWorking Then Return
+            If _formatting OrElse _IgnoreCaretPosChange OrElse StillWorking Then Return
 
             StillWorking = True
-
             Try
                 EditorControl.Dispatcher.BeginInvoke(
                   Sub()
                       StillWorking = True
                       UpdateGlobalSubsList()
-                      StillWorking = False
-                      OnCaretPositionChanged(Nothing, Nothing)
 
-                      If _formatting Then Return
+                      ' re-format if lines changed
                       For Each change In e.Changes
                           If change.Delta > 2 AndAlso change.NewText.Contains(vbLf) AndAlso change.NewText.Trim() <> "" Then
                               FormatSub()
@@ -333,12 +325,14 @@ Namespace Microsoft.SmallBasic.Documents
                               Exit For
                           End If
                       Next
+
+                      StillWorking = False
+                      OnCaretPositionChanged(Nothing, Nothing)
                   End Sub, DispatcherPriority.ContextIdle)
 
             Catch
                 StillWorking = False
             End Try
-
 
         End Sub
 
@@ -607,10 +601,17 @@ Namespace Microsoft.SmallBasic.Documents
                 ' Note that ControlNames Property is bound to a combobox, so keep the existing collection
                 controlNamesList.Sort()
                 _ControlNames.Clear()
-                For Each controlName In controlNamesList
-                    _ControlNames.Add(controlName)
-                Next
-            End If
+                If controlNamesList.Count > 0 Then
+                    For Each controlName In controlNamesList
+                        _ControlNames.Add(controlName)
+                    Next
+
+                    If MdiView?.CmbControlNames IsNot Nothing Then
+                        MdiView.CmbControlNames.SelectedIndex = 0
+                    End If
+                End If
+                End If
+
             Return hint.ToString()
         End Function
 
@@ -804,7 +805,7 @@ EndSub
 
             For i = lineNumber To 0 Step -1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
+                Dim Tokens = LineScanner.GetTokenEnumerator(line.GetText(), i)
                 Dim token = Tokens.Current.Token
                 If token = Token.Sub OrElse token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
@@ -836,7 +837,7 @@ EndSub
             Dim line As ITextSnapshotLine
             For i = lineNumber To textView.TextSnapshot.LineCount - 1
                 line = text.GetLineFromLineNumber(i)
-                Dim tokenInfo = New LineScanner().GetFirstToken(line.GetText(), i)
+                Dim tokenInfo = LineScanner.GetFirstToken(line.GetText(), i)
                 Select Case tokenInfo.Token
                     Case Token.Sub, Token.Function
                         Return -1
@@ -855,7 +856,7 @@ EndSub
                 Dim code = line.GetText().Trim(" "c, vbTab)
                 If code = "" Then Continue For
 
-                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), line.LineNumber)
+                Dim Tokens = LineScanner.GetTokenEnumerator(line.GetText(), line.LineNumber)
                 If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
                         If Tokens.Current.NormalizedText = name Then Return line.Start + Tokens.Current.Column
@@ -866,20 +867,23 @@ EndSub
             Return -1
         End Function
 
-
         Public Sub UpdateGlobalSubsList()
             _GlobalSubs.Clear()
             _GlobalSubs.Add("(Add New Sub)")
 
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
+            Dim hasChanged = False
 
             For i = 0 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
-                If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
-                    If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
-                        Dim subName = Tokens.Current.Text
+                Dim lineText = line.GetText()
+                Dim tokenInfo = LineScanner.GetFirstToken(lineText, i)
+                Dim token = tokenInfo.Token
+                If token = token.Sub OrElse token = token.Function Then
+                    tokenInfo = LineScanner.GetFirstToken(lineText.Substring(tokenInfo.EndColumn), i)
+                    If tokenInfo.Token = token.Identifier Then
+                        Dim subName = tokenInfo.Text
                         If Not _EventHandlers.ContainsKey(subName) Then
                             ' If name has the form Control_Event, add ot to EventHandlers.
                             Dim info = GetHandlerInfo(subName.ToLower())
@@ -887,11 +891,16 @@ EndSub
                                 _EventHandlers(subName) = info
                             Else
                                 _GlobalSubs.Add(subName)
+                                If Not hasChanged Then
+                                    hasChanged = Not _ControlEvents.Contains(subName)
+                                End If
                             End If
                         End If
                     End If
                 End If
             Next
+
+            If Not hasChanged AndAlso _ControlEvents.Count = _GlobalSubs.Count Then Return
 
             _GlobalSubs.Sort()
             If _MdiView Is Nothing OrElse CStr(_MdiView.CmbControlNames.SelectedItem) = "(Global)" Then
@@ -935,7 +944,7 @@ EndSub
 
             For i = 0 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
-                Dim Tokens = New LineScanner().GetTokenEnumerator(line.GetText(), i)
+                Dim Tokens = LineScanner.GetTokenEnumerator(line.GetText(), i)
                 If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
                         Dim subName = Tokens.Current.Text

@@ -6,7 +6,13 @@ Namespace Microsoft.SmallBasic.Utility
     Public Class TextRun
         Inherits Run
 
-        Public Shared Shadows ReadOnly TextProperty As DependencyProperty = DependencyProperty.Register("Text", GetType(String), GetType(TextRun), New PropertyMetadata(AddressOf OnTextChanged))
+        Public Shared Shadows ReadOnly TextProperty As DependencyProperty =
+            DependencyProperty.Register(
+                      "Text",
+                      GetType(String),
+                      GetType(TextRun),
+                      New PropertyMetadata(AddressOf OnTextChanged)
+            )
 
         Public Overloads Property Text As String
             Get

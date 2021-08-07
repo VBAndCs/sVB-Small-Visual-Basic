@@ -211,7 +211,7 @@ Namespace WinForms
             AddHandler(handler As SmallBasicCallback)
                 Try
                     Dim VisualElement = GetListBox([Event].SenderForm, [Event].SenderControl)
-                    AddHandler VisualElement.SelectionChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
+                    AddHandler VisualElement.SelectionChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnSelection), ex.Message)
                 End Try

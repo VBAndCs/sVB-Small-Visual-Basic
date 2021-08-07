@@ -18,6 +18,7 @@ Namespace WinForms
             ListModuleMembers(GetType(Label))
             ListModuleMembers(GetType(Button))
             ListModuleMembers(GetType(ListBox))
+            ListModuleMembers(GetType(ImageBox))
 
             DeafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
             DeafaultControlEvents(NameOf(ListBox).ToLower()) = "OnSelection"
@@ -68,25 +69,32 @@ Namespace WinForms
 
         Public Shared Function GetEvents(controlName As String) As List(Of String)
             Dim events As New List(Of String)
-            For Each e In EventsInfo(NameOf(Control))
-                events.Add(e)
-            Next
+            If controlName = NameOf(Forms) Then Return events
 
-            If controlName = NameOf(Control) Then Return events
+            If controlName <> NameOf(ImageBox) Then
+                For Each e In EventsInfo(NameOf(Control))
+                    events.Add(e)
+                Next
+            End If
 
-            For Each e In EventsInfo(controlName)
-                If Not events.Contains(e) Then events.Add(e)
-            Next
+            If controlName <> NameOf(Control) Then
+                For Each e In EventsInfo(controlName)
+                    If Not events.Contains(e) Then events.Add(e)
+                Next
+            End If
 
             events.Sort()
             Return events
         End Function
 
-        Public Shared Function GetMethodInfo(controlName As String, methodName As String) As ([Module] As String, ParamsCount As Integer)
+        Public Shared Function GetMethodInfo(controlName As String, methodName As String) As ([Module] As String, ParamsCount As Integer, secondIsControl As Boolean)
             Dim method = methodName.ToLower()
             Dim moduleName = ""
             If ModuleInfo(controlName).Contains(method) Then
                 moduleName = controlName
+
+            ElseIf controlName = NameOf(ImageBox) Then
+                Return ("", 0, False)
 
             ElseIf ModuleInfo(NameOf(Control)).Contains(method) Then
                 moduleName = NameOf(Control)
@@ -95,12 +103,12 @@ Namespace WinForms
                 moduleName = NameOf(Forms)
 
             Else
-                Return ("", 0)
+                Return ("", 0, False)
             End If
 
             Dim t = Type.GetType(WinFormsNS & moduleName)
             Dim params = t?.GetMethods.Where(Function(m) m.Name.ToLower() = method).FirstOrDefault?.GetParameters()
-            Return (moduleName, If(params Is Nothing, 0, params.Length))
+            Return (moduleName, If(params Is Nothing, 0, params.Length), moduleName <> NameOf(Form))
         End Function
 
         Public Shared Function ParseFormHints(txt As String) As FormInfo

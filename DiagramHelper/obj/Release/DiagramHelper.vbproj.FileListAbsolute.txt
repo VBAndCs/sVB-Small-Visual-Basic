@@ -66,3 +66,4 @@ F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.AssemblyReference.cache

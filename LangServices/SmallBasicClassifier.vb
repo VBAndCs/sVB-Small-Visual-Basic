@@ -101,7 +101,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim list As List(Of ClassificationSpan) = New List(Of ClassificationSpan)()
             Dim lineNumberFromPosition = textSpan.Snapshot.GetLineNumberFromPosition(textSpan.Start)
             Dim lineNumberFromPosition2 = textSpan.Snapshot.GetLineNumberFromPosition(textSpan.End)
-            Dim lineScanner As LineScanner = New LineScanner()
 
             For i = lineNumberFromPosition To lineNumberFromPosition2
                 Dim lineFromLineNumber = textSpan.Snapshot.GetLineFromLineNumber(i)

@@ -6,35 +6,41 @@ Imports System.Runtime.InteropServices
 
 Namespace Microsoft.SmallBasic
     Public Class LineScanner
+        Private Shared _lineScanner As New LineScanner
+
         Private _currentIndex As Integer
         Private _lineLength As Integer
         Private _lineText As String
         Private _decimalSeparator As Char = "."c
 
-        Public Function GetFirstToken(lineText As String, lineNumber As Integer) As TokenInfo
+        Private Sub New()
+
+        End Sub
+
+        Public Shared Function GetFirstToken(lineText As String, lineNumber As Integer) As TokenInfo
             Dim tokens = GetTokens(lineText, lineNumber, True)
             If tokens.Count = 0 Then Return TokenInfo.Illegal
             Return tokens(0)
         End Function
 
-        Public Function GetTokenEnumerator(lineText As String, lineNumber As Integer) As TokenEnumerator
+        Public Shared Function GetTokenEnumerator(lineText As String, lineNumber As Integer) As TokenEnumerator
             Dim tokenEnumerator As New TokenEnumerator(GetTokens(lineText, lineNumber))
             tokenEnumerator.LineNumber = lineNumber
             Return tokenEnumerator
         End Function
 
-        Public Function GetTokens(lineText As String, lineNumber As Integer, Optional firstTokenOnly As Boolean = False) As List(Of TokenInfo)
+        Public Shared Function GetTokens(lineText As String, lineNumber As Integer, Optional firstTokenOnly As Boolean = False) As List(Of TokenInfo)
             If Equals(lineText, Nothing) Then
                 Throw New ArgumentNullException("lineText")
             End If
 
-            _lineText = lineText
-            _lineLength = _lineText.Length
-            _currentIndex = 0
+            _lineScanner._lineText = lineText
+            _lineScanner._lineLength = lineText.Length
+            _lineScanner._currentIndex = 0
             Dim list As New List(Of TokenInfo)()
             Dim tokenInfo As New TokenInfo
 
-            While ScanNextToken(tokenInfo)
+            While _lineScanner.ScanNextToken(tokenInfo)
                 tokenInfo.Line = lineNumber
                 list.Add(tokenInfo)
                 If firstTokenOnly Then Exit While
