@@ -32,9 +32,11 @@ Namespace Microsoft.SmallBasic.Expressions
             Next
         End Sub
 
-        Private Function Lower(leftValue As String, Optional n As Integer = 0) As String
-            n += 1
-            Dim tmpVar = "__tmpArray__" & n
+        Private Shared counter = 0
+
+        Private Function Lower(leftValue As String) As String
+            counter += 1
+            Dim tmpVar = "__tmpArray__" & counter
             Dim code As New StringBuilder($"{tmpVar} = """"")
             code.AppendLine()
 
@@ -42,7 +44,8 @@ Namespace Microsoft.SmallBasic.Expressions
                 If TypeOf Arguments(i) Is InitializerExpression Then
                     Dim initExpr = CType(Arguments(i), InitializerExpression)
                     code.AppendLine()
-                    code.AppendLine(initExpr.Lower($"{tmpVar}[{i + 1}]", n))
+                    code.AppendLine(initExpr.Lower($"{tmpVar}[{i + 1}]"))
+                    counter -= 1
                 Else
                     code.AppendLine($"{tmpVar}[{i + 1}] = {Arguments(i)}")
                 End If
@@ -56,46 +59,15 @@ Namespace Microsoft.SmallBasic.Expressions
 
         Public Function LowerAndEmit(leftValue As String, scope As CodeGenScope) As Expression
             Dim code = Me.Lower(leftValue)
-            Statements.SubroutineStatement.Current = GetSubroutine(Me)
-            Dim _parser = Parser.Parse(code, scope.SymbolTable)
-            Statements.SubroutineStatement.Current = Nothing
-
-            Dim semantic As New SemanticAnalyzer(_parser, scope.TypeInfoBag)
-            semantic.Analyze()
-
-            'Build new fields
-            For Each key In _parser.SymbolTable.Variables.Keys
-                If Not scope.Fields.ContainsKey(key) Then
-                    Dim value As FieldInfo = scope.TypeBuilder.DefineField(key, GetType(Primitive), FieldAttributes.Private Or FieldAttributes.Static)
-                    scope.Fields.Add(key, value)
-                End If
-            Next
-
-            ' EmitIL
-            For Each item In _parser.ParseTree
-                item.PrepareForEmit(scope)
-            Next
-
-            For Each item In _parser.ParseTree
-                item.EmitIL(scope)
-            Next
-
-            Return CType(_parser.ParseTree(0), Statements.AssignmentStatement).LeftValue
+            Dim subroutine = SubroutineStatement.GetSubroutine(Me)
+            If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
+            Return ArrayExpression.ParseAndEmit(code, subroutine, scope)
         End Function
+
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
             LowerAndEmit("", scope).EmitIL(scope)
         End Sub
-
-
-
-        Private Function GetSubroutine(expression As Expression) As SubroutineStatement
-            Dim parent = expression.Parent
-            Do Until parent Is Nothing OrElse TypeOf parent Is SubroutineStatement
-                parent = parent.Parent
-            Loop
-            Return parent
-        End Function
 
         Public Overrides Function ToString() As String
             Dim stringBuilder As New StringBuilder("{")

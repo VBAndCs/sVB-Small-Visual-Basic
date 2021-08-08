@@ -30,9 +30,12 @@ Namespace Microsoft.SmallBasic
 
         Public Shared Sub LowerAndEmit(code As String, scope As CodeGenScope, Subroutine As Statements.SubroutineStatement)
             IgnoreVarErrors = True
+            Dim tempRoutine = Statements.SubroutineStatement.Current
             Statements.SubroutineStatement.Current = Subroutine
-            Dim _parser = Parser.Parse(code, scope.SymbolTable)
-            Statements.SubroutineStatement.Current = Nothing
+            Dim _parser = Parser.Parse(code, scope.SymbolTable, scope.TypeInfoBag)
+
+            'Dim semantic As New SemanticAnalyzer(_parser, scope.TypeInfoBag)
+            'semantic.Analyze()
 
             ' EmitIL
             For Each item In _parser.ParseTree
@@ -45,6 +48,8 @@ Namespace Microsoft.SmallBasic
             Next
 
             IgnoreVarErrors = False
+            Statements.SubroutineStatement.Current = tempRoutine
+
         End Sub
 
         Public Function GenerateExecutable() As Boolean

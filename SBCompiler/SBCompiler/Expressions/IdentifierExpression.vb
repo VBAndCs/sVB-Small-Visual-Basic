@@ -30,7 +30,7 @@ Namespace Microsoft.SmallBasic.Expressions
                 scope.ILGenerator.Emit(OpCodes.Ldsfld, field)
 
             ElseIf Not CodeGenerator.IgnoreVarErrors Then
-                scope.SymbolTable.Errors.Add(New [Error](Identifier, $"The variable `{Identifier.Text}` is used before beeing initialized."))
+                scope.SymbolTable.Errors.Add(New [Error](Identifier, $"The variable `{Identifier.Text}` is used before being initialized."))
             End If
         End Sub
 

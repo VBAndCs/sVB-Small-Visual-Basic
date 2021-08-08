@@ -1047,17 +1047,16 @@ Namespace Microsoft.SmallBasic
 
         Public Shared Function Compile(programText As String, outputFilePath As String) As List(Of [Error])
             Dim errors As List(Of [Error]) = Nothing
-            ' Try
-            Dim compiler1 As New Compiler
-                compiler1.Initialize()
+            Try
+                Dim compiler1 As New Compiler
                 Dim fileNameWithoutExtension As String = Path.GetFileNameWithoutExtension(outputFilePath)
                 Dim directoryName As String = Path.GetDirectoryName(outputFilePath)
                 errors = compiler1.Build(New StringReader(programText), fileNameWithoutExtension, directoryName)
 
-            'Catch ex As Exception
-            '    If errors Is Nothing Then errors = New List(Of [Error])
-            '    errors.Add(New [Error](-1, 0, ex.Message))
-            'End Try
+            Catch ex As Exception
+                If errors Is Nothing Then errors = New List(Of [Error])
+                errors.Add(New [Error](-1, 0, ex.Message))
+            End Try
 
             Return errors
         End Function

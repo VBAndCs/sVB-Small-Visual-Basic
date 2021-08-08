@@ -6,6 +6,7 @@ Imports Microsoft.SmallBasic.Statements
 Namespace Microsoft.SmallBasic.Completion
     Public Class CompletionHelper
         Private _compiler As Compiler
+        Public Shared AutoCompletion As Boolean
 
         Public Sub New()
             _compiler = New Compiler()
@@ -15,8 +16,11 @@ Namespace Microsoft.SmallBasic.Completion
             Return New CompletionBag(_compiler.TypeInfoBag, _compiler.Parser.SymbolTable)
         End Function
 
-        Public Function GetCompletionItems(ByVal source As TextReader, ByVal line As Integer, ByVal column As Integer) As CompletionBag
+        Public Function GetCompletionItems(source As TextReader, line As Integer, column As Integer) As CompletionBag
+            Completion.CompletionHelper.AutoCompletion = True
             _compiler.Compile(source)
+            Completion.CompletionHelper.AutoCompletion = False
+
             Dim emptyCompletionBag = GetEmptyCompletionBag()
             Dim statement As Statement = Nothing
 
@@ -166,7 +170,6 @@ Namespace Microsoft.SmallBasic.Completion
 
         Public Shared Sub FillMemberNames(ByVal completionBag As CompletionBag, ByVal typeInfo As TypeInfo)
             For Each method In typeInfo.Methods
-
                 If Not IsHiddenFromIntellisense(method.Value) Then
                     Dim completionItem As New CompletionItem() With {
                         .Name = method.Key,
@@ -230,5 +233,43 @@ Namespace Microsoft.SmallBasic.Completion
         Private Shared Function IsHiddenFromIntellisense(ByVal mi As MemberInfo) As Boolean
             Return mi.GetCustomAttributes(GetType(HideFromIntellisenseAttribute), inherit:=False).Length > 0
         End Function
+
+        Public Sub FillDynamicMembers(bag As CompletionBag, typeName As String)
+            For Each type In bag.SymbolTable.Dynamics
+                Dim x = TrimData(typeName)
+                Dim y = TrimData(type.Key)
+                If x.Contains(y) Then
+                    FillDynamicMembers(bag, type.Value)
+                End If
+            Next
+
+        End Sub
+
+        Function TrimData(name As String) As String
+            If name.StartsWith("data") Then Return name.Substring(4)
+            Return name.Substring(0, name.Length - 4)
+        End Function
+
+        Public Sub FillDynamicMembers(bag As CompletionBag, members As Dictionary(Of String, TokenInfo))
+
+            For Each [property] In members.Values
+                Dim Found = False
+                For Each item In bag.CompletionItems
+                    If item.Name = [property].Text Then
+                        Found = True
+                        Exit For
+                    End If
+                Next
+
+                If Found Then Continue For
+
+                bag.CompletionItems.Add(New CompletionItem() With {
+                        .Name = [property].Text,
+                        .DisplayName = [property].Text,
+                        .ItemType = CompletionItemType.PropertyName
+                 })
+            Next
+
+        End Sub
     End Class
 End Namespace

@@ -18,6 +18,21 @@ Namespace Microsoft.SmallBasic.Statements
         Public EndSubToken As TokenInfo
         Friend HasAReturnStatement As Boolean
 
+        Shared Function GetSubroutine(expression As Expressions.Expression) As SubroutineStatement
+            Return GetSubroutine(expression.Parent)
+        End Function
+
+        Shared Function GetSubroutine(Token As TokenInfo) As SubroutineStatement
+            Return GetSubroutine(Token.Parent)
+        End Function
+
+        Shared Function GetSubroutine(statement As Statement) As SubroutineStatement
+            Do Until statement Is Nothing OrElse TypeOf statement Is SubroutineStatement
+                statement = statement.Parent
+            Loop
+            Return statement
+        End Function
+
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             Name.Parent = Me

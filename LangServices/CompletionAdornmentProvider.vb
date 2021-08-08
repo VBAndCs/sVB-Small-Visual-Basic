@@ -205,8 +205,11 @@ Namespace Microsoft.SmallBasic.LanguageService
             Else
                 Dim value As TypeInfo = Nothing
 
-                If newCompletionBag.TypeInfoBag.Types.TryGetValue(identifierToken.NormalizedText, value) Then
+                Dim name = identifierToken.NormalizedText
+                If newCompletionBag.TypeInfoBag.Types.TryGetValue(name, value) Then
                     CompletionHelper.FillMemberNames(newCompletionBag, value)
+                ElseIf name.StartsWith("data") OrElse name.EndsWith("data") Then
+                    completionHelper.FillDynamicMembers(newCompletionBag, name)
                 End If
 
                 Dim controlName = identifierToken.NormalizedText

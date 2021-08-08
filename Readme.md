@@ -182,6 +182,32 @@ So, as a good practice:
 
 10. The editor has a perfect auto-indentation.
 
+11. Using naming convention to give sVB some info about the var type so it can make using them easier. 
+- The first naming convention: Any var ends with or starts with a control name (like Form1 or myLabel) will be treated as a Label, so you can use the short syntax Control.Property and the auto completion list will appear to help you complete method and properties names.
+
+- The second naming convention: Any var ends with or starts with the word  Data is treated as a dynamic object, and you can add properties to it, and get auto completion support when you use them.
+```
+CarData.Color = Color.Red
+CarData.Speed = 100
+x = CarData.Speed
+```
+
+In fact, sVB converts the above syntax to:
+```
+CarData["Color"] = Color.Red
+CarData["Speed"] = 100
+x = CarData["Speed"]
+```
+
+Note that this naming convention ignores var domain rules, to allow you reuse the properties across subs and functions. This is totally safe as it only affects the property list that will appear in the auto completion list, but it has no effect on the variable domain rules when you run the program. You may see properties names from a data object from another function, but you still can't read these properties values in code. It is just a way to make coding faster and easier.
+- The third naming convention: Any Data var that contains the name of another data var (after trimming the `Data` part of them bath) will show the union of their properties in the auto completion list. This allows you to `inherit` other data properties. As an example, of you use the names Car2Data, or myCarData in the above example, they will show the Color and Speed properties (coming from CarData) in the completion list"
+```
+Car2Data.Speed = 200
+Car2Data.Acceleration = 10
+```
+
+And if you use `MyCar2Data` you will inherit all properties from `MyCarData`, `Car2Data` and `CarData`!
+
 # ToDo:
 - Add more controls to the winForms library.
 - Support multi-from programs. Right now you can define other forms by code, but this will bring you back to the verbose code similar to SB's controls code. The designer can already open multiple forms, but I need to add the concept of the Project, and change SB compiler to add multiple modules in the Exe, so it can compile multiple form files into one exe.

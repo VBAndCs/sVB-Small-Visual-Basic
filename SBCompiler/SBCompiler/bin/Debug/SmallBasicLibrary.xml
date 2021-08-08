@@ -2620,6 +2620,14 @@ SmallBasicLibrary
  Turns the turtle 90 degrees to the left.
  </summary>
 </member>
+<member name="M:Microsoft.SmallBasic.WinForms.Color.GetRandomColor">
+ <summary>
+ Gets a valid random color.
+ </summary>
+ <returns>
+ A valid random color.
+ </returns>
+</member>
 <member name="M:Microsoft.SmallBasic.WinForms.Control.GetName(Microsoft.SmallBasic.Library.Primitive,Microsoft.SmallBasic.Library.Primitive)">
  <summary>
  Gets the name of the control.           

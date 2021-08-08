@@ -33,29 +33,29 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Private Sub AnalyzeExpression(ByVal expression As Expression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
+        Private Sub AnalyzeExpression(expression As Expression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
             Dim type As Type = expression.GetType()
 
             If type Is GetType(BinaryExpression) Then
-                AnalyzeBinaryExpression(TryCast(expression, BinaryExpression), leaveValueInStack, mustBeAssignable)
+                AnalyzeBinaryExpression(CType(expression, BinaryExpression), leaveValueInStack, mustBeAssignable)
 
             ElseIf type Is GetType(ArrayExpression) Then
-                AnalyzeArrayExpression(TryCast(expression, ArrayExpression), leaveValueInStack, mustBeAssignable)
+                AnalyzeArrayExpression(CType(expression, ArrayExpression), leaveValueInStack, mustBeAssignable)
 
             ElseIf type Is GetType(InitializerExpression) Then
-                AnalyzeInitializerExpression(TryCast(expression, InitializerExpression), leaveValueInStack, mustBeAssignable)
+                AnalyzeInitializerExpression(CType(expression, InitializerExpression), leaveValueInStack, mustBeAssignable)
 
             ElseIf type Is GetType(IdentifierExpression) Then
-                AnalyzeIdentifierExpression(TryCast(expression, IdentifierExpression), leaveValueInStack, mustBeAssignable)
+                AnalyzeIdentifierExpression(CType(expression, IdentifierExpression), leaveValueInStack, mustBeAssignable)
 
             ElseIf type Is GetType(MethodCallExpression) Then
-                AnalyzeMethodCallExpression(TryCast(expression, MethodCallExpression), leaveValueInStack, mustBeAssignable)
+                AnalyzeMethodCallExpression(CType(expression, MethodCallExpression), leaveValueInStack, mustBeAssignable)
 
             ElseIf type Is GetType(NegativeExpression) Then
-                AnalyzeNegativeExpression(TryCast(expression, NegativeExpression), leaveValueInStack, mustBeAssignable)
+                AnalyzeNegativeExpression(CType(expression, NegativeExpression), leaveValueInStack, mustBeAssignable)
 
             ElseIf type Is GetType(PropertyExpression) Then
-                AnalyzePropertyExpression(TryCast(expression, PropertyExpression), leaveValueInStack, mustBeAssignable)
+                AnalyzePropertyExpression(CType(expression, PropertyExpression), leaveValueInStack, mustBeAssignable)
             End If
         End Sub
 
@@ -134,13 +134,14 @@ Namespace Microsoft.SmallBasic
 
                 If Not _symbolTable.IsDefined(identifierExpression) Then
                     Dim identifier = identifierExpression.Identifier
-                    _symbolTable.Errors.Add(New [Error](identifier, $"The variable `{identifier.Text}` is used before beeing initialized."))
+                    _symbolTable.Errors.Add(New [Error](identifier, $"The variable `{identifier.Text}` is used before being initialized."))
                 End If
             End If
         End Sub
 
         Private Sub AnalyzeMethodCallExpression(methodCall As MethodCallExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
             NoteMethodCallReference(methodCall, leaveValueInStack, mustBeAssignable)
+
             If methodCall.TypeName.Token = Token.Illegal Then ' Function Call
                 Dim subName = methodCall.MethodName.NormalizedText
                 If Not _symbolTable.Subroutines.ContainsKey(subName) Then
@@ -164,7 +165,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzePropertyExpression(ByVal propertyExpression As PropertyExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
+        Private Sub AnalyzePropertyExpression(propertyExpression As PropertyExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
             NotePropertyReference(propertyExpression, leaveValueInStack, mustBeAssignable)
         End Sub
 
@@ -224,7 +225,7 @@ Namespace Microsoft.SmallBasic
                     _parser.AddError(label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("LabelNotFound"), New Object(0) {label.Text}))
                 Else
                     Dim labelStatement = CType(_symbolTable.Labels(label.NormalizedText).Parent, LabelStatement)
-                    If labelStatement.subroutine.Name.NormalizedText <> gotoStatement.subroutine?.Name.NormalizedText Then
+                    If labelStatement.subroutine?.Name.NormalizedText <> gotoStatement.subroutine?.Name.NormalizedText Then
                         _parser.SymbolTable.Errors.Add(New [Error](label, "GoTo can't jump accross subroutines."))
                     End If
                 End If
@@ -341,68 +342,90 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub NoteMethodCallReference(ByVal methodExpression As MethodCallExpression, ByVal leaveValueInStack As Boolean, ByVal isAssignable As Boolean)
-            Dim typeName = methodExpression.TypeName
+            Dim typeNameInfo = methodExpression.TypeName
             Dim methodName = methodExpression.MethodName
 
-            If typeName.Token = Token.Illegal OrElse methodName.Token = Token.Illegal Then
+            If typeNameInfo.Token = Token.Illegal OrElse methodName.Token = Token.Illegal Then
                 Return
             End If
 
             Dim value As TypeInfo = Nothing
+            Dim typeName = typeNameInfo.NormalizedText
 
-            If _typeInfoBag.Types.TryGetValue(typeName.NormalizedText, value) Then
+            If _typeInfoBag.Types.TryGetValue(TypeName, value) Then
                 Dim value2 As MethodInfo = Nothing
 
                 If value.Methods.TryGetValue(methodName.NormalizedText, value2) Then
                     Dim num As Integer = value2.GetParameters().Length
 
                     If num <> methodExpression.Arguments.Count Then
-                        _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("ArgumentNumberMismatch"), typeName.Text, methodName.Text, methodExpression.Arguments.Count, num))
+                        _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("ArgumentNumberMismatch"), typeNameInfo.Text, methodName.Text, methodExpression.Arguments.Count, num))
                     End If
 
                     If leaveValueInStack AndAlso value2.ReturnType Is GetType(Void) Then
                         Me._parser.AddError(methodName, String.Format(System.Globalization.CultureInfo.CurrentUICulture, Microsoft.SmallBasic.ResourceHelper.GetString("ReturnValueExpectedFromVoidMethod"),
-                                New Object() {typeName.Text, methodName.Text}))
+                                New Object() {typeNameInfo.Text, methodName.Text}))
                     End If
-
                 Else
-                    _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("MethodNotFound"), New Object(1) {methodName.Text, typeName.Text}))
+                    _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("MethodNotFound"), New Object(1) {methodName.Text, typeNameInfo.Text}))
                 End If
             Else
-                _parser.AddError(typeName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("TypeNotFound"), New Object(0) {typeName.Text}))
+                _parser.AddError(typeNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("TypeNotFound"), New Object(0) {typeNameInfo.Text}))
             End If
         End Sub
 
-        Private Sub NotePropertyReference(ByVal propertyExpression As PropertyExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
-            Dim typeName = propertyExpression.TypeName
-            Dim propertyName = propertyExpression.PropertyName
+        Private Sub NotePropertyReference(propExpr As PropertyExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
+            Dim typeNameInfo = propExpr.TypeName
+            Dim propertyNameInfo = propExpr.PropertyName
 
-            If typeName.Token = Token.Illegal OrElse propertyName.Token = Token.Illegal Then
+            If typeNameInfo.Token = Token.Illegal OrElse propertyNameInfo.Token = Token.Illegal Then
                 Return
             End If
 
             Dim value As TypeInfo = Nothing
+            Dim typeName = typeNameInfo.NormalizedText
+            Dim propertyName = propertyNameInfo.NormalizedText
 
-            If _typeInfoBag.Types.TryGetValue(typeName.NormalizedText, value) Then
+            If propExpr.IsDynamic Then
+                Dim subroutine = SubroutineStatement.Current
+                If subroutine Is Nothing Then
+                    subroutine = SubroutineStatement.GetSubroutine(propExpr)
+                End If
+
+                Dim id = New IdentifierExpression() With {
+                        .Identifier = typeNameInfo,
+                        .Subroutine = subroutine
+                }
+
+                If Not _symbolTable.IsDefined(id) Then
+                    _symbolTable.Errors.Add(New [Error](typeNameInfo, $"The variable `{typeNameInfo.Text}` is used before being initialized."))
+
+                ElseIf _symbolTable.Dynamics.ContainsKey(typeName) Then
+                    If Not _symbolTable.Dynamics(typeName).ContainsKey(propertyName) Then
+                        _symbolTable.Errors.Add(New [Error](propertyNameInfo, "Trying to read property before setting its value. "))
+                    End If
+                End If
+
+            ElseIf _typeInfoBag.Types.TryGetValue(typeName, value) Then
                 Dim prop As PropertyInfo = Nothing
                 Dim ev As EventInfo = Nothing
 
-                If value.Properties.TryGetValue(propertyName.NormalizedText, prop) Then
+                If value.Properties.TryGetValue(propertyName, prop) Then
                     If mustBeAssignable AndAlso Not prop.CanWrite Then
-                        _parser.AddError(propertyName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsReadOnly"), New Object(1) {propertyName.Text, typeName.Text}))
+                        _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsReadOnly"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
                     End If
 
                     If leaveValueInStack AndAlso Not prop.CanRead Then
-                        _parser.AddError(propertyName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsWriteOnly"), New Object(1) {propertyName.Text, typeName.Text}))
+                        _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsWriteOnly"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
                     End If
 
-                ElseIf value.Events.TryGetValue(propertyName.NormalizedText, ev) Then
-                    _parser.AddError(propertyName, $"Event {ev.Name} can only be set to a Sub.")
+                ElseIf value.Events.TryGetValue(propertyNameInfo.NormalizedText, ev) Then
+                    _parser.AddError(propertyNameInfo, $"Event {ev.Name} can only be set to a Sub.")
                 Else
-                    _parser.AddError(propertyName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyNotFound"), New Object(1) {propertyName.Text, typeName.Text}))
+                    _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyNotFound"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
                 End If
             Else
-                _parser.AddError(typeName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("TypeNotFound"), New Object(0) {typeName.Text}))
+                _parser.AddError(typeNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("TypeNotFound"), New Object(0) {typeNameInfo.Text}))
             End If
         End Sub
 

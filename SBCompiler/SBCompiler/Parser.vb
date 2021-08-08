@@ -14,6 +14,7 @@ Namespace Microsoft.SmallBasic
         Private _currentLineEnumerator As TokenEnumerator
         Private _rewindRequested As Boolean
         Private _FunctionsCall As New List(Of MethodCallExpression)
+        Public ReadOnly Property TypeInfoBag As TypeInfoBag
         Public Property Errors As List(Of [Error])
 
         Public ReadOnly Property ParseTree As List(Of Statement)
@@ -242,7 +243,7 @@ Namespace Microsoft.SmallBasic
                 .StartToken = tokenEnumerator.Current,
                 .SubToken = tokenEnumerator.Current
             }
-
+            Dim tempRoutine = SubroutineStatement.Current
             SubroutineStatement.Current = subroutine
 
             tokenEnumerator.MoveNext()
@@ -263,7 +264,7 @@ Namespace Microsoft.SmallBasic
                         paramDef.AppendLine($"{param} = Stack.PopValue(""_sVB_Arguments"")")
                     Next
 
-                    Dim _parser = Parser.Parse(paramDef.ToString(), New SymbolTable(New List(Of [Error])))
+                    Dim _parser = Parser.Parse(paramDef.ToString(), New SymbolTable(New List(Of [Error]), _TypeInfoBag), _TypeInfoBag)
                     For Each statment As AssignmentStatement In _parser._ParseTree
                         statment.IsLocalVariable = True
                         subroutine.Body.Add(statment)
@@ -307,7 +308,7 @@ Namespace Microsoft.SmallBasic
             End While
 
             subroutine.Body.Add(returnLabelStatement)
-            SubroutineStatement.Current = Nothing
+            SubroutineStatement.Current = tempRoutine
 
             If flag Then
                 tokenEnumerator.MoveNext()
@@ -750,14 +751,15 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Public Sub New()
-            Me.New(Nothing)
+            Me.New(Nothing, Nothing)
         End Sub
 
 
-        Public Sub New(ByVal errors As List(Of [Error]))
+        Public Sub New(errors As List(Of [Error]), typeInfoBag As TypeInfoBag)
             _Errors = errors
+            _TypeInfoBag = typeInfoBag
             If _Errors Is Nothing Then _Errors = New List(Of [Error])()
-            _SymbolTable = New SymbolTable(_Errors)
+            _SymbolTable = New SymbolTable(_Errors, typeInfoBag)
         End Sub
 
 
@@ -767,6 +769,8 @@ Namespace Microsoft.SmallBasic
             If reader Is Nothing Then
                 Throw New ArgumentNullException("reader")
             End If
+
+            _TypeInfoBag = TypeInfoBag
 
             If keepSynbols Then
                 keepSynbols = False
@@ -794,9 +798,10 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Public Shared Function Parse(code As String, symbolTable As SymbolTable) As Parser
-            Dim _parser As New Parser
+        Public Shared Function Parse(code As String, symbolTable As SymbolTable, typeInfoBag As TypeInfoBag) As Parser
+            Dim _parser As New Parser()
             _parser._SymbolTable = symbolTable
+            _parser._TypeInfoBag = typeInfoBag
             _parser.keepSynbols = True
             _parser.Parse(New IO.StringReader(code))
             Return _parser

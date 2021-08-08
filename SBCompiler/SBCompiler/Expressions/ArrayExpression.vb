@@ -1,6 +1,9 @@
 ﻿Imports System
 Imports System.Globalization
+Imports System.Reflection
 Imports System.Reflection.Emit
+Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic.Statements
 
 Namespace Microsoft.SmallBasic.Expressions
     <Serializable>
@@ -9,6 +12,37 @@ Namespace Microsoft.SmallBasic.Expressions
 
         Public Property LeftHand As Expression
         Public Property Indexer As Expression
+
+        Public Shared Function ParseAndEmit(code As String, subroutine As SubroutineStatement, scope As CodeGenScope) As Expression
+            Dim tempRoutine = SubroutineStatement.Current
+            SubroutineStatement.Current = subroutine
+            Dim _parser = Parser.Parse(code, scope.SymbolTable, scope.TypeInfoBag)
+
+            Dim semantic As New SemanticAnalyzer(_parser, scope.TypeInfoBag)
+            semantic.Analyze()
+
+            'Build new fields
+            For Each key In _parser.SymbolTable.Variables.Keys
+                If Not scope.Fields.ContainsKey(key) Then
+                    Dim value = scope.TypeBuilder.DefineField(key, GetType(Primitive), FieldAttributes.Private Or FieldAttributes.Static)
+                    scope.Fields.Add(key, value)
+                End If
+            Next
+
+            ' EmitIL
+            For Each item In _parser.ParseTree
+                item.PrepareForEmit(scope)
+            Next
+
+            For Each item In _parser.ParseTree
+                item.EmitIL(scope)
+            Next
+
+            Statements.SubroutineStatement.Current = tempRoutine
+
+            Return CType(_parser.ParseTree(0), Statements.AssignmentStatement).LeftValue
+        End Function
+
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
@@ -61,8 +95,8 @@ Namespace Microsoft.SmallBasic.Expressions
                     Dim field = scope.Fields(identifierExpression.Identifier.NormalizedText)
                     scope.ILGenerator.Emit(OpCodes.Stsfld, field)
 
-                Else 'If Not CodeGenerator.IgnoreVarErrors Then
-                    scope.SymbolTable.Errors.Add(New [Error](identifier, $"The variable `{identifier.Text}` is used before beeing initialized."))
+                Else
+                    scope.SymbolTable.Errors.Add(New [Error](identifier, $"The variable `{identifier.Text}` is used before being initialized."))
                 End If
 
             End If

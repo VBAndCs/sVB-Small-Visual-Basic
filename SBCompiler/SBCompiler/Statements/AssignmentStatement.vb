@@ -20,6 +20,10 @@ Namespace Microsoft.SmallBasic.Statements
 
             If LeftValue IsNot Nothing Then
                 LeftValue.Parent = Me
+                Dim prop = TryCast(LeftValue, PropertyExpression)
+                If prop IsNot Nothing Then
+                    prop.isSet = True
+                End If
                 LeftValue.AddSymbols(symbolTable)
             End If
 
@@ -65,22 +69,30 @@ Namespace Microsoft.SmallBasic.Statements
                 End If
 
             ElseIf propertyExpression IsNot Nothing Then
-                Dim typeInfo = scope.TypeInfoBag.Types(propertyExpression.TypeName.NormalizedText)
-
-                If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.NormalizedText, value) Then
-                    Dim identifierExpression2 = TryCast(RightValue, IdentifierExpression)
-                    Dim tokenInfo = scope.SymbolTable.Subroutines(identifierExpression2.Identifier.NormalizedText)
-                    Dim meth = scope.MethodBuilders(tokenInfo.NormalizedText)
-                    scope.ILGenerator.Emit(OpCodes.Ldnull)
-                    scope.ILGenerator.Emit(OpCodes.Ldftn, meth)
-                    scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallBasicCallback).GetConstructors()(0))
-                    scope.ILGenerator.EmitCall(OpCodes.Call, value.GetAddMethod(), Nothing)
-
+                If propertyExpression.IsDynamic Then
+                    Dim code = $"{propertyExpression.TypeName.Text}[""{propertyExpression.PropertyName.Text}""] = {RightValue}"
+                    Dim subroutine = SubroutineStatement.GetSubroutine(LeftValue)
+                    If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
+                    ArrayExpression.ParseAndEmit(code, subroutine, scope)
                 Else
-                    Dim propertyInfo = typeInfo.Properties(propertyExpression.PropertyName.NormalizedText)
-                    Dim setMethod = propertyInfo.GetSetMethod()
-                    RightValue.EmitIL(scope)
-                    scope.ILGenerator.EmitCall(OpCodes.Call, setMethod, Nothing)
+                    Dim typeInfo = scope.TypeInfoBag.Types(propertyExpression.TypeName.NormalizedText)
+
+                    If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.NormalizedText, value) Then
+                        Dim identifierExpression2 = TryCast(RightValue, IdentifierExpression)
+                        Dim tokenInfo = scope.SymbolTable.Subroutines(identifierExpression2.Identifier.NormalizedText)
+                        Dim meth = scope.MethodBuilders(tokenInfo.NormalizedText)
+                        scope.ILGenerator.Emit(OpCodes.Ldnull)
+                        scope.ILGenerator.Emit(OpCodes.Ldftn, meth)
+                        scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallBasicCallback).GetConstructors()(0))
+                        scope.ILGenerator.EmitCall(OpCodes.Call, value.GetAddMethod(), Nothing)
+
+                    Else
+                        Dim propertyInfo = typeInfo.Properties(propertyExpression.PropertyName.NormalizedText)
+                        Dim setMethod = propertyInfo.GetSetMethod()
+                        RightValue.EmitIL(scope)
+                        scope.ILGenerator.EmitCall(OpCodes.Call, setMethod, Nothing)
+                    End If
+
                 End If
             End If
         End Sub

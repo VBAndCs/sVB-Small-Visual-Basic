@@ -14,7 +14,6 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                 If _compiler Is Nothing Then
                     _compiler = New Compiler()
-                    _compiler.Initialize()
                 End If
 
                 Return _compiler
@@ -26,7 +25,6 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Function Compile(programText As String, outputFilePath As String, errors As ICollection(Of String)) As Boolean
             Try
                 Dim compiler As New Compiler()
-                compiler.Initialize()
                 Dim fileNameWithoutExtension = Path.GetFileNameWithoutExtension(outputFilePath)
                 Dim directoryName = Path.GetDirectoryName(outputFilePath)
                 Dim list As List(Of [Error]) = compiler.Build(New StringReader(programText), fileNameWithoutExtension, directoryName)
@@ -45,7 +43,6 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Function Compile(programText As String, errors As ICollection(Of String)) As Compiler
             Try
                 Dim compiler As Compiler = New Compiler()
-                compiler.Initialize()
                 Dim list As List(Of [Error]) = compiler.Compile(New StringReader(programText))
 
                 For Each item In list

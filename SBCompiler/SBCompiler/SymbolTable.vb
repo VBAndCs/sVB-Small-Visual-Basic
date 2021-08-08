@@ -13,19 +13,57 @@ Namespace Microsoft.SmallBasic
 
         Public ReadOnly Property Locals As New Dictionary(Of String, Expressions.IdentifierExpression)
 
+        Public ReadOnly Property Dynamics As New Dictionary(Of String, Dictionary(Of String, TokenInfo))
+
         Public ReadOnly Property Subroutines As New Dictionary(Of String, TokenInfo)
+
+        Friend Sub AddDynamic(prop As PropertyExpression)
+            Dim typeNameInfo = prop.TypeName
+            Dim propertyNameInfo = prop.PropertyName
+
+            If typeNameInfo.Token = Token.Illegal OrElse propertyNameInfo.Token = Token.Illegal Then
+                Return
+            End If
+
+            Dim value As TypeInfo = Nothing
+            Dim typeName = typeNameInfo.NormalizedText
+            Dim propertyName = propertyNameInfo.NormalizedText
+
+            If Not _typeInfoBag.Types.TryGetValue(typeName, value) Then
+                prop.IsDynamic = True
+                If _Dynamics.ContainsKey(typeName) Then
+                    Dim fileds = _Dynamics(typeName)
+                    If Not fileds.ContainsKey(propertyName) Then
+                        If prop.isSet Then fileds.Add(propertyName, propertyNameInfo)
+                    End If
+
+                ElseIf prop.isSet Then
+                    _Dynamics.Add(typeName, New Dictionary(Of String, TokenInfo) From {{propertyName, propertyNameInfo}})
+                    Dim subroutine = If(_Variables.ContainsKey(typeName), Nothing, Statements.SubroutineStatement.GetSubroutine(prop))
+                    Dim id = New IdentifierExpression() With {
+                        .Identifier = typeNameInfo,
+                        .Subroutine = subroutine
+                    }
+                    AddVariable(id, subroutine IsNot Nothing)
+                    AddVariableInitialization(typeNameInfo)
+                End If
+            End If
+        End Sub
 
         Public ReadOnly Property Labels As New Dictionary(Of String, TokenInfo)
 
-        Public Sub New(ByVal errors As List(Of [Error]))
-            _Errors = errors
+        Dim _typeInfoBag As TypeInfoBag
 
+        Public Sub New(ByVal errors As List(Of [Error]), typeInfoBag As TypeInfoBag)
+            _Errors = errors
+            _typeInfoBag = typeInfoBag
             If _Errors Is Nothing Then
                 _Errors = New List(Of [Error])()
             End If
         End Sub
 
         Public Sub CopyFrom(symbolTable As SymbolTable)
+            _typeInfoBag = symbolTable._typeInfoBag
             For Each info In symbolTable._Locals
                 _Locals(info.Key) = info.Value
             Next
@@ -48,6 +86,7 @@ Namespace Microsoft.SmallBasic
             _Subroutines.Clear()
             _Variables.Clear()
             _Locals.Clear()
+            _Dynamics.Clear()
         End Sub
 
         Public Sub AddVariable(variable As Expressions.IdentifierExpression, Optional isLocal As Boolean = False)
@@ -59,6 +98,7 @@ Namespace Microsoft.SmallBasic
 
             If isLocal Then
                 _Locals.Add(key, variable)
+
             ElseIf Not _Variables.ContainsKey(variableName) Then
                 If Subroutine Is Nothing Then
                     _Variables.Add(variableName, variable.Identifier)
@@ -76,10 +116,16 @@ Namespace Microsoft.SmallBasic
             Return $"{Subroutine.Name.NormalizedText}.{variableName}"
         End Function
 
+
+
         Public Function IsDefined(variable As IdentifierExpression) As Boolean
-            If _Variables.ContainsKey(variable.Identifier.NormalizedText) Then Return True
+            Dim var = variable.Identifier.NormalizedText
+            If _Variables.ContainsKey(var) Then Return True
+
             Dim key = GetKey(variable)
             If _Locals.ContainsKey(key) Then
+                If Not Completion.CompletionHelper.AutoCompletion Then Return True
+
                 Dim varUse = variable.Identifier
                 Dim varDeclaration = _Locals(key).Identifier
                 Select Case varUse.Line
@@ -93,7 +139,7 @@ Namespace Microsoft.SmallBasic
             Return False
         End Function
 
-        Public Sub AddVariableInitialization(ByVal variable As TokenInfo)
+        Public Sub AddVariableInitialization(variable As TokenInfo)
             If Not InitializedVariables.ContainsKey(variable.NormalizedText) Then
                 InitializedVariables.Add(variable.NormalizedText, variable)
             End If

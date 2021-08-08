@@ -27,7 +27,6 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Sub New(ByVal textBuffer As ITextBuffer, ByVal classificationTypeRegistry As IClassificationTypeRegistry)
             If Not textBuffer.Properties.TryGetProperty(GetType(Compiler), compiler) Then
                 compiler = New Compiler()
-                compiler.Initialize()
                 textBuffer.Properties.AddProperty(GetType(Compiler), compiler)
             End If
 

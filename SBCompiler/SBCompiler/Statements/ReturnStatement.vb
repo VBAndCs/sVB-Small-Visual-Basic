@@ -16,6 +16,7 @@ Namespace Microsoft.SmallBasic.Statements
                 End If
             Else
                 ReturnExpression.Parent = Me
+                ReturnExpression.AddSymbols(symbolTable)
             End If
             If Subroutine IsNot Nothing Then Subroutine.HasAReturnStatement = True
         End Sub

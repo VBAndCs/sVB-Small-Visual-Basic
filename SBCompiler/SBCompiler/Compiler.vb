@@ -16,12 +16,12 @@ Namespace Microsoft.SmallBasic
         Public ReadOnly Property TypeInfoBag As TypeInfoBag
 
         Public Sub New()
-            _Parser = New Parser(_errors)
             _TypeInfoBag = New TypeInfoBag()
             Initialize()
+            _Parser = New Parser(_errors, _TypeInfoBag)
         End Sub
 
-        Public Sub Initialize()
+        Private Sub Initialize()
             PopulateReferences()
             PopulateClrSymbols()
             PopulatePrimitiveMethods()
