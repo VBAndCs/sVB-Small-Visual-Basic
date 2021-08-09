@@ -45,7 +45,6 @@ Namespace Microsoft.SmallBasic.Expressions
                     Dim initExpr = CType(Arguments(i), InitializerExpression)
                     code.AppendLine()
                     code.AppendLine(initExpr.Lower($"{tmpVar}[{i + 1}]"))
-                    counter -= 1
                 Else
                     code.AppendLine($"{tmpVar}[{i + 1}] = {Arguments(i)}")
                 End If
@@ -54,6 +53,7 @@ Namespace Microsoft.SmallBasic.Expressions
             If leftValue <> "" Then
                 code.AppendLine($"{leftValue} = {tmpVar}")
             End If
+            counter -= 1
             Return code.ToString()
         End Function
 

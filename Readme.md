@@ -199,7 +199,7 @@ CarData["Speed"] = 100
 x = CarData["Speed"]
 ```
 
-Note that this naming convention ignores var domain rules, to allow you reuse the properties across subs and functions. This is totally safe as it only affects the property list that will appear in the auto completion list, but it has no effect on the variable domain rules when you run the program. You may see properties names from a data object from another function, but you still can't read these properties values in code. It is just a way to make coding faster and easier.
+Note that this naming convention rule ignores var domain rules, to allow you reuse the properties across subs and functions. This is totally safe as it only affects the property list that will appear in the auto completion list, but it has no effect on the variable domain rules when you run the program. You may see properties names from a data object from another function, but you still can't read these properties values in code. It is just a way to make coding faster and easier.
 - The third naming convention: Any Data var that contains the name of another data var (after trimming the `Data` part of them bath) will show the union of their properties in the auto completion list. This allows you to `inherit` other data properties. As an example, of you use the names Car2Data, or myCarData in the above example, they will show the Color and Speed properties (coming from CarData) in the completion list"
 ```
 Car2Data.Speed = 200

@@ -1,0 +1,33 @@
+x = {CreateArray(1, 5), CreateArray(6, 3), CreateArray(9, 7)}
+ShowArray(x[1])
+ShowArray(x[2])
+ShowArray(GetSubArray(x[3], 3, 5))
+
+
+Function CreateArray(start, count)
+   For i = 1 To count
+      Arr[i] = start
+      start = start + 1
+   Next
+   Return arr
+EndFunction
+
+
+Function GetSubArray(arr, start, count)
+   For i = 1 To count
+      subArr[i] = arr[start]
+      start = start + 1
+   Next
+   Return subArr
+EndFunction
+
+
+Sub ShowArray(arr)
+   str = "{"
+   L = Array.GetItemCount(arr)
+   For i = 1 To L - 1
+      str = str + arr[i] + ", "
+   Next
+   str = str + arr[L] + "}"
+   TextWindow.WriteLine(str)
+EndSub
