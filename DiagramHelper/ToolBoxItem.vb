@@ -27,30 +27,63 @@
         Me.BorderBrush = Brushes.Black
     End Sub
 
+
+    Dim _isSelected As Boolean
+    Dim except As ToolBoxItem
+
+    Public Property IsSelected As Boolean
+        Get
+            Return _isSelected
+        End Get
+
+        Set(value As Boolean)
+            If except Is Me Then
+                except = Nothing
+                Return
+            End If
+
+            If value Then
+                except = Me
+                ToolBox.DeSelectAll()
+                _isSelected = True
+                Me.BorderThickness = New Thickness(2)
+                ToolBox.SelectedItem = Me
+            Else
+                _isSelected = False
+                ToolBox.SelectedItem = Nothing
+                Me.BorderThickness = New Thickness(If(Me.BorderBrush Is Brushes.Brown, 1, 0))
+            End If
+        End Set
+    End Property
+
     Private Sub ToolBoxItem_MouseEnter(sender As Object, e As MouseEventArgs) Handles Me.MouseEnter
-        Me.BorderThickness = New Thickness(1)
+        If Not _isSelected Then Me.BorderThickness = New Thickness(1)
+        Me.BorderBrush = Brushes.Brown
     End Sub
 
     Private Sub ToolBoxItem_MouseLeave(sender As Object, e As MouseEventArgs) Handles Me.MouseLeave
-        If Not IsDragging Then Me.BorderThickness = New Thickness(0)
+        If Not (IsDragging OrElse _isSelected) Then Me.BorderThickness = New Thickness(0)
+        Me.BorderBrush = Brushes.Black
     End Sub
 
     Private Sub ToolBoxItem_MouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs) Handles Me.MouseLeftButtonDown
-        Me.BorderThickness = New Thickness(2)
-    End Sub
-
-    Private Sub ToolBoxItem_MouseLeftButtonUp(sender As Object, e As MouseButtonEventArgs) Handles Me.MouseLeftButtonUp
-        Me.BorderThickness = New Thickness(1)
+        Me.IsSelected = Not _isSelected
     End Sub
 
     Dim IsDragging As Boolean = False
+    Friend ToolBox As ToolBox
 
     Private Sub ToolBoxItem_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
         If e.LeftButton = MouseButtonState.Pressed Then
             IsDragging = True
             Dim x = DragDrop.DoDragDrop(Me, Me, DragDropEffects.Copy)
             IsDragging = False
-            Me.BorderThickness = New Thickness(0)
+            Dim pos = e.GetPosition(Me)
+            If _isSelected AndAlso (pos.X < 0 OrElse pos.Y < 0 OrElse pos.X > Me.ActualWidth OrElse pos.Y > Me.ActualWidth) Then
+                Me.IsSelected = False
+            End If
+
+            If Not _isSelected Then Me.BorderThickness = New Thickness(0)
         End If
     End Sub
 End Class

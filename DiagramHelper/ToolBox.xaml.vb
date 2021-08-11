@@ -1,6 +1,7 @@
 ﻿Public Class ToolBox
 
     Dim tabsLoaded As Boolean
+    Dim Items As New List(Of ToolBoxItem)
 
     Private Sub ToolBox_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         If tabsLoaded Then Return
@@ -38,6 +39,8 @@
                         WrpPnl2.Children.Remove(Diagram)
                         Dim Item As New ToolBoxItem(Diagram)
                         WrpPnl.Children.Add(Item)
+                        Item.ToolBox = Me
+                        Items.Add(Item)
                     Catch ex As Exception
 
                     End Try
@@ -48,6 +51,8 @@
                     Dim diagram = Helper.CreateDiagram(FileName)
                     Dim Item As New ToolBoxItem(diagram, FileName)
                     WrpPnl.Children.Add(Item)
+                    Item.ToolBox = Me
+                    Items.Add(Item)
                 Catch ex As Exception
 
                 End Try
@@ -55,6 +60,51 @@
             End If
         Next
         ToolBoxTabs.Children.Add(Expan)
+    End Sub
+
+
+    Dim _selectedItem As ToolBoxItem
+    Friend Property SelectedItem As ToolBoxItem
+        Get
+            Return _selectedItem
+        End Get
+
+        Set(value As ToolBoxItem)
+            _selectedItem = value
+            Designer.SelectedToolBoxItem = value
+            If value Is Nothing Then
+                Designer.Cursor = Nothing
+            Else
+                Designer.Cursor = Cursors.Pen
+            End If
+        End Set
+    End Property
+
+    Public Sub DeSelectAll()
+        For Each item In Items
+            item.IsSelected = False
+        Next
+    End Sub
+
+
+    Public Property Designer As Designer
+        Get
+            Return GetValue(DesignerProperty)
+        End Get
+
+        Set(ByVal value As Designer)
+            SetValue(DesignerProperty, value)
+        End Set
+    End Property
+
+    Public Shared ReadOnly DesignerProperty As DependencyProperty =
+                           DependencyProperty.Register("Designer",
+                           GetType(Designer), GetType(ToolBox))
+
+    Private Sub UserControl_PreviewKeyDown(sender As Object, e As KeyEventArgs)
+        If e.Key = Key.Escape Then
+            Me.DeSelectAll()
+        End If
     End Sub
 End Class
 

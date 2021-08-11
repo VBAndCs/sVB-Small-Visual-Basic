@@ -36,7 +36,6 @@ EndSub
 '__________________________________
 Sub btnSubtract_OnClick  
   If Validate() Then      
-     Result = n1 - n2 
      lblResult.Text = "Result = " + (n1 - n2)     
   EndIf  
 EndSub
@@ -44,7 +43,6 @@ EndSub
 '__________________________________
 Sub btnMultply_OnClick
   If Validate() Then      
-     Result = n1 * n2 
      lblResult.Text = "Result = " + (n1 * n2)
   EndIf 
 EndSub

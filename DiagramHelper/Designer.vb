@@ -104,6 +104,8 @@ Public Class Designer
 
     End Sub
 
+    Friend SelectedToolBoxItem As ToolBoxItem
+
     Friend Property LocationVisibility As Windows.Visibility
         Get
             Return TbLeftLocation.Visibility
@@ -526,9 +528,19 @@ Public Class Designer
     End Function
 
     Private Sub Designer_Drop(sender As Object, e As DragEventArgs) Handles Me.Drop
-        Dim TbItem As ToolBoxItem = e.Data.GetData(GetType(ToolBoxItem))
-        If TbItem IsNot Nothing Then
-            Dim newItem = TbItem.Child
+        Dim Pos = e.GetPosition(Me.DesignerCanvas)
+        Dim tbItem As ToolBoxItem = e.Data.GetData(GetType(ToolBoxItem))
+        DarwDiagram(tbItem, Pos)
+    End Sub
+
+    Private Sub DarwDiagram(
+                        tbItem As ToolBoxItem,
+                        pos As Point,
+                        Optional width As Double = -1,
+                        Optional height As Double = -1)
+
+        If tbItem IsNot Nothing Then
+            Dim newItem = tbItem.Child
             Dim diagram As UIElement
             Dim defaultName = ""
             Dim controlType As Type
@@ -538,12 +550,15 @@ Public Class Designer
             If sbControl Is Nothing Then
                 diagram = Helper.Clone(newItem)
                 controlType = GetType(Label)
-                typeName = TbItem.Name
+                typeName = tbItem.Name
             Else
                 diagram = Helper.Clone(sbControl.Control)
                 controlType = diagram.GetType()
                 typeName = controlType.Name
             End If
+
+            If width > -1 Then SetFrameWidth(diagram, Math.Max(20, width))
+            If height > -1 Then SetFrameHeight(diagram, Math.Max(20, height))
 
             defaultName = GetDefaultControlName(controlType, typeName)
 
@@ -554,14 +569,15 @@ Public Class Designer
 
             diagram.ClearValue(ToolTipProperty)
 
-            Dim Pos = e.GetPosition(Me.DesignerCanvas)
+
             Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items, diagram)
             Me.Items.Add(diagram)
             UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
 
-            Designer.SetLeft(diagram, Pos.X)
-            Designer.SetTop(diagram, Pos.Y)
+            Designer.SetLeft(diagram, pos.X)
+            Designer.SetTop(diagram, pos.Y)
             Helper.UpdateControl(Me)
+
             Dim Item = Helper.GetListBoxItem(diagram)
             Me.SelectedIndex = -1
             If Item IsNot Nothing Then
@@ -925,7 +941,12 @@ Public Class Designer
         If e.OriginalSource Is Editor Then Return
 
         If e.Key = Input.Key.Escape Then
-            Me.SelectedIndex = -1
+            If Me.SelectedToolBoxItem IsNot Nothing Then
+                SelectedToolBoxItem.IsSelected = False
+            Else
+                Me.SelectedIndex = -1
+            End If
+
             Return
         End If
 
@@ -982,7 +1003,7 @@ Public Class Designer
                     e.Handled = True
                     Return
                 Case Key.F4
-                    Me.ClosePage()
+                    ClosePage()
                     e.Handled = True
                     Return
             End Select
@@ -1071,12 +1092,15 @@ Public Class Designer
             Dim R As New Rect(SelStartPoint, e.GetPosition(Me.ConnectionCanvas))
             If R.Width = 0 AndAlso R.Height = 0 Then Return
 
-            VisualTreeHelper.HitTest(
+            If SelectedToolBoxItem Is Nothing Then
+                VisualTreeHelper.HitTest(
                     DesignerCanvas, Nothing,
                     AddressOf GetDiagramsHitTestResult,
                     New GeometryHitTestParameters(New RectangleGeometry(R))
-            )
-
+                )
+            Else
+                DarwDiagram(SelectedToolBoxItem, R.TopLeft, R.Width, R.Height)
+            End If
         End If
 
         Me.ReleaseMouseCapture()

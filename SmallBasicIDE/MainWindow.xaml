@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v1.2.3" Loaded="Window_Loaded"
+        Title="Small Visual Basic v1.2.4" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
     
@@ -128,10 +128,13 @@
 
                     <DH:ZoomBox x:Name="ZoomBox" Background="AliceBlue"
                                     Designer="{Binding ElementName=formDesigner}"  />
+
                     <DH:ProjectExplorer x:Name="ProjExplorer" Grid.Row="1" MaxHeight="180"
                                     Designer="{Binding ElementName=formDesigner}"  
-                                    ItemDoubleClick="ProjExplorer_ItemDoubleClick"                />
-                    <DH:ToolBox Grid.Row="2" />
+                                    ItemDoubleClick="ProjExplorer_ItemDoubleClick" />
+
+                    <DH:ToolBox x:Name="ToolBox"  Grid.Row="2" 
+                             Designer="{Binding ElementName=formDesigner}"  />
                 </Grid>
             </TabItem>
 

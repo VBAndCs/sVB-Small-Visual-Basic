@@ -1157,6 +1157,7 @@ Namespace Microsoft.SmallBasic
             formDesigner = DiagramHelper.Designer.CurrentPage
             ZoomBox.Designer = formDesigner
             ProjExplorer.Designer = formDesigner
+            ToolBox.Designer = formDesigner
 
             ' Remove the handler if exists not to be called twice
             RemoveHandler formDesigner.DiagramDoubleClick, AddressOf formDesigner_DiagramDoubleClick

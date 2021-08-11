@@ -70,7 +70,8 @@ Namespace WinForms
                                    .WindowStartupLocation = WindowStartupLocation.CenterScreen,
                                    .Name = name,
                                    .Title = Automation.AutomationProperties.GetHelpText(canvas),
-                                   .Content = canvas
+                                   .Content = canvas,
+                                   .ResizeMode = ResizeMode.CanMinimize
                             }
 
                             AddHandler wnd.Closing, AddressOf Form_Closing
