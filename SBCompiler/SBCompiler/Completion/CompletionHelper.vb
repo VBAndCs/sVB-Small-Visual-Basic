@@ -245,9 +245,15 @@ Namespace Microsoft.SmallBasic.Completion
 
         End Sub
 
+        Dim numChars() As Char = {"_"c, "0"c, "1"c, "2"c, "3"c, "4"c, "5"c, "6"c, "7"c, "8"c, "9"c}
+
         Function TrimData(name As String) As String
-            If name.StartsWith("data") Then Return name.Substring(4)
-            Return name.Substring(0, name.Length - 4)
+            If name.StartsWith("data") Then
+                name = name.Substring(4)
+            Else
+                name = name.Substring(0, name.Length - 4)
+            End If
+            Return name.TrimEnd(numChars).TrimStart("_"c)
         End Function
 
         Public Sub FillDynamicMembers(bag As CompletionBag, members As Dictionary(Of String, TokenInfo))
