@@ -259,16 +259,25 @@ Namespace Library
             If AsString Is Nothing Then
                 _primitive = ""
             End If
-            If TypeOf obj Is Primitive Then
-                Dim primitive1 As Primitive = CType(obj, Primitive)
-                If primitive1.AsString IsNot Nothing AndAlso primitive1.AsString.ToLower(CultureInfo.InvariantCulture) = "true" AndAlso AsString IsNot Nothing AndAlso AsString.ToLower(CultureInfo.InvariantCulture) = "true" Then
-                    Return True
-                End If
-                If IsNumber AndAlso primitive1.IsNumber Then
-                    Return GetAsDecimal() = primitive1.GetAsDecimal()
-                End If
 
-                Return AsString = primitive1.AsString
+            If TypeOf obj Is Primitive Then
+                Dim p1 As Primitive = CType(obj, Primitive)
+                Dim s1 = p1.AsString()
+                Dim s2 = Me.AsString()
+                Dim b1 = s1.ToLower(CultureInfo.InvariantCulture)
+                Dim b2 = s2.ToLower(CultureInfo.InvariantCulture)
+
+                If s1 = "" Then
+                    If s2 = "" OrElse b1 = "false" Then Return True
+                ElseIf b1 = "true" Then
+                    Return If(Me.IsNumber, Me.GetAsDecimal() <> 0, b2 = "true")
+                ElseIf b1 = "false" Then
+                    Return If(Me.IsNumber, Me.GetAsDecimal() = 0, b2 = "" OrElse b2 = "false")
+                ElseIf Me.IsNumber AndAlso p1.IsNumber Then
+                    Return Me.GetAsDecimal() = p1.GetAsDecimal()
+                Else
+                    Return s1 = s2
+                End If
             End If
 
             Return False
