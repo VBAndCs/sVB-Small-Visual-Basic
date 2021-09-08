@@ -1,4 +1,4 @@
-﻿Option Explicit On
+Option Explicit On
 Option Strict On
 
 
@@ -34,7 +34,6 @@ Namespace WinForms
                 MsgBox($"Sending `{value}` to {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{msg}")
             End If
         End Sub
-
 
 
         ''' <summary>
@@ -73,7 +72,10 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Wpf.Canvas.SetLeft(GetControl(formName, controlName), value)
+                        Dim obj = GetControl(formName, controlName)
+                        ' Remove any animation effect to allow setting the new value
+                        obj.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
+                        Wpf.Canvas.SetLeft(obj, value)
                     Catch ex As Exception
                         ShowErrorMesssage(formName, controlName, "Left", value, ex.Message)
                     End Try
@@ -100,7 +102,10 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Wpf.Canvas.SetTop(GetControl(formName, controlName), value)
+                        Dim obj = GetControl(formName, controlName)
+                        ' Remove any animation effect to allow setting the new value
+                        obj.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
+                        Wpf.Canvas.SetTop(obj, value)
                     Catch ex As Exception
                         ShowErrorMesssage(formName, controlName, "Top", value, ex.Message)
                     End Try
@@ -134,8 +139,12 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(formName, controlName)
                         If TypeOf obj Is Window Then
+                            ' Remove any animation effect to allow setting the new value
+                            obj.BeginAnimation(Wpf.Canvas.WidthProperty, Nothing)
                             CType(CType(obj, Window).Content, Wpf.Canvas).Width = value
                         Else
+                            ' Remove any animation effect to allow setting the new value
+                            obj.BeginAnimation(Wpf.Control.WidthProperty, Nothing)
                             obj.Width = value
                         End If
                     Catch ex As Exception
@@ -171,8 +180,12 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(formName, controlName)
                         If TypeOf obj Is Window Then
+                            ' Remove any animation effect to allow setting the new value
+                            obj.BeginAnimation(Wpf.Canvas.HeightProperty, Nothing)
                             CType(CType(obj, Window).Content, Wpf.Canvas).Height = value
                         Else
+                            ' Remove any animation effect to allow setting the new value
+                            obj.BeginAnimation(Wpf.Control.HeightProperty, Nothing)
                             obj.Height = value
                         End If
                     Catch ex As Exception
@@ -240,7 +253,17 @@ Namespace WinForms
 
         Private Shared ReadOnly BackColorProperty As _
                            DependencyProperty = DependencyProperty.RegisterAttached("BackColor",
-                           GetType(String), GetType(Wpf.Control))
+                           GetType(Media.Color), GetType(Wpf.Control),
+                           New PropertyMetadata(SystemColors.ControlColor, AddressOf BackColor_Changed))
+
+        Private Shared Sub BackColor_Changed(c As DependencyObject, e As DependencyPropertyChangedEventArgs)
+            Dim _color = CType(e.NewValue, Media.Color)
+            If TypeOf c Is Window Then
+                CType(CType(c, Window).Content, Wpf.Canvas).Background = New SolidColorBrush(_color)
+            End If
+
+            CType(c, Wpf.Control).Background = New SolidColorBrush(_color)
+        End Sub
 
         ''' <summary>
         ''' The backgeound color of the control.
@@ -252,16 +275,27 @@ Namespace WinForms
                  Sub()
                      Try
                          Dim c = GetControl(formName, controlName)
-                         Dim brush = TryCast(c.Background, SolidColorBrush)
-                         If brush IsNot Nothing Then
-                             GetBackColor = brush.Color.ToString()
-                         Else
-                             GetBackColor = CStr(c.GetValue(BackColorProperty))
-                         End If
+                         GetBackColor = GetBackColor(c).ToString()
                      Catch ex As Exception
                          ShowErrorMesssage(formName, controlName, "BackColor", ex.Message)
                      End Try
                  End Sub)
+        End Function
+
+        Public Shared Function GetBackColor(control As Wpf.Control) As Media.Color
+            Dim brush As SolidColorBrush
+            If TypeOf control Is Window Then
+                Dim canvas = CType(CType(control, Window).Content, Wpf.Canvas)
+                brush = TryCast(canvas.Background, SolidColorBrush)
+            Else
+                brush = TryCast(control.Background, SolidColorBrush)
+            End If
+
+            If Brush IsNot Nothing Then
+                Return brush.Color
+            Else
+                Return CType(control.GetValue(BackColorProperty), Media.Color)
+            End If
         End Function
 
         <ExProperty>
@@ -269,10 +303,9 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim c = GetControl(formName, controlName)
                         Dim _color = Color.FromString(value)
-                        c.Background = New SolidColorBrush(_color)
-                        c.SetValue(BackColorProperty, value.ToString())
+                        Dim c = GetControl(formName, controlName)
+                        c.SetValue(BackColorProperty, _color)
                     Catch ex As Exception
                         ShowErrorMesssage(formName, controlName, "BackColor", value, ex.Message)
                     End Try
@@ -354,6 +387,80 @@ Namespace WinForms
         End Function
 
 
+        Public Shared Function GetAngle(ByVal element As DependencyObject) As Double
+            If element Is Nothing Then
+                Throw New ArgumentNullException("element")
+            End If
+
+            Return CDbl(element.GetValue(AngleProperty))
+        End Function
+
+
+        <ExProperty>
+        Public Shared Sub SetAngle(formName As Primitive, controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        SetAngle(GetControl(formName, controlName), value)
+                    Catch ex As Exception
+                        ShowErrorMesssage(formName, controlName, "Angle", value, ex.Message)
+                    End Try
+                End Sub)
+        End Sub
+
+        Public Shared Sub SetAngle(ByVal element As DependencyObject, ByVal value As Double)
+            If element Is Nothing Then
+                Throw New ArgumentNullException("element")
+            End If
+
+            CType(element, Wpf.Control).BeginAnimation(AngleProperty, Nothing)
+            element.SetValue(AngleProperty, value)
+        End Sub
+
+
+        Private Shared _rotateTransformMap As New Dictionary(Of Wpf.Control, RotateTransform)
+
+        ''' <summary>
+        ''' The rotation angle of the control.
+        ''' </summary>
+        <ExProperty>
+        Public Shared Function GetAngle(formName As Primitive, controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetAngle = GetAngle(GetControl(formName, controlName))
+                    Catch ex As Exception
+                        ShowErrorMesssage(formName, controlName, "Angle", ex.Message)
+                    End Try
+                End Sub)
+        End Function
+
+
+        Public Shared ReadOnly AngleProperty As _
+                               DependencyProperty = DependencyProperty.RegisterAttached("Angle",
+                               GetType(Double), GetType(Wpf.Control),
+                               New PropertyMetadata(0.0, AddressOf AngleChanged))
+
+        Private Shared Sub AngleChanged(d As DependencyObject, e As DependencyPropertyChangedEventArgs)
+            Dim obj = CType(d, Wpf.Control)
+            App.BeginInvoke(
+                     Sub()
+                         If Not (TypeOf obj.RenderTransform Is TransformGroup) Then
+                             obj.RenderTransform = New TransformGroup
+                         End If
+
+                         Dim rotation As System.Windows.Media.RotateTransform = Nothing
+                         If Not _rotateTransformMap.TryGetValue(obj, rotation) Then
+                             rotation = New RotateTransform
+                             _rotateTransformMap(obj) = rotation
+                             rotation.CenterX = obj.ActualWidth / 2.0
+                             rotation.CenterY = obj.ActualHeight / 2.0
+                             CType(obj.RenderTransform, TransformGroup).Children.Add(rotation)
+                         End If
+                         rotation.Angle = CDbl(e.NewValue)
+                     End Sub)
+        End Sub
+
         <ExMethod>
         Public Shared Sub Focus(formName As Primitive, controlName As Primitive)
             App.Invoke(
@@ -365,6 +472,154 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Sub
+
+
+        ''' <summary>
+        ''' Rotates the control to the specified angle.
+        ''' </summary>
+        ''' <param name="angle">
+        ''' The angle to rotate the shape.
+        ''' </param>
+        <ExMethod>
+        Public Shared Sub Rotate(formName As Primitive, controlName As Primitive, angle As Primitive)
+            Try
+                Dim obj = GetControl(formName, controlName)
+                App.BeginInvoke(Sub() SetAngle(obj, angle))
+            Catch ex As Exception
+                ShowSubError(formName, controlName, "Rotate", ex.Message)
+            End Try
+        End Sub
+
+
+
+#Region "Animation"
+
+        ''' <summary>
+        ''' Animates the control's backcolor to a new color.
+        ''' </summary>
+        ''' <param name="newColor">
+        ''' The new color to animate the control's backcolor to.
+        ''' </param>
+        ''' <param name="duration">
+        ''' The time for the animation, in milliseconds.
+        ''' </param>
+        <ExMethod>
+        Public Shared Sub AnimateColor(formName As Primitive, controlName As Primitive, newColor As Primitive, duration As Primitive)
+            Try
+                Dim obj = GetControl(formName, controlName)
+                App.Invoke(
+                    Sub()
+                        Dim animation As New Animation.ColorAnimation() With {
+                            .From = GetBackColor(obj),
+                            .To = Color.FromString(newColor),
+                            .Duration = TimeSpan.FromMilliseconds(duration)
+                        }
+                        obj.BeginAnimation(BackColorProperty, animation)
+                    End Sub)
+            Catch ex As Exception
+                ShowSubError(formName, controlName, "AnimateColor", ex.Message)
+            End Try
+        End Sub
+
+        ''' <summary>
+        ''' Animates the control's backcolor to a new transparency.
+        ''' </summary>
+        ''' <param name="transparency">
+        ''' The new transparency to animate the backcolor to. Use a value between 0 and 100.
+        ''' </param>
+        ''' <param name="duration">
+        ''' The time for the animation, in milliseconds.
+        ''' </param>
+        <ExMethod>
+        Public Shared Sub AnimateTransparency(formName As Primitive, controlName As Primitive, transparency As Primitive, duration As Primitive)
+            Try
+                Dim c = GetBackColor(formName, controlName)
+                c = Color.SetTransparency(c, transparency)
+                AnimateColor(formName, controlName, c, duration)
+            Catch ex As Exception
+                ShowSubError(formName, controlName, "AnimateColor", ex.Message)
+            End Try
+        End Sub
+
+
+        ''' <summary>
+        ''' Animates the control to a new position.
+        ''' </summary>
+        ''' <param name="x">
+        ''' The x co-ordinate of the new position.
+        ''' </param>
+        ''' <param name="y">
+        ''' The y co-ordinate of the new position.
+        ''' </param>
+        ''' <param name="duration">
+        ''' The time for the animation, in milliseconds.
+        ''' </param>
+        <ExMethod>
+        Public Shared Sub AnimatePos(formName As Primitive, controlName As Primitive, x As Primitive, y As Primitive, duration As Primitive)
+            Try
+                Dim obj = GetControl(formName, controlName)
+                App.Invoke(
+                    Sub()
+                        GraphicsWindow.DoubleAnimateProperty(obj, Wpf.Canvas.LeftProperty, x, duration)
+                        GraphicsWindow.DoubleAnimateProperty(obj, Wpf.Canvas.TopProperty, y, duration)
+                    End Sub)
+            Catch ex As Exception
+                ShowSubError(formName, controlName, "AnimatePos", ex.Message)
+            End Try
+        End Sub
+
+
+        ''' <summary>
+        ''' Animates the control to a new size.
+        ''' </summary>
+        ''' <param name="width">
+        ''' The new width.
+        ''' </param>
+        ''' <param name="height">
+        ''' The new height.
+        ''' </param>
+        ''' <param name="duration">
+        ''' The time for the animation, in milliseconds.
+        ''' </param>
+        <ExMethod>
+        Public Shared Sub AnimateSize(formName As Primitive, controlName As Primitive, width As Primitive, height As Primitive, duration As Primitive)
+            Try
+                Dim obj = GetControl(formName, controlName)
+                App.Invoke(
+                    Sub()
+                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.WidthProperty, width, duration)
+                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.HeightProperty, height, duration)
+                    End Sub)
+            Catch ex As Exception
+                ShowSubError(formName, controlName, "AnimateSize", ex.Message)
+            End Try
+        End Sub
+
+        ''' <summary>
+        ''' Animates the control's rotation angle to a new angle.
+        ''' </summary>
+        ''' <param name="angle">
+        ''' The new rotation angle.
+        ''' </param>
+        ''' <param name="duration">
+        ''' The time for the animation, in milliseconds.
+        ''' </param>
+        <ExMethod>
+        Public Shared Sub AnimateAngle(formName As Primitive, controlName As Primitive, angle As Primitive, duration As Primitive)
+            Try
+                Dim obj = GetControl(formName, controlName)
+                App.Invoke(
+                    Sub()
+                        GraphicsWindow.DoubleAnimateProperty(obj, AngleProperty, angle, duration)
+                    End Sub)
+            Catch ex As Exception
+                ShowSubError(formName, controlName, "AnimateAngle", ex.Message)
+            End Try
+        End Sub
+
+
+
+#End Region
 
 #Region "Events"
 
