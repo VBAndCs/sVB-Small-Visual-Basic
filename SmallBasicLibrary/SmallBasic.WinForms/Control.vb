@@ -304,8 +304,10 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim _color = Color.FromString(value)
-                        Dim c = GetControl(formName, controlName)
-                        c.SetValue(BackColorProperty, _color)
+                        Dim obj = GetControl(formName, controlName)
+                        ' Remove any animation effect to allow setting the new value
+                        obj.BeginAnimation(BackColorProperty, Nothing)
+                        obj.SetValue(BackColorProperty, _color)
                     Catch ex As Exception
                         ShowErrorMesssage(formName, controlName, "BackColor", value, ex.Message)
                     End Try
