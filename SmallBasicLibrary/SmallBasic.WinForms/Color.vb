@@ -1,4 +1,4 @@
-﻿Imports System.Windows.Media
+Imports System.Windows.Media
 Imports Microsoft.SmallBasic.Library
 
 Namespace WinForms
@@ -29,7 +29,7 @@ Namespace WinForms
         Public Shared Function FromRGB(red As Primitive, green As Primitive, blue As Primitive) As Primitive
             Dim R = InRange(red, 0, 255)
             Dim G = InRange(green, 0, 255)
-            Dim B = InRange(green, 0, 255)
+            Dim B = InRange(blue, 0, 255)
             Return $"#{R:X2}{G:X2}{B:X2}"
         End Function
 
@@ -37,7 +37,7 @@ Namespace WinForms
             Dim A = InRange(alpha, 0, 255)
             Dim R = InRange(red, 0, 255)
             Dim G = InRange(green, 0, 255)
-            Dim B = InRange(green, 0, 255)
+            Dim B = InRange(blue, 0, 255)
             Return $"#{A:X2}{R:X2}{G:X2}{B:X2}"
         End Function
 
