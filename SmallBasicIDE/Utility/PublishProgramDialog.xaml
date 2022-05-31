@@ -1,0 +1,53 @@
+﻿<Window x:Class="Microsoft.SmallBasic.Utility.PublishProgramDialog" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" xmlns:sb="clr-namespace:Microsoft.SmallBasic" xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Name="publishProgramDialog" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False" Title="{lu:Localized Title}">
+  <DockPanel>
+    <Border BorderBrush="sc#0.7, 0.2, 0.2, 0.2" BorderThickness="0">
+      <StackPanel Orientation="Vertical" Background="#FFFFFFFF">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Image Name="iconImageControl" Grid.Column="0" Width="64" Height="64" VerticalAlignment="Top" Margin="8" Source="/SB;component/Resources/Information.png" />
+          <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" FlowDirection="{x:Static sb:App.FlowDirection}">
+            <TextBlock Margin="4" TextWrapping="WrapWithOverflow" FontFamily="Segoe UI" FontSize="16" Foreground="#002ab5" Text="{lu:Localized PublishedToWeb}" />
+            <StackPanel Name="optionalContentControl" Margin="4">
+              <TextBlock Margin="0,0,4,4" Text="{lu:Localized LocationOfProgramOnWeb}" />
+              <TextBox Name="saveId" IsReadOnly="True" FontSize="32" FontFamily="Courier New" FontWeight="Bold" Foreground="#FF696969" Margin="0,4,4,4" MinWidth="300" />
+              <TextBlock Margin="0,0,4,4">
+                <TextBlock Text="{lu:Localized LocationOfProgramListing}" /> <Hyperlink Click="OnClickHyperlink"><TextBlock Name="hyperlink" /></Hyperlink></TextBlock>
+              <Expander Name="expander" Margin="0,4,0,4" 
+                        Expanded="OnExpanderChanged" 
+                        Collapsed="OnExpanderChanged">
+                <HeaderedContentControl.Header>
+                  <TextBlock FontWeight="Bold" Text="{lu:Localized AddMoreDetails}" />
+                </HeaderedContentControl.Header>
+                <StackPanel>
+                  <TextBlock Margin="0,4,4,0" Text="{lu:Localized ProgramTitle}" />
+                  <TextBox Name="titleTextBox" FontWeight="Bold" Margin="0,4,4,4" MinWidth="300" MaxLength="255" />
+                  <TextBlock Margin="0,4,4,0" Text="{lu:Localized BriefDescription}" />
+                  <TextBox Name="descriptionTextBox" Margin="0,4,4,4" MinWidth="300" TextWrapping="Wrap" AcceptsReturn="True" MinLines="3" MaxLines="3" MaxLength="1024" VerticalScrollBarVisibility="Auto" />
+                  <TextBlock Margin="0,4,4,0" Text="{lu:Localized ProgramCategory}" />
+                  <ComboBox Name="categoryCombo" Margin="0,4,4,4" MinWidth="160" SelectedIndex="0">
+                    <TextBlock Tag="Miscellaneous" Text="{lu:Localized CategoryMiscellaneous}" />
+                    <TextBlock Tag="Game" Text="{lu:Localized CategoryGame}" />
+                    <TextBlock Tag="Sample" Text="{lu:Localized CategorySample}" />
+                    <TextBlock Tag="Exercise" Text="{lu:Localized CategoryExercise}" />
+                    <TextBlock Tag="Example" Text="{lu:Localized CategoryExample}" />
+                    <TextBlock Tag="Math" Text="{lu:Localized CategoryMath}" />
+                    <TextBlock Tag="Fun" Text="{lu:Localized CategoryFun}" />
+                  </ComboBox>
+                </StackPanel>
+              </Expander>
+            </StackPanel>
+          </StackPanel>
+        </Grid>
+        <Border HorizontalAlignment="Stretch" Margin="0, 8, 0, 0" Padding="4" BorderBrush="sc#0.7, 0.6, 0.6, 0.6" BorderThickness="0,1,0,0" Background="sc#0.7, 0.83, 0.83, 0.83">
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Name="closeButton" MinWidth="60" Margin="4" IsCancel="True" IsDefault="True" Content="{lu:Localized ButtonClose}" 
+                    Click="OnClickClose" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Border>
+  </DockPanel>
+</Window>

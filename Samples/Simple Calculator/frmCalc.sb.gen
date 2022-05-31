@@ -1,0 +1,61 @@
+'@Form Hints:
+'#frmCalc{
+'    lblNum1: Label
+'    txtNum1: TextBox
+'    lblNum2: Label
+'    txtNum2: TextBox
+'    btnAdd: Button
+'    btnSubtract: Button
+'    btnMultply: Button
+'    btnDivide: Button
+'    lblResult: Label
+'}
+
+Me = "frmCalc"
+lblNum1 = "lblnum1"
+txtNum1 = "txtnum1"
+lblNum2 = "lblnum2"
+txtNum2 = "txtnum2"
+btnAdd = "btnadd"
+btnSubtract = "btnsubtract"
+btnMultply = "btnmultply"
+btnDivide = "btndivide"
+lblResult = "lblresult"
+frmCalc = Forms.LoadForm("frmCalc", "frmcalc.xaml")
+Form.Show(frmCalc)
+
+'#Events{
+'    btnAdd: OnClick
+'    btnSubtract: OnClick
+'    btnMultply: OnClick
+'    btnDivide: OnClick
+'    txtNum1: OnTextInput OnTextChanged
+'    txtNum2: OnTextChanged
+'}
+
+' btnAdd Events:
+Control.HandleEvents(frmCalc, btnAdd)
+Control.OnClick = btnAdd_OnClick
+
+' btnSubtract Events:
+Control.HandleEvents(frmCalc, btnSubtract)
+Control.OnClick = btnSubtract_OnClick
+
+' btnMultply Events:
+Control.HandleEvents(frmCalc, btnMultply)
+Control.OnClick = btnMultply_OnClick
+
+' btnDivide Events:
+Control.HandleEvents(frmCalc, btnDivide)
+Control.OnClick = btnDivide_OnClick
+
+' txtNum1 Events:
+Control.HandleEvents(frmCalc, txtNum1)
+TextBox.OnTextInput = txtNum1_OnTextInput
+TextBox.OnTextChanged = txtNum1_OnTextChanged
+
+' txtNum2 Events:
+Control.HandleEvents(frmCalc, txtNum2)
+TextBox.OnTextChanged = txtNum2_OnTextChanged
+
+

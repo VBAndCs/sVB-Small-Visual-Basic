@@ -1,0 +1,21 @@
+'@Form Hints:
+'#Form1{
+'    Jerry: Label
+'    Button1: Button
+'}
+
+Me = "Form1"
+Jerry = "jerry"
+Button1 = "button1"
+Form1 = Forms.LoadForm("Form1", "Form1.xaml")
+Form.Show(Form1)
+
+'#Events{
+'    Form1: OnClosing
+'}
+
+' Form1 Events:
+Control.HandleEvents(Form1, Form1)
+Form.OnClosing = Form1_OnClosing
+
+

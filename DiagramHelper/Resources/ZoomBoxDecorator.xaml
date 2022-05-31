@@ -1,0 +1,86 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:DiagramHelper"
+                    xmlns:c="http://schemas.ncore.com/wpf/xaml/WpfDialogs">
+
+    <Style x:Key="ZoomBoxStyle" TargetType="{x:Type s:ZoomBox}">
+
+        <Style.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="ExpanderStyle.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Style.Resources>
+
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type s:ZoomBox}">
+                    <Border CornerRadius="1"
+                            BorderThickness="1"
+                            Background="#EEE"
+                            BorderBrush="DimGray">
+                        <Expander Style="{StaticResource ExpanderStyle}"
+                                  x:Name="PART_ZoomExpander"
+                                  Background="Transparent">
+                            <Border BorderBrush="DimGray" Background="LightSlateGray"
+                                    BorderThickness="0,1,0,0"
+                                    Padding="0"
+                                    Height="180">
+                                <Grid >
+                                    <Canvas Margin="5" Name="PART_ZoomCanvas">
+                                        <Canvas.Background>
+                                            <VisualBrush Stretch="Uniform"
+                                                  Visual="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Designer.DesignerGrid}" />
+                                        </Canvas.Background>
+
+                                        <Thumb Name="PART_ZoomThumb"
+                                               Cursor="SizeAll">
+                                            <Thumb.Style>
+                                                <Style TargetType="Thumb">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Thumb">
+                                                                <Rectangle StrokeThickness="1"
+                                                                           Stroke="Black"
+                                                                           Fill="Transparent" />
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </Thumb.Style>
+                                        </Thumb>
+                                    </Canvas>
+                                </Grid>
+                            </Border>
+                            <Expander.Header>
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Slider Name="PART_ZoomSlider"
+                                            VerticalAlignment="Center"  
+                                            Margin="0,0,2,0" Ticks="25,50,75,100,125,150,200,300,400,500"
+                                            Minimum="25" Maximum="500"
+                                            Value="100"
+                                            IsSnapToTickEnabled="True"
+                                            IsMoveToPointEnabled="False" />
+
+                                    <c:DoubleUpDown  Increment="5"  FormatString="F0" Minimum="25" Maximum="500"
+                                                FontSize="18"  Height="27" BorderThickness ="0.8" BorderBrush="DimGray"
+                                               Value="{Binding ElementName=PART_ZoomSlider, Path=Value}"
+                                               Grid.Column="1" VerticalAlignment="Center"  />
+                                </Grid>
+                            </Expander.Header>
+                        </Expander>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

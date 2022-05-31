@@ -1,0 +1,61 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:s="clr-namespace:DiagramHelper">
+
+    <s:CmConverter x:Key="CmConverter"/>
+    <s:ResizeThumb x:Key="ResizeThumb"/>
+
+    <ControlTemplate x:Key="ResizeDecoratorTemplate" TargetType="{x:Type Control}">
+        <Grid x:Name="Grid1" SnapsToDevicePixels="True" Opacity="1">
+            <s:ResizeThumb x:Name="Thumb1" 
+                  Height="3" Cursor="SizeNS" Margin="0 -10 0 0" 
+                  VerticalAlignment="Top" HorizontalAlignment="Stretch" />
+            <s:ResizeThumb x:Name="Thumb2" Width="3" Cursor="SizeWE" Margin="-10 0 0 0" VerticalAlignment="Stretch" HorizontalAlignment="Left" ResizeAngle="90"/>
+
+            <s:ResizeThumb x:Name="Thumb3" Width="3" Cursor="SizeWE" Margin="0 0 -9 0" VerticalAlignment="Stretch" HorizontalAlignment="Right" ResizeAngle="90"/>
+            
+            <Path Stroke="Red" Opacity="0.5" x:Name="Path1"
+                  StrokeThickness="1" Visibility="{Binding Source= {StaticResource ResizeThumb}, Path=MeasurementsVisibilty}"
+                  Width="10"
+                  HorizontalAlignment="Right"
+                  Margin="0,-2,-25,-2"
+                  Stretch="Fill"
+                  Data="M5,0 5,100 M 0,0 10,0 M 0,100 10,100"/>
+            <TextBlock x:Name="Txt1" Text="{Binding ActualHeight, Converter={StaticResource CmConverter}}"
+                       Background="White" Visibility="{Binding Source= {StaticResource ResizeThumb}, Path=MeasurementsVisibilty}"
+                       Foreground="Red"
+                       Padding="3,0,3,0"
+                       Margin="0,0,-38,0"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       LayoutTransform="{Binding ElementName=Thumb1, Path=DesignerItem.RenderTransform.Inverse}" >
+            </TextBlock>
+
+            <s:ResizeThumb x:Name="Thumb4" Height="3" Cursor="SizeNS" Margin="0 0 0 -9" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" />
+            <Path Stroke="Red" Opacity="0.5" x:Name="Path2"
+                  StrokeThickness="1" Visibility="{Binding Source= {StaticResource ResizeThumb}, Path=MeasurementsVisibilty}"
+                  Height="10"
+                  VerticalAlignment="Bottom"
+                  Margin="-2,0,-2,-25"
+                  Stretch="Fill"
+                  Data="M0,0 0,10 M 0,5 100,5 M 100,0 100,10"/>
+            <TextBlock x:Name="Txt2" Text="{Binding ActualWidth, Converter={StaticResource CmConverter}}"
+                       Background="White" Visibility="{Binding Source= {StaticResource ResizeThumb}, Path=MeasurementsVisibilty}"
+                       Padding="3,0,3,0"
+                       Foreground="Red"
+                       Margin="0,0,0,-32"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Bottom"
+                       LayoutTransform="{Binding ElementName=Thumb1, Path=DesignerItem.RenderTransform.Inverse}" >
+            </TextBlock>
+
+            <s:ResizeThumb x:Name="Thumb5" Width="12" Height="12" Cursor="SizeNWSE" Margin="-13 -13 0 0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderBrush="Black" BorderThickness="1" ResizeAngle="-45"/>
+            <s:ResizeThumb x:Name="Thumb6" Width="12" Height="12" Cursor="SizeNESW" Margin="0 -13 -13 0" VerticalAlignment="Top" HorizontalAlignment="Right"  BorderBrush="Black" BorderThickness="1" ResizeAngle="45"/>
+            <s:ResizeThumb x:Name="Thumb7" Width="12" Height="12" Cursor="SizeNESW" Margin="-13 0 0 -13" VerticalAlignment="Bottom" HorizontalAlignment="Left"  BorderBrush="Black" BorderThickness="1" ResizeAngle="45"/>
+            <s:ResizeThumb x:Name="Thumb8" Width="12" Height="12" Cursor="SizeNWSE" Margin="0 0 -13 -13" VerticalAlignment="Bottom" HorizontalAlignment="Right" BorderBrush="Black" BorderThickness="1" ResizeAngle="-45"/>
+        </Grid>
+
+    </ControlTemplate>
+
+</ResourceDictionary>

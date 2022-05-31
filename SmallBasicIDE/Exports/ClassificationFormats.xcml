@@ -1,0 +1,83 @@
+<sws:Exports xmlns:mntcd='clr-namespace:Microsoft.Nautilus.Text.Classification.DataExports;assembly=ToolFramework'
+         xmlns:sws='clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel'
+         xmlns:sys='clr-namespace:System;assembly=mscorlib'
+         xmlns:wpf='http://schemas.microsoft.com/winfx/2006/xaml/presentation'>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat FontRenderingSize='20' FontFamily='Consolas' ForegroundBrush='Black'>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>text</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_Text</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat ForegroundBrush='#FFdd6633'>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_Numeric</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat FontRenderingSize='20' FontFamily='Consolas' FontWeight='Bold' ForegroundBrush='#7777ff'>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_Keyword</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_Unknown</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat FontRenderingSize='20' ForegroundBrush='#FF008020' FontFamily='Georgia' FontStyle='Italic'>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_Comment</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat ForegroundBrush='#FFcc6633'>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_String</sys:String>
+                <sys:String>SB_Literal</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat ForegroundBrush='#997733'>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_Delimiter</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat ForegroundBrush='#800000'>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_Operator</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat ForegroundBrush='#006060'>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_Type</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+    <sws:Export Name='ClassificationFormat'>
+        <mntcd:ClassificationFormat ForegroundBrush='#802020'>
+            <mntcd:ClassificationFormat.ClassificationTypes>
+                <sys:String>SB_Member</sys:String>
+            </mntcd:ClassificationFormat.ClassificationTypes>
+        </mntcd:ClassificationFormat>
+    </sws:Export>
+</sws:Exports>

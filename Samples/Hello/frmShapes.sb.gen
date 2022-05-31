@@ -1,0 +1,25 @@
+'@Form Hints:
+'#frmShapes{
+'    Elps2: Control
+'    Button1: Button
+'    Label1: Label
+'    TextBox1: TextBox
+'}
+
+Me = "frmShapes"
+Elps2 = "elps2"
+Button1 = "button1"
+Label1 = "label1"
+TextBox1 = "textbox1"
+frmShapes = Forms.LoadForm("frmShapes", "frmShapes.xaml")
+Form.Show(frmShapes)
+
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(frmShapes, Button1)
+Control.OnClick = Button1_OnClick
+
+

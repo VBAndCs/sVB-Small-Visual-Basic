@@ -1,0 +1,269 @@
+<sws:Exports 
+    xmlns:sws='clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel'
+    xmlns:mntcd="clr-namespace:Microsoft.Nautilus.Text.Editor;assembly=ToolFramework">
+
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Yank.CurrentLine' 
+      KeySequence="Ctrl+L" />
+  </sws:Export>
+
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Delete.PreviousWord' 
+      KeySequence="Ctrl+Back" />
+  </sws:Export>
+  
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Delete.NextWord' 
+      KeySequence="Ctrl+Delete" />
+  </sws:Export>
+
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Common.Edit.SelectAll' 
+      KeySequence="Ctrl+A" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.CurrentWord' 
+      KeySequence="Ctrl+W" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToNextWord' 
+      KeySequence="Ctrl+Right" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToNextWord' 
+      KeySequence="Ctrl+Shift+Right" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToPreviousWord' 
+      KeySequence="Ctrl+Left" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToPreviousWord' 
+      KeySequence="Ctrl+Shift+Left" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToNextCharacter' 
+      KeySequence="Right" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToNextCharacter' 
+      KeySequence="Shift+Right" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToPreviousCharacter' 
+      KeySequence="Left" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToPreviousCharacter' 
+      KeySequence="Shift+Left" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToNextLine' 
+      KeySequence="Down" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToNextLine' 
+      KeySequence="Shift+Down" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToPreviousLine' 
+      KeySequence="Up" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToPreviousLine' 
+      KeySequence="Shift+Up" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToEndOfLine' 
+      KeySequence="End" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToEndOfLine' 
+      KeySequence="Shift+End" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToStartOfLine' 
+      KeySequence="Home" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToStartOfLine' 
+      KeySequence="Shift+Home" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToStartOfDocument' 
+      KeySequence="Ctrl+Home" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToStartOfDocument' 
+      KeySequence="Ctrl+Shift+Home" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ToEndOfDocument' 
+      KeySequence="Ctrl+End" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.ToEndOfDocument' 
+      KeySequence="Ctrl+Shift+End" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.CurrentLineToTopOfView' 
+      KeySequence="Ctrl+Alt+Home" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.CurrentLineToBottomOfView' 
+      KeySequence="Ctrl+Alt+End" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.Clear' 
+      KeySequence="Esc" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Common.Edit.Delete' 
+      KeySequence="Delete" />
+  </sws:Export>
+
+    <sws:Export Name="CommandKeyBinding">
+        <mntcd:CommandKeyBinding Command='Microsoft.Editor.Delete.PreviousCharacter'
+          KeySequence="Back" />
+    </sws:Export>
+
+    <sws:Export Name="CommandKeyBinding">
+        <mntcd:CommandKeyBinding Command='Microsoft.Editor.Delete.PreviousCharacter'
+          KeySequence="Shift+Back" />
+    </sws:Export>
+
+    <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Mode.Overwrite' 
+      KeySequence="Insert" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Insert.Newline' 
+      KeySequence="Return" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Tab.Insert' 
+      KeySequence="Tab" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Tab.RemovePrevious' 
+      KeySequence="Shift+Tab" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.PageUp' 
+      KeySequence="PageUp" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.PageUp' 
+      KeySequence="Shift+PageUp" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.PageDown' 
+      KeySequence="PageDown" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.PageDown' 
+      KeySequence="Next" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ScrollUp' 
+      KeySequence="Ctrl+Up" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Move.ScrollDown' 
+      KeySequence="Ctrl+Down" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.PageDown' 
+      KeySequence="Shift+PageDown" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Select.PageDown' 
+      KeySequence="Shift+Next" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Transpose.Character' 
+      KeySequence="Ctrl+T" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.Transpose.Line' 
+      KeySequence="Alt+Shift+T" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.CharacterCase.Lowercase' 
+      KeySequence="Ctrl+U" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Microsoft.Editor.CharacterCase.Uppercase' 
+      KeySequence="Ctrl+Shift+U" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Common.Edit.Copy' 
+      KeySequence="Ctrl+C" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Common.Edit.Cut' 
+      KeySequence="Ctrl+X" />
+  </sws:Export>
+    
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Common.Edit.Paste' 
+      KeySequence="Ctrl+V" />
+  </sws:Export>
+
+ <!-- Alternate copy/cut/paste bindings added by mgudgin --> 
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Common.Edit.Copy' 
+      KeySequence="Ctrl+Insert" />
+  </sws:Export>
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Common.Edit.Cut' 
+      KeySequence="Shift+Delete" />
+  </sws:Export>
+  <sws:Export Name="CommandKeyBinding">
+    <mntcd:CommandKeyBinding Command='Common.Edit.Paste' 
+      KeySequence="Shift+Insert" />
+  </sws:Export>
+
+</sws:Exports>

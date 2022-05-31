@@ -1,0 +1,355 @@
+﻿<Window x:Class="Microsoft.SmallBasic.MainWindow" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:l="clr-namespace:Microsoft.SmallBasic" 
+        xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" 
+        xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell" 
+        xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
+        x:Name="ShellWindow" Height="800" Width="1024" 
+        Title="Small Visual Basic v1.3.5" Loaded="Window_Loaded"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
+        Icon="smallbasic.ico">
+    
+  <FrameworkElement.Resources>
+        <Style x:Key="CloseButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Name="OuterBorder" BorderThickness="1" 
+							CornerRadius="0,0,4,4" BorderBrush="#ccd6d6d6" Width="42" Background="#00FFFFFF">
+                            <Grid Name="VisualWrapper" Width="9" Height="9">
+                                <Panel.Background>
+                                    <VisualBrush>
+                                        <VisualBrush.Visual>
+                                            <Grid>
+                                                <Path Stroke="#cc666666" StrokeThickness="3" Stretch="Fill" Data="M3,1 L9,11 M9,1 L3,11" StrokeStartLineCap="Square" StrokeEndLineCap="Square" />
+                                                <Path Stroke="Brown" StrokeThickness="3" Stretch="Fill" Data="M4,2 L8,10 M8,2 L4,10" StrokeStartLineCap="Square" StrokeEndLineCap="Square" />
+                                            </Grid>
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Panel.Background>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                <Setter TargetName="OuterBorder" Property="Border.Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#f49c8c" Offset="0" />
+                                            <GradientStop Color="#d86854" Offset="0.5" />
+                                            <GradientStop Color="#d12e0f" Offset="0.5" />
+                                            <GradientStop Color="#df882f" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="OuterBorder" Property="UIElement.BitmapEffect">
+                                    <Setter.Value>
+                                        <OuterGlowBitmapEffect GlowColor="#d12e0f" GlowSize="8" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="OuterBorder" Property="Border.Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#cda792" Offset="0" />
+                                            <GradientStop Color="#af6d54" Offset="0.5" />
+                                            <GradientStop Color="#7b1301" Offset="0.5" />
+                                            <GradientStop Color="#825f16" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="OuterBorder" Property="UIElement.BitmapEffect">
+                                    <Setter.Value>
+                                        <OuterGlowBitmapEffect GlowColor="#d12e0f" GlowSize="8" />
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+ </FrameworkElement.Resources>
+    
+  <UIElement.CommandBindings>
+    <CommandBinding Command="{x:Static l:MainWindow.NewCommand}" Executed="OnFileNew" />
+    <CommandBinding Command="{x:Static l:MainWindow.OpenCommand}" Executed="OnFileOpen" />
+    <CommandBinding Command="{x:Static l:MainWindow.SaveCommand}" CanExecute="CanFileSave" Executed="OnFileSave" />
+    <CommandBinding Command="{x:Static l:MainWindow.SaveAsCommand}" CanExecute="CanFileSave" Executed="OnFileSaveAs" />
+    <CommandBinding Command="{x:Static l:MainWindow.WebSaveCommand}" CanExecute="CanWebSave" Executed="OnWebSave" />
+    <CommandBinding Command="{x:Static l:MainWindow.WebLoadCommand}" Executed="OnWebLoad" />
+    <CommandBinding Command="{x:Static l:MainWindow.CutCommand}" CanExecute="CanEditCut" Executed="OnEditCut" />
+    <CommandBinding Command="{x:Static l:MainWindow.CopyCommand}" CanExecute="CanEditCopy" Executed="OnEditCopy" />
+    <CommandBinding Command="{x:Static l:MainWindow.PasteCommand}" CanExecute="CanEditPaste" Executed="OnEditPaste" />
+    <CommandBinding Command="{x:Static l:MainWindow.FindCommand}" Executed="OnFind" />
+    <CommandBinding Command="{x:Static l:MainWindow.FindNextCommand}" Executed="OnFindNext" />
+    <CommandBinding Command="{x:Static l:MainWindow.UndoCommand}" CanExecute="CanEditUndo" Executed="OnEditUndo" />
+    <CommandBinding Command="{x:Static l:MainWindow.RedoCommand}" CanExecute="CanEditRedo" Executed="OnEditRedo" />
+    <CommandBinding Command="{x:Static l:MainWindow.FormatCommand}" Executed="OnFormatProgram" />
+    <CommandBinding Command="{x:Static l:MainWindow.RunCommand}" CanExecute="CanRunProgram" Executed="OnProgramRun" />
+    <CommandBinding Command="{x:Static l:MainWindow.EndProgramCommand}" Executed="OnProgramEnd" />
+    <CommandBinding Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" CanExecute="CanExportToVisualBasic" Executed="OnExportToVisualBasic" />
+  </UIElement.CommandBindings>
+  <UIElement.InputBindings>
+    <KeyBinding Command="{x:Static l:MainWindow.NewCommand}" Gesture="Ctrl+N" />
+    <KeyBinding Command="{x:Static l:MainWindow.OpenCommand}" Gesture="Ctrl+O" />
+    <KeyBinding Command="{x:Static l:MainWindow.SaveCommand}" Gesture="Ctrl+S" />
+    <KeyBinding Command="{x:Static l:MainWindow.WebSaveCommand}" Gesture="Ctrl+Shift+S" />
+    <KeyBinding Command="{x:Static l:MainWindow.WebLoadCommand}" Gesture="Ctrl+Shift+O" />
+    <KeyBinding Command="{x:Static l:MainWindow.CutCommand}" Gesture="Ctrl+X" />
+    <KeyBinding Command="{x:Static l:MainWindow.CopyCommand}" Gesture="Ctrl+C" />
+    <KeyBinding Command="{x:Static l:MainWindow.PasteCommand}" Gesture="Ctrl+V" />
+    <KeyBinding Command="{x:Static l:MainWindow.FindCommand}" Gesture="Ctrl+F" />
+    <KeyBinding Command="{x:Static l:MainWindow.FindNextCommand}" Gesture="F3" />
+    <KeyBinding Command="{x:Static l:MainWindow.UndoCommand}" Gesture="Ctrl+Z" />
+    <KeyBinding Command="{x:Static l:MainWindow.RedoCommand}" Gesture="Ctrl+Y" />
+    <KeyBinding Command="{x:Static l:MainWindow.RunCommand}" Gesture="F5" />
+  </UIElement.InputBindings>
+    
+    <Grid>
+        <TabControl x:Name="sVBTabs">
+            <TabItem x:Name="tabDesigner" Header="Form Design"
+                     Selector.Selected="tabDesigner_Selected">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height ="Auto"/>
+                        <RowDefinition Height ="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid x:Name="DesignerGrid" Grid.Column="1" Grid.RowSpan="3">
+                        <DH:Designer x:Name="formDesigner"  
+			                      PageWidth="700" PageHeight="500" ShowGrid="True" />
+                    </Grid>
+
+                    <DH:ZoomBox x:Name="ZoomBox" Background="AliceBlue"
+                                    Designer="{Binding ElementName=formDesigner}"  />
+
+                    <DH:ProjectExplorer x:Name="ProjExplorer" Grid.Row="1" MaxHeight="180"
+                                    Designer="{Binding ElementName=formDesigner}"  
+                                    ItemDoubleClick="ProjExplorer_ItemDoubleClick" />
+
+                    <DH:ToolBox x:Name="ToolBox"  Grid.Row="2" 
+                             Designer="{Binding ElementName=formDesigner}"  />
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="tabCode" Header="Form Code"
+                     Selector.Selected="tabCode_Selected">
+                <Grid>
+                    <Grid>
+                        <Panel.Background>
+                            <ImageBrush ImageSource="pack://application:,,/SB;component/Resources/AppWorkspace.png" 
+                                    AlignmentX="Left" AlignmentY="Top" Stretch="Fill" />
+                        </Panel.Background>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <shell:Ribbon x:Name="rib" DockPanel.Dock="Top" Margin="0,-8,0,0">
+                            <shell:RibbonTabCollection>
+                                <shell:RibbonTab>
+                                    <shell:CommandChunk Name="{lu:Localized FileGroup}">
+                                        <shell:LargeCommandGroup>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.NewCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.LargeIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/FileNew.png" Width="48" Height="48" />
+                                                </shell:Ribbon.LargeIcon>
+                                            </shell:RoutedRibbonCommand>
+
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.OpenCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.LargeIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/FileOpen.png" Width="48" Height="48" />
+                                                </shell:Ribbon.LargeIcon>
+                                            </shell:RoutedRibbonCommand>
+
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.LargeIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/FileSave.png" Width="48" Height="48" />
+                                                </shell:Ribbon.LargeIcon>
+                                            </shell:RoutedRibbonCommand>
+
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveAsCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.LargeIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/FileSaveAs.png" Width="48" Height="48" />
+                                                </shell:Ribbon.LargeIcon>
+                                            </shell:RoutedRibbonCommand>
+                                        </shell:LargeCommandGroup>
+                                    </shell:CommandChunk>
+
+                                    <shell:CommandChunk Name="{lu:Localized WebGroup}">
+                                        <shell:SmallCommandGroup>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebLoadCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.SmallIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/WebOpen.png" Width="28" Height="28" />
+                                                </shell:Ribbon.SmallIcon>
+                                            </shell:RoutedRibbonCommand>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebSaveCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.SmallIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/WebSave.png" Width="28" Height="28" />
+                                                </shell:Ribbon.SmallIcon>
+                                            </shell:RoutedRibbonCommand>
+                                        </shell:SmallCommandGroup>
+                                    </shell:CommandChunk>
+
+                                    <shell:CommandChunk Name="{lu:Localized ClipboardGroup}">
+                                        <shell:LargeCommandGroup>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CutCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.LargeIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/EditCut.png" Width="48" Height="48" />
+                                                </shell:Ribbon.LargeIcon>
+                                            </shell:RoutedRibbonCommand>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CopyCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.LargeIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/EditCopy.png" Width="48" Height="48" />
+                                                </shell:Ribbon.LargeIcon>
+                                            </shell:RoutedRibbonCommand>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.PasteCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.LargeIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/EditPaste.png" Width="48" Height="48" />
+                                                </shell:Ribbon.LargeIcon>
+                                            </shell:RoutedRibbonCommand>
+                                        </shell:LargeCommandGroup>
+                                        <shell:SmallCommandGroup>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.UndoCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.SmallIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/EditUndo.png" Width="24" Height="24" />
+                                                </shell:Ribbon.SmallIcon>
+                                            </shell:RoutedRibbonCommand>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RedoCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.SmallIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/EditRedo.png" Width="24" Height="24" />
+                                                </shell:Ribbon.SmallIcon>
+                                            </shell:RoutedRibbonCommand>
+                                        </shell:SmallCommandGroup>
+                                    </shell:CommandChunk>
+
+                                    <shell:CommandChunk Name="{lu:Localized ProgramGroup}">
+                                        <shell:LargeCommandGroup>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RunCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.LargeIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/ProgramRun.png" Width="48" Height="48" />
+                                                </shell:Ribbon.LargeIcon>
+                                            </shell:RoutedRibbonCommand>
+                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" ShowCommandText="True">
+                                                <shell:Ribbon.LargeIcon>
+                                                    <Image Source="pack://application:,,/SB;component/Resources/VBExport.png" Width="48" Height="48" />
+                                                </shell:Ribbon.LargeIcon>
+                                            </shell:RoutedRibbonCommand>
+                                        </shell:LargeCommandGroup>
+                                    </shell:CommandChunk>
+
+                                </shell:RibbonTab>
+                            </shell:RibbonTabCollection>
+                        </shell:Ribbon>
+
+                        <Grid Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="200" />
+                            </Grid.ColumnDefinitions>
+                            <shell:MdiViewsControl x:Name="viewsControl" 
+                            RequestItemClose="OnCloseItem" 
+                            Grid.Column="0" Grid.ColumnSpan="3" 
+                            ActiveDocumentChanged="viewsControl_ActiveDocumentChanged"/>
+
+                            <lu:HelpPanel x:Name="helpPanel" Column="1" />
+
+                            <GridSplitter Name="gridSplitter" Grid.Column="1" Width="4" Background="#cc333363" Opacity="0.05" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Left" ResizeBehavior="PreviousAndCurrent">
+                                <FrameworkElement.Triggers>
+                                    <EventTrigger RoutedEvent="Mouse.MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="gridSplitter" Storyboard.TargetProperty="Opacity" From="0.05" To="0.3" Duration="0:0:0.2" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="Mouse.MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="gridSplitter" Storyboard.TargetProperty="Opacity" From="0.3" To="0.05" Duration="0:0:0.2" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </FrameworkElement.Triggers>
+                            </GridSplitter>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Name="programRunningOverlay" Visibility="Hidden">
+                        <Panel.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#cc000000" Offset="0" />
+                                <GradientStop Color="#cc333363" Offset="1" />
+                            </LinearGradientBrush>
+                        </Panel.Background>
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Bottom">
+                                <Button Name="endProgramButton" Padding="4" Margin="8" FontWeight="Bold" HorizontalAlignment="Right" Command="{x:Static l:MainWindow.EndProgramCommand}" IsDefault="True" Content="{lu:Localized EndProgramCommand}" />
+                            </StackPanel>
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Name="processRunningMessage" TextAlignment="Center" Margin="8" FontWeight="Bold" FontSize="32" Foreground="#649Db4" TextWrapping="WrapWithOverflow" />
+                                <TextBlock TextAlignment="Center" Margin="8" FontSize="24" Foreground="#999999" TextWrapping="WrapWithOverflow" Text="{lu:Localized WaitForProgramExit}" />
+                                <TextBlock TextAlignment="Center" Margin="8" FontSize="12" Foreground="#FFFFFFFF" FontWeight="Bold" TextWrapping="WrapWithOverflow" Text="{lu:Localized OverlayCloseAtEnd}" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Grid>
+
+                    <!--<StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2">
+                      <TextBlock Name="versionText" Margin="2" IsHitTestVisible="False" Foreground="#66ffffff" FontSize="10" FontWeight="Bold" />
+                      <TextBlock Name="updateAvailable" Margin="2" Visibility="Collapsed" Foreground="#FC9E59" FontSize="11" FontWeight="Bold">
+                        <TextBlock Text="{lu:Localized NewVersionAvailable}" /> <Hyperlink Foreground="#FC9E59" TextDecorations="None" Click="OnClickNewVersionAvailable"><TextBlock Text="{lu:Localized ClickHereToDownload}" /></Hyperlink></TextBlock>
+                    </StackPanel>-->
+
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+        <StackPanel x:Name="stkInfo"
+                    Orientation="Horizontal" HorizontalAlignment="Right" 
+                    VerticalAlignment="Center"   Margin="0,0,5,0">
+            <Grid x:Name="grdNameText">
+                <Grid.ColumnDefinitions >
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center"
+                    Margin="0,1,5,0" Foreground="Brown" Background="LightYellow" >Name:</TextBlock>
+                <TextBox x:Name="txtControlName"  Grid.Column="1" VerticalAlignment="Center"
+                       Width="100" Background="AliceBlue"  Margin="0,1,10,1" Padding="0"
+                       PreviewKeyDown="txtControlName_PreviewKeyDown"
+                       PreviewTextInput="txtControlName_PreviewTextInput"
+                       GotFocus="txtControl_GotFocus"
+                       LostFocus="txtControlName_LostFocus"/>
+
+                <TextBlock VerticalAlignment="Center" Margin="0,1,5,0"  Grid.Column="2" Foreground="Brown" Background="LightYellow" >Text:</TextBlock>
+                <TextBox x:Name="txtControlText"  Grid.Column="3" VerticalAlignment="Center"
+                        Width="100" Background="AliceBlue" Margin="0,1,15,1" Padding="0"
+                        PreviewKeyDown="txtControlText_PreviewKeyDown"
+                        GotFocus="txtControl_GotFocus"
+                        LostFocus="txtControlText_LostFocus"/>
+
+            </Grid>
+
+            <TextBlock VerticalAlignment="Center" x:Name="txtTitle"/>
+            <TextBlock x:Name="txtForm" VerticalAlignment="Center" FontWeight="Bold" Foreground="Blue"/>
+
+            <Border BorderThickness="1,1,1,1"  Margin="8,1,0,0" Padding="0,3"
+                    VerticalAlignment="Center" HorizontalAlignment="Right"
+                    BorderBrush="#99e1e1e1" CornerRadius="4,4,4,4" 
+                    Width="46" Height="{Binding txtControlName.ActualHeight}">
+                <Border BorderThickness="1,0,1,1" BorderBrush="#999999" CornerRadius="4,4,4,4" VerticalAlignment="Center">
+                    <Button Name="CloseButton" Height="20" Click="CloseButton_Click" Style="{StaticResource CloseButtonStyle}" />
+                </Border>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Window>

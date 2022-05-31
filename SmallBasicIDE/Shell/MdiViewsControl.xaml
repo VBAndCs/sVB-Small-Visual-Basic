@@ -1,0 +1,269 @@
+﻿<ItemsControl x:Class="Microsoft.SmallBasic.Shell.MdiViewsControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sbShell="clr-namespace:Microsoft.SmallBasic.Shell" xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <FrameworkElement.Resources>
+        <ResourceDictionary>
+            <sbShell:BooleanToCollapseStateConverter x:Key="BoolToCollapseConverter" />
+            <sbShell:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+            <Style x:Key="CloseButtonStyle" TargetType="{x:Type Button}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Name="OuterBorder" BorderThickness="1" CornerRadius="0,0,4,4" BorderBrush="#ccd6d6d6" Width="42" Background="#00FFFFFF">
+                                <Grid Name="VisualWrapper" Width="9" Height="9">
+                                    <Panel.Background>
+                                        <VisualBrush>
+                                            <VisualBrush.Visual>
+                                                <Grid>
+                                                    <Path Stroke="#cc666666" StrokeThickness="3" Stretch="Fill" Data="M3,1 L9,11 M9,1 L3,11" StrokeStartLineCap="Square" StrokeEndLineCap="Square" />
+                                                    <Path Stroke="#FFFFFFFF" StrokeThickness="3" Stretch="Fill" Data="M4,2 L8,10 M8,2 L4,10" StrokeStartLineCap="Square" StrokeEndLineCap="Square" />
+                                                </Grid>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Panel.Background>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                                    <Setter TargetName="OuterBorder" Property="Border.Background">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Color="#f49c8c" Offset="0" />
+                                                <GradientStop Color="#d86854" Offset="0.5" />
+                                                <GradientStop Color="#d12e0f" Offset="0.5" />
+                                                <GradientStop Color="#df882f" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="OuterBorder" Property="UIElement.BitmapEffect">
+                                        <Setter.Value>
+                                            <OuterGlowBitmapEffect GlowColor="#d12e0f" GlowSize="8" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="OuterBorder" Property="Border.Background">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Color="#cda792" Offset="0" />
+                                                <GradientStop Color="#af6d54" Offset="0.5" />
+                                                <GradientStop Color="#7b1301" Offset="0.5" />
+                                                <GradientStop Color="#825f16" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="OuterBorder" Property="UIElement.BitmapEffect">
+                                        <Setter.Value>
+                                            <OuterGlowBitmapEffect GlowColor="#d12e0f" GlowSize="8" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="{x:Type sbShell:MdiView}" TargetType="{x:Type sbShell:MdiView}">
+                <Setter Property="MinWidth" Value="172" />
+                <Setter Property="MinHeight" Value="32" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type sbShell:MdiView}">
+                            <Grid Name="MdiChildView" Canvas.Top="20" Canvas.Left="40" 
+                                    IsKeyboardFocusWithinChanged="OnFocusWithinChanged" 
+                                    PreviewMouseDown="OnMouseDownInView">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="6" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" MinWidth="6" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" MinHeight="6" />
+                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" MinHeight="6" />
+                                </Grid.RowDefinitions>
+                                <Border Name="border1" BorderThickness="1" CornerRadius="3" BorderBrush="#FFFFFFFF" Grid.ColumnSpan="3" Grid.RowSpan="6">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Offset="0" Color="#A1BFCB" />
+                                            <GradientStop Offset="0.15" Color="#FFFFFF" />
+                                            <GradientStop Offset="0.85" Color="#FFFFFF" />
+                                            <GradientStop Offset="1" Color="#A1BFCB" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Border Name="border2" CornerRadius="3">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Offset="0" Color="#44FFFFFF" />
+                                                <GradientStop Offset="0.2" Color="#EEFFFFFF" />
+                                                <GradientStop Offset="0.8" Color="#EEFFFFFF" />
+                                                <GradientStop Offset="1" Color="#44FFFFFF" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                    </Border>
+                                </Border>
+                                <DockPanel Name="TitleElement" MinWidth="160" 
+                                        Background="#00FFFFFF" Grid.RowSpan="2" Grid.Column="1" 
+                                        MouseDown="OnBeginDrag" MouseMove="OnDrag" 
+                                        MouseUp="OnEndDrag">
+                                    <Border VerticalAlignment="Top" BorderThickness="1,0,1,1" 
+                                            Margin="0,1,0,0" DockPanel.Dock="Right" 
+                                            BorderBrush="#99e1e1e1" CornerRadius="0,0,4,4" 
+                                            Width="46">
+                                        <Border BorderThickness="1,0,1,1" BorderBrush="#999999" CornerRadius="0,0,4,4">
+                                            <DockPanel Height="18">
+                                                <Button Name="CloseButton" Command="{x:Static sbShell:MdiViewsControl.CloseViewCommand}" Style="{StaticResource CloseButtonStyle}" />
+                                            </DockPanel>
+                                        </Border>
+                                    </Border>
+                                    <Grid DockPanel.Dock="Left">
+                                        <TextBlock Margin="0,4,4,4" VerticalAlignment="Center" 
+                                                HorizontalAlignment="Center" Width="120"
+                                                Foreground="#FF808080" TextTrimming="CharacterEllipsis" 
+                                                Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
+                                        <TextBlock Margin="0.5,4.5,4,4" 
+                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" 
+                                                   Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </Grid>
+                                    <Grid Margin="10,0" HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ComboBox Name="CmbControlNames"
+                                            MinWidth="150" Margin="5,4" 
+                                            Background="#FFFFE0C0"
+                                            SelectionChanged="ControlNames_SelectionChanged"
+                                            ItemsSource="{Binding Path=Document.ControlNames, RelativeSource={RelativeSource TemplatedParent}}"
+                                            SelectedIndex="0"/>
+
+                                        <ComboBox Name="CmbEventNames" Grid.Column="1" 
+                                            MinWidth="150"  Margin="5,4" Background="#FFFFE0C0"
+                                            SelectionChanged="EventNames_SelectionChanged"
+                                            ItemsSource="{Binding Path=Document.ControlEvents, RelativeSource={RelativeSource TemplatedParent}}"
+                                            PreviewTextInput="CmbEventNames_PreviewTextInput"
+                                            PreviewKeyDown="CmbEventNames_KeyDown"      
+                                            PreviewMouseLeftButtonDown="CmbEventNames_PreviewMouseLeftButtonDown"
+                                            DropDownOpened="CmbEventNames_DropDownOpened"      />
+
+                                        <Expander Name="detailsExpander" Grid.Column="2"
+                                              VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,12,0" ExpandDirection="Down" 
+                                              Visibility="{Binding Path=Document.ProgramDetails, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource NullToVisibilityConverter}}">
+                                            <HeaderedContentControl.Header>
+                                                <TextBlock VerticalAlignment="Center" Text="{lu:Localized Details}" />
+                                            </HeaderedContentControl.Header>
+                                        </Expander>
+                                    </Grid>
+                                </DockPanel>
+                                <Border Name="contentBorder" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="2" Grid.Column="1" Grid.Row="2">
+                                    <Border BorderBrush="#999999" BorderThickness="1" CornerRadius="2">
+                                        <Grid>
+                                            <ContentControl Name="DocContent" Content="{Binding Path=Document, RelativeSource={RelativeSource TemplatedParent}}">
+                                                <FrameworkElement.LayoutTransform>
+                                                    <ScaleTransform ScaleX="1.0" ScaleY="1.0" />
+                                                </FrameworkElement.LayoutTransform>
+                                            </ContentControl>
+
+                                            <Grid Width="40" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                                <TextBlock 
+                                                       FontFamily="Consolas" FontSize="18" 
+                                                       Foreground="Gray" FontWeight="Bold" 
+                                                       TextAlignment="Right" IsHitTestVisible="False" 
+                                                       Text="{Binding Path=Document.CaretPositionText, RelativeSource={RelativeSource TemplatedParent}}">
+                                                  <UIElement.Effect>
+                                                    <BlurEffect />
+                                                  </UIElement.Effect>
+                                                </TextBlock>
+                                                <TextBlock
+                                                    FontFamily="Consolas" FontSize="18" 
+                                                   Foreground="Brown"
+                                                   FontWeight="Bold" TextAlignment="Right" 
+                                                   IsHitTestVisible="False" 
+                                                   Text="{Binding Path=Document.CaretPositionText, RelativeSource={RelativeSource TemplatedParent}}" />
+                                            </Grid>
+
+                                            <Border HorizontalAlignment="Right" VerticalAlignment="Top" 
+                                                    Width="320" CornerRadius="2" BorderBrush="#999999" 
+                                                    BorderThickness="1" Margin="0,-1,-1,0" 
+                                                    Visibility="{Binding Path=IsExpanded, ElementName=detailsExpander, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                        <GradientBrush.GradientStops>
+                                                            <GradientStop Color="#E6F0F2" Offset="0" />
+                                                            <GradientStop Color="#FBFCFD" Offset="1" />
+                                                        </GradientBrush.GradientStops>
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                                <UIElement.Effect>
+                                                    <DropShadowEffect Color="#cccccc" BlurRadius="3" Opacity="0.5" />
+                                                </UIElement.Effect>
+                                                <FlowDocumentScrollViewer Padding="0" 
+                                                    DataContext="{Binding Path=Document.ProgramDetails, RelativeSource={RelativeSource TemplatedParent}}">
+                                                    <FlowDocument Name="programDetails" FontFamily="Segoe UI" FontSize="12" PagePadding="4" TextAlignment="Left" IsHyphenationEnabled="True">
+                                                        <Paragraph Margin="2">
+                                                            <TextBlock Foreground="#346D84" FontSize="16" FontWeight="Bold" Text="{Binding Id}" />
+                                                            <Run Text="(" />
+                                                            <TextBlock FontStyle="Italic" Text="{Binding Category}" />
+                                                            <Run Text=")" />
+                                                            <LineBreak />
+                                                            <lu:RatingControl VerticalAlignment="Center" ProgramId="{Binding Id}" Rating="{Binding Rating}" />
+                                                            <LineBreak />
+                                                            <TextBlock FontWeight="Bold" TextWrapping="Wrap" Text="{Binding Title}" />
+                                                            <LineBreak />
+                                                            <TextBlock TextWrapping="Wrap" Text="{Binding Description}" />
+                                                        </Paragraph>
+                                                    </FlowDocument>
+                                                </FlowDocumentScrollViewer>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </Border>
+                                <Rectangle Fill="#00FFFFFF" Width="6" Grid.Column="0" Grid.RowSpan="4" Cursor="SizeWE" 
+                                        MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeLeftEdge" />
+                                <Rectangle Fill="#00FFFFFF" Width="6" Grid.Column="2" Grid.RowSpan="4" Cursor="SizeWE" 
+                                        MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeRightEdge" />
+                                <Rectangle Fill="#00FFFFFF" Height="6" Grid.Row="0" Grid.ColumnSpan="3" Cursor="SizeNS" 
+                                        MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeTopEdge" />
+                                <Rectangle Fill="#00FFFFFF" Height="6" Grid.Row="3" Grid.ColumnSpan="3" Cursor="SizeNS" Margin="0,0,0,6"
+                                        MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeBottomEdge" />
+                                <Rectangle Fill="#00FFFFFF" Grid.Column="0" Grid.Row="0" Cursor="SizeNWSE" 
+                                        MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeTopLeftCorner" />
+                                <Rectangle Fill="#00FFFFFF" Grid.Column="2" Grid.Row="0" Cursor="SizeNESW" 
+                                        MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeTopRightCorner" />
+                                <Rectangle Fill="#00FFFFFF" Grid.Column="0" Grid.Row="3" Cursor="SizeNESW" 
+                                        MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeBottomLeftCorner" />
+                                <Rectangle Fill="#00FFFFFF" Grid.Column="2" Grid.Row="3" Cursor="SizeNWSE" 
+                                        MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeBottomRightCorner" />
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="sbShell:MdiView.IsSelected" Value="False">
+                                    <Setter TargetName="border1" Property="Border.Background" Value="#E8B6CEC8" />
+                                    <Setter TargetName="border2" Property="Border.Background">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Offset="0" Color="#44ccccff" />
+                                                <GradientStop Offset="0.2" Color="#66ccccff" />
+                                                <GradientStop Offset="0.8" Color="#66ccccff" />
+                                                <GradientStop Offset="1" Color="#44ccccff" />
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="contentBorder" Property="UIElement.Opacity" Value="0.6" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </FrameworkElement.Resources>
+    <Control.Template>
+        <ControlTemplate>
+            <Canvas Name="MdiContainer" IsItemsHost="True" ClipToBounds="True" />
+        </ControlTemplate>
+    </Control.Template>
+</ItemsControl>

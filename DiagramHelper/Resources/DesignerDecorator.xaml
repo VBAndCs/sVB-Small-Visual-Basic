@@ -1,0 +1,166 @@
+﻿<ResourceDictionary x:Class="DesignerDecorator"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:s="clr-namespace:DiagramHelper">
+
+    <s:CmConverter x:Key="CmConverter"/>
+    <Pen x:Key="GridLinesPen" Thickness="0.3" Brush="LightGray"/>
+
+    <DrawingBrush x:Key="GridBrush" Stretch="None" TileMode="Tile"
+                                Viewport="0, 0, 37.7952756, 37.7952756" ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <GeometryDrawing Pen="{StaticResource GridLinesPen}">
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry Rect="0, 0, 37.7952756, 37.7952756"  />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <Style x:Key="CanvasListBoxStyle" TargetType="ListBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}" 
+                                Padding="1,1,1,1" 
+                                BorderBrush="{TemplateBinding Border.BorderBrush}" 
+                                Background="{TemplateBinding Panel.Background}" 
+                                Name="Bd" SnapsToDevicePixels="True">
+                                <Border.ContextMenu>
+                                    <ContextMenu Opened="ContextMenu_Opened">
+                                        <MenuItem Header="New" InputGestureText="Ctrl+N"  Click="NewMenuItem_Click"/>
+                                        <MenuItem Header="Open" InputGestureText="Ctrl+O"  Click="OpenMenuItem_Click"/>
+                                        <MenuItem Header="Save" InputGestureText="Ctrl+S"  Click="SaveMenuItem_Click"/>
+                                        <MenuItem Header="Save As..." Click="SaveAsMenuItem_Click"/>
+                                        <MenuItem Header="Close" InputGestureText="Ctrl+F4"  Click="CloseMenuItem_Click"/>
+                                        <Separator/>
+                                        <MenuItem Header="Save To Image" InputGestureText="Ctrl+M" Click="SaveImageMenuItem_Click"/>
+                                        <MenuItem Header="Print" InputGestureText="Ctrl+P" Click="PrintMenuItem_Click"/>
+                                        <Separator/>
+                                        <MenuItem Header="Sellect All" InputGestureText="Ctrl+A"  Click="SellectAllMenuItem_Click"/>
+                                        <MenuItem Header="Paste" InputGestureText="Ctrl+V"  Click="PasteMenuItem_Click"/>
+                                        <MenuItem Header="Undo" InputGestureText="Ctrl+Z"  Click="UndoMenuItem_Click"/>
+                                        <MenuItem Header="Redo" InputGestureText="Ctrl+Y"  Click="RedoMenuItem_Click"/>
+                                        <Separator/>
+                                        <MenuItem Header="Grid">
+                                            <MenuItem Header="Show Grid Lines" IsCheckable="True" IsChecked="True" Checked="ShowGridMenuItem_Checked" Unchecked="ShowGridMenuItem_Unchecked"/>
+                                            <MenuItem Header="Decrease Grid Thickness" InputGestureText="Ctrl -"  Click="DecreaseThicknessMenuItem_Click"/>
+                                            <MenuItem Header="Increase Grid Thickness" InputGestureText="Ctrl +"  Click="IncreaseThicknessMenuItem_Click"/>
+                                            <MenuItem Header="Grid Lines Brush" InputGestureText="Ctrl+L"  Click="GridBrushMenuItem_Click"/>
+                                        </MenuItem>
+                                        <MenuItem Header="Page Background" Click="PageBackgroundMenuItem_Click"/>
+                                        <MenuItem Name="AllowTransparencyMenuItem" Header="Allow Transoarency" InputGestureText="Ctrl+T" IsCheckable="True" Checked="AllowTransparencyMenuItem_Checked" Unchecked="AllowTransparencyMenuItem_Checked"/>
+                                        <MenuItem Header="Page Size" Click="PageSizeMenuItem_Click"/>
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+
+                        <Grid Background="Silver">
+                            <ScrollViewer x:Name="Scv" IsTabStop="False" Padding="{TemplateBinding Control.Padding}" Focusable="False" 
+                                          HorizontalScrollBarVisibility="Auto" >
+                                <Grid ClipToBounds="True" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <ItemsPresenter  SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                                    <Canvas x:Name="ConnectionCanvas" ClipToBounds="True" >
+                                        <Border x:Name="PART_SelectionBorder" Background="LightCyan" Opacity="0.2" Visibility="Collapsed"
+                                                    BorderBrush="Gray" BorderThickness="2"/>
+                                        <Popup StaysOpen="False" AllowsTransparency="True" >
+                                            <TextBox x:Name="PART_Editor" AcceptsReturn="True"/>
+                                        </Popup>
+                                    </Canvas>
+                                    <TextBlock x:Name="PART_LeftLocation" Visibility="Collapsed" IsHitTestVisible="False" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="5,0" Background="Gray" Foreground="White"/>
+                                    <TextBlock x:Name="PART_TopLocation" Visibility="Collapsed" IsHitTestVisible="False" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="5,0" Background="Gray"  Foreground="White"/>
+                                    <s:DsnResizeThumb HorizontalAlignment="Right" VerticalAlignment="Stretch"  
+                                                 Width="5" ResizeAngle="90"/>
+                                    <s:DsnResizeThumb HorizontalAlignment="Stretch" VerticalAlignment="Bottom" 
+                                                  Height="5"/>
+                                    <s:DsnResizeThumb HorizontalAlignment="Right" VerticalAlignment="Bottom"  ResizeAngle="-45"
+                                                  Width="5" Height="5"/>
+                                    <Path Stroke="Red" Opacity="0.5"
+                                              StrokeThickness="1" Visibility="{Binding DsnResizeThumb.MeasurementsVisibilty}"
+                                              Width="10" HorizontalAlignment="Right"
+                                              Margin="0,-2,-25,-2" Stretch="Fill"
+                                              Data="M5,0 5,100 M 0,0 10,0 M 0,100 10,100"/>
+                                    <TextBlock Text="{Binding PageHeight, Converter={StaticResource CmConverter}}"
+                                               Background="White" Visibility="{Binding DsnResizeThumb.MeasurementsVisibilty}"
+                                               Foreground="Red" Padding="3,0,3,0" Margin="0,0,-38,0"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center" />
+
+                                    <Path Stroke="Red" Opacity="0.5"
+                                              StrokeThickness="1" Visibility="{Binding DsnResizeThumb.MeasurementsVisibilty}"
+                                              Height="10" VerticalAlignment="Bottom"
+                                              Margin="-2,0,-2,-25" Stretch="Fill"
+                                              Data="M0,0 0,10 M 0,5 100,5 M 100,0 100,10"/>
+                                    <TextBlock Text="{Binding PageWidth, Converter={StaticResource CmConverter}}"
+                                               Background="White" Visibility="{Binding DsnResizeThumb.MeasurementsVisibilty}"
+                                               Padding="3,0,3,0" Margin="0,0,0,-32"
+                                               Foreground="Red"                                              
+                                               HorizontalAlignment="Center" VerticalAlignment="Bottom" >
+                                    </TextBlock>
+
+                                </Grid>
+                            </ScrollViewer>
+                            <Border x:Name="GridLinesBorder" IsHitTestVisible="False" 
+                                         VerticalAlignment="Top" HorizontalAlignment="Left" 
+                                         Width="{Binding ElementName=Scv, Path=ViewportWidth}" 
+                                         Height="{Binding ElementName=Scv, Path=ViewportHeight}"
+                                         Visibility="Collapsed"
+                                         Background="{StaticResource GridBrush}"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="UIElement.IsEnabled">
+                            <Setter Property="Panel.Background" TargetName="Bd">
+                                <Setter.Value>
+                                    <DynamicResource ResourceKey="{x:Static SystemColors.ControlBrushKey}" />
+                                </Setter.Value>
+                            </Setter>
+                            <Trigger.Value>
+                                <sys:Boolean>False</sys:Boolean>
+                            </Trigger.Value>
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="ItemsControl.IsGrouping">
+                                    <Condition.Value>
+                                        <sys:Boolean>True</sys:Boolean>
+                                    </Condition.Value>
+                                </Condition>
+                                <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping">
+                                    <Condition.Value>
+                                        <sys:Boolean>False</sys:Boolean>
+                                    </Condition.Value>
+                                </Condition>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="ScrollViewer.CanContentScroll">
+                                <Setter.Value>
+                                    <sys:Boolean>False</sys:Boolean>
+                                </Setter.Value>
+                            </Setter>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <Canvas Name="DesignerCanvas" ClipToBounds="True" Background="White" />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+
+    <Style x:Key="listBoxItemStyle"  TargetType="ListBoxItem" >
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <s:DiagramPanel x:Name="Dc" IsSelected="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsSelected , Mode=TwoWay}">
+                        <ContentPresenter />
+                    </s:DiagramPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

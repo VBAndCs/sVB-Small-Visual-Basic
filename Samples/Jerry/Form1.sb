@@ -1,0 +1,31 @@
+w = Me.Width - Jerry.Width
+h = Me.Height-Jerry.Height
+Jerry.Image = "1.png"
+
+
+'------------------------------------------------
+Sub Button1_OnClick
+   Jerry.Angle = 0
+   Jerry.AnimatePos(0, 0, 2500)
+EndSub
+
+
+'------------------------------------------------
+Sub Button2_OnClick
+   Jerry.Angle = 90
+   Jerry.AnimatePos(w, h, 3000)
+EndSub
+
+
+'------------------------------------------------
+Sub Button3_OnClick
+   Jerry.Angle = -90
+   Jerry.AnimatePos(0, h, 2500)
+EndSub
+
+
+'------------------------------------------------
+Sub Button4_OnClick
+   Jerry.Angle = 180
+   Jerry.AnimatePos(w, 0, 2000)
+EndSub

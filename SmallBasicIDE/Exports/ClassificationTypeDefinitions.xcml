@@ -1,0 +1,31 @@
+<sws:Exports
+    xmlns:sws='clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel'
+    xmlns:mntcd="clr-namespace:Microsoft.Nautilus.Text.Classification.DataExports;assembly=ToolFramework">
+    <sws:Export Name="ClassificationTypeDefinition">
+        <mntcd:ClassificationTypeDefinition Name="(transient)" />
+    </sws:Export>
+    <sws:Export Name="ClassificationTypeDefinition">
+        <mntcd:ClassificationTypeDefinition Name="text" />
+    </sws:Export>
+    <sws:Export Name="ClassificationTypeDefinition">
+        <mntcd:ClassificationTypeDefinition Name="keyword" DerivesFrom="text" />
+    </sws:Export>
+    <sws:Export Name="ClassificationTypeDefinition">
+        <mntcd:ClassificationTypeDefinition Name="comment" DerivesFrom="text" />
+    </sws:Export>
+    <sws:Export Name="ClassificationTypeDefinition">
+        <mntcd:ClassificationTypeDefinition Name="operator" DerivesFrom="text" />
+    </sws:Export>
+    <sws:Export Name="ClassificationTypeDefinition">
+        <mntcd:ClassificationTypeDefinition Name="literal" DerivesFrom="text" />
+    </sws:Export>
+    <sws:Export Name="ClassificationTypeDefinition">
+        <mntcd:ClassificationTypeDefinition Name="numeric" DerivesFrom="literal" />
+    </sws:Export>
+    <sws:Export Name="ClassificationTypeDefinition">
+        <mntcd:ClassificationTypeDefinition Name="string" DerivesFrom="literal" />
+    </sws:Export>
+    <sws:Export Name="ClassificationTypeDefinition">
+        <mntcd:ClassificationTypeDefinition Name="identifier" DerivesFrom="text" />
+    </sws:Export>
+</sws:Exports>

@@ -1,0 +1,52 @@
+'@Form Hints:
+'#form1{
+'    ListBox1: ListBox
+'    btnAdd: Button
+'    btnRemove: Button
+'    txtAdd: TextBox
+'    btnFind: Button
+'    txtFind: TextBox
+'    lblSelection: Label
+'}
+
+Me = "form1"
+ListBox1 = "listbox1"
+btnAdd = "btnadd"
+btnRemove = "btnremove"
+txtAdd = "txtadd"
+btnFind = "btnfind"
+txtFind = "txtfind"
+lblSelection = "lblselection"
+form1 = Forms.LoadForm("form1", "form1.xaml")
+Form.Show(form1)
+
+'#Events{
+'    btnFind: OnClick
+'    btnAdd: OnClick
+'    ListBox1: OnSelection
+'    btnRemove: OnClick
+'    txtAdd: OnTextChanged OnKeyDown
+'}
+
+' btnFind Events:
+Control.HandleEvents(form1, btnFind)
+Control.OnClick = btnFind_OnClick
+
+' btnAdd Events:
+Control.HandleEvents(form1, btnAdd)
+Control.OnClick = btnAdd_OnClick
+
+' ListBox1 Events:
+Control.HandleEvents(form1, ListBox1)
+ListBox.OnSelection = ListBox1_OnSelection
+
+' btnRemove Events:
+Control.HandleEvents(form1, btnRemove)
+Control.OnClick = btnRemove_OnClick
+
+' txtAdd Events:
+Control.HandleEvents(form1, txtAdd)
+TextBox.OnTextChanged = txtAdd_OnTextChanged
+Control.OnKeyDown = txtAdd_OnKeyDown
+
+
