@@ -648,6 +648,17 @@ Namespace Microsoft.SmallBasic
             If File.Exists(xamlFile) Then
                 File.Copy(xamlFile, newFile & ".xaml", True)
             End If
+
+            For Each f In Directory.EnumerateFiles(docDirectory)
+                Select Case Path.GetExtension(f).ToLower().TrimStart(".")
+                    Case "bmp", "jpg", "jpeg", "png", "gif", "txt"
+                        Dim f2 = Path.Combine(binDirectory, Path.GetFileName(f))
+                        Try
+                            File.Copy(f, f2, True)
+                        Catch
+                        End Try
+                End Select
+            Next
             Return newFile & ".exe"
         End Function
 
