@@ -1,0 +1,7 @@
+<act:Exports
+    xmlns:act="clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel"
+    xmlns:mntcd="clr-namespace:Microsoft.Nautilus.Core.Undo.DataExports;assembly=ToolFramework">
+  <act:Export Name="UndoTransactionMarker">
+    <mntcd:UndoTransactionMarker Name="Save Marker" />
+  </act:Export>
+</act:Exports>

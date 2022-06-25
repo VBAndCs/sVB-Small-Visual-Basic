@@ -45,7 +45,7 @@ Namespace Library
         ''' Ends the program.
         ''' </summary>
         Public Shared Sub [End]()
-            SmallBasicApplication.[End]()
+            SmallBasicApplication.End()
         End Sub
 
         ''' <summary>

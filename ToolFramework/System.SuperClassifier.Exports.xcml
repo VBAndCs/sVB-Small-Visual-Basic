@@ -1,0 +1,30 @@
+<act:Exports
+    xmlns:act="clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel"
+    xmlns:sc="clr-namespace:SuperClassifier;assembly=ToolFramework"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <act:Export Name="LanguageSpecification">
+        <sc:LanguageSpecification ContentType="text.xml">
+            <sc:LanguageSpecification.Delimiters>
+                <sc:Delimiter Class="MultiLineComment" IsMultiLine="true" Start="&lt;!--" End="--&gt;" />
+                <sc:Delimiter Class="SingleLineString" IsMultiLine="false" Start='"' End='"' Ignore='\"' />
+                <sc:Delimiter Class="SingleLineString" IsMultiLine="false" Start="'" End="'" Ignore="\'" />
+                <sc:Delimiter Class="MultiLineString" IsMultiLine="true" Start='@"' End='"' Ignore='""' />
+                <sc:Delimiter Class="XmlTag" IsMultiLine="false" Start="&lt;" End=" " />
+                <sc:Delimiter Class="XmlTag" IsMultiLine="false" Start="&lt;/" End="&gt;" />
+            </sc:LanguageSpecification.Delimiters>
+
+            <sc:LanguageSpecification.Literals>
+                <sc:Literals Class="XmlTag">
+                    <sc:Literals.LiteralList>
+                        <sys:String>/&gt;</sys:String>
+                        <sys:String>&gt;</sys:String>
+                    </sc:Literals.LiteralList>
+                </sc:Literals>
+            </sc:LanguageSpecification.Literals>
+
+            <sc:LanguageSpecification.Identifiers>
+                <sc:Identifiers PrefixCharacters='@$' BodyCharacters='_' />
+            </sc:LanguageSpecification.Identifiers>
+        </sc:LanguageSpecification>
+    </act:Export>
+</act:Exports>

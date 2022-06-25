@@ -148,14 +148,14 @@ Namespace Library
             Dim num As Integer = 0
             While Not autoResetEvent1.WaitOne(200, exitContext:=False)
                 If num > 30 AndAlso mediaPlayer1.Position = TimeSpan.Zero Then
-                    autoResetEvent1.[Set]()
+                    autoResetEvent1.Set()
                 End If
                 If mediaPlayer1.NaturalDuration.HasTimeSpan AndAlso mediaPlayer1.Position >= mediaPlayer1.NaturalDuration.TimeSpan Then
-                    autoResetEvent1.[Set]()
+                    autoResetEvent1.Set()
                 End If
                 num += 1
             End While
-            mediaPlayer1.[Stop]()
+            mediaPlayer1.Stop()
         End Sub
 
         ''' <summary>
@@ -175,7 +175,7 @@ Namespace Library
         ''' The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
         ''' </param>
         Public Shared Sub [Stop](filePath As Primitive)
-            GetMediaPlayer(filePath)?.[Stop]()
+            GetMediaPlayer(filePath)?.Stop()
         End Sub
 
         Private Shared Sub PlayStockSound(name As String, sync As Boolean)

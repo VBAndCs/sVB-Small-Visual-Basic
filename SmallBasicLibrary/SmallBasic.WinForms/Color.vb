@@ -18,7 +18,7 @@ Namespace WinForms
                 _random = New Random(Now.Ticks Mod Integer.MaxValue)
             End If
 
-            Return $"#{_random.[Next](256):X2}{_random.[Next](256):X2}{_random.[Next](256):X2}"
+            Return $"#{_random.Next(256):X2}{_random.Next(256):X2}{_random.Next(256):X2}"
         End Function
 
         Private Shared Function InRange(value As Integer, min As Integer, max As Integer) As Integer

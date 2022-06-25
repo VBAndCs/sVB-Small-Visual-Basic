@@ -61,7 +61,7 @@ Namespace Library.Internal
 
         Private Sub OnQueryOperationCompleted(arg As Object)
             Dim invokeCompletedEventArgs1 As InvokeCompletedEventArgs = CType(arg, InvokeCompletedEventArgs)
-            RaiseEvent QueryCompleted(Me, New QueryCompletedEventArgs(invokeCompletedEventArgs1.Results, invokeCompletedEventArgs1.[Error], invokeCompletedEventArgs1.Cancelled, invokeCompletedEventArgs1.UserState))
+            RaiseEvent QueryCompleted(Me, New QueryCompletedEventArgs(invokeCompletedEventArgs1.Results, invokeCompletedEventArgs1.Error, invokeCompletedEventArgs1.Cancelled, invokeCompletedEventArgs1.UserState))
         End Sub
 
         <SoapDocumentMethod("urn:Microsoft.Search/Registration", RequestNamespace:="urn:Microsoft.Search", ResponseNamespace:="urn:Microsoft.Search", Use:=SoapBindingUse.Literal, ParameterStyle:=SoapParameterStyle.Wrapped)>
@@ -96,7 +96,7 @@ Namespace Library.Internal
 
         Private Sub OnRegistrationOperationCompleted(arg As Object)
             Dim invokeCompletedEventArgs1 As InvokeCompletedEventArgs = CType(arg, InvokeCompletedEventArgs)
-            RaiseEvent RegistrationCompleted(Me, New RegistrationCompletedEventArgs(invokeCompletedEventArgs1.Results, invokeCompletedEventArgs1.[Error], invokeCompletedEventArgs1.Cancelled, invokeCompletedEventArgs1.UserState))
+            RaiseEvent RegistrationCompleted(Me, New RegistrationCompletedEventArgs(invokeCompletedEventArgs1.Results, invokeCompletedEventArgs1.Error, invokeCompletedEventArgs1.Cancelled, invokeCompletedEventArgs1.UserState))
         End Sub
 
         <SoapDocumentMethod("urn:Microsoft.Search/Status", RequestNamespace:="urn:Microsoft.Search", ResponseNamespace:="urn:Microsoft.Search", Use:=SoapBindingUse.Literal, ParameterStyle:=SoapParameterStyle.Wrapped)>
@@ -127,7 +127,7 @@ Namespace Library.Internal
 
         Private Sub OnStatusOperationCompleted(arg As Object)
             Dim invokeCompletedEventArgs1 As InvokeCompletedEventArgs = CType(arg, InvokeCompletedEventArgs)
-            RaiseEvent StatusCompleted(Me, New StatusCompletedEventArgs(invokeCompletedEventArgs1.Results, invokeCompletedEventArgs1.[Error], invokeCompletedEventArgs1.Cancelled, invokeCompletedEventArgs1.UserState))
+            RaiseEvent StatusCompleted(Me, New StatusCompletedEventArgs(invokeCompletedEventArgs1.Results, invokeCompletedEventArgs1.Error, invokeCompletedEventArgs1.Cancelled, invokeCompletedEventArgs1.UserState))
         End Sub
 
         <SoapDocumentMethod("urn:Microsoft.Search/Discovery", RequestNamespace:="urn:Microsoft.Search", ResponseNamespace:="urn:Microsoft.Search", Use:=SoapBindingUse.Literal, ParameterStyle:=SoapParameterStyle.Wrapped)>
@@ -164,7 +164,7 @@ Namespace Library.Internal
 
         Private Sub OnDiscoveryOperationCompleted(arg As Object)
             Dim invokeCompletedEventArgs1 As InvokeCompletedEventArgs = CType(arg, InvokeCompletedEventArgs)
-            RaiseEvent DiscoveryCompleted(Me, New DiscoveryCompletedEventArgs(invokeCompletedEventArgs1.Results, invokeCompletedEventArgs1.[Error], invokeCompletedEventArgs1.Cancelled, invokeCompletedEventArgs1.UserState))
+            RaiseEvent DiscoveryCompleted(Me, New DiscoveryCompletedEventArgs(invokeCompletedEventArgs1.Results, invokeCompletedEventArgs1.Error, invokeCompletedEventArgs1.Cancelled, invokeCompletedEventArgs1.UserState))
         End Sub
 
         Public Shadows Sub CancelAsync(userState As Object)

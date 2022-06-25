@@ -35,7 +35,7 @@ Namespace Library
         ''' </returns>
         Public Shared Function GetPictureOfMoment() As Primitive
             Dim random1 As New Random(Now.Ticks Mod Integer.MaxValue)
-            Dim url As String = $"{_urlTemplate}&method=flickr.photos.getRecent&per_page=50&page={random1.[Next](10) + 1}"
+            Dim url As String = $"{_urlTemplate}&method=flickr.photos.getRecent&per_page=50&page={random1.Next(10) + 1}"
             Thread.Sleep(1000)
             Return GetRandomPhotoNodeUrl(RestHelper.GetContents(url))
         End Function
@@ -56,7 +56,7 @@ Namespace Library
                 Return GetRandomPhotoNodeUrl(_cachedTagDocument)
             End If
 
-            Dim url As String = $"{_urlTemplate}&method=flickr.photos.search&per_page=50&tags={tag}&page={random1.[Next](10) + 1}"
+            Dim url As String = $"{_urlTemplate}&method=flickr.photos.search&per_page=50&tags={tag}&page={random1.Next(10) + 1}"
             Thread.Sleep(1000)
             _cachedTag = tag
             _cachedTagDocument = RestHelper.GetContents(url)
@@ -71,7 +71,7 @@ Namespace Library
             Try
                 Dim source As IEnumerable(Of XElement) = document.Descendants("photo")
                 Dim random1 As New Random(Now.Ticks Mod Integer.MaxValue)
-                Dim xElement1 As XElement = source.ElementAt(random1.[Next](source.Count()))
+                Dim xElement1 As XElement = source.ElementAt(random1.Next(source.Count()))
                 Dim value1 As String = xElement1.Attribute("id").Value
                 Dim value2 As String = xElement1.Attribute("secret").Value
                 Dim value3 As String = xElement1.Attribute("server").Value

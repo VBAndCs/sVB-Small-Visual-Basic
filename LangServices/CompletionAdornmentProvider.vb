@@ -169,12 +169,12 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             Dim identifierToken = TokenInfo.Illegal
 
-            Dim isLookup = (prevToken.Token = Token.lookup)
+            Dim isLookup = (prevToken.Token = Token.Lookup)
             If prevToken.Token = Token.Dot OrElse isLookup Then
                 identifierToken = b4PrevToken
 
             Else
-                isLookup = (currentToken.Token = Token.lookup)
+                isLookup = (currentToken.Token = Token.Lookup)
                 If currentToken.Token = Token.Dot OrElse isLookup Then
                     identifierToken = prevToken
                     Dim endColumn = currentToken.EndColumn

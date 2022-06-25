@@ -151,7 +151,7 @@ Namespace Microsoft.SmallBasic.Engine
                                 .Text = "0"
                             }
                         },
-                        .[Operator] = New TokenInfo With {
+                        .Operator = New TokenInfo With {
                             .Token = Token.LessThan
                         },
                         .RightHandSide = statement.StepValue
@@ -165,7 +165,7 @@ Namespace Microsoft.SmallBasic.Engine
                             .Identifier = statement.Iterator,
                             .Subroutine = SubroutineStatement.Current
                         },
-                        .[Operator] = New TokenInfo With {
+                        .Operator = New TokenInfo With {
                             .Token = Token.LessThan
                         },
                         .RightHandSide = statement.FinalValue
@@ -189,7 +189,7 @@ Namespace Microsoft.SmallBasic.Engine
                         .Identifier = statement.Iterator,
                         .Subroutine = SubroutineStatement.Current
                     },
-                    .[Operator] = New TokenInfo With {
+                    .Operator = New TokenInfo With {
                         .Token = Token.GreaterThan
                     },
                     .RightHandSide = statement.FinalValue
@@ -209,7 +209,7 @@ Namespace Microsoft.SmallBasic.Engine
                         .Identifier = statement.Iterator,
                         .Subroutine = SubroutineStatement.Current
                     },
-                    .[Operator] = New TokenInfo With {
+                    .Operator = New TokenInfo With {
                         .Token = Token.Addition
                     },
                     .RightHandSide = (If(statement.StepValue IsNot Nothing, statement.StepValue, New LiteralExpression With {

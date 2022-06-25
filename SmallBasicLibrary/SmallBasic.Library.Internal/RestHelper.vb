@@ -16,7 +16,7 @@ Namespace Library.Internal
                 Dim webRequest1 As WebRequest = WebRequest.Create(url)
                 Dim evt As New ManualResetEvent(initialState:=False)
                 Dim asyncResult As IAsyncResult = webRequest1.BeginGetResponse(Sub()
-                                                                                   evt.[Set]()
+                                                                                   evt.Set()
                                                                                End Sub, Nothing)
                 evt.WaitOne()
                 Using webResponse1 As WebResponse = webRequest1.EndGetResponse(asyncResult)

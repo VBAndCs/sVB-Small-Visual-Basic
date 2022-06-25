@@ -918,7 +918,7 @@ Namespace Library
                 _random = New Random(Now.Ticks Mod Integer.MaxValue)
             End If
 
-            Return $"#{_random.[Next](256):X2}{_random.[Next](256):X2}{_random.[Next](256):X2}"
+            Return $"#{_random.Next(256):X2}{_random.Next(256):X2}{_random.Next(256):X2}"
         End Function
 
         ''' <summary>
@@ -1050,7 +1050,7 @@ Namespace Library
             _mainCanvas = New Canvas
             _mainCanvas.HorizontalAlignment = HorizontalAlignment.Stretch
             _mainCanvas.VerticalAlignment = VerticalAlignment.Stretch
-            _renderBitmap = New RenderTargetBitmap(_window.Width + 120, _window.Height + 120, 96.0, 96.0, PixelFormats.[Default])
+            _renderBitmap = New RenderTargetBitmap(_window.Width + 120, _window.Height + 120, 96.0, 96.0, PixelFormats.Default)
             Dim image1 As New System.Windows.Controls.Image
             image1.Source = _renderBitmap
             image1.Stretch = Stretch.None
@@ -1073,7 +1073,7 @@ Namespace Library
         Private Shared Sub WindowSizeChanged(sender As Object, e As SizeChangedEventArgs)
             If e.NewSize.Width > _renderBitmap.Width OrElse e.NewSize.Height > _renderBitmap.Height Then
                 Dim renderBitmap As RenderTargetBitmap = _renderBitmap
-                _renderBitmap = New RenderTargetBitmap(e.NewSize.Width + 120, e.NewSize.Height + 120, 96.0, 96.0, PixelFormats.[Default])
+                _renderBitmap = New RenderTargetBitmap(e.NewSize.Width + 120, e.NewSize.Height + 120, 96.0, 96.0, PixelFormats.Default)
                 Dim drawingVisual1 As New DrawingVisual
                 Dim drawingContext1 As DrawingContext = drawingVisual1.RenderOpen()
                 drawingContext1.DrawImage(renderBitmap, New System.Windows.Rect(0.0, 0.0, renderBitmap.Width, renderBitmap.Height))

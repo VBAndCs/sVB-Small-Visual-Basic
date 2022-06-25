@@ -1,0 +1,40 @@
+<act:Exports 
+    xmlns:act="clr-namespace:System.ComponentModel.Activation;assembly=ComponentModel"
+    xmlns:mntcd="clr-namespace:Microsoft.Nautilus.Core.DataExports;assembly=ToolFramework">
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="txt" ContentType="text" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="xml" ContentType="xml" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="cs" ContentType="csharp" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="vb" ContentType="vb" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="proj" ContentType="proj" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="csproj" ContentType="csproj" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="vbproj" ContentType="vbproj" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="jpg" ContentType="jpeg" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="jpeg" ContentType="jpeg" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="png" ContentType="png" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="gif" ContentType="gif" />
+  </act:Export>
+  <act:Export Name="FileExtensionToContentTypeAssociation">
+    <mntcd:FileExtensionToContentTypeAssociation FileExtension="bmp" ContentType="bmp" />
+  </act:Export>
+</act:Exports>

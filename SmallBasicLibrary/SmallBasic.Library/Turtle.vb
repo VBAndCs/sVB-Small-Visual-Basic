@@ -58,7 +58,7 @@ Namespace Library
                     GraphicsWindow.Invoke(
                         Sub()
                             Dim animation As New DoubleAnimation With {
-                                 .[To] = _angle,
+                                 .To = _angle,
                                  .Duration = New Duration(TimeSpan.FromMilliseconds(0.0))
                             }
                             _rotateTransform.BeginAnimation(RotateTransform.AngleProperty, animation)
@@ -160,12 +160,12 @@ Namespace Library
                         GraphicsWindow.AddShape(name, line1)
                         Dim animation As New DoubleAnimation With {
                                .From = _currentX,
-                               .[To] = newX,
+                               .To = newX,
                                .Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
                         }
                         Dim animation2 As New DoubleAnimation With {
                                .From = _currentY,
-                               .[To] = newY,
+                               .To = newY,
                                .Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
                         }
                         line1.BeginAnimation(Line.X2Property, animation)
@@ -222,7 +222,7 @@ Namespace Library
             GraphicsWindow.Invoke(
                 Sub()
                     Dim animation As New DoubleAnimation With {
-                           .[To] = _angle,
+                           .To = _angle,
                            .Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
                     }
                     _rotateTransform.BeginAnimation(RotateTransform.AngleProperty, animation)
@@ -288,8 +288,8 @@ Namespace Library
                     dt.Interval = TimeSpan.FromMilliseconds(time)
                     AddHandler dt.Tick,
                     Sub()
-                        evt.[Set]()
-                        dt.[Stop]()
+                        evt.Set()
+                        dt.Stop()
                     End Sub
                     dt.Start()
                 End Sub)

@@ -255,9 +255,9 @@
                                 <ColumnDefinition Width="200" />
                             </Grid.ColumnDefinitions>
                             <shell:MdiViewsControl x:Name="viewsControl" 
-                            RequestItemClose="OnCloseItem" 
-                            Grid.Column="0" Grid.ColumnSpan="3" 
-                            ActiveDocumentChanged="viewsControl_ActiveDocumentChanged"/>
+                                RequestItemClose="OnCloseItem" 
+                                Grid.Column="0" Grid.ColumnSpan="3" 
+                                ActiveDocumentChanged="viewsControl_ActiveDocumentChanged"/>
 
                             <lu:HelpPanel x:Name="helpPanel" Column="1" />
 

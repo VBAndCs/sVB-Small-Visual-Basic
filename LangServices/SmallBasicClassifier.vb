@@ -97,13 +97,13 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Function
 
         Public Function GetClassificationSpans(ByVal textSpan As SnapshotSpan) As IList(Of ClassificationSpan) Implements IClassifier.GetClassificationSpans
-            Dim list As List(Of ClassificationSpan) = New List(Of ClassificationSpan)()
-            Dim lineNumberFromPosition = textSpan.Snapshot.GetLineNumberFromPosition(textSpan.Start)
-            Dim lineNumberFromPosition2 = textSpan.Snapshot.GetLineNumberFromPosition(textSpan.End)
+            Dim classifications As New List(Of ClassificationSpan)
+            Dim startLineNo = textSpan.Snapshot.GetLineNumberFromPosition(textSpan.Start)
+            Dim endLineNo = textSpan.Snapshot.GetLineNumberFromPosition(textSpan.End)
 
-            For i = lineNumberFromPosition To lineNumberFromPosition2
-                Dim lineFromLineNumber = textSpan.Snapshot.GetLineFromLineNumber(i)
-                Dim tokenList As TokenEnumerator = lineScanner.GetTokenEnumerator(lineFromLineNumber.GetText(), i)
+            For i = startLineNo To endLineNo
+                Dim line = textSpan.Snapshot.GetLineFromLineNumber(i)
+                Dim tokenList = LineScanner.GetTokenEnumerator(line.GetText(), i)
                 Dim tokenInfo = sb.TokenInfo.Illegal
                 Dim tokenInfo2 = sb.TokenInfo.Illegal
                 Dim illegal = TokenInfo.Illegal
@@ -112,13 +112,13 @@ Namespace Microsoft.SmallBasic.LanguageService
                     illegal = tokenInfo2
                     tokenInfo2 = tokenInfo
                     tokenInfo = tokenList.Current
-                    Dim classificationForType = GetClassificationForType(tokenInfo, tokenInfo2, illegal)
-                    Dim textSpan2 = textSpan.Snapshot.CreateTextSpan(lineFromLineNumber.Start + tokenInfo.Column, If(Not Equals(tokenInfo.Text, Nothing), tokenInfo.Text.Length, 0), SpanTrackingMode.EdgeInclusive)
-                    list.Add(New ClassificationSpan(textSpan2, classificationForType))
+                    Dim classification = GetClassificationForType(tokenInfo, tokenInfo2, illegal)
+                    Dim span = textSpan.Snapshot.CreateTextSpan(line.Start + tokenInfo.Column, If(Not Equals(tokenInfo.Text, Nothing), tokenInfo.Text.Length, 0), SpanTrackingMode.EdgeInclusive)
+                    classifications.Add(New ClassificationSpan(span, classification))
                 Loop While tokenList.MoveNext()
             Next
 
-            Return list
+            Return classifications
         End Function
     End Class
 End Namespace

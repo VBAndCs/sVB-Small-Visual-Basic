@@ -34,6 +34,7 @@ Namespace Microsoft.SmallBasic.Documents
         Private _caretPositionText As String
         Private _programDetails As Object
         Public Property BaseId As String
+
         Public Property CaretPositionText As String
             Get
                 Return _caretPositionText
@@ -277,14 +278,19 @@ Namespace Microsoft.SmallBasic.Documents
             Select Case Path.GetExtension(FilePath).ToLowerInvariant()
                 Case ".sb", ".smallbasic"
                     result = "text.smallbasic"
+
                 Case ".cs"
                     result = "text.csharp"
+
                 Case ".xaml", ".xcml"
                     result = "text.xml"
+
                 Case ".xml"
                     result = "text.xml"
+
                 Case ".vb"
                     result = "text.vb"
+
             End Select
 
             Return result
@@ -350,17 +356,19 @@ Namespace Microsoft.SmallBasic.Documents
             Select Case e.Key
                 Case System.Windows.Input.Key.Enter, System.Windows.Input.Key.Space, System.Windows.Input.Key.Tab
                     ' Commit chars
+
                 Case System.Windows.Input.Key.Up, System.Windows.Input.Key.Down, System.Windows.Input.Key.PageUp, System.Windows.Input.Key.PageDown
                     If code.Trim(" "c, vbTab) = "" Then
                         textView.Caret.MoveTo(line.End)
                     End If
                     Return
+
                 Case Else
                     If c <> "("c Then Return
+
             End Select
 
             Try
-
                 If code.Trim = "" Then
                     If e.Key = System.Windows.Input.Key.Enter Then
                         line = text.GetLineFromLineNumber(line.LineNumber - 1)
@@ -370,31 +378,40 @@ Namespace Microsoft.SmallBasic.Documents
                     End If
                 End If
 
-                Dim keyword = code.Trim(" "c, vbTab, "(").ToLower()
+                Dim keyword = code.Trim(" "c, vbTab(0), "("c).ToLower()
                 Dim paran = If(c = "(", "(", "")
                 e.Handled = True
 
                 Select Case keyword
                     Case ""
                         Return
+
                     Case "if"
                         AutoCompleteBlock(textView, line, code, keyword, $"If {paran} Then#   ", "EndIf", paran.Length)
+
                     Case "elseif"
                         AutoCompleteBlock(textView, line, code, keyword, $"ElseIf {paran} Then#   ", "", paran.Length)
+
                     Case "for"
                         AutoCompleteBlock(textView, line, code, keyword, $"For  = ? To ? #   ", "Next", paran.Length)
+
                     Case "while"
                         AutoCompleteBlock(textView, line, code, keyword, $"While {paran}#   ", "Wend", paran.Length)
+
                     Case "sub"
                         AutoCompleteBlock(textView, line, code, keyword, $"Sub #   ", "EndSub", paran.Length)
+
                     Case "function"
                         AutoCompleteBlock(textView, line, code, keyword, $"Function #   ", "EndFunction", paran.Length)
+
                     Case Else
                         e.Handled = False
+
                 End Select
 
-            Catch ex As Exception
+            Catch
             End Try
+
         End Sub
 
         Private Sub AutoCompleteBlock(
@@ -406,6 +423,7 @@ Namespace Microsoft.SmallBasic.Documents
                              endBlock As String,
                              n As Integer
                    )
+
             Dim start = code.IndexOf(keyword, StringComparison.InvariantCultureIgnoreCase)
             Dim leadingSpace = code.Substring(0, start)
             Dim L = line.Length

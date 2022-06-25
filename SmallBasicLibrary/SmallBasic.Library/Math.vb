@@ -294,7 +294,7 @@ Namespace Library
                 _random = New Random(Now.Ticks Mod Integer.MaxValue)
             End If
 
-            Return _random.[Next](maxNumber) + 1
+            Return _random.Next(maxNumber) + 1
         End Function
 
         ''' <summary>

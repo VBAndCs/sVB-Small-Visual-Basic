@@ -55,6 +55,10 @@
     </MyType>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ComponentModel, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>SB.Lib\ComponentModel.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -62,18 +66,12 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xaml" />
     <Reference Include="System" />
-    <Reference Include="ComponentModel">
-      <HintPath>SB.Lib\ComponentModel.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration.Install" />
     <Reference Include="Verex, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Verex.1.2.0\lib\netstandard2.0\Verex.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
-    <Reference Include="ToolFramework">
-      <HintPath>SB.Lib\ToolFramework.dll</HintPath>
-    </Reference>
     <Reference Include="StringResources">
       <HintPath>SB.Lib\StringResources.dll</HintPath>
     </Reference>
@@ -293,6 +291,10 @@
     <ProjectReference Include="..\SmallBasicLibrary\SmallBasicLibrary.vbproj">
       <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>
       <Name>SmallBasicLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ToolFramework\ToolFramework.vbproj">
+      <Project>{b4ac009e-626f-47e8-af2f-9529687df991}</Project>
+      <Name>ToolFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

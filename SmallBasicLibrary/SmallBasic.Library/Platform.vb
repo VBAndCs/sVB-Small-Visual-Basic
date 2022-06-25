@@ -10,7 +10,7 @@ Namespace Library
 
         Public Shared Function CreateInstance(typeName As Primitive) As Primitive
             Try
-                Dim type1 As Type = Type.[GetType](typeName)
+                Dim type1 As Type = Type.GetType(typeName)
                 Dim value As Object = Activator.CreateInstance(type1)
                 Dim text As String = GenerateNewName("Instance")
                 _objectMap(text) = value
@@ -23,7 +23,7 @@ Namespace Library
         Public Shared Function InvokeInstanceMethod(instanceId As Primitive, methodName As Primitive, argumentsStackName As Primitive) As Primitive
             Try
                 Dim obj As Object = _objectMap(instanceId)
-                Dim method As MethodInfo = obj.[GetType]().GetMethod(methodName, BindingFlags.IgnoreCase Or BindingFlags.Instance Or BindingFlags.[Public])
+                Dim method As MethodInfo = obj.GetType().GetMethod(methodName, BindingFlags.IgnoreCase Or BindingFlags.Instance Or BindingFlags.Public)
                 Dim num As Integer = Stack.GetCount(argumentsStackName)
                 Dim parameters As ParameterInfo() = method.GetParameters()
                 If parameters.Length = num Then
@@ -43,8 +43,8 @@ Namespace Library
 
         Public Shared Function InvokeStaticMethod(typeName As Primitive, methodName As Primitive, argumentsStackName As Primitive) As Primitive
             Try
-                Dim type1 As Type = Type.[GetType](typeName)
-                Dim method As MethodInfo = type1.GetMethod(methodName, BindingFlags.IgnoreCase Or BindingFlags.[Static] Or BindingFlags.[Public])
+                Dim type1 As Type = Type.GetType(typeName)
+                Dim method As MethodInfo = type1.GetMethod(methodName, BindingFlags.IgnoreCase Or BindingFlags.Static Or BindingFlags.Public)
                 Dim num As Integer = Stack.GetCount(argumentsStackName)
                 Dim parameters As ParameterInfo() = method.GetParameters()
                 If parameters.Length = num Then

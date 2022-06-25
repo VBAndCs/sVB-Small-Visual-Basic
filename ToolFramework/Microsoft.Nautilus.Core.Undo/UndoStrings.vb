@@ -1,0 +1,33 @@
+Namespace Microsoft.Nautilus.Core.Undo
+    Friend NotInheritable Class UndoStrings
+
+        Public Const ArgumentCannotBeNull As String = "'{0}' called with a null value for argument '{1}'.  This value is not an allowable value."
+        Public Const GetHistoryCannotFindContextInRegistry As String = "The request to retrieve an UndoHistory cannot be satisfied, because no UndoHistory has been associated with the given context."
+        Public Const AttachHistoryAlreadyContainsContextInRegistry As String = "The request to attach an UndoHistory with the given context cannot be satisfied, because that context is already attached to a History in the registry."
+        Public Const GlobalHistoryCannotBeRemovedFromRegistry As String = "The request to remove the given history from the registry cannot be satisfied, because the given history is the GlobalHistory."
+        Public Const HistoryCantUndo As String = "Can't Undo"
+        Public Const HistoryCantRedo As String = "Can't Redo"
+        Public Const RedoAndUndoAcceptOnlyPositiveCounts As String = "The UndoHistory operation '{0}' only accepts positive count values, but {1} was received."
+        Public Const CannotCreateVisibleTransactionNestedInHiddenTransaction As String = "A nested UndoTransaction which is not marked IsHidden cannot be created within an UndoTransaction which is marked IsHidden."
+        Public Const CannotUndoMoreTransactionsThanExist As String = "An UndoHistory received a request to {0} {1} transactions, which is more transactions than currently exist in the stack."
+        Public Const EndTransactionOutOfOrder As String = "There has been an attempt to end the creation of a new UndoTransaction which is not the most recently created. You can fix this issue by using the IDispose/using coding pattern on UndoHistory.CreateTransaction."
+        Public Const InvalidHistoryInTransaction As String = "UndoTransactionImpl must be created with a reference to a valid UndoHistoryImpl"
+        Public Const InvalidParentInTransaction As String = "UndoTransactionImpl must be created with a reference to a valid UndoTransactionImpl"
+        Public Const CompleteCalledOnTransationThatIsNotOpened As String = "Complete can only be invoked on UndoTransactions that are currently in an Open state."
+        Public Const CancelCalledOnTransationThatIsNotOpened As String = "Cancel can only be invoked on UndoTransactions that are currently in an Open state."
+        Public Const RollbackCalledOnTransationThatIsNotOpened As String = "Rollback can only be invoked on UndoTransactions that are currently in an Open state."
+        Public Const AddUndoCalledOnTransationThatIsNotOpened As String = "AddUndo can only be invoked on UndoTransactions that are currently in an Open state."
+        Public Const DoCalledButCanRedoFalse As String = "UndoTransaction does not currently support Do, because CanRedo is false."
+        Public Const UndoCalledButCanUndoFalse As String = "RedoTransaction does not currently support Undo, because CanUndo is false."
+        Public Const CannotUndoRequestedPrimitiveFromHistoryUndo As String = "The UndoHistory cannot fulfill your request to Undo because at least one of the UndoPrimitives does not permit it."
+        Public Const CannotRedoRequestedPrimitiveFromHistoryRedo As String = "The UndoHistory cannot fulfill your request to Redo because at least one of the UndoPrimitives does not permit it."
+        Public Const CannotCreateTransactionWhenCurrentTransactionNotOpen As String = "The UndoHistory cannot fulfill your request to create a new transaction, because the current transaction has been Completed but not yet been Disposed. You should Complete() an UndoTransaction as the last step in the CreateTransaction using block."
+        Public Const GetUndoPropertyFailedWithName As String = "There is no UndoProperty with name '{0}'."
+        Public Const GetUndoTransactionMarkerFailedWithName As String = "There is no UndoTransactionMarker with name '{0}'."
+        Public Const DelegatedUndoPrimitiveCannotMerge As String = "The DelegatedUndoPrimitive cannot Merge."
+        Public Const NoUndoTransactionOpen As String = "There must exist an open UndoTransaction in the UndoHistory to proceed with this add."
+        Public Const DelegatedUndoPrimitiveStateDoesNotAllowAdd As String = "It is only possible to add a new operation to the DelegatedUndoPrimitive when the state is Undoing or Redoing."
+        Public Const ClosingAnOpenTransactionThatAppearsToBeUndoneOrUndoing As String = "Following the Creation of an UndoTransaction but prior to calling Dispose, a Do() or Undo() was called illegally, and now the transaction cannot be closed properly."
+        Public Const OnlyOneLinkedTransaction As String = "Only one open linked transaction may exist at a time, and there is already an open LinkedUndoTransaction."
+    End Class
+End Namespace
