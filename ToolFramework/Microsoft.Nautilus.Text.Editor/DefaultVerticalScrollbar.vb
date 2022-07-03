@@ -98,7 +98,7 @@ Namespace Microsoft.Nautilus.Text.Editor
 
             Public ReadOnly Property Maximum As Double
                 Get
-                    Return _minimum + _distance
+                    Return _Minimum + _Distance
                 End Get
             End Property
 
@@ -120,7 +120,7 @@ Namespace Microsoft.Nautilus.Text.Editor
             End Function
 
             Public Overrides Function GetHashCode() As Integer
-                Return _minimum.GetHashCode() Xor _distance.GetHashCode()
+                Return _Minimum.GetHashCode() Xor _Distance.GetHashCode()
             End Function
 
             Public Overrides Function Equals(obj As Object) As Boolean
@@ -222,9 +222,9 @@ Namespace Microsoft.Nautilus.Text.Editor
                     _textView.ViewScroller.ScrollViewportVerticallyByLine(ScrollDirection.Up)
 
                 Case Else
-                    Dim characterAtCoordinate = _scrollMap.GetCharacterAtCoordinate(e.NewValue)
-                    If characterAtCoordinate.HasValue Then
-                        _textView.DisplayTextLineContainingCharacter(characterAtCoordinate.Value, 0.0, ViewRelativePosition.Top)
+                    Dim index = _scrollMap.GetCharacterAtCoordinate(e.NewValue)
+                    If index.HasValue Then
+                        _textView.DisplayTextLineContainingCharacter(index.Value, 0.0, ViewRelativePosition.Top)
                     End If
 
             End Select

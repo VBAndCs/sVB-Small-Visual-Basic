@@ -147,9 +147,8 @@ Namespace Microsoft.Nautilus.Text.Adornments
         End Function
 
         Friend Sub OnRender(dc As DrawingContext)
-            For Each adornmentsAndVisual As KeyValuePair(Of SimpleAdornment, AvalonVisual) In _adornmentsAndVisuals
-                Dim _value As AvalonVisual = adornmentsAndVisual.Value
-                _value.OnRender(_textView, adornmentsAndVisual.Key, dc)
+            For Each item In _adornmentsAndVisuals
+                item.Value.OnRender(_textView, item.Key, dc)
             Next
         End Sub
     End Class

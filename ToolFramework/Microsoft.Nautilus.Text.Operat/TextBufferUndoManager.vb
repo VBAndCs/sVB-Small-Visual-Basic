@@ -36,12 +36,12 @@ Namespace Microsoft.Nautilus.Text.Operations
         Private Sub TextBufferChanged(sender As Object, e As TextChangedEventArgs)
             If _undoHistory.State <> 0 Then Return
 
-            Using undoTransaction1 As UndoTransaction = _undoHistory.CreateTransaction("Text Buffer Change")
-                For Each change As ITextChange In e.Changes
-                    Dim undo As New TextBufferChangeUndoPrimitive(_textBuffer, change)
-                    undoTransaction1.AddUndo(undo)
+            Using undoTransaction = _undoHistory.CreateTransaction("Text Buffer Change")
+                For Each change In e.Changes
+                    Dim undo As New TextBufferChangeUndoPrimitive(_TextBuffer, change)
+                    undoTransaction.AddUndo(undo)
                 Next
-                undoTransaction1.Complete()
+                undoTransaction.Complete()
             End Using
         End Sub
 

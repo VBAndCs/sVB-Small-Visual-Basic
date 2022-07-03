@@ -77,18 +77,21 @@ Namespace Microsoft.Nautilus.Text
                 If canceled Then
                     Throw New InvalidOperationException("Edit has ben canceled")
                 End If
+
                 If applied Then
                     Throw New InvalidOperationException("Attempt to reuse already applied TextEdit")
                 End If
+
                 If position < 0 OrElse position > bufferLength Then
                     Throw New ArgumentOutOfRangeException("position")
                 End If
+
                 If text Is Nothing Then
                     Throw New ArgumentNullException("text")
                 End If
-                If Not CanInsert(position) Then
-                    Return False
-                End If
+
+                If Not CanInsert(position) Then Return False
+
                 changes.Add(New TextChange(position, "", text))
                 Return True
             End Function
@@ -97,24 +100,29 @@ Namespace Microsoft.Nautilus.Text
                 If canceled Then
                     Throw New InvalidOperationException("Edit has ben canceled")
                 End If
+
                 If applied Then
                     Throw New InvalidOperationException("Attempt to reuse already applied TextEdit")
                 End If
+
                 If position < 0 OrElse position > bufferLength Then
                     Throw New ArgumentOutOfRangeException("position")
                 End If
+
                 If characterBuffer Is Nothing Then
                     Throw New ArgumentNullException("characterBuffer")
                 End If
+
                 If startIndex < 0 OrElse startIndex > characterBuffer.Length Then
                     Throw New ArgumentOutOfRangeException("startIndex")
                 End If
+
                 If length1 < 0 OrElse startIndex + length1 > characterBuffer.Length Then
                     Throw New ArgumentOutOfRangeException("length")
                 End If
-                If Not CanInsert(position) Then
-                    Return False
-                End If
+
+                If Not CanInsert(position) Then Return False
+
                 changes.Add(New TextChange(position, "", New String(characterBuffer, startIndex, length1)))
                 Return True
             End Function
@@ -123,21 +131,27 @@ Namespace Microsoft.Nautilus.Text
                 If canceled Then
                     Throw New InvalidOperationException("Edit has ben canceled")
                 End If
+
                 If applied Then
                     Throw New InvalidOperationException("Attempt to reuse already applied TextEdit")
                 End If
+
                 If startPosition < 0 OrElse startPosition > bufferLength Then
                     Throw New ArgumentOutOfRangeException("startPosition")
                 End If
+
                 If charsToReplace < 0 OrElse startPosition + charsToReplace > bufferLength Then
                     Throw New ArgumentOutOfRangeException("charsToReplace")
                 End If
+
                 If replaceWith Is Nothing Then
                     Throw New ArgumentNullException("replaceWith")
                 End If
+
                 If Not CanDeleteOrReplace(New Span(startPosition, charsToReplace)) Then
                     Return False
                 End If
+
                 changes.Add(New TextChange(startPosition, originSnapshot.GetText(startPosition, charsToReplace), replaceWith))
                 Return True
             End Function
@@ -159,9 +173,7 @@ Namespace Microsoft.Nautilus.Text
                     Throw New ArgumentNullException("replaceWith")
                 End If
 
-                If Not CanDeleteOrReplace(replaceSpan) Then
-                    Return False
-                End If
+                If Not CanDeleteOrReplace(replaceSpan) Then Return False
 
                 changes.Add(New TextChange(replaceSpan.Start, originSnapshot.GetText(replaceSpan), replaceWith))
                 Return True
@@ -171,18 +183,23 @@ Namespace Microsoft.Nautilus.Text
                 If canceled Then
                     Throw New InvalidOperationException("Edit has ben canceled")
                 End If
+
                 If applied Then
                     Throw New InvalidOperationException("Attempt to reuse already applied TextEdit")
                 End If
+
                 If startPosition < 0 OrElse startPosition > bufferLength Then
                     Throw New ArgumentOutOfRangeException("startPosition")
                 End If
+
                 If charsToDelete < 0 OrElse startPosition + charsToDelete > bufferLength Then
                     Throw New ArgumentOutOfRangeException("charsToDelete")
                 End If
+
                 If Not CanDeleteOrReplace(New Span(startPosition, charsToDelete)) Then
                     Return False
                 End If
+
                 changes.Add(New TextChange(startPosition, originSnapshot.GetText(startPosition, charsToDelete), ""))
                 Return True
             End Function
@@ -191,15 +208,17 @@ Namespace Microsoft.Nautilus.Text
                 If canceled Then
                     Throw New InvalidOperationException("Edit has ben canceled")
                 End If
+
                 If applied Then
                     Throw New InvalidOperationException("Attempt to reuse already applied TextEdit")
                 End If
+
                 If deleteSpan.End > bufferLength Then
                     Throw New ArgumentOutOfRangeException("deleteSpan")
                 End If
-                If Not CanDeleteOrReplace(deleteSpan) Then
-                    Return False
-                End If
+
+                If Not CanDeleteOrReplace(deleteSpan) Then Return False
+
                 changes.Add(New TextChange(deleteSpan.Start, originSnapshot.GetText(deleteSpan), ""))
                 Return True
             End Function
@@ -215,17 +234,18 @@ Namespace Microsoft.Nautilus.Text
 
                 applied = True
                 If changes.Count > 0 Then
-                    Dim normalizedChanges As NormalizedTextChangeCollection = _baseBuffer.ApplyChanges(changes, sourceToken)
-                    Return _baseBuffer.FinishChangeApplication(normalizedChanges, originSnapshot, sourceToken)
+                    Return _baseBuffer.FinishChangeApplication(
+                                    normalizedChanges:=_baseBuffer.ApplyChanges(changes, sourceToken),
+                                    originSnapshot,
+                                    sourceToken
+                                 )
                 End If
 
                 Return _baseBuffer._CurrentSnapshot
             End Function
 
             Public Sub Dispose() Implements IDisposable.Dispose
-                If Not applied Then
-                    canceled = True
-                End If
+                If Not applied Then canceled = True
             End Sub
 
             Public Sub Cancel() Implements ITextEdit.Cancel

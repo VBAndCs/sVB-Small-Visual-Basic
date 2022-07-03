@@ -253,13 +253,10 @@ Namespace Microsoft.Nautilus.Text.Editor
 
             Set(value As Double)
                 Dim num As Double
-                If (_wordWrapStyle And WordWrapStyles.WordWrap) = WordWrapStyles.WordWrap Then
+                If (_wordWrapStyle And WordWrapStyles.WordWrap) > 0 Then
                     num = 0.0
                 Else
-                    If _layoutNeeded Then
-                        PerformLayout()
-                    End If
-
+                    If _layoutNeeded Then PerformLayout()
                     num = Math.Max(0.0, Math.Min(value, MaxTextWidth + 10.0 - ViewportWidth))
                 End If
 
@@ -267,9 +264,7 @@ Namespace Microsoft.Nautilus.Text.Editor
                     _viewportLeft = num
                     Canvas.SetLeft(_baseLayer, 0.0 - _viewportLeft)
                     RaiseEvent ViewportLeftChanged(Me, New EventArgs)
-                    If _imeEnabled Then
-                        PositionImmCompositionWindow()
-                    End If
+                    If _imeEnabled Then PositionImmCompositionWindow()
                 End If
             End Set
         End Property
@@ -453,46 +448,56 @@ Namespace Microsoft.Nautilus.Text.Editor
             Return If(textLineVisual?.GetAvalonTextElementSpan(position), New Span(position, Math.Min(_TextSnapshot.Length - position, 1)))
         End Function
 
-        Public Sub AddAdornmentSurface(adornmentSurface As IAdornmentSurface) Implements IAdornmentSurfaceHost.AddAdornmentSurface
-            If adornmentSurface Is Nothing Then
+        Public Sub AddAdornmentSurface(surface As IAdornmentSurface) Implements IAdornmentSurfaceHost.AddAdornmentSurface
+            If surface Is Nothing Then
                 Throw New ArgumentNullException("adornmentSurface")
             End If
 
-            Select Case adornmentSurface.SurfacePosition
+            Dim panel = surface.SurfacePanel
+            Dim children = _baseLayer.Children
+
+            Select Case surface.SurfacePosition
                 Case SurfacePosition.Bottommost
-                    _baseLayer.Children.Insert(0, adornmentSurface.SurfacePanel)
+                    children.Insert(0, panel)
+
                 Case SurfacePosition.BelowSelection
-                    _baseLayer.Children.Insert(_baseLayer.Children.IndexOf(_selectionLayer), adornmentSurface.SurfacePanel)
+                    children.Insert(children.IndexOf(_selectionLayer), panel)
+
                 Case SurfacePosition.AboveSelection
-                    _baseLayer.Children.Insert(_baseLayer.Children.IndexOf(_selectionLayer) + 1, adornmentSurface.SurfacePanel)
+                    children.Insert(children.IndexOf(_selectionLayer) + 1, panel)
+
                 Case SurfacePosition.BelowText
-                    _baseLayer.Children.Insert(_baseLayer.Children.IndexOf(_contentLayer), adornmentSurface.SurfacePanel)
+                    children.Insert(children.IndexOf(_contentLayer), panel)
+
                 Case SurfacePosition.AboveText
-                    _baseLayer.Children.Insert(_baseLayer.Children.IndexOf(_contentLayer) + 1, adornmentSurface.SurfacePanel)
+                    children.Insert(children.IndexOf(_contentLayer) + 1, panel)
+
                 Case Else
-                    _baseLayer.Children.Add(adornmentSurface.SurfacePanel)
+                    children.Add(panel)
+
             End Select
 
-            adornmentSurface.SurfacePanel.Width = _baseLayer.ActualWidth
-            adornmentSurface.SurfacePanel.Height = _baseLayer.ActualHeight
+            panel.Width = _baseLayer.ActualWidth
+            panel.Height = _baseLayer.ActualHeight
+
             AddHandler _baseLayer.SizeChanged,
                 Sub()
-                    adornmentSurface.SurfacePanel.Width = _baseLayer.ActualWidth
-                    adornmentSurface.SurfacePanel.Height = _baseLayer.ActualHeight
+                    panel.Width = _baseLayer.ActualWidth
+                    panel.Height = _baseLayer.ActualHeight
                 End Sub
         End Sub
 
-        Private Overloads Sub SetValue(val As String) Implements IValueProvider.SetValue
+        Private Overloads Sub SetValue(text As String) Implements IValueProvider.SetValue
             Dim textEdit As ITextEdit
 
             Do
                 textEdit = _TextBuffer.CreateEdit()
-                Dim span1 As New Span(0, textEdit.Snapshot.Length)
-                If Not textEdit.CanDeleteOrReplace(span1) Then
+                Dim span As New Span(0, textEdit.Snapshot.Length)
+                If Not textEdit.CanDeleteOrReplace(span) Then
                     Exit Do
                 End If
 
-                textEdit.Replace(span1, val)
+                textEdit.Replace(span, text)
             Loop While textEdit.Apply() Is Nothing
         End Sub
 
@@ -615,11 +620,15 @@ Namespace Microsoft.Nautilus.Text.Editor
             End SyncLock
         End Sub
 
-        Private Function GetInvalidationSpan(span1 As Span) As Span
+        Private Function GetInvalidationSpan(span As Span) As Span
             If (WordWrapStyle And WordWrapStyles.WordWrap) <> WordWrapStyles.WordWrap Then
-                Return span1
+                Return span
+            Else
+                Return Span.FromBounds(
+                    _TextSnapshot.GetLineFromPosition(span.Start).Start,
+                    _TextSnapshot.GetLineFromPosition(span.End).EndIncludingLineBreak
+                )
             End If
-            Return Span.FromBounds(_TextSnapshot.GetLineFromPosition(span1.Start).Start, _TextSnapshot.GetLineFromPosition(span1.End).EndIncludingLineBreak)
         End Function
 
         Protected Overrides Sub OnPreviewMouseLeftButtonDown(e As MouseButtonEventArgs)
@@ -744,13 +753,13 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Sub InnerPerformLayout(anchorPosition As Integer, verticalDistance As Double, relativeTo As ViewRelativePosition, gapBehavior As GapBehaviors, ignoreViewHeight As Boolean)
-            Dim lineFromPosition = _TextSnapshot.GetLineFromPosition(anchorPosition)
+            Dim line = _TextSnapshot.GetLineFromPosition(anchorPosition)
             Dim layoutStart As TextLineVisual = Nothing
             Dim layoutEnd As TextLineVisual = Nothing
             Dim topY As Double
 
-            DoAnchorLayout(lineFromPosition, anchorPosition, verticalDistance, relativeTo, layoutStart, layoutEnd, topY)
-            layoutStart = If(DoLayoutUp(lineFromPosition, topY), layoutStart)
+            DoAnchorLayout(line, anchorPosition, verticalDistance, relativeTo, layoutStart, layoutEnd, topY)
+            layoutStart = If(DoLayoutUp(line, topY), layoutStart)
 
             If topY > 0.0 Then
                 topY = If(
@@ -760,37 +769,37 @@ Namespace Microsoft.Nautilus.Text.Editor
                     )
             End If
 
-            Dim startIndex As Integer = _textLineVisuals.IndexOf(layoutStart)
-            Dim index As Integer = startIndex - 1
-            Dim textLineVisual1 As TextLineVisual
+            Dim startIndex = _textLineVisuals.IndexOf(layoutStart)
+            Dim index = startIndex - 1
+            Dim lineVisual As TextLineVisual
 
             Do
                 index += 1
-                textLineVisual1 = _textLineVisuals(index)
+                lineVisual = _textLineVisuals(index)
 
-                If textLineVisual1.Top <> topY Then
-                    InvalidateLayoutOverSpan(textLineVisual1.LineSpan)
+                If lineVisual.Top <> topY Then
+                    InvalidateLayoutOverSpan(lineVisual.LineSpan)
                 End If
 
-                textLineVisual1.Top = topY
-                topY += textLineVisual1.Height
-            Loop While textLineVisual1 IsNot layoutEnd
+                lineVisual.Top = topY
+                topY += lineVisual.Height
+            Loop While lineVisual IsNot layoutEnd
 
-            Dim num4 As Integer = index + DoLayoutDown(lineFromPosition, topY, ignoreViewHeight)
-            If _textLineVisuals(num4).Top < 0.0 Then
-                InnerPerformLayout(_textLineVisuals(num4).LineSpan.Start, 0.0, ViewRelativePosition.Top, GapBehaviors.GapAtTopAllowed Or GapBehaviors.GapAtBottomAllowed, ignoreViewHeight)
+            Dim i = index + DoLayoutDown(line, topY, ignoreViewHeight)
+            If _textLineVisuals(i).Top < 0.0 Then
+                InnerPerformLayout(_textLineVisuals(i).LineSpan.Start, 0.0, ViewRelativePosition.Top, GapBehaviors.GapAtTopAllowed Or GapBehaviors.GapAtBottomAllowed, ignoreViewHeight)
                 Return
             End If
 
-            If (gapBehavior And GapBehaviors.GapAtBottomAllowed) <> GapBehaviors.GapAtBottomAllowed AndAlso _textLineVisuals(num4).Bottom < ViewportHeight Then
-                InnerPerformLayout(_textLineVisuals(num4).LineSpan.Start, 0.0, ViewRelativePosition.Bottom, gapBehavior Or GapBehaviors.GapAtBottomAllowed, ignoreViewHeight)
+            If (gapBehavior And GapBehaviors.GapAtBottomAllowed) <> GapBehaviors.GapAtBottomAllowed AndAlso _textLineVisuals(i).Bottom < ViewportHeight Then
+                InnerPerformLayout(_textLineVisuals(i).LineSpan.Start, 0.0, ViewRelativePosition.Bottom, gapBehavior Or GapBehaviors.GapAtBottomAllowed, ignoreViewHeight)
                 Return
             End If
 
-            RemoveTextLineRange(num4 + 1, _textLineVisuals.Count)
+            RemoveTextLineRange(i + 1, _textLineVisuals.Count)
             RemoveTextLineRange(0, startIndex)
 
-            Dim i = 0
+            i = 0
             While i < _textLineVisuals.Count - 1 AndAlso _textLineVisuals(i).Top < 0.0
                 i += 1
             End While
@@ -801,19 +810,19 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Function DoAnchorLayout(line As ITextSnapshotLine, anchorCharacter As Integer, anchorVerticalDistance As Double, relativeTo As ViewRelativePosition, <Out> ByRef layoutStart As TextLineVisual, <Out> ByRef layoutEnd As TextLineVisual, <Out> ByRef topY As Double) As TextLineVisual
-            Dim startIndex As Integer
-            Dim endIndex As Integer
+            Dim startIndex, endIndex, index As Integer
             LayoutOneLine(line, anchorVerticalDistance, positionExistingTextLines:=False, startIndex, endIndex)
             layoutStart = _textLineVisuals(startIndex)
             layoutEnd = _textLineVisuals(endIndex)
-            Dim index As Integer
-
             _defaultFormattedTextLines.FindTextLineIndexContainingPosition(anchorCharacter, index)
-            Dim textLineVisual = _textLineVisuals(index)
-            topY = (If((relativeTo = ViewRelativePosition.Bottom), (ViewportHeight - anchorVerticalDistance - textLineVisual.Height), anchorVerticalDistance))
 
-            For num As Integer = index - 1 To startIndex Step -1
-                topY -= _textLineVisuals(num).Height
+            Dim textLineVisual = _textLineVisuals(index)
+            topY = If(relativeTo = ViewRelativePosition.Bottom,
+                            ViewportHeight - anchorVerticalDistance - textLineVisual.Height,
+                            anchorVerticalDistance)
+
+            For i = index - 1 To startIndex Step -1
+                topY -= _textLineVisuals(i).Height
             Next
 
             Return textLineVisual
@@ -926,8 +935,8 @@ Namespace Microsoft.Nautilus.Text.Editor
             lineVisual.Dispose()
         End Sub
 
-        Private Sub InvalidateLines(span1 As Span)
-            InvalidateLines(New NormalizedSpanCollection(span1))
+        Private Sub InvalidateLines(span As Span)
+            InvalidateLines(New NormalizedSpanCollection(span))
         End Sub
 
         Private Sub InvalidateLines(span1 As NormalizedSpanCollection)

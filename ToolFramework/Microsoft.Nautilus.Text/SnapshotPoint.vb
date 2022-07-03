@@ -44,26 +44,19 @@ Namespace Microsoft.Nautilus.Text
                 Throw New ArgumentException("targetSnapshot belongs to the wrong TextBuffer")
             End If
 
-            If targetSnapshot Is _Snapshot Then
-                Return Me
-            End If
+            If targetSnapshot Is _Snapshot Then Return Me
 
-            Dim textPoint As ITextPoint = _Snapshot.CreateTextPoint(_Position, trackingMode1)
+            Dim textPoint = _Snapshot.CreateTextPoint(_Position, trackingMode1)
             Return New SnapshotPoint(targetSnapshot, textPoint.GetPosition(targetSnapshot))
         End Function
 
         Public Overrides Function Equals(obj As Object) As Boolean
-            If TypeOf obj Is SnapshotPoint Then
-                Return CType(obj, SnapshotPoint) = Me
-            End If
-            Return False
+            If TypeOf obj IsNot SnapshotPoint Then Return False
+            Return CType(obj, SnapshotPoint) = Me
         End Function
 
         Public Shared Operator =(sp1 As SnapshotPoint, sp2 As SnapshotPoint) As Boolean
-            If sp1.Snapshot Is sp2.Snapshot Then
-                Return sp1.Position = sp2.Position
-            End If
-            Return False
+            Return sp1.Snapshot Is sp2.Snapshot AndAlso sp1.Position = sp2.Position
         End Operator
 
         Public Shared Operator <>(sp1 As SnapshotPoint, sp2 As SnapshotPoint) As Boolean

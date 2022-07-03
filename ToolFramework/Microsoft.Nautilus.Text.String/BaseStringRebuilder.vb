@@ -121,8 +121,8 @@ Namespace Microsoft.Nautilus.Text.StringRebuilder
             Return Assemble(Span.FromBounds(0, span1.Start), Span.FromBounds(span1.End, Length))
         End Function
 
-        Public Function Replace(span1 As Span, text As String) As IStringRebuilder Implements IStringRebuilder.Replace
-            Return Replace(span1, SimpleStringRebuilder.Create(text))
+        Public Function Replace(span As Span, text As String) As IStringRebuilder Implements IStringRebuilder.Replace
+            Return Replace(span, SimpleStringRebuilder.Create(text))
         End Function
 
         Public Function Replace(span1 As Span, text As IStringRebuilder) As IStringRebuilder Implements IStringRebuilder.Replace

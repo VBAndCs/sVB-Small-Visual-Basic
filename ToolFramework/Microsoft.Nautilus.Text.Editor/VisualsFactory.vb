@@ -59,10 +59,10 @@ Namespace Microsoft.Nautilus.Text.Editor
                 Dim previousLineBreak As TextLineBreak = Nothing
 
                 Do
-                    Dim textLine1 = _textFormatter.FormatLine(formattingSource, index2, maxWidth, _paragraphProperties, previousLineBreak)
-                    previousLineBreak = textLine1.GetTextLineBreak()
-                    lines.Add(textLine1)
-                    Dim endPos As Integer = textLine1.Length
+                    Dim formatedLine = _textFormatter.FormatLine(formattingSource, index2, maxWidth, _paragraphProperties, previousLineBreak)
+                    previousLineBreak = formatedLine.GetTextLineBreak()
+                    lines.Add(formatedLine)
+                    Dim endPos As Integer = formatedLine.Length
                     index2 += endPos
 
                     For Each pos In positions
@@ -80,16 +80,26 @@ Namespace Microsoft.Nautilus.Text.Editor
                     End If
                 Loop While maxWidth = 0.0
 
-                Dim textLineVisual1 As New TextLineVisual(_textView, lines, index, New Span(curPos, pos2 - curPos), newLineLength, positions, horizontalOffset, verticalOffset)
-                lineVisuals.Add(textLineVisual1)
+                Dim lineVisual As New TextLineVisual(
+                        _textView,
+                        lines,
+                        index,
+                        New Span(curPos, pos2 - curPos),
+                        newLineLength,
+                        positions,
+                        horizontalOffset,
+                        verticalOffset
+                 )
+                lineVisuals.Add(lineVisual)
+
                 If pos2 >= lineEnd Then Exit Do
 
-                verticalOffset += textLineVisual1.Height
+                verticalOffset += lineVisual.Height
                 If curPos = line.Start AndAlso maxIndent > 0.0 Then
-                    Dim num6 As Double = textLineVisual1.GetIndentation()
-                    If num6 > maxIndent Then num6 = maxIndent
-                    horizontalOffset += num6
-                    maxWidth -= num6
+                    Dim indent = lineVisual.GetIndentation()
+                    If indent > maxIndent Then indent = maxIndent
+                    horizontalOffset += indent
+                    maxWidth -= indent
                     maxIndent = 0.0
                 End If
 

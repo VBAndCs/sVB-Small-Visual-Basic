@@ -14,8 +14,8 @@ Namespace Microsoft.Nautilus.Text
             MyBase.New(CType(New Span() {}, IList(Of Span)))
         End Sub
 
-        Public Sub New(span1 As Span)
-            MyBase.New(CType(New Span(0) {span1}, IList(Of Span)))
+        Public Sub New(span As Span)
+            MyBase.New(CType(New Span(0) {span}, IList(Of Span)))
         End Sub
 
         Public Sub New(spans As IEnumerable(Of Span))
@@ -204,31 +204,36 @@ Namespace Microsoft.Nautilus.Text
                 [end] = Math.Max([end], span1.End)
             End If
         End Sub
+
         Private Shared Function NormalizeSpans(spans As IEnumerable(Of Span)) As IList(Of Span)
             If spans Is Nothing Then
                 Throw New ArgumentNullException("spans")
             End If
-            Dim list1 As New List(Of Span)(spans)
-            If list1.Count <= 1 Then
-                Return list1
-            End If
-            list1.Sort(Function(s1 As Span, s2 As Span) s1.Start.CompareTo(s2.Start))
-            Dim list2 As IList(Of Span) = New List(Of Span)(list1.Count)
-            Dim num As Integer = list1(0).Start
-            Dim num2 As Integer = list1(0).End
-            For i As Integer = 1 To list1.Count - 1
-                Dim start As Integer = list1(i).Start
-                Dim [end] As Integer = list1(i).End
-                If num2 < start Then
-                    list2.Add(New Span(num, num2 - num))
-                    num = start
-                    num2 = [end]
+
+            Dim spanList = spans.ToList()
+            If spanList.Count <= 1 Then Return spanList
+
+            spanList.Sort(Function(s1 As Span, s2 As Span) s1.Start.CompareTo(s2.Start))
+
+            Dim result As New List(Of Span)(spanList.Count)
+            Dim start1 = spanList(0).Start
+            Dim end1 = spanList(0).End
+
+            For i As Integer = 1 To spanList.Count - 1
+                Dim start2 = spanList(i).Start
+                Dim end2 = spanList(i).End
+
+                If end1 < start2 Then
+                    result.Add(New Span(start1, end1 - start1))
+                    start1 = start2
+                    end1 = end2
                 Else
-                    num2 = Math.Max(num2, [end])
+                    end1 = Math.Max(end1, end2)
                 End If
             Next
-            list2.Add(New Span(num, num2 - num))
-            Return list2
+
+            result.Add(New Span(start1, end1 - start1))
+            Return result
         End Function
     End Class
 End Namespace

@@ -176,7 +176,7 @@ Namespace Microsoft.Nautilus.Core.Undo
         End Sub
 
         Public Sub CopyPrimitivesFrom(transaction As UndoTransactionImpl)
-            For Each undoPrimitive As IUndoPrimitive In transaction.UndoPrimitives
+            For Each undoPrimitive In transaction.UndoPrimitives
                 AddUndo(undoPrimitive)
             Next
         End Sub

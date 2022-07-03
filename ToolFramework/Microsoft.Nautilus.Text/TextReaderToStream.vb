@@ -126,31 +126,31 @@ Namespace Microsoft.Nautilus.Text
         End Sub
 
         Private Function ReadBlock() As Integer
-            Dim array1((_buffer.Length - 4) \ 4 - 1) As Char
-            Dim num As Integer = 0
+            Dim block((_buffer.Length - 4) \ 4 - 1) As Char
+            Dim index As Integer = 0
 
             If _cachedSurrogate <> vbNullChar Then
-                array1(0) = _cachedSurrogate
-                num = 1
+                block(0) = _cachedSurrogate
+                index = 1
                 _cachedSurrogate = ChrW(0)
             End If
 
-            Dim num2 As Integer = _reader.Read(array1, num, array1.Length - num)
-            num2 += num
+            Dim count = _reader.Read(block, index, block.Length - index)
+            count += index
 
-            If num2 > 0 Then
-                If num2 >= 2 AndAlso Char.IsHighSurrogate(array1(num2 - 1)) Then
-                    _cachedSurrogate = array1(Threading.Interlocked.Decrement(num2))
+            If count > 0 Then
+                If count >= 2 AndAlso Char.IsHighSurrogate(block(count - 1)) Then
+                    _cachedSurrogate = block(Threading.Interlocked.Decrement(count))
                 End If
 
                 _memoryStream.Position = 0L
                 _bufferPosition = 0
-                _writer.Write(array1, 0, num2)
+                _writer.Write(block, 0, count)
                 _writer.Flush()
                 _bytesInBuffer = CInt(CLng(Fix(_memoryStream.Position)) Mod Integer.MaxValue)
             End If
 
-            Return num2
+            Return count
         End Function
     End Class
 End Namespace

@@ -240,13 +240,11 @@ Namespace Microsoft.Nautilus.Text.Editor
             _capturedCharacterBounds = New TextBounds(_capturedCharacterBounds.Left, Top, _capturedCharacterBounds.Width, Height)
         End Sub
 
-        Protected Overrides Sub OnRender(drawingContext1 As DrawingContext)
-            If _updateNeeded Then
-                UpdateCaret()
-            End If
-            MyBase.OnRender(drawingContext1)
+        Protected Overrides Sub OnRender(drawingContext As DrawingContext)
+            If _updateNeeded Then UpdateCaret()
+            MyBase.OnRender(drawingContext)
             If _bounds.Height <> 0.0 AndAlso MyBase.Visibility = Visibility.Visible Then
-                drawingContext1.DrawGeometry(_caretBrush, Nothing, _caretGeometry)
+                drawingContext.DrawGeometry(_caretBrush, Nothing, _caretGeometry)
             Else
                 _blinkAnimationClock.Controller.Stop()
             End If

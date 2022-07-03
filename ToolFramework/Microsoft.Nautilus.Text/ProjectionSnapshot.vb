@@ -123,35 +123,33 @@ Namespace Microsoft.Nautilus.Text
                 Throw New ArgumentOutOfRangeException("span")
             End If
 
-            Dim list1 As New List(Of SnapshotSpan)
-            Dim num As Integer = 0
+            Dim spans As New List(Of SnapshotSpan)
+            Dim lastPos As Integer = 0
             Dim flag As Boolean = True
 
-            For Each sourceSpan As SnapshotSpan In sourceSpans
-                Dim num2 As Integer = num + sourceSpan.Length
+            For Each sourceSpan In sourceSpans
+                Dim pos = lastPos + sourceSpan.Length
                 If flag Then
-                    If span1.Start < num2 OrElse (span1.Start = num2 AndAlso span1.Start = Length) Then
+                    If span1.Start < pos OrElse (span1.Start = pos AndAlso span1.Start = Length) Then
                         flag = False
-                        Dim num3 As Integer = sourceSpan.Start + span1.Start - num
-                        Dim num4 As Integer = (If((num3 + span1.Length < sourceSpan.End), span1.Length, (sourceSpan.End - num3)))
-                        list1.Add(New SnapshotSpan(sourceSpan.Snapshot, New Span(num3, num4)))
-                        If num4 = span1.Length Then
-                            Return list1
-                        End If
+                        Dim start = sourceSpan.Start + span1.Start - lastPos
+                        Dim [end] = If(start + span1.Length < sourceSpan.End, span1.Length, (sourceSpan.End - start))
+                        spans.Add(New SnapshotSpan(sourceSpan.Snapshot, start, [end]))
+                        If [end] = span1.Length Then Return spans
                     End If
 
                 Else
-                    If span1.End <= num2 Then
-                        list1.Add(New SnapshotSpan(sourceSpan.Snapshot, New Span(sourceSpan.Start, span1.End - num)))
-                        Return list1
+                    If span1.End <= pos Then
+                        spans.Add(New SnapshotSpan(sourceSpan.Snapshot, sourceSpan.Start, span1.End - lastPos))
+                        Return spans
                     End If
-                    list1.Add(sourceSpan)
+                    spans.Add(sourceSpan)
                 End If
 
-                num = num2
+                lastPos = pos
             Next
 
-            Return list1
+            Return spans
         End Function
 
         Public Function MapFromSourceSnapshot(sourceSpan As SnapshotSpan) As IList(Of Span) Implements IProjectionSnapshot.MapFromSourceSnapshot
@@ -217,16 +215,16 @@ Namespace Microsoft.Nautilus.Text
                 Throw New ArgumentOutOfRangeException("span")
             End If
 
-            Dim list1 As IList(Of SnapshotSpan) = MapToSourceSnapshots(span1)
-            If list1.Count = 1 Then
-                Return list1(0).GetText()
+            Dim snapshotSpans = MapToSourceSnapshots(span1)
+            If snapshotSpans.Count = 1 Then
+                Return snapshotSpans(0).GetText()
             End If
 
-            Dim stringBuilder1 As New StringBuilder
-            For Each item As SnapshotSpan In list1
-                stringBuilder1.Append(item.GetText())
+            Dim sb As New StringBuilder
+            For Each snapshotSpan In snapshotSpans
+                sb.Append(snapshotSpan.GetText())
             Next
-            Return stringBuilder1.ToString()
+            Return sb.ToString()
         End Function
 
         Public Function GetText(startIndex As Integer, length1 As Integer) As String Implements ITextSnapshot.GetText

@@ -18,11 +18,11 @@ Namespace Microsoft.Nautilus.Text
         End Sub
 
         Protected Overrides Function ApplyChanges(changes As List(Of TextChange), sourceToken As Object) As NormalizedTextChangeCollection
-            Dim normalizedTextChangeCollection1 As New NormalizedTextChangeCollection(changes)
-            For Each item As TextChange In normalizedTextChangeCollection1
-                builder = builder.Replace(New Span(item.Position, item.OldLength), item.NewText)
+            Dim normalizedChanges As New NormalizedTextChangeCollection(changes)
+            For Each change In normalizedChanges
+                builder = builder.Replace(New Span(change.Position, change.OldLength), change.NewText)
             Next
-            Return normalizedTextChangeCollection1
+            Return normalizedChanges
         End Function
 
         Protected Overrides Function TakeSnapshot() As ITextSnapshot

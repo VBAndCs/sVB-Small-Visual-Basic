@@ -45,35 +45,23 @@ Namespace Microsoft.Nautilus.Text
         End Function
 
         Public Function Contains(position As Integer) As Boolean
-            If position >= _Start Then
-                Return position < [End]
-            End If
-            Return False
+            Return position >= _Start AndAlso position < [End]
         End Function
 
-        Public Function Contains(span1 As Span) As Boolean
-            If span1._Start >= _Start Then
-                Return span1.End <= [End]
-            End If
-            Return False
+        Public Function Contains(span As Span) As Boolean
+            Return span._Start >= _Start AndAlso span.End <= [End]
         End Function
 
-        Public Function OverlapsWith(span1 As Span) As Boolean
-            If span1 = Me Then
-                Return True
-            End If
-
-            If span1._Start < [End] Then
-                Return span1.End > _Start
-            End If
-            Return False
+        Public Function OverlapsWith(span As Span) As Boolean
+            If span = Me Then Return True
+            Return span._Start < [End] AndAlso span.End > _Start
         End Function
 
-        Public Function Overlap(span1 As Span) As Span?
-            If OverlapsWith(span1) Then
-                Dim num As Integer = Math.Max(_Start, span1._Start)
-                Dim num2 As Integer = Math.Min([End], span1.End)
-                Return New Span(num, num2 - num)
+        Public Function Overlap(span As Span) As Span?
+            If OverlapsWith(span) Then
+                Dim start = Math.Max(_Start, span._Start)
+                Dim [end] = Math.Min(Me.[End], span.End)
+                Return New Span(start, [end] - start)
             End If
             Return Nothing
         End Function
@@ -90,21 +78,13 @@ Namespace Microsoft.Nautilus.Text
         End Function
 
         Public Overrides Function Equals(obj As Object) As Boolean
-            If TypeOf obj Is Span Then
-                Dim span1 = CType(obj, Span)
-                If span1._Start = _Start Then
-                    Return span1._Length = _Length
-                End If
-                Return False
-            End If
-            Return False
+            If TypeOf obj IsNot Span Then Return False
+            Dim span = CType(obj, Span)
+            Return span._Start = _Start AndAlso span._Length = _Length
         End Function
 
         Public Shared Operator =(span1 As Span, span2 As Span) As Boolean
-            If span1._Start = span2._Start Then
-                Return span1._Length = span2._Length
-            End If
-            Return False
+            Return span1._Start = span2._Start AndAlso span1._Length = span2._Length
         End Operator
 
         Public Shared Operator <>(span1 As Span, span2 As Span) As Boolean

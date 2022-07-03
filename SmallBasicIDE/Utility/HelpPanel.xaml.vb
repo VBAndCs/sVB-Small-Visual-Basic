@@ -29,13 +29,13 @@ Namespace Microsoft.SmallBasic.Utility
 
             Set(ByVal value As CompletionItemWrapper)
                 _completionItemWrapper = value
-                DataContext = _completionItemWrapper
+                DataContext = value
                 SetSymbolImage()
                 Me.detailsParagraph.Inlines.Clear()
 
-                If _completionItemWrapper.SymbolType = LanguageService.SymbolType.Method Then
+                If value.SymbolType = LanguageService.SymbolType.Method Then
                     FillArguments()
-                ElseIf _completionItemWrapper.SymbolType = LanguageService.symbolType.Type Then
+                ElseIf value.SymbolType = LanguageService.SymbolType.Type Then
                     FillTypeMembers()
                 End If
 

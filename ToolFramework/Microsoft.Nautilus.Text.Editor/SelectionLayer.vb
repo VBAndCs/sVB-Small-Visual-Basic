@@ -145,12 +145,12 @@ Namespace Microsoft.Nautilus.Text.Editor
             Return CType(_textSpanList, IEnumerable).GetEnumerator()
         End Function
 
-        Protected Overrides Sub OnRender(drawingContext1 As DrawingContext)
-            MyBase.OnRender(drawingContext1)
+        Protected Overrides Sub OnRender(drawingContext As DrawingContext)
+            MyBase.OnRender(drawingContext)
             For Each textSpan As ITextSpan In _textSpanList
-                Dim geometry1 As Geometry = _geometryLookup(textSpan)
-                If geometry1 IsNot Nothing Then
-                    drawingContext1.DrawGeometry(_selectionBrush, _selectionPen, geometry1)
+                Dim geometry = _geometryLookup(textSpan)
+                If geometry IsNot Nothing Then
+                    drawingContext.DrawGeometry(_selectionBrush, _selectionPen, geometry)
                 End If
             Next
         End Sub

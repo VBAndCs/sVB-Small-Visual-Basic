@@ -60,8 +60,8 @@ Namespace Microsoft.Nautilus.Text.Editor
             End If
         End Sub
 
-        Protected Overrides Sub OnRender(drawingContext1 As DrawingContext)
-            _textLine.Draw(drawingContext1, New Point(_horizontalOffset, _verticalOffset), InvertAxes.None)
+        Protected Overrides Sub OnRender(drawingContext As DrawingContext)
+            _textLine.Draw(drawingContext, New Point(_horizontalOffset, _VerticalOffset), InvertAxes.None)
         End Sub
     End Class
 End Namespace

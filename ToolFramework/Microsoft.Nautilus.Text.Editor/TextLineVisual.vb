@@ -445,16 +445,16 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Friend Sub RenderText()
-            Dim drawingContext1 As DrawingContext = RenderOpen()
-            Dim num As Double = 0.0
+            Dim dc = RenderOpen()
+            Dim x = 0.0
 
-            For Each textLine1 As TextLine In _textLines
-                Dim y1 As Double = Baseline - textLine1.Baseline + 1.0
-                textLine1.Draw(drawingContext1, New Point(num, y1), InvertAxes.None)
-                num += textLine1.WidthIncludingTrailingWhitespace
+            For Each line In _textLines
+                Dim y = Baseline - line.Baseline + 1.0
+                line.Draw(dc, New Point(x, y), InvertAxes.None)
+                x += line.WidthIncludingTrailingWhitespace
             Next
 
-            drawingContext1.Close()
+            dc.Close()
         End Sub
 
         Friend Function GetAvalonTextElementSpan(bufferPosition As Integer) As Span
@@ -482,12 +482,11 @@ Namespace Microsoft.Nautilus.Text.Editor
             If num < 0 Then num = 0
 
             Dim indexOfLineContaining As Integer = GetIndexOfLineContaining(num)
-            Dim textLine1 As TextLine = _textLines(indexOfLineContaining)
-            Dim nextCaretCharacterHit As CharacterHit = textLine1.GetNextCaretCharacterHit(New CharacterHit(num, 0))
-            Dim bufferRelativePosition As Integer = GetBufferRelativePosition(nextCaretCharacterHit.FirstCharacterIndex + nextCaretCharacterHit.TrailingLength)
-            Dim bufferRelativePosition2 As Integer = GetBufferRelativePosition(textLine1.GetPreviousCaretCharacterHit(New CharacterHit(GetLineRelativePosition(bufferRelativePosition), 0)).FirstCharacterIndex)
-
-            Return New Span(bufferRelativePosition2, bufferRelativePosition - bufferRelativePosition2)
+            Dim line = _textLines(indexOfLineContaining)
+            Dim charHit = line.GetNextCaretCharacterHit(New CharacterHit(num, 0))
+            Dim pos1 = GetBufferRelativePosition(charHit.FirstCharacterIndex + charHit.TrailingLength)
+            Dim pos2 = GetBufferRelativePosition(line.GetPreviousCaretCharacterHit(New CharacterHit(GetLineRelativePosition(pos1), 0)).FirstCharacterIndex)
+            Return New Span(pos2, pos1 - pos2)
         End Function
 
         Private Sub ComputeLineProperties()
@@ -497,8 +496,8 @@ Namespace Microsoft.Nautilus.Text.Editor
             _overhangAfter = 0.0
             _baseline = 0.0
 
-            Dim num As Double = 0.0
-            Dim num2 As Integer = _sourceIndex
+            Dim distance = 0.0
+            Dim index = _sourceIndex
 
             _textLineDistances = New List(Of Double)
             _textLineStartIndices = New List(Of Integer)
@@ -521,10 +520,10 @@ Namespace Microsoft.Nautilus.Text.Editor
                 End If
 
                 _width += textLine1.WidthIncludingTrailingWhitespace
-                _textLineDistances.Add(num)
-                num += textLine1.WidthIncludingTrailingWhitespace
-                _textLineStartIndices.Add(num2)
-                num2 += textLine1.Length
+                _textLineDistances.Add(distance)
+                distance += textLine1.WidthIncludingTrailingWhitespace
+                _textLineStartIndices.Add(index)
+                index += textLine1.Length
             Next
 
             _height += 2.0
@@ -532,16 +531,17 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Function GetIndexOfTextLineAtDistance(offset As Double) As Integer
-            For num As Integer = _textLineDistances.Count - 1 To 0 Step -1
-                If _textLineDistances(num) <= offset Then Return num
+            For i = _textLineDistances.Count - 1 To 0 Step -1
+                If _textLineDistances(i) <= offset Then Return i
             Next
+
             Return 0
         End Function
 
         Private Function GetIndexOfLineContaining(lineRelativePosition As Integer) As Integer
-            For num As Integer = _textLineStartIndices.Count - 1 To 0 Step -1
-                If _textLineStartIndices(num) <= lineRelativePosition Then
-                    Return num
+            For i = _textLineStartIndices.Count - 1 To 0 Step -1
+                If _textLineStartIndices(i) <= lineRelativePosition Then
+                    Return i
                 End If
             Next
 
@@ -549,38 +549,39 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Function
 
         Private Function GetLineRelativePosition(bufferRelativePosition As Integer) As Integer
-            Dim num As Integer = bufferRelativePosition - LineSpan.Start + _sourceIndex
+            Dim position = bufferRelativePosition - LineSpan.Start + _sourceIndex
+
             For Each pos In _virtualCharacterPositions
-                If pos > bufferRelativePosition Then Return num
-                num += 1
+                If pos > bufferRelativePosition Then Return position
+                position += 1
             Next
 
-            Return num
+            Return position
         End Function
 
         Private Function GetBufferRelativePosition(lineRelativePosition As Integer) As Integer
-            Dim num As Integer = lineRelativePosition + LineSpan.Start - _sourceIndex
-            For Each virtualCharacterPosition As Integer In _virtualCharacterPositions
-                If virtualCharacterPosition >= num Then Return num
-                num -= 1
+            Dim position As Integer = lineRelativePosition + LineSpan.Start - _sourceIndex
+            For Each pos In _virtualCharacterPositions
+                If pos >= position Then Return position
+                position -= 1
             Next
 
-            Return num
+            Return position
         End Function
 
-        Private Function GetTextBoundsOnLine(textLine1 As TextLine, horizontalOffset As Double, startIndex As Integer, endIndex As Integer) As List(Of TextBounds)
-            Dim list1 As New List(Of TextBounds)
+        Private Function GetTextBoundsOnLine(textLine As TextLine, horizontalOffset As Double, startIndex As Integer, endIndex As Integer) As List(Of TextBounds)
+            Dim bounds As New List(Of TextBounds)
             If startIndex = endIndex Then
-                Dim distanceFromCharacterHit As Double = textLine1.GetDistanceFromCharacterHit(New CharacterHit(startIndex, 0))
-                list1.Add(New TextBounds(distanceFromCharacterHit + horizontalOffset + Left, Top, 0.0, Height))
-                Return list1
+                Dim distance = textLine.GetDistanceFromCharacterHit(New CharacterHit(startIndex, 0))
+                bounds.Add(New TextBounds(distance + horizontalOffset + Left, Top, 0.0, Height))
+                Return bounds
             End If
 
-            For Each textBound As System.Windows.Media.TextFormatting.TextBounds In textLine1.GetTextBounds(startIndex, endIndex - startIndex)
-                list1.Add(New TextBounds(textBound.Rectangle.Left + horizontalOffset + Left, Top, textBound.Rectangle.Width, Height))
+            For Each textBounds In textLine.GetTextBounds(startIndex, endIndex - startIndex)
+                bounds.Add(New TextBounds(textBounds.Rectangle.Left + horizontalOffset + Left, Top, textBounds.Rectangle.Width, Height))
             Next
 
-            Return list1
+            Return bounds
         End Function
 
         Public Overrides Function ToString() As String

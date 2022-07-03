@@ -18,9 +18,9 @@ Namespace Microsoft.Nautilus.Text
 
         Public Function CreateNext(changes As INormalizedTextChangeCollection) As TextVersionImpl
             normalizedChanges = changes
-            Dim nxt = New TextVersionImpl(MyBase.TextBuffer, MyBase.VersionNumber + 1)
-            _Next = nxt
-            Return nxt
+            Dim ver As New TextVersionImpl(MyBase.TextBuffer, MyBase.VersionNumber + 1)
+            _Next = ver
+            Return ver
         End Function
 
     End Class

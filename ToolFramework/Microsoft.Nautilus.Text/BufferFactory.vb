@@ -10,6 +10,7 @@ Imports Microsoft.Nautilus.Text.Projection.Implementation
 Imports Microsoft.Nautilus.Text.StringRebuilder
 
 Namespace Microsoft.Nautilus.Text
+
     <Export(GetType(ITextBufferFactory))>
     <Export(GetType(IProjectionBufferFactory))>
     Public NotInheritable Class BufferFactory
@@ -44,51 +45,46 @@ Namespace Microsoft.Nautilus.Text
         End Sub
 
         Public Function ReportLiveBuffers(writer As TextWriter) As Integer Implements IBufferTracker.ReportLiveBuffers
-            Dim num As Integer = 0
+            Dim liveBuffers As Integer = 0
+
             If allocatedBuffers IsNot Nothing Then
                 For i As Integer = 0 To allocatedBuffers.Count - 1
-
                     If TypeOf allocatedBuffers(i).Target IsNot ITextBuffer Then
                         Continue For
                     End If
 
                     Dim textBuffer = CType(allocatedBuffers(i).Target, ITextBuffer)
 
-                    num += 1
-                    If writer Is Nothing Then
-                        Continue For
-                    End If
+                    liveBuffers += 1
+                    If writer Is Nothing Then Continue For
 
                     Dim [property] As String = ""
-                    Dim flag As Boolean = textBuffer.Properties.TryGetProperty(Of String)("tag", [property])
+                    Dim found = textBuffer.Properties.TryGetProperty(Of String)("tag", [property])
                     writer.Write(String.Format(
                         CultureInfo.CurrentCulture,
                         "{0,5} {1}" & vbCrLf,
-                        New Object() {i, If(flag, [property], "Untagged")})
+                        New Object() {i, If(found, [property], "Untagged")})
                     )
 
-                    For Each property2 As KeyValuePair(Of Object, Object) In textBuffer.Properties
-                        If Not (property2.Key.ToString() <> "tag") Then
-                            Continue For
-                        End If
+                    For Each prop In textBuffer.Properties
+                        If Not (prop.Key.ToString() <> "tag") Then Continue For
 
                         Dim text As String
-                        If property2.Value Is Nothing Then
+                        If prop.Value Is Nothing Then
                             text = "?null"
                         Else
-                            text = property2.Value.GetType().Name
-                            If TypeOf property2.Value Is WeakReference Then
-                                Dim target1 As Object = TryCast(property2.Value, WeakReference).Target
-                                If target1 IsNot Nothing Then
-                                    text = text & "(" & target1.GetType().Name & ")"
-                                End If
+                            text = prop.Value.GetType().Name
+                            Dim target = TryCast(prop.Value, WeakReference).Target
+                            If target IsNot Nothing Then
+                                text = text & "(" & target.GetType().Name & ")"
                             End If
                         End If
                         writer.Write(String.Format(CultureInfo.CurrentCulture, "      {0}" & vbCrLf, New Object(0) {text}))
                     Next
                 Next
             End If
-            Return num
+
+            Return liveBuffers
         End Function
 
         Private Sub Record(buffer As ITextBuffer)

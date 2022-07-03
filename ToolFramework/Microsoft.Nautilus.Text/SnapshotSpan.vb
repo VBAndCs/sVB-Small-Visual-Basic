@@ -43,8 +43,8 @@ Namespace Microsoft.Nautilus.Text
             _Span = span
         End Sub
 
-        Public Sub New(_snapshot As ITextSnapshot, start1 As Integer, length1 As Integer)
-            Me.New(_snapshot, New Span(start1, length1))
+        Public Sub New(_snapshot As ITextSnapshot, start As Integer, length As Integer)
+            Me.New(_snapshot, New Span(start, length))
         End Sub
 
         Public Shared Widening Operator CType(snapshotSpan1 As SnapshotSpan) As Span
@@ -64,11 +64,9 @@ Namespace Microsoft.Nautilus.Text
                 Throw New ArgumentException("targetSnapshot belongs to the wrong TextBuffer")
             End If
 
-            If targetSnapshot Is _Snapshot Then
-                Return Me
-            End If
+            If targetSnapshot Is _Snapshot Then Return Me
 
-            Dim textSpan As ITextSpan = _Snapshot.CreateTextSpan(_Span, spanTrackingMode1)
+            Dim textSpan = _Snapshot.CreateTextSpan(_Span, spanTrackingMode1)
             Return New SnapshotSpan(targetSnapshot, textSpan.GetSpan(targetSnapshot))
         End Function
 
@@ -93,17 +91,12 @@ Namespace Microsoft.Nautilus.Text
         End Function
 
         Public Overrides Function Equals(obj As Object) As Boolean
-            If TypeOf obj Is SnapshotSpan Then
-                Return CType(obj, SnapshotSpan) = Me
-            End If
-            Return False
+            If TypeOf obj IsNot SnapshotSpan Then Return False
+            Return CType(obj, SnapshotSpan) = Me
         End Function
 
         Public Shared Operator =(ss1 As SnapshotSpan, ss2 As SnapshotSpan) As Boolean
-            If ss1._Snapshot Is ss2._Snapshot Then
-                Return ss1._Span = ss2._Span
-            End If
-            Return False
+            Return ss1._Snapshot Is ss2._Snapshot AndAlso ss1._Span = ss2._Span
         End Operator
 
         Public Shared Operator <>(ss1 As SnapshotSpan, ss2 As SnapshotSpan) As Boolean

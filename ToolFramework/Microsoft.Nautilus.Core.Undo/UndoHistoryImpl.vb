@@ -87,11 +87,12 @@ Namespace Microsoft.Nautilus.Core.Undo
             Return num
         End Function
 
-        Public Overrides Function CreateTransaction(description1 As String) As UndoTransaction
-            If String.IsNullOrEmpty(description1) Then
+        Public Overrides Function CreateTransaction(description As String) As UndoTransaction
+            If String.IsNullOrEmpty(description) Then
                 Throw New ArgumentNullException("description", String.Format(CultureInfo.CurrentUICulture, "'{0}' called with a null value for argument '{1}'.  This value is not an allowable value.", New Object(1) {"CreateTransaction", "description"}))
             End If
-            Return CreateTransaction(description1, CurrentTransaction IsNot Nothing AndAlso CurrentTransaction.IsHidden)
+
+            Return CreateTransaction(description, CurrentTransaction IsNot Nothing AndAlso CurrentTransaction.IsHidden)
         End Function
 
         Public Overrides Function CreateTransaction(description As String, isHidden As Boolean) As UndoTransaction

@@ -31,10 +31,10 @@ Namespace Microsoft.Nautilus.Text.StringRebuilder
 
         Function Insert(position As Integer, text As IStringRebuilder) As IStringRebuilder
 
-        Function Delete(span1 As Span) As IStringRebuilder
+        Function Delete(span As Span) As IStringRebuilder
 
-        Function Replace(span1 As Span, text As String) As IStringRebuilder
+        Function Replace(span As Span, text As String) As IStringRebuilder
 
-        Function Replace(span1 As Span, text As IStringRebuilder) As IStringRebuilder
+        Function Replace(span As Span, text As IStringRebuilder) As IStringRebuilder
     End Interface
 End Namespace

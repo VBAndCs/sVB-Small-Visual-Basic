@@ -462,26 +462,29 @@ Namespace Microsoft.Nautilus.Text.Operations
             _TextView.Caret.EnsureVisible()
         End Sub
 
-        Public Sub InsertTab(undoHistory1 As UndoHistory) Implements IEditorOperations.InsertTab
-            If undoHistory1 Is Nothing Then
+        Public Sub InsertTab(undoHistory As UndoHistory) Implements IEditorOperations.InsertTab
+            If undoHistory Is Nothing Then
                 Throw New ArgumentNullException("undoHistory")
             End If
 
-            Using undoTransaction1 As UndoTransaction = undoHistory1.CreateTransaction("Insert Tab")
-                Dim flag As Boolean = True
-                If Not ConvertTabsToSpace Then
-                    flag = (If((Not _textView.Selection.IsEmpty OrElse Not _overwriteMode), ReplaceSelection(vbTab, TextEditAction.Type, undoHistory1), InsertTextOverwriteMode(_textView.Caret.Position.TextInsertionIndex, vbTab, undoHistory1)))
+            Using undoTransaction = undoHistory.CreateTransaction("Insert Tab")
+                Dim text As String
+
+                If ConvertTabsToSpace Then
+                    Dim columnOffset = ColumnOffsetOfPositionInLine(_TextView.Caret.Position.TextInsertionIndex, _TextView.TextSnapshot.GetLineFromPosition(_TextView.Caret.Position.TextInsertionIndex))
+                    text = New String(" "c, TabSize - columnOffset Mod TabSize)
                 Else
-                    Dim num As Integer = ColumnOffsetOfPositionInLine(_textView.Caret.Position.TextInsertionIndex, _textView.TextSnapshot.GetLineFromPosition(_textView.Caret.Position.TextInsertionIndex))
-                    Dim count1 As Integer = TabSize - num Mod TabSize
-                    Dim text As New String(" "c, count1)
-                    flag = (If((Not _textView.Selection.IsEmpty OrElse Not _overwriteMode), ReplaceSelection(text, TextEditAction.Type, undoHistory1), InsertTextOverwriteMode(_textView.Caret.Position.TextInsertionIndex, text, undoHistory1)))
+                    text = vbTab
                 End If
 
-                If flag Then
-                    undoTransaction1.Complete()
+                Dim done = If(_TextView.Selection.IsEmpty AndAlso _OverwriteMode,
+                         InsertTextOverwriteMode(_TextView.Caret.Position.TextInsertionIndex, text, undoHistory),
+                         ReplaceSelection(text, TextEditAction.Type, undoHistory))
+
+                If done Then
+                    undoTransaction.Complete()
                 Else
-                    undoTransaction1.Cancel()
+                    undoTransaction.Cancel()
                 End If
             End Using
 
@@ -691,76 +694,82 @@ Namespace Microsoft.Nautilus.Text.Operations
             End Using
         End Sub
 
-        Public Sub InsertText(text As String, undoHistory1 As UndoHistory) Implements IEditorOperations.InsertText
+        Public Sub InsertText(text As String, undoHistory As UndoHistory) Implements IEditorOperations.InsertText
+            If undoHistory Is Nothing Then
+                Throw New ArgumentNullException(NameOf(undoHistory))
+            End If
+
             EditorTrace.TraceTextInsertStart()
             If text Is Nothing Then
                 Throw New ArgumentNullException("text")
             End If
 
-            If undoHistory1 Is Nothing Then
+            If undoHistory Is Nothing Then
                 Throw New ArgumentNullException("undoHistory")
             End If
 
-            If Not _textView.Selection.IsEmpty Then
-                Using undoTransaction1 As UndoTransaction = undoHistory1.CreateTransaction("Stop Text Merge", isHidden:=True)
-                    undoTransaction1.Complete()
+            If Not _TextView.Selection.IsEmpty Then
+                Using undoTransaction = undoHistory.CreateTransaction("Stop Text Merge", isHidden:=True)
+                    undoTransaction.Complete()
                 End Using
             End If
 
-            Using undoTransaction2 As UndoTransaction = undoHistory1.CreateTransaction("Insert Text")
-                undoTransaction2.MergePolicy = New TextTransactionMergePolicy
-                Dim flag As Boolean = True
-                If If((Not _textView.Selection.IsEmpty OrElse Not _overwriteMode),
-                        ReplaceSelection(text, TextEditAction.Type, undoHistory1),
-                        InsertTextOverwriteMode(_textView.Caret.Position.TextInsertionIndex, text, undoHistory1)) Then
-
-                    undoTransaction2.Complete()
-
+            Using undoTransaction = undoHistory.CreateTransaction("Insert Text")
+                undoTransaction.MergePolicy = New TextTransactionMergePolicy
+                Dim done = If((_TextView.Selection.IsEmpty AndAlso _OverwriteMode),
+                                        InsertTextOverwriteMode(_TextView.Caret.Position.TextInsertionIndex, text, undoHistory),
+                                        ReplaceSelection(text, TextEditAction.Type, undoHistory)
+                                    )
+                If done Then
+                    undoTransaction.Complete()
                 Else
-                    undoTransaction2.Cancel()
+                    undoTransaction.Cancel()
                 End If
             End Using
+
             EditorTrace.TraceTextInsertEnd()
         End Sub
 
-        Public Sub SelectLine(lineNumber1 As Integer, extendSelection1 As Boolean) Implements IEditorOperations.SelectLine
-            Dim textSnapshot1 As ITextSnapshot = _textView.TextSnapshot
-            If lineNumber1 < 0 OrElse lineNumber1 > textSnapshot1.LineCount Then
+        Public Sub SelectLine(lineNumber As Integer, extendSelection As Boolean) Implements IEditorOperations.SelectLine
+            Dim snapshot = _TextView.TextSnapshot
+            If lineNumber < 0 OrElse lineNumber > snapshot.LineCount Then
                 Throw New ArgumentOutOfRangeException("lineNumber")
             End If
 
-            Dim lineFromLineNumber As ITextSnapshotLine = textSnapshot1.GetLineFromLineNumber(lineNumber1)
-            If Not extendSelection1 OrElse _textView.Selection.IsEmpty Then
-                _textView.Selection.ActiveSnapshotSpan = New SnapshotSpan(textSnapshot1, New Span(lineFromLineNumber.Start, lineFromLineNumber.LengthIncludingLineBreak))
-                _textView.Selection.IsActiveSpanReversed = False
-                _textView.Caret.MoveTo(lineFromLineNumber.EndIncludingLineBreak)
-                _textView.Caret.EnsureVisible()
+            Dim line = snapshot.GetLineFromLineNumber(lineNumber)
+            If Not extendSelection OrElse _TextView.Selection.IsEmpty Then
+                _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(snapshot, New Span(line.Start, line.LengthIncludingLineBreak))
+                _TextView.Selection.IsActiveSpanReversed = False
+                _TextView.Caret.MoveTo(line.EndIncludingLineBreak)
+                _TextView.Caret.EnsureVisible()
+
             Else
-                Dim span1 As Span = _textView.Selection.ActiveSnapshotSpan
-                Dim num As Integer = span1.Start
-                Dim num2 As Integer = span1.End
-                If _textView.Selection.IsActiveSpanReversed Then
-                    num = Math.Min(textSnapshot1.Length, textSnapshot1.GetLineFromPosition(num2).EndIncludingLineBreak + 1)
+                Dim span = _TextView.Selection.ActiveSnapshotSpan
+                Dim start = span.Start
+                Dim [end] = span.End
+
+                If _TextView.Selection.IsActiveSpanReversed Then
+                    start = Math.Min(snapshot.Length, snapshot.GetLineFromPosition([end]).EndIncludingLineBreak + 1)
                 Else
-                    num2 = textSnapshot1.GetLineFromPosition(num).EndIncludingLineBreak
+                    [end] = snapshot.GetLineFromPosition(start).EndIncludingLineBreak
                 End If
 
-                If lineFromLineNumber.EndIncludingLineBreak < num2 Then
-                    _textView.Selection.ActiveSnapshotSpan = New SnapshotSpan(textSnapshot1, Span.FromBounds(lineFromLineNumber.Start, num2))
-                    _textView.Selection.IsActiveSpanReversed = True
-                    _textView.Caret.MoveTo(lineFromLineNumber.Start)
-                    _textView.Caret.EnsureVisible()
+                If line.EndIncludingLineBreak < [end] Then
+                    _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(snapshot, Text.Span.FromBounds(line.Start, [end]))
+                    _TextView.Selection.IsActiveSpanReversed = True
+                    _TextView.Caret.MoveTo(line.Start)
+                    _TextView.Caret.EnsureVisible()
                 Else
-                    Dim start1 As Integer = Math.Min(Math.Min(num, num2), lineFromLineNumber.EndIncludingLineBreak)
-                    Dim num3 As Integer = Math.Max(Math.Max(num, num2), lineFromLineNumber.EndIncludingLineBreak)
-                    _textView.Selection.ActiveSnapshotSpan = New SnapshotSpan(textSnapshot1, Span.FromBounds(start1, num3))
-                    _textView.Selection.IsActiveSpanReversed = False
-                    _textView.Caret.MoveTo(num3)
-                    _textView.Caret.EnsureVisible()
+                    Dim start2 = Math.Min(Math.Min(start, [end]), line.EndIncludingLineBreak)
+                    Dim end2 = Math.Max(Math.Max(start, [end]), line.EndIncludingLineBreak)
+                    _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(snapshot, Text.Span.FromBounds(start2, end2))
+                    _TextView.Selection.IsActiveSpanReversed = False
+                    _TextView.Caret.MoveTo(end2)
+                    _TextView.Caret.EnsureVisible()
                 End If
             End If
 
-            _textView.Caret.CapturePreferredBounds()
+            _TextView.Caret.CapturePreferredBounds()
         End Sub
 
         Public Sub ResetSelection() Implements IEditorOperations.ResetSelection
@@ -1076,44 +1085,51 @@ Namespace Microsoft.Nautilus.Text.Operations
             Return position1 - line.Start
         End Function
 
-        Private Function ReplaceSelection(text As String, textEditAction1 As TextEditAction, undoHistory1 As UndoHistory) As Boolean
-            If undoHistory1 Is Nothing Then
+        Private Function ReplaceSelection(text As String, textEditAction As TextEditAction, undoHistory As UndoHistory) As Boolean
+            If undoHistory Is Nothing Then
                 Throw New ArgumentNullException("undoHistory")
             End If
 
-            If _textView.Selection.IsEmpty Then
-                Return ReplaceText(New Span(_textView.Caret.Position.TextInsertionIndex, 0), text, textEditAction1, undoHistory1)
-            End If
-
-            Return ReplaceText(_textView.Selection.ActiveSnapshotSpan, text, textEditAction1, undoHistory1)
+            Dim s = If(_TextView.Selection.IsEmpty, New Span(_TextView.Caret.Position.TextInsertionIndex, 0), _TextView.Selection.ActiveSnapshotSpan)
+            Return ReplaceText(s, text, textEditAction, undoHistory)
         End Function
 
-        Private Function ReplaceText(span1 As Span, text As String, textEditAction1 As TextEditAction, undoHistory1 As UndoHistory) As Boolean
-            Return ReplaceText(span1, text, textEditAction1, undoHistory1, preserveCaretAndSelection:=False)
+        Private Function ReplaceText(span As Span, text As String, textEditAction As TextEditAction, undoHistory As UndoHistory) As Boolean
+            Return ReplaceText(span, text, textEditAction, undoHistory, preserveCaretAndSelection:=False)
         End Function
 
-        Private Function ReplaceText(span As Span, text As String, textEditAction1 As TextEditAction, undoHistory1 As UndoHistory, preserveCaretAndSelection As Boolean) As Boolean
+        Private Function ReplaceText(span As Span, text As String, textEditAction As TextEditAction, undoHistory As UndoHistory, preserveCaretAndSelection As Boolean) As Boolean
             EditorTrace.TraceTextReplaceStart()
 
             Using textEdit As ITextEdit = _TextView.TextBuffer.CreateEdit()
-                If If((span.Length <> 0), textEdit.CanDeleteOrReplace(span), textEdit.CanInsert(span.Start)) Then
-                    Dim position1 As ICaretPosition = _TextView.Caret.Position
-                    Dim span2 As Span = _TextView.Selection.ActiveSnapshotSpan
-                    Dim undo As New BeforeTextBufferChangeUndoPrimitive(_TextView, position1.CharacterIndex, position1.Placement, span2)
-                    undoHistory1.CurrentTransaction.AddUndo(undo)
+                If If(span.Length = 0, textEdit.CanInsert(span.Start), textEdit.CanDeleteOrReplace(span)) Then
+                    Dim caretPos = _TextView.Caret.Position
+                    Dim selectedSpan = _TextView.Selection.ActiveSnapshotSpan
+                    undoHistory.CurrentTransaction.AddUndo(
+                            New BeforeTextBufferChangeUndoPrimitive(
+                               _TextView,
+                               caretPos.CharacterIndex,
+                               caretPos.Placement,
+                               selectedSpan)
+                    )
                     textEdit.Replace(span, text)
                     textEdit.Apply()
 
                     If preserveCaretAndSelection Then
-                        _TextView.Caret.MoveTo(position1.CharacterIndex, position1.Placement)
-                        _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_TextView.TextSnapshot, span2)
+                        _TextView.Caret.MoveTo(caretPos.CharacterIndex, caretPos.Placement)
+                        _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_TextView.TextSnapshot, selectedSpan)
                     Else
                         ResetSelection()
                     End If
 
                     _TextView.Caret.CapturePreferredBounds()
-                    Dim undo2 As New AfterTextBufferChangeUndoPrimitive(_TextView, _TextView.Caret.Position.CharacterIndex, _TextView.Caret.Position.Placement, _TextView.Selection.ActiveSnapshotSpan)
-                    undoHistory1.CurrentTransaction.AddUndo(undo2)
+                    undoHistory.CurrentTransaction.AddUndo(
+                            New AfterTextBufferChangeUndoPrimitive(
+                                _TextView,
+                                _TextView.Caret.Position.CharacterIndex,
+                                _TextView.Caret.Position.Placement,
+                                _TextView.Selection.ActiveSnapshotSpan)
+                    )
                     EditorTrace.TraceTextReplaceEnd()
                     Return True
                 End If
@@ -1122,25 +1138,36 @@ Namespace Microsoft.Nautilus.Text.Operations
             Return False
         End Function
 
-        Private Function InsertTextOverwriteMode(index As Integer, text As String, undoHistory1 As UndoHistory) As Boolean
+        Private Function InsertTextOverwriteMode(index As Integer, text As String, undoHistory As UndoHistory) As Boolean
             Dim text2 As String = ""
-            Dim num As Integer = 0
+            Dim length As Integer = 0
 
-            If _textView.Caret.Position.TextInsertionIndex < _textView.TextSnapshot.GetLineFromPosition(_textView.Caret.Position.TextInsertionIndex).End Then
-                num = text.Length
-                text2 = _textView.TextSnapshot.GetText(_textView.Caret.Position.TextInsertionIndex, num)
+            If _TextView.Caret.Position.TextInsertionIndex < _TextView.TextSnapshot.GetLineFromPosition(_TextView.Caret.Position.TextInsertionIndex).End Then
+                length = text.Length
+                text2 = _TextView.TextSnapshot.GetText(_TextView.Caret.Position.TextInsertionIndex, length)
             End If
 
-            Using textEdit As ITextEdit = _textView.TextBuffer.CreateEdit()
+            Using textEdit = _TextView.TextBuffer.CreateEdit()
                 If textEdit.CanDeleteOrReplace(New Span(index, text2.Length)) Then
-                    Dim undo As New BeforeTextBufferChangeUndoPrimitive(_textView, _textView.Caret.Position.CharacterIndex, _textView.Caret.Position.Placement, _textView.Selection.ActiveSnapshotSpan)
-                    undoHistory1.CurrentTransaction.AddUndo(undo)
+                    undoHistory.CurrentTransaction.AddUndo(
+                           New BeforeTextBufferChangeUndoPrimitive(
+                               _TextView,
+                               _TextView.Caret.Position.CharacterIndex,
+                               _TextView.Caret.Position.Placement,
+                               _TextView.Selection.ActiveSnapshotSpan
+                          )
+                    )
                     textEdit.Replace(index, text2.Length, text)
                     textEdit.Apply()
                     ResetSelection()
-                    _textView.Caret.CapturePreferredBounds()
-                    Dim undo2 As New AfterTextBufferChangeUndoPrimitive(_textView, _textView.Caret.Position.CharacterIndex, _textView.Caret.Position.Placement, _textView.Selection.ActiveSnapshotSpan)
-                    undoHistory1.CurrentTransaction.AddUndo(undo2)
+                    _TextView.Caret.CapturePreferredBounds()
+                    undoHistory.CurrentTransaction.AddUndo(
+                           New AfterTextBufferChangeUndoPrimitive(
+                               _TextView,
+                               _TextView.Caret.Position.CharacterIndex,
+                               _TextView.Caret.Position.Placement,
+                               _TextView.Selection.ActiveSnapshotSpan)
+                    )
                     Return True
                 End If
 
