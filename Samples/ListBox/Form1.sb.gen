@@ -7,6 +7,8 @@
 '    btnFind: Button
 '    txtFind: TextBox
 '    lblSelection: Label
+'    btnFindNext: Button
+'    btnFindPrev: Button
 '}
 
 Me = "form1"
@@ -17,7 +19,9 @@ txtAdd = "txtadd"
 btnFind = "btnfind"
 txtFind = "txtfind"
 lblSelection = "lblselection"
-form1 = Forms.LoadForm("form1", "form1.xaml")
+btnFindNext = "btnfindnext"
+btnFindPrev = "btnfindprev"
+form1 = Forms.LoadForm("form1", "Form1.xaml")
 Form.Show(form1)
 
 '#Events{
@@ -26,6 +30,8 @@ Form.Show(form1)
 '    ListBox1: OnSelection
 '    btnRemove: OnClick
 '    txtAdd: OnTextChanged OnKeyDown
+'    btnFindNext: OnClick
+'    btnFindPrev: OnClick
 '}
 
 ' btnFind Events:
@@ -48,5 +54,13 @@ Control.OnClick = btnRemove_OnClick
 Control.HandleEvents(form1, txtAdd)
 TextBox.OnTextChanged = txtAdd_OnTextChanged
 Control.OnKeyDown = txtAdd_OnKeyDown
+
+' btnFindNext Events:
+Control.HandleEvents(form1, btnFindNext)
+Control.OnClick = btnFindNext_OnClick
+
+' btnFindPrev Events:
+Control.HandleEvents(form1, btnFindPrev)
+Control.OnClick = btnFindPrev_OnClick
 
 

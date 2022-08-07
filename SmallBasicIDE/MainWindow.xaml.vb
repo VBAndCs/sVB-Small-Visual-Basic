@@ -26,6 +26,7 @@ Imports System.Linq
 Imports System.ComponentModel.Composition
 Imports RegexBuilder
 Imports sb = Microsoft.SmallBasic.WinForms
+Imports Microsoft.VisualBasic
 
 Namespace Microsoft.SmallBasic
     <Export("MainWindow")>
@@ -433,8 +434,8 @@ Namespace Microsoft.SmallBasic
         Private Sub RunProgram()
             Dim ReSelectDesigner As Boolean = False
 
-            Try
-                If tabDesigner.IsSelected Then
+            ' Try
+            If tabDesigner.IsSelected Then
                     ' User can hit F5 on the designer.
                     ' We need to save changes and generate the code behind
                     ' The safe way to do this is to shwitch to the code tab
@@ -483,11 +484,11 @@ Namespace Microsoft.SmallBasic
                     doc.ErrorListControl.SelectError(0)
                 End If
 
-            Catch ex As Exception
-                Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
-            Finally
-                If ReSelectDesigner Then tabDesigner.IsSelected = True
-            End Try
+            ' Catch ex As Exception
+            'Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
+            'Finally
+            If ReSelectDesigner Then tabDesigner.IsSelected = True
+            'End Try
         End Sub
 
         Private Function RunProgram(code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
@@ -523,11 +524,27 @@ Namespace Microsoft.SmallBasic
                 Me.endProgramButton.Focus()
 
             ElseIf doc.Form <> "" Then
+                Dim controlNamesList As New Dictionary(Of String, String)
                 Dim normalErrors As New List(Of [Error])
-                For Each err In errors
-                    Dim e = err.Description
-                    If Not (e = "!" OrElse e.StartsWith("Cannot find object", StringComparison.InvariantCultureIgnoreCase)) Then
-                        normalErrors.Add(err)
+
+                For Each [error] In errors
+                    Dim errMsg = [error].Description
+                    If Not (errMsg = "!" OrElse errMsg.StartsWith("Cannot find object", StringComparison.InvariantCultureIgnoreCase)) Then
+                        normalErrors.Add([error])
+                    ElseIf normalErrors.Count = 0 Then
+                        Dim pos = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
+                        Dim obj As String = errMsg.Substring(pos, errMsg.Length - pos - 2).ToLower()
+
+                        If Not controlNamesList.ContainsKey(obj) Then
+                            Dim controlName As String
+                            If doc.ControlsInfo.ContainsKey(obj) Then
+                                controlName = doc.ControlsInfo(obj)
+                            Else
+                                controlName = sb.PreCompiler.GetModuleFromVarName(obj)
+                                If controlName = "" Then normalErrors.Add([error])
+                            End If
+                            controlNamesList.Add(obj, controlName)
+                        End If
                     End If
                 Next
 
@@ -537,7 +554,7 @@ Namespace Microsoft.SmallBasic
                     Return False
                 End If
 
-                Return PreCompile(code, errors, outputFileName)
+                Return PreCompile(code, errors, outputFileName, controlNamesList)
 
             Else
                 Return False
@@ -839,28 +856,24 @@ Namespace Microsoft.SmallBasic
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
             Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
             Dim UnSaved = Path.Combine(appDir, "UnSaved")
-            For Each dir In IO.Directory.GetDirectories(UnSaved)
+            For Each directory In IO.Directory.GetDirectories(UnSaved)
                 Try
-                    Dim d = Date.ParseExact(IO.Path.GetFileNameWithoutExtension(dir), "yy-MM-dd-HH-mm-ss", New Globalization.CultureInfo("Ar-eg"))
+                    Dim d = Date.ParseExact(
+                            IO.Path.GetFileNameWithoutExtension(directory),
+                            "yy-MM-dd-HH-mm-ss",
+                            New Globalization.CultureInfo("Ar-eg"))
                     If (Date.Now - d).TotalDays > 10 Then
-                        Global.My.Computer.FileSystem.DeleteDirectory(dir, VisualBasic.FileIO.DeleteDirectoryOption.DeleteAllContents)
+                        Global.My.Computer.FileSystem.DeleteDirectory(directory, FileIO.DeleteDirectoryOption.DeleteAllContents)
                     End If
                 Catch
                 End Try
             Next
         End Sub
 
-
-        Private ReadOnly WordRgex As New Verex(Patterns.Symbols.AnyWord)
-        Private ReadOnly OpenBracketRegex As New Verex(Patterns.NoneOrMany(Patterns.Symbols.WhiteSpace) + "(")
-        Private ReadOnly MethodRegex As New Verex(Patterns.Symbols.AnyWord + Patterns.NoneOrMany(Patterns.Symbols.WhiteSpace) + "(")
-
-        Private Function PreCompile(code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
+        Private Function PreCompile(code As String, ByRef errors As List(Of [Error]), outputFileName As String, controlNamesList As Dictionary(Of String, String)) As Boolean
             Dim ReRun = False
             Dim lines = New List(Of String)(code.Split(New String(0) {VisualBasic.vbLf}, StringSplitOptions.None))
             Dim doc = ActiveDocument
-            Dim num = errors.Count - 1
-            Dim controlNamesList As New Dictionary(Of String, String)
 
             Dim lineNum As Integer
             For i = errors.Count - 1 To 0 Step -1
@@ -868,7 +881,6 @@ Namespace Microsoft.SmallBasic
                 If lineNum = err.Line AndAlso ReRun Then Exit For
 
                 Dim errMsg = err.Description
-
                 lineNum = err.Line
                 Dim charNum = err.Column
                 Dim line = lines(lineNum)
@@ -880,143 +892,141 @@ Namespace Microsoft.SmallBasic
                     Continue For
                 End If
 
-                If Not errMsg.StartsWith("Cannot find object", StringComparison.InvariantCultureIgnoreCase) Then Continue For
+                Dim pos = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
+                Dim obj As String = errMsg.Substring(pos, errMsg.Length - pos - 2).ToLower()
 
-                Dim pos1 = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
-                Dim obj As String = errMsg.Substring(pos1, errMsg.Length - pos1 - 2).ToLower()
+                Dim controlName = controlNamesList(obj)
+                ' (lineNum) to be passed by value
+                Dim tokens = LineScanner.GetTokens(line, (lineNum), lines)
 
-                Dim controlName As String
-                If doc.ControlsInfo.ContainsKey(obj) Then
-                    controlName = doc.ControlsInfo(obj)
-                ElseIf controlNamesList.ContainsKey(obj) Then
-                    controlName = controlNamesList(obj)
-                Else
-                    controlName = sb.PreCompiler.GetModuleFromVarName(obj)
-                    If controlName = "" Then Continue For
-                    controlNamesList.Add(obj, controlName)
+                Dim objId As Integer
+                For objId = 0 To tokens.Count - 1
+                    If tokens(objId).Column = charNum Then Exit For
+                Next
+
+                If objId + 2 >= tokens.Count Then
+                    errors(i) = New [Error](lineNum, 0, charNum, "Method name is expected.")
+                    Continue For
                 End If
 
-
-
-                If line.Substring(charNum, obj.Length + 1).ToLower() = obj + "." Then
+                If tokens(objId + 1).Token = Token.Dot Then
                     Dim prevText = If(charNum = 0, "", line.Substring(0, charNum))
                     Dim methodPos = charNum + obj.Length + 1
                     Dim nextText = line.Substring(methodPos)
 
-                    Dim match = MethodRegex.Match(nextText)
-                    If match.Success AndAlso match.Index = 0 Then ' Method Call
-                        Dim method = nextText.Substring(0, WordRgex.Match(nextText).Length)
-                        Dim contents = GetBalancedBrackets(nextText)
-                        If contents Is Nothing OrElse contents.Count = 0 Then
-                            errors(i) = New [Error](err.Line, methodPos, "Wrong brackets pairs")
+                    If objId + 3 < tokens.Count AndAlso tokens(objId + 2).Token = Token.Identifier AndAlso tokens(objId + 3).Token = Token.LeftParens Then
+                        ' Method Call
+                        Dim method = tokens(objId + 2).Text
+                        Dim rParansPos As Integer = -1
+                        Dim restText = line.Substring(tokens(objId + 3).Column + 1)
+                        Dim argsExprList = Parser.ParseArgumentList(restText, lineNum, lines, rParansPos)
+                        If argsExprList Is Nothing Then
+                            errors(i) = New [Error](err.Line, 0, methodPos, "Wrong brackets pairs")
                             Continue For
                         End If
-
-                        Dim params = contents(0).Value.Trim(" "c, Convert.ToChar(8))
-                        Dim RestText = If(contents(0).Index + contents(0).Length > nextText.Length - 2, "",
-                                        nextText.Substring(contents(0).Index + contents(0).Length + 1))
 
                         Dim methodInfo = sb.PreCompiler.GetMethodInfo(controlName, method)
                         Dim ModuleName = methodInfo.Module
                         If ModuleName = "" Then
-                            errors(i) = New [Error](err.Line, methodPos, $"`{method}` doesn't exist.")
+                            errors(i) = New [Error](err.Line, 0, methodPos, $"`{method}` doesn't exist.")
                             Continue For
                         End If
 
-                        Dim expressions = Parser.ParseArgumentList(params)
-                        Dim paramsCount = expressions.Count
-                        If methodInfo.ParamsCount = 0 OrElse methodInfo.ParamsCount <= paramsCount Then
-                            errors(i) = New [Error](err.Line, methodPos, "Wrong number of parameters.")
+                        Dim argsCount = argsExprList.Count
+                        Dim paramsCount = methodInfo.ParamsCount
+                        If paramsCount = 0 OrElse paramsCount <= argsCount OrElse
+                                  (ModuleName <> "Form" AndAlso argsCount > paramsCount - 2) Then
+                            errors(i) = New [Error](err.Line, 0, methodPos, "Wrong number of parameters.")
                             Continue For
                         End If
 
-
-                        Select Case methodInfo.ParamsCount
+                        Select Case paramsCount
                             Case 1
                                 lines(lineNum) = prevText &
-                                        $"{ModuleName}.{method}({obj})" &
-                                        RestText
-                            Case paramsCount + 1
+                                        $"{ModuleName}.{method}({obj}" &
+                                        restText
+                            Case argsCount + 1
                                 lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({obj}, {params})" &
-                                            RestText
+                                            $"{ModuleName}.{method}({obj}, " &
+                                            restText
                             Case 2
-                                Dim secondParam = If(methodInfo.secondIsControl, obj, params)
+                                Dim secondParam = If(methodInfo.secondIsControl, obj & ", ", "")
                                 lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({doc.Form}, {secondParam})" &
-                                            RestText
+                                            $"{ModuleName}.{method}({doc.Form}, {secondParam}" &
+                                            restText
                             Case Else
-                                Dim secondParam = If(methodInfo.secondIsControl, ", " & obj, "")
-
+                                Dim secondParam = If(methodInfo.secondIsControl, obj & ", ", "")
                                 lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({doc.Form}{secondParam}, {params})" &
-                                            RestText
+                                            $"{ModuleName}.{method}({doc.Form}, {secondParam} " &
+                                            restText
                         End Select
 
                         errors.RemoveAt(i)
                         ReRun = True
 
-                    ElseIf prevText.Trim(" "c, Convert.ToChar(8)) = "" Then 'Property Set
-                        pos1 = nextText.IndexOf("="c)
-                        If pos1 = -1 Then
-                            errors(i) = New [Error](err.Line, methodPos, $"Expected `=` and a value to set the property")
+                    ElseIf objId = 0 AndAlso err.subLine = 0 Then 'Property Set 
+
+                        If tokens(objId + 2).Token <> Token.Identifier Then
+                            errors(i) = New [Error](err.Line, 0, methodPos, $"Expected a property name.")
                             Continue For
                         End If
 
-                        Dim result = WordRgex.Match(nextText)
-                        If Not result.Success OrElse result.Index > 0 Then
-                            errors(i) = New [Error](err.Line, methodPos, $"Expected a property name.")
+                        If objId + 3 >= tokens.Count OrElse tokens(objId + 3).Token <> Token.Equals Then
+                            errors(i) = New [Error](err.Line, 0, methodPos, $"Expected `=` and a value to set the property")
                             Continue For
                         End If
 
-                        Dim L = pos1 - result.Length
+                        Dim propName = tokens(objId + 2).Text
 
-                        If L = 0 OrElse nextText.Substring(result.Length, L).Trim(" "c, Convert.ToChar(8)) = "" Then
-                            Dim eventInfo = sb.PreCompiler.GetMethodInfo(controlName, result.Value)
-                            If eventInfo.Module = "" Then
-                                Dim method = $"Set{result.Value}"
-                                Dim methodInfo = sb.PreCompiler.GetMethodInfo(controlName, method)
-                                Dim ModuleName = methodInfo.Module
-                                If ModuleName = "" Then
-                                    errors(i) = New [Error](err.Line, methodPos, $"`{result.Value}` doesn't exist.")
-                                    Continue For
-                                End If
-
-                                Select Case methodInfo.ParamsCount
-                                    Case 2
-                                        lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({obj}, {nextText.Substring(pos1 + 1).Trim})"
-                                    Case 3
-                                        lines(lineNum) = prevText &
-                                             $"{ModuleName}.{method}({doc.Form}, {obj}, {nextText.Substring(pos1 + 1).Trim})"
-                                    Case Else
-                                        errors(i) = New [Error](err.Line, methodPos, $"`{method}` definition is not supported.")
-                                        Continue For
-                                End Select
-
-                                errors.RemoveAt(i)
-                                ReRun = True
-                            Else ' Event
-                                Dim ModuleName = eventInfo.Module
-                                lines.Insert(lineNum, $"Control.HandleEvents({doc.Form}, {obj})")
-                                lines(lineNum + 1) = prevText & $"{ModuleName}.{nextText}"
-                                errors.RemoveAt(i)
-                                ReRun = True
+                        Dim propInfo = sb.PreCompiler.GetMethodInfo(controlName, propName)
+                        If propInfo.Module = "" Then
+                            Dim method = $"Set{propName}"
+                            Dim methodInfo = sb.PreCompiler.GetMethodInfo(controlName, method)
+                            Dim ModuleName = methodInfo.Module
+                            If ModuleName = "" Then
+                                errors(i) = New [Error](err.Line, 0, methodPos, $"`{propName}` doesn't exist.")
+                                Continue For
                             End If
+
+                            pos = tokens(objId + 3).Column
+
+                            Select Case methodInfo.ParamsCount
+                                Case 2
+                                    lines(lineNum) = prevText &
+                                            $"{ModuleName}.{method}({obj}, {line.Substring(pos + 1).Trim}"
+                                Case 3
+                                    lines(lineNum) = prevText &
+                                             $"{ModuleName}.{method}({doc.Form}, {obj}, {line.Substring(pos + 1).Trim}"
+                                Case Else
+                                    errors(i) = New [Error](err.Line, 0, methodPos, $"`{method}` definition is not supported.")
+                                    Continue For
+                            End Select
+
+                            lines(lineNum + tokens.Last.subLine) += ")"
+
+                            errors.RemoveAt(i)
+                            ReRun = True
+
+                        Else ' Event
+                            Dim ModuleName = propInfo.Module
+                            lines.Insert(lineNum, $"Control.HandleEvents({doc.Form}, {obj})")
+                            lines(lineNum + 1) = prevText & $"{ModuleName}.{nextText}"
+                            errors.RemoveAt(i)
+                            ReRun = True
                         End If
 
-                    Else 'Property Get          
-                        match = WordRgex.Match(nextText)
-                        If Not match.Success OrElse match.Index > 0 Then
-                            errors(i) = New [Error](err.Line, methodPos, "property name is expected.")
+                    Else 'Property Get                     
+                        If tokens.Count > objId + 2 AndAlso tokens(objId + 2).Token <> Token.Identifier Then
+                            errors(i) = New [Error](err.Line, 0, methodPos, "property name is expected.")
                             Continue For
                         End If
 
-                        Dim method = $"Get{match.Value}"
+                        Dim propName = tokens(objId + 2).Text
+                        Dim method = $"Get{propName}"
                         Dim methodInfo = sb.PreCompiler.GetMethodInfo(controlName, method)
                         Dim ModuleName = methodInfo.Module
                         If ModuleName = "" Then
-                            errors(i) = New [Error](err.Line, methodPos, $"`{match.Value}` doesn't exist.")
+                            errors(i) = New [Error](err.Line, 0, methodPos, $"`{propName}` doesn't exist.")
                             Continue For
                         End If
 
@@ -1025,15 +1035,17 @@ Namespace Microsoft.SmallBasic
                                 lines(lineNum) =
                                             prevText &
                                             $"{ModuleName}.{method}({obj})" &
-                                            nextText.Substring(match.Length)
+                                            nextText.Substring(propName.Length)
                             Case 2
                                 lines(lineNum) =
                                             prevText &
                                             $"{ModuleName}.{method}({doc.Form}, {obj})" &
-                                            nextText.Substring(match.Length)
+                                            nextText.Substring(propName.Length)
+
                             Case Else
-                                errors(i) = New [Error](err.Line, methodPos, $"`{method}` definition is not supported.")
+                                errors(i) = New [Error](err.Line, 0, methodPos, $"`{method}` definition is not supported.")
                                 Continue For
+
                         End Select
 
                         errors.RemoveAt(i)
@@ -1053,21 +1065,7 @@ Namespace Microsoft.SmallBasic
 
         End Function
 
-        Private Function GetBalancedBrackets(str As String) As List(Of Content)
-            Do
-                Dim contents As List(Of Content) = Verex.BalancedContents(str, "(", ")")
-                If contents IsNot Nothing Then
-                    Return contents
-                End If
-                Dim pos As Integer = str.LastIndexOfAny(New Char(1) {"("c, ")"c})
-                If pos = -1 Then
-                    Exit Do
-                End If
-                str = str.Substring(0, pos)
-            Loop
 
-            Return Nothing
-        End Function
 
         Private Function CountLines(str As String) As Integer
             If str = "" Then Return 0
@@ -1093,7 +1091,7 @@ Namespace Microsoft.SmallBasic
 
             Catch ex As Exception
                 If errors Is Nothing Then errors = New List(Of [Error])
-                errors.Add(New [Error](-1, 0, ex.Message))
+                errors.Add(New [Error](-1, 0, 0, ex.Message))
             End Try
 
             Return errors
@@ -1107,7 +1105,8 @@ Namespace Microsoft.SmallBasic
             If formDesigner.CodeFilePath <> "" Then
                 Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
                 Dim controlName = formDesigner.GetControlNameOrDefault(control)
-                Dim type = doc.ControlsInfo(controlName.ToLower())
+                Dim key = controlName.ToLower()
+                Dim type = If(doc.ControlsInfo.ContainsKey(key), doc.ControlsInfo(key), "")
 
                 If doc.AddEventHandler(controlName, sb.PreCompiler.GetDefaultEvent(type)) Then
                     doc.PageKey = formDesigner.PageKey
@@ -1359,7 +1358,7 @@ Namespace Microsoft.SmallBasic
             If CommitName() Then
                 txtControlName.Tag = ""
             Else
-                e.Handled = True
+                If e IsNot Nothing Then e.Handled = True
                 FocusTxtName.Start()
             End If
         End Sub

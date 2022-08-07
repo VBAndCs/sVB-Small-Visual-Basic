@@ -1,13 +1,17 @@
 '@Form Hints:
 '#frmShapes{
+'    Control1: Control
 '    Elps2: Control
+'    Control2: Control
 '    Button1: Button
 '    Label1: Label
 '    TextBox1: TextBox
 '}
 
 Me = "frmShapes"
+Control1 = "control1"
 Elps2 = "elps2"
+Control2 = "control2"
 Button1 = "button1"
 Label1 = "label1"
 TextBox1 = "textbox1"

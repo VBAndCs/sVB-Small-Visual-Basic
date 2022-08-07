@@ -336,8 +336,11 @@ Public Class Designer
 
         If Pages.ContainsKey(key) Then
             CurrentPage = Pages(key)
+        ElseIf Not IO.File.Exists(key) Then ' closed
+            Return key
         Else
             Dim xamlPath = key.ToLower()
+
             Dim codePath = xamlPath.Substring(0, xamlPath.Length - 5) & ".sb"
             For Each item In Pages
                 Dim page = item.Value

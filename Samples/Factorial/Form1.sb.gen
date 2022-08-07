@@ -4,6 +4,7 @@
 '    TextBox1: TextBox
 '    TextBox2: TextBox
 '    Label1: Label
+'    Label2: Label
 '}
 
 Me = "Form1"
@@ -11,6 +12,7 @@ Button1 = "button1"
 TextBox1 = "textbox1"
 TextBox2 = "textbox2"
 Label1 = "label1"
+Label2 = "label2"
 Form1 = Forms.LoadForm("Form1", "Form1.xaml")
 Form.Show(Form1)
 

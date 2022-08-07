@@ -16,6 +16,9 @@ Namespace WinForms
             Return t
         End Function
 
+        ''' <summary>
+        ''' Gets or sets the text that is displayed on the label
+        ''' </summary>
         <ExProperty>
         Public Shared Function GetText(formName As Primitive, labelName As Primitive) As Primitive
             App.Invoke(
@@ -27,7 +30,6 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Function
-
 
         <ExProperty>
         Public Shared Sub SetText(formName As Primitive, labelName As Primitive, value As Primitive)
@@ -42,7 +44,12 @@ Namespace WinForms
                 End Sub)
         End Sub
 
-
+        ''' <summary>
+        ''' Gets or sets the path of the image that is displayed on the label
+        ''' </summary>
+        ''' <param name="formName"></param>
+        ''' <param name="labelName"></param>
+        ''' <returns></returns>
         <ExProperty>
         Public Shared Function GetImage(formName As Primitive, labelName As Primitive) As Primitive
             App.Invoke(
@@ -61,7 +68,6 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Function
-
 
         <ExProperty>
         Public Shared Sub SetImage(formName As Primitive, labelName As Primitive, imageFile As Primitive)

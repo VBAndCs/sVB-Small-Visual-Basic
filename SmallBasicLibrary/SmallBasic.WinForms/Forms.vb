@@ -14,7 +14,7 @@ Namespace WinForms
 
         Friend Shared _forms As New Dictionary(Of String, ControlsDictionay)
 
-        Shared Function GetForm(name As String) As Window
+        Friend Shared Function GetForm(name As String) As Window
             name = name.ToLower()
             If Not _forms.ContainsKey(name) Then Return Nothing
 
@@ -26,6 +26,10 @@ Namespace WinForms
             Return wnd
         End Function
 
+        ''' <summary>
+        ''' Returns an array containing the names of all forms you created.
+        ''' </summary>
+        ''' <returns></returns>
         Public Shared Function GetForms() As Primitive
             Dim map = New Dictionary(Of Primitive, Primitive)
             Dim num = 1
@@ -40,6 +44,12 @@ Namespace WinForms
 
         Private Shared _syncLock As New Object
 
+        ''' <summary>
+        ''' Loads a form from its xaml file.
+        ''' </summary>
+        ''' <param name="formName">the name of the form</param>
+        ''' <param name="xamlPath">the path pf the xaml file that contains the form design</param>
+        ''' <returns>The name of the form</returns>
         Public Shared Function LoadForm(formName As Primitive, xamlPath As Primitive) As Primitive
             Dim xamlContent As String = $"<Canvas Name=""{formName}"" Width=""700"" Height=""500"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""/>"
 
@@ -134,8 +144,6 @@ Namespace WinForms
             Return name
         End Function
 
-
-
         Private Shared Sub SetControlText(control As UIElement, value As String)
             Try
                 CObj(control).Text = value
@@ -152,7 +160,7 @@ Namespace WinForms
             End Try
         End Sub
 
-        Shared Function GetControlText(control As UIElement) As String
+        Private Shared Function GetControlText(control As UIElement) As String
             Try
                 Return CObj(control).Text
             Catch
@@ -168,6 +176,11 @@ Namespace WinForms
             Return Automation.AutomationProperties.GetHelpText(control)
         End Function
 
+        ''' <summary>
+        ''' Creats a new form with the given name, and adds it to the forms collection.
+        ''' </summary>
+        ''' <param name="formName">the name of the form</param>
+        ''' <returns>the name of the form</returns>
         Public Shared Function AddForm(formName As Primitive) As Primitive
             Try
                 Dim frm = GetForm(formName)
@@ -233,6 +246,11 @@ Namespace WinForms
             Return canvas
         End Function
 
+        ''' <summary>
+        ''' Shows a message box dialog.
+        ''' </summary>
+        ''' <param name="message">the text to dislpay on the message box</param>
+        ''' <param name="title">the title to display of the dialog box</param>
         Public Shared Sub ShowMessage(message As Primitive, title As Primitive)
             Try
                 SmallBasicApplication.Invoke(Sub() System.Windows.MessageBox.Show(message.ToString(), title.ToString()))

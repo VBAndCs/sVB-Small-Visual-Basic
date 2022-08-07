@@ -25,8 +25,8 @@ Namespace WinForms
         End Sub
 
         Public Shared Function GetDefaultEvent(controlName As String) As String
-            controlName = controlName.ToLower()
-            If DeafaultControlEvents.ContainsKey(controlName) Then
+            controlName = controlName?.ToLower()
+            If controlName <> "" AndAlso DeafaultControlEvents.ContainsKey(controlName) Then
                 Return DeafaultControlEvents(controlName)
             Else
                 Return "OnClick"
@@ -107,7 +107,9 @@ Namespace WinForms
             End If
 
             Dim t = Type.GetType(WinFormsNS & moduleName)
-            Dim params = t?.GetMethods.Where(Function(m) m.Name.ToLower() = method).FirstOrDefault?.GetParameters()
+            Dim params = t?.GetMethods.Where(
+                   Function(m) m.IsPublic AndAlso m.Name.ToLower() = method
+                ).FirstOrDefault?.GetParameters()
             Return (moduleName, If(params Is Nothing, 0, params.Length), moduleName <> NameOf(Form))
         End Function
 
@@ -147,8 +149,11 @@ Namespace WinForms
                 If pair Is Nothing OrElse pair.Length <> 2 Then Return Nothing
 
                 Dim cntrlName = pair(0).Trim()
-                info.ControlsInfo.Add(cntrlName.ToLower(), pair(1).Trim)
-                info.ControlNames.Add(cntrlName)
+                Dim c = cntrlName.ToLower()
+                If Not info.ControlsInfo.ContainsKey(c) Then
+                    info.ControlsInfo.Add(c, pair(1).Trim)
+                    info.ControlNames.Add(cntrlName)
+                End If
 
             Next
             Return Nothing

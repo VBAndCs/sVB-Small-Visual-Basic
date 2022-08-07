@@ -6,50 +6,116 @@ Imports System.Runtime.InteropServices
 
 Namespace Microsoft.SmallBasic
     Public Class LineScanner
-        Private Shared _lineScanner As New LineScanner
 
-        Private _currentIndex As Integer
-        Private _lineLength As Integer
-        Private _lineText As String
-        Private _decimalSeparator As Char = "."c
-
-        Private Sub New()
-
-        End Sub
+        Private Shared _currentIndex As Integer
+        Private Shared _lineLength As Integer
+        Private Shared _lineText As String
+        Private Shared _decimalSeparator As Char = "."c
 
         Public Shared Function GetFirstToken(lineText As String, lineNumber As Integer) As TokenInfo
-            Dim tokens = GetTokens(lineText, lineNumber, True)
+            Dim tokens = GetTokens(lineText, lineNumber, Nothing, True)
             If tokens.Count = 0 Then Return TokenInfo.Illegal
             Return tokens(0)
         End Function
 
-        Public Shared Function GetTokenEnumerator(lineText As String, lineNumber As Integer) As TokenEnumerator
-            Dim tokenEnumerator As New TokenEnumerator(GetTokens(lineText, lineNumber))
-            tokenEnumerator.LineNumber = lineNumber
-            Return tokenEnumerator
+        Public Shared Function GetTokenEnumerator(
+                    lineText As String,
+                    ByRef lineNumber As Integer,
+                    Optional lines As List(Of String) = Nothing
+                ) As TokenEnumerator
+
+            Dim e As New TokenEnumerator(GetTokens(lineText, lineNumber, lines))
+            e.LineNumber = lineNumber
+            Return e
         End Function
 
-        Public Shared Function GetTokens(lineText As String, lineNumber As Integer, Optional firstTokenOnly As Boolean = False) As List(Of TokenInfo)
-            If Equals(lineText, Nothing) Then
-                Throw New ArgumentNullException("lineText")
+        Public Shared Function GetTokens(
+                       lineText As String,
+                       ByRef lineNumber As Integer,
+                       Optional lines As List(Of String) = Nothing,
+                       Optional firstTokenOnly As Boolean = False
+                  ) As List(Of TokenInfo)
+
+            Dim tokens As New List(Of TokenInfo)()
+            If lineText = "" Then Return tokens
+
+            _lineText = lineText
+            _lineLength = lineText.Length
+            _currentIndex = 0
+
+            Dim tokenInfo As New TokenInfo
+            Dim subLine = 0
+            Do
+                If ScanNextToken(tokenInfo) Then
+                    tokenInfo.Line = lineNumber
+                    tokenInfo.subLine = subLine
+                    tokens.Add(tokenInfo)
+                    If firstTokenOnly Then Exit Do
+
+                ElseIf lines IsNot Nothing AndAlso tokens.Count > 0 AndAlso
+                            lineNumber < lines.Count - 1 Then
+
+                    If IsLineContinuity(tokens,
+                              If(lineNumber < lines.Count - 1, lines(lineNumber + 1), "")) Then
+                        ' Scan the next line as a part of this line
+
+                        _lineText = lines(lineNumber + 1)
+                        If _lineText = "" Then Exit Do
+
+                        _lineLength = _lineText.Length
+                        _currentIndex = 0
+                        lineNumber += 1
+                        subLine += 1
+                    Else
+                        Exit Do
+                    End If
+
+                Else
+                    Exit Do
+                End If
+            Loop
+            Return tokens
+        End Function
+
+        Public Shared Function IsLineContinuity(tokens As List(Of TokenInfo), nextLine As String) As Boolean
+            Dim last = tokens.Count - 1
+            If last = -1 Then Return False
+
+            Dim comment = -1
+
+            If tokens(last).TokenType = TokenType.Comment Then
+                comment = last
+                last -= 1
+                If last = -1 Then Return False
             End If
 
-            _lineScanner._lineText = lineText
-            _lineScanner._lineLength = lineText.Length
-            _lineScanner._currentIndex = 0
-            Dim list As New List(Of TokenInfo)()
-            Dim tokenInfo As New TokenInfo
+            Dim nextLineFirstToken = GetFirstToken(nextLine, 0).Text
 
-            While _lineScanner.ScanNextToken(tokenInfo)
-                tokenInfo.Line = lineNumber
-                list.Add(tokenInfo)
-                If firstTokenOnly Then Exit While
-            End While
+            Select Case tokens(last).Text
+                Case "_"
+                    If last = 0 OrElse tokens(last - 1).Text = "." OrElse nextLineFirstToken = "." Then
+                        Return False
+                    Else
+                        tokens.RemoveAt(last) ' remove the Hyphen
+                        comment -= 1
+                    End If
 
-            Return list
+                Case ",", "{", "(", "[", "+", "-", "*", "\", "/", "="
+
+                Case Else
+                    Select Case nextLineFirstToken
+                        Case ")", "]", "}", "+", "-", "*", "\", "/"
+
+                        Case Else
+                            Return False
+                    End Select
+            End Select
+
+            If comment > -1 Then tokens.RemoveAt(comment)
+            Return True
         End Function
 
-        Private Function ScanNextToken(<Out> ByRef tokenInfo As TokenInfo) As Boolean
+        Private Shared Function ScanNextToken(<Out> ByRef tokenInfo As TokenInfo) As Boolean
             EatSpaces()
             tokenInfo = Nothing
             tokenInfo.Column = _currentIndex
@@ -63,41 +129,52 @@ Namespace Microsoft.SmallBasic
                 Case "+"c
                     tokenInfo.Token = Token.Addition
                     tokenInfo.Text = "+"
+
                 Case "-"c
                     tokenInfo.Token = Token.Subtraction
                     tokenInfo.Text = "-"
+
                 Case "/"c
                     tokenInfo.Token = Token.Division
                     tokenInfo.Text = "/"
+
                 Case "*"c
                     tokenInfo.Token = Token.Multiplication
                     tokenInfo.Text = "*"
+
                 Case "("c
                     tokenInfo.Token = Token.LeftParens
                     tokenInfo.Text = "("
+
                 Case ")"c
                     tokenInfo.Token = Token.RightParens
                     tokenInfo.Text = ")"
+
                 Case "["c
                     tokenInfo.Token = Token.LeftBracket
                     tokenInfo.Text = "["
+
                 Case "]"c
                     tokenInfo.Token = Token.RightBracket
                     tokenInfo.Text = "]"
+
                 Case "{"c
                     tokenInfo.Token = Token.LeftCurlyBracket
                     tokenInfo.Text = "{"
+
                 Case "}"c
                     tokenInfo.Token = Token.RightCurlyBracket
                     tokenInfo.Text = "}"
+
                 Case ":"c
                     tokenInfo.Token = Token.Colon
                     tokenInfo.Text = ":"
+
                 Case ","c
                     tokenInfo.Token = Token.Comma
                     tokenInfo.Text = ","
-                Case "<"c
 
+                Case "<"c
                     Select Case GetNextChar()
                         Case "="c
                             tokenInfo.Token = Token.LessThanEqualTo
@@ -113,7 +190,6 @@ Namespace Microsoft.SmallBasic
 
                 Case ">"c
                     nextChar = GetNextChar()
-
                     If nextChar = "="c Then
                         tokenInfo.Token = Token.GreaterThanEqualTo
                         tokenInfo.Text = ">="
@@ -126,14 +202,17 @@ Namespace Microsoft.SmallBasic
                 Case "="c
                     tokenInfo.Token = Token.Equals
                     tokenInfo.Text = "="
+
                 Case "'"c
                     _currentIndex -= 1
                     tokenInfo.Token = Token.Comment
                     tokenInfo.Text = ReadComment()
+
                 Case """"c
                     _currentIndex -= 1
                     tokenInfo.Token = Token.StringLiteral
                     tokenInfo.Text = ReadStringLiteral()
+
                 Case Else
                     Dim nextChar2 As Char = GetNextChar()
                     _currentIndex -= 1
@@ -143,17 +222,21 @@ Namespace Microsoft.SmallBasic
                         Dim text As String = ReadKeywordOrIdentifier()
                         tokenInfo.Token = MatchToken(text)
                         tokenInfo.Text = text
+
                     ElseIf Char.IsDigit(nextChar) OrElse nextChar = "-"c OrElse nextChar = _decimalSeparator AndAlso Char.IsDigit(nextChar2) Then
                         _currentIndex -= 1
                         Dim text2 As String = ReadNumericLiteral()
                         tokenInfo.Token = Token.NumericLiteral
                         tokenInfo.Text = text2
+
                     ElseIf nextChar = "."c Then
                         tokenInfo.Token = Token.Dot
                         tokenInfo.Text = "."
+
                     ElseIf nextChar = "!"c Then
                         tokenInfo.Token = Token.Lookup
                         tokenInfo.Text = "!"
+
                     Else
                         _currentIndex -= 1
                         Dim text3 As String = ReadUntilNextSpace()
@@ -168,7 +251,7 @@ Namespace Microsoft.SmallBasic
             Return True
         End Function
 
-        Private Function GetNextChar() As Char
+        Private Shared Function GetNextChar() As Char
             If _currentIndex < _lineLength Then
                 Return _lineText(Math.Min(Threading.Interlocked.Increment(_currentIndex), _currentIndex - 1))
             End If
@@ -177,7 +260,7 @@ Namespace Microsoft.SmallBasic
             Return VisualBasic.Strings.ChrW(0)
         End Function
 
-        Private Function ReadUntilNextSpace() As String
+        Private Shared Function ReadUntilNextSpace() As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
             Dim nextChar As Char = GetNextChar()
 
@@ -190,7 +273,7 @@ Namespace Microsoft.SmallBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Function ReadKeywordOrIdentifier() As String
+        Private Shared Function ReadKeywordOrIdentifier() As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
             Dim nextChar As Char = GetNextChar()
 
@@ -203,7 +286,7 @@ Namespace Microsoft.SmallBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Function ReadNumericLiteral() As String
+        Private Shared Function ReadNumericLiteral() As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
             Dim nextChar As Char = GetNextChar()
             GetNextChar()
@@ -228,7 +311,7 @@ Namespace Microsoft.SmallBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Function ReadStringLiteral() As String
+        Private Shared Function ReadStringLiteral() As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
             Dim nextChar As Char = GetNextChar()
             stringBuilder.Append(nextChar)
@@ -260,7 +343,7 @@ Namespace Microsoft.SmallBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Function ReadComment() As String
+        Private Shared Function ReadComment() As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
             Dim nextChar As Char = GetNextChar()
             stringBuilder.Append(nextChar)
@@ -269,14 +352,14 @@ Namespace Microsoft.SmallBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Sub EatSpaces()
+        Private Shared Sub EatSpaces()
             While IsWhiteSpace(GetNextChar())
             End While
 
             _currentIndex -= 1
         End Sub
 
-        Private Function IsWhiteSpace(ByVal c As Char) As Boolean
+        Private Shared Function IsWhiteSpace(ByVal c As Char) As Boolean
             Select Case c
                 Case VisualBasic.Strings.ChrW(9), VisualBasic.Strings.ChrW(11), VisualBasic.Strings.ChrW(12), VisualBasic.Strings.ChrW(26), " "c
                     Return True
@@ -290,7 +373,7 @@ Namespace Microsoft.SmallBasic
             End Select
         End Function
 
-        Private Function MatchToken(ByVal tokenText As String) As Token
+        Private Shared Function MatchToken(ByVal tokenText As String) As Token
             Select Case tokenText.ToLower(CultureInfo.InvariantCulture)
                 Case "and"
                     Return Token.And
@@ -347,7 +430,7 @@ Namespace Microsoft.SmallBasic
             End Select
         End Function
 
-        Private Function GetTokenType(ByVal token As Token) As TokenType
+        Private Shared Function GetTokenType(ByVal token As Token) As TokenType
             Select Case token
                 Case Token.Illegal
                     Return TokenType.Illegal

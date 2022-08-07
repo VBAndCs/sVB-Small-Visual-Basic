@@ -191,8 +191,8 @@ Namespace Microsoft.Nautilus.Text.Editor
             Get
                 If Not _lineContainsBidi.HasValue Then
                     _lineContainsBidi = False
-                    For Each textLine1 As TextLine In _textLines
-                        For Each indexedGlyphRun As IndexedGlyphRun In textLine1.GetIndexedGlyphRuns()
+                    For Each line In _textLines
+                        For Each indexedGlyphRun In line.GetIndexedGlyphRuns()
                             If (CUInt(indexedGlyphRun.GlyphRun.BidiLevel) And (If(True, 1UL, 0UL))) <> 0 Then
                                 _lineContainsBidi = True
                                 Exit For

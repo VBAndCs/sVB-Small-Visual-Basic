@@ -77,13 +77,21 @@ Namespace Microsoft.SmallBasic.LanguageService
                     [end] = FindCurrentSubEnd(currentSnapshot, lineNumber)
                 End If
 
+                Dim nextLineOffset = 0
+                Dim resetNextLineOffset = False
+
                 For i = start To [end]
                     Dim line = currentSnapshot.Lines(i)
                     Dim nextPos = line.GetPositionOfNextNonWhiteSpaceCharacter(0)
+                    Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
 
-                    Dim tokenInfo = LineScanner.GetFirstToken(line.GetText(), line.LineNumber)
+                    If tokens.Count = 0 Then
+                        AdjustIndentation(textEdit, line, indentationLevel + nextLineOffset, nextPos)
+                        nextLineOffset = 0
+                        Continue For
+                    End If
 
-                    Select Case tokenInfo.Token
+                    Select Case tokens(0).Token
                         Case Token.EndIf, Token.Next, Token.EndFor, Token.Wend, Token.EndWhile
                             indentationLevel -= 1
                             AdjustIndentation(textEdit, line, indentationLevel, nextPos)
@@ -105,8 +113,37 @@ Namespace Microsoft.SmallBasic.LanguageService
                             AdjustIndentation(textEdit, line, indentationLevel, nextPos)
                             indentationLevel += 1
 
+                        Case Token.RightParens, Token.RightBracket, Token.RightCurlyBracket
+                            nextLineOffset = Math.Max(0, nextLineOffset - 1)
+                            AdjustIndentation(textEdit, line, indentationLevel + nextLineOffset, nextPos)
+
+                        Case Token.Addition, Token.Subtraction, Token.Multiplication, Token.Division
+                            If nextLineOffset = 0 Then nextLineOffset = 1
+                            AdjustIndentation(textEdit, line, indentationLevel + nextLineOffset, nextPos)
+
                         Case Else
-                            AdjustIndentation(textEdit, line, indentationLevel, nextPos)
+                            If resetNextLineOffset Then nextLineOffset = 0
+                            AdjustIndentation(textEdit, line, indentationLevel + nextLineOffset, nextPos)
+                    End Select
+
+                    resetNextLineOffset = False
+
+                    Dim last = tokens.Count - 1
+                    If tokens(last).TokenType = TokenType.Comment Then
+                        last -= 1
+                    End If
+
+                    If last = -1 Then nextLineOffset = 0
+
+                    Select Case tokens(last).Text
+                        Case "_", ",", "+", "-", "*", "/"
+                            If nextLineOffset = 0 Then nextLineOffset = 1
+                        Case "(", "{", "[", "="
+                            nextLineOffset += 1
+                        Case ")", "}", "]"
+                            nextLineOffset = Math.Max(0, nextLineOffset - 1)
+                        Case Else
+                            resetNextLineOffset = True
                     End Select
                 Next
 

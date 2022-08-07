@@ -167,13 +167,11 @@ Namespace Microsoft.SmallBasic.LanguageService
                 End If
             Next
 
-            While filteredCompletionItems.Count < 8 AndAlso completionItems.Count > 0
-                For Each item2 In completionItems
-                    If CanAddItem(item2) Then
-                        filteredCompletionItems.Add(New CompletionItemWrapper(item2))
-                    End If
-                Next
-            End While
+            For Each item2 In completionItems
+                If CanAddItem(item2) Then
+                    If filteredCompletionItems.Count < 8 Then filteredCompletionItems.Add(New CompletionItemWrapper(item2))
+                End If
+            Next
         End Sub
 
         Private Function GetUniqueItems(ByVal completionItems As CompletionItem()) As List(Of CompletionItem)

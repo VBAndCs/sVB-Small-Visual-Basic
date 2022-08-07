@@ -24,13 +24,16 @@ Namespace WinForms
         End Sub
 
         Private Shared Sub TextInput(sender As Object, e As System.Windows.Input.TextCompositionEventArgs)
-            _LastTextInput = e.Text
+            _lastTextInput = e.Text
         End Sub
 
         Private Shared Sub KeyDown(sender As Object, e As System.Windows.Input.KeyEventArgs)
             _LastKey = e.Key
         End Sub
 
+        ''' <summary>
+        ''' Returns True if the Alt key is pressed
+        ''' </summary>
         Public Shared ReadOnly Property AltPressed As Primitive
             Get
                 App.Invoke(
@@ -40,6 +43,9 @@ Namespace WinForms
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns True if the Cntrl key is pressed
+        ''' </summary>
         Public Shared ReadOnly Property CtrlPressed As Primitive
             Get
                 App.Invoke(
@@ -49,6 +55,9 @@ Namespace WinForms
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns True if the Shift key is pressed
+        ''' </summary>
         Public Shared ReadOnly Property ShiftPressed As Primitive
             Get
                 App.Invoke(
@@ -58,6 +67,9 @@ Namespace WinForms
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns True if the Win key is pressed
+        ''' </summary>
         Public Shared ReadOnly Property WinPressed As Primitive
             Get
                 App.Invoke(
@@ -67,6 +79,9 @@ Namespace WinForms
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns True if the Caps Lock key is on.
+        ''' </summary>
         Public Shared ReadOnly Property CapsLockOn As Primitive
             Get
                 App.Invoke(
@@ -76,6 +91,9 @@ Namespace WinForms
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns True if the Insert key is on.
+        ''' </summary>
         Public Shared ReadOnly Property InsertOn As Primitive
             Get
                 App.Invoke(
@@ -85,6 +103,9 @@ Namespace WinForms
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns True if the Scroll Lock key is on.
+        ''' </summary>
         Public Shared ReadOnly Property ScrollOn As Primitive
             Get
                 App.Invoke(
@@ -94,6 +115,9 @@ Namespace WinForms
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns True if the Num Lock key is on.
+        ''' </summary>
         Public Shared ReadOnly Property NumLockOn As Primitive
             Get
                 App.Invoke(
@@ -103,15 +127,27 @@ Namespace WinForms
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns the last Key pressed on the keyboard. 
+        ''' Use The Keys enum members to check they key.
+        ''' Examle: If Keyboard.LastKey = Keys.A Then
+        ''' </summary>
         Public Shared ReadOnly Property LastKey As Primitive
 
         Friend Shared _lastTextInput As Primitive
+
+        ''' <summary>
+        ''' returns the last text that was about to be written to the TextBox
+        ''' </summary>
         Public Shared ReadOnly Property LastTextInput As Primitive
             Get
                 Return _lastTextInput
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns the name of the last key pressed on the keyboard.
+        ''' </summary>
         Public Shared ReadOnly Property LastKeyName As Primitive
             Get
                 Return [Enum].GetName(GetType(Input.Key), CInt(LastKey))

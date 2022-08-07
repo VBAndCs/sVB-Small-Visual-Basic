@@ -23,7 +23,15 @@ EndGame = False
 Braking = False
 a = 0.2
 
-MyCarData = CreateCar("MyCar", 255, 30, Me.Width/2 - 25, Me.Height - 250, "Cars\0.gif")
+MyCarData = CreateCar(
+   "MyCar",   		' name 
+   255,        		' maxSpeed
+   30,          	' speed
+   Me.Width/2 - 25,  ' left 
+   Me.Height - 250,  ' top
+   "Cars\0.gif"      ' image
+)
+
 Cars[0] = MyCarData
 
 CreateEnamyCars()
@@ -69,7 +77,8 @@ Sub CreateEnamyCars()
       
       img = "Cars\" + i + ".png"
       CarsCount = CarsCount + 1
-      carData = CreateCar("EnemyCar" + i, maxSpeed, speed, left, top, img)
+      carData = CreateCar("EnemyCar" + i, maxSpeed, speed, _
+         left, top, img)
       Cars[CarsCount] = carData
       
       If i = 4 Then
@@ -109,10 +118,12 @@ Sub MoveMyCar
          
          
       ElseIf MoveDirection = Direction_Right Then
-         myCarLabel.Left = myCarLabel.Left + Math.Min(MyCarSpeed / 100, 1)
+         myCarLabel.Left = myCarLabel.Left _
+            + Math.Min(MyCarSpeed / 100, 1)
          
       ElseIf MoveDirection = Direction_Left Then
-         myCarLabel.Left = myCarLabel.Left - Math.Min(MyCarSpeed / 100, 1)
+         myCarLabel.Left = myCarLabel.Left _
+            - Math.Min(MyCarSpeed / 100, 1)
       EndIf
    EndIf
 EndSub
@@ -320,7 +331,13 @@ Sub Form1_OnKeyDown()
 EndSub
 
 '-------------------------------------------------------------------------------
-gameKeys = {Keys.Up, Keys.Down, Keys.Left, Keys.Right, Keys.Space}
+gameKeys = {_
+   Keys.Up, _
+   Keys.Down, _
+   Keys.Left, _
+   Keys.Right, _
+   Keys.Space _
+   }
 
 Sub Form1_OnKeyUp
    Key = Event.LastKey
@@ -348,11 +365,11 @@ EndSub
 '------------------------------------------------
 Sub CreateTracks()
    leftTrackLabel = Me.AddLabel("leftTrack", 0, 0, 20, Me.Height)
-   leftTrackLabel.BackColor = Color.White
+   leftTrackLabel.BackColor = Colors.White
    
    x2 = Me.Width - 20
    rightTrackLabel = Me.AddLabel("rightTrack", x2, 0, 20, Me.Height)
-   rightTrackLabel.BackColor = Color.White
+   rightTrackLabel.BackColor = Colors.White
    
    BlockDistance = Me.Height / (BlockCount - 1)
    BlockFraction = Me.Height - BlockDistance * (BlockCount - 1)
@@ -367,7 +384,7 @@ EndSub
 '------------------------------------------------
 Function CreateBlock(left, top, n)
    blockLabel = Me.AddLabel("blockLabel" + n, left, top, 20, 20)
-   blockLabel.BackColor = Color.Black
+   blockLabel.BackColor = Colors.Black
    Return blockLabel
 EndFunction
 
@@ -428,7 +445,8 @@ Function AvoidCollisions(n)
       car2Top = car2Data.Top
       car2Bottom = car2Top + car2Label.Height
       
-      if carTop >= car2Top And carTop - car2Bottom <= rDisplacement Then
+      if carTop >= car2Top And _
+            carTop - car2Bottom <= rDisplacement Then
          ' SpeedUp collision
          car2Left = car2Data.Left
          car2Right = car2Left + car2Label.Width

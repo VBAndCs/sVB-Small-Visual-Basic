@@ -1,7 +1,7 @@
 
 Me.Text = Ellipse1.Width
 goBack = false
-Ellipse1.BackColor = Color.Yellow
+Ellipse1.BackColor = Colors.Yellow
 
 
 '------------------------------------------------

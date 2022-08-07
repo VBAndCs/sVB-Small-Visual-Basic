@@ -1,7 +1,7 @@
 n = 0
 duration = 2000
-TextBox1.BackColor = Color.AliceBlue
-TextBox2.BackColor = Color.Yellow
+TextBox1.BackColor = Colors.AliceBlue
+TextBox2.BackColor = Colors.Yellow
 
 '------------------------------------------------
 Sub Button1_OnClick
@@ -11,7 +11,7 @@ Sub Button1_OnClick
       TextBox1.AnimatePos(Me.Width - 100, Me.Height - 100, duration)
       'TextBox1.AnimateSize(TextBox1.Width * 2, TextBox1.Height * 2, duration)
       TextBox1.AnimateAngle(360, duration)
-      TextBox1.AnimateColor(Color.Red, duration)
+      TextBox1.AnimateColor(Colors.Red, duration)
       
       TextBox2.AnimatePos(0, Me.Height - 100, duration)
       'TextBox2.AnimateSize(TextBox2.Width * 2, TextBox2.Height * 2, duration)
@@ -22,7 +22,7 @@ Sub Button1_OnClick
       TextBox1.AnimatePos(200, 50, duration)
       'TextBox1.AnimateSize(TextBox1.Width / 2, TextBox1.Height / 2, duration)
       TextBox1.AnimateAngle(0, duration)
-      TextBox1.AnimateColor(Color.AliceBlue, duration)
+      TextBox1.AnimateColor(Colors.AliceBlue, duration)
       
       TextBox2.AnimatePos(400, 50, duration)
       'TextBox2.AnimateSize(TextBox2.Width / 2, TextBox2.Height / 2, duration)

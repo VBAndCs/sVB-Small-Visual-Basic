@@ -91,6 +91,11 @@ Namespace Microsoft.SmallBasic
 
         Public Sub AddVariable(variable As Expressions.IdentifierExpression, Optional isLocal As Boolean = False)
             Dim variableName = variable.Identifier.NormalizedText
+            If variableName = "_" Then
+                Errors.Add(New [Error](variable.Identifier, "_ is not a valid name"))
+                Return
+            End If
+
             Dim Subroutine = variable.Subroutine
             Dim key = GetKey(variable)
 
@@ -162,14 +167,18 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Public Sub AddLabelDefinition(ByVal label As TokenInfo)
-            Dim normalizedText = label.NormalizedText
-
-            If Not Labels.ContainsKey(normalizedText) Then
-                Labels.Add(normalizedText, label)
+            Dim labelName = label.NormalizedText
+            If labelName = "_" Then
+                Errors.Add(New [Error](label, "_ is not a valid name"))
                 Return
             End If
 
-            Errors.Add(New [Error](label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("AnotherLabelExists"), New Object(0) {label.Text})))
+            If Not Labels.ContainsKey(labelName) Then
+                Labels.Add(labelName, label)
+            Else
+                Errors.Add(New [Error](label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("AnotherLabelExists"), New Object(0) {label.Text})))
+            End If
+
         End Sub
     End Class
 End Namespace

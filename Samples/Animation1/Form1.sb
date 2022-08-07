@@ -28,21 +28,20 @@ EndSub
 '------------------------------------------------
 Sub Rotate
    t = Clock.ElapsedMilliseconds - startTime
-   If t >= duration Then
+   If t > duration Then
       t = duration
       Timer.Pause()
       Button1.Enabled = True
    EndIf
    
    a = Math.Round(360 * t / duration)
-   
+
    If Math.Remainder(n, 2) = 1 Then
-      a1 =  a
-      a2 = -a
+      TextBox1.Angle = a
+      TextBox2.Angle = -a
    Else
-      a1 = -a
-      a2 = a
+      TextBox1.Angle = -a
+      TextBox2.Angle = a
    EndIf
-   TextBox1.Rotate(a1)
-   TextBox2.Rotate(a2)
+   
 EndSub

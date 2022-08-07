@@ -11,7 +11,6 @@ Namespace WinForms
             MsgBox($"Calling {formName}.{memberName} caused an error: {vbCrLf}{msg}")
         End Sub
 
-
         Shared Sub ShowErrorMesssage(formName As String, memberName As String, msg As String)
             MsgBox($"Reading {formName}.{memberName} caused an error: {vbCrLf}{msg}")
         End Sub
@@ -19,7 +18,6 @@ Namespace WinForms
         Shared Sub ShowErrorMesssage(formName As String, memberName As String, value As String, msg As String)
             MsgBox($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{msg}")
         End Sub
-
 
         ''' <summary>
         ''' Adds a new TextBox control to the form
@@ -222,7 +220,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Button control to the form
         ''' </summary>
-        ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
+        ''' <param name="formName">The name of the form. Omit this param when you call this method from the form name</param>
         ''' <param name="listBoxName">A unique name for the control.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
@@ -265,6 +263,12 @@ Namespace WinForms
             Return listBoxName
         End Function
 
+        ''' <summary>
+        ''' Returns True if the form dsiplays a control with the given name.
+        ''' </summary>
+        ''' <param name="formName">The name of the form. Omit this param when you call this method from the form name</param>
+        ''' <param name="controlName">the name of the control to search for</param>
+        ''' <returns>True or False</returns>
         <ExMethod>
         Public Shared Function ContainsControl(formName As Primitive, controlName As Primitive) As Primitive
             Dim frmName = CStr(formName).ToLower()
@@ -291,6 +295,10 @@ Namespace WinForms
 
         End Function
 
+
+        ''' <summary>
+        ''' Returns an array containg the names of all controls displayed on the form
+        ''' </summary>
         <ExMethod>
         Public Shared Function GetControls(formName As Primitive) As Primitive
             If Not Forms._forms.ContainsKey(formName) Then
@@ -307,7 +315,9 @@ Namespace WinForms
             Return Primitive.ConvertFromMap(map)
         End Function
 
-
+        ''' <summary>
+        ''' Displayes the form on the screen.
+        ''' </summary>
         <ExMethod>
         Public Shared Sub Show(formName As Primitive)
             App.Invoke(
@@ -323,6 +333,9 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Displayes the form on the screen as a modal dialog, so the user must close it first to ba able to accees other forms of your app.
+        ''' </summary>
         <ExMethod>
         Public Shared Function ShowDialog(formName As Primitive) As Primitive
             App.Invoke(
@@ -336,6 +349,11 @@ Namespace WinForms
                End Sub)
         End Function
 
+        ''' <summary>
+        ''' Shows a message box dialog on the owner form.
+        ''' </summary>
+        ''' <param name="message">the text to dislpay on the message box</param>
+        ''' <param name="title">the title to display of the dialog box</param>
         <ExMethod>
         Public Shared Sub ShowMessage(ownerFormName As Primitive, message As Primitive, title As Primitive)
             App.Invoke(
@@ -348,6 +366,9 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Hides the form
+        ''' </summary>
         <ExMethod>
         Public Shared Sub Hide(formName As Primitive)
             App.Invoke(
@@ -360,6 +381,10 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Closes the form. You can't show the form after it is closed.
+        ''' </summary>
+        ''' <param name="formName"></param>
         <ExMethod>
         Public Shared Sub Close(formName As Primitive)
             App.Invoke(
@@ -372,6 +397,9 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Gets or sets the title of the form
+        ''' </summary>
         <ExProperty>
         Public Shared Function GetText(formName As Primitive) As Primitive
             App.Invoke(
@@ -396,6 +424,9 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Call this method to allow using transparent colors on the form background.
+        ''' </summary>
         <ExMethod>
         Public Shared Sub AllowTransparency(formName As Primitive)
             App.Invoke(
@@ -415,7 +446,10 @@ Namespace WinForms
                 End Sub)
         End Sub
 
-
+        ''' <summary>
+        ''' Fired jsut before the form is closed.
+        ''' Use Event.Handled = True if you want to cancel closing the form.
+        ''' </summary>
         Public Shared Custom Event OnClosing As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Dim VisualElement = CType(Control.GetControl([Event].SenderForm, ""), System.Windows.Window)
@@ -449,6 +483,9 @@ Namespace WinForms
             End RaiseEvent
         End Event
 
+        ''' <summary>
+        ''' Fired after the form is closed
+        ''' </summary>
         Public Shared Custom Event OnClosed As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Dim VisualElement = CType(Control.GetControl([Event].SenderForm, ""), System.Windows.Window)

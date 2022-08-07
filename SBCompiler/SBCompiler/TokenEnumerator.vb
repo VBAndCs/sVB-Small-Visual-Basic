@@ -15,12 +15,8 @@ Namespace Microsoft.SmallBasic
 
         Public ReadOnly Property IsEndOfNonCommentList As Boolean
             Get
-
-                If _currentIndex <> _tokenList.Count Then
-                    Return _Current.TokenType = TokenType.Comment
-                End If
-
-                Return True
+                If _currentIndex = _tokenList.Count Then Return True
+                Return _Current.TokenType = TokenType.Comment
             End Get
         End Property
 

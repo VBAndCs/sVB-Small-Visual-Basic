@@ -74,7 +74,7 @@ Namespace WinForms
                         Dim obj = GetControl(formName, controlName)
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
-                        Wpf.Canvas.SetLeft(obj, value)
+                        Wpf.Canvas.SetLeft(obj, CDbl(value))
                     Catch ex As Exception
                         ShowErrorMesssage(formName, controlName, "Left", value, ex.Message)
                     End Try
@@ -314,7 +314,7 @@ Namespace WinForms
                 brush = TryCast(control.Background, SolidColorBrush)
             End If
 
-            If Brush IsNot Nothing Then
+            If brush IsNot Nothing Then
                 Return brush.Color
             Else
                 Return CType(control.GetValue(BackColorProperty), Media.Color)
@@ -412,7 +412,22 @@ Namespace WinForms
         End Function
 
 
-        Public Shared Function GetAngle(ByVal element As DependencyObject) As Double
+        ''' <summary>
+        ''' Gets or sets the rotation angle of the control.
+        ''' </summary>
+        <ExProperty>
+        Public Shared Function GetAngle(formName As Primitive, controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetAngle = GetAngle(GetControl(formName, controlName))
+                    Catch ex As Exception
+                        ShowErrorMesssage(formName, controlName, "Angle", ex.Message)
+                    End Try
+                End Sub)
+        End Function
+
+        Private Shared Function GetAngle(ByVal element As DependencyObject) As Double
             If element Is Nothing Then
                 Throw New ArgumentNullException("element")
             End If
@@ -433,7 +448,7 @@ Namespace WinForms
                 End Sub)
         End Sub
 
-        Public Shared Sub SetAngle(ByVal element As DependencyObject, ByVal value As Double)
+        Private Shared Sub SetAngle(ByVal element As DependencyObject, ByVal value As Double)
             If element Is Nothing Then
                 Throw New ArgumentNullException("element")
             End If
@@ -444,22 +459,6 @@ Namespace WinForms
 
 
         Private Shared _rotateTransformMap As New Dictionary(Of Wpf.Control, RotateTransform)
-
-        ''' <summary>
-        ''' The rotation angle of the control.
-        ''' </summary>
-        <ExProperty>
-        Public Shared Function GetAngle(formName As Primitive, controlName As Primitive) As Primitive
-            App.Invoke(
-                Sub()
-                    Try
-                        GetAngle = GetAngle(GetControl(formName, controlName))
-                    Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Angle", ex.Message)
-                    End Try
-                End Sub)
-        End Function
-
 
         Public Shared ReadOnly AngleProperty As _
                                DependencyProperty = DependencyProperty.RegisterAttached("Angle",
@@ -509,7 +508,7 @@ Namespace WinForms
         Public Shared Sub Rotate(formName As Primitive, controlName As Primitive, angle As Primitive)
             Try
                 Dim obj = GetControl(formName, controlName)
-                App.BeginInvoke(Sub() SetAngle(obj, GetAngle(obj) + angle))
+                App.BeginInvoke(Sub() SetAngle(obj, GetAngle(obj) + CDbl(angle)))
             Catch ex As Exception
                 ShowSubError(formName, controlName, "Rotate", ex.Message)
             End Try
@@ -585,8 +584,8 @@ Namespace WinForms
                 Dim obj = GetControl(formName, controlName)
                 App.Invoke(
                     Sub()
-                        GraphicsWindow.DoubleAnimateProperty(obj, Wpf.Canvas.LeftProperty, x, duration)
-                        GraphicsWindow.DoubleAnimateProperty(obj, Wpf.Canvas.TopProperty, y, duration)
+                        GraphicsWindow.DoubleAnimateProperty(obj, Wpf.Canvas.LeftProperty, x, CDbl(duration))
+                        GraphicsWindow.DoubleAnimateProperty(obj, Wpf.Canvas.TopProperty, y, CDbl(duration))
                     End Sub)
             Catch ex As Exception
                 ShowSubError(formName, controlName, "AnimatePos", ex.Message)
@@ -635,14 +634,12 @@ Namespace WinForms
                 Dim obj = GetControl(formName, controlName)
                 App.Invoke(
                     Sub()
-                        GraphicsWindow.DoubleAnimateProperty(obj, AngleProperty, angle, duration)
+                        GraphicsWindow.DoubleAnimateProperty(obj, AngleProperty, CDbl(angle), CDbl(duration))
                     End Sub)
             Catch ex As Exception
                 ShowSubError(formName, controlName, "AnimateAngle", ex.Message)
             End Try
         End Sub
-
-
 
 #End Region
 

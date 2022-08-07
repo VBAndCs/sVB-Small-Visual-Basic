@@ -286,6 +286,11 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub AnalyzeSubroutineStatement(subroutine As SubroutineStatement)
+
+            If subroutine.Name.Text = "_" Then
+                _parser.AddError(subroutine.Name, "_ is not a valid name")
+            End If
+
             Select Case subroutine.StartToken.Token
                 Case Token.Sub
                     If subroutine.EndSubToken.Token <> Token.EndSub Then
@@ -302,8 +307,8 @@ Namespace Microsoft.SmallBasic
             End Select
 
             For Each item In subroutine.Body
-                    AnalyzeStatement(item)
-                Next
+                AnalyzeStatement(item)
+            Next
         End Sub
 
         Private Sub AnalyzeWhileStatement(ByVal whileStatement As WhileStatement)

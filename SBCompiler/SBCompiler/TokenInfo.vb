@@ -36,6 +36,7 @@ Namespace Microsoft.SmallBasic
             .Token = Token.Illegal,
             .TokenType = TokenType.Illegal
         }
+        Public Property subLine As Integer
 
         Public Overrides Function ToString() As String
             Return $"{Line},{Column}: {Text}, {Token}"

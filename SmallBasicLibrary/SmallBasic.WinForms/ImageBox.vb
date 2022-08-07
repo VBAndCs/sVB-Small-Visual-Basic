@@ -30,7 +30,12 @@ Namespace WinForms
             Return imgBox
         End Function
 
-
+        ''' <summary>
+        ''' Gets or sets the path of the image that is displayed in the control.
+        ''' </summary>
+        ''' <param name="formName"></param>
+        ''' <param name="ImageBoxName"></param>
+        ''' <returns></returns>
         <ExProperty>
         Public Shared Function GetFileName(formName As Primitive, ImageBoxName As Primitive) As Primitive
             App.Invoke(
@@ -50,7 +55,6 @@ Namespace WinForms
                 End Sub)
         End Function
 
-
         <ExProperty>
         Public Shared Sub SetFileName(formName As Primitive, ImageBoxName As Primitive, imageFile As Primitive)
             App.Invoke(
@@ -67,7 +71,6 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Sub
-
 
 
         ''' <summary>

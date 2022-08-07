@@ -37,18 +37,29 @@ Namespace WinForms
         ''' <returns></returns>
         Public Shared Property Handled As Primitive
 
+        ''' <summary>
+        ''' Returns the last Key pressed on the keyboard. 
+        ''' Use The Keys enum members to check they key.
+        ''' Examle: If Event.LastKey = Keys.A Then
+        ''' </summary>
         Public Shared ReadOnly Property LastKey As Primitive
             Get
                 Return Keyboard.LastKey
             End Get
         End Property
 
+        ''' <summary>
+        ''' returns the last text that was about to be written to the TextBox
+        ''' </summary>
         Public Shared ReadOnly Property LastTextInput As Primitive
             Get
                 Return Keyboard.LastTextInput
             End Get
         End Property
 
+        ''' <summary>
+        ''' Returns the name of the last key pressed on the keyboard.
+        ''' </summary>
         Public Shared ReadOnly Property LastKeyName As Primitive
             Get
                 Return Keyboard.LastKeyName

@@ -16,6 +16,9 @@ Namespace WinForms
             Return t
         End Function
 
+        ''' <summary>
+        ''' Gets or sets the text that is displayed on the label
+        ''' </summary>
         <ExProperty>
         Public Shared Function GetText(formName As Primitive, textBoxName As Primitive) As Primitive
             App.Invoke(
@@ -40,6 +43,9 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Set this property to True  to allow the user to write more than one line in the TextBox
+        ''' </summary>
         <ExProperty>
         Public Shared Function GetMuliLine(formName As Primitive, textBoxName As Primitive) As Primitive
             App.Invoke(
@@ -64,7 +70,11 @@ Namespace WinForms
                 End Sub)
         End Sub
 
-
+        ''' <summary>
+        ''' Selscts a part ot the text deisplayed in the TextBox.
+        ''' </summary>
+        ''' <param name="startPos">the pos of the first character you want to select</param>
+        ''' <param name="length">the number of characters you want to select</param>
         <ExMethod>
         Public Shared Sub [Select](formName As Primitive, textBoxName As Primitive, startPos As Primitive, length As Primitive)
             App.Invoke(
@@ -83,6 +93,9 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Selects all the text displayed in the TextBox
+        ''' </summary>
         <ExMethod>
         Public Shared Sub SelectAll(formName As Primitive, textBoxName As Primitive)
             App.Invoke(
@@ -95,6 +108,9 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Fired when the text is changed.
+        ''' </summary>
         Public Shared Custom Event OnTextChanged As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Try
@@ -112,6 +128,11 @@ Namespace WinForms
             End RaiseEvent
         End Event
 
+        ''' <summary>
+        ''' Fired when before text is written to thee TextBox. 
+        ''' Use Event.LastTextInput to get this text.
+        ''' Use Event.Handled = True if you want to cancel writing this text to the TexBox. 
+        ''' </summary>
         Public Shared Custom Event OnTextInput As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Try
@@ -122,7 +143,7 @@ Namespace WinForms
                     AddHandler VisualElement.PreviewKeyDown,
                         Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
                             If e.Key = Keys.Space Then
-                                Keyboard._lastTextInput = " "
+                                Keyboard._LastTextInput = " "
                                 [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                             End If
                         End Sub

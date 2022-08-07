@@ -8,18 +8,39 @@
 - SB Code Enhancements:
 - ToDo:
 
-# What's new Ver 1.3.5:
-- Use the vb lookup operator to crate dynamic properties:
+# What's new in sVB v1.4
+1. Many enhancements in the WinForms controls and bug fixes.
 
-```VB
-Student!ID = 1
-Student!Name = "Adam"
+2. You can split the code line over multi-lines by using the _ symbol at the end of each line segment. ex:
+```VB..NET
+Dim x = "First Line" + _
+            "Second Line"
 ```
 
-This is a shorter alternative to using the Data naming convention (see more details at the end of the file):
+You can use _ at any position expet before of after the dot `.`.
+
+3. You can also split the line at some positions without using the _ . These positions are:
+- after the following symbols: `,`, `=`, `+`, `-`, `*`. `/`, `(`, `[`, `{`.
+- before the following symbols: `+`, `-`, `*`. `/`, `)`, `]`, `}`.
+
+Ex:
 ```VB
-StudentData.ID = 1
-StudentData.Name = "Adam"
+x = y 
+   + Text.GetSubText(
+      "some text",
+      6,
+      3
+)
+```
+
+4. You can add comments at the end of any line segment. Ex:
+```VB
+Function Add(  ' Adds two numbers
+   a, _   ' first number
+   b      ' second number
+)
+   Return a + b 
+EndFunction
 ```
 
 # Small Visual Basic (sVB):
@@ -153,7 +174,7 @@ In the case of nested 2 loops of any kind, you can exit the outer loop by using 
 
 4. You can use `Me` to refer to the current Form.
 
-5. True and False are keywords of sVB.
+5. 'True' and 'False' are keywords of sVB.
 
 6. Subroutines can have parameters now:
 ```vb
@@ -199,7 +220,7 @@ So, as a good practice:
 11. Using naming convention to give sVB some info about the var type so it can make using them easier. 
 - The first naming convention: Any var ends with or starts with a control name (like Form1 or myLabel) will be treated as a Label, so you can use the short syntax Control.Property and the auto completion list will appear to help you complete method and properties names.
 
-- The second naming convention: Any var ends with or starts with the word  Data is treated as a dynamic object, and you can add properties to it, and get auto completion support when you use them.
+- The second naming convention: Any var ends with or starts with the word Data is treated as a dynamic object, and you can add properties to it, and get auto completion support when you use them.
 ```
 CarData.Color = Color.Red
 CarData.Speed = 100
@@ -221,6 +242,19 @@ Car2Data.Acceleration = 10
 ```
 
 And if you use `MyCar2Data` you will inherit all properties from `MyCarData`, `Car2Data` and `CarData`!
+
+12. Use the vb lookup operator to crate dynamic properties:
+
+```VB
+Student!ID = 1
+Student!Name = "Adam"
+```
+
+This is a shorter alternative to using the Data naming convention (see more details at the end of the file):
+```VB
+StudentData.ID = 1
+StudentData.Name = "Adam"
+```
 
 # ToDo:
 - Add more controls to the winForms library.

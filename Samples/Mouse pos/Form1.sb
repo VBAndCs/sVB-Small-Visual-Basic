@@ -1,9 +1,9 @@
-TextBox1.OnMouseMove = Form1_OnMouseMove
-TextBox2.OnMouseMove = Form1_OnMouseMove
-Label1.OnMouseMove = Form1_OnMouseMove
+TextBox1.OnMouseMove = OnMouseMove
+TextBox2.OnMouseMove = OnMouseMove
+Label1.OnMouseMove = OnMouseMove
 
 '----------------------------
-Sub Form1_OnMouseMove
+Sub OnMouseMove
    msg = "Pos relative to TextBox1: ("
    TextBox1.Text = msg + TextBox1.MouseX + "," + TextBox1.MouseY + ")"
    

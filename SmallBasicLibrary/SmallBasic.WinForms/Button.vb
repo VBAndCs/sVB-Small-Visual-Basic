@@ -15,6 +15,9 @@ Namespace WinForms
             Return t
         End Function
 
+        ''' <summary>
+        ''' Gets or sets the test that is displayed on the button
+        ''' </summary>
         <ExProperty>
         Public Shared Function GetText(formName As Primitive, buttonName As Primitive) As Primitive
             App.Invoke(

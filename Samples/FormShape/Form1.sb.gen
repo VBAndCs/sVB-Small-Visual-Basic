@@ -12,11 +12,12 @@ Form.AllowTransparency(Form1)
 Form.Show(Form1)
 
 '#Events{
-'    Form1: OnMouseMove
+'    Form1: OnMouseMove OnPreviewKeyDown
 '}
 
 ' Form1 Events:
 Control.HandleEvents(Form1, Form1)
 Control.OnMouseMove = Form1_OnMouseMove
+Control.OnPreviewKeyDown = Form1_OnPreviewKeyDown
 
 
