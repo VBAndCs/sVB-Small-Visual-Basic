@@ -75,8 +75,10 @@ Namespace Microsoft.Nautilus.Text.Projection.Implementation
             End Sub
 
             Public Sub RemoveSpan(span As ITextSpan)
-                Dim index As Integer = Find(span.TextBuffer)
-                If Threading.Interlocked.Decrement(_sourceBufferTrackers(index)._spanCount) = 0 Then
+                Dim index = Find(span.TextBuffer)
+                Dim tracker = _sourceBufferTrackers(index)
+                tracker._spanCount -= 1
+                If tracker._spanCount = 0 Then
                     _sourceBufferTrackers.RemoveAt(index)
                     _removedBuffers.Add(span.TextBuffer)
                 End If
@@ -118,7 +120,8 @@ Namespace Microsoft.Nautilus.Text.Projection.Implementation
             Dim list1 As New List(Of SnapshotSpan)
 
             For Each initialSourceSpan As ITextSpan In initialSourceSpans
-                AddSpan(Math.Min(Threading.Interlocked.Increment(num), num - 1), initialSourceSpan)
+                AddSpan(num, initialSourceSpan)
+                num += 1
                 list1.Add(New SnapshotSpan(initialSourceSpan.TextBuffer.CurrentSnapshot, initialSourceSpan.GetSpan(initialSourceSpan.TextBuffer.CurrentSnapshot)))
             Next
 
@@ -214,7 +217,8 @@ Namespace Microsoft.Nautilus.Text.Projection.Implementation
             Dim stringBuilder2 As New StringBuilder
             Dim num2 As Integer = position
             For Each item As ITextSpan In spansToInsert
-                AddSpan(Math.Min(Threading.Interlocked.Increment(num2), num2 - 1), item)
+                AddSpan(num2, item)
+                num2 += 1
                 stringBuilder2.Append(item.GetSpan(item.TextBuffer.CurrentSnapshot).GetText())
             Next
 
@@ -314,7 +318,8 @@ Namespace Microsoft.Nautilus.Text.Projection.Implementation
             Dim index As Integer = 0
             For Each change As ITextChange In e.Changes
                 While _value(index).Position <= change.Position
-                    num += _value(Math.Min(Threading.Interlocked.Increment(index), index - 1)).Delta
+                    num += _value(index).Delta
+                    index += 1
                 End While
                 _value.Insert(index, If((num <> 0), New TextChange(change.Position - num, change.OldText, change.NewText), change))
             Next

@@ -68,7 +68,8 @@ Namespace Microsoft.Nautilus.Text.Document
                             Return False
                         End If
 
-                        If Threading.Interlocked.Decrement(num) = 0 Then
+                        num -= 1
+                        If num = 0 Then
                             flag = True
                             Continue For
                         End If

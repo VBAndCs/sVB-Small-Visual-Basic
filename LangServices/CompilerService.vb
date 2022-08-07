@@ -133,7 +133,10 @@ Namespace Microsoft.SmallBasic.LanguageService
                         last -= 1
                     End If
 
-                    If last = -1 Then nextLineOffset = 0
+                    If last = -1 Then
+                        nextLineOffset = 0
+                        Continue For
+                    End If
 
                     Select Case tokens(last).Text
                         Case "_", ",", "+", "-", "*", "/"

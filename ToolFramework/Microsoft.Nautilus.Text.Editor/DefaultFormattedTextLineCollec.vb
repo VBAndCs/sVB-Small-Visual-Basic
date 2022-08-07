@@ -237,6 +237,7 @@ Namespace Microsoft.Nautilus.Text.Editor
             If position < 0 OrElse position > _textView.TextSnapshot.Length Then
                 Throw New ArgumentOutOfRangeException("position")
             End If
+
             Dim num As Integer = _textLines.Count - 1
             If num >= 0 Then
                 Dim val As T = _textLines(0)
@@ -255,7 +256,8 @@ Namespace Microsoft.Nautilus.Text.Editor
                         Dim textLine As ITextLine = _textLines(index)
 
                         If position < textLine.LineSpan.Start Then
-                            num = Threading.Interlocked.Decrement(index)
+                            index -= 1
+                            num = index
                             Continue Do
                         End If
 
@@ -318,7 +320,8 @@ Namespace Microsoft.Nautilus.Text.Editor
                         index = (num2 + num) \ 2
                         Dim textLine As ITextLine = _textLines(index)
                         If y < textLine.Top Then
-                            num = Threading.Interlocked.Decrement(index)
+                            index -= 1
+                            num = index
                             Continue Do
                         End If
 

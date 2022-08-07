@@ -42,7 +42,8 @@ Namespace Microsoft.Nautilus.Text.StringRebuilder
             End Sub
 
             Public Function MoveNext() As Boolean Implements Collections.IEnumerator.MoveNext
-                Return Threading.Interlocked.Increment(_index) < _source.Length
+                _index += 1
+                Return _index < _source.Length
             End Function
 
             Public Sub Reset() Implements Collections.IEnumerator.Reset

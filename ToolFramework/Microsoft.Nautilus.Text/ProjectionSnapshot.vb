@@ -295,7 +295,8 @@ Namespace Microsoft.Nautilus.Text
             Dim num As Integer = 0
             Dim num2 As Integer = position
 
-            While Math.Max(Threading.Interlocked.Decrement(num2), num2 + 1) > 0
+            While num2 > 0
+                num2 -= 1
                 Select Case Me(num2)
                     Case vbLf(0), vbVerticalTab(0), vbFormFeed(0), ChrW(&H85)
                         num = num2 + 1

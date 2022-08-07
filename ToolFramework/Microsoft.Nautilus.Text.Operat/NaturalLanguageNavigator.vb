@@ -118,11 +118,13 @@ Namespace Microsoft.Nautilus.Text.Operations
             Dim start1 As Integer = snapshotLine.Start
             Dim num As Integer = currentPosition
 
-            While Threading.Interlocked.Increment(num) - start1 < bufferLineText.Length
+            Do
+                num += 1
+                If num - start1 >= bufferLineText.Length Then Exit Do
                 If GetCharacterType(bufferLineText(num - start1)) <> baseType Then
                     Return num
                 End If
-            End While
+            Loop
 
             If num = snapshot1.Length Then
                 Return num
@@ -140,16 +142,18 @@ Namespace Microsoft.Nautilus.Text.Operations
         Private Function FindStartOfWord(currentPosition As Integer, snapshotLine As ITextSnapshotLine, bufferLineText As String, baseType As CharacterType) As Integer
             If currentPosition = 0 Then Return 0
 
-            Dim start1 As Integer = snapshotLine.Start
-            Dim num As Integer = currentPosition
+            Dim start As Integer = snapshotLine.Start
+            Dim pos As Integer = currentPosition
 
-            While Threading.Interlocked.Decrement(num) > start1
-                If GetCharacterType(bufferLineText(num - start1)) <> baseType Then
-                    Return num + 1
+            Do
+                pos -= 1
+                If pos <= start Then Exit Do
+                If GetCharacterType(bufferLineText(pos - start)) <> baseType Then
+                    Return pos + 1
                 End If
-            End While
+            Loop
 
-            Return start1
+            Return start
         End Function
     End Class
 End Namespace

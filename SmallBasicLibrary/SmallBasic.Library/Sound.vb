@@ -227,7 +227,9 @@ Namespace Library
             Dim length1 As Integer = song.Length
             While num < song.Length
                 Dim num2 As Integer = _defaultLength
-                Dim c As Char = song(Math.Min(Threading.Interlocked.Increment(num), num - 1))
+                Dim c As Char = song(num)
+                num += 1
+
                 If Char.IsLetter(c) Then
                     Dim text As New String(c, 1)
                     If num < length1 Then

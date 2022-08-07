@@ -140,7 +140,8 @@ Namespace Microsoft.Nautilus.Text
 
             If count > 0 Then
                 If count >= 2 AndAlso Char.IsHighSurrogate(block(count - 1)) Then
-                    _cachedSurrogate = block(Threading.Interlocked.Decrement(count))
+                    count -= 1
+                    _cachedSurrogate = block(count)
                 End If
 
                 _memoryStream.Position = 0L

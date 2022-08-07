@@ -42,7 +42,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Exit For
                 End If
 
-                buffer(index + i) = textSnapshot(Math.Min(Threading.Interlocked.Increment(current), current - 1))
+                buffer(index + i) = textSnapshot(current)
+                current += 1
             Next
 
             Return i
@@ -57,7 +58,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Exit For
                 End If
 
-                buffer(index + i) = textSnapshot(Math.Min(Threading.Interlocked.Increment(current), current - 1))
+                buffer(index + i) = textSnapshot(current)
+                current += 1
             Next
 
             Return i

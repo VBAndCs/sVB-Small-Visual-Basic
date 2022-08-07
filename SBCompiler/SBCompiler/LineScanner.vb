@@ -253,11 +253,12 @@ Namespace Microsoft.SmallBasic
 
         Private Shared Function GetNextChar() As Char
             If _currentIndex < _lineLength Then
-                Return _lineText(Math.Min(Threading.Interlocked.Increment(_currentIndex), _currentIndex - 1))
+                GetNextChar = _lineText(_currentIndex)
+            Else
+                GetNextChar = ChrW(0)
             End If
 
             _currentIndex += 1
-            Return VisualBasic.Strings.ChrW(0)
         End Function
 
         Private Shared Function ReadUntilNextSpace() As String

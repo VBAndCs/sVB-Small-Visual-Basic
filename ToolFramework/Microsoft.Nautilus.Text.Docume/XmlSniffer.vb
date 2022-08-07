@@ -99,15 +99,19 @@ Namespace Microsoft.Nautilus.Text.Document.Implementation
             Dim num2 As Integer = 0
 
             Do
-
-                If Char.ToLowerInvariant(ChrW(num)) <> text(Math.Min(Threading.Interlocked.Increment(num2), num2 - 1)) Then
+                If Char.ToLowerInvariant(ChrW(num)) <> text(num2) Then
+                    num2 += 1
                     Return False
                 End If
+
+                num2 += 1
                 If num2 = text.Length Then
                     Return True
                 End If
+
                 num = reader.Read()
             Loop While num <> -1
+
             Return False
         End Function
 

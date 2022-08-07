@@ -63,7 +63,8 @@ Namespace Microsoft.Nautilus.Text
                 If num4 > 0 Then
                     textChange1.Position += num
                     num += textChange1.Delta
-                    num2 = Math.Min(Threading.Interlocked.Increment(num3), num3 - 1)
+                    num2 = num3
+                    num3 += 1
                     Continue While
                 End If
 
