@@ -82,7 +82,7 @@
                                     <RowDefinition Height="Auto" MinHeight="6" />
                                     <RowDefinition Height="20" />
                                     <RowDefinition Height="*" />
-                                    <RowDefinition Height="Auto" MinHeight="6" />
+                                    <RowDefinition Height="20" MinHeight="6" />
                                 </Grid.RowDefinitions>
                                 <Border Name="border1" BorderThickness="1" CornerRadius="3" BorderBrush="#FFFFFFFF" Grid.ColumnSpan="3" Grid.RowSpan="6">
                                     <Border.Background>
@@ -168,7 +168,7 @@
                                                 </FrameworkElement.LayoutTransform>
                                             </ContentControl>
 
-                                            <Grid Width="40" Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                            <Grid Height="20" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                                                 <TextBlock 
                                                        FontFamily="Consolas" FontSize="18" 
                                                        Foreground="Gray" FontWeight="Bold" 
@@ -228,8 +228,10 @@
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeRightEdge" />
                                 <Rectangle Fill="#00FFFFFF" Height="6" Grid.Row="0" Grid.ColumnSpan="3" Cursor="SizeNS" 
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeTopEdge" />
+
                                 <Rectangle Fill="#00FFFFFF" Height="6" Grid.Row="3" Grid.ColumnSpan="3" Cursor="SizeNS" Margin="0,0,0,6"
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeBottomEdge" />
+                                
                                 <Rectangle Fill="#00FFFFFF" Grid.Column="0" Grid.Row="0" Cursor="SizeNWSE" 
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeTopLeftCorner" />
                                 <Rectangle Fill="#00FFFFFF" Grid.Column="2" Grid.Row="0" Cursor="SizeNESW" 

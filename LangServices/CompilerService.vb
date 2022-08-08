@@ -89,7 +89,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Dim tokens = LineScanner.GetTokens(lines(lineNum), (lineNum), lines)
 
                     If tokens.Count = 0 Then
-                        AdjustIndentation(textEdit, Line, indentationLevel, 0)
+                        AdjustIndentation(textEdit, line, indentationLevel, line.GetText.Length)
                         Continue For
                     End If
 
@@ -160,11 +160,16 @@ Namespace Microsoft.SmallBasic.LanguageService
                                 End If
 
                             Case Token.RightParens, Token.RightBracket, Token.RightCurlyBracket
-                                If indentStack.Count = 0 Then
-                                    subLineOffset = Math.Max(0, subLineOffset - 1)
-                                Else
-                                    indentStack.Pop()
-                                    subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), indentStack.Peek())
+                                If Not lineEnd Then
+                                    If indentStack.Count = 0 Then
+                                        subLineOffset = Math.Max(0, subLineOffset - 1)
+                                    Else
+                                        indentStack.Pop()
+                                        subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), indentStack.Peek())
+                                    End If
+
+                                ElseIf lineStart Then
+                                    subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), Math.Max(0, indentStack.Peek() - 1))
                                 End If
 
                                 If lineStart Then AdjustIndentation(textEdit, Line, indentationLevel + subLineOffset, t.Column)
@@ -196,6 +201,7 @@ CheckLineEnd:
                                 Else
                                     subLineOffset = indentStack.Peek()
                                 End If
+
                             Case "_", "+", "-", "*", "/", "and", "or"
                                 subLineOffset = Math.Max(1, subLineOffset)
                             Case "="
@@ -203,8 +209,9 @@ CheckLineEnd:
                             Case "(", "{", "["
                                 subLineOffset += 1
                                 indentStack.Push(subLineOffset)
+
                             Case ")", "}", "]"
-                                subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), indentStack.Pop())
+                                indentStack.Pop()
                         End Select
 
                     Next
