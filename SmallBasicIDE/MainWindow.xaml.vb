@@ -917,9 +917,8 @@ Namespace Microsoft.SmallBasic
                     If objId + 3 < tokens.Count AndAlso tokens(objId + 2).Token = Token.Identifier AndAlso tokens(objId + 3).Token = Token.LeftParens Then
                         ' Method Call
                         Dim method = tokens(objId + 2).Text
-                        Dim rParansPos As Integer = -1
                         Dim restText = line.Substring(tokens(objId + 3).Column + 1)
-                        Dim argsExprList = Parser.ParseArgumentList(restText, lineNum, lines, rParansPos)
+                        Dim argsExprList = Parser.ParseArgumentList(restText, lineNum, lines, Token.LeftParens)
                         If argsExprList Is Nothing Then
                             errors(i) = New [Error](err.Line, 0, methodPos, "Wrong brackets pairs")
                             Continue For

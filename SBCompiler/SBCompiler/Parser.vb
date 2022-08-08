@@ -669,21 +669,28 @@ Namespace Microsoft.SmallBasic
                           args As String,
                           lineNumber As Integer,
                           lines As List(Of String),
-                          <Out> ByRef rightParansPos As Integer
+                          openToken As Token
                     ) As List(Of Expression)
 
-            args = "(" + args
+            Dim closeToken As Token
+            Select Case openToken
+                Case Token.LeftParens
+                    args = "(" + args
+                    closeToken = Token.RightParens
+                Case Token.LeftBracket
+                    args = "[" + args
+                    closeToken = Token.RightBracket
+                Case Token.LeftCurlyBracket
+                    args = "{" + args
+                    closeToken = Token.RightCurlyBracket
+            End Select
+
             Dim tokens = LineScanner.GetTokenEnumerator(args, lineNumber, lines)
             tokens.MoveNext()
             Dim parser As New Parser()
-            Dim argExprs = parser.ParseCommaSepList(tokens, Token.RightParens, False)
+            Dim argExprs = parser.ParseCommaSepList(tokens, closeToken, False)
 
-            If parser.Errors.Count > 0 Then
-                rightParansPos = -1
-                Return Nothing
-            End If
-
-            rightParansPos = tokens.Current.Column
+            If parser.Errors.Count > 0 Then Return Nothing
             Return argExprs
         End Function
 
