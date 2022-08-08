@@ -211,7 +211,7 @@ CheckLineEnd:
                                 indentStack.Push(subLineOffset)
 
                             Case ")", "}", "]"
-                                indentStack.Pop()
+                                If indentStack.Count > 0 Then indentStack.Pop()
                         End Select
 
                     Next
