@@ -117,7 +117,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                             nextLineOffset = Math.Max(0, nextLineOffset - 1)
                             AdjustIndentation(textEdit, line, indentationLevel + nextLineOffset, nextPos)
 
-                        Case Token.Addition, Token.Subtraction, Token.Multiplication, Token.Division
+                        Case Token.Addition, Token.Subtraction, Token.Multiplication, Token.Division, Token.Or, Token.And
                             If nextLineOffset = 0 Then nextLineOffset = 1
                             AdjustIndentation(textEdit, line, indentationLevel + nextLineOffset, nextPos)
 
@@ -138,8 +138,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                         Continue For
                     End If
 
-                    Select Case tokens(last).Text
-                        Case "_", ",", "+", "-", "*", "/"
+                    Select Case tokens(last).NormalizedText
+                        Case "_", ",", "+", "-", "*", "/", "and", "or"
                             If nextLineOffset = 0 Then nextLineOffset = 1
                         Case "(", "{", "[", "="
                             nextLineOffset += 1

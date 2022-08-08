@@ -672,7 +672,9 @@ Namespace Microsoft.SmallBasic
                           <Out> ByRef rightParansPos As Integer
                     ) As List(Of Expression)
 
+            args = "(" + args
             Dim tokens = LineScanner.GetTokenEnumerator(args, lineNumber, lines)
+            tokens.MoveNext()
             Dim parser As New Parser()
             Dim argExprs = parser.ParseCommaSepList(tokens, Token.RightParens, False)
 

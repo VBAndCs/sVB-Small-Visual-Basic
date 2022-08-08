@@ -89,9 +89,9 @@ Namespace Microsoft.SmallBasic
                 If last = -1 Then Return False
             End If
 
-            Dim nextLineFirstToken = GetFirstToken(nextLine, 0).Text
+            Dim nextLineFirstToken = GetFirstToken(nextLine, 0).NormalizedText
 
-            Select Case tokens(last).Text
+            Select Case tokens(last).NormalizedText
                 Case "_"
                     If last = 0 OrElse tokens(last - 1).Text = "." OrElse nextLineFirstToken = "." Then
                         Return False
@@ -100,11 +100,11 @@ Namespace Microsoft.SmallBasic
                         comment -= 1
                     End If
 
-                Case ",", "{", "(", "[", "+", "-", "*", "\", "/", "="
+                Case ",", "{", "(", "[", "+", "-", "*", "\", "/", "=", "or", "and"
 
                 Case Else
                     Select Case nextLineFirstToken
-                        Case ")", "]", "}", "+", "-", "*", "\", "/"
+                        Case ")", "]", "}", "+", "-", "*", "\", "/", "or", "and"
 
                         Case Else
                             Return False

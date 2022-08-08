@@ -20,17 +20,20 @@ Dim x = "First Line" + _
 You can use _ at any position expet before of after the dot `.`.
 
 3. You can also split the line at some positions without using the _ . These positions are:
-- after the following symbols: `,`, `=`, `+`, `-`, `*`. `/`, `(`, `[`, `{`.
-- before the following symbols: `+`, `-`, `*`. `/`, `)`, `]`, `}`.
+- after the following symbols: `,`, `=`, `+`, `-`, `*`. `/`, `(`, `[`, `{`, `or`, `and`.
+- before the following symbols: `+`, `-`, `*`. `/`, `)`, `]`, `}`, `or`, `and`.
 
 Ex:
 ```VB
-x = y 
-   + Text.GetSubText(
-      "some text",
-      6,
-      3
-)
+If x = y or 
+    Text.GetSubText(
+       "some text",
+       6,
+       3
+   ) = "abc" Then
+
+   x = 0
+End If
 ```
 
 4. You can add comments at the end of any line segment. Ex:
