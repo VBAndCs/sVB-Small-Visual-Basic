@@ -172,7 +172,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub CreateProgramFile(ByVal filePath As String, ByVal parser As Parser, ByVal moduleName As String)
-            Using CSharpImpl.__Assign(writer, New StreamWriter(filePath))
+            Using writer As New StreamWriter(filePath)
                 writer.WriteLine("Module {0}", moduleName)
                 indentationLevel += 1
                 EmitVariableDeclarations(parser)
@@ -625,12 +625,5 @@ Namespace Microsoft.SmallBasic
             writer.WriteLine("End While")
         End Sub
 
-        Private Class CSharpImpl
-            <Obsolete("Please refactor calling code to use normal Visual Basic assignment")>
-            Shared Function __Assign(Of T)(ByRef target As T, value As T) As T
-                target = value
-                Return value
-            End Function
-        End Class
     End Class
 End Namespace

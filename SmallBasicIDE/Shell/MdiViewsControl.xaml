@@ -78,12 +78,14 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" MinWidth="6" />
                                 </Grid.ColumnDefinitions>
+                                
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" MinHeight="6" />
                                     <RowDefinition Height="20" />
                                     <RowDefinition Height="*" />
-                                    <RowDefinition Height="20" MinHeight="6" />
+                                    <RowDefinition Height="18" />
                                 </Grid.RowDefinitions>
+                                
                                 <Border Name="border1" BorderThickness="1" CornerRadius="3" BorderBrush="#FFFFFFFF" Grid.ColumnSpan="3" Grid.RowSpan="6">
                                     <Border.Background>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -159,7 +161,10 @@
                                         </Expander>
                                     </Grid>
                                 </DockPanel>
-                                <Border Name="contentBorder" BorderBrush="#FFFFFFFF" BorderThickness="1" CornerRadius="2" Grid.Column="1" Grid.Row="2">
+                                <Border Name="contentBorder"
+                                        BorderBrush="#FFFFFFFF" 
+                                        BorderThickness="1" CornerRadius="2" 
+                                        Grid.Column="1" Grid.Row="2">
                                     <Border BorderBrush="#999999" BorderThickness="1" CornerRadius="2">
                                         <Grid>
                                             <ContentControl Name="DocContent" Content="{Binding Path=Document, RelativeSource={RelativeSource TemplatedParent}}">
@@ -222,22 +227,32 @@
                                         </Grid>
                                     </Border>
                                 </Border>
+                                
                                 <Rectangle Fill="#00FFFFFF" Width="6" Grid.Column="0" Grid.RowSpan="4" Cursor="SizeWE" 
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeLeftEdge" />
+                                
                                 <Rectangle Fill="#00FFFFFF" Width="6" Grid.Column="2" Grid.RowSpan="4" Cursor="SizeWE" 
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeRightEdge" />
+                                
                                 <Rectangle Fill="#00FFFFFF" Height="6" Grid.Row="0" Grid.ColumnSpan="3" Cursor="SizeNS" 
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeTopEdge" />
 
-                                <Rectangle Fill="#00FFFFFF" Height="6" Grid.Row="3" Grid.ColumnSpan="3" Cursor="SizeNS" Margin="0,0,0,6"
-                                        MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeBottomEdge" />
+                                <Rectangle Fill="#00FFFFFF" Height="6" VerticalAlignment="Top"
+                                        Grid.Row="3" Grid.ColumnSpan="3" 
+                                        Cursor="SizeNS"
+                                        MouseDown="OnInitResize" 
+                                        MouseUp="OnEndResize" 
+                                        MouseMove="OnResizeBottomEdge" />
                                 
                                 <Rectangle Fill="#00FFFFFF" Grid.Column="0" Grid.Row="0" Cursor="SizeNWSE" 
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeTopLeftCorner" />
+                                
                                 <Rectangle Fill="#00FFFFFF" Grid.Column="2" Grid.Row="0" Cursor="SizeNESW" 
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeTopRightCorner" />
+                                
                                 <Rectangle Fill="#00FFFFFF" Grid.Column="0" Grid.Row="3" Cursor="SizeNESW" 
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeBottomLeftCorner" />
+                                
                                 <Rectangle Fill="#00FFFFFF" Grid.Column="2" Grid.Row="3" Cursor="SizeNWSE" 
                                         MouseDown="OnInitResize" MouseUp="OnEndResize" MouseMove="OnResizeBottomRightCorner" />
                             </Grid>
@@ -265,7 +280,7 @@
     </FrameworkElement.Resources>
     <Control.Template>
         <ControlTemplate>
-            <Canvas Name="MdiContainer" IsItemsHost="True" ClipToBounds="True" />
+            <Canvas Name="MdiContainer" IsItemsHost="True" ClipToBounds="True"/>
         </ControlTemplate>
     </Control.Template>
 </ItemsControl>

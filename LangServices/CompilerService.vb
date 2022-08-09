@@ -89,9 +89,11 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Dim tokens = LineScanner.GetTokens(lines(lineNum), (lineNum), lines)
 
                     If tokens.Count = 0 Then
-                        AdjustIndentation(textEdit, line, indentationLevel, line.GetText.Length)
+                        AdjustIndentation(textEdit, line, indentationLevel, lines(lineNum).Length)
                         Continue For
                     End If
+
+                    FormatLine(textEdit, line, tokens, 0)
 
                     Dim firstCharPos = tokens(0).Column
 
@@ -144,6 +146,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                             lineStart = True
                             lineNum += 1
                             line = currentSnapshot.Lines(lineNum + start)
+                            FormatLine(textEdit, line, tokens, i)
                         Else
                             lineStart = False
                         End If
@@ -258,6 +261,111 @@ CheckLineEnd:
             Return text.LineCount - 1
         End Function
 
+
+        Private Sub FormatLine(
+                         textEdit As ITextEdit,
+                         line As ITextSnapshotLine,
+                         tokens As List(Of TokenInfo),
+                         startAt As Integer
+                    )
+
+            Dim text = line.GetText()
+            Dim textLen = text.Length
+            Dim endAt = tokens.Count - 1
+
+            Dim subLine = tokens(startAt).subLine
+
+            For i = startAt To endAt
+                Dim t = tokens(i)
+                If t.subLine <> subLine Then Return
+
+                Dim notFirstToken = i > startAt
+                Dim notLastToken = i < endAt AndAlso tokens(i + 1).subLine = subLine
+
+                Select Case t.Token
+                    Case Token.Equals, Token.GreaterThan, Token.GreaterThanEqualTo, Token.LessThan, Token.LessThanEqualTo,
+                                   Token.And, Token.Or,
+                                   Token.Addition, Token.Subtraction, Token.Multiplication, Token.Division
+                        If notFirstToken Then FixSpaces(textEdit, line, tokens(i - 1), t, 1)
+                        If notLastToken Then FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+
+                    Case Token.LeftBracket, Token.LeftCurlyBracket, Token.LeftParens
+                        If notFirstToken Then
+                            Select Case tokens(i - 1).Token
+                                Case Token.Identifier, Token.LeftBracket, Token.LeftCurlyBracket, Token.LeftParens, Token.RightBracket, Token.RightCurlyBracket, Token.RightParens
+                                    FixSpaces(textEdit, line, tokens(i - 1), t, 0)
+                                Case Else
+                                    FixSpaces(textEdit, line, tokens(i - 1), t, 1)
+                            End Select
+                        End If
+
+                        If notLastToken Then FixSpaces(textEdit, line, t, tokens(i + 1), 0)
+
+                    Case Token.RightBracket, Token.RightCurlyBracket, Token.RightParens
+                        If notFirstToken Then FixSpaces(textEdit, line, tokens(i - 1), t, 0)
+                        If notLastToken Then
+                            Select Case tokens(i + 1).Token
+                                Case Token.Comma, Token.LeftBracket, Token.LeftCurlyBracket, Token.LeftParens, Token.RightBracket, Token.RightCurlyBracket, Token.RightParens
+                                    FixSpaces(textEdit, line, t, tokens(i + 1), 0)
+                                Case Else
+                                    FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+                            End Select
+                        End If
+
+                    Case Token.Comma
+                        If notFirstToken Then FixSpaces(textEdit, line, tokens(i - 1), t, 0)
+                        If notLastToken Then FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+
+                    Case Token.Identifier
+                        If notFirstToken Then
+                            Select Case tokens(i - 1).Token
+                                Case Token.Dot, Token.Lookup, Token.LeftBracket, Token.LeftCurlyBracket, Token.LeftParens
+                                    FixSpaces(textEdit, line, tokens(i - 1), t, 0)
+                                Case Else
+                                    FixSpaces(textEdit, line, tokens(i - 1), t, 1)
+                            End Select
+                        End If
+
+                        If notLastToken Then
+                            Select Case tokens(i + 1).Token
+                                Case Token.Dot, Token.Lookup, Token.Comma,
+                                        Token.LeftBracket, Token.LeftCurlyBracket, Token.LeftParens,
+                                        Token.RightBracket, Token.RightCurlyBracket, Token.RightParens
+                                    FixSpaces(textEdit, line, t, tokens(i + 1), 0)
+                                Case Else
+                                    FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+                            End Select
+                        End If
+
+                    Case Else
+                        If t.TokenType = TokenType.Keyword Then
+                            If notFirstToken Then FixSpaces(textEdit, line, tokens(i - 1), t, 1)
+                            If notLastToken Then FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+                        End If
+                End Select
+            Next
+        End Sub
+
+        Private Sub FixSpaces(
+                       textEdit As ITextEdit,
+                       line As ITextSnapshotLine,
+                       token1 As TokenInfo,
+                       token2 As TokenInfo,
+                       requiredSpaces As Integer
+                )
+
+            If token2.Token = Token.Comment Then Return
+
+            Dim spaces = token2.Column - token1.EndColumn
+            If spaces = requiredSpaces Then Return
+
+            Dim n = spaces - requiredSpaces
+            If n > 0 Then
+                textEdit.Replace(line.Start + token2.Column - n, n, "")
+            Else
+                textEdit.Insert(line.Start + token2.Column, Space(n * -1))
+            End If
+        End Sub
 
         Private Sub AdjustIndentation(textEdit As ITextEdit, line As ITextSnapshotLine, indentationLevel As Integer, nextPos As Integer)
             If indentationLevel < 0 Then indentationLevel = 0

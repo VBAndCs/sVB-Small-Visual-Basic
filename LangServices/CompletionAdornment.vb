@@ -6,14 +6,14 @@ Namespace Microsoft.SmallBasic.LanguageService
     Public NotInheritable Class CompletionAdornment
         Implements IAdornment
 
-        Private completionBagField As CompletionBag
+        Private _completionBag As CompletionBag
         Private textSpan As ITextSpan
 
         Public Property AdornmentProvider As CompletionAdornmentProvider
 
         Public ReadOnly Property CompletionBag As CompletionBag
             Get
-                Return completionBagField
+                Return _completionBag
             End Get
         End Property
 
@@ -32,7 +32,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                        replaceSpan As ITextSpan)
 
             _AdornmentProvider = provider
-            completionBagField = completionBag
+            _completionBag = completionBag
             textSpan = adornmentSpan
             _ReplaceSpan = replaceSpan
         End Sub

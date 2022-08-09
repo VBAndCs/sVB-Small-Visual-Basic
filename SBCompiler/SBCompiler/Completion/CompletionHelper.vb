@@ -7,6 +7,7 @@ Namespace Microsoft.SmallBasic.Completion
     Public Class CompletionHelper
         Private _compiler As Compiler
         Public Shared AutoCompletion As Boolean
+        Public Shared DoNotAddGlobals As Boolean
 
         Public Sub New()
             _compiler = New Compiler()
@@ -16,7 +17,12 @@ Namespace Microsoft.SmallBasic.Completion
             Return New CompletionBag(_compiler.TypeInfoBag, _compiler.Parser.SymbolTable)
         End Function
 
-        Public Function GetCompletionItems(source As TextReader, line As Integer, column As Integer) As CompletionBag
+        Public Function GetCompletionItems(
+                        source As TextReader,
+                        line As Integer,
+                        column As Integer
+                    ) As CompletionBag
+
             Completion.CompletionHelper.AutoCompletion = True
             _compiler.Compile(source)
             Completion.CompletionHelper.AutoCompletion = False
@@ -24,8 +30,8 @@ Namespace Microsoft.SmallBasic.Completion
             Dim emptyCompletionBag = GetEmptyCompletionBag()
             Dim statement As Statement = Nothing
 
-            For num = _compiler.Parser.ParseTree.Count - 1 To 0 Step -1
-                Dim statement2 = _compiler.Parser.ParseTree(num)
+            For i = _compiler.Parser.ParseTree.Count - 1 To 0 Step -1
+                Dim statement2 = _compiler.Parser.ParseTree(i)
 
                 If line >= statement2.StartToken.Line Then
                     statement = statement2
@@ -47,7 +53,13 @@ Namespace Microsoft.SmallBasic.Completion
             statement.PopulateCompletionItems(completionBag, line, column, globalScope:=True)
         End Sub
 
-        Public Shared Sub FillAllGlobalItems(completionBag As CompletionBag, inGlobalScope As Boolean)
+        Public Shared Sub FillAllGlobalItems(
+                               completionBag As CompletionBag,
+                               inGlobalScope As Boolean
+                         )
+
+            If DoNotAddGlobals Then Return
+
             FillExpressionItems(completionBag)
             FillAllKeywords(completionBag)
             FillSubroutines(completionBag)

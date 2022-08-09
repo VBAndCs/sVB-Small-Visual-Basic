@@ -135,10 +135,10 @@ Namespace Microsoft.SmallBasic.LanguageService
                     CompletionPopup.HorizontalOffset = characterBounds.Left
                     UnfadeCompletionList()
                     BuildFilteredCompletionList()
-                    Dim selectedItemIndex As Integer = GetSelectedItemIndex()
+                    Dim index As Integer = GetSelectedItemIndex()
                     CompletionListBox.ItemsSource = filteredCompletionItems
                     CompletionPopup.IsOpen = True
-                    CompletionListBox.SelectedIndex = selectedItemIndex
+                    CompletionListBox.SelectedIndex = index
                 End If
             End If
         End Sub
@@ -167,11 +167,16 @@ Namespace Microsoft.SmallBasic.LanguageService
                 End If
             Next
 
-            For Each item2 In completionItems
-                If CanAddItem(item2) Then
-                    If filteredCompletionItems.Count < 8 Then filteredCompletionItems.Add(New CompletionItemWrapper(item2))
-                End If
-            Next
+            Do
+                Dim n = filteredCompletionItems.Count
+                If n > 7 Then Exit Do
+
+                For Each item In completionItems
+                    If CanAddItem(item) Then filteredCompletionItems.Add(
+                            New CompletionItemWrapper(item))
+                Next
+                If filteredCompletionItems.Count = n Then Exit Do
+            Loop
         End Sub
 
         Private Function GetUniqueItems(ByVal completionItems As CompletionItem()) As List(Of CompletionItem)

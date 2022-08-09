@@ -20,18 +20,22 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dispatcher.BeginInvoke(CType(Sub() ArrangeItems(), Action))
         End Sub
 
-        Protected Overrides Sub OnItemsSourceChanged(ByVal oldValue As IEnumerable, ByVal newValue As IEnumerable)
+        Protected Overrides Sub OnItemsSourceChanged(
+                         oldValue As IEnumerable,
+                         newValue As IEnumerable
+                    )
+
             _itemContainerMap.Clear()
 
             If _itemsHost IsNot Nothing Then
                 _itemsHost.Children.Clear()
             End If
 
-            Dim num = 0
+            Dim index = 0
 
             For Each item In newValue
-                _itemContainerMap(num) = New CircularListItem(Me, num) With {.Content = item}
-                num += 1
+                _itemContainerMap(index) = New CircularListItem(Me, index) With {.Content = item}
+                index += 1
             Next
 
             SelectedIndex = 0
@@ -40,25 +44,13 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Public Sub MoveUp()
             If Not _isAnimating Then
-                Dim num = SelectedIndex - 1
-
-                If num < 0 Then
-                    num = Items.Count - 1
-                End If
-
-                SelectedIndex = num
+                SelectedIndex = If(SelectedIndex > 0, SelectedIndex - 1, Items.Count - 1)
             End If
         End Sub
 
         Public Sub MoveDown()
             If Not _isAnimating Then
-                Dim num = SelectedIndex + 1
-
-                If num > Items.Count - 1 Then
-                    num = 0
-                End If
-
-                SelectedIndex = num
+                SelectedIndex = If(SelectedIndex < Items.Count - 1, SelectedIndex + 1, 0)
             End If
         End Sub
 
@@ -70,11 +62,8 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Private Sub ArrangeItems()
-            Dim _moveDirection = MoveDirection.Up
-
-            If _oldSelectionIndex > SelectedIndex Then
-                _moveDirection = MoveDirection.Down
-            End If
+            Dim _moveDirection = If(_oldSelectionIndex > SelectedIndex,
+                 MoveDirection.Down, MoveDirection.Up)
 
             _oldSelectionIndex = SelectedIndex
             Dim list As New List(Of Integer)()
@@ -92,81 +81,100 @@ Namespace Microsoft.SmallBasic.LanguageService
             Next
         End Sub
 
-        Private Sub HideItem(ByVal itemIndex As Integer, ByVal moveDirection As MoveDirection)
+        Private Sub HideItem(itemIndex As Integer, moveDirection As MoveDirection)
             Dim value As CircularListItem = Nothing
             _itemContainerMap.TryGetValue(itemIndex, value)
 
             If value IsNot Nothing AndAlso _itemsHost IsNot Nothing Then
                 value.Scale = 0.1
-                Dim num = Canvas.GetTop(value)
+                Dim top = Canvas.GetTop(value)
 
-                If Double.IsNaN(num) Then
-                    num = 0.0
-                End If
+                If Double.IsNaN(top) Then top = 0.0
 
                 If moveDirection = MoveDirection.Up Then
-                    DoubleAnimateProperty(value, Canvas.TopProperty, num, -18.0, 100.0)
+                    DoubleAnimateProperty(value, Canvas.TopProperty, top, -18.0, 100.0)
                 Else
-                    DoubleAnimateProperty(value, Canvas.TopProperty, num, ActualHeight + 18.0, 100.0)
+                    DoubleAnimateProperty(value, Canvas.TopProperty, top, ActualHeight + 18.0, 100.0)
                 End If
 
                 _itemsHost.Children.Remove(value)
             End If
         End Sub
 
-        Private Function ArrangeItem(relIndex As Integer, moveDirection As MoveDirection, ByRef top As Double) As Integer
-            Dim num = SelectedIndex + relIndex
+        Private Function ArrangeItem(
+                     relIndex As Integer,
+                     moveDirection As MoveDirection,
+                     ByRef top As Double
+                  ) As Integer
 
-            If num < 0 Then
-                num = Items.Count + num
-            ElseIf num > Items.Count - 1 Then
-                num -= Items.Count
+            Dim index = SelectedIndex + relIndex
+
+            If index < 0 Then
+                index = Items.Count + index
+            ElseIf index > Items.Count - 1 Then
+                index -= Items.Count
             End If
 
-            Dim value As CircularListItem = Nothing
-            _itemContainerMap.TryGetValue(num, value)
+            Dim item As CircularListItem = Nothing
+            _itemContainerMap.TryGetValue(index, item)
 
-            If value IsNot Nothing AndAlso _itemsHost IsNot Nothing Then
-                If Not _itemsHost.Children.Contains(value) Then
-                    _itemsHost.Children.Add(value)
+            If item IsNot Nothing AndAlso _itemsHost IsNot Nothing Then
+                If Not _itemsHost.Children.Contains(item) Then
+                    _itemsHost.Children.Add(item)
                 End If
 
                 If relIndex = 0 Then
-                    TextBlock.SetFontWeight(value, FontWeights.Bold)
+                    TextBlock.SetFontWeight(item, FontWeights.Bold)
                 Else
-                    TextBlock.SetFontWeight(value, FontWeights.Normal)
+                    TextBlock.SetFontWeight(item, FontWeights.Normal)
                 End If
 
-                AnimateItem(value, relIndex, moveDirection, top)
+                AnimateItem(item, relIndex, moveDirection, top)
             End If
 
-            Return num
+            Return index
         End Function
 
-        Private Sub AnimateItem(ByVal cli As CircularListItem, ByVal relIndex As Integer, ByVal moveDirection As MoveDirection, ByRef top As Double)
-            Dim num = 1.7 / Math.Pow(1.33, Math.Abs(relIndex))
-            Dim num2 = Canvas.GetTop(cli)
+        Private Sub AnimateItem(
+                        cli As CircularListItem,
+                        relIndex As Integer,
+                        moveDirection As MoveDirection,
+                        ByRef top As Double
+                  )
 
-            If Double.IsNaN(num2) OrElse num2 < 0.0 OrElse num2 > ActualHeight Then
-                num2 = If(moveDirection <> MoveDirection.Down, ActualHeight, (0.0 - cli.Height) * num)
+            Dim r = 1.7 / Math.Pow(1.33, Math.Abs(relIndex))
+            Dim cliTop = Canvas.GetTop(cli)
+
+            If Double.IsNaN(cliTop) OrElse cliTop < 0.0 OrElse cliTop > ActualHeight Then
+                cliTop = If(moveDirection <> MoveDirection.Down,
+                    ActualHeight, (0.0 - cli.Height) * r)
             End If
 
-            Dim num3 = Canvas.GetLeft(cli)
+            Dim cliLeft = Canvas.GetLeft(cli)
+            If Double.IsNaN(cliLeft) Then cliLeft = 0.0
 
-            If Double.IsNaN(num3) Then
-                num3 = 0.0
-            End If
-
-            DoubleAnimateProperty(cli, CircularListItem.ScaleProperty, cli.Scale, num, 100.0)
-            DoubleAnimateProperty(cli, Canvas.TopProperty, num2, top, 100.0)
-            DoubleAnimateProperty(cli, Canvas.LeftProperty, num3, 12 - Math.Abs(relIndex) * 3, 100.0)
-            top += (cli.Height + 2.0) * num
+            DoubleAnimateProperty(cli, CircularListItem.ScaleProperty, cli.Scale, r, 100.0)
+            DoubleAnimateProperty(cli, Canvas.TopProperty, cliTop, top, 100.0)
+            DoubleAnimateProperty(cli, Canvas.LeftProperty, cliLeft, 12 - Math.Abs(relIndex) * 3, 100.0)
+            top += (cli.Height + 2.0) * r
         End Sub
 
-        Private Sub DoubleAnimateProperty(ByVal animatable As IAnimatable, ByVal [property] As DependencyProperty, ByVal start As Double, ByVal [end] As Double, ByVal timespan As Double)
+        Private Sub DoubleAnimateProperty(
+                       animatable As IAnimatable,
+                       [property] As DependencyProperty,
+                       start As Double,
+                       [end] As Double,
+                       time As Double)
+
             _isAnimating = True
-            Dim doubleAnimation As DoubleAnimation = New DoubleAnimation(start, [end], New Duration(System.TimeSpan.FromMilliseconds(timespan)))
-            AddHandler doubleAnimation.Completed, Sub() _isAnimating = False
+            Dim doubleAnimation As New DoubleAnimation(
+                    start, [end],
+                    New Duration(TimeSpan.FromMilliseconds(time))
+             )
+
+            AddHandler doubleAnimation.Completed,
+                        Sub() _isAnimating = False
+
             animatable.BeginAnimation([property], doubleAnimation)
         End Sub
 

@@ -170,12 +170,14 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim identifierToken = TokenInfo.Illegal
 
             Dim isLookup = (prevToken.Token = Token.Lookup)
+
             If prevToken.Token = Token.Dot OrElse isLookup Then
                 identifierToken = b4PrevToken
-
+                CompletionHelper.DoNotAddGlobals = True
             Else
                 isLookup = (currentToken.Token = Token.Lookup)
                 If currentToken.Token = Token.Dot OrElse isLookup Then
+                    CompletionHelper.DoNotAddGlobals = True
                     identifierToken = prevToken
                     Dim endColumn = currentToken.EndColumn
                     currentToken = TokenInfo.Illegal
@@ -196,11 +198,12 @@ Namespace Microsoft.SmallBasic.LanguageService
                                        Where name.ToLower().StartsWith(txt)
 
                         For Each name In controls
-                            newCompletionBag.CompletionItems.Add(New CompletionItem With {
+                            newCompletionBag.CompletionItems.Add(
+                                     New CompletionItem With {
                                            .DisplayName = name,
                                            .ItemType = CompletionItemType.Identifier,
                                            .ReplacementText = name
-                                       }
+                                     }
                                 )
                         Next
                     End If
@@ -208,7 +211,6 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             Else
                 Dim value As TypeInfo = Nothing
-
                 Dim name = identifierToken.NormalizedText
                 If newCompletionBag.TypeInfoBag.Types.TryGetValue(name, value) Then
                     CompletionHelper.FillMemberNames(newCompletionBag, value)
@@ -228,11 +230,18 @@ Namespace Microsoft.SmallBasic.LanguageService
             If addGlobals OrElse newCompletionBag Is Nothing OrElse newCompletionBag.CompletionItems.Count = 0 Then
                 If Not (currentToken.Token = Token.StringLiteral OrElse currentToken.Token = Token.Comment) Then
                     Dim source = New TextBufferReader(line.TextSnapshot)
-                    newCompletionBag.CompletionItems.AddRange(completionHelper.GetCompletionItems(source, line.LineNumber, column).CompletionItems)
+                    newCompletionBag.CompletionItems.AddRange(
+                           completionHelper.GetCompletionItems(
+                                    source, line.LineNumber, column
+                            ).CompletionItems)
                 End If
             End If
 
-            newCompletionBag.CompletionItems.Sort(Function(ci1, ci2) ci1.DisplayName.CompareTo(ci2.DisplayName))
+            newCompletionBag.CompletionItems.Sort(
+                   Function(ci1, ci2) ci1.DisplayName.CompareTo(ci2.DisplayName))
+
+            CompletionHelper.DoNotAddGlobals = False
+
             Return newCompletionBag
         End Function
 
@@ -259,10 +268,12 @@ Namespace Microsoft.SmallBasic.LanguageService
             adornment = New CompletionAdornment(Me, completionBag, adornmentSpan, textSpan)
 
             If AdornmentsChangedEvent IsNot Nothing Then
-                Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, CType(Function()
-                                                                                           RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(adornmentSpan))
-                                                                                           Return Nothing
-                                                                                       End Function, DispatcherOperationCallback), Nothing)
+                Application.Current.Dispatcher.Invoke(
+                    DispatcherPriority.Normal, CType(
+                    Function()
+                        RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(adornmentSpan))
+                        Return Nothing
+                    End Function, DispatcherOperationCallback), Nothing)
             End If
         End Sub
 
@@ -285,8 +296,6 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             Return TokenInfo.Illegal
         End Function
-
-
 
         Private Shared CompletionItems As New Dictionary(Of String, List(Of CompletionItem))
 

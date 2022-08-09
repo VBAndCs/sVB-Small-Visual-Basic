@@ -11,7 +11,7 @@ Imports System.Windows.Media
 Imports System.Windows.Media.Imaging
 
 Namespace Microsoft.SmallBasic.Utility
-    Public Partial Class MessageBox
+    Partial Public Class MessageBox
         Inherits Window
         Implements INotifyPropertyChanged, IComponentConnector
 
@@ -153,17 +153,18 @@ Namespace Microsoft.SmallBasic.Utility
                 Me.iconImageControl.Visibility = Visibility.Collapsed
             End If
 
-            Dim button As Button = Me.closeButton
-            Dim button2 As Button = Me.cancelButton
-            Dim button3 As Button = Me.retryButton
-            Dim button4 As Button = Me.noButton
-            Dim button5 As Button = Me.yesButton
-            Dim visibility2 As Visibility = CSharpImpl.__Assign(Me.okButton.Visibility, Visibility.Collapsed)
-            Dim visibility4 As Visibility = CSharpImpl.__Assign(button5.Visibility, visibility2)
-            Dim visibility6 As Visibility = CSharpImpl.__Assign(button4.Visibility, visibility4)
-            Dim visibility8 As Visibility = CSharpImpl.__Assign(button3.Visibility, visibility6)
-            Dim visibility10 As Visibility = CSharpImpl.__Assign(button2.Visibility, visibility8)
-            button.Visibility = visibility10
+            Dim button = Me.closeButton
+            Dim button2 = Me.cancelButton
+            Dim button3 = Me.retryButton
+            Dim button4 = Me.noButton
+            Dim button5 = Me.yesButton
+
+            Me.okButton.Visibility = Visibility.Collapsed
+            button5.Visibility = Visibility.Collapsed
+            button4.Visibility = Visibility.Collapsed
+            button3.Visibility = Visibility.Collapsed
+            button2.Visibility = Visibility.Collapsed
+            button.Visibility = Visibility.Collapsed
 
             If (notificationButtonsField And NotificationButtons.Close) = NotificationButtons.Close Then
                 Me.closeButton.Visibility = Visibility.Visible
@@ -306,12 +307,5 @@ Namespace Microsoft.SmallBasic.Utility
             MyBase.OnSourceInitialized(e)
         End Sub
 
-        Private Class CSharpImpl
-            <Obsolete("Please refactor calling code to use normal Visual Basic assignment")>
-            Shared Function __Assign(Of T)(ByRef target As T, value As T) As T
-                target = value
-                Return value
-            End Function
-        End Class
     End Class
 End Namespace
