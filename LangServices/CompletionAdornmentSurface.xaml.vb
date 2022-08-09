@@ -14,12 +14,12 @@ Imports Microsoft.SmallBasic.Completion
 Imports Microsoft.SmallBasic.Library
 
 Namespace Microsoft.SmallBasic.LanguageService
-    Public Partial Class CompletionAdornmentSurface
+    Partial Public Class CompletionAdornmentSurface
         Inherits Canvas
         Implements IAdornmentSurface
 
         Private textView As IAvalonTextView
-        Private adornmentField As CompletionAdornment
+        Private _adornment As CompletionAdornment
         Private filteredCompletionItems As List(Of CompletionItemWrapper)
 
         Public ReadOnly Property CanNegotiateSurfaceSpace As Boolean Implements IAdornmentSurface.CanNegotiateSurfaceSpace
@@ -48,7 +48,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Public ReadOnly Property Adornment As CompletionAdornment
             Get
-                Return adornmentField
+                Return _adornment
             End Get
         End Property
 
@@ -72,7 +72,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Public Sub AddAdornment(adornment As IAdornment) Implements IAdornmentSurface.AddAdornment
-            adornmentField = TryCast(adornment, CompletionAdornment)
+            _adornment = TryCast(adornment, CompletionAdornment)
             Dispatcher.BeginInvoke(
                     DispatcherPriority.Normal,
                     CType(Function()
@@ -84,7 +84,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Public Sub RemoveAdornment(adornment As IAdornment) Implements IAdornmentSurface.RemoveAdornment
-            adornmentField = Nothing
+            _adornment = Nothing
             CompletionPopup.IsOpen = False
         End Sub
 
@@ -107,8 +107,8 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Private Sub OnCompletionClosed(sender As Object, e As EventArgs)
-            If adornmentField IsNot Nothing Then
-                adornmentField.Dismiss(force:=False)
+            If _adornment IsNot Nothing Then
+                _adornment.Dismiss(force:=False)
             End If
         End Sub
 
@@ -125,20 +125,22 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Private Sub DisplayListBox()
-            If adornmentField IsNot Nothing Then
-                Dim span As Span = adornmentField.ReplaceSpan.GetSpan(textView.TextSnapshot)
-                Dim textLineContainingPosition = textView.FormattedTextLines.GetTextLineContainingPosition(span.Start)
+            If _adornment IsNot Nothing Then
+                Dim span As Span = _adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
+                Dim textLine = textView.FormattedTextLines.GetTextLineContainingPosition(span.Start)
 
-                If textLineContainingPosition IsNot Nothing Then
-                    Dim characterBounds = textLineContainingPosition.GetCharacterBounds(span.Start)
-                    Me.completionPopup.VerticalOffset = characterBounds.Bottom
+                If textLine IsNot Nothing Then
+                    Dim characterBounds = textLine.GetCharacterBounds(span.Start)
+                    Me.CompletionPopup.VerticalOffset = characterBounds.Bottom
                     CompletionPopup.HorizontalOffset = characterBounds.Left
                     UnfadeCompletionList()
                     BuildFilteredCompletionList()
-                    Dim index As Integer = GetSelectedItemIndex()
-                    CompletionListBox.ItemsSource = filteredCompletionItems
-                    CompletionPopup.IsOpen = True
-                    CompletionListBox.SelectedIndex = index
+                    Dim index = GetSelectedItemIndex()
+                    If index > -1 Then
+                        CompletionListBox.ItemsSource = filteredCompletionItems
+                        CompletionPopup.IsOpen = True
+                        CompletionListBox.SelectedIndex = index
+                    End If
                 End If
             End If
         End Sub
@@ -159,7 +161,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Private Sub BuildFilteredCompletionList()
             filteredCompletionItems = New List(Of CompletionItemWrapper)()
-            Dim completionItems = adornmentField.CompletionBag.CompletionItems
+            Dim completionItems = _adornment.CompletionBag.CompletionItems
 
             For Each item In completionItems
                 If CanAddItem(item) Then
@@ -218,25 +220,23 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Function
 
         Private Function GetSelectedItemIndex() As Integer
-            Dim text = adornmentField.ReplaceSpan.GetText(adornmentField.ReplaceSpan.TextBuffer.CurrentSnapshot)
+            Dim text = _adornment.ReplaceSpan.GetText(_adornment.ReplaceSpan.TextBuffer.CurrentSnapshot)
 
-            If text.Length = 0 Then
-                Return 0
-            End If
+            If text.Length = 0 Then Return 0
 
-            Dim num = 0
+            Dim lenght = 0
             Dim result = -1
 
             For i = 0 To filteredCompletionItems.Count - 1
                 Dim maxMatchLength As Integer = GetMaxMatchLength(filteredCompletionItems(i).Display.ToLowerInvariant(), text.ToLowerInvariant())
 
-                If maxMatchLength > num Then
-                    num = maxMatchLength
+                If maxMatchLength > lenght Then
+                    lenght = maxMatchLength
                     result = i
                 End If
             Next
 
-            If num < text.Length Then
+            If lenght < text.Length Then
                 result = -1
             End If
 
@@ -255,11 +255,11 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Function
 
         Private Sub OnCompletionListDoubleClicked(ByVal sender As Object, ByVal e As MouseButtonEventArgs)
-            If adornmentField IsNot Nothing Then
+            If _adornment IsNot Nothing Then
                 Dim completionItemWrapper As CompletionItemWrapper = TryCast(Me.CompletionListBox.SelectedItem, CompletionItemWrapper)
 
                 If completionItemWrapper IsNot Nothing Then
-                    adornmentField.AdornmentProvider.CommitItem(completionItemWrapper.CompletionItem)
+                    _adornment.AdornmentProvider.CommitItem(completionItemWrapper.CompletionItem)
                 End If
             End If
         End Sub

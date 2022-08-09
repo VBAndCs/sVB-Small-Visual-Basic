@@ -71,8 +71,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             If textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), completionSurface) AndAlso completionSurface.IsAdornmentVisible Then
                 Select Case args.Text
                     Case "+", "-", "*", "/", "="
-                        CommitConditionally(textView, completionSurface, " " & args.Text & " ")
-                        args.Handled = True
+                        args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ")
 
                     Case "!"
                         CommitConditionally(textView, completionSurface)
@@ -89,7 +88,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             MyBase.TextInputUpdate(textView, args)
         End Sub
 
-        Private Sub CommitConditionally(textView As IAvalonTextView, adornmentSurface As CompletionAdornmentSurface, Optional extraText As String = "")
+        Private Function CommitConditionally(textView As IAvalonTextView, adornmentSurface As CompletionAdornmentSurface, Optional extraText As String = "") As Boolean
             If adornmentSurface.CompletionListBox.SelectedItem IsNot Nothing Then
                 Dim editorOperations = EditorOperationsProvider.GetEditorOperations(textView)
                 Dim name = CType(adornmentSurface.CompletionListBox.SelectedItem, CompletionItemWrapper).Name
@@ -98,6 +97,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                     replaceSpan,
                     name & extraText,
                     UndoHistoryRegistry.GetHistory(textView.TextBuffer))
+
+                CommitConditionally = True
             End If
 
             If adornmentSurface.Adornment IsNot Nothing Then
@@ -105,7 +106,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
 
             textView.VisualElement.Focus()
-        End Sub
+        End Function
 
         Private Function CommitItem(textView As IAvalonTextView, adornmentSurface As CompletionAdornmentSurface) As Boolean
             Dim result = False

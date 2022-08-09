@@ -78,7 +78,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Public Function GetAdornments(span As SnapshotSpan) As IList(Of IAdornment) Implements IAdornmentProvider.GetAdornments
-            Dim list As List(Of IAdornment) = New List(Of IAdornment)()
+            Dim list As New List(Of IAdornment)()
 
             If adornment IsNot Nothing AndAlso adornment.Span.GetSpan(span.Snapshot).OverlapsWith(span) Then
                 list.Add(adornment)
@@ -282,7 +282,12 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Return line.TextSnapshot.CreateTextSpan(line.End, 0, SpanTrackingMode.EdgeInclusive)
             End If
 
-            Return line.TextSnapshot.CreateTextSpan(line.Start + tokenInfo.Column, tokenInfo.Text.Length, SpanTrackingMode.EdgeInclusive)
+            Return line.TextSnapshot.CreateTextSpan(
+                line.Start + tokenInfo.Column,
+                tokenInfo.Text.Length,
+                SpanTrackingMode.EdgeInclusive
+           )
+
         End Function
 
         Private Function GetTokenInfo(tokenEnumerator As TokenEnumerator, column As Integer) As TokenInfo
