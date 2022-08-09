@@ -414,6 +414,8 @@ Namespace Microsoft.SmallBasic.Documents
 
         End Sub
 
+        Dim stopFormatingLine As Integer = -1
+
         Private Sub AutoCompleteBlock(
                              textView As IAvalonTextView,
                              line As ITextSnapshotLine,
@@ -472,7 +474,7 @@ Namespace Microsoft.SmallBasic.Documents
                 Space(inden) & block.Replace("#", nl) & If(addBlockEnd AndAlso endBlock <> "", nl & endBlock & nl, ""), _undoHistory)
 
             textView.Caret.MoveTo(line.Start + inden + Len(keyword) + 1 + n)
-            CompilerService.FormatDocument(textView.TextBuffer, line.LineNumber)
+            stopFormatingLine = line.LineNumber
         End Sub
 
         Friend Sub Focus(Optional moveToStart As Boolean = False)
@@ -842,9 +844,10 @@ EndSub
             _formatting = True
             Dim textView = _editorControl.TextView
             Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
-            Dim lineNumber = textView.TextSnapshot.GetLineFromPosition(insertionIndex).LineNumber
-            CompilerService.FormatDocument(textView.TextBuffer, lineNumber)
+            Dim lineNumber = If(stopFormatingLine = -1, textView.TextSnapshot.GetLineFromPosition(insertionIndex).LineNumber, stopFormatingLine)
+            CompilerService.FormatDocument(textView.TextBuffer, lineNumber, stopFormatingLine = -1)
             _formatting = False
+            stopFormatingLine = -1
         End Sub
 
         Public Function FindEndSub(pos As Integer) As Integer

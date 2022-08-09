@@ -351,7 +351,7 @@ Namespace Microsoft.SmallBasic
             Dim current = tokenEnumerator.Current
             Dim tokenInfo As TokenInfo = tokenEnumerator.PeekNext()
 
-            If tokenInfo.Equals(TokenInfo.Illegal) Then
+            If tokenInfo.Token = Token.Illegal Then
                 AddError(tokenEnumerator.Current, ResourceHelper.GetString("UnrecognizedStatement"))
                 Dim leftValue = BuildIdentifierTerm(tokenEnumerator)
                 Return New AssignmentStatement() With {

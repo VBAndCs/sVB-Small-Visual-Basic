@@ -240,7 +240,8 @@ Namespace Microsoft.SmallBasic
                     Else
                         _currentIndex -= 1
                         Dim text3 As String = ReadUntilNextSpace()
-                        tokenInfo = TokenInfo.Illegal
+                        tokenInfo.Token = Token.Illegal
+                        tokenInfo.TokenType = TokenType.Illegal
                         tokenInfo.Text = text3
                     End If
 

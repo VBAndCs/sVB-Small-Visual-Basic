@@ -189,7 +189,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim newCompletionBag = completionHelper.GetEmptyCompletionBag()
             Dim addGlobals = False
 
-            If identifierToken.Token = TokenInfo.Illegal.Token Then
+            If identifierToken.Token = Token.Illegal Then
                 addGlobals = True
                 If ControlsInfo IsNot Nothing Then
                     Dim txt = currentToken.NormalizedText
