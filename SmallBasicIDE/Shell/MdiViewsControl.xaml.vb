@@ -340,7 +340,10 @@ Namespace Microsoft.SmallBasic.Shell
             For i = 0 To cmb.Items.Count - 1
                 Dim item = CType(cmb.ItemContainerGenerator.ContainerFromIndex(i), ComboBoxItem)
                 If item Is Nothing Then Return
-                item.FontWeight = If((isGlobal AndAlso i > 0) OrElse (Not isGlobal AndAlso events.Contains(cmb.Items(i))), FontWeights.Bold, FontWeights.Normal)
+                item.FontWeight = If((isGlobal AndAlso i > 1) OrElse
+                    (Not isGlobal AndAlso events.Contains(cmb.Items(i))),
+                    FontWeights.Bold, FontWeights.Normal
+                )
             Next
         End Sub
 

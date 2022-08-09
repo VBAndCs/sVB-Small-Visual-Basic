@@ -171,8 +171,10 @@ Namespace Microsoft.SmallBasic.Documents
             App.GlobalDomain.AddComponent(Me)
             App.GlobalDomain.Bind()
             _ControlNames.Add("(Global)")
-            _GlobalSubs.Add("(Add New Sub)")
-            _ControlEvents.Add("(Add New Sub)")
+            _GlobalSubs.Add(AddNewSub)
+            _GlobalSubs.Add(AddNewFunc)
+            _ControlEvents.Add(AddNewSub)
+            _ControlEvents.Add(AddNewFunc)
             ParseFormHints()
             UpdateGlobalSubsList()
         End Sub
@@ -630,7 +632,7 @@ Namespace Microsoft.SmallBasic.Documents
                         MdiView.CmbControlNames.SelectedIndex = 0
                     End If
                 End If
-                End If
+            End If
 
             Return hint.ToString()
         End Function
@@ -695,19 +697,32 @@ Namespace Microsoft.SmallBasic.Documents
             Return New TextDocument(filename)
         End Function
 
+        Private Const SubBodyLength As Integer = 19
+        Private Const AddNewSub As String = "(Add New Sub)"
         Private ReadOnly eventHandlerSub As String = vbCrLf & "
 '------------------------------------------------
-Sub #
+Sub #( )
    
 EndSub
 "
 
+        Private Const FuncBodyLength As Integer = 37
+        Private Const AddNewFunc As String  = "(Add New Function)"
+        Private ReadOnly globalFunc As String = vbCrLf & "
+'------------------------------------------------
+Function #( )
+   
+   Return 0
+EndFunction
+"
         Public Property IgnoreCaretPosChange As Boolean
 
         Public Function AddEventHandler(controlName As String, eventName As String) As Boolean
             Dim alreadyExists = False
             Dim isGlobal = (controlName = "(Global)")
-            Dim handlerName = If(isGlobal, "", controlName & "_") & If(eventName = "(Add New Sub)", "", eventName)
+            Dim handlerName = If(isGlobal, "", controlName & "_") &
+                        If(eventName.StartsWith("(Add New "), "", eventName)
+
             Dim pos = -1
             If handlerName = "" Then
                 pos = -1
@@ -733,29 +748,34 @@ EndSub
             If pos = -1 Then
                 caret.MoveTo(Me.Text.Length)
                 If handlerName = "" Then
-                    Dim NewName = "NewSub_"
+                    Dim isSub = (eventName = AddNewSub)
+                    Dim NewName = If(isSub, "NewSub_", "NewFunc_")
                     Dim n = 0
+                    Dim L = NewName.Length
                     Try
                         n = Aggregate s In _GlobalSubs
                                  Where s.StartsWith(NewName)
-                                 Let x = s.Substring(7)
+                                 Let x = s.Substring(L)
                                  Into Max(If(IsNumeric(x), CInt(x), 0))
-                    Catch ex As Exception
+                    Catch
                     End Try
 
                     handlerName = NewName & n + 1
-                    Dim handler = eventHandlerSub.Replace("#", handlerName)
+                    Dim name = If(isSub, eventHandlerSub, globalFunc)
+                    Dim handler = name.Replace("#", handlerName)
                     _GlobalSubs.Add(handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
-                    caret.MoveTo(Text.Length - 15)
+                    caret.MoveTo(Text.Length - If(isSub, SubBodyLength, FuncBodyLength))
                     SelectCurrentWord()
                     _ControlEvents.Add(handlerName)
+
                 Else
                     _EventHandlers(handlerName) = (controlName, eventName)
                     Dim handler = eventHandlerSub.Replace("#", handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
                     EnsureAtTop(Text.Length - 10)
                 End If
+
             Else
                 alreadyExists = True
                 caret.MoveTo(pos)
@@ -890,7 +910,8 @@ EndSub
 
         Public Sub UpdateGlobalSubsList()
             _GlobalSubs.Clear()
-            _GlobalSubs.Add("(Add New Sub)")
+            _GlobalSubs.Add(AddNewSub)
+            _GlobalSubs.Add(AddNewFunc)
 
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot

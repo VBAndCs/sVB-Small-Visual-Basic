@@ -359,6 +359,8 @@ Namespace Microsoft.Nautilus.Text.Editor
                 Throw New ArgumentNullException("textLine")
             End If
             If textLine.IsDisposed Then
+                Stop
+                Return -1
                 Throw New ObjectDisposedException("textLine")
             End If
 
