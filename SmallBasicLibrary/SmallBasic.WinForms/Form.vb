@@ -5,6 +5,7 @@ Imports System.Windows.Media
 
 Namespace WinForms
     <SmallBasicType>
+    <HideFromIntellisense>
     Public NotInheritable Class Form
 
         Shared Sub ShowSubError(formName As String, memberName As String, msg As String)

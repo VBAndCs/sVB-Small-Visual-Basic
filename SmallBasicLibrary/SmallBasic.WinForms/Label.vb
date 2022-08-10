@@ -5,6 +5,7 @@ Imports System.Windows.Media.Imaging
 
 Namespace WinForms
     <SmallBasicType>
+    <HideFromIntellisense>
     Public NotInheritable Class Label
 
         Private Shared Function GetLabel(formName As String, labelName As String) As Wpf.Label

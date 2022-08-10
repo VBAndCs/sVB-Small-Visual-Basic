@@ -4,6 +4,7 @@ Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     <SmallBasicType>
+    <HideFromIntellisense>
     Public NotInheritable Class Button
 
         Private Shared Function GetButton(formName As String, buttonName As String) As Wpf.Button

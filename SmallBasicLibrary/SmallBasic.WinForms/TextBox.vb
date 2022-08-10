@@ -5,6 +5,7 @@ Imports System.Windows
 
 Namespace WinForms
     <SmallBasicType>
+    <HideFromIntellisense>
     Public NotInheritable Class TextBox
 
         Private Shared Function GetTextBox(formName As String, textBoxName As String) As Wpf.TextBox

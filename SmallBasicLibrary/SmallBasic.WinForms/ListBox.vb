@@ -6,6 +6,7 @@ Imports System.Windows
 
 Namespace WinForms
     <SmallBasicType>
+    <HideFromIntellisense>
     Public NotInheritable Class ListBox
 
         Private Shared Function GetListBox(formName As String, ListBoxName As String) As Wpf.ListBox

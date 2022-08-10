@@ -45,6 +45,11 @@ Function Add(  ' Adds two numbers
    Return a + b 
 EndFunction
 ```
+5. Adding an `(Add new function)` command to the upper right dropdown list in the code editor
+
+6. Enhancing the auto completion list.
+
+7. Enhancing the auto formatting of code, to adjust indentation of sub lines, and adjust spaces between tokens.
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 

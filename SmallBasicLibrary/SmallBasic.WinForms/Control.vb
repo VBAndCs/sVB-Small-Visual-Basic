@@ -9,6 +9,7 @@ Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     <SmallBasicType>
+    <HideFromIntellisense>
     Public NotInheritable Class Control
         Shared Sub ShowSubError(formName As String, controlName As String, memberName As String, msg As String)
             If controlName.ToLower() = formName.ToLower Then

@@ -5,6 +5,7 @@ Imports System.Windows.Media.Imaging
 
 Namespace WinForms
     <SmallBasicType>
+    <HideFromIntellisense>
     Public NotInheritable Class ImageBox
 
         Private Shared Function GetImageBox(formName As String, imageBoxName As String) As Wpf.Image
