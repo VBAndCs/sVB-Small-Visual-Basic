@@ -329,7 +329,7 @@ Namespace Microsoft.Windows.Controls
         End Sub
 
 
-        Public Property WordHighlightingColor As Color = Colors.LightGray
+        Public Property WordHighlightingColor As Color = Colors.Gray
 
         Public Sub HighlightWords(ParamArray spans() As (Start As Integer, Lenght As Integer))
 
