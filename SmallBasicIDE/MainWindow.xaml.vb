@@ -359,7 +359,9 @@ Namespace Microsoft.SmallBasic
             Dim doc = ActiveDocument
             If doc IsNot Nothing Then
                 Dim editor = doc.EditorControl
-                If Not editor.ContainsWordHighlights Then
+                If editor.ContainsWordHighlights Then
+                    doc.WordsAreAlreadyHighlighed = True
+                Else
                     doc.HighlightEnclosingBlockKeywords()
                 End If
                 editor.SelectAnotherHighlightedWord(moveDown)

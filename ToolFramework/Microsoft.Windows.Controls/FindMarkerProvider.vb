@@ -21,6 +21,21 @@ Namespace Microsoft.Windows.Controls
             RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(marker.Span))
         End Sub
 
+        Public Function IsHighlighted(pos As Integer) As Boolean
+            Dim n = _findMarkerList.Count
+            If n = 0 Then Return False
+
+            Dim snapshot = _textView.TextSnapshot
+
+            For i = 0 To n - 1
+                Dim span = _findMarkerList(i).Span
+                Dim start = span.GetStartPoint(snapshot).Position
+                Dim [end] = span.GetEndPoint(snapshot).Position
+                If pos >= start AndAlso pos <= [end] Then Return True
+            Next
+            Return False
+        End Function
+
         Public Function GetFindMarker(moveDown As Boolean) As FindMarker
             Dim n = _findMarkerList.Count
             If n = 0 Then Return Nothing

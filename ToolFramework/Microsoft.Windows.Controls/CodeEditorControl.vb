@@ -31,7 +31,6 @@ Namespace Microsoft.Windows.Controls
         Private _isLineNumberMarginVisible As Boolean
         Private _marginTransform As New ScaleTransform(1.0, 1.0)
         Private _lineNumberMargin As Canvas
-
         Public ReadOnly Property ContainsHighlights As Boolean
 
         Public ReadOnly Property ContainsWordHighlights As Boolean
@@ -353,6 +352,11 @@ Namespace Microsoft.Windows.Controls
             _ContainsWordHighlights = True
         End Sub
 
+        Public Function IsHighlighted(pos As Integer) As Boolean
+            Dim provider = FindMarkerProvider.GetFindMarkerProvider(TextView)
+            Return provider.IsHighlighted(pos)
+        End Function
+
         Public Sub SelectAnotherHighlightedWord(moveDown As Boolean)
             If Not _ContainsWordHighlights Then Return
             Dim provider = FindMarkerProvider.GetFindMarkerProvider(TextView)
@@ -361,8 +365,6 @@ Namespace Microsoft.Windows.Controls
 
             Dim span = marker.Span
             TextView.Selection.ActiveSpan = span
-            TextView.Caret.MoveTo(span.GetEndPoint(TextView.TextSnapshot))
-            TextView.Caret.EnsureVisible()
             TextView.Caret.MoveTo(span.GetStartPoint(TextView.TextSnapshot))
             TextView.Caret.EnsureVisible()
         End Sub
@@ -425,6 +427,11 @@ Namespace Microsoft.Windows.Controls
         End Sub
 
         Private Sub OnSelectionChanged(sender As Object, e As EventArgs)
+            Dim span = _textView.Selection.ActiveSnapshotSpan
+            Dim pos = TextView.Caret.Position.TextInsertionIndex
+
+            If ContainsWordHighlights AndAlso IsHighlighted(pos) Then Return
+
             If HighlightSearchHits AndAlso _textView.Selection.ActiveSnapshotSpan.Length > 2 Then
                 Dim text As String = _textView.Selection.ActiveSnapshotSpan.GetText()
                 HighlightMatches(text, ignoreCase:=True)

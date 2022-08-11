@@ -179,6 +179,8 @@ Namespace Microsoft.SmallBasic.Documents
             UpdateGlobalSubsList()
         End Sub
 
+        Public WordsAreAlreadyHighlighed As Boolean
+
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
             If IgnoreCaretPosChange Or StillWorking Then Return
             EditorControl.Dispatcher.BeginInvoke(
@@ -207,7 +209,16 @@ Namespace Microsoft.SmallBasic.Documents
                                 End If
                             End If
                             _MdiView.FreezeCmbEvents = False
-                            HighLightMatchingPair()
+
+                            If WordsAreAlreadyHighlighed OrElse (
+                                        _editorControl.ContainsWordHighlights AndAlso
+                                        _editorControl.IsHighlighted(e.NewPosition.TextInsertionIndex)
+                                    ) Then
+                                WordsAreAlreadyHighlighed = False
+                            Else
+                                HighlightMatchingPair()
+                            End If
+
                             UpdateCaretPositionText()
 
                         Finally
@@ -290,7 +301,11 @@ Namespace Microsoft.SmallBasic.Documents
                         pair1Count += 1
                     Case matchingPair2
                         If pair1Count = 0 Then
-                            _editorControl.HighlightWords((index, 1), (i, 1))
+                            If index < i Then
+                                _editorControl.HighlightWords((index, 1), (i, 1))
+                            Else
+                                _editorControl.HighlightWords((i, 1), (index, 1))
+                            End If
                             Return
                         End If
                         pair1Count -= 1
