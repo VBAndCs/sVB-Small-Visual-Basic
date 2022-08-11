@@ -10,7 +10,6 @@ Namespace Microsoft.SmallBasic.Statements
     Public Class ForStatement
         Inherits LoopStatement
 
-        Public ForBody As New List(Of Statement)()
         Public InitialValue As Expression
         Public FinalValue As Expression
         Public StepValue As Expression
@@ -18,9 +17,38 @@ Namespace Microsoft.SmallBasic.Statements
         Public ForToken As TokenInfo
         Public ToToken As TokenInfo
         Public StepToken As TokenInfo
-        Public EndForToken As TokenInfo
         Public Subroutine As SubroutineStatement
         Public EqualsToken As TokenInfo
+
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If lineNumber > EndLoopToken.Line Then Return Nothing
+            If lineNumber <= Iterator.Line Then Return Me
+            If lineNumber <= EqualsToken.Line Then Return Me
+            If lineNumber <= InitialValue?.EndToken.Line Then Return Me
+            If lineNumber <= ToToken.Line Then Return Me
+            If lineNumber <= FinalValue?.EndToken.Line Then Return Me
+            If lineNumber <= StepToken.Line Then Return Me
+            If lineNumber <= StepValue?.EndToken.Line Then Return Me
+
+            For Each statment In Body
+                Dim st = statment.GetStatement(lineNumber)
+                If st IsNot Nothing Then Return st
+            Next
+
+            If lineNumber <= EndLoopToken.Line Then Return Me
+
+            Return Nothing
+        End Function
+
+        Public Overrides Function GetKeywords() As LegalTokens
+            Dim spans As New LegalTokens
+            spans.Add(ForToken)
+            spans.Add(ToToken)
+            spans.Add(StepToken)
+            spans.Add(EndLoopToken)
+            Return spans
+        End Function
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
@@ -28,7 +56,7 @@ Namespace Microsoft.SmallBasic.Statements
             ForToken.Parent = Me
             ToToken.Parent = Me
             StepToken.Parent = Me
-            EndForToken.Parent = Me
+            EndLoopToken.Parent = Me
             EqualsToken.Parent = Me
 
             If Iterator.Token <> Token.Illegal Then
@@ -54,14 +82,14 @@ Namespace Microsoft.SmallBasic.Statements
                 StepValue.AddSymbols(symbolTable)
             End If
 
-            For Each item In ForBody
+            For Each item In Body
                 item.Parent = Me
                 item.AddSymbols(symbolTable)
             Next
         End Sub
 
         Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
-            For Each item In ForBody
+            For Each item In Body
                 item.PrepareForEmit(scope)
             Next
         End Sub
@@ -101,7 +129,7 @@ Namespace Microsoft.SmallBasic.Statements
             scope.ILGenerator.Emit(OpCodes.Brfalse, ExitLabel)
             scope.ILGenerator.MarkLabel(loopBody)
 
-            For Each item In ForBody
+            For Each item In Body
                 item.EmitIL(scope)
             Next
 
@@ -148,7 +176,7 @@ Namespace Microsoft.SmallBasic.Statements
                 End If
 
             Else
-                Dim statementContaining = GetStatementContaining(ForBody, line)
+                Dim statementContaining = GetStatementContaining(Body, line)
                 CompletionHelper.FillKeywords(completionBag, Token.EndFor, Token.Next)
                 statementContaining?.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
             End If
@@ -164,11 +192,11 @@ Namespace Microsoft.SmallBasic.Statements
 
             stringBuilder.AppendLine()
 
-            For Each item In ForBody
+            For Each item In Body
                 stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {item})
             Next
 
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {EndForToken.Text})
+            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {EndLoopToken.Text})
             Return stringBuilder.ToString()
         End Function
     End Class

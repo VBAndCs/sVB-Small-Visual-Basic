@@ -140,6 +140,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                         CompletionListBox.ItemsSource = filteredCompletionItems
                         CompletionPopup.IsOpen = True
                         CompletionListBox.SelectedIndex = index
+                    Else
+                        _adornment.Dismiss(True)
                     End If
                 End If
             End If

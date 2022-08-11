@@ -14,6 +14,13 @@ Namespace Microsoft.SmallBasic.Statements
         Public EqualsToken As TokenInfo
         Public IsLocalVariable As Boolean
 
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If lineNumber <= RightValue?.EndToken.Line Then Return Me
+            Return Nothing
+        End Function
+
+
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             EqualsToken.Parent = Me
@@ -43,7 +50,7 @@ Namespace Microsoft.SmallBasic.Statements
                     symbolTable.AddVariable(arrayExpression.LeftHand, IsLocalVariable)
                 End If
                 arrayExpression.AddSymbolInitialization(symbolTable)
-                End If
+            End If
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)

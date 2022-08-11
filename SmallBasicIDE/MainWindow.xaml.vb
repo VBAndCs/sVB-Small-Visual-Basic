@@ -24,39 +24,129 @@ Imports System.Windows.Media.Imaging
 Imports System.Windows.Threading
 Imports System.Linq
 Imports System.ComponentModel.Composition
-Imports RegexBuilder
 Imports sb = Microsoft.SmallBasic.WinForms
 Imports Microsoft.VisualBasic
 
 Namespace Microsoft.SmallBasic
     <Export("MainWindow")>
     Public Class MainWindow
-        Private documentTrackerField As DocumentTracker = New DocumentTracker()
+        Private documentTrackerField As New DocumentTracker()
         Private currentCompletionItem As CompletionItemWrapper
         Private helpUpdateTimer As DispatcherTimer
         Private currentProgramProcess As Process
         Private mdiViews As ObservableCollection(Of MdiView)
         Private lastSearchedText As String = ""
-        Public Shared NewCommand As New RoutedUICommand(ResourceHelper.GetString("NewCommand"), ResourceHelper.GetString("NewCommand"), GetType(MainWindow))
-        Public Shared OpenCommand As New RoutedUICommand(ResourceHelper.GetString("OpenCommand"), ResourceHelper.GetString("OpenCommand"), GetType(MainWindow))
-        Public Shared SaveCommand As New RoutedUICommand(ResourceHelper.GetString("SaveCommand"), ResourceHelper.GetString("SaveCommand"), GetType(MainWindow))
-        Public Shared SaveAsCommand As New RoutedUICommand(ResourceHelper.GetString("SaveAsCommand"), ResourceHelper.GetString("SaveAsCommand"), GetType(MainWindow))
-        Public Shared CutCommand As New RoutedUICommand(ResourceHelper.GetString("CutCommand"), ResourceHelper.GetString("CutCommand"), GetType(MainWindow))
-        Public Shared CopyCommand As New RoutedUICommand(ResourceHelper.GetString("CopyCommand"), ResourceHelper.GetString("CopyCommand"), GetType(MainWindow))
-        Public Shared PasteCommand As New RoutedUICommand(ResourceHelper.GetString("PasteCommand"), ResourceHelper.GetString("PasteCommand"), GetType(MainWindow))
-        Public Shared FindCommand As New RoutedUICommand(ResourceHelper.GetString("FindCommand"), ResourceHelper.GetString("FindCommand"), GetType(MainWindow))
-        Public Shared FindNextCommand As New RoutedUICommand(ResourceHelper.GetString("FindNextCommand"), ResourceHelper.GetString("FindNextCommand"), GetType(MainWindow))
-        Public Shared UndoCommand As New RoutedUICommand(ResourceHelper.GetString("UndoCommand"), ResourceHelper.GetString("UndoCommand"), GetType(MainWindow))
-        Public Shared RedoCommand As New RoutedUICommand(ResourceHelper.GetString("RedoCommand"), ResourceHelper.GetString("RedoCommand"), GetType(MainWindow))
-        Public Shared FormatCommand As New RoutedUICommand(ResourceHelper.GetString("FormatProgramCommand"), ResourceHelper.GetString("FormatProgramCommand"), GetType(MainWindow))
-        Public Shared RunCommand As New RoutedUICommand(ResourceHelper.GetString("RunProgramCommand"), ResourceHelper.GetString("RunProgramCommand"), GetType(MainWindow))
-        Public Shared EndProgramCommand As New RoutedUICommand(ResourceHelper.GetString("EndProgramCommand"), ResourceHelper.GetString("EndProgramCommand"), GetType(MainWindow))
-        Public Shared StepOverCommand As New RoutedUICommand(ResourceHelper.GetString("StepOverCommand"), ResourceHelper.GetString("StepOverCommand"), GetType(MainWindow))
-        Public Shared BreakpointCommand As New RoutedUICommand(ResourceHelper.GetString("BreakpointCommand"), ResourceHelper.GetString("BreakpointCommand"), GetType(MainWindow))
-        Public Shared DebugCommand As New RoutedUICommand(ResourceHelper.GetString("DebugCommand"), ResourceHelper.GetString("DebugCommand"), GetType(MainWindow))
-        Public Shared WebSaveCommand As New RoutedUICommand(ResourceHelper.GetString("PublishProgramCommand"), ResourceHelper.GetString("PublishProgramCommand"), GetType(MainWindow))
-        Public Shared WebLoadCommand As New RoutedUICommand(ResourceHelper.GetString("ImportProgramCommand"), ResourceHelper.GetString("ImportProgramCommand"), GetType(MainWindow))
-        Public Shared ExportToVisualBasicCommand As New RoutedUICommand(ResourceHelper.GetString("ExportToVisualBasicCommand"), ResourceHelper.GetString("ExportToVisualBasicCommand"), GetType(MainWindow))
+
+        Public Shared NewCommand As New RoutedUICommand(
+            ResourceHelper.GetString("NewCommand"),
+            ResourceHelper.GetString("NewCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared OpenCommand As New RoutedUICommand(
+            ResourceHelper.GetString("OpenCommand"),
+            ResourceHelper.GetString("OpenCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared SaveCommand As New RoutedUICommand(
+            ResourceHelper.GetString("SaveCommand"),
+            ResourceHelper.GetString("SaveCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared SaveAsCommand As New RoutedUICommand(
+            ResourceHelper.GetString("SaveAsCommand"),
+            ResourceHelper.GetString("SaveAsCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared CutCommand As New RoutedUICommand(
+            ResourceHelper.GetString("CutCommand"),
+            ResourceHelper.GetString("CutCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared CopyCommand As New RoutedUICommand(
+            ResourceHelper.GetString("CopyCommand"),
+            ResourceHelper.GetString("CopyCommand"),
+            GetType(MainWindow)
+         )
+        Public Shared PasteCommand As New RoutedUICommand(
+            ResourceHelper.GetString("PasteCommand"),
+            ResourceHelper.GetString("PasteCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared FindCommand As New RoutedUICommand(
+            ResourceHelper.GetString("FindCommand"),
+            ResourceHelper.GetString("FindCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared FindNextCommand As New RoutedUICommand(
+            ResourceHelper.GetString("FindNextCommand"),
+            ResourceHelper.GetString("FindNextCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared SelectNextMatchCommand As New RoutedUICommand(
+            "Find Next matching pair",
+            "Find Next matching pair",
+            GetType(MainWindow)
+        )
+        Public Shared SelectPrevMatchCommand As New RoutedUICommand(
+            "Find Previous matching pair",
+            "Find Previous matching pair",
+            GetType(MainWindow)
+        )
+        Public Shared UndoCommand As New RoutedUICommand(
+            ResourceHelper.GetString("UndoCommand"),
+            ResourceHelper.GetString("UndoCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared RedoCommand As New RoutedUICommand(
+            ResourceHelper.GetString("RedoCommand"),
+            ResourceHelper.GetString("RedoCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared FormatCommand As New RoutedUICommand(
+            ResourceHelper.GetString("FormatProgramCommand"),
+            ResourceHelper.GetString("FormatProgramCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared RunCommand As New RoutedUICommand(
+            ResourceHelper.GetString("RunProgramCommand"),
+            ResourceHelper.GetString("RunProgramCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared EndProgramCommand As New RoutedUICommand(
+            ResourceHelper.GetString("EndProgramCommand"),
+            ResourceHelper.GetString("EndProgramCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared StepOverCommand As New RoutedUICommand(
+            ResourceHelper.GetString("StepOverCommand"),
+            ResourceHelper.GetString("StepOverCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared BreakpointCommand As New RoutedUICommand(
+            ResourceHelper.GetString("BreakpointCommand"),
+            ResourceHelper.GetString("BreakpointCommand"),
+            GetType(MainWindow)
+         )
+        Public Shared DebugCommand As New RoutedUICommand(
+            ResourceHelper.GetString("DebugCommand"),
+            ResourceHelper.GetString("DebugCommand"),
+            GetType(MainWindow)
+         )
+        Public Shared WebSaveCommand As New RoutedUICommand(
+            ResourceHelper.GetString("PublishProgramCommand"),
+            ResourceHelper.GetString("PublishProgramCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared WebLoadCommand As New RoutedUICommand(
+            ResourceHelper.GetString("ImportProgramCommand"),
+            ResourceHelper.GetString("ImportProgramCommand"),
+            GetType(MainWindow)
+        )
+        Public Shared ExportToVisualBasicCommand As New RoutedUICommand(
+            ResourceHelper.GetString("ExportToVisualBasicCommand"),
+            ResourceHelper.GetString("ExportToVisualBasicCommand"),
+            GetType(MainWindow)
+        )
 
         ''' <summary>
         ''' DocumentTracker
@@ -197,7 +287,7 @@ Namespace Microsoft.SmallBasic
             exportToVBDialog.ShowDialog()
         End Sub
 
-        Private Sub OnFind(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnFind(sender As Object, e As RoutedEventArgs)
             If ActiveDocument Is Nothing Then
                 Return
             End If
@@ -241,13 +331,38 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub OnFindNext(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnFindNext(sender As Object, e As RoutedEventArgs)
             If ActiveDocument IsNot Nothing Then
-                If String.IsNullOrEmpty(lastSearchedText) Then
+                Dim editor = ActiveDocument.EditorControl
+                If Not editor.ContainsHighlights AndAlso lastSearchedText = "" Then
                     OnFind(sender, e)
-                ElseIf Not ActiveDocument.EditorControl.HighlightNextMatch(lastSearchedText, ignoreCase:=True) Then
-                    Console.Beep()
+                Else
+                    Dim srch = If(lastSearchedText = "",
+                         editor.TextView.Selection?.ActiveSnapshotSpan.GetText(),
+                         lastSearchedText
+                    )
+
+                    If Not editor.HighlightNextMatch(srch, ignoreCase:=True) Then Console.Beep()
                 End If
+            End If
+        End Sub
+
+        Private Sub OnSelectNextMatch(sender As Object, e As RoutedEventArgs)
+            SelectAnotherMatch(True)
+        End Sub
+
+        Private Sub OnSelectPrevMatch(sender As Object, e As RoutedEventArgs)
+            SelectAnotherMatch(False)
+        End Sub
+
+        Private Sub SelectAnotherMatch(moveDown As Boolean)
+            Dim doc = ActiveDocument
+            If doc IsNot Nothing Then
+                Dim editor = doc.EditorControl
+                If Not editor.ContainsWordHighlights Then
+                    doc.HighlightEnclosingBlockKeywords()
+                End If
+                editor.SelectAnotherHighlightedWord(moveDown)
             End If
         End Sub
 

@@ -9,29 +9,50 @@ Namespace Microsoft.SmallBasic.Statements
     Public Class WhileStatement
         Inherits LoopStatement
 
-        Public WhileBody As New List(Of Statement)()
-        Public Condition As Expression
         Public WhileToken As TokenInfo
-        Public EndWhileToken As TokenInfo
+        Public Condition As Expression
+
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If lineNumber > EndLoopToken.Line Then Return Nothing
+
+            If lineNumber <= Condition?.EndToken.Line Then Return Me
+
+            For Each statment In Body
+                Dim st = statment.GetStatement(lineNumber)
+                If st IsNot Nothing Then Return st
+            Next
+
+            If lineNumber <= EndLoopToken.Line Then Return Me
+
+            Return Nothing
+        End Function
+
+        Public Overrides Function GetKeywords() As LegalTokens
+            Dim spans As New LegalTokens
+            spans.Add(WhileToken)
+            spans.Add(EndLoopToken)
+            Return spans
+        End Function
 
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             WhileToken.Parent = Me
-            EndWhileToken.Parent = Me
+            EndLoopToken.Parent = Me
 
             If Condition IsNot Nothing Then
                 Condition.Parent = Me
                 Condition.AddSymbols(symbolTable)
             End If
 
-            For Each item In WhileBody
+            For Each item In Body
                 item.Parent = Me
                 item.AddSymbols(symbolTable)
             Next
         End Sub
 
         Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
-            For Each item In WhileBody
+            For Each item In Body
                 item.PrepareForEmit(scope)
             Next
         End Sub
@@ -45,7 +66,7 @@ Namespace Microsoft.SmallBasic.Statements
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)
             scope.ILGenerator.Emit(OpCodes.Brfalse, ExitLabel)
 
-            For Each item In WhileBody
+            For Each item In Body
                 item.EmitIL(scope)
             Next
 
@@ -64,7 +85,7 @@ Namespace Microsoft.SmallBasic.Statements
                 Return
             End If
 
-            Dim statementContaining = GetStatementContaining(WhileBody, line)
+            Dim statementContaining = GetStatementContaining(Body, line)
 
             If statementContaining IsNot Nothing Then
                 CompletionHelper.FillKeywords(completionBag, Token.EndWhile, Token.Wend)
@@ -77,11 +98,11 @@ Namespace Microsoft.SmallBasic.Statements
             stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1}", New Object(1) {WhileToken.Text, Condition})
             stringBuilder.AppendLine()
 
-            For Each item In WhileBody
+            For Each item In Body
                 stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {item})
             Next
 
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {EndWhileToken.Text})
+            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {EndLoopToken.Text})
             Return stringBuilder.ToString()
         End Function
     End Class

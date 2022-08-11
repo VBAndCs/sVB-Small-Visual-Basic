@@ -496,7 +496,7 @@ Namespace Microsoft.SmallBasic
             writer.WriteLine()
             indentationLevel += 1
 
-            For Each item In forStatement.ForBody
+            For Each item In forStatement.Body
                 EmitStatement(item)
             Next
 
@@ -616,7 +616,7 @@ Namespace Microsoft.SmallBasic
             writer.WriteLine()
             indentationLevel += 1
 
-            For Each item In whileStatement.WhileBody
+            For Each item In whileStatement.Body
                 EmitStatement(item)
             Next
 

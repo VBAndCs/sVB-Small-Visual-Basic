@@ -486,6 +486,9 @@ Namespace WinForms
                      End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Moves focus to the control, so it beccomes the active control that recives the keybored keys.
+        ''' </summary>
         <ExMethod>
         Public Shared Sub Focus(formName As Primitive, controlName As Primitive)
             App.Invoke(

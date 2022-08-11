@@ -60,6 +60,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub AnalyzeStatement(statement As Statement)
+
             Dim type As Type = statement.GetType()
 
             If type Is GetType(AssignmentStatement) Then
@@ -86,7 +87,7 @@ Namespace Microsoft.SmallBasic
             ElseIf type Is GetType(SubroutineStatement) Then
                 AnalyzeSubroutineStatement(CType(statement, SubroutineStatement))
 
-            ElseIf type Is GetType(returnStatement) Then
+            ElseIf type Is GetType(ReturnStatement) Then
                 AnalyzeReturnStatement(CType(statement, ReturnStatement))
 
             ElseIf type Is GetType(WhileStatement) Then
@@ -213,14 +214,14 @@ Namespace Microsoft.SmallBasic
                 AnalyzeExpression(forStatement.StepValue, leaveValueInStack:=True, mustBeAssignable:=False)
             End If
 
-            For Each item In forStatement.ForBody
+            For Each item In forStatement.Body
                 AnalyzeStatement(item)
             Next
         End Sub
 
         Private Sub AnalyzeGotoStatement(gotoStatement As GotoStatement)
             Dim label = gotoStatement.Label
-            If Label.Token <> 0 Then
+            If label.Token <> 0 Then
                 If label.Token <> 0 AndAlso Not _symbolTable.Labels.ContainsKey(label.NormalizedText) Then
                     _parser.AddError(label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("LabelNotFound"), New Object(0) {label.Text}))
                 Else
@@ -301,7 +302,8 @@ Namespace Microsoft.SmallBasic
                     If subroutine.EndSubToken.Token <> Token.EndFunction Then
                         _parser.AddError(subroutine.EndSubToken, "Function must end with EndFunction")
                     End If
-                    If Not subroutine.HasAReturnStatement Then
+
+                    If subroutine.ReturnStatement Is Nothing Then
                         _parser.AddError(subroutine.SubToken, "Function must return a value")
                     End If
             End Select
@@ -316,7 +318,7 @@ Namespace Microsoft.SmallBasic
                 AnalyzeExpression(whileStatement.Condition, leaveValueInStack:=True, mustBeAssignable:=False)
             End If
 
-            For Each item In whileStatement.WhileBody
+            For Each item In whileStatement.Body
                 AnalyzeStatement(item)
             Next
         End Sub
@@ -357,7 +359,7 @@ Namespace Microsoft.SmallBasic
             Dim value As TypeInfo = Nothing
             Dim typeName = typeNameInfo.NormalizedText
 
-            If _typeInfoBag.Types.TryGetValue(TypeName, value) Then
+            If _typeInfoBag.Types.TryGetValue(typeName, value) Then
                 Dim value2 As MethodInfo = Nothing
 
                 If value.Methods.TryGetValue(methodName.NormalizedText, value2) Then

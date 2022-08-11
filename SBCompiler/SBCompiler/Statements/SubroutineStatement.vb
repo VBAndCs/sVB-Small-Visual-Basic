@@ -16,7 +16,27 @@ Namespace Microsoft.SmallBasic.Statements
         Public Body As New List(Of Statement)()
         Public SubToken As TokenInfo
         Public EndSubToken As TokenInfo
-        Friend HasAReturnStatement As Boolean
+        Friend ReturnStatement As ReturnStatement
+
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If lineNumber > EndSubToken.Line Then Return Nothing
+
+            For Each statment In Body
+                Dim st = statment.GetStatement(lineNumber)
+                If st IsNot Nothing Then Return st
+            Next
+
+            Return Nothing
+        End Function
+
+        Public Overrides Function GetKeywords() As LegalTokens
+            Dim spans As New LegalTokens
+            spans.Add(SubToken)
+            If ReturnStatement IsNot Nothing Then spans.Add(ReturnStatement.StartToken)
+            spans.Add(EndSubToken)
+            Return spans
+        End Function
 
         Shared Function GetSubroutine(expression As Expressions.Expression) As SubroutineStatement
             Return GetSubroutine(expression.Parent)
@@ -123,5 +143,6 @@ Namespace Microsoft.SmallBasic.Statements
             stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {EndSubToken.Text})
             Return stringBuilder.ToString()
         End Function
+
     End Class
 End Namespace

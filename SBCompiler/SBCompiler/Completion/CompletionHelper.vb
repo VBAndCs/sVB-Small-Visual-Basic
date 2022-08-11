@@ -14,7 +14,10 @@ Namespace Microsoft.SmallBasic.Completion
         End Sub
 
         Public Function GetEmptyCompletionBag() As CompletionBag
-            Return New CompletionBag(_compiler.TypeInfoBag, _compiler.Parser.SymbolTable)
+            Return New CompletionBag(
+                _compiler.TypeInfoBag,
+                _compiler.Parser.SymbolTable
+            )
         End Function
 
         Public Function GetCompletionItems(
@@ -23,30 +26,39 @@ Namespace Microsoft.SmallBasic.Completion
                         column As Integer
                     ) As CompletionBag
 
+
             Completion.CompletionHelper.AutoCompletion = True
             _compiler.Compile(source)
             Completion.CompletionHelper.AutoCompletion = False
 
-            Dim emptyCompletionBag = GetEmptyCompletionBag()
-            Dim statement As Statement = Nothing
+            Dim completionBag = GetEmptyCompletionBag()
+            Dim statement = GetStatement(_compiler, line)
 
-            For i = _compiler.Parser.ParseTree.Count - 1 To 0 Step -1
-                Dim statement2 = _compiler.Parser.ParseTree(i)
+            If statement IsNot Nothing Then
+                FillCompletionItemsFromStatement(statement, completionBag, line, column)
+            Else
+                FillAllGlobalItems(completionBag, inGlobalScope:=True)
+            End If
 
-                If line >= statement2.StartToken.Line Then
-                    statement = statement2
+            completionBag.CompletionItems.Sort(Function(ByVal ci1, ByVal ci2) ci1.DisplayName.CompareTo(ci2.DisplayName))
+            Return completionBag
+        End Function
+
+        Public Shared Function GetStatement(
+                        compiler As Compiler,
+                        line As Integer
+                  ) As Statement
+
+            For i = compiler.Parser.ParseTree.Count - 1 To 0 Step -1
+                Dim statement = compiler.Parser.ParseTree(i)
+
+                If line >= statement.StartToken.Line Then
+                    Return statement
                     Exit For
                 End If
             Next
 
-            If statement IsNot Nothing Then
-                FillCompletionItemsFromStatement(statement, emptyCompletionBag, line, column)
-            Else
-                FillAllGlobalItems(emptyCompletionBag, inGlobalScope:=True)
-            End If
-
-            emptyCompletionBag.CompletionItems.Sort(Function(ByVal ci1, ByVal ci2) ci1.DisplayName.CompareTo(ci2.DisplayName))
-            Return emptyCompletionBag
+            Return Nothing
         End Function
 
         Private Sub FillCompletionItemsFromStatement(statement As Statement, completionBag As CompletionBag, line As Integer, column As Integer)

@@ -6,12 +6,14 @@ Namespace Microsoft.SmallBasic.Statements
         Public Property StartToken As TokenInfo
         Public Property EndingComment As TokenInfo
 
-        Public Parent As Statement
+        Public Property Parent As Statement
 
-        Public Overridable Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overridable Sub AddSymbols(symbolTable As SymbolTable)
             _StartToken.Parent = Me
             _EndingComment.Parent = Me
         End Sub
+
+        Public MustOverride Function GetStatement(lineNumber) As Statement
 
         Public Overridable Sub PrepareForEmit(ByVal scope As CodeGenScope)
         End Sub
@@ -19,7 +21,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public Overridable Sub EmitIL(ByVal scope As CodeGenScope)
         End Sub
 
-        Public Overridable Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)
+        Public Overridable Sub PopulateCompletionItems(completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)
             CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
         End Sub
 
@@ -30,6 +32,25 @@ Namespace Microsoft.SmallBasic.Statements
                 If L > 0 AndAlso line >= L Then Return statement
             Next
             Return Nothing
+        End Function
+
+        Public Overridable Function GetKeywords() As LegalTokens
+            Return Nothing
+        End Function
+
+        Public Function IsOfType(statementType As Type) As Boolean
+            If statementType Is Nothing Then
+                Select Case Me.GetType
+                    Case GetType(SubroutineStatement),
+                             GetType(IfStatement),
+                             GetType(ForStatement),
+                             GetType(WhileStatement)
+                        Return True
+                    Case Else
+                        Return False
+                End Select
+            End If
+            Return Me.GetType Is statementType
         End Function
     End Class
 End Namespace

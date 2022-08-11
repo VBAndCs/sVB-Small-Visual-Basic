@@ -10,6 +10,12 @@ Namespace Microsoft.SmallBasic.Statements
         Public Label As TokenInfo
         Public subroutine As SubroutineStatement
 
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If lineNumber <= Label.Line Then Return Me
+            Return Nothing
+        End Function
+
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             GotoToken.Parent = Me

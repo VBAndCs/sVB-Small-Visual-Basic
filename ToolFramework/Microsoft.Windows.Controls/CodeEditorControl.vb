@@ -29,9 +29,12 @@ Namespace Microsoft.Windows.Controls
         Private _textView As AvalonTextView
         Private _textViewHost As AvalonTextViewHost
         Private _isLineNumberMarginVisible As Boolean
-        Private _containsHighlights As Boolean
         Private _marginTransform As New ScaleTransform(1.0, 1.0)
         Private _lineNumberMargin As Canvas
+
+        Public ReadOnly Property ContainsHighlights As Boolean
+
+        Public ReadOnly Property ContainsWordHighlights As Boolean
 
         <Import>
         Public Property AdornmentAggregatorCache As IAdornmentAggregatorCache
@@ -221,29 +224,33 @@ Namespace Microsoft.Windows.Controls
         End Sub
 
         Public Sub ClearHighlighting()
-            If _containsHighlights Then
-                Dim findMarkerProvider1 As FindMarkerProvider = FindMarkerProvider.GetFindMarkerProvider(TextView)
-                findMarkerProvider1.ClearAllMarkers()
-                _containsHighlights = False
+            If _ContainsHighlights OrElse _ContainsWordHighlights Then
+                Dim marker = FindMarkerProvider.GetFindMarkerProvider(TextView)
+                marker.ClearAllMarkers()
+                _ContainsHighlights = False
+                _ContainsWordHighlights = False
             End If
         End Sub
 
         Public Function HighlightNextMatch(searchText As String, ignoreCase As Boolean) As Boolean
-            Dim textSnapshot1 As ITextSnapshot = TextView.TextSnapshot
+            Dim textSnapshot1 = TextView.TextSnapshot
             Dim __ As Object = String.Empty
             __ = textSnapshot1.LineCount
 
-            Dim lineFromPosition As ITextSnapshotLine = textSnapshot1.GetLineFromPosition(TextView.Caret.Position.TextInsertionIndex)
-            Dim searchHit As TextSpan = GetSearchHit(lineFromPosition, TextView.Caret.Position.TextInsertionIndex - lineFromPosition.Start, searchText, ignoreCase)
+            Dim line = textSnapshot1.GetLineFromPosition(TextView.Caret.Position.TextInsertionIndex)
+            Dim index = TextView.Caret.Position.TextInsertionIndex
+            Dim searchHit = GetSearchHit(line, index - line.Start, searchText, ignoreCase)
+
             If searchHit IsNot Nothing Then
                 TextView.Selection.ActiveSpan = searchHit
                 TextView.Caret.MoveTo(searchHit.GetEndPoint(textSnapshot1))
                 TextView.Caret.EnsureVisible()
                 Return True
             End If
-            For i As Integer = lineFromPosition.LineNumber + 1 To textSnapshot1.LineCount - 1
-                Dim lineFromLineNumber As ITextSnapshotLine = textSnapshot1.GetLineFromLineNumber(i)
-                searchHit = GetSearchHit(lineFromLineNumber, 0, searchText, ignoreCase)
+
+            For i = line.LineNumber + 1 To textSnapshot1.LineCount - 1
+                Dim line2 = textSnapshot1.GetLineFromLineNumber(i)
+                searchHit = GetSearchHit(line2, 0, searchText, ignoreCase)
                 If searchHit IsNot Nothing Then
                     TextView.Selection.ActiveSpan = searchHit
                     TextView.Caret.MoveTo(searchHit.GetEndPoint(textSnapshot1))
@@ -251,9 +258,10 @@ Namespace Microsoft.Windows.Controls
                     Return True
                 End If
             Next
-            For j As Integer = 0 To lineFromPosition.LineNumber
-                Dim lineFromLineNumber2 As ITextSnapshotLine = textSnapshot1.GetLineFromLineNumber(j)
-                searchHit = GetSearchHit(lineFromLineNumber2, 0, searchText, ignoreCase)
+
+            For j = 0 To line.LineNumber
+                Dim line2 = textSnapshot1.GetLineFromLineNumber(j)
+                searchHit = GetSearchHit(line2, 0, searchText, ignoreCase)
                 If searchHit IsNot Nothing Then
                     TextView.Selection.ActiveSpan = searchHit
                     TextView.Caret.MoveTo(searchHit.GetEndPoint(textSnapshot1))
@@ -264,43 +272,99 @@ Namespace Microsoft.Windows.Controls
             Return False
         End Function
 
-        Public Function GetSearchHit(textLine As ITextSnapshotLine, startIndex As Integer, searchText As String, ignoreCase As Boolean) As TextSpan
-            Dim comparisonType As StringComparison = (If(ignoreCase, StringComparison.InvariantCultureIgnoreCase, StringComparison.InvariantCulture))
-            Dim text As String = textLine.GetText()
-            Dim num As Integer = text.IndexOf(searchText, startIndex, comparisonType)
-            If num <> -1 Then
-                Return New TextSpan(textLine.TextSnapshot, New Span(num + textLine.Start, searchText.Length), SpanTrackingMode.EdgeInclusive)
+        Public Function GetSearchHit(
+                    textLine As ITextSnapshotLine,
+                    startIndex As Integer,
+                    searchText As String,
+                    ignoreCase As Boolean
+            ) As TextSpan
+
+            Dim comparisonType = (If(ignoreCase, StringComparison.InvariantCultureIgnoreCase, StringComparison.InvariantCulture))
+            Dim text = textLine.GetText()
+            Dim index = text.IndexOf(searchText, startIndex, comparisonType)
+            If index <> -1 Then
+                Return New TextSpan(
+                    textLine.TextSnapshot,
+                    New Span(index + textLine.Start, searchText.Length),
+                    SpanTrackingMode.EdgeInclusive)
+
             End If
+
             Return Nothing
         End Function
 
-        Public Sub HighlightMatches(searchText As String, ignoreCase As Boolean)
+        Public Sub HighlightMatches(
+                    searchText As String,
+                    ignoreCase As Boolean
+            )
+
             ClearHighlighting()
-            Dim textSnapshot1 As ITextSnapshot = TextView.TextSnapshot
-            Dim empty1 As String = String.Empty
-            Dim num As Integer = -1
-            Dim length1 As Integer = searchText.Length
-            Dim comparisonType As StringComparison = (If(ignoreCase, StringComparison.InvariantCultureIgnoreCase, StringComparison.InvariantCulture))
-            Dim list1 As New List(Of FindMarker)
-            For i As Integer = 0 To textSnapshot1.LineCount - 1
-                Dim lineFromLineNumber As ITextSnapshotLine = textSnapshot1.GetLineFromLineNumber(i)
-                empty1 = lineFromLineNumber.GetText()
-                For j As Integer = 0 To empty1.Length - 1
-                    num = empty1.IndexOf(searchText, j, comparisonType)
-                    If num = -1 Then
-                        Exit For
-                    End If
-                    If num + lineFromLineNumber.Start <> _textView.Selection.ActiveSnapshotSpan.Start Then
-                        list1.Add(New FindMarker(New TextSpan(textSnapshot1, num + lineFromLineNumber.Start, length1, SpanTrackingMode.EdgeInclusive), Color.FromArgb(Byte.MaxValue, Byte.MaxValue, Byte.MaxValue, 102)))
-                        j = num
+            Dim textSnapshot1 = TextView.TextSnapshot
+            Dim text = ""
+            Dim index = -1
+            Dim length = searchText.Length
+            Dim comparisonType = (If(ignoreCase, StringComparison.InvariantCultureIgnoreCase, StringComparison.InvariantCulture))
+            Dim markers As New List(Of FindMarker)
+
+            For i = 0 To textSnapshot1.LineCount - 1
+                Dim line = textSnapshot1.GetLineFromLineNumber(i)
+                text = line.GetText()
+                For j As Integer = 0 To text.Length - 1
+                    index = text.IndexOf(searchText, j, comparisonType)
+                    If index = -1 Then Exit For
+                    If index + line.Start <> _textView.Selection.ActiveSnapshotSpan.Start Then
+                        markers.Add(New FindMarker(
+                                  New TextSpan(textSnapshot1, index + line.Start, length, SpanTrackingMode.EdgeInclusive),
+                                  Color.FromArgb(96, 255, 255, 0)
+                               ))
+                        j = index
                     End If
                 Next
             Next
-            Dim findMarkerProvider1 As FindMarkerProvider = FindMarkerProvider.GetFindMarkerProvider(TextView)
-            If list1.Count > 0 Then
-                findMarkerProvider1.AddFindMarkers(list1)
-                _containsHighlights = True
+
+            If markers.Count > 0 Then
+                Dim provider = FindMarkerProvider.GetFindMarkerProvider(TextView)
+                provider.AddFindMarkers(markers)
+                _ContainsHighlights = True
             End If
+        End Sub
+
+
+        Public Property WordHighlightingColor As Color = Colors.LightGray
+
+        Public Sub HighlightWords(ParamArray spans() As (Start As Integer, Lenght As Integer))
+
+            If spans Is Nothing OrElse spans.Count = 0 Then Return
+
+            ClearHighlighting()
+            Dim textSnapshot1 = TextView.TextSnapshot
+            Dim markers As New List(Of FindMarker)
+
+            For Each span In spans
+                markers.Add(New FindMarker(
+                          New TextSpan(textSnapshot1, span.Start, span.Lenght,
+                                       SpanTrackingMode.EdgeInclusive),
+                          WordHighlightingColor
+                       ))
+            Next
+
+            Dim provider = FindMarkerProvider.GetFindMarkerProvider(TextView)
+            provider.AddFindMarkers(markers)
+            _ContainsWordHighlights = True
+        End Sub
+
+        Public Sub SelectAnotherHighlightedWord(moveDown As Boolean)
+            If Not _ContainsWordHighlights Then Return
+            Dim provider = FindMarkerProvider.GetFindMarkerProvider(TextView)
+            Dim marker = provider.GetFindMarker(moveDown)
+            If marker Is Nothing Then Return
+
+            Dim span = marker.Span
+            TextView.Selection.ActiveSpan = span
+            TextView.Caret.MoveTo(span.GetEndPoint(TextView.TextSnapshot))
+            TextView.Caret.EnsureVisible()
+            TextView.Caret.MoveTo(span.GetStartPoint(TextView.TextSnapshot))
+            TextView.Caret.EnsureVisible()
         End Sub
 
         Private Sub Initialize()

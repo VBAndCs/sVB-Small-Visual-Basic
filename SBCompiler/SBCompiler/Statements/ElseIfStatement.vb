@@ -12,6 +12,18 @@ Namespace Microsoft.SmallBasic.Statements
         Public ElseIfToken As TokenInfo
         Public ThenToken As TokenInfo
 
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If lineNumber <= ThenToken.Line Then Return Me
+
+            For Each statment In ThenStatements
+                Dim st = statment.GetStatement(lineNumber)
+                If st IsNot Nothing Then Return st
+            Next
+
+            Return Nothing
+        End Function
+
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             ElseIfToken.Parent = Me

@@ -344,10 +344,14 @@ CheckLineEnd:
             End If
         End Sub
 
-        Private Sub AdjustIndentation(textEdit As ITextEdit, line As ITextSnapshotLine, indentationLevel As Integer, nextPos As Integer)
+        Private Sub AdjustIndentation(textEdit As ITextEdit, line As ITextSnapshotLine, indentationLevel As Integer, firstCharPos As Integer)
             If indentationLevel < 0 Then indentationLevel = 0
-            If nextPos <> indentationLevel * 3 Then
-                textEdit.Replace(line.Start, nextPos, New String(" "c, indentationLevel * 3))
+            If firstCharPos <> indentationLevel * 3 Then
+                If firstCharPos = 19 Then Stop
+                textEdit.Replace(
+                    line.Start, firstCharPos,
+                    New String(" "c, indentationLevel * 3)
+                )
             End If
 
             ' Trim line end

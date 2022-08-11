@@ -21,26 +21,59 @@ Namespace Microsoft.Windows.Controls
             RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(marker.Span))
         End Sub
 
-        Public Sub AddFindMarkers(markers As IEnumerable(Of FindMarker))
-            Dim textSnapshot1 As ITextSnapshot = _textView.TextSnapshot
-            Dim num As Integer = _textView.TextSnapshot.Length
-            Dim num2 As Integer = 0
+        Public Function GetFindMarker(moveDown As Boolean) As FindMarker
+            Dim n = _findMarkerList.Count
+            If n = 0 Then Return Nothing
+            Dim pos = _textView.Caret.Position.TextInsertionIndex
+            Dim snapshot = _textView.TextSnapshot
+            Dim index = -1
 
-            For Each marker As FindMarker In markers
-                Dim span1 As Span = marker.Span.GetSpan(textSnapshot1)
-                If num > span1.Start Then
-                    num = span1.Start
+            Dim i As Integer
+            For i = If(moveDown, 0, n - 1) To If(moveDown, n - 1, 0) Step If(moveDown, 1, -1)
+                Dim span = _findMarkerList(i).Span
+                Dim start = span.GetStartPoint(snapshot).Position
+                Dim [end] = span.GetEndPoint(snapshot).Position
+                If (moveDown AndAlso pos < start) OrElse (Not moveDown AndAlso pos > [end]) Then
+                    index = i
+                    Exit For
+                End If
+            Next
+
+            If i = -1 Then
+                index = n - 1
+            ElseIf i = n Then
+                index = 0
+            End If
+            Return _findMarkerList(index)
+        End Function
+
+        Public Sub AddFindMarkers(markers As IEnumerable(Of FindMarker))
+            Dim textSnapshot = _textView.TextSnapshot
+            Dim length = _textView.TextSnapshot.Length
+            Dim pos = 0
+
+            For Each marker In markers
+                Dim span = marker.Span.GetSpan(textSnapshot)
+                If length > span.Start Then
+                    length = span.Start
                 End If
 
-                If num2 < span1.End Then
-                    num2 = span1.End
+                If pos < span.End Then
+                    pos = span.End
                 End If
 
                 _findMarkerList.Add(marker)
             Next
 
-            If num < num2 Then
-                RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(New TextSpan(textSnapshot1, num, num2 - num, SpanTrackingMode.EdgeInclusive)))
+            If length < pos Then
+                RaiseEvent AdornmentsChanged(Me,
+                         New AdornmentsChangedEventArgs(
+                                  New TextSpan(textSnapshot,
+                                               length, pos - length,
+                                               SpanTrackingMode.EdgeInclusive
+                                 )
+                        )
+               )
             End If
         End Sub
 
@@ -52,7 +85,7 @@ Namespace Microsoft.Windows.Controls
 
         Public Function GetAdornments(span As SnapshotSpan) As IList(Of IAdornment) Implements IAdornmentProvider.GetAdornments
             Dim adornments As New List(Of IAdornment)
-            For Each marker As FindMarker In _findMarkerList
+            For Each marker In _findMarkerList
                 If span.OverlapsWith(marker.Span.GetSpan(span.Snapshot)) Then
                     adornments.Add(marker)
                 End If

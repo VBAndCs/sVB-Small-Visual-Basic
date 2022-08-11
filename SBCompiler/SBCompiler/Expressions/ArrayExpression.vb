@@ -16,6 +16,7 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Shared Function ParseAndEmit(code As String, subroutine As SubroutineStatement, scope As CodeGenScope) As Expression
             Dim tempRoutine = SubroutineStatement.Current
             SubroutineStatement.Current = subroutine
+
             Dim _parser = Parser.Parse(code, scope.SymbolTable, scope.TypeInfoBag)
 
             Dim semantic As New SemanticAnalyzer(_parser, scope.TypeInfoBag)

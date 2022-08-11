@@ -171,10 +171,10 @@ Namespace Microsoft.SmallBasic.Documents
             App.GlobalDomain.AddComponent(Me)
             App.GlobalDomain.Bind()
             _ControlNames.Add("(Global)")
-            _GlobalSubs.Add(AddNewSub)
             _GlobalSubs.Add(AddNewFunc)
-            _ControlEvents.Add(AddNewSub)
+            _GlobalSubs.Add(AddNewSub)
             _ControlEvents.Add(AddNewFunc)
+            _ControlEvents.Add(AddNewSub)
             ParseFormHints()
             UpdateGlobalSubsList()
         End Sub
@@ -207,6 +207,7 @@ Namespace Microsoft.SmallBasic.Documents
                                 End If
                             End If
                             _MdiView.FreezeCmbEvents = False
+                            HighLightMatchingPair()
                             UpdateCaretPositionText()
 
                         Finally
@@ -216,6 +217,186 @@ Namespace Microsoft.SmallBasic.Documents
                  DispatcherPriority.ContextIdle)
 
         End Sub
+
+        Sub HighlightMatchingPair()
+            Dim textView = EditorControl.TextView
+            Dim snapshot = textView.TextSnapshot
+            Dim length = snapshot.Length
+
+            If length = 0 Then Return
+
+            Dim sel = textView.Selection
+            If sel.ActiveSnapshotSpan.Length > 1 Then
+                Dim span = sel.ActiveSnapshotSpan
+                Dim token = LineScanner.GetToken(span.GetText().ToLower())
+                Dim tokenType = LineScanner.GetTokenType(token)
+                If tokenType = TokenType.Keyword Then
+                    Dim pos = span.Start
+                    Dim line = snapshot.GetLineFromPosition(pos)
+                    HighlightBlockKeywords(line.LineNumber, snapshot, token)
+                End If
+                Return
+            End If
+
+            Dim index = If(sel.IsEmpty,
+                    textView.Caret.Position.TextInsertionIndex,
+                    sel.ActiveSnapshotSpan.Start
+            )
+
+            Dim matchingPair1 As Char
+            Dim matchingPair2 As Char = ChrW(0)
+            Dim direction As Integer = 1
+
+            For pos = If(index = length, 1, 0) To If(index = 0 OrElse Not sel.IsEmpty, 0, 1)
+                index -= pos
+                Select Case snapshot(index)
+                    Case "("c
+                        matchingPair1 = "("c
+                        matchingPair2 = ")"c
+                    Case "["c
+                        matchingPair1 = "["c
+                        matchingPair2 = "]"c
+                    Case "{"c
+                        matchingPair1 = "{"c
+                        matchingPair2 = "}"c
+                    Case ")"c
+                        matchingPair1 = ")"c
+                        matchingPair2 = "("c
+                        direction = -1
+                    Case "]"c
+                        matchingPair1 = "]"c
+                        matchingPair2 = "["c
+                        direction = -1
+                    Case "}"c
+                        matchingPair1 = "}"c
+                        matchingPair2 = "{"c
+                        direction = -1
+                End Select
+                If AscW(matchingPair2) <> 0 Then Exit For
+            Next
+
+            If AscW(matchingPair2) = 0 Then
+                If sel.IsEmpty Then HighlightBlockKeywords()
+                Return
+            End If
+
+            Dim i = index
+            Dim pair1Count = 0
+            Do
+                i += direction
+                If i = -1 OrElse i >= length Then Exit Do
+                Select Case snapshot(i)
+                    Case matchingPair1
+                        pair1Count += 1
+                    Case matchingPair2
+                        If pair1Count = 0 Then
+                            _editorControl.HighlightWords((index, 1), (i, 1))
+                            Return
+                        End If
+                        pair1Count -= 1
+                End Select
+            Loop
+
+        End Sub
+        Public Sub HighlightEnclosingBlockKeywords()
+            Dim textView = _editorControl.TextView
+            Dim pos = textView.Caret.Position.TextInsertionIndex
+            Dim lineNumber = textView.TextSnapshot.GetLineNumberFromPosition(pos)
+            Dim statement = GetBlock(lineNumber, Nothing)
+            _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+        End Sub
+
+        Private Sub HighlightBlockKeywords()
+            Dim textView = _editorControl.TextView
+            Dim snapshot = textView.TextSnapshot
+            Dim index = textView.Caret.Position.TextInsertionIndex
+            Dim line = snapshot.GetLineFromPosition(index)
+            Dim pos = index - line.Start
+
+            For Each tokenInfo In LineScanner.GetTokens(line.GetText(), line.LineNumber)
+                If pos >= tokenInfo.Column AndAlso pos <= tokenInfo.EndColumn Then
+                    If tokenInfo.TokenType = TokenType.Keyword Then
+                        HighlightBlockKeywords(line.LineNumber, snapshot, tokenInfo.Token)
+                    End If
+                    Return
+                End If
+            Next
+        End Sub
+
+        Dim highlightCompiler As New Compiler()
+
+        Private Sub HighlightBlockKeywords(lineNumber As Integer, snapshot As ITextSnapshot, token As Token)
+            Select Case token
+                Case Token.Sub, Token.EndSub, Token.Function, Token.EndFunction, Token.Return
+                    Dim statement = GetBlock(lineNumber, GetType(Statements.SubroutineStatement))
+                    _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+
+                Case Token.If, Token.Then, Token.ElseIf, Token.Else, Token.EndIf
+                    Dim statement = GetBlock(lineNumber, GetType(Statements.IfStatement))
+                    _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+
+                Case Token.For, Token.To, Token.Step, Token.Next, Token.EndFor
+                    Dim statement = GetBlock(lineNumber, GetType(Statements.ForStatement))
+                    _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+
+                Case Token.While, Token.Wend, Token.EndWhile
+                    Dim statement = GetBlock(lineNumber, GetType(Statements.WhileStatement))
+                    _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+
+                Case Token.ContinueLoop, Token.ExitLoop
+
+            End Select
+        End Sub
+
+        Public Function GetBlock(lineNumber As Integer, statementType As Type) As Statements.Statement
+
+            If sourceCodeChanged Then
+                sourceCodeChanged = False
+                highlightCompiler.Compile(New StringReader(Me.Text))
+            End If
+
+            Dim statement = Completion.CompletionHelper.GetStatement(highlightCompiler, lineNumber)
+
+            If statement Is Nothing Then Return Nothing
+            If statementType IsNot Nothing AndAlso statement.GetType() Is statementType Then Return statement
+
+            statement = statement.GetStatement(lineNumber)
+
+            ' Get parent block
+            If statement IsNot Nothing Then
+                Do
+                    If statement.IsOfType(statementType) Then Return statement
+                    statement = statement.Parent
+                    If statement Is Nothing Then Exit Do
+                Loop
+            End If
+
+            Return Nothing
+        End Function
+
+        Public Function GetSpans(tokens As List(Of TokenInfo)) As (Integer, Integer)()
+            If tokens Is Nothing Then Return Nothing
+
+            Dim spans As New List(Of (Start As Integer, Length As Integer))
+            Dim snapshot = _editorControl.TextView.TextSnapshot
+            Dim lineNum = -1
+            Dim linestart = 0
+
+            For Each token In tokens
+                If lineNum <> token.Line Then
+                    lineNum = token.Line
+                    linestart = snapshot.GetLineFromLineNumber(token.Line).Start
+                End If
+
+                spans.Add((
+                    linestart + token.Column,
+                    token.EndColumn - token.Column
+                ))
+            Next
+
+            Return spans.ToArray()
+        End Function
+
 
         Sub UpdateCombos(eventInfo As (ControlName As String, EventName As String))
             If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
@@ -227,7 +408,7 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public Overrides Sub Close()
             RemoveHandler _editorControl.TextView.Caret.PositionChanged, AddressOf OnCaretPositionChanged
-            RemoveHandler _textBuffer.Changed, AddressOf TextBufferChanged
+            RemoveHandler _textBuffer.Changed, AddressOf OnTextBufferChanged
             RemoveHandler _undoHistory.UndoRedoHappened, AddressOf UndoRedoHappened
             MyBase.Close()
         End Sub
@@ -271,7 +452,7 @@ Namespace Microsoft.SmallBasic.Documents
                 End Using
             End If
 
-            AddHandler _textBuffer.Changed, AddressOf TextBufferChanged
+            AddHandler _textBuffer.Changed, AddressOf OnTextBufferChanged
         End Sub
 
         Private Function GetContentTypeFromFileExtension() As String
@@ -310,7 +491,10 @@ Namespace Microsoft.SmallBasic.Documents
 
         Dim _formatting As Boolean
 
-        Private Sub TextBufferChanged(sender As Object, e As TextChangedEventArgs)
+        Dim sourceCodeChanged As Boolean = True
+
+        Private Sub OnTextBufferChanged(sender As Object, e As TextChangedEventArgs)
+            sourceCodeChanged = True
             IsDirty = True
             If _formatting OrElse _IgnoreCaretPosChange OrElse StillWorking Then Return
 
@@ -347,12 +531,12 @@ Namespace Microsoft.SmallBasic.Documents
         Private Sub AutoCompleteBlocks(sender As Object, e As System.Windows.Input.KeyEventArgs)
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
-            Dim textInsertionIndex = textView.Caret.Position.TextInsertionIndex
-            If textInsertionIndex = 0 Then Return
+            Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
+            If insertionIndex = 0 Then Return
 
-            Dim c = text.GetText(textInsertionIndex - 1, 1)
+            Dim c = text.GetText(insertionIndex - 1, 1)
             If Char.IsLetterOrDigit(c) OrElse c = "_" Then Return
-            Dim line = text.GetLineFromPosition(textInsertionIndex)
+            Dim line = text.GetLineFromPosition(insertionIndex)
             Dim code = line.GetText()
 
             Select Case e.Key
@@ -439,6 +623,7 @@ Namespace Microsoft.SmallBasic.Documents
                     Dim nextLine = text.GetLineFromLineNumber(i)
                     Dim LineCode = nextLine.GetText()
                     If LineCode.Trim(" "c, vbTab, "(").ToLower() <> "" Then
+                        Dim indent_Keyword = leadingSpace & keyword
                         If LineCode = leadingSpace & endBlock Then
                             L += nextLine.Length + 2
                             Try
@@ -450,13 +635,13 @@ Namespace Microsoft.SmallBasic.Documents
                             Catch ex As Exception
 
                             End Try
-                        ElseIf LineCode.StartsWith(leadingSpace & keyword) Then
+                        ElseIf LineCode.StartsWith(indent_KeyWord) Then
                             Exit For
                         Else
                             For j = i + 1 To text.LineCount - 1
                                 nextLine = text.GetLineFromLineNumber(j)
                                 LineCode = nextLine.GetText()
-                                If LineCode.StartsWith(leadingSpace & keyword) Then Exit For
+                                If LineCode.StartsWith(indent_KeyWord) Then Exit For
                                 If LineCode = leadingSpace & endBlock Then
                                     addBlockEnd = False
                                     Exit For
@@ -469,14 +654,20 @@ Namespace Microsoft.SmallBasic.Documents
                 Next
             End If
 
-            Dim inden = 0
-            Dim nl = $"{vbCrLf}{Space(inden)}"
+            Dim inden = leadingSpace.Length
+            Dim nl = $"{vbCrLf}{leadingSpace}"
+            addBlockEnd = addBlockEnd AndAlso endBlock <> ""
+            _formatting = True
             EditorControl.EditorOperations.ReplaceText(
                  New Span(line.Start, L),
-                Space(inden) & block.Replace("#", nl) & If(addBlockEnd AndAlso endBlock <> "", nl & endBlock & nl, ""), _undoHistory)
-
+                leadingSpace &
+                    block.Replace("#", If(addBlockEnd, nl, "")) &
+                    If(addBlockEnd, nl & endBlock & nl, ""),
+                _undoHistory
+            )
             textView.Caret.MoveTo(line.Start + inden + Len(keyword) + 1 + n)
             stopFormatingLine = line.LineNumber
+            _formatting = False
         End Sub
 
         Friend Sub Focus(Optional moveToStart As Boolean = False)
@@ -841,7 +1032,7 @@ EndFunction
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
             Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
-            Dim lineNumber = textView.TextSnapshot.GetLineFromPosition(insertionIndex).LineNumber
+            Dim lineNumber = text.GetLineFromPosition(insertionIndex).LineNumber
 
             For i = lineNumber To 0 Step -1
                 Dim line = text.GetLineFromLineNumber(i)
@@ -910,8 +1101,8 @@ EndFunction
 
         Public Sub UpdateGlobalSubsList()
             _GlobalSubs.Clear()
-            _GlobalSubs.Add(AddNewSub)
             _GlobalSubs.Add(AddNewFunc)
+            _GlobalSubs.Add(AddNewSub)
 
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot

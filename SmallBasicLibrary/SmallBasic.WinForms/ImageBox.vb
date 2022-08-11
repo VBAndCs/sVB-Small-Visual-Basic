@@ -34,9 +34,6 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the path of the image that is displayed in the control.
         ''' </summary>
-        ''' <param name="formName"></param>
-        ''' <param name="ImageBoxName"></param>
-        ''' <returns></returns>
         <ExProperty>
         Public Shared Function GetFileName(formName As Primitive, ImageBoxName As Primitive) As Primitive
             App.Invoke(

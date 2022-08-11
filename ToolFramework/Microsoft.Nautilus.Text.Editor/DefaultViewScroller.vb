@@ -120,8 +120,8 @@ Namespace Microsoft.Nautilus.Text.Editor
 
 
             Dim result As Boolean = False
-            If startTextLine Is Nothing Then Return False
-            If endTextLine Is Nothing Then Return False
+            If startTextLine Is Nothing OrElse startTextLine.IsDisposed Then Return False
+            If endTextLine Is Nothing OrElse endTextLine.IsDisposed Then Return False
 
             result = startTextLine.Top >= verticalPadding AndAlso endTextLine.Bottom + verticalPadding <= _textView.ViewportHeight
             Dim leftEdge, rightEdge As Double

@@ -6,7 +6,13 @@ Namespace Microsoft.SmallBasic.Statements
         Inherits Statement
 
         Public ReturnExpression As Expression
-        Friend Subroutine As SubroutineStatement
+        Public Subroutine As SubroutineStatement
+
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If lineNumber <= ReturnExpression?.EndToken.Line Then Return Me
+            Return Nothing
+        End Function
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
@@ -18,7 +24,10 @@ Namespace Microsoft.SmallBasic.Statements
                 ReturnExpression.Parent = Me
                 ReturnExpression.AddSymbols(symbolTable)
             End If
-            If Subroutine IsNot Nothing Then Subroutine.HasAReturnStatement = True
+
+            If Subroutine IsNot Nothing Then
+                Subroutine.ReturnStatement = Me
+            End If
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
@@ -28,7 +37,7 @@ Namespace Microsoft.SmallBasic.Statements
                 code = $"Stack.PushValue(""_sVB_ReturnValues"", {If(ReturnExpression, ChrW(34) & ChrW(34))})" & vbCrLf
             End If
 
-            code &= $"GoTo _EXIT_SUB_{subroutine.Name.NormalizedText}"
+            code &= $"GoTo _EXIT_SUB_{Subroutine.Name.NormalizedText}"
 
             CodeGenerator.LowerAndEmit(code, scope, Subroutine)
         End Sub

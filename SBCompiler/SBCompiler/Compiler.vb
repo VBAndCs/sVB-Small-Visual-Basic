@@ -27,15 +27,15 @@ Namespace Microsoft.SmallBasic
             PopulatePrimitiveMethods()
         End Sub
 
-        Public Function Compile(ByVal source As TextReader) As List(Of [Error])
+        Public Function Compile(source As TextReader) As List(Of [Error])
             If source Is Nothing Then
                 Throw New ArgumentNullException("source")
             End If
 
             _errors.Clear()
-            _parser.Parse(source)
+            _Parser.Parse(source)
             If _errors.Count = 0 Then
-                Dim semanticAnalyzer As New SemanticAnalyzer(_parser, _typeInfoBag)
+                Dim semanticAnalyzer As New SemanticAnalyzer(_Parser, _TypeInfoBag)
                 semanticAnalyzer.Analyze()
             End If
 
@@ -59,7 +59,7 @@ Namespace Microsoft.SmallBasic
 
             If _errors.Count > 0 Then Return _errors
 
-            Dim codeGenerator As New CodeGenerator(_parser, _typeInfoBag, outputName, directory)
+            Dim codeGenerator As New CodeGenerator(_Parser, _TypeInfoBag, outputName, directory)
             codeGenerator.GenerateExecutable()
             CopyLibraryAssemblies(directory)
             Return _errors
@@ -196,7 +196,7 @@ Namespace Microsoft.SmallBasic
             Next
 
             If typeInfo.Events.Count > 0 OrElse typeInfo.Methods.Count > 0 OrElse typeInfo.Properties.Count > 0 Then
-                _typeInfoBag.Types(type.Name.ToLower(CultureInfo.CurrentUICulture)) = typeInfo
+                _TypeInfoBag.Types(type.Name.ToLower(CultureInfo.CurrentUICulture)) = typeInfo
             End If
         End Sub
 
@@ -238,24 +238,24 @@ Namespace Microsoft.SmallBasic
 
         Private Sub PopulatePrimitiveMethods()
             Dim typeFromHandle = GetType(Primitive)
-            _typeInfoBag.StringToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(String)})
-            _typeInfoBag.NumberToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(Double)})
-            _typeInfoBag.PrimitiveToBoolean = typeFromHandle.GetMethod("ConvertToBoolean")
-            _typeInfoBag.Negation = typeFromHandle.GetMethod("op_UnaryNegation")
-            _typeInfoBag.Add = typeFromHandle.GetMethod("op_Addition")
-            _typeInfoBag.Subtract = typeFromHandle.GetMethod("op_Subtraction")
-            _typeInfoBag.Multiply = typeFromHandle.GetMethod("op_Multiply")
-            _typeInfoBag.Divide = typeFromHandle.GetMethod("op_Division")
-            _typeInfoBag.GreaterThan = typeFromHandle.GetMethod("op_GreaterThan")
-            _typeInfoBag.GreaterThanOrEqualTo = typeFromHandle.GetMethod("op_GreaterThanOrEqual")
-            _typeInfoBag.LessThan = typeFromHandle.GetMethod("op_LessThan")
-            _typeInfoBag.LessThanOrEqualTo = typeFromHandle.GetMethod("op_LessThanOrEqual")
-            _typeInfoBag.EqualTo = typeFromHandle.GetMethod("op_Equality", New Type(1) {GetType(Primitive), GetType(Primitive)})
-            _typeInfoBag.NotEqualTo = typeFromHandle.GetMethod("op_Inequality", New Type(1) {GetType(Primitive), GetType(Primitive)})
-            _typeInfoBag.And = typeFromHandle.GetMethod("op_And", New Type(1) {GetType(Primitive), GetType(Primitive)})
-            _typeInfoBag.Or = typeFromHandle.GetMethod("op_Or", New Type(1) {GetType(Primitive), GetType(Primitive)})
-            _typeInfoBag.GetArrayValue = typeFromHandle.GetMethod("GetArrayValue")
-            _typeInfoBag.SetArrayValue = typeFromHandle.GetMethod("SetArrayValue")
+            _TypeInfoBag.StringToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(String)})
+            _TypeInfoBag.NumberToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(Double)})
+            _TypeInfoBag.PrimitiveToBoolean = typeFromHandle.GetMethod("ConvertToBoolean")
+            _TypeInfoBag.Negation = typeFromHandle.GetMethod("op_UnaryNegation")
+            _TypeInfoBag.Add = typeFromHandle.GetMethod("op_Addition")
+            _TypeInfoBag.Subtract = typeFromHandle.GetMethod("op_Subtraction")
+            _TypeInfoBag.Multiply = typeFromHandle.GetMethod("op_Multiply")
+            _TypeInfoBag.Divide = typeFromHandle.GetMethod("op_Division")
+            _TypeInfoBag.GreaterThan = typeFromHandle.GetMethod("op_GreaterThan")
+            _TypeInfoBag.GreaterThanOrEqualTo = typeFromHandle.GetMethod("op_GreaterThanOrEqual")
+            _TypeInfoBag.LessThan = typeFromHandle.GetMethod("op_LessThan")
+            _TypeInfoBag.LessThanOrEqualTo = typeFromHandle.GetMethod("op_LessThanOrEqual")
+            _TypeInfoBag.EqualTo = typeFromHandle.GetMethod("op_Equality", New Type(1) {GetType(Primitive), GetType(Primitive)})
+            _TypeInfoBag.NotEqualTo = typeFromHandle.GetMethod("op_Inequality", New Type(1) {GetType(Primitive), GetType(Primitive)})
+            _TypeInfoBag.And = typeFromHandle.GetMethod("op_And", New Type(1) {GetType(Primitive), GetType(Primitive)})
+            _TypeInfoBag.Or = typeFromHandle.GetMethod("op_Or", New Type(1) {GetType(Primitive), GetType(Primitive)})
+            _TypeInfoBag.GetArrayValue = typeFromHandle.GetMethod("GetArrayValue")
+            _TypeInfoBag.SetArrayValue = typeFromHandle.GetMethod("SetArrayValue")
         End Sub
     End Class
 End Namespace

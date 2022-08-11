@@ -14,6 +14,7 @@ Namespace Microsoft.SmallBasic
         Private _currentLineEnumerator As TokenEnumerator
         Private _rewindRequested As Boolean
         Private _FunctionsCall As New List(Of MethodCallExpression)
+
         Public ReadOnly Property TypeInfoBag As TypeInfoBag
         Public Property Errors As List(Of [Error])
 
@@ -39,7 +40,7 @@ Namespace Microsoft.SmallBasic
             While tokenEnumerator IsNot Nothing
 
                 If tokenEnumerator.Current.Token = Token.EndWhile OrElse tokenEnumerator.Current.Token = Token.Wend Then
-                    whileStatement2.EndWhileToken = tokenEnumerator.Current
+                    whileStatement2.EndLoopToken = tokenEnumerator.Current
                     flag = True
                     Exit While
                 End If
@@ -49,7 +50,7 @@ Namespace Microsoft.SmallBasic
                     Exit While
                 End If
 
-                whileStatement2.WhileBody.Add(GetStatementFromTokens(tokenEnumerator))
+                whileStatement2.Body.Add(GetStatementFromTokens(tokenEnumerator))
                 tokenEnumerator = ReadNextLine()
             End While
 
@@ -87,7 +88,7 @@ Namespace Microsoft.SmallBasic
             While tokenEnumerator IsNot Nothing
 
                 If tokenEnumerator.Current.Token = Token.EndFor OrElse tokenEnumerator.Current.Token = Token.Next Then
-                    forStatement.EndForToken = tokenEnumerator.Current
+                    forStatement.EndLoopToken = tokenEnumerator.Current
                     flag = True
                     Exit While
                 End If
@@ -97,7 +98,7 @@ Namespace Microsoft.SmallBasic
                     Exit While
                 End If
 
-                forStatement.ForBody.Add(GetStatementFromTokens(tokenEnumerator))
+                forStatement.Body.Add(GetStatementFromTokens(tokenEnumerator))
                 tokenEnumerator = ReadNextLine()
             End While
 
@@ -111,131 +112,143 @@ Namespace Microsoft.SmallBasic
             Return forStatement
         End Function
 
-        Private Function ConstructIfStatement(ByVal tokenEnumerator As TokenEnumerator) As IfStatement
-            Dim ifStatement As IfStatement = New IfStatement()
-            ifStatement.StartToken = tokenEnumerator.Current
-            ifStatement.IfToken = tokenEnumerator.Current
-            Dim ifStatement2 = ifStatement
-            tokenEnumerator.MoveNext()
+        Private Function ConstructIfStatement(tokenEnum As TokenEnumerator) As IfStatement
+            Dim ifStatement As New IfStatement() With {
+                    .StartToken = tokenEnum.Current,
+                    .IfToken = tokenEnum.Current
+            }
 
-            If EatLogicalExpression(tokenEnumerator, ifStatement2.Condition) AndAlso EatToken(tokenEnumerator, Token.Then, ifStatement2.ThenToken) Then
-                ExpectEndOfLine(tokenEnumerator)
+            tokenEnum.MoveNext()
+
+            If EatLogicalExpression(tokenEnum, ifStatement.Condition) AndAlso
+                        EatToken(tokenEnum, Token.Then, ifStatement.ThenToken) Then
+                ExpectEndOfLine(tokenEnum)
             End If
 
-            tokenEnumerator = ReadNextLine()
-            Dim flag = False
-            Dim flag2 = False
-            Dim flag3 = False
+            tokenEnum = ReadNextLine()
+            Dim foundEndIf = False
+            Dim foundElseIf = False
+            Dim foundElse = False
 
-            While tokenEnumerator IsNot Nothing
+            While tokenEnum IsNot Nothing
 
-                If tokenEnumerator.Current.Token = Token.EndIf Then
-                    ifStatement2.EndIfToken = tokenEnumerator.Current
-                    flag = True
+                If tokenEnum.Current.Token = Token.EndIf Then
+                    ifStatement.EndIfToken = tokenEnum.Current
+                    foundEndIf = True
                     Exit While
                 End If
 
-                If tokenEnumerator.Current.Token = Token.Else Then
-                    ifStatement2.ElseToken = tokenEnumerator.Current
-                    flag3 = True
+                If tokenEnum.Current.Token = Token.Else Then
+                    ifStatement.ElseToken = tokenEnum.Current
+                    foundElse = True
                     Exit While
                 End If
 
-                If tokenEnumerator.Current.Token = Token.ElseIf Then
-                    flag2 = True
+                If tokenEnum.Current.Token = Token.ElseIf Then
+                    foundElseIf = True
                     Exit While
                 End If
 
-                If tokenEnumerator.Current.Token = Token.Sub OrElse tokenEnumerator.Current.Token = Token.EndSub OrElse
-                    tokenEnumerator.Current.Token = Token.Function OrElse tokenEnumerator.Current.Token = Token.EndFunction Then
+                If tokenEnum.Current.Token = Token.Sub OrElse
+                            tokenEnum.Current.Token = Token.EndSub OrElse
+                            tokenEnum.Current.Token = Token.Function OrElse
+                            tokenEnum.Current.Token = Token.EndFunction Then
                     Exit While
                 End If
 
-                ifStatement2.ThenStatements.Add(GetStatementFromTokens(tokenEnumerator))
-                tokenEnumerator = ReadNextLine()
+                ifStatement.ThenStatements.Add(GetStatementFromTokens(tokenEnum))
+                tokenEnum = ReadNextLine()
             End While
 
-            If flag2 Then
-                While tokenEnumerator IsNot Nothing
-
-                    If tokenEnumerator.Current.Token = Token.EndIf Then
-                        ifStatement2.EndIfToken = tokenEnumerator.Current
-                        flag = True
+            If foundElseIf Then
+                While tokenEnum IsNot Nothing
+                    If tokenEnum.Current.Token = Token.EndIf Then
+                        ifStatement.EndIfToken = tokenEnum.Current
+                        foundEndIf = True
                         Exit While
                     End If
 
-                    If tokenEnumerator.Current.Token = Token.Else Then
-                        ifStatement2.ElseToken = tokenEnumerator.Current
-                        flag3 = True
+                    If tokenEnum.Current.Token = Token.Else Then
+                        ifStatement.ElseToken = tokenEnum.Current
+                        foundElse = True
                         Exit While
                     End If
 
-                    If tokenEnumerator.Current.Token = Token.Sub OrElse tokenEnumerator.Current.Token = Token.EndSub OrElse
-                              tokenEnumerator.Current.Token = Token.Function OrElse tokenEnumerator.Current.Token = Token.EndFunction OrElse
-                              tokenEnumerator.Current.Token <> Token.ElseIf Then
+                    If tokenEnum.Current.Token = Token.Sub OrElse tokenEnum.Current.Token = Token.EndSub OrElse
+                              tokenEnum.Current.Token = Token.Function OrElse tokenEnum.Current.Token = Token.EndFunction OrElse
+                              tokenEnum.Current.Token <> Token.ElseIf Then
                         Exit While
                     End If
 
-                    ifStatement2.ElseIfStatements.Add(ConstructElseIfStatement(tokenEnumerator))
+                    ifStatement.ElseIfStatements.Add(ConstructElseIfStatement(tokenEnum))
                 End While
             End If
 
-            If flag3 Then
-                tokenEnumerator.MoveNext()
-                ExpectEndOfLine(tokenEnumerator)
-                tokenEnumerator = ReadNextLine()
+            If foundElse Then
+                tokenEnum.MoveNext()
+                ExpectEndOfLine(tokenEnum)
+                tokenEnum = ReadNextLine()
 
-                While tokenEnumerator IsNot Nothing
+                While tokenEnum IsNot Nothing
 
-                    If tokenEnumerator.Current.Token = Token.EndIf Then
-                        ifStatement2.EndIfToken = tokenEnumerator.Current
-                        flag = True
+                    If tokenEnum.Current.Token = Token.EndIf Then
+                        ifStatement.EndIfToken = tokenEnum.Current
+                        foundEndIf = True
                         Exit While
                     End If
 
-                    If tokenEnumerator.Current.Token = Token.Sub OrElse tokenEnumerator.Current.Token = Token.EndSub OrElse
-                                tokenEnumerator.Current.Token = Token.Function OrElse tokenEnumerator.Current.Token = Token.EndFunction OrElse
-                                tokenEnumerator.Current.Token = Token.Else Then
+                    If tokenEnum.Current.Token = Token.Sub OrElse
+                                tokenEnum.Current.Token = Token.EndSub OrElse
+                                tokenEnum.Current.Token = Token.Function OrElse
+                                tokenEnum.Current.Token = Token.EndFunction OrElse
+                                tokenEnum.Current.Token = Token.Else Then
                         Exit While
                     End If
 
-                    ifStatement2.ElseStatements.Add(GetStatementFromTokens(tokenEnumerator))
-                    tokenEnumerator = ReadNextLine()
+                    ifStatement.ElseStatements.Add(GetStatementFromTokens(tokenEnum))
+                    tokenEnum = ReadNextLine()
                 End While
             End If
 
-            If flag Then
-                tokenEnumerator.MoveNext()
-                ExpectEndOfLine(tokenEnumerator)
+            If foundEndIf Then
+                tokenEnum.MoveNext()
+                ExpectEndOfLine(tokenEnum)
             Else
                 AddError(ResourceHelper.GetString("EndIfExpected"))
             End If
 
-            Return ifStatement2
+            Return ifStatement
         End Function
 
-        Private Function ConstructElseIfStatement(ByRef tokenEnumerator As TokenEnumerator) As ElseIfStatement
-            Dim elseIfStatement As ElseIfStatement = New ElseIfStatement()
-            elseIfStatement.StartToken = tokenEnumerator.Current
-            elseIfStatement.ElseIfToken = tokenEnumerator.Current
-            Dim elseIfStatement2 = elseIfStatement
-            tokenEnumerator.MoveNext()
+        Private Function ConstructElseIfStatement(ByRef tokenEnum As TokenEnumerator) As ElseIfStatement
+            Dim elseIfStatement As New ElseIfStatement() With {
+                    .StartToken = tokenEnum.Current,
+                    .ElseIfToken = tokenEnum.Current
+            }
 
-            If EatLogicalExpression(tokenEnumerator, elseIfStatement2.Condition) AndAlso EatToken(tokenEnumerator, Token.Then, elseIfStatement2.ThenToken) Then
-                ExpectEndOfLine(tokenEnumerator)
+            tokenEnum.MoveNext()
+
+            If EatLogicalExpression(tokenEnum, elseIfStatement.Condition) AndAlso
+                        EatToken(tokenEnum, Token.Then, elseIfStatement.ThenToken) Then
+                ExpectEndOfLine(tokenEnum)
             End If
 
-            tokenEnumerator = ReadNextLine()
+            tokenEnum = ReadNextLine()
 
-            While tokenEnumerator IsNot Nothing AndAlso tokenEnumerator.Current.Token <> Token.EndIf AndAlso tokenEnumerator.Current.Token <> Token.Else AndAlso tokenEnumerator.Current.Token <> Token.ElseIf AndAlso
-                        tokenEnumerator.Current.Token <> Token.Sub AndAlso tokenEnumerator.Current.Token <> Token.EndSub AndAlso
-                        tokenEnumerator.Current.Token <> Token.Function AndAlso tokenEnumerator.Current.Token <> Token.EndFunction
+            While tokenEnum IsNot Nothing AndAlso
+                        tokenEnum.Current.Token <> Token.EndIf AndAlso
+                        tokenEnum.Current.Token <> Token.Else AndAlso
+                        tokenEnum.Current.Token <> Token.ElseIf AndAlso
+                        tokenEnum.Current.Token <> Token.Sub AndAlso
+                        tokenEnum.Current.Token <> Token.EndSub AndAlso
+                        tokenEnum.Current.Token <> Token.Function AndAlso
+                        tokenEnum.Current.Token <> Token.EndFunction
 
-                elseIfStatement2.ThenStatements.Add(GetStatementFromTokens(tokenEnumerator))
-                tokenEnumerator = ReadNextLine()
+                elseIfStatement.ThenStatements.Add(GetStatementFromTokens(tokenEnum))
+                tokenEnum = ReadNextLine()
             End While
 
-            Return elseIfStatement2
+            Return elseIfStatement
         End Function
 
         Private Function ConstructSubStatement(tokenEnumerator As TokenEnumerator) As SubroutineStatement
@@ -277,14 +290,18 @@ Namespace Microsoft.SmallBasic
             Dim flag = False
 
 
-            Dim returnLabelToken = New TokenInfo() With {
+            Dim returnLabelToken As New TokenInfo() With {
                     .Text = $"_EXIT_SUB_{subroutine.Name.NormalizedText}",
                     .Token = Token.Identifier,
                     .TokenType = TokenType.Identifier
                 }
 
             Dim returnLabelStatement As New LabelStatement() With {
-                .ColonToken = New TokenInfo With {.Text = ":", .Token = Token.Colon, .TokenType = TokenType.Delimiter},
+                .ColonToken = New TokenInfo With {
+                        .Text = ":",
+                        .Token = Token.Colon,
+                        .TokenType = TokenType.Delimiter
+                },
                 .StartToken = returnLabelToken,
                 .LabelToken = returnLabelToken,
                 .subroutine = subroutine
@@ -495,11 +512,11 @@ Namespace Microsoft.SmallBasic
                         Return Nothing
                     End If
 
-                    Dim negativeExpression As NegativeExpression = New NegativeExpression()
-                    negativeExpression.Negation = tokenEnumerator.Current
-                    negativeExpression.Expression = expression2
-                    negativeExpression.Precedence = 9
-                    expression = negativeExpression
+                    expression = New NegativeExpression() With {
+                        .Negation = tokenEnumerator.Current,
+                        .Expression = expression2,
+                        .Precedence = 9
+                    }
             End Select
 
             expression.StartToken = current
@@ -604,13 +621,13 @@ Namespace Microsoft.SmallBasic
                     .Subroutine = SubroutineStatement.Current
                 }
 
-                Dim expression2 As Expression
+                Dim indexerExpression As Expression = Nothing
 
                 While True
                     EatToken(tokenEnumerator, Token.LeftBracket)
-                    expression2 = BuildArithmeticExpression(tokenEnumerator)
+                    indexerExpression = BuildArithmeticExpression(tokenEnumerator)
 
-                    If expression2 Is Nothing Then
+                    If indexerExpression Is Nothing Then
                         AddError(tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected"))
                         Exit While
                     End If
@@ -626,7 +643,7 @@ Namespace Microsoft.SmallBasic
                         .EndToken = tokenEnumerator.Current,
                         .Precedence = 9,
                         .LeftHand = leftHand,
-                        .Indexer = expression2
+                        .Indexer = indexerExpression
                     }
                     leftHand = arrayExpression
                 End While
@@ -636,7 +653,7 @@ Namespace Microsoft.SmallBasic
                     .EndToken = tokenEnumerator.Current,
                     .Precedence = 9,
                     .LeftHand = leftHand,
-                    .Indexer = expression2
+                    .Indexer = indexerExpression
                 }
             End If
 
@@ -789,7 +806,6 @@ Namespace Microsoft.SmallBasic
             Me.New(Nothing, Nothing)
         End Sub
 
-
         Public Sub New(errors As List(Of [Error]), typeInfoBag As TypeInfoBag)
             _Errors = errors
             _TypeInfoBag = typeInfoBag
@@ -855,8 +871,8 @@ Namespace Microsoft.SmallBasic
                 Dim tokenEnumerator = ReadNextLine()
                 If tokenEnumerator Is Nothing Then Exit While
 
-                Dim statementFromTokens = GetStatementFromTokens(tokenEnumerator)
-                _ParseTree.Add(statementFromTokens)
+                Dim statement = GetStatementFromTokens(tokenEnumerator)
+                _ParseTree.Add(statement)
             End While
         End Sub
 

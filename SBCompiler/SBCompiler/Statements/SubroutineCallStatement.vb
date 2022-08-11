@@ -11,6 +11,12 @@ Namespace Microsoft.SmallBasic.Statements
         Public IsFunctionCall As Boolean
         Public OuterSubRoutine As SubroutineStatement
 
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If Args.Count > 0 AndAlso lineNumber <= Args.Last.EndToken.Line Then Return Me
+            Return Nothing
+        End Function
+
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             Name.Parent = Me

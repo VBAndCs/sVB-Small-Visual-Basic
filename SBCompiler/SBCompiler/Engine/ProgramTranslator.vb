@@ -201,7 +201,7 @@ Namespace Microsoft.SmallBasic.Engine
                 .LabelName = labelName3,
                 .LineNumber = statement.StartToken.Line
             })
-            TranslateStatements(instructions, statement.ForBody)
+            TranslateStatements(instructions, statement.Body)
             instructions.Add(New FieldAssignmentInstruction With {
                 .FieldName = statement.Iterator.NormalizedText,
                 .RightSide = New BinaryExpression With {
@@ -252,17 +252,19 @@ Namespace Microsoft.SmallBasic.Engine
                 .LineNumber = statement.StartToken.Line
             })
 
-            For Each elseIfStatement As ElseIfStatement In statement.ElseIfStatements
+            For Each elseIfStatement In statement.ElseIfStatements
                 instructions.Add(New LabelInstruction With {
                     .LabelName = labelName2,
                     .LineNumber = statement.StartToken.Line
                 })
+
                 labelName2 = CreateNewLabel()
                 instructions.Add(New IfNotGotoInstruction With {
                     .Condition = elseIfStatement.Condition,
                     .LabelName = labelName2,
                     .LineNumber = elseIfStatement.StartToken.Line
                 })
+
                 TranslateStatements(instructions, elseIfStatement.ThenStatements)
                 instructions.Add(New GotoInstruction With {
                     .LabelName = labelName,
@@ -320,7 +322,7 @@ Namespace Microsoft.SmallBasic.Engine
                 .LabelName = labelName,
                 .LineNumber = statement.StartToken.Line
             })
-            TranslateStatements(instructions, statement.WhileBody)
+            TranslateStatements(instructions, statement.Body)
             instructions.Add(New GotoInstruction With {
                 .LabelName = labelName2,
                 .LineNumber = statement.StartToken.Line

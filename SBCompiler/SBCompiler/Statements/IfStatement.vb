@@ -18,7 +18,50 @@ Namespace Microsoft.SmallBasic.Statements
         Public ElseToken As TokenInfo
         Public EndIfToken As TokenInfo
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If lineNumber <= ThenToken.Line Then Return Me
+            If lineNumber > EndIfToken.Line Then Return Nothing
+
+            For Each statment In ThenStatements
+                Dim st = statment.GetStatement(lineNumber)
+                If st IsNot Nothing Then Return st
+            Next
+
+            For Each statment In ElseIfStatements
+                Dim st = statment.GetStatement(lineNumber)
+                If st IsNot Nothing Then Return st
+            Next
+
+            For Each statment In ElseStatements
+                Dim st = statment.GetStatement(lineNumber)
+                If st IsNot Nothing Then Return st
+            Next
+
+            If lineNumber <= EndIfToken.Line Then Return Me
+
+            Return Nothing
+        End Function
+
+
+
+        Public Overrides Function GetKeywords() As LegalTokens
+            Dim spans As New LegalTokens
+            spans.Add(IfToken)
+            spans.Add(ThenToken)
+
+            For Each statement In ElseIfStatements
+                spans.Add(statement.ElseIfToken)
+                spans.Add(statement.ThenToken)
+            Next
+
+            spans.Add(ElseToken)
+            spans.Add(EndIfToken)
+            Return spans
+        End Function
+
+
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             IfToken.Parent = Me
             ThenToken.Parent = Me

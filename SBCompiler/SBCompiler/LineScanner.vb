@@ -220,7 +220,7 @@ Namespace Microsoft.SmallBasic
                     If Char.IsLetter(nextChar) OrElse nextChar = "_"c Then
                         _currentIndex -= 1
                         Dim text As String = ReadKeywordOrIdentifier()
-                        tokenInfo.Token = MatchToken(text)
+                        tokenInfo.Token = GetToken(text)
                         tokenInfo.Text = text
 
                     ElseIf Char.IsDigit(nextChar) OrElse nextChar = "-"c OrElse nextChar = _decimalSeparator AndAlso Char.IsDigit(nextChar2) Then
@@ -375,7 +375,7 @@ Namespace Microsoft.SmallBasic
             End Select
         End Function
 
-        Private Shared Function MatchToken(ByVal tokenText As String) As Token
+        Public Shared Function GetToken(tokenText As String) As Token
             Select Case tokenText.ToLower(CultureInfo.InvariantCulture)
                 Case "and"
                     Return Token.And
@@ -432,7 +432,7 @@ Namespace Microsoft.SmallBasic
             End Select
         End Function
 
-        Private Shared Function GetTokenType(ByVal token As Token) As TokenType
+        Public Shared Function GetTokenType(token As Token) As TokenType
             Select Case token
                 Case Token.Illegal
                     Return TokenType.Illegal

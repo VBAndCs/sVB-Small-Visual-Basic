@@ -9,6 +9,12 @@ Namespace Microsoft.SmallBasic.Statements
         Public ColonToken As TokenInfo
         Public subroutine As SubroutineStatement
 
+        Public Overrides Function GetStatement(lineNumber) As Statement
+            If lineNumber < StartToken.Line Then Return Nothing
+            If lineNumber <= LabelToken.Line Then Return Me
+            Return Nothing
+        End Function
+
         Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             LabelToken.Parent = Me

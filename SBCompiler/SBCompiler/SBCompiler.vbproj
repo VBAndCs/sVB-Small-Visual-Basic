@@ -111,6 +111,7 @@
     <Compile Include="Statements\IfStatement.vb" />
     <Compile Include="Statements\IllegalStatement.vb" />
     <Compile Include="Statements\LabelStatement.vb" />
+    <Compile Include="Statements\LegalTokens.vb" />
     <Compile Include="Statements\LoopStatement.vb" />
     <Compile Include="Statements\ReturnStatement.vb" />
     <Compile Include="Statements\MethodCallStatement.vb" />

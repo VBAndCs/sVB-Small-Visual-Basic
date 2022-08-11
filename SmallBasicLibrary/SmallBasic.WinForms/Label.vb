@@ -48,9 +48,6 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the path of the image that is displayed on the label
         ''' </summary>
-        ''' <param name="formName"></param>
-        ''' <param name="labelName"></param>
-        ''' <returns></returns>
         <ExProperty>
         Public Shared Function GetImage(formName As Primitive, labelName As Primitive) As Primitive
             App.Invoke(

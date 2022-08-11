@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v1.4.1" Loaded="Window_Loaded"
+        Title="Small Visual Basic v1.4.2" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
     
@@ -73,38 +73,81 @@
  </FrameworkElement.Resources>
     
   <UIElement.CommandBindings>
-    <CommandBinding Command="{x:Static l:MainWindow.NewCommand}" Executed="OnFileNew" />
-    <CommandBinding Command="{x:Static l:MainWindow.OpenCommand}" Executed="OnFileOpen" />
-    <CommandBinding Command="{x:Static l:MainWindow.SaveCommand}" CanExecute="CanFileSave" Executed="OnFileSave" />
-    <CommandBinding Command="{x:Static l:MainWindow.SaveAsCommand}" CanExecute="CanFileSave" Executed="OnFileSaveAs" />
-    <CommandBinding Command="{x:Static l:MainWindow.WebSaveCommand}" CanExecute="CanWebSave" Executed="OnWebSave" />
-    <CommandBinding Command="{x:Static l:MainWindow.WebLoadCommand}" Executed="OnWebLoad" />
-    <CommandBinding Command="{x:Static l:MainWindow.CutCommand}" CanExecute="CanEditCut" Executed="OnEditCut" />
-    <CommandBinding Command="{x:Static l:MainWindow.CopyCommand}" CanExecute="CanEditCopy" Executed="OnEditCopy" />
-    <CommandBinding Command="{x:Static l:MainWindow.PasteCommand}" CanExecute="CanEditPaste" Executed="OnEditPaste" />
-    <CommandBinding Command="{x:Static l:MainWindow.FindCommand}" Executed="OnFind" />
-    <CommandBinding Command="{x:Static l:MainWindow.FindNextCommand}" Executed="OnFindNext" />
-    <CommandBinding Command="{x:Static l:MainWindow.UndoCommand}" CanExecute="CanEditUndo" Executed="OnEditUndo" />
-    <CommandBinding Command="{x:Static l:MainWindow.RedoCommand}" CanExecute="CanEditRedo" Executed="OnEditRedo" />
-    <CommandBinding Command="{x:Static l:MainWindow.FormatCommand}" Executed="OnFormatProgram" />
-    <CommandBinding Command="{x:Static l:MainWindow.RunCommand}" CanExecute="CanRunProgram" Executed="OnProgramRun" />
-    <CommandBinding Command="{x:Static l:MainWindow.EndProgramCommand}" Executed="OnProgramEnd" />
-    <CommandBinding Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" CanExecute="CanExportToVisualBasic" Executed="OnExportToVisualBasic" />
+        <CommandBinding Command="{x:Static l:MainWindow.NewCommand}" 
+                    Executed="OnFileNew" />
+        <CommandBinding Command="{x:Static l:MainWindow.OpenCommand}" 
+                    Executed="OnFileOpen" />
+        <CommandBinding Command="{x:Static l:MainWindow.SaveCommand}" 
+                    CanExecute="CanFileSave" Executed="OnFileSave" />
+        <CommandBinding Command="{x:Static l:MainWindow.SaveAsCommand}" 
+                    CanExecute="CanFileSave" Executed="OnFileSaveAs" />
+        <CommandBinding Command="{x:Static l:MainWindow.WebSaveCommand}" 
+                    CanExecute="CanWebSave" Executed="OnWebSave" />
+        <CommandBinding Command="{x:Static l:MainWindow.WebLoadCommand}"
+                    Executed="OnWebLoad" />
+        <CommandBinding Command="{x:Static l:MainWindow.CutCommand}" 
+                    CanExecute="CanEditCut" Executed="OnEditCut" />
+        <CommandBinding Command="{x:Static l:MainWindow.CopyCommand}" 
+                    CanExecute="CanEditCopy" Executed="OnEditCopy" />
+        <CommandBinding Command="{x:Static l:MainWindow.PasteCommand}" 
+                    CanExecute="CanEditPaste" Executed="OnEditPaste" />
+        <CommandBinding Command="{x:Static l:MainWindow.FindCommand}" 
+                    Executed="OnFind" />
+        <CommandBinding Command="{x:Static l:MainWindow.FindNextCommand}" 
+                    Executed="OnFindNext" />
+        <CommandBinding Command="{x:Static l:MainWindow.SelectNextMatchCommand}" 
+                    Executed="OnSelectNextMatch" />
+        <CommandBinding Command="{x:Static l:MainWindow.SelectPrevMatchCommand}" 
+                    Executed="OnSelectPrevMatch" />
+        <CommandBinding Command="{x:Static l:MainWindow.UndoCommand}" 
+                    CanExecute="CanEditUndo" Executed="OnEditUndo" />
+        <CommandBinding Command="{x:Static l:MainWindow.RedoCommand}" 
+                    CanExecute="CanEditRedo" Executed="OnEditRedo" />
+        <CommandBinding Command="{x:Static l:MainWindow.FormatCommand}" 
+                    Executed="OnFormatProgram" />
+        <CommandBinding Command="{x:Static l:MainWindow.RunCommand}" 
+                    CanExecute="CanRunProgram" Executed="OnProgramRun" />
+        <CommandBinding Command="{x:Static l:MainWindow.EndProgramCommand}" 
+                    Executed="OnProgramEnd" />
+        <CommandBinding Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" 
+                    CanExecute="CanExportToVisualBasic" Executed="OnExportToVisualBasic" />
   </UIElement.CommandBindings>
+    
   <UIElement.InputBindings>
-    <KeyBinding Command="{x:Static l:MainWindow.NewCommand}" Gesture="Ctrl+N" />
-    <KeyBinding Command="{x:Static l:MainWindow.OpenCommand}" Gesture="Ctrl+O" />
-    <KeyBinding Command="{x:Static l:MainWindow.SaveCommand}" Gesture="Ctrl+S" />
-    <KeyBinding Command="{x:Static l:MainWindow.WebSaveCommand}" Gesture="Ctrl+Shift+S" />
-    <KeyBinding Command="{x:Static l:MainWindow.WebLoadCommand}" Gesture="Ctrl+Shift+O" />
-    <KeyBinding Command="{x:Static l:MainWindow.CutCommand}" Gesture="Ctrl+X" />
-    <KeyBinding Command="{x:Static l:MainWindow.CopyCommand}" Gesture="Ctrl+C" />
-    <KeyBinding Command="{x:Static l:MainWindow.PasteCommand}" Gesture="Ctrl+V" />
-    <KeyBinding Command="{x:Static l:MainWindow.FindCommand}" Gesture="Ctrl+F" />
-    <KeyBinding Command="{x:Static l:MainWindow.FindNextCommand}" Gesture="F3" />
-    <KeyBinding Command="{x:Static l:MainWindow.UndoCommand}" Gesture="Ctrl+Z" />
-    <KeyBinding Command="{x:Static l:MainWindow.RedoCommand}" Gesture="Ctrl+Y" />
-    <KeyBinding Command="{x:Static l:MainWindow.RunCommand}" Gesture="F5" />
+        <KeyBinding Command="{x:Static l:MainWindow.NewCommand}" 
+                Gesture="Ctrl+N" />
+        <KeyBinding Command="{x:Static l:MainWindow.OpenCommand}" 
+                Gesture="Ctrl+O" />
+        <KeyBinding Command="{x:Static l:MainWindow.SaveCommand}" 
+                Gesture="Ctrl+S" />
+        <KeyBinding Command="{x:Static l:MainWindow.WebSaveCommand}" 
+                Gesture="Ctrl+Shift+S" />
+        <KeyBinding Command="{x:Static l:MainWindow.WebLoadCommand}" 
+                Gesture="Ctrl+Shift+O" />
+        <KeyBinding Command="{x:Static l:MainWindow.CutCommand}" 
+                Gesture="Ctrl+X" />
+        <KeyBinding Command="{x:Static l:MainWindow.CopyCommand}" 
+                Gesture="Ctrl+C" />
+        <KeyBinding Command="{x:Static l:MainWindow.PasteCommand}" 
+                Gesture="Ctrl+V" />
+        <KeyBinding Command="{x:Static l:MainWindow.FindCommand}" 
+                Gesture="Ctrl+F" />
+        <KeyBinding Command="{x:Static l:MainWindow.FindNextCommand}" 
+                Gesture="F3" />
+        <KeyBinding Command="{x:Static l:MainWindow.SelectNextMatchCommand}" 
+                Gesture="F4" />
+        <KeyBinding Command="{x:Static l:MainWindow.SelectNextMatchCommand}" 
+                Gesture="Ctrl+Shift+Down"/>
+        <KeyBinding Command="{x:Static l:MainWindow.SelectPrevMatchCommand}" 
+                Gesture="Shift+F4" />
+        <KeyBinding Command="{x:Static l:MainWindow.SelectPrevMatchCommand}" 
+                Gesture="Ctrl+Shift+Up"/>
+        <KeyBinding Command="{x:Static l:MainWindow.UndoCommand}" 
+                Gesture="Ctrl+Z" />
+        <KeyBinding Command="{x:Static l:MainWindow.RedoCommand}" 
+                Gesture="Ctrl+Y" />
+        <KeyBinding Command="{x:Static l:MainWindow.RunCommand}" 
+                Gesture="F5" />
   </UIElement.InputBindings>
     
     <Grid>

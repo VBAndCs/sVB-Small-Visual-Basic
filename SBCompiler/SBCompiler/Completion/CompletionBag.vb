@@ -24,7 +24,10 @@ Namespace Microsoft.SmallBasic.Completion
             End Get
         End Property
 
-        Public Sub New(ByVal typeInfoBag As TypeInfoBag, ByVal symbolTable As SymbolTable)
+        Public Sub New(
+                      typeInfoBag As TypeInfoBag,
+                      symbolTable As SymbolTable
+                 )
             _typeInfoBag = typeInfoBag
             _symbolTable = symbolTable
             _completionItems = New List(Of CompletionItem)()

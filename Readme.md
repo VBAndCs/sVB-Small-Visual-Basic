@@ -51,6 +51,10 @@ EndFunction
 
 7. Enhancing the auto formatting of code, to adjust indentation of sub lines, and adjust spaces between tokens.
 
+8. The code editor now highlights any matching pairs such as `()`, `[]` and `{}`. It also highlights the keywords of the Sub, Function, If, For, and While bolcks whenever you insert the caret on on of them. You can move to the next highlighted token by pressing `F4` or `Ctrl+Shift+Down`, and you can move to the previous highlighted token by pressing `Shift+F4` or `Ctrl+Shift+Up`.
+You can also press such shortcuts keys on any line even there is no highlighted keywords. This will highlight the nearest block that contains the statement, and move to the neareest keyword up or down according to the shourtcut keys you are using.
+
+
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
 

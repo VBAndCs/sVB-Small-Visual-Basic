@@ -168,7 +168,7 @@ Namespace Microsoft.Nautilus.Text.Editor
 
             _ensureVisiblePending = False
             Dim span1 As New Span(Position.TextInsertionIndex, 0)
-            If Not _avalonTextView.ViewScroller.EnsureSpanVisible(span1, 2.0 + Width, 0.0) Then
+            If Not _avalonTextView.ViewScroller.EnsureSpanVisible(span1, 20.0 + Width, 20.0) Then
                 _avalonTextView.ViewScroller.EnsureSpanVisible(span1, 0.0, 0.0)
             End If
         End Sub

@@ -23,8 +23,6 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new TextBox control to the form
         ''' </summary>
-        ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
-        ''' <param name="textBoxName">A unique name for the control.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -69,8 +67,6 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Label control to the form
         ''' </summary>
-        ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
-        ''' <param name="labelName">A unique name for the control.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -115,8 +111,6 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new IamgeBox control to the form
         ''' </summary>
-        ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
-        ''' <param name="imageBoxName">A unique name for the control.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -170,8 +164,6 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Button control to the form
         ''' </summary>
-        ''' <param name="formName">The name of the form. Omit this param if you call this method from the form name</param>
-        ''' <param name="buttonName">A unique name for the control.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -221,8 +213,6 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Button control to the form
         ''' </summary>
-        ''' <param name="formName">The name of the form. Omit this param when you call this method from the form name</param>
-        ''' <param name="listBoxName">A unique name for the control.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -267,8 +257,6 @@ Namespace WinForms
         ''' <summary>
         ''' Returns True if the form dsiplays a control with the given name.
         ''' </summary>
-        ''' <param name="formName">The name of the form. Omit this param when you call this method from the form name</param>
-        ''' <param name="controlName">the name of the control to search for</param>
         ''' <returns>True or False</returns>
         <ExMethod>
         Public Shared Function ContainsControl(formName As Primitive, controlName As Primitive) As Primitive
@@ -385,7 +373,6 @@ Namespace WinForms
         ''' <summary>
         ''' Closes the form. You can't show the form after it is closed.
         ''' </summary>
-        ''' <param name="formName"></param>
         <ExMethod>
         Public Shared Sub Close(formName As Primitive)
             App.Invoke(
