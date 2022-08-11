@@ -210,12 +210,13 @@ Namespace Microsoft.SmallBasic.Documents
                             End If
                             _MdiView.FreezeCmbEvents = False
 
-                            If WordsAreAlreadyHighlighed OrElse (
+                            If Not sourceCodeChanged AndAlso (WordsAreAlreadyHighlighed OrElse (
                                         _editorControl.ContainsWordHighlights AndAlso
-                                        _editorControl.IsHighlighted(e.NewPosition.TextInsertionIndex)
-                                    ) Then
+                                        _editorControl.IsHighlighted(_editorControl.TextView.Caret.Position.TextInsertionIndex)
+                                    )) Then
                                 WordsAreAlreadyHighlighed = False
                             Else
+                                _editorControl.ClearHighlighting()
                                 HighlightMatchingPair()
                             End If
 
