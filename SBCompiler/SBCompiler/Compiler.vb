@@ -27,13 +27,13 @@ Namespace Microsoft.SmallBasic
             PopulatePrimitiveMethods()
         End Sub
 
-        Public Function Compile(source As TextReader) As List(Of [Error])
+        Public Function Compile(source As TextReader, Optional autoCompletion As Boolean = False)
             If source Is Nothing Then
                 Throw New ArgumentNullException("source")
             End If
 
             _errors.Clear()
-            _Parser.Parse(source)
+            _Parser.Parse(source, autoCompletion)
             If _errors.Count = 0 Then
                 Dim semanticAnalyzer As New SemanticAnalyzer(_Parser, _TypeInfoBag)
                 semanticAnalyzer.Analyze()

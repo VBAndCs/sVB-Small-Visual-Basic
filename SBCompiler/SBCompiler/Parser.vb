@@ -814,28 +814,31 @@ Namespace Microsoft.SmallBasic
         End Sub
 
 
-        Dim keepSynbols As Boolean
+        Dim keepSymbols As Boolean
 
-        Public Sub Parse(reader As TextReader)
+        Public Sub Parse(reader As TextReader, Optional autoCompletion As Boolean = False)
             If reader Is Nothing Then
                 Throw New ArgumentNullException("reader")
             End If
 
+
             _TypeInfoBag = TypeInfoBag
 
-            If keepSynbols Then
-                keepSynbols = False
+            If keepSymbols Then
+                keepSymbols = False
             Else
                 _Errors.Clear()
                 _SymbolTable.Reset()
             End If
+
+            _SymbolTable.autoCompletion = autoCompletion
 
             _ParseTree = New List(Of Statement)()
             codeLines = New List(Of String)
             Do
                 Dim line = reader.ReadLine
                 If line Is Nothing Then Exit Do
-                codeLines.Add(Line)
+                codeLines.Add(line)
             Loop
 
             BuildParseTree()
@@ -853,13 +856,14 @@ Namespace Microsoft.SmallBasic
                     End If
                 End If
             Next
+            _SymbolTable.autoCompletion = False
         End Sub
 
         Public Shared Function Parse(code As String, symbolTable As SymbolTable, typeInfoBag As TypeInfoBag) As Parser
             Dim _parser As New Parser()
             _parser._SymbolTable = symbolTable
             _parser._TypeInfoBag = typeInfoBag
-            _parser.keepSynbols = True
+            _parser.keepSymbols = True
             _parser.Parse(New IO.StringReader(code))
             Return _parser
         End Function
@@ -919,7 +923,7 @@ Namespace Microsoft.SmallBasic
 
                 Case Token.ElseIf
                     AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("ElseIfUnexpected"), tokenEnumerator.Current.Text))
-                    Return New IllegalStatement()
+                    Return New IllegalStatement(tokenEnumerator.Current)
 
                 Case Token.Sub, Token.Function
                     statement = ConstructSubStatement(tokenEnumerator)
@@ -959,7 +963,7 @@ Namespace Microsoft.SmallBasic
 
             If statement Is Nothing Then
                 AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
-                Return New IllegalStatement()
+                Return New IllegalStatement(tokenEnumerator.Current)
             End If
 
             If tokenEnumerator.Current.Token = Token.Comment Then

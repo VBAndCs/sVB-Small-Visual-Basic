@@ -6,7 +6,6 @@ Imports Microsoft.SmallBasic.Statements
 Namespace Microsoft.SmallBasic.Completion
     Public Class CompletionHelper
         Private _compiler As Compiler
-        Public Shared AutoCompletion As Boolean
         Public Shared DoNotAddGlobals As Boolean
 
         Public Sub New()
@@ -27,9 +26,7 @@ Namespace Microsoft.SmallBasic.Completion
                     ) As CompletionBag
 
 
-            Completion.CompletionHelper.AutoCompletion = True
-            _compiler.Compile(source)
-            Completion.CompletionHelper.AutoCompletion = False
+            _compiler.Compile(source, True)
 
             Dim completionBag = GetEmptyCompletionBag()
             Dim statement = GetStatement(_compiler, line)
@@ -83,21 +80,29 @@ Namespace Microsoft.SmallBasic.Completion
         End Sub
 
         Public Shared Sub FillAllKeywords(ByVal completionBag As CompletionBag)
+            If DoNotAddGlobals Then Return
+
             FillKeywords(completionBag, Token.If, Token.For, Token.Goto, Token.While, Token.Return, Token.ExitLoop, Token.ContinueLoop)
         End Sub
 
         Public Shared Sub FillLogicalExpressionItems(ByVal completionBag As CompletionBag)
+            If DoNotAddGlobals Then Return
+
             FillExpressionItems(completionBag)
             FillKeywords(completionBag, Token.And, Token.Or)
         End Sub
 
         Public Shared Sub FillExpressionItems(bag As CompletionBag)
+            If DoNotAddGlobals Then Return
+
             FillTypeNames(bag)
             FillVariables(bag)
             FillBooleanLitrals(bag)
         End Sub
 
         Public Shared Sub FillSubroutines(bag As CompletionBag)
+            If DoNotAddGlobals Then Return
+
             For Each subroutine In bag.SymbolTable.Subroutines
                 bag.CompletionItems.Add(New CompletionItem() With {
                     .Name = subroutine.Key,
@@ -109,6 +114,8 @@ Namespace Microsoft.SmallBasic.Completion
         End Sub
 
         Public Shared Sub FillLabels(bag As CompletionBag)
+            If DoNotAddGlobals Then Return
+
             For Each label In bag.SymbolTable.Labels
                 bag.CompletionItems.Add(New CompletionItem() With {
                     .Name = label.Key,
@@ -119,6 +126,8 @@ Namespace Microsoft.SmallBasic.Completion
         End Sub
 
         Public Shared Sub FillBooleanLitrals(bag As CompletionBag)
+            If DoNotAddGlobals Then Return
+
             bag.CompletionItems.Add(New CompletionItem() With {
                 .Name = "True",
                 .DisplayName = "True",
@@ -136,6 +145,8 @@ Namespace Microsoft.SmallBasic.Completion
         Public Shared CurrentColumn As Integer
 
         Public Shared Sub FillVariables(completionBag As CompletionBag)
+            If DoNotAddGlobals Then Return
+
             For Each variable In completionBag.SymbolTable.Variables
                 Dim tokenInfo = variable.Value
                 If tokenInfo.Line = CurrentLine AndAlso tokenInfo.EndColumn = CurrentColumn Then Continue For
@@ -149,6 +160,8 @@ Namespace Microsoft.SmallBasic.Completion
         End Sub
 
         Public Shared Sub FillLocals(completionBag As CompletionBag, subroutine As String)
+            If DoNotAddGlobals Then Return
+
             For Each variable In completionBag.SymbolTable.Locals
                 Dim addToBag = False
                 If subroutine = "" Then
@@ -174,6 +187,8 @@ Namespace Microsoft.SmallBasic.Completion
 
 
         Public Shared Sub FillTypeNames(bag As CompletionBag)
+            If DoNotAddGlobals Then Return
+
             For Each type In bag.TypeInfoBag.Types
                 If Not type.Value.HideFromIntellisense Then
                     bag.CompletionItems.Add(New CompletionItem() With {
@@ -245,6 +260,8 @@ Namespace Microsoft.SmallBasic.Completion
         End Sub
 
         Public Shared Sub FillKeywords(completionBag As CompletionBag, ParamArray keywords As Token())
+            If DoNotAddGlobals Then Return
+
             For Each token In keywords
                 completionBag.CompletionItems.Add(New CompletionItem() With {
                     .Name = token.ToString(),

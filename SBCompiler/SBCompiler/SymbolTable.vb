@@ -54,7 +54,9 @@ Namespace Microsoft.SmallBasic
 
         Dim _typeInfoBag As TypeInfoBag
 
-        Public Sub New(ByVal errors As List(Of [Error]), typeInfoBag As TypeInfoBag)
+        Friend autoCompletion As Boolean
+
+        Public Sub New(errors As List(Of [Error]), typeInfoBag As TypeInfoBag)
             _Errors = errors
             _typeInfoBag = typeInfoBag
             If _Errors Is Nothing Then
@@ -129,7 +131,7 @@ Namespace Microsoft.SmallBasic
 
             Dim key = GetKey(variable)
             If _Locals.ContainsKey(key) Then
-                If Not Completion.CompletionHelper.AutoCompletion Then Return True
+                If Not autoCompletion Then Return True
 
                 Dim varUse = variable.Identifier
                 Dim varDeclaration = _Locals(key).Identifier

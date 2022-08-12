@@ -191,7 +191,7 @@ Namespace Microsoft.SmallBasic.Documents
                     Sub()
                         StillWorking = True
                         Try
-                            Dim handlerName = FindCurrentSub()
+                            Dim handlerName = GetCurrentSubName()
                             _MdiView.FreezeCmbEvents = True
                             If _EventHandlers.ContainsKey(handlerName) Then
                                 UpdateCombos(_EventHandlers(handlerName))
@@ -220,12 +220,12 @@ Namespace Microsoft.SmallBasic.Documents
                                         ) Then
 
                                 If sourceCodeChanged Then
+                                    sourceCodeChanged = False
                                     reCompileSourceCode = True
                                     _editorControl.ClearHighlighting()
                                 End If
 
                                 HighlightMatchingPair()
-                                sourceCodeChanged = False
                             End If
 
                             UpdateCaretPositionText()
@@ -396,6 +396,13 @@ Namespace Microsoft.SmallBasic.Documents
             End If
 
             Return Nothing
+        End Function
+
+        Private Function GetCurrentSubText(lineNumber As Integer) As String
+            Dim snapshot = _editorControl.TextView.TextSnapshot
+            Dim start = snapshot.Lines(CompilerService.FindCurrentSubStart(snapshot, lineNumber)).Start
+            Dim [end] = snapshot.Lines(CompilerService.FindCurrentSubEnd(snapshot, lineNumber)).End
+            Return Me.Text.Substring(start, [end] - start + 1)
         End Function
 
         Public Function GetSpans(tokens As List(Of TokenInfo)) As (Integer, Integer)()
@@ -660,13 +667,13 @@ Namespace Microsoft.SmallBasic.Documents
                             Catch ex As Exception
 
                             End Try
-                        ElseIf LineCode.StartsWith(indent_KeyWord) Then
+                        ElseIf LineCode.StartsWith(indent_Keyword) Then
                             Exit For
                         Else
                             For j = i + 1 To text.LineCount - 1
                                 nextLine = text.GetLineFromLineNumber(j)
                                 LineCode = nextLine.GetText()
-                                If LineCode.StartsWith(indent_KeyWord) Then Exit For
+                                If LineCode.StartsWith(indent_Keyword) Then Exit For
                                 If LineCode = leadingSpace & endBlock Then
                                     addBlockEnd = False
                                     Exit For
@@ -923,7 +930,7 @@ EndSub
 "
 
         Private Const FuncBodyLength As Integer = 37
-        Private Const AddNewFunc As String  = "(Add New Function)"
+        Private Const AddNewFunc As String = "(Add New Function)"
         Private ReadOnly globalFunc As String = vbCrLf & "
 '------------------------------------------------
 Function #( )
@@ -1053,7 +1060,7 @@ EndFunction
             sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
         End Sub
 
-        Public Function FindCurrentSub() As String
+        Public Function GetCurrentSubName() As String
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
             Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
@@ -1086,7 +1093,7 @@ EndFunction
             stopFormatingLine = -1
         End Sub
 
-        Public Function FindEndSub(pos As Integer) As Integer
+        Public Function GetEndSubPos(pos As Integer) As Integer
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
             Dim lineNumber = textView.TextSnapshot.GetLineFromPosition(pos).LineNumber + 1

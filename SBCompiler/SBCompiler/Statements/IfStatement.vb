@@ -139,7 +139,13 @@ Namespace Microsoft.SmallBasic.Statements
             scope.ILGenerator.MarkLabel(endIfLabel)
         End Sub
 
-        Public Overrides Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)
+        Public Overrides Sub PopulateCompletionItems(
+                                         completionBag As CompletionBag,
+                                         line As Integer,
+                                         column As Integer,
+                                         globalScope As Boolean
+                                  )
+
             Select Case line
                 Case StartToken.Line
                     If column < IfToken.EndColumn Then

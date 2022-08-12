@@ -61,8 +61,8 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Public Sub FormatDocument(textBuffer As ITextBuffer, Optional lineNumber As Integer = -1, Optional prettyListing As Boolean = True)
-            Dim currentSnapshot = textBuffer.CurrentSnapshot
-            Dim source As New TextBufferReader(currentSnapshot)
+            Dim snapshot = textBuffer.CurrentSnapshot
+            Dim source As New TextBufferReader(snapshot)
             Dim completionHelper As New CompletionHelper()
             Dim textEdit = textBuffer.CreateEdit()
 
@@ -71,20 +71,20 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Dim start, [end] As Integer
                 If lineNumber = -1 Then
                     start = 0
-                    [end] = currentSnapshot.LineCount - 1
+                    [end] = snapshot.LineCount - 1
                 Else
-                    start = FindCurrentSubStart(currentSnapshot, lineNumber)
-                    [end] = FindCurrentSubEnd(currentSnapshot, lineNumber)
+                    start = FindCurrentSubStart(snapshot, lineNumber)
+                    [end] = FindCurrentSubEnd(snapshot, lineNumber)
                 End If
 
                 Dim lines As New List(Of String)
 
                 For i = start To [end]
-                    lines.Add(currentSnapshot.Lines(i).GetText())
+                    lines.Add(snapshot.Lines(i).GetText())
                 Next
 
                 For lineNum = 0 To lines.Count - 1
-                    Dim line = currentSnapshot.Lines(lineNum + start)
+                    Dim line = snapshot.Lines(lineNum + start)
                     ' (lineNum) to send it ByVal not to be changed ByRef
                     Dim tokens = LineScanner.GetTokens(lines(lineNum), (lineNum), lines)
 
@@ -145,7 +145,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                         If t.subLine > subLine Then
                             lineStart = True
                             lineNum += 1
-                            line = currentSnapshot.Lines(lineNum + start)
+                            line = snapshot.Lines(lineNum + start)
                             If prettyListing OrElse lineNum <> lineNumber Then FormatLine(textEdit, line, tokens, i)
                         Else
                             lineStart = False
@@ -225,9 +225,9 @@ CheckLineEnd:
             End Using
         End Sub
 
-        Public Function FindCurrentSubStart(text As ITextSnapshot, LineNumber As Integer) As Integer
+        Public Function FindCurrentSubStart(textSnapshot As ITextSnapshot, LineNumber As Integer) As Integer
             For i = LineNumber To 0 Step -1
-                Dim line = text.GetLineFromLineNumber(i)
+                Dim line = textSnapshot.GetLineFromLineNumber(i)
                 Dim tokenInfo = LineScanner.GetFirstToken(line.GetText(), i)
 
                 Select Case tokenInfo.Token
@@ -245,9 +245,9 @@ CheckLineEnd:
             Return 0
         End Function
 
-        Public Function FindCurrentSubEnd(text As ITextSnapshot, LineNumber As Integer) As Integer
-            For i = LineNumber + 1 To text.LineCount - 1
-                Dim line = text.GetLineFromLineNumber(i)
+        Public Function FindCurrentSubEnd(textSnapshot As ITextSnapshot, LineNumber As Integer) As Integer
+            For i = LineNumber + 1 To textSnapshot.LineCount - 1
+                Dim line = textSnapshot.GetLineFromLineNumber(i)
                 Dim tokenInfo = LineScanner.GetFirstToken(line.GetText(), i)
                 Select Case tokenInfo.Token
                     Case Token.Sub, Token.Function
@@ -258,7 +258,7 @@ CheckLineEnd:
                 End Select
             Next
 
-            Return text.LineCount - 1
+            Return textSnapshot.LineCount - 1
         End Function
 
 
