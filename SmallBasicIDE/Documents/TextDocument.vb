@@ -35,6 +35,11 @@ Namespace Microsoft.SmallBasic.Documents
         Private _programDetails As Object
         Public Property BaseId As String
 
+        Public Property WordHighlightColor As System.Windows.Media.Color = System.Windows.Media.Colors.LightGray
+
+        Public Property MatchingPairsHighlightColor As System.Windows.Media.Color = System.Windows.Media.Colors.LightGreen
+
+
         Public Property CaretPositionText As String
             Get
                 Return _caretPositionText
@@ -179,7 +184,6 @@ Namespace Microsoft.SmallBasic.Documents
             UpdateGlobalSubsList()
         End Sub
 
-        Public WordsAreAlreadyHighlighed As Boolean
 
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
             If IgnoreCaretPosChange Or StillWorking Then Return
@@ -210,14 +214,18 @@ Namespace Microsoft.SmallBasic.Documents
                             End If
                             _MdiView.FreezeCmbEvents = False
 
-                            If Not sourceCodeChanged AndAlso (WordsAreAlreadyHighlighed OrElse (
-                                        _editorControl.ContainsWordHighlights AndAlso
-                                        _editorControl.IsHighlighted(_editorControl.TextView.Caret.Position.TextInsertionIndex)
-                                    )) Then
-                                WordsAreAlreadyHighlighed = False
-                            Else
-                                _editorControl.ClearHighlighting()
+                            If sourceCodeChanged OrElse Not (
+                                            _editorControl.ContainsWordHighlights AndAlso
+                                            _editorControl.IsHighlighted(_editorControl.TextView.Caret.Position.TextInsertionIndex)
+                                        ) Then
+
+                                If sourceCodeChanged Then
+                                    reCompileSourceCode = True
+                                    _editorControl.ClearHighlighting()
+                                End If
+
                                 HighlightMatchingPair()
+                                sourceCodeChanged = False
                             End If
 
                             UpdateCaretPositionText()
@@ -303,9 +311,9 @@ Namespace Microsoft.SmallBasic.Documents
                     Case matchingPair2
                         If pair1Count = 0 Then
                             If index < i Then
-                                _editorControl.HighlightWords((index, 1), (i, 1))
+                                _editorControl.HighlightWords(_MatchingPairsHighlightColor, (index, 1), (i, 1))
                             Else
-                                _editorControl.HighlightWords((i, 1), (index, 1))
+                                _editorControl.HighlightWords(_MatchingPairsHighlightColor, (i, 1), (index, 1))
                             End If
                             Return
                         End If
@@ -319,7 +327,7 @@ Namespace Microsoft.SmallBasic.Documents
             Dim pos = textView.Caret.Position.TextInsertionIndex
             Dim lineNumber = textView.TextSnapshot.GetLineNumberFromPosition(pos)
             Dim statement = GetBlock(lineNumber, Nothing)
-            _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+            _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
         End Sub
 
         Private Sub HighlightBlockKeywords()
@@ -345,19 +353,19 @@ Namespace Microsoft.SmallBasic.Documents
             Select Case token
                 Case Token.Sub, Token.EndSub, Token.Function, Token.EndFunction, Token.Return
                     Dim statement = GetBlock(lineNumber, GetType(Statements.SubroutineStatement))
-                    _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+                    _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
                 Case Token.If, Token.Then, Token.ElseIf, Token.Else, Token.EndIf
                     Dim statement = GetBlock(lineNumber, GetType(Statements.IfStatement))
-                    _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+                    _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
                 Case Token.For, Token.To, Token.Step, Token.Next, Token.EndFor
                     Dim statement = GetBlock(lineNumber, GetType(Statements.ForStatement))
-                    _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+                    _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
                 Case Token.While, Token.Wend, Token.EndWhile
                     Dim statement = GetBlock(lineNumber, GetType(Statements.WhileStatement))
-                    _editorControl.HighlightWords(GetSpans(statement?.GetKeywords()))
+                    _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
                 Case Token.ContinueLoop, Token.ExitLoop
 
@@ -366,8 +374,8 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public Function GetBlock(lineNumber As Integer, statementType As Type) As Statements.Statement
 
-            If sourceCodeChanged Then
-                sourceCodeChanged = False
+            If reCompileSourceCode Then
+                reCompileSourceCode = False
                 highlightCompiler.Compile(New StringReader(Me.Text))
             End If
 
@@ -508,6 +516,7 @@ Namespace Microsoft.SmallBasic.Documents
         Dim _formatting As Boolean
 
         Dim sourceCodeChanged As Boolean = True
+        Dim reCompileSourceCode As Boolean
 
         Private Sub OnTextBufferChanged(sender As Object, e As TextChangedEventArgs)
             sourceCodeChanged = True

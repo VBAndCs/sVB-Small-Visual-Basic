@@ -328,10 +328,10 @@ Namespace Microsoft.Windows.Controls
             End If
         End Sub
 
-
-        Public Property WordHighlightingColor As Color = Colors.Gray
-
-        Public Sub HighlightWords(ParamArray spans() As (Start As Integer, Lenght As Integer))
+        Public Sub HighlightWords(
+                         highlightColor As Color,
+                         ParamArray spans() As (Start As Integer, Lenght As Integer)
+                   )
 
             If spans Is Nothing OrElse spans.Count = 0 Then Return
 
@@ -343,7 +343,7 @@ Namespace Microsoft.Windows.Controls
                 markers.Add(New FindMarker(
                           New TextSpan(textSnapshot1, span.Start, span.Lenght,
                                        SpanTrackingMode.EdgeInclusive),
-                          WordHighlightingColor
+                          highlightColor
                        ))
             Next
 

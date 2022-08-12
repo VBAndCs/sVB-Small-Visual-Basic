@@ -49,7 +49,7 @@ Namespace Microsoft.SmallBasic.Completion
                         line As Integer
                   ) As Statement
 
-            For i = compiler.Parser.ParseTree.Count - 1 To 0 Step -1
+            For i = compiler.Parser.ParseTree?.Count - 1 To 0 Step -1
                 Dim statement = compiler.Parser.ParseTree(i)
 
                 If line >= statement.StartToken.Line Then
