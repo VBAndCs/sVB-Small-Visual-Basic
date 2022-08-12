@@ -16,7 +16,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public Body As New List(Of Statement)()
         Public SubToken As TokenInfo
         Public EndSubToken As TokenInfo
-        Friend ReturnStatement As ReturnStatement
+        Friend ReturnStatements As New List(Of ReturnStatement)
 
         Public Overrides Function GetStatement(lineNumber) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
@@ -33,7 +33,9 @@ Namespace Microsoft.SmallBasic.Statements
         Public Overrides Function GetKeywords() As LegalTokens
             Dim spans As New LegalTokens
             spans.Add(SubToken)
-            If ReturnStatement IsNot Nothing Then spans.Add(ReturnStatement.StartToken)
+            For Each statement In ReturnStatements
+                spans.Add(statement.StartToken)
+            Next
             spans.Add(EndSubToken)
             Return spans
         End Function

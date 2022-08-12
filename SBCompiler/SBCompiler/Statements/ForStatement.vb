@@ -46,6 +46,9 @@ Namespace Microsoft.SmallBasic.Statements
             spans.Add(ForToken)
             spans.Add(ToToken)
             spans.Add(StepToken)
+            For Each statement In JumpLoopStatements
+                spans.Add(statement.StartToken)
+            Next
             spans.Add(EndLoopToken)
             Return spans
         End Function

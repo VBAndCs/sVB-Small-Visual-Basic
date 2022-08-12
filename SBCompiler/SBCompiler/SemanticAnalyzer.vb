@@ -303,7 +303,7 @@ Namespace Microsoft.SmallBasic
                         _parser.AddError(subroutine.EndSubToken, "Function must end with EndFunction")
                     End If
 
-                    If subroutine.ReturnStatement Is Nothing Then
+                    If subroutine.ReturnStatements.Count = 0 Then
                         _parser.AddError(subroutine.SubToken, "Function must return a value")
                     End If
             End Select

@@ -368,7 +368,8 @@ Namespace Microsoft.SmallBasic.Documents
                     _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
                 Case Token.ContinueLoop, Token.ExitLoop
-
+                    Dim statement = GetLoopBlock(lineNumber)
+                    _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
             End Select
         End Sub
 
@@ -396,6 +397,25 @@ Namespace Microsoft.SmallBasic.Documents
             End If
 
             Return Nothing
+        End Function
+
+        Public Function GetLoopBlock(lineNumber As Integer) As Statements.Statement
+
+            If reCompileSourceCode Then
+                reCompileSourceCode = False
+                highlightCompiler.Compile(New StringReader(Me.Text))
+            End If
+
+            Dim statement = Completion.CompletionHelper.GetStatement(highlightCompiler, lineNumber)
+            If statement Is Nothing Then Return Nothing
+
+            Dim jumpStatement = TryCast(statement.GetStatement(lineNumber), Statements.JumpLoopStatement)
+            If jumpStatement Is Nothing Then Return Nothing
+
+            Dim loopsCount = jumpStatement.UpLevel + 1
+            Dim loops = jumpStatement.GetParentLoops()
+            If loops.Count = 0 Then Return Nothing
+            Return loops(loops.Count - 1)
         End Function
 
         Private Function GetCurrentSubText(lineNumber As Integer) As String

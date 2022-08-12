@@ -26,7 +26,7 @@ Namespace Microsoft.SmallBasic.Statements
             End If
 
             If Subroutine IsNot Nothing Then
-                Subroutine.ReturnStatement = Me
+                Subroutine.ReturnStatements.Add(Me)
             End If
         End Sub
 

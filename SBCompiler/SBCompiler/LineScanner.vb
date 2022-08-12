@@ -100,7 +100,11 @@ Namespace Microsoft.SmallBasic
                         comment -= 1
                     End If
 
-                Case ",", "{", "(", "[", "+", "-", "*", "\", "/", "=", "or", "and"
+                Case "-"
+                    If tokens(0).Token = Token.ContinueLoop OrElse tokens(0).Token = Token.ExitLoop Then
+                        Return False
+                    End If
+                Case ",", "{", "(", "[", "+", "*", "\", "/", "=", "or", "and"
 
                 Case Else
                     Select Case nextLineFirstToken

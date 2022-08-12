@@ -31,6 +31,9 @@ Namespace Microsoft.SmallBasic.Statements
         Public Overrides Function GetKeywords() As LegalTokens
             Dim spans As New LegalTokens
             spans.Add(WhileToken)
+            For Each statement In JumpLoopStatements
+                spans.Add(statement.StartToken)
+            Next
             spans.Add(EndLoopToken)
             Return spans
         End Function
