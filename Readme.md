@@ -38,11 +38,13 @@ Function InRange( ' Checks if the pos is withing the givin range
 EndFunction
 ```
 
-[Image]
+![image](https://user-images.githubusercontent.com/48354902/187048217-0f626439-8e90-4e90-b838-41cd3312ae4b.png)
+
 
 while typing the arguments of the method call, the popup help will highlight the current param with a red color, and show only the info about this param, so you can focus only on the task in hand.
 
-[Image]
+![image](https://user-images.githubusercontent.com/48354902/187048339-8861202b-9b86-41ce-9af9-b09c4dc3d7d1.png)
+
 
 4. The editor formats the current sub after leaving a line that has changes. Formatting doesn't only include indentation, but also pretty listing of space between tokens, and fixing the casing of keywords, labels, type and method names. It also enforces using lower-case initial letters for local variables, and upper-case initial letters for global variables, labels, subs and functions.
 
