@@ -21,7 +21,7 @@ Namespace Microsoft.SmallBasic.Shell
             AddHandler ItemContainerGenerator.ItemsChanged, AddressOf ErrorListControl_OnItemsChanged
         End Sub
 
-        Protected Overrides Sub OnKeyDown(ByVal e As KeyEventArgs)
+        Protected Overrides Sub OnKeyDown(e As KeyEventArgs)
             If e.Key = Key.Return Then
                 MoveToCurrentError()
                 e.Handled = True
@@ -30,7 +30,7 @@ Namespace Microsoft.SmallBasic.Shell
             MyBase.OnKeyDown(e)
         End Sub
 
-        Protected Overrides Sub OnMouseDoubleClick(ByVal e As MouseButtonEventArgs)
+        Protected Overrides Sub OnMouseDoubleClick(e As MouseButtonEventArgs)
             MoveToCurrentError()
             MyBase.OnMouseDoubleClick(e)
         End Sub
@@ -70,12 +70,12 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub DoubleAnimateHeight(ByVal height As Double)
+        Private Sub DoubleAnimateHeight(height As Double)
             Dim animation As DoubleAnimation = New DoubleAnimation(height, New Duration(TimeSpan.FromMilliseconds(200.0)))
             BeginAnimation(HeightProperty, animation)
         End Sub
 
-        Private Sub OnCloseClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnCloseClick(sender As Object, e As RoutedEventArgs)
             DoubleAnimateHeight(0.0)
         End Sub
     End Class

@@ -8,11 +8,11 @@ Namespace Microsoft.SmallBasic.LanguageService
         Private current As Integer
         Private textSnapshot As ITextSnapshot
 
-        Public Sub New(ByVal textSnapshot As ITextSnapshot)
+        Public Sub New(textSnapshot As ITextSnapshot)
             Me.textSnapshot = textSnapshot
         End Sub
 
-        Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Protected Overrides Sub Dispose(disposing As Boolean)
             MyBase.Dispose(disposing)
         End Sub
 
@@ -24,7 +24,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return AscW(textSnapshot(current))
         End Function
 
-        Public Overrides Overloads Function Read() As Integer
+        Public Overloads Overrides Function Read() As Integer
             If current = textSnapshot.Length Then
                 Return -1
             End If
@@ -33,7 +33,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             current += 1
         End Function
 
-        Public Overrides Overloads Function Read(ByVal buffer As Char(), ByVal index As Integer, ByVal count As Integer) As Integer
+        Public Overloads Overrides Function Read(buffer As Char(), index As Integer, count As Integer) As Integer
             Dim i As Integer
 
             For i = 0 To count - 1
@@ -49,7 +49,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return i
         End Function
 
-        Public Overrides Function ReadBlock(ByVal buffer As Char(), ByVal index As Integer, ByVal count As Integer) As Integer
+        Public Overrides Function ReadBlock(buffer As Char(), index As Integer, count As Integer) As Integer
             Dim i As Integer
 
             For i = 0 To count - 1
@@ -70,14 +70,14 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Return Nothing
             End If
 
-            Dim lineFromPosition = textSnapshot.GetLineFromPosition(current)
-            Dim text As String = lineFromPosition.GetText()
+            Dim line = textSnapshot.GetLineFromPosition(current)
+            Dim text = line.GetText()
 
-            If lineFromPosition.Start < current AndAlso lineFromPosition.End > current Then
-                text = text.Substring(current - lineFromPosition.Start)
+            If line.Start < current AndAlso line.End > current Then
+                text = text.Substring(current - line.Start)
             End If
 
-            current = lineFromPosition.EndIncludingLineBreak
+            current = line.EndIncludingLineBreak
             Return text
         End Function
 

@@ -3,7 +3,7 @@ Imports System.Windows.Media.Animation
 Imports sb = Microsoft.SmallBasic
 
 Namespace Microsoft.SmallBasic.LanguageService
-    Public Partial Class CircularList
+    Partial Public Class CircularList
         Inherits Selector
 
         Private _itemContainerMap As Dictionary(Of Integer, CircularListItem) = New Dictionary(Of Integer, CircularListItem)()
@@ -54,7 +54,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
         End Sub
 
-        Protected Overrides Sub OnSelectionChanged(ByVal e As SelectionChangedEventArgs)
+        Protected Overrides Sub OnSelectionChanged(e As SelectionChangedEventArgs)
             If SelectedIndex <> -1 Then
                 Dispatcher.BeginInvoke(Sub() ArrangeItems())
                 MyBase.OnSelectionChanged(e)
@@ -178,7 +178,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             animatable.BeginAnimation([property], doubleAnimation)
         End Sub
 
-        Protected Overrides Sub OnMouseDown(ByVal e As MouseButtonEventArgs)
+        Protected Overrides Sub OnMouseDown(e As MouseButtonEventArgs)
             e.Handled = True
             MyBase.OnMouseDown(e)
         End Sub

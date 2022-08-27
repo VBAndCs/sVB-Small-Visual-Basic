@@ -4,6 +4,9 @@ Imports Microsoft.SmallBasic.Library
 Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
+    ''' <summary>
+    ''' Contains info about the state of the keyboard keys.
+    ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class Keyboard
 

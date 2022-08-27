@@ -5,7 +5,7 @@
   
     <sws:Export Name='ClassificationFormat'>
         <mntcd:ClassificationFormat 
-          FontRenderingSize='20' 
+          FontRenderingSize='22' 
           FontFamily='Consolas' 
           ForegroundBrush='Black'>
             <mntcd:ClassificationFormat.ClassificationTypes>
@@ -32,7 +32,7 @@
   
     <sws:Export Name='ClassificationFormat'>
         <mntcd:ClassificationFormat 
-          FontRenderingSize='20' 
+          FontRenderingSize='22' 
           FontFamily='Consolas' 
           FontWeight='Bold' 
           ForegroundBrush='#7777ff'>
@@ -52,7 +52,7 @@
   
     <sws:Export Name='ClassificationFormat'>
         <mntcd:ClassificationFormat 
-          FontRenderingSize='20' 
+          FontRenderingSize='22' 
           ForegroundBrush='#FF008020' 
           FontFamily='Georgia' 
           FontStyle='Italic'>

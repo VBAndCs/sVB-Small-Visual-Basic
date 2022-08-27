@@ -51,8 +51,6 @@ Namespace WinForms
         ''' <param name="xamlPath">the path pf the xaml file that contains the form design</param>
         ''' <returns>The name of the form</returns>
         Public Shared Function LoadForm(formName As Primitive, xamlPath As Primitive) As Primitive
-            Dim xamlContent As String = $"<Canvas Name=""{formName}"" Width=""700"" Height=""500"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""/>"
-
             Dim name = CStr(formName).ToLower()
             If name = "" Then
                 MsgBox("Form name can't be an empty string.")

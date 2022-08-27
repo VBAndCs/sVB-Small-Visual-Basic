@@ -149,8 +149,8 @@ Namespace Microsoft.Windows.Controls
             End Get
 
             Set(value As String)
-                Dim currentSnapshot1 As ITextSnapshot = TextBuffer.CurrentSnapshot
-                TextBuffer.Replace(New Span(0, currentSnapshot1.Length), value)
+                Dim currentSnapshot = TextBuffer.CurrentSnapshot
+                TextBuffer.Replace(New Span(0, currentSnapshot.Length), value)
             End Set
         End Property
 
@@ -173,15 +173,17 @@ Namespace Microsoft.Windows.Controls
             End Set
         End Property
 
+        Public Function GetCurrentLine() As ITextSnapshotLine
+            Dim pos = TextView.Caret.Position.TextInsertionIndex
+            Return TextView.TextSnapshot.GetLineFromPosition(pos)
+        End Function
+
         <Import>
         Public Property TextStructureNavigatorFactory As ITextStructureNavigatorFactory
 
         Public ReadOnly Property TextView As IAvalonTextView
             Get
-                If _textView Is Nothing Then
-                    Initialize()
-                End If
-
+                If _textView Is Nothing Then Initialize()
                 Return _textView
             End Get
         End Property
@@ -330,18 +332,18 @@ Namespace Microsoft.Windows.Controls
 
         Public Sub HighlightWords(
                          highlightColor As Color,
-                         ParamArray spans() As (Start As Integer, Lenght As Integer)
+                         ParamArray spans() As Span
                    )
 
             If spans Is Nothing OrElse spans.Count = 0 Then Return
 
             ClearHighlighting()
-            Dim textSnapshot1 = TextView.TextSnapshot
+            Dim snapshot = TextView.TextSnapshot
             Dim markers As New List(Of FindMarker)
 
             For Each span In spans
                 markers.Add(New FindMarker(
-                          New TextSpan(textSnapshot1, span.Start, span.Lenght,
+                          New TextSpan(snapshot, span.Start, span.Length,
                                        SpanTrackingMode.EdgeInclusive),
                           highlightColor
                        ))
@@ -371,8 +373,28 @@ Namespace Microsoft.Windows.Controls
 
         Private Sub Initialize()
             If MyBase.Content Is Nothing AndAlso TextBuffer IsNot Nothing Then
-                _textView = New AvalonTextView(TextBuffer, ClassifierAggregatorProvider, AdornmentAggregatorCache, AdornmentSurfaceManagerFactory, ClassificationFormatMap, ClassificationTypeRegistry, TextViewServices)
-                _textViewHost = New AvalonTextViewHost(UndoHistoryRegistry, Orderer, TextView, AvalonTextViewMarginFactories, EditorOperationsProvider, MouseBindingFactories, KeyboardFilters)
+                _textView = New AvalonTextView(
+                        TextBuffer,
+                        ClassifierAggregatorProvider,
+                        AdornmentAggregatorCache,
+                        AdornmentSurfaceManagerFactory,
+                        ClassificationFormatMap,
+                        ClassificationTypeRegistry,
+                        TextViewServices
+                )
+
+                _textView.Editor = Me
+
+                _textViewHost = New AvalonTextViewHost(
+                        UndoHistoryRegistry,
+                        Orderer,
+                        TextView,
+                        AvalonTextViewMarginFactories,
+                        EditorOperationsProvider,
+                        MouseBindingFactories,
+                        KeyboardFilters
+                )
+
                 _textViewHost.TextView.Background = MyBase.Background
                 _textViewHost.ScaleFactor = _scaleFactor
 

@@ -13,11 +13,11 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public Property FilePath As String
             Get
-                Return _filePath
+                Return _filePath?.ToLower()
             End Get
 
-            Protected Set(ByVal value As String)
-                _filePath = value
+            Protected Set(value As String)
+                _filePath = value?.ToLower()
                 NotifyProperty("FilePath")
                 NotifyProperty("Title")
             End Set
@@ -27,7 +27,7 @@ Namespace Microsoft.SmallBasic.Documents
             Get
                 Return isDirtyField
             End Get
-            Protected Set(ByVal value As Boolean)
+            Protected Set(value As Boolean)
 
                 If isDirtyField <> value Then
                     isDirtyField = value
@@ -37,11 +37,7 @@ Namespace Microsoft.SmallBasic.Documents
             End Set
         End Property
 
-        Public ReadOnly Property IsNew As Boolean
-            Get
-                Return FilePath = ""
-            End Get
-        End Property
+        Public Property IsNew As Boolean
 
         Public ReadOnly Property PropertyStore As Dictionary(Of Object, Object)
             Get
@@ -64,9 +60,9 @@ Namespace Microsoft.SmallBasic.Documents
         Public Event Closed As EventHandler
         Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
 
-        Public Sub New(ByVal filePath As String)
+        Public Sub New(filePath As String)
             If filePath <> "" AndAlso Not File.Exists(filePath) Then
-                Throw New ArgumentException("The specified file path doesn't exist.")
+                File.WriteAllText(filePath, "")
             End If
 
             _filePath = filePath
@@ -77,10 +73,6 @@ Namespace Microsoft.SmallBasic.Documents
         End Sub
 
         Public Function Open() As Stream
-            If IsNew Then
-                Throw New InvalidOperationException("Can't open a transient document.")
-            End If
-
             Return File.Open(FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite)
         End Function
 
@@ -88,7 +80,7 @@ Namespace Microsoft.SmallBasic.Documents
             RaiseEvent Closed(Me, EventArgs.Empty)
         End Sub
 
-        Protected Sub NotifyProperty(ByVal propertyName As String)
+        Protected Sub NotifyProperty(propertyName As String)
             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
         End Sub
     End Class

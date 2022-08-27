@@ -2,7 +2,7 @@
     Public Class SubHeading
         Inherits Heading
 
-        Public Sub New(ByVal text As String)
+        Public Sub New(text As String)
             MyBase.New(text)
             FontSize = 14.0
         End Sub

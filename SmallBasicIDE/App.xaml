@@ -5,8 +5,7 @@
              xmlns:doc="clr-namespace:Microsoft.SmallBasic.Documents" 
              xmlns:sb="clr-namespace:Microsoft.SmallBasic" 
              xmlns:editor="clr-namespace:Microsoft.Windows.Controls;assembly=ToolFramework" 
-             xmlns:sbshell="clr-namespace:Microsoft.SmallBasic.Shell"
-             >
+             xmlns:sbshell="clr-namespace:Microsoft.SmallBasic.Shell">
     
   <Application.Resources>
     <ResourceDictionary>
@@ -18,20 +17,21 @@
           </Grid.RowDefinitions>            
           <ContentControl Content="{Binding Path=EditorControl}">
             <FrameworkElement.ContextMenu>
-              <ContextMenu>
-                <MenuItem Command="{x:Static sb:MainWindow.CutCommand}" />
-                <MenuItem Command="{x:Static sb:MainWindow.CopyCommand}" />
-                <MenuItem Command="{x:Static sb:MainWindow.PasteCommand}" />
-                <Separator />
-                <MenuItem Command="{x:Static sb:MainWindow.FindCommand}" />
-                <Separator />
-                <MenuItem Command="{x:Static sb:MainWindow.FormatCommand}" />
+                <ContextMenu Name="CntxMenu" Opened="CntxMenu_Opened" Closed="CntxMenu_Closed">
+                    <MenuItem Command="{x:Static sb:MainWindow.CutCommand}" />
+                    <MenuItem Command="{x:Static sb:MainWindow.CopyCommand}" />
+                    <MenuItem Command="{x:Static sb:MainWindow.PasteCommand}" />
+                    <Separator />
+                    <MenuItem Command="{x:Static sb:MainWindow.FindCommand}" />
+                    <Separator />
+                    <MenuItem Command="{x:Static sb:MainWindow.FormatCommand}" />
               </ContextMenu>
             </FrameworkElement.ContextMenu>
           </ContentControl>
           <ContentControl Grid.Row="1" Content="{Binding Path=ErrorListControl}" />
         </Grid>
       </DataTemplate>
+        
       <ControlTemplate x:Key="RepeatButtonTemplate" TargetType="{x:Type RepeatButton}">
         <Border Background="#00FFFFFF" />
       </ControlTemplate>

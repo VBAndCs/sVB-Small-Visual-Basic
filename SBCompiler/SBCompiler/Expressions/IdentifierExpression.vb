@@ -7,19 +7,25 @@ Namespace Microsoft.SmallBasic.Expressions
     Public Class IdentifierExpression
         Inherits Expression
 
-        Public Property Identifier As TokenInfo
+        Public Identifier As Token
         Public Subroutine As SubroutineStatement
+
+        Public Property IsParam As Boolean
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
-            _Identifier.Parent = Me.Parent
+            Identifier.Parent = Me.Parent
+            If Identifier.SymbolType = Completion.CompletionItemType.None Then
+                Identifier.SymbolType = If(symbolTable.IsLocalVar(Me), Completion.CompletionItemType.LocalVariable, Completion.CompletionItemType.GlobalVariable)
+            End If
+            symbolTable.AllIdentifiers.Add(Identifier)
         End Sub
 
-        Public Sub AddSymbolInitialization(ByVal symbolTable As SymbolTable)
+        Public Sub AddSymbolInitialization(symbolTable As SymbolTable)
             symbolTable.AddVariableInitialization(Identifier)
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
             Dim var = scope.GetLocalBuilder(Subroutine, Identifier)
 
             If var IsNot Nothing Then

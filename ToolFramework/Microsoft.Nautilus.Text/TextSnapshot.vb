@@ -80,8 +80,8 @@ Namespace Microsoft.Nautilus.Text
         End Function
 
         Public Function GetLineFromLineNumber(lineNumber As Integer) As ITextSnapshotLine Implements ITextSnapshot.GetLineFromLineNumber
-            Dim lineFromLineNumber As LineSpan = content.GetLineFromLineNumber(lineNumber)
-            Return New TextSnapshotLine(Me, lineFromLineNumber)
+            Dim line = content.GetLineFromLineNumber(lineNumber)
+            Return New TextSnapshotLine(Me, line)
         End Function
 
         Public Function GetLineFromPosition(position As Integer) As ITextSnapshotLine Implements ITextSnapshot.GetLineFromPosition

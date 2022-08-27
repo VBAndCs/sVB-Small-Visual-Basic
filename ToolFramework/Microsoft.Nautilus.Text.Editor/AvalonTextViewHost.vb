@@ -9,6 +9,7 @@ Imports Microsoft.Nautilus.Core
 Imports Microsoft.Nautilus.Core.Undo
 Imports Microsoft.Nautilus.Text.Editor.Automation.Implementation
 Imports Microsoft.Nautilus.Text.Operations
+Imports ImportantMarginInfo = System.ComponentModel.Composition.ImportInfo(Of Microsoft.Nautilus.Text.Editor.AvalonTextViewMarginFactory, Microsoft.Nautilus.Text.Editor.IAvalonTextViewMarginFactoryMetadata)
 
 Namespace Microsoft.Nautilus.Text.Editor
     Public NotInheritable Class AvalonTextViewHost
@@ -17,7 +18,7 @@ Namespace Microsoft.Nautilus.Text.Editor
 
         Private _textView As IAvalonTextView
         Private _viewTransform As ScaleTransform
-        Private _avalonTextViewMarginFactories As IEnumerable(Of ImportInfo(Of AvalonTextViewMarginFactory, IAvalonTextViewMarginFactoryMetadata))
+        Private _avalonTextViewMarginFactories As IEnumerable(Of ImportantMarginInfo)
         Private _outerGrid As Grid
         Private _horizontalScrollBar As ITextViewMargin
         Private _verticalScrollBar As ITextViewMargin
@@ -107,7 +108,7 @@ Namespace Microsoft.Nautilus.Text.Editor
             End Set
         End Property
 
-        Public Sub New(undoHistoryRegistry As IUndoHistoryRegistry, orderer As IOrderer, textView1 As IAvalonTextView, avalonTextViewMarginFactories As IEnumerable(Of ImportInfo(Of AvalonTextViewMarginFactory, IAvalonTextViewMarginFactoryMetadata)), editorOperationsProvider As IEditorOperationsProvider, mouseBindingFactories As IEnumerable(Of MouseBindingFactory), keyboardFilters As IEnumerable(Of KeyboardFilter))
+        Public Sub New(undoHistoryRegistry As IUndoHistoryRegistry, orderer As IOrderer, textView1 As IAvalonTextView, avalonTextViewMarginFactories As IEnumerable(Of ImportantMarginInfo), editorOperationsProvider As IEditorOperationsProvider, mouseBindingFactories As IEnumerable(Of MouseBindingFactory), keyboardFilters As IEnumerable(Of KeyboardFilter))
             If textView1 Is Nothing Then
                 Throw New ArgumentNullException("textView")
             End If
@@ -177,6 +178,7 @@ Namespace Microsoft.Nautilus.Text.Editor
             _outerGrid.Children.Add(_textView.VisualElement)
             SetupMargins()
         End Sub
+
         Private Sub SetupMargins()
             _marginGrids = New Grid(3) {}
             _extensibleMargins = New Dictionary(Of String, IAvalonTextViewMargin)
@@ -212,27 +214,26 @@ Namespace Microsoft.Nautilus.Text.Editor
             IsHorizontalScrollBarVisible = (_textView.WordWrapStyle And WordWrapStyles.WordWrap) <> WordWrapStyles.WordWrap
             IsVerticalScrollBarVisible = True
         End Sub
+
         Private Function IsMarginPlacementHorizontal(placement As MarginPlacement) As Boolean
-            If placement = MarginPlacement.Top OrElse placement = MarginPlacement.Bottom Then
-                Return True
-            End If
-            Return False
+            Return placement = MarginPlacement.Top OrElse placement = MarginPlacement.Bottom
         End Function
+
         Private Function IsMarginPlacementOrderReversed(placement As MarginPlacement) As Boolean
-            If placement = MarginPlacement.Top OrElse placement = MarginPlacement.Left Then
-                Return True
-            End If
-            Return False
+            Return placement = MarginPlacement.Top OrElse placement = MarginPlacement.Left
         End Function
+
         Private Sub SetupExtensibleMargin(placement As MarginPlacement)
-            Dim list1 As IList(Of ImportInfo(Of AvalonTextViewMarginFactory, IAvalonTextViewMarginFactoryMetadata)) = New List(Of ImportInfo(Of AvalonTextViewMarginFactory, IAvalonTextViewMarginFactoryMetadata))
-            For Each avalonTextViewMarginFactory1 As ImportInfo(Of AvalonTextViewMarginFactory, IAvalonTextViewMarginFactoryMetadata) In _avalonTextViewMarginFactories
+            Dim list1 As New List(Of ImportantMarginInfo)
+            For Each avalonTextViewMarginFactory1 As ImportantMarginInfo In _avalonTextViewMarginFactories
                 If avalonTextViewMarginFactory1.Metadata.MarginPlacement = CInt(CLng(Fix(placement)) Mod Integer.MaxValue) Then
                     list1.Add(avalonTextViewMarginFactory1)
                 End If
             Next
-            list1 = New List(Of ImportInfo(Of AvalonTextViewMarginFactory, IAvalonTextViewMarginFactoryMetadata))(_orderer.Order(list1))
+
+            list1 = New List(Of ImportantMarginInfo)(_orderer.Order(list1))
             Dim count1 As Integer = list1.Count
+
             For i As Integer = 0 To count1 - 1
                 If IsMarginPlacementHorizontal(placement) Then
                     Dim value As New RowDefinition
@@ -241,7 +242,8 @@ Namespace Microsoft.Nautilus.Text.Editor
                     Dim value2 As New ColumnDefinition
                     _marginGrids(CInt(CLng(Fix(placement)) Mod Integer.MaxValue)).ColumnDefinitions.Add(value2)
                 End If
-                Dim avalonTextViewMargin As IAvalonTextViewMargin = list1(i).GetBoundValue().CreateAvalonTextViewMargin(_textView)
+
+                Dim avalonTextViewMargin = list1(i).GetBoundValue().CreateAvalonTextViewMargin(_textView)
                 Grid.SetColumn(avalonTextViewMargin.VisualElement, _marginGrids(CInt(CLng(Fix(placement)) Mod Integer.MaxValue)).ColumnDefinitions.Count - 1)
                 Grid.SetRow(avalonTextViewMargin.VisualElement, _marginGrids(CInt(CLng(Fix(placement)) Mod Integer.MaxValue)).RowDefinitions.Count - 1)
                 _marginGrids(CInt(CLng(Fix(placement)) Mod Integer.MaxValue)).Children.Add(avalonTextViewMargin.VisualElement)
@@ -261,9 +263,9 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Function
 
         Private Overloads Sub OnTextInput(sender As Object, e As TextCompositionEventArgs)
-            For Each keyboardFilter1 As KeyboardFilter In _keyboardFilters
-                If Not e.Handled OrElse keyboardFilter1.IsApplicableToHandledEvents Then
-                    keyboardFilter1.TextInput(_textView, e)
+            For Each keyboardFilter In _keyboardFilters
+                If Not e.Handled OrElse keyboardFilter.IsApplicableToHandledEvents Then
+                    keyboardFilter.TextInput(_textView, e)
                 End If
             Next
         End Sub
@@ -285,17 +287,17 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Overloads Sub OnKeyDown(sender As Object, e As KeyEventArgs)
-            For Each keyboardFilter1 As KeyboardFilter In _keyboardFilters
-                If Not e.Handled OrElse keyboardFilter1.IsApplicableToHandledEvents Then
-                    keyboardFilter1.KeyDown(_textView, e)
+            For Each keyboardFilter In _keyboardFilters
+                If Not e.Handled OrElse keyboardFilter.IsApplicableToHandledEvents Then
+                    keyboardFilter.KeyDown(_textView, e)
                 End If
             Next
         End Sub
 
         Private Overloads Sub OnLostKeyboardFocus(sender As Object, e As KeyboardFocusChangedEventArgs)
-            For Each keyboardFilter1 As KeyboardFilter In _keyboardFilters
-                If Not e.Handled OrElse keyboardFilter1.IsApplicableToHandledEvents Then
-                    keyboardFilter1.LostKeyboardFocus(_textView, e)
+            For Each keyboardFilter In _keyboardFilters
+                If Not e.Handled OrElse keyboardFilter.IsApplicableToHandledEvents Then
+                    keyboardFilter.LostKeyboardFocus(_textView, e)
                 End If
             Next
         End Sub

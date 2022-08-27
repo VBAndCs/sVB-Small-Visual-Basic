@@ -8,6 +8,13 @@ Namespace Microsoft.SmallBasic.Shell
     Public Class MdiView
         Inherits ContentControl
 
+        Public Overrides Sub OnApplyTemplate()
+            MyBase.OnApplyTemplate()
+            _CmbControlNames = Me.Template.FindName("CmbControlNames", Me)
+            _CmbEventNames = Me.Template.FindName("CmbEventNames", Me)
+
+        End Sub
+
         Public Shared ReadOnly IsSelectedProperty As DependencyProperty = DependencyProperty.Register("IsSelected", GetType(Boolean), GetType(MdiView))
         Public Shared ReadOnly CaretPositionTextProperty As DependencyProperty = DependencyProperty.Register("CaretPositionText", GetType(String), GetType(MdiView))
         Private oldWidth As Double = Double.NaN
@@ -17,11 +24,6 @@ Namespace Microsoft.SmallBasic.Shell
         Public ReadOnly Property CmbEventNames As ComboBox
         Friend Property FreezeCmbEvents As Boolean
 
-        Public Overrides Sub OnApplyTemplate()
-            MyBase.OnApplyTemplate()
-            _CmbControlNames = Me.Template.FindName("CmbControlNames", Me)
-            _CmbEventNames = Me.Template.FindName("CmbEventNames", Me)
-        End Sub
 
         Public Property CaretPositionText As String
             Get
@@ -52,18 +54,10 @@ Namespace Microsoft.SmallBasic.Shell
                 Return CBool(GetValue(IsSelectedProperty))
             End Get
 
-            Set(ByVal value As Boolean)
+            Set(value As Boolean)
                 SetValue(IsSelectedProperty, value)
             End Set
         End Property
-
-        Protected Overrides Function MeasureOverride(ByVal constraint As Size) As Size
-            If Double.IsNaN(Width) Then
-                Return New Size(640.0, 480.0)
-            End If
-
-            Return MyBase.MeasureOverride(constraint)
-        End Function
 
         Public Sub ResetOldWidthAndHeight()
             oldWidth = Double.NaN
@@ -84,7 +78,7 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub DoubleAnimateProperty(ByVal [property] As DependencyProperty, ByVal start As Double, ByVal [end] As Double, ByVal timespan As Double)
+        Private Sub DoubleAnimateProperty([property] As DependencyProperty, start As Double, [end] As Double, timespan As Double)
             Dim doubleAnimation As DoubleAnimation = New DoubleAnimation(start, [end], New Duration(System.TimeSpan.FromMilliseconds(timespan)))
             doubleAnimation.DecelerationRatio = 0.9
             Dim doubleAnimation2 = doubleAnimation

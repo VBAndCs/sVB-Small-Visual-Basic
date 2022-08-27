@@ -1,5 +1,6 @@
 ﻿Imports System
 Imports System.Collections.Generic
+Imports System.Collections.ObjectModel
 Imports System.Globalization
 Imports System.Windows
 Imports System.Windows.Controls
@@ -97,12 +98,18 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Function
 
         Public Sub FadeCompletionList()
-            Dim animation As DoubleAnimation = New DoubleAnimation(0.3, New Duration(TimeSpan.FromMilliseconds(300.0)))
+            Dim animation As New DoubleAnimation(0.3, New Duration(TimeSpan.FromMilliseconds(300.0)))
             popupContent.BeginAnimation(OpacityProperty, animation)
         End Sub
 
+        Public ReadOnly Property IsFaded() As Boolean
+            Get
+                Return System.Math.Abs(popupContent.Opacity - 1.0) > Double.Epsilon
+            End Get
+        End Property
+
         Public Sub UnfadeCompletionList()
-            Dim animation As DoubleAnimation = New DoubleAnimation(1.0, New Duration(TimeSpan.FromMilliseconds(300.0)))
+            Dim animation As New DoubleAnimation(1.0, New Duration(TimeSpan.FromMilliseconds(300.0)))
             popupContent.BeginAnimation(OpacityProperty, animation)
         End Sub
 
@@ -126,69 +133,80 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Private Sub DisplayListBox()
             If _adornment IsNot Nothing Then
-                Dim span As Span = _adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
+                Dim span = _adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
                 Dim textLine = textView.FormattedTextLines.GetTextLineContainingPosition(span.Start)
 
                 If textLine IsNot Nothing Then
                     Dim characterBounds = textLine.GetCharacterBounds(span.Start)
                     Me.CompletionPopup.VerticalOffset = characterBounds.Bottom
                     CompletionPopup.HorizontalOffset = characterBounds.Left
-                    UnfadeCompletionList()
-                    BuildFilteredCompletionList()
-                    Dim index = GetSelectedItemIndex()
-                    If index > -1 Then
-                        CompletionListBox.ItemsSource = filteredCompletionItems
-                        CompletionPopup.IsOpen = True
-                        CompletionListBox.SelectedIndex = index
-                    Else
-                        _adornment.Dismiss(True)
-                    End If
+                    FilterItems()
                 End If
             End If
         End Sub
 
-        Private Sub OnTextChanged(ByVal sender As Object, ByVal e As Nautilus.Text.TextChangedEventArgs)
-            If IsAdornmentVisible Then
-                Dim selectedItemIndex As Integer = GetSelectedItemIndex()
-                CompletionListBox.SelectedIndex = selectedItemIndex
+        Private Sub FilterItems()
+            Dim inputText = GetInputText()
+            BuildFilteredCompletionList(inputText)
+            If filteredCompletionItems.Count > 0 Then
+                CompletionListBox.ItemsSource = filteredCompletionItems
+                CompletionPopup.IsOpen = True
+                CompletionListBox.SelectedIndex = GetSelectedItemIndex(inputText)
                 UnfadeCompletionList()
+
+            ElseIf CompletionPopup.IsOpen Then
+                FadeCompletionList()
+
+            Else
+                _adornment.Dismiss(True)
             End If
         End Sub
 
-        Private Sub OnCurrentCompletionItemChanged(ByVal sender As Object, ByVal e As SelectionChangedEventArgs)
-            If CompletionListBox.SelectedItem IsNot Nothing Then
-                UpdateCurrentCompletionItem(TryCast(CompletionListBox.SelectedItem, CompletionItemWrapper))
-            End If
+        Private Sub OnTextChanged(sender As Object, e As Nautilus.Text.TextChangedEventArgs)
+            If IsAdornmentVisible Then FilterItems()
         End Sub
 
-        Private Sub BuildFilteredCompletionList()
-            filteredCompletionItems = New List(Of CompletionItemWrapper)()
-            Dim completionItems = _adornment.CompletionBag.CompletionItems
+        Private Sub OnCurrentCompletionItemChanged(sender As Object, e As SelectionChangedEventArgs)
+            'If CompletionListBox.SelectedItem IsNot Nothing Then
+            '    UpdateCurrentCompletionItem(
+            '            TryCast(CompletionListBox.SelectedItem, CompletionItemWrapper))
+            'End If
+        End Sub
 
+        Private Sub BuildFilteredCompletionList(inputText As String)
+            filteredCompletionItems = New List(Of CompletionItemWrapper)
+            Dim bag = _adornment.CompletionBag
+            Dim completionItems = bag.CompletionItems
+
+            Dim items As New List(Of CompletionItemWrapper)
             For Each item In completionItems
-                If CanAddItem(item) Then
-                    filteredCompletionItems.Add(New CompletionItemWrapper(item))
+                If CanAddItem(item, bag.IsFirstToken, inputText) Then
+                    Dim itemWrapper = New CompletionItemWrapper(item, bag)
+                    items.Add(itemWrapper)
+                    filteredCompletionItems.Add(itemWrapper)
                 End If
             Next
 
+            If items.Count = 0 Then Return
+
+            ' Completion list must contain 7 items at least
+            ' Otherwise repeat the items to fill the gaps
             Do
                 Dim n = filteredCompletionItems.Count
                 If n > 7 Then Exit Do
 
-                For Each item In completionItems
-                    If CanAddItem(item) Then filteredCompletionItems.Add(
-                            New CompletionItemWrapper(item))
+                For Each item In items
+                    filteredCompletionItems.Add(item)
                 Next
-                If filteredCompletionItems.Count = n Then Exit Do
             Loop
         End Sub
 
-        Private Function GetUniqueItems(ByVal completionItems As CompletionItem()) As List(Of CompletionItem)
+        Private Function GetUniqueItems(completionItems As CompletionItem()) As List(Of CompletionItem)
             Dim dictionary As Dictionary(Of String, CompletionItem) = New Dictionary(Of String, CompletionItem)()
 
             For Each completionItem In completionItems
-                If Not dictionary.ContainsKey(completionItem.Name) Then
-                    dictionary(completionItem.Name) = completionItem
+                If Not dictionary.ContainsKey(completionItem.Key) Then
+                    dictionary(completionItem.Key) = completionItem
                 End If
             Next
 
@@ -197,66 +215,140 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return list
         End Function
 
-        Private Function CanAddItem(ByVal item As CompletionItem) As Boolean
-            If item.DisplayName.StartsWith("_") Then
-                Return False
+        Private Function CanAddItem(item As CompletionItem, isFirstToken As Boolean, inputText As String) As Boolean
+            Dim displayName = item.DisplayName
+
+            If displayName.StartsWith("_") Then Return False
+            Select Case displayName
+                Case "GetHashCode", "ToString", "Equals", "GetType"
+                    Return False
+            End Select
+
+            If Not isFirstToken Then
+                Select Case displayName
+                    Case "If", "ElseIf", "Else", "EndIf",
+                             "For", "Next", "EndFor",
+                             "While", "Wend", "EndWhile",
+                             "ExitLoop", "ContinueLoop", "GoTo",
+                             "Function", "EndFunction", "Sub", "EndSub", "Return"
+                        Return False
+                End Select
             End If
 
-            If Equals(item.DisplayName, "GetHashCode") OrElse Equals(item.DisplayName, "ToString") OrElse Equals(item.DisplayName, "Equals") OrElse Equals(item.DisplayName, "GetType") Then
-                Return False
-            End If
+            If item.MemberInfo IsNot Nothing AndAlso
+                    item.MemberInfo.Name = GetType(Primitive).Name Then Return False
 
-            If item.MemberInfo IsNot Nothing AndAlso Equals(item.MemberInfo.Name, GetType(Primitive).Name) Then
-                Return False
-            End If
+            If inputText = "" Then Return True
 
-            Return True
+            Dim words = GetSubWords(displayName)
+            inputText = inputText.ToLowerInvariant()
+            For Each word In words
+                If word.StartsWith(inputText) Then Return True
+            Next
+
+            Return words.Count > 1 AndAlso displayName.ToLowerInvariant().StartsWith(inputText)
         End Function
 
-        Private Function CompletionItemComparer(ByVal item1 As CompletionItem, ByVal item2 As CompletionItem) As Integer
+        Private Function CompletionItemComparer(item1 As CompletionItem, item2 As CompletionItem) As Integer
             Return item1.DisplayName.CompareTo(item2.DisplayName)
         End Function
 
-        Private Function ItemWrapperComparer(ByVal item1 As CompletionItemWrapper, ByVal item2 As CompletionItemWrapper) As Integer
+        Private Function ItemWrapperComparer(item1 As CompletionItemWrapper, item2 As CompletionItemWrapper) As Integer
             Return item1.Display.CompareTo(item2.Display)
         End Function
 
-        Private Function GetSelectedItemIndex() As Integer
+        Function GetInputText() As String
             Dim text = _adornment.ReplaceSpan.GetText(_adornment.ReplaceSpan.TextBuffer.CurrentSnapshot)
-
-            If text.Length = 0 Then Return 0
-
-            Dim lenght = 0
-            Dim result = -1
-
-            For i = 0 To filteredCompletionItems.Count - 1
-                Dim maxMatchLength As Integer = GetMaxMatchLength(filteredCompletionItems(i).Display.ToLowerInvariant(), text.ToLowerInvariant())
-
-                If maxMatchLength > lenght Then
-                    lenght = maxMatchLength
-                    result = i
-                End If
-            Next
-
-            If lenght < text.Length Then
-                result = -1
+            If text.Length = 0 Then
+                text = CType(textView, AvalonTextView).Editor.EditorOperations.GetCurrentWord
+                If text.Trim.Length = 0 OrElse text.StartsWith(".") OrElse text.StartsWith("!") Then Return ""
             End If
 
-            Return result
+            Dim tokens = LineScanner.GetTokens(text, 0)
+            If tokens.Count = 0 Then Return ""
+            Dim token = tokens.Last
+            If token.ParseType = ParseType.Operator AndAlso Not (
+                         token.Type = TokenType.Or OrElse token.Type = TokenType.And) Then
+                Return ""
+            End If
+
+            Return token.NormalizedText
         End Function
 
-        Private Function GetMaxMatchLength(ByVal s1 As String, ByVal s2 As String) As Integer
+        Private Function GetSelectedItemIndex(text As String) As Integer
+            Dim textLength = text.Length
+
+            If textLength < 2 Then
+                Dim firstItem = filteredCompletionItems(0).CompletionItem
+                Dim key = firstItem.HistoryKey
+                If key <> "" AndAlso CompletionProvider.compHistory.ContainsKey(key) Then
+                    text = CompletionProvider.compHistory(key).ToLower()
+                    textLength = text.Length
+                End If
+            End If
+
+            If text.Trim = "" Then Return 0
+
+            Dim maxMatchLength = 0
+            Dim wordsList As New List(Of List(Of String))
+
+            For i = 0 To filteredCompletionItems.Count - 1
+                Dim displayName = filteredCompletionItems(i).Display
+                Dim matchLength = GetMatchLength(displayName.ToLowerInvariant(), text)
+
+                If matchLength = textLength Then Return i
+
+                If matchLength > maxMatchLength Then
+                    maxMatchLength = matchLength
+                End If
+
+                Dim words = GetSubWords(displayName)
+                wordsList.Add(words)
+            Next
+
+            For i = 0 To wordsList.Count - 1
+                Dim words = wordsList(i)
+
+                For j = 1 To words.Count - 1
+                    Dim matchLength = GetMatchLength(words(j), text)
+                    If matchLength = textLength Then Return i
+
+                    If matchLength > maxMatchLength Then
+                        maxMatchLength = matchLength
+                    End If
+                Next
+            Next
+
+            Return -1
+        End Function
+
+        Private Function GetSubWords(text As String) As List(Of String)
+            Dim words As New List(Of String)
+            Dim start = 0
+            For i = 1 To text.Length - 1
+                If Char.IsUpper(text(i)) Then
+                    Dim word = text.Substring(start, i - start).ToLowerInvariant()
+                    words.Add(word)
+                    start = i
+                End If
+            Next
+            words.Add(text.Substring(start, text.Length - start).ToLowerInvariant())
+            Return words
+        End Function
+
+        Private Function GetMatchLength(s1 As String, s2 As String) As Integer
             Dim i As Integer
             i = 0
+            Dim L = System.Math.Min(s1.Length, s2.Length)
 
-            While i < System.Math.Min(s1.Length, s2.Length) AndAlso s1(i) = s2(i)
+            While i < L AndAlso s1(i) = s2(i)
                 i += 1
             End While
 
             Return i
         End Function
 
-        Private Sub OnCompletionListDoubleClicked(ByVal sender As Object, ByVal e As MouseButtonEventArgs)
+        Private Sub OnCompletionListDoubleClicked(sender As Object, e As MouseButtonEventArgs)
             If _adornment IsNot Nothing Then
                 Dim completionItemWrapper As CompletionItemWrapper = TryCast(Me.CompletionListBox.SelectedItem, CompletionItemWrapper)
 

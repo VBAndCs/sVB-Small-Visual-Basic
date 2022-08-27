@@ -8,52 +8,52 @@
 - SB Code Enhancements:
 - ToDo:
 
-# What's new in sVB v1.4
-1. Many enhancements in the WinForms controls and bug fixes.
-
-2. You can split the code line over multi-lines by using the _ symbol at the end of each line segment. ex:
-```VB..NET
-Dim x = "First Line" + _
-            "Second Line"
-```
-
-You can use _ at any position expet before of after the dot `.`.
-
-3. You can also split the line at some positions without using the _ . These positions are:
-- after the following symbols: `,`, `=`, `+`, `-`, `*`. `/`, `(`, `[`, `{`, `or`, `and`.
-- before the following symbols: `+`, `-`, `*`. `/`, `)`, `]`, `}`, `or`, `and`.
-
-Ex:
+# What's new in sVB v1.6
+1. Some bug fixes in compiler and other tools.
+2. Add `OnShown` event to the Form. It is fired after the content of the form is rendered. If you use it, you should add all initialization into it, as you can't know for sure if it will occur before or after the code in the global section is executed! But you can be sure that all the controls are rendered and ready for use.
+`OnShown` is the default event for the Form, and you can add a handler to it by just double-clicking the form surface in the form designer.
+3. I got rid of the side help panel to save space, and showed the help info in a tip window that pops up after 2 seconds from moving the caret to any word in the code editor, and stays open for 10 seconds unlice you move to another position, move the scroll, or press Esc key. I prevent showing the help for the same word unless toy move to another one, but you can force to show the help by pressing `F1`.
+You can magnify the font of the popup help by pressing Ctrl and moving the mouse wheel. This is one of many functionalites built-in the WPF FlowDocument control that is used to show the help.
+You can say I brought the VS intellisense to sVB. The pop up help offers valuable info about the current code token, including:
+ * The scope (local or global var).
+ * The definition signature (Type, Property, Dynamic Property, Event, Method Parameters).
+ * If the tokens is a `variable`, a `sub` or a `function`, it will be shown as a link, so, you can click it to go to its definition line. If the token it the name of the form or a control on it, clicking the link will select the form or the control on the form designer.
+* The documentation including a summery, and info about parameters and return value. You can add a summery for user defined types by adding one or more comment lines above the var, sub, or function definitions. You can also add one more comment line at the end of the definition line. For subs and functions, you can add the additional summery line after the opining parans if you split the params over multi lines which also allows you to add a comment for each parameter to be used as a documentation. For Functions, the comment placed after the closing parans will be used as the documentation info for the return value. For subs, it will be considered an additional line of the summery. Ex:
 ```VB
-If x = y or 
-    Text.GetSubText(
-       "some text",
-       6,
-       3
-   ) = "abc" Then
+XPos = 1   ' the horizontal position 
 
-   x = 0
-End If
-```
-
-4. You can add comments at the end of any line segment. Ex:
-```VB
-Function Add(  ' Adds two numbers
-   a, _   ' first number
-   b      ' second number
+' adds x to the pos
+Sub Move(
+    x ' The increment value to add to the pos
 )
-   Return a + b 
+   XPos = XPos + x
+EndSub
+
+Function InRange( ' Checks if the pos is withing the givin range
+    start, ' the start position
+    end  ' the end position
+) ' True if the pos is in range, False otherwise.
+   Return XPos >= start And XPos <= end
 EndFunction
 ```
-5. Adding an `(Add new function)` command to the upper right dropdown list in the code editor
 
-6. Enhancing the auto completion list.
+[Image]
 
-7. Enhancing the auto formatting of code, to adjust indentation of sub lines, and adjust spaces between tokens.
+while typing the arguments of the method call, the popup help will highlight the current param with a red color, and show only the info about this param, so you can focus only on the task in hand.
 
-8. The code editor now highlights any matching pairs such as `()`, `[]` and `{}`. It also highlights the keywords of the Sub, Function, If, For, and While bolcks whenever you insert the caret on on of them. You can move to the next highlighted token by pressing `F4` or `Ctrl+Shift+Down`, and you can move to the previous highlighted token by pressing `Shift+F4` or `Ctrl+Shift+Up`.
-You can also press such shortcuts keys on any line even there is no highlighted keywords. This will highlight the nearest block that contains the statement, and move to the neareest keyword up or down according to the shourtcut keys you are using.
+[Image]
 
+4. The editor formats the current sub after leaving a line that has changes. Formatting doesn't only include indentation, but also pretty listing of space between tokens, and fixing the casing of keywords, labels, type and method names. It also enforces using lower-case initial letters for local variables, and upper-case initial letters for global variables, labels, subs and functions.
+
+5. The editor highlights every occurrence of the current identifier (variable, sub, function, label, type, method) name. Similar to highlighted block keywords, you can navigate between highlighted identifiers by pressing `F4` or `Ctrl+Shift+Up` or `Ctrl+Shift+down`
+
+6. Many enhancements to the completion list to make it smarter, such as :
+ * Filtering completion names by partial words (for ex: typing name can select MyName) 
+ * Filtered out names don't apper in the list anymore.
+ * The list remembers last selected object for each first letter.
+ * The list remembers last selected method for each object.
+
+The aim of this release is to make coding with sVB easier, educational and fun!
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
@@ -110,7 +110,7 @@ Small basic is a dynamic language, as it doesn't declare variables with types. Y
 This makes the language very easy to learn and use for kids.
 
 But, a programming language is not just instructions. It has to have a class library to communicate with Windows. In fact SB comes with a number of powerful libraries, and allow you to supply your own libraries as well. This is where I saw a big issue while trying to teach SB to my nephews:
-The language is too easy,  but using the libraries isn't that easy, especially when dealing with graphics and UI. The PDF book that comes with SB makes it hard, focusing on drawing shapes by using geometric functions (it even contains a fractals sample!) 
+The language is too easy,  but using the libraries isn't that easy, especially when dealing with graphics and UI. The PDF book that comes with SB makes it hard, focusing on drawing shapes by using geometric functions (it even contains a fractals sample!)  
 This is not the best way to introduce programming to kids. A black command window (the TextWindow) is easy but boring, while using vector graphics or drawing using the Turtle on the Graphics Window is amazing but can be quite hard.
 
 The good news is that the Controls class allows you to draw a TextBox, and a Button on the GraphicsWindow, deal with their properties and handle their events. But, unfortunately, the kid has to design the form blindly while adding controls by code, and even worst,  the code used to communicate with these controls is verbose, because SB doesn't have the Object type as I explained above, so, you can only store the name of the control in a variable:
@@ -229,7 +229,7 @@ So, as a good practice:
 
 10. The editor has a perfect auto-indentation.
 
-11. Using naming convention to give sVB some info about the var type so it can make using them easier. 
+11. Using naming convention to give sVB some info about the var type to make using them easier. 
 - The first naming convention: Any var ends with or starts with a control name (like Form1 or myLabel) will be treated as a Label, so you can use the short syntax Control.Property and the auto completion list will appear to help you complete method and properties names.
 
 - The second naming convention: Any var ends with or starts with the word Data is treated as a dynamic object, and you can add properties to it, and get auto completion support when you use them.
@@ -267,6 +267,61 @@ This is a shorter alternative to using the Data naming convention (see more deta
 StudentData.ID = 1
 StudentData.Name = "Adam"
 ```
+
+13. Many enhancements in the WinForms controls and bug fixes.
+
+14. You can split the code line over multi-lines by using the _ symbol at the end of each  
+line segment. ex:
+```VB..NET
+Dim x = "First Line" + _
+            "Second Line"
+```
+
+You can use _ at any position expet before of after the dot `.`.
+
+15. You can also split the line at some positions without using the _ . These positions are:
+- after the following symbols: `,`, `=`, `+`, `-`, `*`. `/`, `(`, `[`, `{`, `or`, `and`.
+- before the following symbols: `+`, `-`, `*`. `/`, `)`, `]`, `}`, `or`, `and`.
+
+Ex:
+```VB
+If x = y or 
+    Text.GetSubText(
+       "some text",
+       6,
+       3
+   ) = "abc" Then
+
+   x = 0
+End If
+```
+
+16. You can add comments at the end of any line segment. Ex:
+```VB
+Function Add(  ' Adds two numbers
+   a, _   ' first number
+   b      ' second number
+)
+   Return a + b 
+EndFunction
+```
+
+17. Adding an `(Add new function)` command to the upper right dropdown list in the code  
+editor
+
+18. Enhancing the auto completion list.
+
+19. Enhancing the auto formatting of code, to adjust indentation of sub lines, and adjust  
+spaces between tokens.
+
+20. The code editor now highlights any matching pairs such as `()`, `[]` and `{}`. It also  
+highlights the keywords of the Sub, Function, If, For, and While bolcks whenever you insert  
+the caret on on of them. You can move to the next highlighted token by pressing `F4` or  
+`Ctrl+Shift+Down`, and you can move to the previous highlighted token by pressing `Shift 
++F4` or `Ctrl+Shift+Up`.
+You can also press such shortcuts keys on any line even there is no highlighted keywords.  
+This will highlight the nearest block that contains the statement, and move to the neareest  
+keyword up or down according to the shourtcut keys you are using.
 
 # ToDo:
 - Add more controls to the winForms library.

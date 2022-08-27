@@ -90,7 +90,7 @@ Namespace Microsoft.Nautilus.Text.Classification
             For Each classifierProvider As ImportInfo(Of Func(Of ITextBuffer, IClassifier), IContentTypeMetadata) In _classifierProviders
                 For Each contentType As String In classifierProvider.Metadata.ContentTypes
                     If ContentTypeHelper.IsSame(_textBuffer.ContentType, contentType) Then
-                        Dim classifier As IClassifier = classifierProvider.GetBoundValue()(_textBuffer)
+                        Dim classifier = classifierProvider.GetBoundValue()(_textBuffer)
                         If classifier IsNot Nothing Then
                             _classifiers.Add(classifier)
                             AddHandler classifier.ClassificationChanged, AddressOf OnClassificationChanged

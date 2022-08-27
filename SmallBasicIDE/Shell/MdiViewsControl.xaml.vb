@@ -47,7 +47,7 @@ Namespace Microsoft.SmallBasic.Shell
             App.GlobalDomain.Bind()
         End Sub
 
-        Protected Overrides Function IsItemItsOwnContainerOverride(ByVal item As Object) As Boolean
+        Protected Overrides Function IsItemItsOwnContainerOverride(item As Object) As Boolean
             Return TypeOf item Is MdiView
         End Function
 
@@ -55,28 +55,37 @@ Namespace Microsoft.SmallBasic.Shell
             Return New MdiView()
         End Function
 
-        Protected Overrides Sub PrepareContainerForItemOverride(ByVal element As DependencyObject, ByVal item As Object)
+        Protected Overrides Sub PrepareContainerForItemOverride(
+                             element As DependencyObject,
+                             item As Object
+                   )
+
             MyBase.PrepareContainerForItemOverride(element, item)
             Dim mdiView = TryCast(element, MdiView)
             If mdiView Is Nothing Then Return
+            If Items.Count = 1 Then Return
+
+            For i = 0 To Items.Count - 1
+                If Items(i) Is mdiView Then
+                    If i = 0 Then Return
+                    Dim lastView = CType(Items(i - 1), MdiView)
+                    lastXOffset = Canvas.GetLeft(lastView) + 10.0
+                    lastYOffset = Canvas.GetTop(lastView) + 10.0
+                    Exit For
+                End If
+            Next
 
             Dim __ = mdiView.Width
             __ = mdiView.Height
-            Dim left = Canvas.GetLeft(mdiView)
-            Dim top = Canvas.GetTop(mdiView)
 
-            If Double.IsNaN(left) OrElse Double.IsNaN(top) Then
-                left = lastXOffset
-                top = lastYOffset
-                lastXOffset += 32.0
-                lastYOffset += 32.0
+            Dim left = lastXOffset
+            Dim top = lastYOffset
 
-                If lastXOffset > ActualWidth OrElse lastYOffset > ActualHeight Then
-                    lastOffsetForXOffset += 32.0
+            If lastXOffset > ActualWidth OrElse lastYOffset > ActualHeight Then
+                    lastOffsetForXOffset += 10.0
                     lastXOffset = lastOffsetForXOffset
                     lastYOffset = 0.0
                 End If
-            End If
 
             Canvas.SetLeft(mdiView, left)
             Canvas.SetTop(mdiView, top)
@@ -210,7 +219,7 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Function FindViewContainingTemplateItem(ByVal templateItem As UIElement) As MdiView
+        Private Function FindViewContainingTemplateItem(templateItem As UIElement) As MdiView
             Dim dependencyObject As DependencyObject = templateItem
 
             While dependencyObject IsNot Nothing
@@ -259,8 +268,7 @@ Namespace Microsoft.SmallBasic.Shell
                 _SelectedItem = selectedView
                 selectedView.IsSelected = True
 
-                selectedView.Dispatcher.Invoke(
-                    DispatcherPriority.Render,
+                SelectView.After(20,
                    Sub()
                        KeepFocus = True
                        selectedView.Document.Focus()
@@ -271,7 +279,7 @@ Namespace Microsoft.SmallBasic.Shell
             RaiseEvent ActiveDocumentChanged()
         End Sub
 
-        Protected Overrides Sub OnItemsChanged(ByVal e As NotifyCollectionChangedEventArgs)
+        Protected Overrides Sub OnItemsChanged(e As NotifyCollectionChangedEventArgs)
             If Not selectionChanging Then
                 If e.OldItems IsNot Nothing Then
                     For Each oldItem In e.OldItems
@@ -294,20 +302,29 @@ Namespace Microsoft.SmallBasic.Shell
         End Sub
 
         Dim KeepFocus As Boolean
-        Private Sub OnFocusWithinChanged(ByVal sender As Object, ByVal e As DependencyPropertyChangedEventArgs)
+
+        Private Sub OnFocusWithinChanged(sender As Object, e As DependencyPropertyChangedEventArgs)
             If KeepFocus Then Return
+            SelectView.After(20,
+                Sub()
+                    Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+                    ChangeSelection(selectedView)
+                End Sub
+            )
 
-            Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
-            ChangeSelection(selectedView)
         End Sub
 
-        Private Sub OnMouseDownInView(ByVal sender As Object, ByVal e As MouseEventArgs)
+        Dim SelectView As New RunAfter()
+
+        Private Sub OnMouseDownInView(sender As Object, e As MouseEventArgs)
             Dim uIElement = CType(sender, UIElement)
-            Dim selectedView = FindViewContainingTemplateItem(uIElement)
-            uIElement.Focus()
-            ChangeSelection(selectedView)
+            SelectView.After(20,
+                   Sub()
+                       Dim selectedView = FindViewContainingTemplateItem(uIElement)
+                       uIElement.Focus()
+                       ChangeSelection(selectedView)
+                   End Sub)
         End Sub
-
         Private Sub ControlNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             Dim cmb = CType(sender, ComboBox)
             Dim controlName = CStr(cmb.SelectedItem)

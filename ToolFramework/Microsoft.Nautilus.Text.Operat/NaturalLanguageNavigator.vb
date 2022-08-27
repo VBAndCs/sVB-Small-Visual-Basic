@@ -60,7 +60,7 @@ Namespace Microsoft.Nautilus.Text.Operations
                 Return New TextExtent(position1, 0, isSignificant:=False)
             End If
 
-            Dim containingLine As ITextSnapshotLine = currentPosition.GetContainingLine()
+            Dim containingLine = currentPosition.GetContainingLine()
             Dim textIncludingLineBreak As String = containingLine.GetTextIncludingLineBreak()
             Dim characterType1 As CharacterType = GetCharacterType(currentPosition.GetChar())
             Dim num As Integer = FindStartOfWord(position1, containingLine, textIncludingLineBreak, characterType1)

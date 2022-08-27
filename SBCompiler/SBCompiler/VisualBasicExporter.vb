@@ -158,7 +158,7 @@ Namespace Microsoft.SmallBasic
             "array"
         }
 
-        Public Sub New(ByVal compiler As Compiler)
+        Public Sub New(compiler As Compiler)
             If compiler Is Nothing Then
                 Throw New ArgumentNullException("compiler")
             End If
@@ -171,7 +171,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub CreateProgramFile(ByVal filePath As String, ByVal parser As Parser, ByVal moduleName As String)
+        Private Sub CreateProgramFile(filePath As String, parser As Parser, moduleName As String)
             Using writer As New StreamWriter(filePath)
                 writer.WriteLine("Module {0}", moduleName)
                 indentationLevel += 1
@@ -201,7 +201,7 @@ Namespace Microsoft.SmallBasic
             End Using
         End Sub
 
-        Private Sub CreateProject(ByVal projectPath As String, ByVal assemblyName As String, ByVal moduleName As String)
+        Private Sub CreateProject(projectPath As String, assemblyName As String, moduleName As String)
             Dim stringBuilder As StringBuilder = New StringBuilder(GetProjectTemplateContents())
             stringBuilder.Replace("$$(STARTUP_OBJECT)", assemblyName & "." & moduleName)
             stringBuilder.Replace("$$(ASSEMBLY_NAME)", assemblyName)
@@ -210,7 +210,7 @@ Namespace Microsoft.SmallBasic
             IO.File.WriteAllText(projectPath, stringBuilder.ToString(), Encoding.UTF8)
         End Sub
 
-        Private Function ConvertExpressionToVB(ByVal expression As Expression) As String
+        Private Function ConvertExpressionToVB(expression As Expression) As String
             Dim type As Type = expression.GetType()
 
             If type Is GetType(BinaryExpression) Then
@@ -244,7 +244,7 @@ Namespace Microsoft.SmallBasic
             Return ""
         End Function
 
-        Private Sub EmitStatement(ByVal statement As Statement)
+        Private Sub EmitStatement(statement As Statement)
             Dim type As Type = statement.GetType()
 
             If type Is GetType(AssignmentStatement) Then
@@ -270,8 +270,8 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub EmitVariableDeclarations(ByVal parser As Parser)
-            If parser.SymbolTable.Variables.Count = 0 Then
+        Private Sub EmitVariableDeclarations(parser As Parser)
+            If parser.SymbolTable.GlobalVariables.Count = 0 Then
                 Return
             End If
 
@@ -279,7 +279,7 @@ Namespace Microsoft.SmallBasic
             writer.Write("Dim ")
             Dim flag = True
 
-            For Each variable In parser.SymbolTable.Variables
+            For Each variable In parser.SymbolTable.GlobalVariables
                 Dim text = NormalizeVariable(variable.Value.Text)
 
                 If flag Then
@@ -293,7 +293,7 @@ Namespace Microsoft.SmallBasic
             writer.WriteLine(" As Primitive")
         End Sub
 
-        Public Function ExportToVisualBasicProject(ByVal projectName As String, ByVal targetLocation As String) As String
+        Public Function ExportToVisualBasicProject(projectName As String, targetLocation As String) As String
             Dim text = MakeSafe(projectName)
             Dim text2 = text & "Module"
             Dim text3 = Path.Combine(targetLocation, text & ".vbproj")
@@ -325,7 +325,7 @@ Namespace Microsoft.SmallBasic
             writer.Write(New String(" "c, indentationLevel * 4))
         End Sub
 
-        Private Function MakeSafe(ByVal name As String) As String
+        Private Function MakeSafe(name As String) As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
 
             For Each c In name
@@ -340,7 +340,7 @@ Namespace Microsoft.SmallBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Function NormalizeTypeName(ByVal typeName As String) As String
+        Private Function NormalizeTypeName(typeName As String) As String
             If conflictingTypes.Contains(typeName.ToLowerInvariant()) Then
                 Return "Microsoft.SmallBasic.Library." & typeName
             End If
@@ -348,7 +348,7 @@ Namespace Microsoft.SmallBasic
             Return typeName
         End Function
 
-        Private Function NormalizeVariable(ByVal variableName As String) As String
+        Private Function NormalizeVariable(variableName As String) As String
             If keywords.Contains(variableName.ToLowerInvariant()) Then
                 Return "__" & variableName
             End If
@@ -356,16 +356,16 @@ Namespace Microsoft.SmallBasic
             Return variableName
         End Function
 
-        Private Function ConvertArrayExpressionToVB(ByVal arrayExpression As ArrayExpression) As String
+        Private Function ConvertArrayExpressionToVB(arrayExpression As ArrayExpression) As String
             Return $"{ConvertExpressionToVB(arrayExpression.LeftHand)}({ConvertExpressionToVB(arrayExpression.Indexer)})"
         End Function
 
-        Private Function ConvertBinaryExpressionToVB(ByVal binaryExpression As BinaryExpression) As String
+        Private Function ConvertBinaryExpressionToVB(binaryExpression As BinaryExpression) As String
             Dim text = ConvertExpressionToVB(binaryExpression.RightHandSide)
             Dim literalExpression As LiteralExpression = TryCast(binaryExpression.RightHandSide, LiteralExpression)
-            Dim operatorPriority = Parser.GetOperatorPriority(binaryExpression.Operator.Token)
+            Dim operatorPriority = Parser.GetOperatorPriority(binaryExpression.Operator.Type)
 
-            If operatorPriority < 7 AndAlso literalExpression IsNot Nothing AndAlso literalExpression.Literal.Token = Token.StringLiteral Then
+            If operatorPriority < 7 AndAlso literalExpression IsNot Nothing AndAlso literalExpression.Literal.Type = TokenType.StringLiteral Then
                 Return $"{ConvertExpressionToVB(binaryExpression.LeftHandSide)} {binaryExpression.Operator.Text} CType({text}, Primitive)"
             End If
 
@@ -388,11 +388,11 @@ Namespace Microsoft.SmallBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Function ConvertIdentifierExpressionToVB(ByVal identifierExpression As IdentifierExpression) As String
+        Private Function ConvertIdentifierExpressionToVB(identifierExpression As IdentifierExpression) As String
             Return NormalizeVariable(identifierExpression.Identifier.Text)
         End Function
 
-        Private Function ConvertLiteralExpressionToVB(ByVal literalExpression As LiteralExpression) As String
+        Private Function ConvertLiteralExpressionToVB(literalExpression As LiteralExpression) As String
             If Equals(literalExpression.Literal.NormalizedText, """true""") Then
                 Return "true"
             End If
@@ -404,7 +404,7 @@ Namespace Microsoft.SmallBasic
             Return literalExpression.Literal.Text
         End Function
 
-        Private Function ConvertMethodCallExpressionToVB(ByVal methodCallExpression As MethodCallExpression) As String
+        Private Function ConvertMethodCallExpressionToVB(methodCallExpression As MethodCallExpression) As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
             stringBuilder.AppendFormat("{0}.{1}(", NormalizeTypeName(methodCallExpression.TypeName.Text), methodCallExpression.MethodName.Text)
             Dim flag = True
@@ -423,15 +423,15 @@ Namespace Microsoft.SmallBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Function ConvertNegativeExpressionToVB(ByVal negativeExpression As NegativeExpression) As String
+        Private Function ConvertNegativeExpressionToVB(negativeExpression As NegativeExpression) As String
             Return "-" & ConvertExpressionToVB(negativeExpression.Expression)
         End Function
 
-        Private Function ConvertPropertyExpressionToVB(ByVal propertyExpression As PropertyExpression) As String
+        Private Function ConvertPropertyExpressionToVB(propertyExpression As PropertyExpression) As String
             Return $"{NormalizeTypeName(propertyExpression.TypeName.Text)}.{propertyExpression.PropertyName.Text}"
         End Function
 
-        Private Sub EmitAssignmentStatement(ByVal assignmentStatement As AssignmentStatement)
+        Private Sub EmitAssignmentStatement(assignmentStatement As AssignmentStatement)
             Indent()
             Dim propertyExpression As PropertyExpression = TryCast(assignmentStatement.LeftValue, PropertyExpression)
             Dim __ As EventInfo = Nothing
@@ -447,18 +447,18 @@ Namespace Microsoft.SmallBasic
 
             writer.Write("{0} = {1}", ConvertExpressionToVB(assignmentStatement.LeftValue), ConvertExpressionToVB(assignmentStatement.RightValue))
 
-            If assignmentStatement.EndingComment.Token <> 0 Then
+            If assignmentStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", assignmentStatement.EndingComment.Text)
             End If
 
             writer.WriteLine()
         End Sub
 
-        Private Sub EmitElseIfStatement(ByVal elseIfStatement As ElseIfStatement)
+        Private Sub EmitElseIfStatement(elseIfStatement As ElseIfStatement)
             Indent()
             writer.Write("ElseIf {0} Then", ConvertExpressionToVB(elseIfStatement.Condition))
 
-            If elseIfStatement.EndingComment.Token <> 0 Then
+            If elseIfStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", elseIfStatement.EndingComment.Text)
             End If
 
@@ -472,8 +472,8 @@ Namespace Microsoft.SmallBasic
             indentationLevel -= 1
         End Sub
 
-        Private Sub EmitEmptyStatement(ByVal emptyStatement As EmptyStatement)
-            If emptyStatement.EndingComment.Token <> 0 Then
+        Private Sub EmitEmptyStatement(emptyStatement As EmptyStatement)
+            If emptyStatement.EndingComment.Type <> 0 Then
                 Indent()
                 writer.WriteLine(emptyStatement.EndingComment.Text)
             Else
@@ -481,15 +481,15 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub EmitForStatement(ByVal forStatement As ForStatement)
+        Private Sub EmitForStatement(forStatement As ForStatement)
             Indent()
             writer.Write("For {0} = {1} To {2}", forStatement.Iterator.Text, ConvertExpressionToVB(forStatement.InitialValue), ConvertExpressionToVB(forStatement.FinalValue))
 
-            If forStatement.StepToken.TokenType <> 0 Then
+            If forStatement.StepToken.ParseType <> 0 Then
                 writer.Write(" Step {0}", ConvertExpressionToVB(forStatement.StepValue))
             End If
 
-            If forStatement.EndingComment.Token <> 0 Then
+            If forStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", forStatement.EndingComment.Text)
             End If
 
@@ -505,22 +505,22 @@ Namespace Microsoft.SmallBasic
             writer.WriteLine("Next")
         End Sub
 
-        Private Sub EmitGotoStatement(ByVal gotoStatement As GotoStatement)
+        Private Sub EmitGotoStatement(gotoStatement As GotoStatement)
             Indent()
             writer.Write("Goto {0}", gotoStatement.Label.Text)
 
-            If gotoStatement.EndingComment.Token <> 0 Then
+            If gotoStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", gotoStatement.EndingComment.Text)
             End If
 
             writer.WriteLine()
         End Sub
 
-        Private Sub EmitIfStatement(ByVal ifStatement As IfStatement)
+        Private Sub EmitIfStatement(ifStatement As IfStatement)
             Indent()
             writer.Write("If {0} Then", ConvertExpressionToVB(ifStatement.Condition))
 
-            If ifStatement.EndingComment.Token <> 0 Then
+            If ifStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", ifStatement.EndingComment.Text)
             End If
 
@@ -553,43 +553,43 @@ Namespace Microsoft.SmallBasic
             writer.WriteLine("End If")
         End Sub
 
-        Private Sub EmitLabelStatement(ByVal labelStatement As LabelStatement)
+        Private Sub EmitLabelStatement(labelStatement As LabelStatement)
             writer.Write("{0}:", labelStatement.LabelToken.Text)
 
-            If labelStatement.EndingComment.Token <> 0 Then
+            If labelStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", labelStatement.EndingComment.Text)
             End If
 
             writer.WriteLine()
         End Sub
 
-        Private Sub EmitMethodCallStatement(ByVal methodCallStatement As MethodCallStatement)
+        Private Sub EmitMethodCallStatement(methodCallStatement As MethodCallStatement)
             Indent()
             writer.Write("{0}", ConvertExpressionToVB(methodCallStatement.MethodCallExpression))
 
-            If methodCallStatement.EndingComment.Token <> 0 Then
+            If methodCallStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", methodCallStatement.EndingComment.Text)
             End If
 
             writer.WriteLine()
         End Sub
 
-        Private Sub EmitSubroutineCallStatement(ByVal subroutineCallStatement As SubroutineCallStatement)
+        Private Sub EmitSubroutineCallStatement(subroutineCallStatement As SubroutineCallStatement)
             Indent()
             writer.Write("{0}()", NormalizeVariable(subroutineCallStatement.Name.Text))
 
-            If subroutineCallStatement.EndingComment.Token <> 0 Then
+            If subroutineCallStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", subroutineCallStatement.EndingComment.Text)
             End If
 
             writer.WriteLine()
         End Sub
 
-        Private Sub EmitSubroutineStatement(ByVal subroutineStatement As SubroutineStatement)
+        Private Sub EmitSubroutineStatement(subroutineStatement As SubroutineStatement)
             Indent()
             writer.Write("Sub {0}()", NormalizeVariable(subroutineStatement.Name.Text))
 
-            If subroutineStatement.EndingComment.Token <> 0 Then
+            If subroutineStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", subroutineStatement.EndingComment.Text)
             End If
 
@@ -605,11 +605,11 @@ Namespace Microsoft.SmallBasic
             writer.WriteLine("End Sub")
         End Sub
 
-        Private Sub EmitWhileStatement(ByVal whileStatement As WhileStatement)
+        Private Sub EmitWhileStatement(whileStatement As WhileStatement)
             Indent()
             writer.Write("While {0}", ConvertExpressionToVB(whileStatement.Condition))
 
-            If whileStatement.EndingComment.Token <> 0 Then
+            If whileStatement.EndingComment.Type <> 0 Then
                 writer.Write(" {0}", whileStatement.EndingComment.Text)
             End If
 

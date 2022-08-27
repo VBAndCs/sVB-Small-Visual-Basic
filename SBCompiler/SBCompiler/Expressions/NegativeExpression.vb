@@ -7,10 +7,10 @@ Namespace Microsoft.SmallBasic.Expressions
     Public Class NegativeExpression
         Inherits Expression
 
-        Public Property Negation As TokenInfo
+        Public Property Negation As Token
         Public Property Expression As Expression
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             _Negation.Parent = Me.Parent
 
@@ -20,7 +20,7 @@ Namespace Microsoft.SmallBasic.Expressions
             End If
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
             Expression.EmitIL(scope)
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.Negation, Nothing)
         End Sub

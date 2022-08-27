@@ -36,20 +36,35 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Sub VisualElement_MouseWheel(sender As Object, e As MouseWheelEventArgs)
-            For Each mouseBinding As IMouseBinding In _mouseBindings
+            For Each mouseBinding In _mouseBindings
                 mouseBinding.PreprocessMouseWheel(e)
-                If e.Handled Then
-                    Exit For
-                End If
+                If e.Handled Then Exit For
             Next
 
             If Not e.Handled Then
+                Dim scrollArgs As Controls.Primitives.ScrollEventArgs
                 If CDbl(Math.Abs(e.Delta)) > _textView.ViewportHeight Then
-                    _textView.ViewScroller.ScrollViewportVerticallyByPage(If((e.Delta < 0), ScrollDirection.Down, ScrollDirection.Up))
+                    If e.Delta < 0 Then
+                        scrollArgs = New Controls.Primitives.ScrollEventArgs(Controls.Primitives.ScrollEventType.LargeDecrement, 0)
+                        _textView.OnScrollChanged(scrollArgs)
+                        If Not e.Handled Then _textView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Up)
+                    Else
+                        scrollArgs = New Controls.Primitives.ScrollEventArgs(Controls.Primitives.ScrollEventType.LargeIncrement, 0)
+                        _textView.OnScrollChanged(scrollArgs)
+                        If Not e.Handled Then _textView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Down)
+                    End If
+
                 Else
-                    _textView.ViewScroller.ScrollViewportVerticallyByPixels(e.Delta)
+                    scrollArgs = New Controls.Primitives.ScrollEventArgs(
+                        If(e.Delta < 0,
+                               Controls.Primitives.ScrollEventType.SmallDecrement,
+                               Controls.Primitives.ScrollEventType.SmallIncrement),
+                       0
+                    )
+                    _textView.OnScrollChanged(scrollArgs)
+                    If Not e.Handled Then _textView.ViewScroller.ScrollViewportVerticallyByPixels(e.Delta)
+                    End If
                 End If
-            End If
 
             For Each mouseBinding2 As IMouseBinding In _mouseBindings
                 mouseBinding2.PostprocessMouseWheel(e)

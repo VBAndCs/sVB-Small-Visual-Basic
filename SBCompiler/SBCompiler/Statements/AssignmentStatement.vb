@@ -11,10 +11,10 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public LeftValue As Expression
         Public RightValue As Expression
-        Public EqualsToken As TokenInfo
+        Public EqualsToken As Token
         Public IsLocalVariable As Boolean
 
-        Public Overrides Function GetStatement(lineNumber) As Statement
+        Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
             If lineNumber <= RightValue?.EndToken.Line Then Return Me
             Return Nothing
@@ -37,17 +37,21 @@ Namespace Microsoft.SmallBasic.Statements
             If RightValue IsNot Nothing Then
                 RightValue.Parent = Me
                 RightValue.AddSymbols(symbolTable)
+                If TypeOf RightValue Is IdentifierExpression Then
+                    Dim id = CType(RightValue, IdentifierExpression).Identifier
+                    symbolTable.PossibleEventHandlers.Add((id, symbolTable.AllIdentifiers.Count - 1))
+                End If
             End If
 
             If TypeOf LeftValue Is IdentifierExpression Then
                 Dim identifierExpression = CType(LeftValue, IdentifierExpression)
-                symbolTable.AddVariable(identifierExpression, IsLocalVariable)
+                symbolTable.AddVariable(identifierExpression, Me.GetSummery(), IsLocalVariable)
                 identifierExpression.AddSymbolInitialization(symbolTable)
 
             ElseIf TypeOf LeftValue Is ArrayExpression Then
                 Dim arrayExpression = CType(LeftValue, ArrayExpression)
                 If TypeOf arrayExpression.LeftHand Is IdentifierExpression Then
-                    symbolTable.AddVariable(arrayExpression.LeftHand, IsLocalVariable)
+                    symbolTable.AddVariable(arrayExpression.LeftHand, Me.GetSummery(), IsLocalVariable)
                 End If
                 arrayExpression.AddSymbolInitialization(symbolTable)
             End If
@@ -80,14 +84,14 @@ Namespace Microsoft.SmallBasic.Statements
                     Dim code = $"{propertyExpression.TypeName.Text}[""{propertyExpression.PropertyName.Text}""] = {RightValue}"
                     Dim subroutine = SubroutineStatement.GetSubroutine(LeftValue)
                     If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
-                    ArrayExpression.ParseAndEmit(code, subroutine, scope)
+                    ArrayExpression.ParseAndEmit(code, subroutine, scope, StartToken.Line)
                 Else
                     Dim typeInfo = scope.TypeInfoBag.Types(propertyExpression.TypeName.NormalizedText)
 
                     If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.NormalizedText, value) Then
                         Dim identifierExpression2 = TryCast(RightValue, IdentifierExpression)
-                        Dim tokenInfo = scope.SymbolTable.Subroutines(identifierExpression2.Identifier.NormalizedText)
-                        Dim meth = scope.MethodBuilders(tokenInfo.NormalizedText)
+                        Dim token = scope.SymbolTable.Subroutines(identifierExpression2.Identifier.NormalizedText)
+                        Dim meth = scope.MethodBuilders(token.NormalizedText)
                         scope.ILGenerator.Emit(OpCodes.Ldnull)
                         scope.ILGenerator.Emit(OpCodes.Ldftn, meth)
                         scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallBasicCallback).GetConstructors()(0))
@@ -107,7 +111,7 @@ Namespace Microsoft.SmallBasic.Statements
         Private Function LowerAndEmitIL(scope As CodeGenScope) As Boolean
             If TypeOf RightValue Is InitializerExpression Then
                 Dim initExpr = CType(RightValue, InitializerExpression)
-                initExpr.LowerAndEmit(LeftValue.ToString(), scope)
+                initExpr.LowerAndEmit(LeftValue.ToString(), scope, StartToken.Line)
                 Return True
             Else
                 RightValue.EmitIL(scope)
@@ -116,15 +120,31 @@ Namespace Microsoft.SmallBasic.Statements
         End Function
 
         Public Overrides Sub PopulateCompletionItems(
-                         completionBag As CompletionBag,
+                         bag As CompletionBag,
                          line As Integer,
                          column As Integer,
                          globalScope As Boolean)
 
-            If EqualsToken.Token = Token.Illegal OrElse column <= EqualsToken.Column Then
-                CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
+            If EqualsToken.IsBefore(line, column) Then
+                CompletionHelper.FillExpressionItems(bag)
+                Dim prop = TryCast(LeftValue, PropertyExpression)
+                Dim canBeAHandler = bag.NextToEquals AndAlso prop IsNot Nothing AndAlso Not prop.IsDynamic
+                CompletionHelper.FillSubroutines(bag, functionsOnly:=Not canBeAHandler)
             Else
-                CompletionHelper.FillExpressionItems(completionBag)
+                Dim arrayExpr = TryCast(LeftValue, ArrayExpression)
+                If arrayExpr Is Nothing Then
+                    bag.IsFirstToken = StartToken.Contains(line, column, True)
+                    CompletionHelper.FillAllGlobalItems(bag, globalScope)
+                    bag.IsFirstToken = False
+                Else
+                    Dim indexer = arrayExpr.Indexer
+                    If indexer IsNot Nothing AndAlso indexer.StartToken.IsBefore(line, column) Then
+                        CompletionHelper.FillAllGlobalItems(bag, globalScope)
+                    Else
+                        CompletionHelper.FillExpressionItems(bag)
+                        CompletionHelper.FillSubroutines(bag, functionsOnly:=True)
+                    End If
+                End If
             End If
         End Sub
 

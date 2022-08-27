@@ -12,7 +12,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End Get
         End Property
 
-        Public Sub New(ByVal completionItem As CompletionItemWrapper)
+        Public Sub New(completionItem As CompletionItemWrapper)
             _currentCompletionItem = completionItem
         End Sub
     End Class

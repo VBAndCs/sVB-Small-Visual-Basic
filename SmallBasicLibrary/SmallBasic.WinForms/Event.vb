@@ -4,6 +4,9 @@ Imports Wpf = System.Windows.Controls
 
 Namespace WinForms
 
+    ''' <summary>
+    ''' Contains info about thee last fired event
+    ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class [Event]
         Shared Sub ShowErrorMessage(eventName As String, msg As String)

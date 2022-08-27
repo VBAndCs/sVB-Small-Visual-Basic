@@ -17,10 +17,9 @@ Namespace Microsoft.SmallBasic.LanguageService
 
 
         Public Overrides Sub KeyDown(textView As IAvalonTextView, args As KeyEventArgs)
-            Dim completionProvider As CompletionAdornmentProvider
-            Dim completionSurface As CompletionAdornmentSurface = Nothing
+            Dim completionSurface = textView.Properties.GetProperty(Of CompletionAdornmentSurface)()
 
-            If textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), completionSurface) AndAlso completionSurface.IsAdornmentVisible Then
+            If completionSurface IsNot Nothing AndAlso completionSurface.IsAdornmentVisible Then
                 Dim completionListBox = completionSurface.CompletionListBox
                 Dim __ = completionListBox.SelectedIndex
 
@@ -41,25 +40,35 @@ Namespace Microsoft.SmallBasic.LanguageService
                         completionListBox.MoveDown()
                         args.Handled = True
 
-                    Case Key.Tab, Key.Return
-                        args.Handled = CommitItem(textView, completionSurface)
+                    Case Key.Return
+                        args.Handled = CommitConditionally(textView, completionSurface)
 
-                    Case Key.Space, Key.OemPeriod, Key.Oem4
+                    Case Key.Space, Key.Tab, Key.OemPeriod, Key.Oem4 ' !
                         CommitConditionally(textView, completionSurface)
+
                 End Select
 
-            ElseIf textView.Properties.TryGetProperty(GetType(CompletionAdornmentProvider), completionProvider) AndAlso
-                       args.Key = Key.Space AndAlso args.KeyboardDevice.Modifiers = ModifierKeys.Control Then
-                completionProvider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex)
-                args.Handled = True
+            Else
+                Dim provider = textView.Properties.GetProperty(Of CompletionProvider)()
+                If provider Is Nothing Then Return
+
+                If args.Key = Key.Space AndAlso args.KeyboardDevice.Modifiers = ModifierKeys.Control Then
+                    provider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex)
+                    args.Handled = True
+
+                ElseIf args.Key = Key.F1 Then
+                    provider.ShowHelp(True)
+                End If
             End If
         End Sub
 
         Public Overrides Sub KeyUp(textView As IAvalonTextView, args As KeyEventArgs)
-            Dim [property] As CompletionAdornmentSurface = Nothing
+            Dim adornmentSurface As CompletionAdornmentSurface = Nothing
 
-            If (args.Key = Key.LeftCtrl OrElse args.Key = Key.RightCtrl) AndAlso textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), [property]) AndAlso [property].IsAdornmentVisible Then
-                [property].UnfadeCompletionList()
+            If (args.Key = Key.LeftCtrl OrElse args.Key = Key.RightCtrl) AndAlso
+                        textView.Properties.TryGetProperty(Of CompletionAdornmentSurface)(adornmentSurface) AndAlso
+                        adornmentSurface.IsAdornmentVisible Then
+                adornmentSurface.UnfadeCompletionList()
             End If
 
             MyBase.KeyUp(textView, args)
@@ -68,62 +77,80 @@ Namespace Microsoft.SmallBasic.LanguageService
         Public Overrides Sub TextInput(textView As IAvalonTextView, args As TextCompositionEventArgs)
             Dim completionSurface As CompletionAdornmentSurface = Nothing
 
-            If textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), completionSurface) AndAlso completionSurface.IsAdornmentVisible Then
-                Select Case args.Text
-                    Case "+", "-", "*", "/", "="
-                        args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ")
+            If textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), completionSurface) Then
+                If completionSurface.IsAdornmentVisible Then
+                    Select Case args.Text
+                        Case "+", "-", "*", "/", "="
+                            args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ")
 
-                    Case "!"
-                        CommitConditionally(textView, completionSurface)
+                        Case "!"
+                            CommitConditionally(textView, completionSurface)
 
-                    Case ","
-                        CommitConditionally(textView, completionSurface, ", ")
-                        args.Handled = True
+                        Case ",", "("
+                            args.Handled = CommitConditionally(textView, completionSurface, args.Text & " ")
 
-                    Case "("
-                        CommitConditionally(textView, completionSurface)
-                End Select
+                    End Select
+                End If
             End If
-
             MyBase.TextInputUpdate(textView, args)
         End Sub
 
-        Private Function CommitConditionally(textView As IAvalonTextView, adornmentSurface As CompletionAdornmentSurface, Optional extraText As String = "") As Boolean
-            If adornmentSurface.CompletionListBox.SelectedItem IsNot Nothing Then
+        Private Function CommitConditionally(
+                                textView As IAvalonTextView,
+                                completionSurface As CompletionAdornmentSurface,
+                                Optional extraText As String = ""
+                       ) As Boolean
+
+            If Not completionSurface.IsFaded AndAlso completionSurface.CompletionListBox.SelectedItem IsNot Nothing Then
                 Dim editorOperations = EditorOperationsProvider.GetEditorOperations(textView)
-                Dim name = CType(adornmentSurface.CompletionListBox.SelectedItem, CompletionItemWrapper).Name
-                Dim replaceSpan As Span = adornmentSurface.Adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
+                Dim compList = completionSurface.CompletionListBox
+                Dim itemWrapper = CType(compList.SelectedItem, CompletionItemWrapper)
+                Dim item = itemWrapper.CompletionItem
+                Dim repWith = item.ReplacementText
+                Dim replaceSpan = completionSurface.Adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
+
+                Dim key = item.HistoryKey
+                If key <> "" Then CompletionProvider.compHistory(key) = item.DisplayName
+
+                If extraText.EndsWith("( ") AndAlso (repWith.EndsWith("(") OrElse repWith.EndsWith(")")) Then
+                    extraText = ""
+                End If
+
                 editorOperations.ReplaceText(
                     replaceSpan,
-                    name & extraText,
+                    repWith & extraText,
                     UndoHistoryRegistry.GetHistory(textView.TextBuffer))
 
+                If extraText = ", " OrElse repWith.EndsWith("(") Then
+                    Dim provider = textView.Properties.GetProperty(Of CompletionProvider)()
+                    provider.ShowHelp(True)
+                End If
                 CommitConditionally = True
             End If
 
-            If adornmentSurface.Adornment IsNot Nothing Then
-                adornmentSurface.Adornment.Dismiss(force:=False)
+            If completionSurface.Adornment IsNot Nothing Then
+                completionSurface.Adornment.Dismiss(force:=False)
             End If
 
             textView.VisualElement.Focus()
         End Function
 
         Private Function CommitItem(textView As IAvalonTextView, adornmentSurface As CompletionAdornmentSurface) As Boolean
-            Dim result = False
-            Dim completionItemWrapper As CompletionItemWrapper = TryCast(adornmentSurface.CompletionListBox.SelectedItem, CompletionItemWrapper)
-            Dim [property] As CompletionAdornmentProvider = Nothing
+            Dim compList = adornmentSurface.CompletionListBox
+            Dim itemWrapper = TryCast(compList.SelectedItem, CompletionItemWrapper)
+            Dim provider As CompletionProvider = Nothing
 
-            If completionItemWrapper IsNot Nothing Then
-                If textView.Properties.TryGetProperty(GetType(CompletionAdornmentProvider), [property]) Then
-                    [property].CommitItem(completionItemWrapper.CompletionItem)
+            If itemWrapper IsNot Nothing Then
+                If textView.Properties.TryGetProperty(GetType(CompletionProvider), provider) Then
+                    provider.CommitItem(itemWrapper.CompletionItem)
                 End If
+                Return True
 
-                result = True
             ElseIf adornmentSurface.Adornment IsNot Nothing Then
                 adornmentSurface.Adornment.Dismiss(force:=False)
             End If
 
-            Return result
+            Return False
         End Function
     End Class
 End Namespace

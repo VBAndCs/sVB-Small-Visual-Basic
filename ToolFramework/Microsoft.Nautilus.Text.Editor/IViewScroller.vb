@@ -10,4 +10,5 @@ Namespace Microsoft.Nautilus.Text.Editor
 
         Function EnsureSpanVisible(span1 As Span, horizontalPadding As Double, verticalPadding As Double) As Boolean
     End Interface
+
 End Namespace

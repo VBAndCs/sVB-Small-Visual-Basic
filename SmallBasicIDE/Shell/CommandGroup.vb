@@ -11,7 +11,7 @@ Namespace Microsoft.SmallBasic.Shell
             Get
                 Return maxSizeField
             End Get
-            Set(ByVal value As Double)
+            Set(value As Double)
                 maxSizeField = value
             End Set
         End Property
@@ -20,7 +20,7 @@ Namespace Microsoft.SmallBasic.Shell
             Get
                 Return nameField
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 nameField = value
             End Set
         End Property

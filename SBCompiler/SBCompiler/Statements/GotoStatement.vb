@@ -6,11 +6,11 @@ Namespace Microsoft.SmallBasic.Statements
     Public Class GotoStatement
         Inherits Statement
 
-        Public GotoToken As TokenInfo
-        Public Label As TokenInfo
+        Public GotoToken As Token
+        Public Label As Token
         Public subroutine As SubroutineStatement
 
-        Public Overrides Function GetStatement(lineNumber) As Statement
+        Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
             If lineNumber <= Label.Line Then Return Me
             Return Nothing
@@ -20,14 +20,17 @@ Namespace Microsoft.SmallBasic.Statements
             MyBase.AddSymbols(symbolTable)
             GotoToken.Parent = Me
             Label.Parent = Me
+            Label.SymbolType = CompletionItemType.Label
+            symbolTable.AllIdentifiers.Add(Label)
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
             Dim label = scope.Labels(Me.Label.NormalizedText)
             scope.ILGenerator.Emit(OpCodes.Br, label)
         End Sub
 
-        Public Overrides Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)
+        Public Overrides Sub PopulateCompletionItems(completionBag As CompletionBag, line As Integer, column As Integer, globalScope As Boolean)
+            completionBag.CompletionItems.Clear()
             CompletionHelper.FillLabels(completionBag)
         End Sub
 

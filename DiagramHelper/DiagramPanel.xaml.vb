@@ -92,7 +92,7 @@ Public Class DiagramPanel
             Return GetValue(IsSelectedProperty)
         End Get
 
-        Set(ByVal value As Boolean)
+        Set(value As Boolean)
             SetValue(IsSelectedProperty, value)
         End Set
     End Property

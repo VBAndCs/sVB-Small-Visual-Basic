@@ -111,7 +111,7 @@
     <Compile Include="Statements\IfStatement.vb" />
     <Compile Include="Statements\IllegalStatement.vb" />
     <Compile Include="Statements\LabelStatement.vb" />
-    <Compile Include="Statements\LegalTokens.vb" />
+    <Compile Include="LegalTokens.vb" />
     <Compile Include="Statements\LoopStatement.vb" />
     <Compile Include="Statements\ReturnStatement.vb" />
     <Compile Include="Statements\MethodCallStatement.vb" />
@@ -129,10 +129,10 @@
     <Compile Include="Program.vb" />
     <Compile Include="SemanticAnalyzer.vb" />
     <Compile Include="SymbolTable.vb" />
-    <Compile Include="Token.vb" />
-    <Compile Include="TokenEnumerator.vb" />
-    <Compile Include="TokenInfo.vb" />
     <Compile Include="TokenType.vb" />
+    <Compile Include="TokenEnumerator.vb" />
+    <Compile Include="Token.vb" />
+    <Compile Include="ParseType.vb" />
     <Compile Include="TypeInfo.vb" />
     <Compile Include="TypeInfoBag.vb" />
     <Compile Include="VisualBasicExporter.vb" />

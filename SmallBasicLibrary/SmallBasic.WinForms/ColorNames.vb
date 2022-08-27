@@ -1,6 +1,9 @@
 ﻿Imports Microsoft.SmallBasic.Library
 
 Namespace WinForms
+    ''' <summary>
+    ''' Defines all known color names
+    ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class Colors
         Public Shared ReadOnly Property AliceBlue As Primitive = "#F0F8FF"

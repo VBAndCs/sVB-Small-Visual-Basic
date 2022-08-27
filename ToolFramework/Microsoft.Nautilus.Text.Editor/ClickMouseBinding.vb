@@ -159,15 +159,15 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Function
         Friend Function GetExtentOfCurrentWord(currentPosition As Integer) As TextExtent
             Dim extentOfWord As TextExtent = _textStructureNavigator.GetExtentOfWord(New SnapshotPoint(_textView.TextSnapshot, currentPosition))
-            If extentOfWord.IsSignificant Then
-                Return extentOfWord
-            End If
-            Dim lineFromPosition As ITextSnapshotLine = _textView.TextSnapshot.GetLineFromPosition(currentPosition)
-            Dim start1 As Integer = lineFromPosition.Start
-            Dim [end] As Integer = lineFromPosition.End
+            If extentOfWord.IsSignificant Then Return extentOfWord
+
+            Dim line = _textView.TextSnapshot.GetLineFromPosition(currentPosition)
+            Dim start1 As Integer = line.Start
+            Dim [end] As Integer = line.End
             Dim num As Integer = Math.Max(start1, extentOfWord.Start)
             Dim num2 As Integer = Math.Min([end], extentOfWord.Start + extentOfWord.Length)
             Dim num3 As Integer = num2 - num
+
             Select Case num3
                 Case 0
                     If num = start1 Then

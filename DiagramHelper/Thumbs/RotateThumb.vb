@@ -19,7 +19,7 @@ Friend Class RotateThumb
             Return GetValue(RotateAngleProperty)
         End Get
 
-        Set(ByVal value As Double)
+        Set(value As Double)
             If value >= 360 Then
                 value -= 360
             ElseIf value < 0 Then
@@ -42,7 +42,7 @@ Friend Class RotateThumb
             Return GetValue(CounterRotateAngleProperty)
         End Get
 
-        Set(ByVal value As Double)
+        Set(value As Double)
             SetValue(CounterRotateAngleProperty, value)
         End Set
     End Property
@@ -58,7 +58,7 @@ Friend Class RotateThumb
             Return GetValue(AngleVisibiltyProperty)
         End Get
 
-        Set(ByVal value As Visibility)
+        Set(value As Visibility)
             SetValue(AngleVisibiltyProperty, value)
         End Set
     End Property
@@ -87,7 +87,7 @@ Friend Class RotateThumb
 
     Dim OldState As PropertyState
 
-    Private Sub RotateThumb_DragStarted(ByVal sender As Object, ByVal e As DragStartedEventArgs)
+    Private Sub RotateThumb_DragStarted(sender As Object, e As DragStartedEventArgs)
         OldState = New PropertyState(Pnl.AfterRestoreSub, Diagram, Designer.RotationAngleProperty)
 
         AngleVisibilty = Windows.Visibility.Visible
@@ -100,7 +100,7 @@ Friend Class RotateThumb
         RotateAngle = InitialAngle
     End Sub
 
-    Private Sub RotateThumb_DragDelta(ByVal sender As Object, ByVal e As DragDeltaEventArgs)
+    Private Sub RotateThumb_DragDelta(sender As Object, e As DragDeltaEventArgs)
         Dim currentPoint As Point = Mouse.GetPosition(Me.designerCanvas)
         Dim deltaVector As Vector = Point.Subtract(currentPoint, Me.centerPoint)
 

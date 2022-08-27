@@ -102,6 +102,7 @@
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Properties\Resources.vb" />
     <Compile Include="Properties\Settings.vb" />
+    <Compile Include="Utility\RunAfter.vb" />
     <Compile Include="Shell\BooleanToCollapseStateConverter.vb" />
     <Compile Include="Shell\CommandChunk.vb" />
     <Compile Include="Shell\CommandChunkCollection.vb" />

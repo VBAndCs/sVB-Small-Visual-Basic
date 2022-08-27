@@ -4,15 +4,15 @@ Imports System.ComponentModel
 
 Namespace Microsoft.SmallBasic.Documents
     Public Class DocumentTracker
-        Private openDocumentsField As ObservableCollection(Of FileDocument) = New ObservableCollection(Of FileDocument)()
+        Private _openDocuments As ObservableCollection(Of FileDocument) = New ObservableCollection(Of FileDocument)()
 
         Public ReadOnly Property OpenDocuments As ReadOnlyObservableCollection(Of FileDocument)
             Get
-                Return New ReadOnlyObservableCollection(Of FileDocument)(openDocumentsField)
+                Return New ReadOnlyObservableCollection(Of FileDocument)(_openDocuments)
             End Get
         End Property
 
-        Public Shared Function GetDocumentProperty(Of T)(ByVal document As FileDocument) As T
+        Public Shared Function GetDocumentProperty(Of T)(document As FileDocument) As T
             Dim value As Object = Nothing
 
             If document.PropertyStore.TryGetValue(GetType(T), value) Then
@@ -22,19 +22,19 @@ Namespace Microsoft.SmallBasic.Documents
             Return Nothing
         End Function
 
-        Public Shared Sub SetDocumentProperty(ByVal document As FileDocument, ByVal value As Object)
+        Public Shared Sub SetDocumentProperty(document As FileDocument, value As Object)
             document.PropertyStore(value.GetType()) = value
         End Sub
 
-        Public Sub TrackDocument(ByVal document As FileDocument)
+        Public Sub TrackDocument(document As FileDocument)
             If document Is Nothing Then
                 Throw New ArgumentNullException("document")
             End If
 
-            openDocumentsField.Add(document)
+            _openDocuments.Add(document)
             AddHandler document.Closed,
                 Sub()
-                    openDocumentsField.Remove(document)
+                    _openDocuments.Remove(document)
                 End Sub
         End Sub
 

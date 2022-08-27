@@ -18,12 +18,12 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return CStr(GetValue(TextProperty))
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 SetValue(TextProperty, value)
             End Set
         End Property
 
-        Private Shared Sub OnTextChanged(ByVal d As DependencyObject, ByVal e As DependencyPropertyChangedEventArgs)
+        Private Shared Sub OnTextChanged(d As DependencyObject, e As DependencyPropertyChangedEventArgs)
             CType(d, Run).Dispatcher.BeginInvoke(
                    DispatcherPriority.Normal,
                    CType(Function()

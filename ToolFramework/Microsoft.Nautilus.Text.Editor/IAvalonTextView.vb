@@ -1,4 +1,5 @@
 Imports System.Windows
+Imports System.Windows.Controls.Primitives
 Imports System.Windows.Media
 
 Namespace Microsoft.Nautilus.Text.Editor
@@ -11,5 +12,8 @@ Namespace Microsoft.Nautilus.Text.Editor
         ReadOnly Property SpanGeometry As ISpanGeometry
 
         Sub Invalidate()
+        Sub OnScrollChanged(e As ScrollEventArgs)
+
+        Event ScrollChaged(senmder As Object, e As ScrollEventArgs)
     End Interface
 End Namespace

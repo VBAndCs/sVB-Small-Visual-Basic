@@ -145,7 +145,7 @@ Namespace Microsoft.Nautilus.Text
                 End If
 
                 If replaceWith Is Nothing Then
-                    Throw New ArgumentNullException("replaceWith")
+                    replaceWith = ""
                 End If
 
                 If Not CanDeleteOrReplace(New Span(startPosition, charsToReplace)) Then

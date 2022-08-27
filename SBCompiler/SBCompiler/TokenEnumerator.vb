@@ -2,7 +2,7 @@
 
 Namespace Microsoft.SmallBasic
     Public Class TokenEnumerator
-        Private _tokenList As List(Of TokenInfo)
+        Private _tokenList As List(Of Token)
         Private _currentIndex As Integer
 
         Public Property LineNumber As Integer
@@ -16,13 +16,13 @@ Namespace Microsoft.SmallBasic
         Public ReadOnly Property IsEndOfNonCommentList As Boolean
             Get
                 If _currentIndex = _tokenList.Count Then Return True
-                Return _Current.TokenType = TokenType.Comment
+                Return _Current.ParseType = ParseType.Comment
             End Get
         End Property
 
-        Public ReadOnly Property Current As TokenInfo
+        Public ReadOnly Property Current As Token
 
-        Public Sub New(tokenList As List(Of TokenInfo))
+        Public Sub New(tokenList As List(Of Token))
             _tokenList = tokenList
 
             If tokenList.Count > 0 Then
@@ -30,12 +30,12 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Public Function PeekNext() As TokenInfo
+        Public Function PeekNext() As Token
             If _currentIndex < _tokenList.Count - 1 Then
                 Return _tokenList(_currentIndex + 1)
             End If
 
-            Return TokenInfo.Illegal
+            Return Token.Illegal
         End Function
 
         Public Function MoveNext() As Boolean

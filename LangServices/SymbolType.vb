@@ -3,10 +3,13 @@
         Unknown
         Keyword
         Type
+        Control
         Method
         [Property]
+        DynamicProperty
         [Event]
-        Variable
+        GlobalVariable
+        LocalVariable
         Subroutine
         Label
     End Enum

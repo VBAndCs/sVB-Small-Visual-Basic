@@ -1,0 +1,27 @@
+X = {
+   "1. First item",
+   "2. second item",
+   "3. Third item"
+}
+
+' I is global
+For I = 1 To 3
+   TextWindow.WriteLine(X[I])
+   Test()
+Next
+
+
+'------------------------------------------------
+Sub Test()
+   y = {
+      "a) First subItem",
+      "b) second subItem",
+      "c) third subItem"
+   }
+   
+   ' i is local
+   For i = 1 To 3
+      TextWindow.WriteLine("   " + y[i])
+   Next
+   
+EndSub

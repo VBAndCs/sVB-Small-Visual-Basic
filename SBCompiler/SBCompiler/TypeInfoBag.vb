@@ -7,7 +7,7 @@ Namespace Microsoft.SmallBasic
     Public Class TypeInfoBag
         Inherits MarshalByRefObject
 
-        Private _types As Dictionary(Of String, TypeInfo) = New Dictionary(Of String, TypeInfo)()
+        Private _types As New Dictionary(Of String, TypeInfo)()
         Public StringToPrimitive As MethodInfo
         Public NumberToPrimitive As MethodInfo
         Public PrimitiveToBoolean As MethodInfo

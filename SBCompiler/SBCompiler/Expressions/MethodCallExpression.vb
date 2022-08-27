@@ -10,7 +10,7 @@ Namespace Microsoft.SmallBasic.Expressions
     Public Class MethodCallExpression
         Inherits Expression
 
-        Public Sub New(startToken As TokenInfo, precedence As Integer, typeName As TokenInfo, methodName As TokenInfo, arguments As List(Of Expression))
+        Public Sub New(startToken As Token, precedence As Integer, typeName As Token, methodName As Token, arguments As List(Of Expression))
             Me.StartToken = startToken
             Me.Precedence = precedence
             _TypeName = typeName
@@ -18,13 +18,13 @@ Namespace Microsoft.SmallBasic.Expressions
             _Arguments = arguments
         End Sub
 
-        Public Property TypeName As TokenInfo
-        Public Property MethodName As TokenInfo
+        Public Property TypeName As Token
+        Public Property MethodName As Token
         Public Property OuterSubRoutine As Statements.SubroutineStatement
 
         Public ReadOnly Property Arguments As New List(Of Expression)
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             _TypeName.Parent = Me.Parent
             _MethodName.Parent = Me.Parent
@@ -33,15 +33,23 @@ Namespace Microsoft.SmallBasic.Expressions
                 argument.Parent = Me.Parent
                 argument.AddSymbols(symbolTable)
             Next
+
+            _TypeName.SymbolType = Completion.CompletionItemType.GlobalVariable
+            symbolTable.AllIdentifiers.Add(_TypeName)
+
+            _MethodName.SymbolType = If(_TypeName.IsIllegal, Completion.CompletionItemType.SubroutineName, Completion.CompletionItemType.MethodName)
+            symbolTable.AllIdentifiers.Add(_MethodName)
+
+            symbolTable.FixNames(_TypeName, _MethodName, True)
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
-            If TypeName.Token = Token.Illegal Then ' Function Call
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If TypeName.Type = TokenType.Illegal Then ' Function Call
                 Dim subroutine As New Statements.SubroutineCallStatement() With {
                     .Name = MethodName,
                     .Args = Arguments,
                     .IsFunctionCall = True,
-                    .OuterSubRoutine = OuterSubRoutine
+                    .OuterSubroutine = OuterSubRoutine
                 }
                 subroutine.EmitIL(scope)
             Else
@@ -56,14 +64,14 @@ Namespace Microsoft.SmallBasic.Expressions
 
         End Sub
 
-        Public Function GetMethodInfo(ByVal scope As CodeGenScope) As MethodInfo
+        Public Function GetMethodInfo(scope As CodeGenScope) As MethodInfo
             Dim typeInfo = scope.TypeInfoBag.Types(TypeName.NormalizedText)
             Return typeInfo.Methods(MethodName.NormalizedText)
         End Function
 
         Public Overrides Function ToString() As String
             Dim stringBuilder As New StringBuilder()
-            If TypeName.Token = Token.Illegal Then
+            If TypeName.Type = TokenType.Illegal Then
                 stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{1}(", New Object(1) {TypeName.Text, MethodName.Text})
             Else
                 stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}.{1}(", New Object(1) {TypeName.Text, MethodName.Text})

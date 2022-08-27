@@ -62,18 +62,19 @@ Namespace Microsoft.Nautilus.Text.Editor
             AddHandler _textView.LayoutChanged, AddressOf EditorLayoutChanged
             AddHandler _textView.ViewportLeftChanged, AddressOf EditorLayoutChanged
             AddHandler _textView.ViewportWidthChanged, AddressOf EditorLayoutChanged
-            AddHandler _scrollbar.Scroll, AddressOf HorizontalScrollBarScrolled
+            AddHandler _scrollbar.Scroll, AddressOf OnHorizontalScrollBarScrolled
         End Sub
 
         Private Sub UnRegisterEvents()
             RemoveHandler _textView.LayoutChanged, AddressOf EditorLayoutChanged
             RemoveHandler _textView.ViewportLeftChanged, AddressOf EditorLayoutChanged
             RemoveHandler _textView.ViewportWidthChanged, AddressOf EditorLayoutChanged
-            RemoveHandler _scrollbar.Scroll, AddressOf HorizontalScrollBarScrolled
+            RemoveHandler _scrollbar.Scroll, AddressOf OnHorizontalScrollBarScrolled
         End Sub
 
-        Friend Sub HorizontalScrollBarScrolled(sender As Object, e As ScrollEventArgs)
-            _textView.ViewportLeft = e.NewValue
+        Friend Sub OnHorizontalScrollBarScrolled(sender As Object, e As ScrollEventArgs)
+            _textView.OnScrollChanged(e)
+            If Not e.Handled Then _textView.ViewportLeft = e.NewValue
         End Sub
 
         Friend Sub EditorLayoutChanged(sender As Object, e As EventArgs)

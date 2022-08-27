@@ -38,13 +38,13 @@ Public Class Designer
     Dim _fileName As String = ""
     Public Property FileName As String
         Get
-            Return _fileName
+            Return _fileName?.ToLower()
         End Get
 
         Set(value As String)
-            _fileName = If(value = "", "", IO.Path.GetFullPath(value))
-            If _fileName <> "" AndAlso _CodeFilePath = "" Then
-                _CodeFilePath = _fileName.Substring(0, _fileName.Length - 5) & ".sb"
+            _fileName = If(value = "", "", IO.Path.GetFullPath(value)).ToLower()
+            If _fileName <> "" AndAlso _codeFilePath = "" Then
+                _codeFilePath = _fileName.Substring(0, _fileName.Length - 5) & ".sb".ToLower()
             End If
         End Set
     End Property
@@ -129,21 +129,19 @@ Public Class Designer
         If name = "" Then Return False
 
         Dim newName = name.ToLower()
-        If Me.GetControlName(control).ToLower() = newName Then
-            Return True
-        End If
-
-        If IsNumeric(newName(0)) Then
-            MessageBox.Show("Name can't start with a number.", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
-            Return False
-        End If
-
-        For Each cnt In Me.Items
-            If Me.GetControlName(cnt).ToLower() = newName Then
-                MessageBox.Show($"There is another control named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+        If Me.GetControlName(control).ToLower() <> newName Then
+            If IsNumeric(newName(0)) Then
+                MessageBox.Show("Name can't start with a number.", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
                 Return False
             End If
-        Next
+
+            For Each cnt In Me.Items
+                If Me.GetControlName(cnt).ToLower() = newName Then
+                    MessageBox.Show($"There is another control named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                    Return False
+                End If
+            Next
+        End If
 
         Try
             Dim OldState As New PropertyState(
@@ -158,9 +156,11 @@ Public Class Designer
             Dim fw = TryCast(control, FrameworkElement)
             If fw IsNot Nothing Then fw.Name = name
             Automation.AutomationProperties.SetName(control, name)
+
             Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
             RaiseEvent PageShown(-3)
             Return True
+
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
         End Try
@@ -172,19 +172,20 @@ Public Class Designer
         If name = "" Then Return False
 
         Dim newName = name.ToLower()
-        If Me.Name.ToLower() = newName Then Return True
-
-        If IsNumeric(newName(0)) Then
-            MessageBox.Show("Name can't start with a number.", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
-            Return False
-        End If
-
-        For Each page In Pages.Values
-            If page.Name.ToLower() = newName Then
-                MessageBox.Show($"There is another form named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+        If Me.Name.ToLower() <> newName Then
+            If IsNumeric(newName(0)) Then
+                MessageBox.Show("Name can't start with a number.", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
                 Return False
             End If
-        Next
+
+            For Each page In Pages.Values
+                If page.Name.ToLower() = newName Then
+                    MessageBox.Show($"There is another form named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                    Return False
+                End If
+            Next
+        End If
+
 
         Try
             Dim OldState As New PropertyState(AddressOf UpdateFormInfo, Me, Designer.NameProperty)
@@ -214,7 +215,20 @@ Public Class Designer
     Public Shared FormKeys As New List(Of String)
     Public Shared CurrentPage As Designer
     Public Shared Property PagesGrid As Grid
-    Public Property CodeFilePath As String = ""
+    Public Shared TempProjectPath As String
+
+    Dim _codeFilePath As String
+
+    Public Property CodeFilePath As String
+        Get
+            Return _codeFilePath?.ToLower()
+        End Get
+
+        Set(value As String)
+            _codeFilePath = value?.ToLower()
+        End Set
+    End Property
+
 
     Private Shared TempKeyNum As Integer = 0
     Public PageKey As String
@@ -234,6 +248,7 @@ Public Class Designer
 
     Private Shared Function GetTempKey(Optional pagePath As String = "") As String
         If pagePath <> "" Then
+            pagePath = pagePath.ToLower()
             For Each p In Pages
                 If p.Value._fileName = pagePath Then Return p.Key
             Next
@@ -264,6 +279,7 @@ Public Class Designer
         CurrentPage = New Designer()
         PagesGrid.Children.Add(CurrentPage)
         Helper.UpdateControl(CurrentPage)
+
     End Sub
 
     Public Shared Function OpenNewPage(Optional UpdateCurrentPage As Boolean = True) As String
@@ -298,7 +314,7 @@ Public Class Designer
     Public Shared Function ClosePage(Optional openNewPageIfLast As Boolean = True) As Boolean
         If CurrentPage.IsNew AndAlso Pages.Count = 1 Then Return True
 
-        If CurrentPage.HasChanges OrElse (CurrentPage._fileName = "" AndAlso CurrentPage.CodeFilePath <> "") Then
+        If CurrentPage.HasChanges OrElse (CurrentPage._fileName = "" AndAlso CurrentPage.CodeFilePath <> "" AndAlso Not CurrentPage.CodeFilePath.StartsWith(TempProjectPath)) Then
             If Not CurrentPage.AskToSave() Then Return False
         End If
 
@@ -341,12 +357,11 @@ Public Class Designer
         Else
             Dim xamlPath = key.ToLower()
 
-            Dim codePath = xamlPath.Substring(0, xamlPath.Length - 5) & ".sb"
+            Dim codePath = xamlPath.Substring(0, xamlPath.Length - 5) & ".sb".ToLower()
             For Each item In Pages
                 Dim page = item.Value
-                If page._fileName.ToLower() = xamlPath OrElse
-                         page._CodeFilePath.ToLower() = codePath Then
-
+                If page._fileName = xamlPath OrElse
+                         page._codeFilePath = codePath Then
                     ' File is already opened. Stwich to it.
                     Return SwitchTo(item.Key, False)
                 End If
@@ -744,7 +759,7 @@ Public Class Designer
         If _fileName = "" Then
             Return SaveAs()
         ElseIf Me.HasChanges Then
-            Return SavePage("")
+            Return SavePage("", False)
         Else
             Return True
         End If
@@ -770,22 +785,24 @@ Public Class Designer
 
         If result = True Then
             ' Don't use _fileName here, to update Tempkey!
-            Me.FileName = dlg.FileName
-            If Not SavePage("") Then Return False
+            _fileName = dlg.FileName.ToLower() ' don't use FileName property to keep the old code file path
+            If Not SavePage("", True) Then Return False
+            FileName = _fileName ' Update the old code file path
+
             Return True
         End If
         Return False
     End Function
 
-    Public Delegate Function SavePageDelegate(tmpPath As String) As Boolean
+    Public Delegate Function SavePageDelegate(tmpPath As String, saveAs As Boolean) As Boolean
     Public SavePage As SavePageDelegate = AddressOf DoSave
 
-    Public Function DoSave(Optional tmpPath As String = Nothing) As Boolean
+    Public Function DoSave(Optional tmpPath As String = Nothing, Optional saveAs As Boolean = False) As Boolean
         Try
             Dim xmal = PageToXaml()
             Dim saveTo = If(tmpPath = "", _fileName, tmpPath)
             IO.File.WriteAllText(saveTo, xmal, System.Text.Encoding.UTF8)
-            _CodeFilePath = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
+            _codeFilePath = saveTo.Substring(0, saveTo.Length - 5) & ".sb".ToLower()
             If tmpPath = "" Then
                 UpdateFormInfo()
                 Me.HasChanges = False
@@ -842,7 +859,7 @@ Public Class Designer
 
             CurrentPage.XamlToPage(xaml)
             CurrentPage.ShowGrid = True
-            CurrentPage._fileName = IO.Path.GetFullPath(fileName)
+            CurrentPage.FileName = IO.Path.GetFullPath(fileName).ToLower()
             CurrentPage.PageKey = GetTempKey(CurrentPage._fileName)
             Pages(CurrentPage.PageKey) = CurrentPage
             UpdateFormInfo()
@@ -850,7 +867,10 @@ Public Class Designer
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
-            PagesGrid.Cursor = Nothing
+            If PagesGrid.Cursor IsNot Nothing Then
+                PagesGrid.Cursor.Dispose()
+                PagesGrid.Cursor = Nothing
+            End If
         End Try
     End Sub
 
@@ -1270,7 +1290,7 @@ Public Class Designer
 
 #Region "Left Attached Property"
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Function GetLeft(ByVal element As DependencyObject) As Double
+    Public Shared Function GetLeft(element As DependencyObject) As Double
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1279,7 +1299,7 @@ Public Class Designer
     End Function
 
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Sub SetLeft(ByVal element As DependencyObject, ByVal value As Double)
+    Public Shared Sub SetLeft(element As DependencyObject, value As Double)
         If element Is Nothing Then Return
 
         element.SetValue(LeftProperty, value)
@@ -1308,7 +1328,7 @@ Public Class Designer
 
 #Region "Right Attached Property"
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Function GetRight(ByVal element As DependencyObject) As Double
+    Public Shared Function GetRight(element As DependencyObject) As Double
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1317,7 +1337,7 @@ Public Class Designer
     End Function
 
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Sub SetRight(ByVal element As DependencyObject, ByVal value As Double)
+    Public Shared Sub SetRight(element As DependencyObject, value As Double)
         If element Is Nothing Then
             Return
         End If
@@ -1351,7 +1371,7 @@ Public Class Designer
 
 #Region "Top Attached Property"
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Function GetTop(ByVal element As DependencyObject) As Double
+    Public Shared Function GetTop(element As DependencyObject) As Double
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1360,7 +1380,7 @@ Public Class Designer
     End Function
 
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Sub SetTop(ByVal element As DependencyObject, ByVal value As Double)
+    Public Shared Sub SetTop(element As DependencyObject, value As Double)
         If element Is Nothing Then
             Return
         End If
@@ -1394,7 +1414,7 @@ Public Class Designer
 
 #Region "Bottom Attached Property"
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Function GetBottom(ByVal element As DependencyObject) As Double
+    Public Shared Function GetBottom(element As DependencyObject) As Double
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1403,7 +1423,7 @@ Public Class Designer
     End Function
 
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Sub SetBottom(ByVal element As DependencyObject, ByVal value As Double)
+    Public Shared Sub SetBottom(element As DependencyObject, value As Double)
         If element Is Nothing Then
             Return
         End If
@@ -1436,7 +1456,7 @@ Public Class Designer
 
 #Region "FrameWidth Attached Property"
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Function GetFrameWidth(ByVal element As DependencyObject) As Double
+    Public Shared Function GetFrameWidth(element As DependencyObject) As Double
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1445,7 +1465,7 @@ Public Class Designer
     End Function
 
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Sub SetFrameWidth(ByVal element As DependencyObject, ByVal value As Double)
+    Public Shared Sub SetFrameWidth(element As DependencyObject, value As Double)
         If element Is Nothing Then
             Return
         End If
@@ -1467,7 +1487,7 @@ Public Class Designer
 
 #Region "FrameHeight Attached Property"
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Function GetFrameHeight(ByVal element As DependencyObject) As Double
+    Public Shared Function GetFrameHeight(element As DependencyObject) As Double
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1476,7 +1496,7 @@ Public Class Designer
     End Function
 
     <TypeConverter(GetType(LengthConverter))>
-    Public Shared Sub SetFrameHeight(ByVal element As DependencyObject, ByVal value As Double)
+    Public Shared Sub SetFrameHeight(element As DependencyObject, value As Double)
         If element Is Nothing Then
             Return
         End If
@@ -1498,7 +1518,7 @@ Public Class Designer
 
 #Region "RotationAngle Attached Property"
 
-    Public Shared Function GetRotationAngle(ByVal element As DependencyObject) As Double
+    Public Shared Function GetRotationAngle(element As DependencyObject) As Double
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1506,7 +1526,7 @@ Public Class Designer
         Return element.GetValue(RotationAngleProperty)
     End Function
 
-    Public Shared Sub SetRotationAngle(ByVal element As DependencyObject, ByVal value As Double)
+    Public Shared Sub SetRotationAngle(element As DependencyObject, value As Double)
         If element Is Nothing Then
             Return
         End If
@@ -1533,7 +1553,7 @@ Public Class Designer
             Return GetValue(ScrollViewerProperty)
         End Get
 
-        Set(ByVal value As ScrollViewer)
+        Set(value As ScrollViewer)
             SetValue(ScrollViewerProperty, value)
         End Set
     End Property
@@ -1551,7 +1571,7 @@ Public Class Designer
             Return GetValue(DesignerGridProperty)
         End Get
 
-        Private Set(ByVal value As Grid)
+        Private Set(value As Grid)
             SetValue(DesignerGridProperty, value)
         End Set
     End Property
@@ -1569,7 +1589,7 @@ Public Class Designer
             Return GetValue(PageWidthProperty)
         End Get
 
-        Set(ByVal value As Double)
+        Set(value As Double)
             SetValue(PageWidthProperty, value)
         End Set
     End Property
@@ -1596,7 +1616,7 @@ Public Class Designer
             Return GetValue(PageHeightProperty)
         End Get
 
-        Set(ByVal value As Double)
+        Set(value As Double)
             SetValue(PageHeightProperty, value)
         End Set
     End Property
@@ -1624,7 +1644,7 @@ Public Class Designer
             Return GetValue(ShowGridProperty)
         End Get
 
-        Set(ByVal value As Boolean)
+        Set(value As Boolean)
             SetValue(ShowGridProperty, value)
         End Set
     End Property
@@ -1654,7 +1674,7 @@ Public Class Designer
             Return GetValue(ScaleProperty)
         End Get
 
-        Set(ByVal value As Double)
+        Set(value As Double)
             SetValue(ScaleProperty, value)
         End Set
     End Property
@@ -1686,7 +1706,7 @@ Public Class Designer
 
 
 #Region "DiagramTextFontProps"
-    Public Shared Function GetDiagramTextFontProps(ByVal element As DependencyObject) As PropertyDictionary
+    Public Shared Function GetDiagramTextFontProps(element As DependencyObject) As PropertyDictionary
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1694,7 +1714,7 @@ Public Class Designer
         Return element.GetValue(DiagramTextFontPropsProperty)
     End Function
 
-    Public Shared Sub SetDiagramTextFontProps(ByVal element As DependencyObject, ByVal value As PropertyDictionary)
+    Public Shared Sub SetDiagramTextFontProps(element As DependencyObject, value As PropertyDictionary)
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1725,7 +1745,7 @@ Public Class Designer
             Return GetValue(HasChangesProperty)
         End Get
 
-        Set(ByVal value As Boolean)
+        Set(value As Boolean)
             SetValue(HasChangesProperty, value)
         End Set
     End Property
@@ -1744,7 +1764,7 @@ Public Class Designer
             Return GetValue(CanUndoProperty)
         End Get
 
-        Set(ByVal value As Boolean)
+        Set(value As Boolean)
             SetValue(CanUndoProperty, value)
         End Set
     End Property
@@ -1763,7 +1783,7 @@ Public Class Designer
             Return GetValue(CanRedoProperty)
         End Get
 
-        Set(ByVal value As Boolean)
+        Set(value As Boolean)
             SetValue(CanRedoProperty, value)
         End Set
     End Property
@@ -1779,7 +1799,7 @@ Public Class Designer
 
 #Region "GroupID"
 
-    Public Shared Function GetGroupID(ByVal element As DependencyObject) As String
+    Public Shared Function GetGroupID(element As DependencyObject) As String
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1787,7 +1807,7 @@ Public Class Designer
         Return element.GetValue(GroupIDProperty)
     End Function
 
-    Public Shared Sub SetGroupID(ByVal element As DependencyObject, ByVal value As String)
+    Public Shared Sub SetGroupID(element As DependencyObject, value As String)
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If

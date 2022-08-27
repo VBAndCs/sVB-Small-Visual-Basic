@@ -38,7 +38,7 @@ Public Class ZoomBox
             Return GetValue(DesignerProperty)
         End Get
 
-        Set(ByVal value As Designer)
+        Set(value As Designer)
             SetValue(DesignerProperty, value)
             Designer.ZoomBox = Me
 
@@ -52,7 +52,7 @@ Public Class ZoomBox
                            GetType(Designer), GetType(ZoomBox))
 
 
-    Private Sub ZoomSlider_ValueChanged(ByVal sender As Object, ByVal e As RoutedPropertyChangedEventArgs(Of Double))
+    Private Sub ZoomSlider_ValueChanged(sender As Object, e As RoutedPropertyChangedEventArgs(Of Double))
         If ScrollViewer Is Nothing Then Return
         Dim Xof = ScrollViewer.HorizontalOffset
         Dim Yof = ScrollViewer.VerticalOffset
@@ -73,7 +73,7 @@ Public Class ZoomBox
 
     End Sub
 
-    Private Sub Thumb_DragDelta(ByVal sender As Object, ByVal e As DragDeltaEventArgs)
+    Private Sub Thumb_DragDelta(sender As Object, e As DragDeltaEventArgs)
         Dim scale, xOffset, yOffset As Double
         Me.InvalidateScale(scale, xOffset, yOffset)
 

@@ -7,7 +7,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public ContinueLabel As Label
         Public ExitLabel As Label
         Public Body As New List(Of Statement)()
-        Public EndLoopToken As TokenInfo
+        Public EndLoopToken As Token
         Friend JumpLoopStatements As New List(Of JumpLoopStatement)
 
     End Class

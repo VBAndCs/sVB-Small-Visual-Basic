@@ -25,13 +25,12 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Public ReadOnly Property Description As String
             Get
-                Return _item.MemberInfo.Name
+                Return _item.MemberInfo?.Name
             End Get
         End Property
 
         Public ReadOnly Property Prefix As String
             Get
-
                 Select Case SymbolType
                     Case SymbolType.Keyword
                         Return "M:"
@@ -44,36 +43,60 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Case SymbolType.Event
                         Return "E:"
                     Case Else
-                        Return "?:"
+                        Return ""
                 End Select
             End Get
         End Property
 
+        Dim _symbolType? As SymbolType
+
         Public ReadOnly Property SymbolType As SymbolType
             Get
+                If Not _symbolType.HasValue Then
 
-                Select Case _item.ItemType
-                    Case CompletionItemType.EventName
-                        Return SymbolType.Event
-                    Case CompletionItemType.Identifier
-                        Return SymbolType.Unknown
-                    Case CompletionItemType.Keyword
-                        Return SymbolType.Keyword
-                    Case CompletionItemType.Label
-                        Return SymbolType.Label
-                    Case CompletionItemType.MethodName
-                        Return SymbolType.Method
-                    Case CompletionItemType.PropertyName
-                        Return SymbolType.Property
-                    Case CompletionItemType.SubroutineName
-                        Return SymbolType.Subroutine
-                    Case CompletionItemType.TypeName
-                        Return SymbolType.Type
-                    Case CompletionItemType.Variable
-                        Return SymbolType.Variable
-                    Case Else
-                        Return SymbolType.Unknown
-                End Select
+                    Select Case _item.ItemType
+                        Case CompletionItemType.EventName
+                            _symbolType = SymbolType.Event
+
+                        Case CompletionItemType.Identifier
+                            _symbolType = SymbolType.Unknown
+
+                        Case CompletionItemType.Keyword
+                            _symbolType = SymbolType.Keyword
+
+                        Case CompletionItemType.Label
+                            _symbolType = SymbolType.Label
+
+                        Case CompletionItemType.MethodName
+                            _symbolType = SymbolType.Method
+
+                        Case CompletionItemType.PropertyName
+                            _symbolType = SymbolType.Property
+
+                        Case CompletionItemType.SubroutineName
+                            _symbolType = SymbolType.Subroutine
+
+                        Case CompletionItemType.TypeName
+                            _symbolType = SymbolType.Type
+
+                        Case CompletionItemType.Control
+                            _symbolType = SymbolType.Control
+
+                        Case CompletionItemType.GlobalVariable
+                            _symbolType = SymbolType.GlobalVariable
+
+                        Case CompletionItemType.LocalVariable
+                            _symbolType = SymbolType.LocalVariable
+
+                        Case CompletionItemType.DynamicPropertyName
+                            _symbolType = SymbolType.DynamicProperty
+
+                        Case Else
+                            _symbolType = SymbolType.Unknown
+                    End Select
+                End If
+
+                Return _symbolType.Value
             End Get
         End Property
 
@@ -89,9 +112,9 @@ Namespace Microsoft.SmallBasic.LanguageService
             End Get
         End Property
 
-        Public Sub New(ByVal item As CompletionItem)
+        Public Sub New(item As CompletionItem, bag As CompletionBag)
             _item = item
-            Dim normalizedModuleName As String = GetNormalizedModuleName()
+            Dim normalizedModuleName = GetNormalizedModuleName()
             Dim value As ModuleDocumentation = Nothing
 
             If Not _moduleDocMap.TryGetValue(normalizedModuleName, value) Then
@@ -99,7 +122,71 @@ Namespace Microsoft.SmallBasic.LanguageService
                 _moduleDocMap(normalizedModuleName) = value
             End If
 
-            _documentation = value.GetItemDocumentation(GetSymbolName())
+            Select Case SymbolType
+                Case SymbolType.Subroutine
+                    Dim parseTree = bag.ParseTree
+                    If parseTree Is Nothing Then Return
+
+                    Dim subrotine = CompletionHelper.GetSubroutine(_item.DisplayName, parseTree)
+                    If subrotine Is Nothing Then Return
+
+                    _documentation = New CompletionItemDocumentation() With {
+                            .Prefix = subrotine.StartToken.Text & " ",
+                            .Summary = subrotine.GetSummery,
+                            .ParamsDoc = subrotine.GetParamsDoc(),
+                            .Returns = subrotine.GetRetunDoc()
+                    }
+
+                Case SymbolType.DynamicProperty
+                    _documentation = New CompletionItemDocumentation() With {
+                            .Prefix = item.ObjectName & "!",
+                            .Suffix = " Dynamic Property",
+                            .Summary = item.DefinitionIdintifier.Comment
+                    }
+
+                Case SymbolType.Label
+                    _documentation = New CompletionItemDocumentation() With {
+                            .Prefix = "Label: ",
+                            .Summary = item.DefinitionIdintifier.Comment
+                    }
+
+                Case SymbolType.GlobalVariable
+                    _documentation = New CompletionItemDocumentation() With {
+                            .Prefix = "Global Variable: ",
+                            .Suffix = If(item.ObjectName = "", "", $" As {item.ObjectName}"),
+                            .Summary = item.DefinitionIdintifier.Comment
+                    }
+
+                Case SymbolType.LocalVariable
+                    Dim vars = bag.SymbolTable.LocalVariables
+                    Dim var = item.Key
+                    If Not vars.ContainsKey(var) Then Return
+                    Dim varExpr = vars(var)
+
+                    _documentation = New CompletionItemDocumentation() With {
+                            .Prefix = If(varExpr.IsParam, "Parameter: " & varExpr.Subroutine.Name.Text & ".", "Local Variable: "),
+                            .Suffix = If(item.ObjectName = "", "", $" As {item.ObjectName}"),
+                            .Summary = varExpr.Identifier.Comment
+                    }
+
+                Case SymbolType.Control
+                    _documentation = New CompletionItemDocumentation() With {
+                            .Prefix = "Global Variable: ",
+                            .Suffix = If(item.ObjectName = "", "", $" As {item.ObjectName}"),
+                            .Summary = If(item.DisplayName = "Me",
+                                 $"Me is a global variable that referes to the current form, which is {item.Key} in this context",
+                                 $"A global variable that referes to a {item.ObjectName} control that you created by the form designer"
+                             )
+                    }
+
+                Case Else
+                    Dim name = GetSymbolName()
+                    If name <> "" Then
+                        _documentation = value.GetItemDocumentation(name)
+                    End If
+            End Select
+
+
         End Sub
 
         Private Function GetNormalizedModuleName() As String
@@ -110,26 +197,29 @@ Namespace Microsoft.SmallBasic.LanguageService
         Private Function GetSymbolName() As String
             Dim result = ""
 
-            If SymbolType = SymbolType.Keyword Then
-                result = $"{Prefix}Microsoft.SmallBasic.Library.Keywords.{_item.DisplayName}"
+            Select Case SymbolType
+                Case SymbolType.Keyword
+                    result = $"{Prefix}Microsoft.SmallBasic.Library.Keywords.{_item.DisplayName}"
 
-            ElseIf SymbolType = SymbolType.Method Then
-                result = GetMethodName()
-            ElseIf SymbolType = SymbolType.Property Then
-                Dim propertyInfo As PropertyInfo = TryCast(_item.MemberInfo, PropertyInfo)
-                If propertyInfo Is Nothing Then
+                Case SymbolType.Method
                     result = GetMethodName()
-                Else
-                    result = $"{Prefix}{propertyInfo.DeclaringType.FullName}.{propertyInfo.Name}"
-                End If
-            ElseIf SymbolType = SymbolType.Event Then
-                Dim eventInfo As EventInfo = TryCast(_item.MemberInfo, EventInfo)
-                result = $"{Prefix}{eventInfo.DeclaringType.FullName}.{eventInfo.Name}"
 
-            ElseIf SymbolType = SymbolType.Type Then
-                Dim type As Type = TryCast(_item.MemberInfo, Type)
-                result = $"{Prefix}{type.FullName}"
-            End If
+                Case SymbolType.Property
+                    Dim propertyInfo As PropertyInfo = TryCast(_item.MemberInfo, PropertyInfo)
+                    If propertyInfo Is Nothing Then
+                        result = GetMethodName()
+                    Else
+                        result = $"{Prefix}{propertyInfo.DeclaringType.FullName}.{propertyInfo.Name}"
+                    End If
+
+                Case SymbolType.Event
+                    Dim eventInfo = TryCast(_item.MemberInfo, EventInfo)
+                    result = $"{Prefix}{eventInfo.DeclaringType.FullName}.{eventInfo.Name}"
+
+                Case SymbolType.Type
+                    Dim type = TryCast(_item.MemberInfo, Type)
+                    result = $"{Prefix}{type.FullName}"
+            End Select
 
             Return result
         End Function

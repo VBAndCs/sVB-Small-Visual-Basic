@@ -8,11 +8,11 @@ Namespace Microsoft.SmallBasic.Utility
 
         Public Property ResourceId As String
 
-        Public Sub New(ByVal resourceId As String)
+        Public Sub New(resourceId As String)
             Me.ResourceId = resourceId
         End Sub
 
-        Public Overrides Function ProvideValue(ByVal serviceProvider As IServiceProvider) As Object
+        Public Overrides Function ProvideValue(serviceProvider As IServiceProvider) As Object
             Return ResourceHelper.GetString(ResourceId)
         End Function
     End Class

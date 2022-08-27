@@ -84,7 +84,7 @@ Public Class DiagramObject
         If DraggingDiagram Then Diagram_PreviewMouseLeftButtonUp(Nothing, Nothing)
     End Sub
 
-    Private Sub Diagram_GotFocus(ByVal sender As Object, ByVal e As EventArgs) Handles Diagram.GotFocus
+    Private Sub Diagram_GotFocus(sender As Object, e As EventArgs) Handles Diagram.GotFocus
         If Keyboard.Modifiers = ModifierKeys.Control Then
             Pnl.IsSelected = Not Pnl.IsSelected
         ElseIf Pnl.IsSelected = False Then

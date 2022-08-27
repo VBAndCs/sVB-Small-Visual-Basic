@@ -30,7 +30,6 @@ Imports Microsoft.VisualBasic
 Namespace Microsoft.SmallBasic
     <Export("MainWindow")>
     Public Class MainWindow
-        Private documentTrackerField As New DocumentTracker()
         Private currentCompletionItem As CompletionItemWrapper
         Private helpUpdateTimer As DispatcherTimer
         Private currentProgramProcess As Process
@@ -42,106 +41,127 @@ Namespace Microsoft.SmallBasic
             ResourceHelper.GetString("NewCommand"),
             GetType(MainWindow)
         )
+
         Public Shared OpenCommand As New RoutedUICommand(
             ResourceHelper.GetString("OpenCommand"),
             ResourceHelper.GetString("OpenCommand"),
             GetType(MainWindow)
         )
+
         Public Shared SaveCommand As New RoutedUICommand(
             ResourceHelper.GetString("SaveCommand"),
             ResourceHelper.GetString("SaveCommand"),
             GetType(MainWindow)
         )
+
         Public Shared SaveAsCommand As New RoutedUICommand(
             ResourceHelper.GetString("SaveAsCommand"),
             ResourceHelper.GetString("SaveAsCommand"),
             GetType(MainWindow)
         )
+
         Public Shared CutCommand As New RoutedUICommand(
             ResourceHelper.GetString("CutCommand"),
             ResourceHelper.GetString("CutCommand"),
             GetType(MainWindow)
         )
+
         Public Shared CopyCommand As New RoutedUICommand(
             ResourceHelper.GetString("CopyCommand"),
             ResourceHelper.GetString("CopyCommand"),
             GetType(MainWindow)
          )
+
         Public Shared PasteCommand As New RoutedUICommand(
             ResourceHelper.GetString("PasteCommand"),
             ResourceHelper.GetString("PasteCommand"),
             GetType(MainWindow)
         )
+
         Public Shared FindCommand As New RoutedUICommand(
             ResourceHelper.GetString("FindCommand"),
             ResourceHelper.GetString("FindCommand"),
             GetType(MainWindow)
         )
+
         Public Shared FindNextCommand As New RoutedUICommand(
             ResourceHelper.GetString("FindNextCommand"),
             ResourceHelper.GetString("FindNextCommand"),
             GetType(MainWindow)
         )
+
         Public Shared SelectNextMatchCommand As New RoutedUICommand(
             "Find Next matching pair",
             "Find Next matching pair",
             GetType(MainWindow)
         )
+
         Public Shared SelectPrevMatchCommand As New RoutedUICommand(
             "Find Previous matching pair",
             "Find Previous matching pair",
             GetType(MainWindow)
         )
+
         Public Shared UndoCommand As New RoutedUICommand(
             ResourceHelper.GetString("UndoCommand"),
             ResourceHelper.GetString("UndoCommand"),
             GetType(MainWindow)
         )
+
         Public Shared RedoCommand As New RoutedUICommand(
             ResourceHelper.GetString("RedoCommand"),
             ResourceHelper.GetString("RedoCommand"),
             GetType(MainWindow)
         )
+
         Public Shared FormatCommand As New RoutedUICommand(
             ResourceHelper.GetString("FormatProgramCommand"),
             ResourceHelper.GetString("FormatProgramCommand"),
             GetType(MainWindow)
         )
+
         Public Shared RunCommand As New RoutedUICommand(
             ResourceHelper.GetString("RunProgramCommand"),
             ResourceHelper.GetString("RunProgramCommand"),
             GetType(MainWindow)
         )
+
         Public Shared EndProgramCommand As New RoutedUICommand(
             ResourceHelper.GetString("EndProgramCommand"),
             ResourceHelper.GetString("EndProgramCommand"),
             GetType(MainWindow)
         )
+
         Public Shared StepOverCommand As New RoutedUICommand(
             ResourceHelper.GetString("StepOverCommand"),
             ResourceHelper.GetString("StepOverCommand"),
             GetType(MainWindow)
         )
+
         Public Shared BreakpointCommand As New RoutedUICommand(
             ResourceHelper.GetString("BreakpointCommand"),
             ResourceHelper.GetString("BreakpointCommand"),
             GetType(MainWindow)
          )
+
         Public Shared DebugCommand As New RoutedUICommand(
             ResourceHelper.GetString("DebugCommand"),
             ResourceHelper.GetString("DebugCommand"),
             GetType(MainWindow)
          )
+
         Public Shared WebSaveCommand As New RoutedUICommand(
             ResourceHelper.GetString("PublishProgramCommand"),
             ResourceHelper.GetString("PublishProgramCommand"),
             GetType(MainWindow)
         )
+
         Public Shared WebLoadCommand As New RoutedUICommand(
             ResourceHelper.GetString("ImportProgramCommand"),
             ResourceHelper.GetString("ImportProgramCommand"),
             GetType(MainWindow)
         )
+
         Public Shared ExportToVisualBasicCommand As New RoutedUICommand(
             ResourceHelper.GetString("ExportToVisualBasicCommand"),
             ResourceHelper.GetString("ExportToVisualBasicCommand"),
@@ -152,22 +172,17 @@ Namespace Microsoft.SmallBasic
         ''' DocumentTracker
         ''' </summary>
         ''' <returns></returns>
-        Public ReadOnly Property DocumentTracker As DocumentTracker
-            Get
-                Return documentTrackerField
-            End Get
-        End Property
+        Public ReadOnly Property DocumentTracker As New DocumentTracker()
 
         Public ReadOnly Property ActiveDocument As TextDocument
             Get
-                Dim result As TextDocument = Nothing
                 Dim selectedItem = Me.viewsControl.SelectedItem
 
                 If selectedItem IsNot Nothing Then
-                    result = selectedItem.Document
+                    Return selectedItem.Document
+                Else
+                    Return Nothing
                 End If
-
-                Return result
             End Get
         End Property
 
@@ -184,37 +199,45 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub OnFileNew(sender As Object, e As RoutedEventArgs)
-            Dim textDocument As New TextDocument(Nothing)
-            textDocument.ContentType = "text.smallbasic"
-            DocumentTracker.TrackDocument(textDocument)
-            Dim mdiView As New MdiView()
-            mdiView.Document = textDocument
+            Dim doc As New TextDocument(Nothing) With {
+                .ContentType = "text.smallbasic",
+                .IsNew = True
+            }
+            _DocumentTracker.TrackDocument(doc)
+            Dim mdiView As New MdiView() With {
+                  .Document = doc,
+                  .Width = viewsControl.ActualWidth - 100,
+                  .Height = viewsControl.ActualHeight - 50
+            }
+            Canvas.SetTop(mdiView, 10)
+            Canvas.SetLeft(mdiView, 10)
             mdiViews.Add(mdiView)
-            textDocument.Focus()
+            doc.Focus()
         End Sub
 
-        Private Sub OnFileOpen(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnFileOpen(sender As Object, e As RoutedEventArgs)
             Dim openFileDialog As New OpenFileDialog()
             openFileDialog.Filter = ResourceHelper.GetString("SmallBasicFileFilter") & "|*.sb;*.smallbasic"
 
             If openFileDialog.ShowDialog() = True Then
                 OpenDocIfNot(openFileDialog.FileName).Focus()
             End If
+
         End Sub
 
         Private Sub CanFileSave(sender As Object, e As CanExecuteRoutedEventArgs)
             e.CanExecute = ActiveDocument IsNot Nothing
         End Sub
 
-        Private Sub OnFileSave(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnFileSave(sender As Object, e As RoutedEventArgs)
             SaveDocument(ActiveDocument)
         End Sub
 
-        Private Sub OnFileSaveAs(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnFileSaveAs(sender As Object, e As RoutedEventArgs)
             SaveDocumentAs(ActiveDocument)
         End Sub
 
-        Private Sub CanEditCut(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
+        Private Sub CanEditCut(sender As Object, e As CanExecuteRoutedEventArgs)
             e.CanExecute = ActiveDocument IsNot Nothing AndAlso Not ActiveDocument.EditorControl.TextView.Selection.IsEmpty
         End Sub
 
@@ -223,36 +246,36 @@ Namespace Microsoft.SmallBasic
             doc.EditorControl.EditorOperations.CutSelection(doc.UndoHistory)
         End Sub
 
-        Private Sub CanEditCopy(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
+        Private Sub CanEditCopy(sender As Object, e As CanExecuteRoutedEventArgs)
             e.CanExecute = ActiveDocument IsNot Nothing AndAlso Not ActiveDocument.EditorControl.TextView.Selection.IsEmpty
         End Sub
 
-        Private Sub OnEditCopy(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnEditCopy(sender As Object, e As RoutedEventArgs)
             ActiveDocument.EditorControl.EditorOperations.CopySelection()
         End Sub
 
-        Private Sub CanEditPaste(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
+        Private Sub CanEditPaste(sender As Object, e As CanExecuteRoutedEventArgs)
             e.CanExecute = ActiveDocument IsNot Nothing AndAlso ActiveDocument.EditorControl.EditorOperations.CanPaste
         End Sub
 
-        Private Sub OnEditPaste(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnEditPaste(sender As Object, e As RoutedEventArgs)
             Dim doc = ActiveDocument
             doc.EditorControl.EditorOperations.Paste(doc.UndoHistory)
         End Sub
 
-        Private Sub CanEditUndo(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
+        Private Sub CanEditUndo(sender As Object, e As CanExecuteRoutedEventArgs)
             e.CanExecute = ActiveDocument IsNot Nothing AndAlso ActiveDocument.UndoHistory.CanUndo
         End Sub
 
-        Private Sub OnEditUndo(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnEditUndo(sender As Object, e As RoutedEventArgs)
             ActiveDocument.UndoHistory.Undo(1)
         End Sub
 
-        Private Sub CanEditRedo(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
+        Private Sub CanEditRedo(sender As Object, e As CanExecuteRoutedEventArgs)
             e.CanExecute = ActiveDocument IsNot Nothing AndAlso ActiveDocument.UndoHistory.CanRedo
         End Sub
 
-        Private Sub OnEditRedo(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnEditRedo(sender As Object, e As RoutedEventArgs)
             ActiveDocument.UndoHistory.Redo(1)
         End Sub
 
@@ -266,14 +289,16 @@ Namespace Microsoft.SmallBasic
                 mdiViews.Remove(mdiView)
                 If mdiViews.Count > 0 Then
                     If viewsControl.SelectedItem Is Nothing Then
-                        viewsControl.ChangeSelection(mdiViews(mdiViews.Count - 1))
+                        mdiView = mdiViews(mdiViews.Count - 1)
+                        viewsControl.ChangeSelection(mdiView)
+                        mdiView.Document.Focus()
                     End If
                 End If
             End If
 
         End Sub
 
-        Private Sub CanExportToVisualBasic(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
+        Private Sub CanExportToVisualBasic(sender As Object, e As CanExecuteRoutedEventArgs)
             If ActiveDocument IsNot Nothing AndAlso ActiveDocument.Text.Trim().Length > 0 Then
                 e.CanExecute = True
             Else
@@ -281,7 +306,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub OnExportToVisualBasic(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnExportToVisualBasic(sender As Object, e As RoutedEventArgs)
             Dim exportToVBDialog As ExportToVBDialog = New ExportToVBDialog(ActiveDocument)
             exportToVBDialog.Owner = Me
             exportToVBDialog.ShowDialog()
@@ -347,6 +372,26 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
+        Friend Sub SelectControl(controlName As String)
+            controlName = controlName.ToLower()
+            If controlName = "me" OrElse controlName = formDesigner.Name.ToLower() Then
+                tabDesigner.IsSelected = True
+                formDesigner.SelectedIndex = -1
+                formDesigner.Focus()
+            Else
+                For i = 0 To formDesigner.Items.Count - 1
+                    Dim name = formDesigner.GetControlName(i).ToLower()
+                    If controlName = name Then
+                        tabDesigner.IsSelected = True
+                        formDesigner.SelectedIndex = i
+                        Return
+                    End If
+                Next
+                Beep()
+            End If
+
+        End Sub
+
         Private Sub OnSelectNextMatch(sender As Object, e As RoutedEventArgs)
             SelectAnotherMatch(True)
         End Sub
@@ -366,13 +411,17 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub OnFormatProgram(ByVal sender As Object, ByVal e As RoutedEventArgs)
-            If ActiveDocument IsNot Nothing Then
-                CompilerService.FormatDocument(ActiveDocument.TextBuffer)
+        Private Sub OnFormatProgram(sender As Object, e As RoutedEventArgs)
+            Dim doc = ActiveDocument
+            If doc IsNot Nothing Then
+                Using undoTransaction = doc.UndoHistory.CreateTransaction("Format Document")
+                    CompilerService.FormatDocument(doc.TextBuffer)
+                    undoTransaction.Complete()
+                End Using
             End If
         End Sub
 
-        Private Sub CanRunProgram(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
+        Private Sub CanRunProgram(sender As Object, e As CanExecuteRoutedEventArgs)
             e.CanExecute = ActiveDocument IsNot Nothing
         End Sub
 
@@ -380,7 +429,7 @@ Namespace Microsoft.SmallBasic
             RunProgram()
         End Sub
 
-        Private Sub OnProgramEnd(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnProgramEnd(sender As Object, e As RoutedEventArgs)
             If currentProgramProcess IsNot Nothing AndAlso Not currentProgramProcess.HasExited Then
                 currentProgramProcess.Kill()
                 currentProgramProcess = Nothing
@@ -388,7 +437,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub OnStepOver(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnStepOver(sender As Object, e As RoutedEventArgs)
             ActiveDocument.Errors.Clear()
             CompilerService.Compile(ActiveDocument.Text, ActiveDocument.Errors)
 
@@ -398,48 +447,63 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub OnToggleBreakpoint(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnToggleBreakpoint(sender As Object, e As RoutedEventArgs)
             Dim debugger = ProgramDebugger.GetDebugger(ActiveDocument)
             Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(ActiveDocument.EditorControl.TextView)
-            Dim lineFromPosition = ActiveDocument.TextBuffer.CurrentSnapshot.GetLineFromPosition(ActiveDocument.EditorControl.TextView.Caret.Position.CharacterIndex)
+            Dim line = ActiveDocument.TextBuffer.CurrentSnapshot.GetLineFromPosition(ActiveDocument.EditorControl.TextView.Caret.Position.CharacterIndex)
 
-            If debugger.Breakpoints.Contains(lineFromPosition.LineNumber) Then
-                debugger.Breakpoints.Remove(lineFromPosition.LineNumber)
+            If debugger.Breakpoints.Contains(line.LineNumber) Then
+                debugger.Breakpoints.Remove(line.LineNumber)
                 Dim array As StatementMarker() = stMarkerProvider.Markers.ToArray()
 
                 For Each statementMarker In array
                     Dim containingLine As ITextSnapshotLine = statementMarker.Span.GetStartPoint(ActiveDocument.TextBuffer.CurrentSnapshot).GetContainingLine()
 
-                    If containingLine.LineNumber = lineFromPosition.LineNumber Then
+                    If containingLine.LineNumber = line.LineNumber Then
                         stMarkerProvider.RemoveMarker(statementMarker)
                     End If
                 Next
             Else
-                debugger.Breakpoints.Add(lineFromPosition.LineNumber)
-                stMarkerProvider.AddStatementMarker(New StatementMarker(New TextSpan(ActiveDocument.TextBuffer.CurrentSnapshot, lineFromPosition.Start, lineFromPosition.Length, SpanTrackingMode.EdgeInclusive), Colors.Red))
+                debugger.Breakpoints.Add(line.LineNumber)
+                stMarkerProvider.AddStatementMarker(New StatementMarker(New TextSpan(ActiveDocument.TextBuffer.CurrentSnapshot, line.Start, line.Length, SpanTrackingMode.EdgeInclusive), Colors.Red))
             End If
         End Sub
 
-        Private Sub CanWebSave(ByVal sender As Object, ByVal e As CanExecuteRoutedEventArgs)
+        Private Sub CanWebSave(sender As Object, e As CanExecuteRoutedEventArgs)
             e.CanExecute = ActiveDocument IsNot Nothing
         End Sub
 
-        Private Sub OnWebSave(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnWebSave(sender As Object, e As RoutedEventArgs)
             PublishDocument(ActiveDocument)
         End Sub
 
-        Private Sub OnWebLoad(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnWebLoad(sender As Object, e As RoutedEventArgs)
             ImportDocument()
         End Sub
 
-        Protected Overrides Sub OnClosing(ByVal e As CancelEventArgs)
-            For Each item In New List(Of MdiView)(mdiViews)
-                If Not CloseDocument(item.Document) Then
+
+        Function CloseDocument(docIndex As Integer) As Boolean
+            Dim item = mdiViews(docIndex)
+            If Not CloseDocument(item.Document) Then Return False
+            mdiViews.RemoveAt(docIndex)
+            Return True
+        End Function
+
+        Protected Overrides Sub OnClosing(e As CancelEventArgs)
+            Dim doc = ActiveDocument
+            If doc IsNot Nothing Then
+                If Not CloseDocument(doc) Then
                     e.Cancel = True
                     Return
                 End If
+                mdiViews.Remove(doc.MdiView)
+            End If
 
-                mdiViews.Remove(item)
+            For i = mdiViews.Count - 1 To 0 Step -1
+                If Not CloseDocument(i) Then
+                    e.Cancel = True
+                    Return
+                End If
             Next
 
             tabDesigner.IsSelected = True
@@ -453,32 +517,37 @@ Namespace Microsoft.SmallBasic
             MyBase.OnClosing(e)
         End Sub
 
-        Private Function OpenCodeFile(ByVal filePath As String) As TextDocument
+        Private Function OpenCodeFile(filePath As String) As TextDocument
             tabCode.IsSelected = True
             Dim doc As New TextDocument(filePath)
-            DocumentTracker.TrackDocument(doc)
-            Dim mdiView As New MdiView()
-            mdiView.Document = doc
+            _DocumentTracker.TrackDocument(doc)
+            Dim mdiView As New MdiView() With {
+                .Document = doc,
+                  .Width = viewsControl.ActualWidth - 100,
+                  .Height = viewsControl.ActualHeight - 50
+            }
+            Canvas.SetTop(mdiView, 10)
+            Canvas.SetLeft(mdiView, 10)
             mdiViews.Add(mdiView)
             doc.Focus(True)
             Return doc
         End Function
 
-        Private Function SaveDocument(ByVal document As TextDocument) As Boolean
-            If document.IsNew OrElse (document.Form <> "" AndAlso formDesigner.FileName = "") Then
-                Return SaveDocumentAs(document)
+        Private Function SaveDocument(doc As TextDocument) As Boolean
+            If doc.IsNew Then
+                Return SaveDocumentAs(doc)
             End If
 
             Try
-                Dim designIsDirty = document.Form <> "" AndAlso formDesigner.HasChanges
-                If designIsDirty Then SaveDesignInfo(document)
-                If document.IsDirty Then document.Save()
+                Dim designIsDirty = doc.PageKey = formDesigner.PageKey AndAlso doc.Form <> "" AndAlso formDesigner.HasChanges
+                If designIsDirty Then SaveDesignInfo(doc)
+                If doc.IsDirty Then doc.Save()
                 Return True
             Catch ex As Exception
                 Dim notificationButtons = Utility.MessageBox.Show(ResourceHelper.GetString("SaveFailed"), "Small Basic", String.Format(CultureInfo.CurrentCulture, ResourceHelper.GetString("SaveFailedReason"), New Object(0) {ex.Message}), Nf.No Or Nf.Yes, NotificationIcon.Information)
 
                 If notificationButtons = Nf.Yes Then
-                    Return SaveDocumentAs(document)
+                    Return SaveDocumentAs(doc)
                 End If
 
                 Return False
@@ -486,13 +555,12 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Function SaveDocumentAs(document As TextDocument) As Boolean
-            Dim saveFileDialog As SaveFileDialog = New SaveFileDialog()
+            Dim saveFileDialog As New SaveFileDialog()
             saveFileDialog.Filter = ResourceHelper.GetString("SmallBasicFileFilter") & "|*.sb"
             saveFileDialog.FileName = document.Form
 
             If saveFileDialog.ShowDialog() Then
                 Try
-
                     Dim FileName = saveFileDialog.FileName
                     If File.Exists(FileName) Then File.Delete(FileName)
                     document.SaveAs(FileName)
@@ -532,13 +600,16 @@ Namespace Microsoft.SmallBasic
         Private Function CloseDocument(document As TextDocument) As Boolean
             If document.IsDirty Then
                 tabCode.IsSelected = True
+                document.Focus()
+                closePopHelp.After(1)
+
                 Select Case Utility.MessageBox.Show(ResourceHelper.GetString("SaveDocumentBeforeClosing"), ResourceHelper.GetString("Title"), document.Title & ResourceHelper.GetString("DocumentModified"), Nf.Cancel Or Nf.No Or Nf.Yes, NotificationIcon.Information)
                     Case Nf.Yes
                         Return SaveDocument(document)
                     Case Nf.No
                         Return True
                     Case Else
-                        Return False
+                        Return False ' cancel
                 End Select
             End If
 
@@ -547,66 +618,66 @@ Namespace Microsoft.SmallBasic
 
 
         Private Sub RunProgram()
-            Dim ReSelectDesigner As Boolean = False
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait
 
-            ' Try
             If tabDesigner.IsSelected Then
-                    ' User can hit F5 on the designer.
-                    ' We need to save changes and generate the code behind
-                    ' The safe way to do this is to shwitch to the code tab
-                    ' then come back after the program ends.
-                    tabCode.IsSelected = True
-                    ReSelectDesigner = True
-                End If
+                ' User can hit F5 on the designer.
+                ' We need to save changes and generate the code behind
+                SaveDesignInfo()
+            End If
 
-                Dim doc = ActiveDocument
-                Dim code As String
-                Dim outputFileName = GetOutputFileName(doc)
-                Dim offset = 0
-                Dim gen As String
+            Dim doc = ActiveDocument
+            Dim code As String
+            Dim outputFileName = GetOutputFileName(doc)
+            Dim offset = 0
+            Dim gen As String
 
-                If doc.PageKey <> "" Then
-                    If doc.Text.Contains("'@Form Hints:") Then
-                        doc.ParseFormHints()
-                        gen = doc.GetCodeBehind(True)
-                    Else
-                        gen = doc.GenerateCodeBehind(formDesigner, False)
-                    End If
-                Else
+            If doc.PageKey <> "" Then
+                If doc.Text.Contains("'@Form Hints:") Then
+                    doc.ParseFormHints()
                     gen = doc.GetCodeBehind(True)
-                End If
-
-                If gen <> "" Then
-                    offset = CountLines(gen) + 1
-                    code = gen & VisualBasic.vbLf & doc.Text
                 Else
-                    code = doc.Text
+                    gen = doc.GenerateCodeBehind(formDesigner, False)
                 End If
+            Else
+                gen = doc.GetCodeBehind(True)
+            End If
 
-                code = code.Replace(VisualBasic.vbCrLf, VisualBasic.vbLf)
+            If gen <> "" Then
+                offset = CountLines(gen) + 1
+                code = gen & VisualBasic.vbLf & doc.Text
+            Else
+                code = doc.Text
+            End If
 
-                doc.Errors.Clear()
-                Dim errors As List(Of [Error])
+            code = code.Replace(VisualBasic.vbCrLf, VisualBasic.vbLf)
 
-                If Not RunProgram(code, errors, outputFileName) Then
-                    For Each err As [Error] In errors
-                        If err.Line = -1 Then
-                            doc.Errors.Add(err.Description)
-                        Else
-                            doc.Errors.Add($"{err.Line - offset + 1},{err.Column + 1}: {err.Description}")
-                        End If
-                    Next
-                    doc.ErrorListControl.SelectError(0)
-                End If
+            doc.Errors.Clear()
+            Dim errors As List(Of [Error])
 
-            ' Catch ex As Exception
-            'Utility.MessageBox.Show(ResourceHelper.GetString("FailedToCreateOutputFile"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("FailedToCreateOutputFileReason"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
-            'Finally
-            If ReSelectDesigner Then tabDesigner.IsSelected = True
-            'End Try
+            Mouse.OverrideCursor = Nothing
+
+            If Not RunProgram(code, errors, outputFileName) Then
+                For Each err As [Error] In errors
+                    If err.Line = -1 Then
+                        doc.Errors.Add(err.Description)
+                    Else
+                        doc.Errors.Add($"{err.Line - offset + 1},{err.Column + 1}: {err.Description}")
+                    End If
+                Next
+
+                doc.ErrorListControl.SelectError(0)
+                tabCode.IsSelected = True
+            End If
+
         End Sub
 
-        Private Function RunProgram(code As String, ByRef errors As List(Of [Error]), outputFileName As String) As Boolean
+        Private Function RunProgram(
+                           code As String,
+                           ByRef errors As List(Of [Error]),
+                           outputFileName As String
+                    ) As Boolean
+
             Dim doc = ActiveDocument
             errors = Compile(code, outputFileName)
             If errors.Count = 0 Then
@@ -621,7 +692,7 @@ Namespace Microsoft.SmallBasic
                                  Me.programRunningOverlay.Visibility = Visibility.Hidden
                                  currentProgramProcess = Nothing
 
-                                 If doc.IsNew Then
+                                 If doc.FilePath = "" Then
                                      Try
                                          File.Delete(outputFileName)
                                      Catch
@@ -679,7 +750,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
 
-        Private Sub PublishDocument(ByVal document As TextDocument)
+        Private Sub PublishDocument(document As TextDocument)
             Try
                 Cursor = Cursors.Wait
                 Dim service As Service = New Service()
@@ -741,14 +812,15 @@ Namespace Microsoft.SmallBasic
                         newDocument.BaseId = baseId
                         newDocument.TextBuffer.Insert(0, code)
                         Dim service2 As Service = New Service()
-                        AddHandler service2.GetProgramDetailsCompleted, Sub(ByVal o, ByVal e)
-                                                                            Dim result = e.Result
-                                                                            result.Category = ResourceHelper.GetString("Category" & result.Category)
-                                                                            newDocument.ProgramDetails = result
-                                                                        End Sub
+                        AddHandler service2.GetProgramDetailsCompleted,
+                                Sub(o, e)
+                                    Dim result = e.Result
+                                    result.Category = ResourceHelper.GetString("Category" & result.Category)
+                                    newDocument.ProgramDetails = result
+                                End Sub
 
                         service2.GetProgramDetailsAsync(baseId)
-                        DocumentTracker.TrackDocument(newDocument)
+                        _DocumentTracker.TrackDocument(newDocument)
                         Dim mdiView As New MdiView()
                         mdiView.Document = newDocument
                         mdiViews.Add(mdiView)
@@ -764,7 +836,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Function GetOutputFileName(document As TextDocument) As String
-            If document.IsNew Then
+            If document.FilePath = "" Then
                 Dim tempFileName = Path.GetTempFileName()
                 File.Move(tempFileName, tempFileName & ".exe")
                 Return tempFileName & ".exe"
@@ -794,7 +866,7 @@ Namespace Microsoft.SmallBasic
             Return newFile & ".exe"
         End Function
 
-        Private Sub OnCurrentCompletionItemChanged(ByVal sender As Object, ByVal e As CurrentCompletionItemChangedEventArgs)
+        Private Sub OnCurrentCompletionItemChanged(sender As Object, e As CurrentCompletionItemChangedEventArgs)
             currentCompletionItem = e.CurrentCompletionItem
 
             If currentCompletionItem IsNot Nothing Then
@@ -802,7 +874,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub OnHelpUpdate(ByVal sender As Object, ByVal e As EventArgs)
+        Private Sub OnHelpUpdate(sender As Object, e As EventArgs)
             helpUpdateTimer.Stop()
 
             If currentCompletionItem IsNot Nothing Then
@@ -827,12 +899,12 @@ Namespace Microsoft.SmallBasic
             End Try
         End Sub
 
-        Private Sub OnClickNewVersionAvailable(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnClickNewVersionAvailable(sender As Object, e As RoutedEventArgs)
             Process.Start("http://smallbasic.com/download.aspx")
         End Sub
 
-        Function OpenDocIfNot(FilePath As String) As TextDocument
-            Dim docPath = Path.GetFullPath(FilePath)
+        Function OpenDocIfNot(filePath As String) As TextDocument
+            Dim docPath = Path.GetFullPath(filePath).ToLower()
             For Each view As MdiView In Me.viewsControl.Items
                 If view.Document.FilePath = docPath Then
                     viewsControl.ChangeSelection(view)
@@ -840,7 +912,9 @@ Namespace Microsoft.SmallBasic
                 End If
             Next
 
-            Return OpenCodeFile(FilePath)
+            Dim doc = OpenCodeFile(docPath)
+            doc.IsNew = tempProjectPath <> "" AndAlso docPath.StartsWith(tempProjectPath)
+            Return doc
         End Function
 
         Function GetDocIfOpened() As TextDocument
@@ -852,10 +926,16 @@ Namespace Microsoft.SmallBasic
             Return Nothing
         End Function
 
+        Dim saveInfo As New RunAfter(
+                Sub()
+                    SaveDesignInfo()
+                    Me.ActiveDocument?.Focus()
+                End Sub)
+
         Private Sub tabCode_Selected(sender As Object, e As RoutedEventArgs)
 
             If DiagramHelper.Designer.CurrentPage IsNot Nothing Then
-                SaveDesignInfo()
+                saveInfo.After(10)
             End If
 
             ' Note this prop isn't changed yet
@@ -867,22 +947,22 @@ Namespace Microsoft.SmallBasic
             UpdateTitle()
         End Sub
 
-        Dim _projectPath As String
+        Dim tempProjectPath As String
 
         Private Function GetProjectPath() As String
-            If _projectPath <> "" Then Return _projectPath
+            If tempProjectPath <> "" Then Return tempProjectPath
 
             Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
             Dim tmpPath = Path.Combine(appDir, "UnSaved")
             If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
 
             Dim projectName = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss")
-            _projectPath = Path.Combine(tmpPath, projectName)
-
-            Return _projectPath
+            tempProjectPath = Path.Combine(tmpPath, projectName).ToLower()
+            DiagramHelper.Designer.TempProjectPath = tempProjectPath
+            Return tempProjectPath
         End Function
 
-        Private Sub SaveDesignInfo(Optional doc As TextDocument = Nothing, Optional openDoc As Boolean = True)
+        Private Sub SaveDesignInfo(Optional doc As TextDocument = Nothing, Optional openDoc As Boolean = True, Optional saveAs As Boolean = False)
             Dim formName As String
             Dim xamlPath As String
             Dim formPath As String
@@ -942,7 +1022,7 @@ Namespace Microsoft.SmallBasic
                 formName = formDesigner.Name
                 doc.Form = formName
 
-                If formDesigner.HasChanges Then formDesigner.DoSave()
+                If formDesigner.HasChanges OrElse saveAs Then formDesigner.DoSave()
 
             End If
 
@@ -985,7 +1065,13 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Private Function PreCompile(code As String, ByRef errors As List(Of [Error]), outputFileName As String, controlNamesList As Dictionary(Of String, String)) As Boolean
+        Private Function PreCompile(
+                                   code As String,
+                                   ByRef errors As List(Of [Error]),
+                                   outputFileName As String,
+                                   controlNames As Dictionary(Of String, String)
+                     ) As Boolean
+
             Dim ReRun = False
             Dim lines = New List(Of String)(code.Split(New String(0) {VisualBasic.vbLf}, StringSplitOptions.None))
             Dim doc = ActiveDocument
@@ -1010,8 +1096,8 @@ Namespace Microsoft.SmallBasic
                 Dim pos = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
                 Dim obj As String = errMsg.Substring(pos, errMsg.Length - pos - 2).ToLower()
 
-                Dim controlName = controlNamesList(obj)
-                ' (lineNum) to be passed by value
+                Dim controlName = controlNames(obj)
+                'use (lineNum) to be passed by value
                 Dim tokens = LineScanner.GetTokens(line, (lineNum), lines)
 
                 Dim objId As Integer
@@ -1024,16 +1110,16 @@ Namespace Microsoft.SmallBasic
                     Continue For
                 End If
 
-                If tokens(objId + 1).Token = Token.Dot Then
+                If tokens(objId + 1).Type = TokenType.Dot Then
                     Dim prevText = If(charNum = 0, "", line.Substring(0, charNum))
                     Dim methodPos = charNum + obj.Length + 1
                     Dim nextText = line.Substring(methodPos)
 
-                    If objId + 3 < tokens.Count AndAlso tokens(objId + 2).Token = Token.Identifier AndAlso tokens(objId + 3).Token = Token.LeftParens Then
+                    If objId + 3 < tokens.Count AndAlso tokens(objId + 2).Type = TokenType.Identifier AndAlso tokens(objId + 3).Type = TokenType.LeftParens Then
                         ' Method Call
                         Dim method = tokens(objId + 2).Text
                         Dim restText = line.Substring(tokens(objId + 3).Column + 1)
-                        Dim argsExprList = Parser.ParseArgumentList(restText, lineNum, lines, Token.LeftParens)
+                        Dim argsExprList = Parser.ParseArgumentList(restText, lineNum, lines, TokenType.LeftParens)
                         If argsExprList Is Nothing Then
                             errors(i) = New [Error](err.Line, 0, methodPos, "Wrong brackets pairs")
                             Continue For
@@ -1080,12 +1166,12 @@ Namespace Microsoft.SmallBasic
 
                     ElseIf objId = 0 AndAlso err.subLine = 0 Then 'Property Set 
 
-                        If tokens(objId + 2).Token <> Token.Identifier Then
+                        If tokens(objId + 2).Type <> TokenType.Identifier Then
                             errors(i) = New [Error](err.Line, 0, methodPos, $"Expected a property name.")
                             Continue For
                         End If
 
-                        If objId + 3 >= tokens.Count OrElse tokens(objId + 3).Token <> Token.Equals Then
+                        If objId + 3 >= tokens.Count OrElse tokens(objId + 3).Type <> TokenType.Equals Then
                             errors(i) = New [Error](err.Line, 0, methodPos, $"Expected `=` and a value to set the property")
                             Continue For
                         End If
@@ -1130,7 +1216,7 @@ Namespace Microsoft.SmallBasic
                         End If
 
                     Else 'Property Get                     
-                        If tokens.Count > objId + 2 AndAlso tokens(objId + 2).Token <> Token.Identifier Then
+                        If tokens.Count > objId + 2 AndAlso tokens(objId + 2).Type <> TokenType.Identifier Then
                             errors(i) = New [Error](err.Line, 0, methodPos, "property name is expected.")
                             Continue For
                         End If
@@ -1173,35 +1259,28 @@ Namespace Microsoft.SmallBasic
             If ReRun Then Return RunProgram(
                         String.Join(VisualBasic.vbLf, lines),
                         errors,
-                        outputFileName)
+                        outputFileName
+            )
 
             Return errors.Count = 0
 
         End Function
 
 
+        Dim _compiler As Compiler
 
-        Private Function CountLines(str As String) As Integer
-            If str = "" Then Return 0
+        Public Function Compile(
+                        code As String,
+                        outputFilePath As String
+                   ) As List(Of [Error])
 
-            Dim pos As Integer = -1
-            Dim count As Integer = 0
-            Do
-                pos = str.IndexOf(VisualBasic.vbLf, pos + 1)
-                If pos = -1 Then Exit Do
-                count += 1
-            Loop
-            Return count
-        End Function
-
-
-        Public Shared Function Compile(programText As String, outputFilePath As String) As List(Of [Error])
             Dim errors As List(Of [Error]) = Nothing
+            If _compiler Is Nothing Then _compiler = New Compiler()
+
             Try
-                Dim compiler1 As New Compiler
-                Dim fileNameWithoutExtension As String = Path.GetFileNameWithoutExtension(outputFilePath)
+                Dim fileName = Path.GetFileNameWithoutExtension(outputFilePath)
                 Dim directoryName As String = Path.GetDirectoryName(outputFilePath)
-                errors = compiler1.Build(New StringReader(programText), fileNameWithoutExtension, directoryName)
+                errors = _compiler.Build(New StringReader(code), fileName, directoryName)
 
             Catch ex As Exception
                 If errors Is Nothing Then errors = New List(Of [Error])
@@ -1211,29 +1290,44 @@ Namespace Microsoft.SmallBasic
             Return errors
         End Function
 
-        Private Sub formDesigner_DiagramDoubleClick(control As UIElement)
+        Private Sub AddEventDefaultHandler(controlName As String)
+            tabCode.IsSelected = True
             Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait
 
-            tabCode.IsSelected = True
+            Dim AddEventHandler As New RunAfter(
+                Sub()
+                    If formDesigner.CodeFilePath <> "" Then
+                        Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
+                        If doc.ControlsInfo Is Nothing Then SaveDesignInfo(doc, False)
 
-            If formDesigner.CodeFilePath <> "" Then
-                Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
-                Dim controlName = formDesigner.GetControlNameOrDefault(control)
-                Dim key = controlName.ToLower()
-                Dim type = If(doc.ControlsInfo.ContainsKey(key), doc.ControlsInfo(key), "")
+                        Dim key = controlName.ToLower()
+                        Dim type = If(doc.ControlsInfo.ContainsKey(key), doc.ControlsInfo(key), "")
 
-                If doc.AddEventHandler(controlName, sb.PreCompiler.GetDefaultEvent(type)) Then
-                    doc.PageKey = formDesigner.PageKey
-                    ' The code behind is saved before the new Handler is added.
-                    ' We must make the designer dirty, to force saving this chamge in 
-                    ' a nex call to SaveDesignInfo()
-                    formDesigner.HasChanges = True
-                End If
-            End If
+                        If doc.AddEventHandler(controlName, sb.PreCompiler.GetDefaultEvent(type), False) Then
+                            doc.PageKey = formDesigner.PageKey
+                            ' The code behind is saved before the new Handler is added.
+                            ' We must make the designer dirty, to force saving this chamge in 
+                            ' a next call to SaveDesignInfo()
+                            formDesigner.HasChanges = True
+                        End If
+                    End If
 
-            Mouse.OverrideCursor = Nothing
+                    tabCode.IsSelected = True
+                    Mouse.OverrideCursor = Nothing
+                End Sub)
 
+            AddEventHandler.After(1)
         End Sub
+
+        Private Sub formDesigner_DiagramDoubleClick(control As UIElement)
+            AddEventDefaultHandler(formDesigner.GetControlNameOrDefault(control))
+        End Sub
+
+        Private Sub formDesigner_DoubleClick(sender As Object, e As MouseButtonEventArgs)
+            e.Handled = True
+            AddEventDefaultHandler(formDesigner.Name)
+        End Sub
+
 
         Dim FirstTime As Boolean = True
         Dim SelectCodeTab As Boolean
@@ -1248,61 +1342,49 @@ Namespace Microsoft.SmallBasic
             HeaderPanelGrid.Children.Add(stkInfo)
             UpdateTitle()
 
-            formDesigner.SavePage =
-                    Function()
-                        Dim newFormName = Path.GetFileNameWithoutExtension(formDesigner.FileName)
-                        Dim newDir = Path.GetDirectoryName(formDesigner.FileName)
-                        Dim newFilePath = Path.Combine(newDir, newFormName)
-                        Dim FileName = newFilePath & ".sb"
-
-                        Dim oldCodeFile = formDesigner.CodeFilePath
-                        SaveDesignInfo(Nothing, False)
-                        Dim doc = GetDocIfOpened()
-
-                        If oldCodeFile.ToLower() = FileName.ToLower() Then
-                            If doc IsNot Nothing Then doc.Save()
-                        Else
-                            If File.Exists(FileName) Then File.Delete(FileName)
-                            If doc IsNot Nothing Then
-                                doc.SaveAs(FileName)
-                            Else
-                                File.Move(oldCodeFile, FileName)
-                            End If
-                            formDesigner.CodeFilePath = FileName
-
-                            FileName = newFilePath & ".sb.gen"
-                            If File.Exists(FileName) Then File.Delete(FileName)
-                            File.Move(oldCodeFile & ".gen", FileName)
-                        End If
-
-                        Return True
-                    End Function
-
             AddHandler DiagramHelper.Designer.PageShown, AddressOf formDesigner_CurrentPageChanged
 
             ' Set any defaults you want
             'DiagramHelper.Designer.SetDefaultPropertiesSub =
             '    Sub()
             '        DiagramHelper.Designer.SetDefaultProperties()
-            '        Set any defaults you want here
+            '        'Set any defaults you want here
+
             '    End Sub
 
 
-            Me.Dispatcher.Invoke(DispatcherPriority.Background,
-                      Sub()
-                          For Each fileName In FilesToOpen
-                              fileName = fileName.ToLower()
-                              If fileName.EndsWith(".sb") Then
-                                  OpenDocIfNot(fileName)
-                                  SelectCodeTab = True
-                              ElseIf fileName.EndsWith(".xaml") Then
-                                  DiagramHelper.Designer.SwitchTo(fileName)
-                                  SelectCodeTab = False
-                              End If
-                          Next
-                      End Sub)
-
         End Sub
+
+        Function SavePage(Optional tmpPath As String = Nothing, Optional saveAs As Boolean = False) As Boolean
+            Dim newFormName = Path.GetFileNameWithoutExtension(formDesigner.FileName)
+            Dim newDir = Path.GetDirectoryName(formDesigner.FileName)
+            Dim newFilePath = Path.Combine(newDir, newFormName)
+            Dim fileName = newFilePath & ".sb"
+
+            Dim oldCodeFile = formDesigner.CodeFilePath
+            SaveDesignInfo(Nothing, False, saveAs)
+            Dim doc = GetDocIfOpened()
+
+            If oldCodeFile.ToLower() = fileName.ToLower() Then
+                If doc IsNot Nothing Then doc.Save()
+            Else
+                If File.Exists(fileName) Then File.Delete(fileName)
+
+                If doc IsNot Nothing Then
+                    doc.SaveAs(fileName)
+                Else
+                    File.Copy(oldCodeFile, fileName)
+                End If
+
+                formDesigner.CodeFilePath = fileName
+
+                'fileName = newFilePath & ".sb.gen"
+                'If File.Exists(fileName) Then File.Delete(fileName)
+                'File.Move(oldCodeFile & ".gen", fileName)
+            End If
+
+            Return True
+        End Function
 
         Private Sub formDesigner_CurrentPageChanged(index As Integer)
             formDesigner = DiagramHelper.Designer.CurrentPage
@@ -1314,8 +1396,14 @@ Namespace Microsoft.SmallBasic
             RemoveHandler formDesigner.DiagramDoubleClick, AddressOf formDesigner_DiagramDoubleClick
             AddHandler formDesigner.DiagramDoubleClick, AddressOf formDesigner_DiagramDoubleClick
 
+            RemoveHandler formDesigner.MouseDoubleClick, AddressOf formDesigner_DoubleClick
+            AddHandler formDesigner.MouseDoubleClick, AddressOf formDesigner_DoubleClick
+
             RemoveHandler formDesigner.SelectionChanged, AddressOf formDesigner_SelectionChanged
             AddHandler formDesigner.SelectionChanged, AddressOf formDesigner_SelectionChanged
+
+            formDesigner.SavePage = AddressOf SavePage
+
             UpdateTitle()
 
             If index > -1 AndAlso ProjExplorer.FilesList IsNot Nothing Then
@@ -1328,7 +1416,15 @@ Namespace Microsoft.SmallBasic
 
         End Sub
 
-        Dim FocusTxtName As New DiagramHelper.RunAfter(10, Sub() txtControlName.Focus())
+        Dim FocusTxtName As New DiagramHelper.RunAfter(20,
+                 Sub()
+                     txtControlName.Focus()
+                     txtControlName.SelectAll()
+                 End Sub)
+
+        Dim FocusTxtText As New DiagramHelper.RunAfter(20,
+                 Sub() txtControlText.SelectAll())
+
         Dim ExitSelectionChanged As Boolean
 
         Private Sub formDesigner_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
@@ -1350,7 +1446,7 @@ Namespace Microsoft.SmallBasic
                         End If
                         ExitSelectionChanged = False
 
-                        ' gobacl to the textbox
+                        ' goback to the textbox
                         FocusTxtName.Start()
                         Return
                     End If
@@ -1439,13 +1535,16 @@ Namespace Microsoft.SmallBasic
             If CStr(txtControlName.Tag) = "" Then Return True
 
             Dim controlIndex = CInt(txtControlName.Tag)
-            If Not formDesigner.SetControlName(controlIndex, txtControlName.Text) Then
+            Dim name = txtControlName.Text.Trim()
+            If name = "" Then Return False
+
+            name = name(0).ToString().ToUpper & If(name.Length > 1, name.Substring(1), "")
+            txtControlName.Text = name
+
+            If Not formDesigner.SetControlName(controlIndex, name) Then
                 VisualBasic.Beep()
                 Return False
             End If
-
-            'Dim doc = GetDocIfOpened()
-            'If doc IsNot Nothing Then doc.Form = formDesigner.Name
 
             Return True
         End Function
@@ -1467,6 +1566,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub txtControlName_LostFocus(sender As Object, e As RoutedEventArgs)
+            txtControlName.SelectionLength = 0
             If FocusTxtName.Started Then Return
 
             If CommitName() Then
@@ -1504,6 +1604,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub txtControlText_LostFocus(sender As Object, e As RoutedEventArgs)
+            txtControlText.SelectionLength = 0
             If CStr(txtControlText.Tag) = "" Then Return
 
             Dim controlIndex = CInt(txtControlText.Tag)
@@ -1517,9 +1618,65 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub Window_ContentRendered(sender As Object, e As EventArgs)
-            ' Load the code edotor
+
+            Dim doc As TextDocument
+            For Each fileName In FilesToOpen
+                fileName = fileName.ToLower()
+                If fileName.EndsWith(".sb") Then
+                    doc = OpenDocIfNot(fileName)
+                    SelectCodeTab = True
+
+                ElseIf fileName.EndsWith(".xaml") Then
+                    DiagramHelper.Designer.SwitchTo(fileName)
+                    SelectCodeTab = False
+                End If
+            Next
+
+            ' Load the code editor
             tabCode.IsSelected = True
-            If Not SelectCodeTab Then tabDesigner.IsSelected = True
+            If SelectCodeTab Then
+                If doc IsNot Nothing Then
+                    Dim selectLastDoc As New RunAfter(Sub() viewsControl.ChangeSelection(doc.MdiView))
+                    selectLastDoc.After(10)
+                End If
+            Else
+                    Dim selectDesigner As New RunAfter(Sub() tabDesigner.IsSelected = True)
+                selectDesigner.After(10)
+            End If
+        End Sub
+
+        Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+            CompletionProvider.popHelp = popHelp
+        End Sub
+
+        Private Sub MainWindow_PreviewMouseDown(sender As Object, e As MouseButtonEventArgs) Handles Me.PreviewMouseDown
+            If GetParent(Of MainWindow)(e.OriginalSource) IsNot Nothing Then
+                popHelp.IsOpen = False
+            End If
+        End Sub
+
+        Private Sub MainWindow_PreviewKeyDown(sender As Object, e As KeyEventArgs) Handles Me.PreviewKeyDown
+            If e.Key = Key.Escape Then
+                popHelp.IsOpen = False
+            End If
+
+        End Sub
+
+        Dim closePopHelp As New RunAfter(Sub() popHelp.IsOpen = False)
+        Private Sub popHelp_Opened(sender As Object, e As EventArgs)
+            closePopHelp.After(10000)
+        End Sub
+
+        Private Sub txtControlName_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtControlName.GotFocus
+            FocusTxtName.Start()
+        End Sub
+
+        Private Sub txtControlText_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtControlText.GotFocus
+            FocusTxtText.Start()
+        End Sub
+
+        Private Sub MainWindow_Deactivated(sender As Object, e As EventArgs) Handles Me.Deactivated
+            popHelp.IsOpen = False
         End Sub
     End Class
 

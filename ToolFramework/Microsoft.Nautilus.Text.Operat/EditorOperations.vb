@@ -140,29 +140,29 @@ Namespace Microsoft.Nautilus.Text.Operations
         End Sub
 
         Public Sub YankCurrentLine(undoHistory1 As UndoHistory) Implements IEditorOperations.YankCurrentLine
-            Dim num As Integer = 0
-            Dim num2 As Integer = 0
+            Dim start = 0
+            Dim [end] = 0
 
-            If _textView.Selection.IsEmpty Then
-                Dim lineFromPosition As ITextSnapshotLine = _textView.TextSnapshot.GetLineFromPosition(_textView.Caret.Position.TextInsertionIndex)
-                num = lineFromPosition.Start
-                num2 = lineFromPosition.EndIncludingLineBreak
+            If _TextView.Selection.IsEmpty Then
+                Dim line = _TextView.TextSnapshot.GetLineFromPosition(_TextView.Caret.Position.TextInsertionIndex)
+                start = line.Start
+                [end] = line.EndIncludingLineBreak
 
             Else
-                Dim num3 As Integer = _textView.Selection.ActiveSnapshotSpan.Start
-                Dim num4 As Integer = _textView.Selection.ActiveSnapshotSpan.End
+                Dim selStart = _TextView.Selection.ActiveSnapshotSpan.Start
+                Dim selEnd = _TextView.Selection.ActiveSnapshotSpan.End
 
                 If _TextView.Selection.IsActiveSpanReversed Then
-                    Dim num5 As Integer = num4
-                    num4 = num3
-                    num3 = num5
+                    Dim temp = selEnd
+                    selEnd = selStart
+                    selStart = temp
                 End If
 
-                num = _textView.TextSnapshot.GetLineFromPosition(num3).Start
-                num2 = _textView.TextSnapshot.GetLineFromPosition(num4).EndIncludingLineBreak
+                start = _TextView.TextSnapshot.GetLineFromPosition(selStart).Start
+                [end] = _TextView.TextSnapshot.GetLineFromPosition(selEnd).EndIncludingLineBreak
             End If
 
-            _textView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_textView.TextSnapshot, num, num2 - num)
+            _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_TextView.TextSnapshot, start, [end] - start)
             CutSelection(undoHistory1)
         End Sub
 
@@ -212,17 +212,30 @@ Namespace Microsoft.Nautilus.Text.Operations
 
         Public Sub SelectCurrentWord() Implements IEditorOperations.SelectCurrentWord
             EditorTrace.TraceTextSelectStart()
-            Dim textSnapshot1 As ITextSnapshot = _textView.TextSnapshot
-            Dim currentPosition As New SnapshotPoint(textSnapshot1, If(_textView.Selection.IsEmpty, _textView.Caret.Position.TextInsertionIndex, _textView.Selection.ActiveSnapshotSpan.Start))
-            Dim extentOfCurrentWord As TextExtent = GetExtentOfCurrentWord(currentPosition)
-
-            _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(textSnapshot1, extentOfCurrentWord.Span)
-            _TextView.Caret.MoveTo(extentOfCurrentWord.Span.End)
-            _textView.Caret.EnsureVisible()
+            Dim span = Me.GetCurrentWordSpan()
+            _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_TextView.TextSnapshot, span)
+            _TextView.Caret.MoveTo(span.End)
+            _TextView.Caret.EnsureVisible()
             _TextView.Caret.CapturePreferredBounds()
 
             EditorTrace.TraceTextSelectEnd()
         End Sub
+
+        Private Function GetCurrentWordSpan() As Span Implements IEditorOperations.GetCurrentWordSpan
+            Dim pos As New SnapshotPoint(_TextView.TextSnapshot,
+                                If(_TextView.Selection.IsEmpty,
+                                       _TextView.Caret.Position.TextInsertionIndex,
+                                       _TextView.Selection.ActiveSnapshotSpan.Start
+                                )
+                           )
+
+            Return GetExtentOfCurrentWord(pos).Span
+        End Function
+
+
+        Private Function GetCurrentWord() As String Implements IEditorOperations.GetCurrentWord
+            Return TextView.TextSnapshot.GetText(GetCurrentWordSpan())
+        End Function
 
         Public Sub SelectAll() Implements IEditorOperations.SelectAll
             EditorTrace.TraceTextSelectStart()
@@ -242,8 +255,8 @@ Namespace Microsoft.Nautilus.Text.Operations
                 Throw New ArgumentOutOfRangeException("newEnd")
             End If
 
-            Dim selection1 As ITextSelection = _textView.Selection
-            Dim num As Integer = (If(selection1.IsEmpty, _textView.Caret.Position.TextInsertionIndex, (If((Not selection1.IsActiveSpanReversed), selection1.ActiveSnapshotSpan.Start, selection1.ActiveSnapshotSpan.End))))
+            Dim selection1 As ITextSelection = _TextView.Selection
+            Dim num As Integer = (If(selection1.IsEmpty, _TextView.Caret.Position.TextInsertionIndex, (If((Not selection1.IsActiveSpanReversed), selection1.ActiveSnapshotSpan.Start, selection1.ActiveSnapshotSpan.End))))
 
             If num < newEnd Then
                 selection1.ActiveSnapshotSpan = New SnapshotSpan(_TextView.TextSnapshot, Span.FromBounds(num, newEnd))
@@ -311,8 +324,8 @@ Namespace Microsoft.Nautilus.Text.Operations
         Public Sub MoveLineDown([select] As Boolean) Implements IEditorOperations.MoveLineDown
             _textView.Caret.EnsureVisible()
 
-            Dim formattedTextLines1 As IFormattedTextLineCollection = _TextView.FormattedTextLines
-            Dim textLineContainingPosition As ITextLine = formattedTextLines1.GetTextLineContainingPosition(_textView.Caret.Position.CharacterIndex)
+            Dim formattedTextLines1 = _TextView.FormattedTextLines
+            Dim textLineContainingPosition = formattedTextLines1.GetTextLineContainingPosition(_TextView.Caret.Position.CharacterIndex)
             Dim num As Integer = formattedTextLines1.IndexOf(textLineContainingPosition)
 
             If num <> formattedTextLines1.Count - 1 Then
@@ -433,29 +446,29 @@ Namespace Microsoft.Nautilus.Text.Operations
                 Throw New ArgumentNullException("undoHistory")
             End If
 
-            Dim stringBuilder1 As New StringBuilder(Microsoft.VisualBasic.vbNewLine)
-            Dim textInsertionIndex1 As Integer = _textView.Caret.Position.TextInsertionIndex
-            Dim lineFromPosition As ITextSnapshotLine = _textView.TextSnapshot.GetLineFromPosition(textInsertionIndex1)
+            Dim sb As New StringBuilder(Microsoft.VisualBasic.vbNewLine)
+            Dim insertionIndex = _TextView.Caret.Position.TextInsertionIndex
+            Dim line = _TextView.TextSnapshot.GetLineFromPosition(insertionIndex)
 
-            If textInsertionIndex1 <> lineFromPosition.Start Then
-                Dim text As String = lineFromPosition.GetText()
+            If insertionIndex <> line.Start Then
+                Dim text As String = line.GetText()
                 For i As Integer = 0 To text.Length - 1
                     If text(i) = vbTab Then
-                        stringBuilder1.Append(vbTab)
+                        sb.Append(vbTab)
                         Continue For
                     End If
                     If text(i) <> " "c Then
                         Exit For
                     End If
-                    stringBuilder1.Append(" "c)
+                    sb.Append(" "c)
                 Next
             End If
 
-            Using undoTransaction1 As UndoTransaction = undoHistory1.CreateTransaction("Insert Newline")
-                If ReplaceSelection(stringBuilder1.ToString(), TextEditAction.Enter, undoHistory1) Then
-                    undoTransaction1.Complete()
+            Using undoTransaction = undoHistory1.CreateTransaction("Insert Newline")
+                If ReplaceSelection(sb.ToString(), TextEditAction.Enter, undoHistory1) Then
+                    undoTransaction.Complete()
                 Else
-                    undoTransaction1.Cancel()
+                    undoTransaction.Cancel()
                 End If
             End Using
 
@@ -561,29 +574,29 @@ Namespace Microsoft.Nautilus.Text.Operations
 
             Dim textSnapshot1 As ITextSnapshot = _textView.TextSnapshot
             Dim span1 As Span = _textView.Selection.ActiveSnapshotSpan
-            Dim lineFromPosition As ITextSnapshotLine = textSnapshot1.GetLineFromPosition(span1.Start)
-            Dim lineFromPosition2 As ITextSnapshotLine = textSnapshot1.GetLineFromPosition(span1.End)
-            Dim num As Integer = lineFromPosition2.LineNumber
+            Dim line1 = textSnapshot1.GetLineFromPosition(span1.Start)
+            Dim line2 = textSnapshot1.GetLineFromPosition(span1.End)
+            Dim num As Integer = line2.LineNumber
 
-            If lineFromPosition.End >= span1.End Then
+            If line1.End >= span1.End Then
                 InsertTab(undoHistory1)
                 Return
             End If
 
             Dim text As String = (If(ConvertTabsToSpace, New String(" "c, TabSize), vbTab))
-            If span1.End = lineFromPosition2.Start Then
+            If span1.End = line2.Start Then
                 num -= 1
             End If
 
             Using undoTransaction1 As UndoTransaction = undoHistory1.CreateTransaction("Indent Selection")
                 Dim span2 As Span = span1
-                Dim position1 As ICaretPosition = _textView.Caret.Position
-                Dim undo As New BeforeTextBufferChangeUndoPrimitive(_textView, _textView.Caret.Position.CharacterIndex, _textView.Caret.Position.Placement, span1)
+                Dim position1 As ICaretPosition = _TextView.Caret.Position
+                Dim undo As New BeforeTextBufferChangeUndoPrimitive(_TextView, _TextView.Caret.Position.CharacterIndex, _TextView.Caret.Position.Placement, span1)
                 undoHistory1.CurrentTransaction.AddUndo(undo)
 
                 Dim flag As Boolean = False
-                Using textEdit As ITextEdit = _textView.TextBuffer.CreateEdit()
-                    For i As Integer = lineFromPosition.LineNumber To num
+                Using textEdit As ITextEdit = _TextView.TextBuffer.CreateEdit()
+                    For i As Integer = line1.LineNumber To num
                         Dim lineFromLineNumber As ITextSnapshotLine = textSnapshot1.GetLineFromLineNumber(i)
                         If lineFromLineNumber.Length <> 0 Then
                             Dim start1 As Integer = lineFromLineNumber.Start
@@ -601,17 +614,17 @@ Namespace Microsoft.Nautilus.Text.Operations
                     End If
 
                     textEdit.Apply()
-                    Dim snapshotSpan1 As SnapshotSpan = _textView.Selection.ActiveSnapshotSpan
-                    Dim num2 As Integer = _textView.Caret.Position.CharacterIndex
-                    Dim caretPlacement1 As CaretPlacement = _textView.Caret.Position.Placement
-                    Dim positionOfNextNonWhiteSpaceCharacter As Integer = lineFromPosition.GetPositionOfNextNonWhiteSpaceCharacter(0)
-                    Dim positionOfNextNonWhiteSpaceCharacter2 As Integer = lineFromPosition2.GetPositionOfNextNonWhiteSpaceCharacter(0)
-                    Dim flag2 As Boolean = span2.Start <= lineFromPosition.Start + positionOfNextNonWhiteSpaceCharacter
-                    Dim flag3 As Boolean = span2.End < lineFromPosition2.Start + positionOfNextNonWhiteSpaceCharacter2
+                    Dim snapshotSpan1 As SnapshotSpan = _TextView.Selection.ActiveSnapshotSpan
+                    Dim num2 As Integer = _TextView.Caret.Position.CharacterIndex
+                    Dim caretPlacement1 As CaretPlacement = _TextView.Caret.Position.Placement
+                    Dim positionOfNextNonWhiteSpaceCharacter As Integer = line1.GetPositionOfNextNonWhiteSpaceCharacter(0)
+                    Dim positionOfNextNonWhiteSpaceCharacter2 As Integer = line2.GetPositionOfNextNonWhiteSpaceCharacter(0)
+                    Dim flag2 As Boolean = span2.Start <= line1.Start + positionOfNextNonWhiteSpaceCharacter
+                    Dim flag3 As Boolean = span2.End < line2.Start + positionOfNextNonWhiteSpaceCharacter2
 
                     If flag2 OrElse flag3 Then
                         Dim num3 As Integer = (If(flag2, span2.Start, _TextView.Selection.ActiveSnapshotSpan.Start))
-                        Dim num4 As Integer = (If((Not flag3 OrElse span2.End = lineFromPosition2.Start OrElse lineFromPosition2.Length = 0), _TextView.Selection.ActiveSnapshotSpan.End, (_TextView.Selection.ActiveSnapshotSpan.End - text.Length)))
+                        Dim num4 As Integer = (If((Not flag3 OrElse span2.End = line2.Start OrElse line2.Length = 0), _TextView.Selection.ActiveSnapshotSpan.End, (_TextView.Selection.ActiveSnapshotSpan.End - text.Length)))
                         snapshotSpan1 = New SnapshotSpan(_TextView.TextSnapshot, num3, num4 - num3)
                         If position1.TextInsertionIndex = span2.Start Then
                             num2 = num3
@@ -644,11 +657,11 @@ Namespace Microsoft.Nautilus.Text.Operations
                 Throw New InvalidOperationException
             End If
 
-            Dim textSnapshot1 As ITextSnapshot = _textView.TextSnapshot
+            Dim textSnapshot1 = _TextView.TextSnapshot
             Dim oldSelectionSpan As Span = _textView.Selection.ActiveSnapshotSpan
-            Dim lineFromPosition As ITextSnapshotLine = textSnapshot1.GetLineFromPosition(oldSelectionSpan.Start)
-            Dim lineFromPosition2 As ITextSnapshotLine = textSnapshot1.GetLineFromPosition(oldSelectionSpan.End)
-            Dim num As Integer = lineFromPosition2.LineNumber
+            Dim lineFromPosition = textSnapshot1.GetLineFromPosition(oldSelectionSpan.Start)
+            Dim lineFromPosition2 = textSnapshot1.GetLineFromPosition(oldSelectionSpan.End)
+            Dim num = lineFromPosition2.LineNumber
             If lineFromPosition.End >= oldSelectionSpan.End Then
                 Return
             End If
@@ -1282,31 +1295,37 @@ Namespace Microsoft.Nautilus.Text.Operations
         End Function
 
         Private Function GetExtentOfCurrentWord(currentPosition As SnapshotPoint) As TextExtent
-            Dim extentOfWord As TextExtent = _textStructureNavigator.GetExtentOfWord(currentPosition)
+            Dim extentOfWord = _textStructureNavigator.GetExtentOfWord(currentPosition)
             If extentOfWord.IsSignificant Then Return extentOfWord
 
-            Dim containingLine As ITextSnapshotLine = currentPosition.GetContainingLine()
-            Dim num As Integer = Math.Max(containingLine.Start, extentOfWord.Span.Start)
-            Dim num2 As Integer = Math.Min(containingLine.End, extentOfWord.Span.End)
-            Dim num3 As Integer = num2 - num
+            Dim containingLine = currentPosition.GetContainingLine()
+            Dim start = Math.Max(containingLine.Start, extentOfWord.Span.Start)
+            Dim [end] = Math.Min(containingLine.End, extentOfWord.Span.End)
+            Dim length = [end] - start
 
-            Select Case num3
+            Select Case length
                 Case 0
-                    If num = containingLine.Start Then
+                    If start = containingLine.Start Then
                         Return New TextExtent(currentPosition.Position, 0, isSignificant:=False)
                     End If
-                    Return GetExtentOfCurrentWord(New SnapshotPoint(currentPosition.Snapshot, num - 1))
+                    Return GetExtentOfCurrentWord(New SnapshotPoint(currentPosition.Snapshot, start - 1))
 
                 Case 1
-                    If num = containingLine.Start Then
-                        Return New TextExtent(num, 1, isSignificant:=False)
+                    If start = containingLine.Start Then
+                        Return New TextExtent(start, 1, isSignificant:=False)
                     End If
-                    Return GetExtentOfCurrentWord(New SnapshotPoint(currentPosition.Snapshot, num - 1))
+                    Return GetExtentOfCurrentWord(New SnapshotPoint(currentPosition.Snapshot, start - 1))
 
                 Case Else
-                    Return New TextExtent(num, num3, isSignificant:=False)
+                    Return New TextExtent(start, length, isSignificant:=False)
             End Select
 
         End Function
+
+        Public Sub [Select](start As Integer, length As Integer) Implements IEditorOperations.Select
+            _TextView.Caret.MoveTo(start + length)
+            _TextView.Caret.EnsureVisible()
+            _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_TextView.TextSnapshot, New Span(start, length))
+        End Sub
     End Class
 End Namespace

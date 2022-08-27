@@ -13,24 +13,51 @@ Namespace Library
         ''' </summary>
         Public Shared Property MouseX As Primitive
             Get
-                Return New Primitive(System.Windows.Forms.Cursor.Position.X)
+                Return New Primitive(Cursor.Position.X)
             End Get
 
             Set(Value As Primitive)
-                System.Windows.Forms.Cursor.Position = New Point(value, MouseY)
+                Cursor.Position = New Point(Value, MouseY)
             End Set
         End Property
+
+        ''' <summary>
+        ''' Gets or sets the mouse cursor's x co-ordinate.
+        ''' </summary>
+        Public Shared Property X As Primitive
+            Get
+                Return New Primitive(Cursor.Position.X)
+            End Get
+
+            Set(Value As Primitive)
+                Cursor.Position = New Point(Value, MouseY)
+            End Set
+        End Property
+
 
         ''' <summary>
         ''' Gets or sets the mouse cursor's y co-ordinate.
         ''' </summary>
         Public Shared Property MouseY As Primitive
             Get
-                Return New Primitive(System.Windows.Forms.Cursor.Position.Y)
+                Return New Primitive(Cursor.Position.Y)
             End Get
 
             Set(Value As Primitive)
-                System.Windows.Forms.Cursor.Position = New Point(MouseX, value)
+                Cursor.Position = New Point(MouseX, Value)
+            End Set
+        End Property
+
+        ''' <summary>
+        ''' Gets or sets the mouse cursor's y co-ordinate.
+        ''' </summary>
+        Public Shared Property Y As Primitive
+            Get
+                Return New Primitive(Cursor.Position.Y)
+            End Get
+
+            Set(Value As Primitive)
+                Cursor.Position = New Point(MouseX, Value)
             End Set
         End Property
 

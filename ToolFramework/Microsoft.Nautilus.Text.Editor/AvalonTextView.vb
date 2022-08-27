@@ -14,6 +14,8 @@ Imports Microsoft.Nautilus.Text.AdornmentSystem
 Imports Microsoft.Nautilus.Text.Classification
 Imports Microsoft.Nautilus.Text.Editor.Automation.Implementation
 Imports System.Runtime.InteropServices
+Imports Microsoft.Windows.Controls
+Imports System.Windows.Controls.Primitives
 
 Namespace Microsoft.Nautilus.Text.Editor
     Public NotInheritable Class AvalonTextView
@@ -137,6 +139,7 @@ Namespace Microsoft.Nautilus.Text.Editor
             End Sub
         End Class
 
+        Public Property Editor As CodeEditorControl
         Private Const WM_IME_STARTCOMPOSITION As Integer = 269
         Private Const WM_IME_ENDCOMPOSITION As Integer = 270
         Private _defaultFormattedTextLines As IFormattedTextLineCollection
@@ -238,9 +241,15 @@ Namespace Microsoft.Nautilus.Text.Editor
             End Get
         End Property
 
+        Dim _viewScroller As DefaultViewScroller
+
         Public ReadOnly Property ViewScroller As IViewScroller Implements ITextView.ViewScroller
             Get
-                Return New DefaultViewScroller(Me)
+                If _viewScroller Is Nothing Then
+                    _viewScroller = New DefaultViewScroller(Me)
+                End If
+
+                Return _viewScroller
             End Get
         End Property
 
@@ -365,7 +374,7 @@ Namespace Microsoft.Nautilus.Text.Editor
                       classificationFormatMap As IClassificationFormatMap,
                       classificationTypeRegistry As IClassificationTypeRegistry,
                       textViewServices As IEnumerable(Of ImportInfo(Of Action(Of ITextView), IContentTypeMetadata))
-         )
+                )
 
             InputMethod.SetIsInputMethodSuspended(Me, value:=True)
             _TextBuffer = textBuffer
@@ -433,8 +442,8 @@ Namespace Microsoft.Nautilus.Text.Editor
 
             Dim textLineVisual = TryCast(FormattedTextLines.GetTextLineContainingPosition(position), TextLineVisual)
             If textLineVisual Is Nothing Then
-                Dim lineFromPosition = _TextSnapshot.GetLineFromPosition(position)
-                Dim lineVisuals = LayoutTextLinesForPositioningCaret(lineFromPosition)
+                Dim line = _TextSnapshot.GetLineFromPosition(position)
+                Dim lineVisuals = LayoutTextLinesForPositioningCaret(line)
 
                 For Each lineVisual In lineVisuals
                     If lineVisual.ContainsPosition(position) Then
@@ -1083,5 +1092,10 @@ Namespace Microsoft.Nautilus.Text.Editor
             End If
         End Sub
 
+        Public Event ScrollChaged(senmder As Object, e As ScrollEventArgs) Implements IAvalonTextView.ScrollChaged
+
+        Public Sub OnScrollChanged(e As ScrollEventArgs) Implements IAvalonTextView.OnScrollChanged
+            RaiseEvent ScrollChaged(Me, e)
+        End Sub
     End Class
 End Namespace

@@ -15,7 +15,7 @@ Namespace Microsoft.SmallBasic.Utility
         Public Property HyperlinkRef As String
         Public Property ProgramId As String
 
-        Public Sub New(ByVal programId As String)
+        Public Sub New(programId As String)
             Me.InitializeComponent()
             Icon = Application.Current.MainWindow.Icon
             Me.ProgramId = programId
@@ -24,7 +24,7 @@ Namespace Microsoft.SmallBasic.Utility
             Me.saveId.Text = Me.ProgramId
         End Sub
 
-        Private Sub OnClickClose(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnClickClose(sender As Object, e As RoutedEventArgs)
             If Me.expander.IsExpanded Then
                 Dim text As String = Me.titleTextBox.Text
                 Dim text2 As String = Me.descriptionTextBox.Text
@@ -45,11 +45,11 @@ Namespace Microsoft.SmallBasic.Utility
             Close()
         End Sub
 
-        Private Sub OnClickHyperlink(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnClickHyperlink(sender As Object, e As RoutedEventArgs)
             Process.Start(HyperlinkRef)
         End Sub
 
-        Private Sub OnExpanderChanged(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnExpanderChanged(sender As Object, e As RoutedEventArgs)
             If Me.expander.IsExpanded Then
                 Me.titleTextBox.Focus()
                 Me.closeButton.Content = ResourceHelper.GetString("UpdateAndClose")

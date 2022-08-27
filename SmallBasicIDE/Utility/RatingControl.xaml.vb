@@ -24,7 +24,7 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return CStr(GetValue(ProgramIdProperty))
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 SetValue(ProgramIdProperty, value)
             End Set
         End Property
@@ -33,7 +33,7 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return GetValue(RatingProperty)
             End Get
-            Set(ByVal value As Double)
+            Set(value As Double)
                 SetValue(RatingProperty, value)
             End Set
         End Property
@@ -54,11 +54,11 @@ Namespace Microsoft.SmallBasic.Utility
             unfilledBrush = New SolidColorBrush(unfilledColor)
         End Sub
 
-        Protected Overrides Sub OnPreviewMouseDown(ByVal e As MouseButtonEventArgs)
+        Protected Overrides Sub OnPreviewMouseDown(e As MouseButtonEventArgs)
             Rating = Math.Min(CInt(6.0 * e.GetPosition(Me).X / ActualWidth), 4) + 1
         End Sub
 
-        Protected Overrides Sub OnPreviewMouseMove(ByVal e As MouseEventArgs)
+        Protected Overrides Sub OnPreviewMouseMove(e As MouseEventArgs)
             Dim num = Math.Min(CInt(6.0 * e.GetPosition(Me).X / ActualWidth), 4)
 
             For i = 0 To num + 1 - 1
@@ -70,11 +70,11 @@ Namespace Microsoft.SmallBasic.Utility
             Next
         End Sub
 
-        Protected Overrides Sub OnMouseLeave(ByVal e As MouseEventArgs)
+        Protected Overrides Sub OnMouseLeave(e As MouseEventArgs)
             RepaintRating()
         End Sub
 
-        Private Shared Sub OnRatingChanged(ByVal obj As DependencyObject, ByVal e As DependencyPropertyChangedEventArgs)
+        Private Shared Sub OnRatingChanged(obj As DependencyObject, e As DependencyPropertyChangedEventArgs)
             Dim ratingControl As RatingControl = TryCast(obj, RatingControl)
             ratingControl.RepaintRating()
             ratingControl.FireRatingChanged(obj, EventArgs.Empty)

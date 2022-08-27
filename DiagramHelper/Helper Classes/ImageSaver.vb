@@ -13,7 +13,7 @@
         Me.PixelFormat = PixelFormat
     End Sub
 
-    Public Sub Save(ByVal Visual As FrameworkElement, ByVal fileName As String, Optional ShowSaveDialoge As Boolean = True)
+    Public Sub Save(Visual As FrameworkElement, fileName As String, Optional ShowSaveDialoge As Boolean = True)
         If ShowSaveDialoge Then
             Dim dlg As New Microsoft.Win32.SaveFileDialog()
             dlg.Title = "Save To Image"
@@ -56,7 +56,7 @@
         SaveUsingEncoder(Visual, fileName, encoder)
     End Sub
 
-    Private Sub SaveUsingEncoder(ByVal Visual1 As FrameworkElement, ByVal fileName As String, ByVal encoder As BitmapEncoder)
+    Private Sub SaveUsingEncoder(Visual1 As FrameworkElement, fileName As String, encoder As BitmapEncoder)
         Dim W = Math.Floor(Visual1.ActualWidth)
         Dim H = Math.Floor(Visual1.ActualHeight)
         Dim bitmap As New RenderTargetBitmap(W * DpiX / 96, H * DpiY / 96, DpiX, DpiY, Me.PixelFormat)

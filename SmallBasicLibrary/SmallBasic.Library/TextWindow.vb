@@ -3,7 +3,7 @@ Imports Microsoft.SmallBasic.Library.Internal
 
 Namespace Library
     ''' <summary>
-    ''' The TextWindow provides text-related input and output functionalities.  For example using this class, it is possible to write or read some text or number to and from the text-based text window.
+    ''' Provides text-related input and output functionalities.  For example using this class, it is possible to write or read some text or number to and from the text-based text window.
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class TextWindow

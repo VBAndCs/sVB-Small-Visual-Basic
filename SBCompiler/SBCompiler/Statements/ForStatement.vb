@@ -13,14 +13,14 @@ Namespace Microsoft.SmallBasic.Statements
         Public InitialValue As Expression
         Public FinalValue As Expression
         Public StepValue As Expression
-        Public Iterator As TokenInfo
-        Public ForToken As TokenInfo
-        Public ToToken As TokenInfo
-        Public StepToken As TokenInfo
+        Public Iterator As Token
+        Public ForToken As Token
+        Public ToToken As Token
+        Public StepToken As Token
         Public Subroutine As SubroutineStatement
-        Public EqualsToken As TokenInfo
+        Public EqualsToken As Token
 
-        Public Overrides Function GetStatement(lineNumber) As Statement
+        Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
             If lineNumber > EndLoopToken.Line Then Return Nothing
             If lineNumber <= Iterator.Line Then Return Me
@@ -32,7 +32,7 @@ Namespace Microsoft.SmallBasic.Statements
             If lineNumber <= StepValue?.EndToken.Line Then Return Me
 
             For Each statment In Body
-                Dim st = statment.GetStatement(lineNumber)
+                Dim st = statment.GetStatementAt(lineNumber)
                 If st IsNot Nothing Then Return st
             Next
 
@@ -53,7 +53,7 @@ Namespace Microsoft.SmallBasic.Statements
             Return spans
         End Function
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             Iterator.Parent = Me
             ForToken.Parent = Me
@@ -62,12 +62,17 @@ Namespace Microsoft.SmallBasic.Statements
             EndLoopToken.Parent = Me
             EqualsToken.Parent = Me
 
-            If Iterator.Token <> Token.Illegal Then
+            If Iterator.Type <> TokenType.Illegal Then
                 Dim id As New IdentifierExpression() With {
                     .Identifier = Iterator,
                     .Subroutine = Subroutine
                 }
-                symbolTable.AddVariable(id, True)
+                Iterator.SymbolType = If(Subroutine Is Nothing, CompletionItemType.GlobalVariable, CompletionItemType.LocalVariable)
+                symbolTable.AllIdentifiers.Add(Iterator)
+                symbolTable.AddVariable(id, "The for loop counter (iterator)", Subroutine IsNot Nothing)
+                If symbolTable.IsGlobalVar(id) Then
+                    id.AddSymbolInitialization(symbolTable)
+                End If
             End If
 
             If InitialValue IsNot Nothing Then
@@ -91,26 +96,38 @@ Namespace Microsoft.SmallBasic.Statements
             Next
         End Sub
 
-        Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
+        Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
             For Each item In Body
                 item.PrepareForEmit(scope)
             Next
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
-            Dim iteratorVar = scope.CreateLocalBuilder(Subroutine, Iterator)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
 
             InitialValue.EmitIL(scope)
-            scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
 
-            ContinueLabel = scope.ILGenerator.DefineLabel()
-            ExitLabel = scope.ILGenerator.DefineLabel()
+            Dim IsField = Subroutine Is Nothing
+            Dim iteratorVar As LocalBuilder
+            Dim iteratorField As System.Reflection.FieldInfo
+
             Dim ConditionLabel = scope.ILGenerator.DefineLabel()
             Dim lblElseIf = scope.ILGenerator.DefineLabel()
             Dim loopBody = scope.ILGenerator.DefineLabel()
+            ContinueLabel = scope.ILGenerator.DefineLabel()
+            ExitLabel = scope.ILGenerator.DefineLabel()
 
-            scope.ILGenerator.MarkLabel(ConditionLabel)
-            scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
+            If IsField Then
+                iteratorField = scope.Fields(Iterator.NormalizedText)
+                scope.ILGenerator.Emit(OpCodes.Stsfld, iteratorField)
+                scope.ILGenerator.MarkLabel(ConditionLabel)
+                scope.ILGenerator.Emit(OpCodes.Ldsfld, iteratorField)
+            Else
+                iteratorVar = scope.CreateLocalBuilder(Subroutine, Iterator)
+                scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
+                scope.ILGenerator.MarkLabel(ConditionLabel)
+                scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
+            End If
+
             FinalValue.EmitIL(scope)
 
             If StepValue IsNot Nothing Then
@@ -138,7 +155,11 @@ Namespace Microsoft.SmallBasic.Statements
 
             ' Increase Iterator
             scope.ILGenerator.MarkLabel(ContinueLabel)
-            scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
+            If IsField Then
+                scope.ILGenerator.Emit(OpCodes.Ldsfld, iteratorField)
+            Else
+                scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
+            End If
 
             If StepValue IsNot Nothing Then
                 StepValue.EmitIL(scope)
@@ -148,7 +169,13 @@ Namespace Microsoft.SmallBasic.Statements
             End If
 
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.Add, Nothing)
-            scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
+
+            If IsField Then
+                scope.ILGenerator.Emit(OpCodes.Stsfld, iteratorField)
+            Else
+                scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
+            End If
+
             scope.ILGenerator.Emit(OpCodes.Br, ConditionLabel)
             scope.ILGenerator.MarkLabel(ExitLabel)
         End Sub
@@ -159,37 +186,70 @@ Namespace Microsoft.SmallBasic.Statements
                                  column As Integer,
                                  globalScope As Boolean)
 
-            If StartToken.Line = line Then
-                If column <= ForToken.EndColumn Then
-                    CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
+            If ForToken.Line = line AndAlso column <= ForToken.EndColumn Then
+                CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
 
-                ElseIf EqualsToken.Token = Token.Illegal OrElse column < EqualsToken.Column Then
-                    CompletionHelper.FillLocals(completionBag, Subroutine?.Name.NormalizedText)
-
-                ElseIf ToToken.Token = Token.Illegal OrElse column < ToToken.EndColumn Then
-                    CompletionHelper.FillKeywords(completionBag, Token.To)
-                    CompletionHelper.FillExpressionItems(completionBag)
-
-                ElseIf StepToken.Token = Token.Illegal OrElse column < StepToken.EndColumn Then
-                    CompletionHelper.FillKeywords(completionBag, Token.Step)
-                    CompletionHelper.FillExpressionItems(completionBag)
-
-                Else
-                    CompletionHelper.FillExpressionItems(completionBag)
+            ElseIf EqualsToken.IsIllegal OrElse line < EqualsToken.Line OrElse
+                        (line = EqualsToken.Line AndAlso column < EqualsToken.Column) Then
+                CompletionHelper.FillLocals(completionBag, Subroutine?.Name.NormalizedText)
+                If Not Iterator.IsIllegal AndAlso Subroutine Is Nothing Then
+                    completionBag.CompletionItems.Add(New CompletionItem() With {
+                        .Key = Iterator.Text,
+                        .DisplayName = Iterator.Text,
+                        .ItemType = CompletionItemType.GlobalVariable,
+                        .DefinitionIdintifier = completionBag.SymbolTable.GlobalVariables(Iterator.NormalizedText)
+                     })
                 End If
 
+            ElseIf InForHeader(line) Then
+                CompletionHelper.FillKeywords(completionBag, TokenType.To, TokenType.Step)
+                CompletionHelper.FillExpressionItems(completionBag)
+                CompletionHelper.FillSubroutines(completionBag, True)
+
+            ElseIf Not EndLoopToken.IsIllegal AndAlso line = EndLoopToken.Line Then
+                completionBag.CompletionItems.Clear()
+                CompletionHelper.FillKeywords(completionBag, EndLoopToken.Type)
+
             Else
-                Dim statementContaining = GetStatementContaining(Body, line)
-                CompletionHelper.FillKeywords(completionBag, Token.EndFor, Token.Next)
-                statementContaining?.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
+                Dim statement = GetStatementContaining(Body, line)
+                CompletionHelper.FillKeywords(completionBag, TokenType.EndFor, TokenType.Next)
+                statement?.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
             End If
         End Sub
+
+        Private Function InForHeader(line As Integer) As Boolean
+            Dim line2 As Integer
+
+            ' Note that for loop parts can be split over multi lines using the _ symbol,
+            ' and some of these parts can be missing while the user is typing code
+
+            If StepValue IsNot Nothing Then
+                line2 = StepValue.EndToken.Line
+
+            ElseIf Not StepToken.IsIllegal Then
+                line2 = StepToken.Line
+
+            ElseIf FinalValue IsNot Nothing Then
+                line2 = FinalValue.EndToken.Line
+
+            ElseIf Not ToToken.IsIllegal Then
+                line2 = ToToken.Line
+
+            ElseIf InitialValue IsNot Nothing Then
+                line2 = InitialValue.EndToken.Line
+
+            Else
+                line2 = EqualsToken.Line
+            End If
+
+            Return line <= line2
+        End Function
 
         Public Overrides Function ToString() As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
             stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1} = {2} To {3}", ForToken.Text, Iterator.Text, InitialValue, FinalValue)
 
-            If StepToken.TokenType <> 0 Then
+            If StepToken.ParseType <> 0 Then
                 stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1}", New Object(1) {StepToken.Text, StepValue})
             End If
 

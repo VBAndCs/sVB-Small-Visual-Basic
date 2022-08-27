@@ -12,7 +12,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Get
                 Return GetValue(ScaleProperty)
             End Get
-            Set(ByVal value As Double)
+            Set(value As Double)
                 SetValue(ScaleProperty, value)
             End Set
         End Property

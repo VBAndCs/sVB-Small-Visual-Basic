@@ -428,7 +428,7 @@ Namespace WinForms
                 End Sub)
         End Function
 
-        Private Shared Function GetAngle(ByVal element As DependencyObject) As Double
+        Private Shared Function GetAngle(element As DependencyObject) As Double
             If element Is Nothing Then
                 Throw New ArgumentNullException("element")
             End If
@@ -449,7 +449,7 @@ Namespace WinForms
                 End Sub)
         End Sub
 
-        Private Shared Sub SetAngle(ByVal element As DependencyObject, ByVal value As Double)
+        Private Shared Sub SetAngle(element As DependencyObject, value As Double)
             If element Is Nothing Then
                 Throw New ArgumentNullException("element")
             End If
@@ -655,20 +655,22 @@ Namespace WinForms
             [Event].SenderControl = ControlName
         End Sub
 
-        Shared Function GetVisualElemet(eventNmae As String) As FrameworkElement
+        Shared Function GetVisualElemet(eventNmae As String, Optional getForm As Boolean = False) As FrameworkElement
             Try
                 Dim VisualElement = CType(GetControl([Event].SenderForm, [Event].SenderControl), FrameworkElement)
-                App.Invoke(
-                      Sub()
-                          If TypeOf VisualElement Is Window Then
-                              Dim win = CType(VisualElement, Window)
-                              If win.AllowsTransparency Then
-                                  ' Use the camvas events ibstead of the form, because form events will not fire if it is transperent
-                                  VisualElement = CType(win.Content, Wpf.Canvas)
-                              End If
-                          End If
-                      End Sub)
+                If TypeOf VisualElement Is Window AndAlso Not getForm Then
+                    App.Invoke(
+                           Sub()
+                               Dim win = CType(VisualElement, Window)
+                               Dim canvas = CType(win.Content, Wpf.Canvas)
+                               If canvas.Background IsNot Nothing OrElse win.AllowsTransparency Then
+                                   ' Use the camvas events instead of the form, because form events will not fire if the form is transperent or if the canvas has a non-transparent back color
+                                   VisualElement = canvas
+                               End If
+                           End Sub)
+                End If
                 Return VisualElement
+
             Catch ex As Exception
                 [Event].ShowErrorMessage(eventNmae, ex.Message)
             End Try
@@ -730,10 +732,20 @@ Namespace WinForms
         Public Shared Custom Event OnDoubleClick As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Dim VisualElement = GetVisualElemet(NameOf(OnDoubleClick))
-                AddHandler VisualElement.PreviewMouseLeftButtonUp,
-                      Sub(Sender As Object, e As Input.MouseButtonEventArgs)
-                          If e.ClickCount > 1 Then [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
-                      End Sub
+
+                If TypeOf VisualElement Is Wpf.Canvas Then
+                    AddHandler VisualElement.MouseLeftButtonDown,
+                        Sub(Sender As Object, e As Input.MouseButtonEventArgs)
+                            If e.ClickCount > 1 Then [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                        End Sub
+
+                Else
+                    AddHandler VisualElement.PreviewMouseLeftButtonDown,
+                         Sub(Sender As Object, e As Input.MouseButtonEventArgs)
+                             If e.ClickCount > 1 Then [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                         End Sub
+                End If
+
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -844,8 +856,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnKeyDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnKeyDown))
-                AddHandler VisualElement.PreviewKeyDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim VisualElement = GetVisualElemet(NameOf(OnKeyDown), True)
+                AddHandler VisualElement.KeyDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -860,7 +872,7 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnPreviewKeyDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnPreviewKeyDown))
+                Dim VisualElement = GetVisualElemet(NameOf(OnPreviewKeyDown), True)
                 AddHandler VisualElement.PreviewKeyDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler, True)
             End AddHandler
 
@@ -876,8 +888,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnKeyUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnKeyUp))
-                AddHandler VisualElement.PreviewKeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim VisualElement = GetVisualElemet(NameOf(OnKeyUp), True)
+                AddHandler VisualElement.KeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -892,7 +904,7 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnPreviewKeyUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnPreviewKeyUp))
+                Dim VisualElement = GetVisualElemet(NameOf(OnPreviewKeyUp), True)
                 AddHandler VisualElement.PreviewKeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler, True)
             End AddHandler
 

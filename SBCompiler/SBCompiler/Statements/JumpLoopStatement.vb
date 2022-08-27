@@ -8,7 +8,7 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public UpLevel As Integer
 
-        Public Overrides Function GetStatement(lineNumber) As Statement
+        Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber = StartToken.Line Then Return Me
             Return Nothing
         End Function
@@ -57,11 +57,28 @@ Namespace Microsoft.SmallBasic.Statements
             Dim loops = GetParentLoops()
 
             If loops.Count > 0 Then
-                If StartToken.Token = Token.ExitLoop Then
+                If StartToken.Type = TokenType.ExitLoop Then
                     scope.ILGenerator.Emit(OpCodes.Br, loops(loops.Count - 1).ExitLabel)
                 Else
                     scope.ILGenerator.Emit(OpCodes.Br, loops(loops.Count - 1).ContinueLabel)
                 End If
+            End If
+        End Sub
+
+        Public Overrides Sub PopulateCompletionItems(
+                        bag As CompletionBag,
+                        line As Integer,
+                        column As Integer,
+                        globalScope As Boolean
+                   )
+
+            If Me.StartToken.IsBefore(line, column) Then
+                bag.CompletionItems.Clear()
+                bag.CompletionItems.Add(New CompletionItem() With {
+                    .Key = "-",
+                    .DisplayName = "-",
+                    .ItemType = CompletionItemType.Keyword
+                })
             End If
         End Sub
 

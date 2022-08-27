@@ -30,7 +30,7 @@ Namespace Microsoft.SmallBasic.Properties
             Get
                 Return resourceCulture
             End Get
-            Set(ByVal value As CultureInfo)
+            Set(value As CultureInfo)
                 resourceCulture = value
             End Set
         End Property

@@ -8,11 +8,11 @@ Namespace Microsoft.SmallBasic.Utility
         Public Const MF_GREYED As Integer = 1
 
         <DllImport("user32")>
-        Public Function GetSystemMenu(ByVal hWnd As IntPtr, ByVal revert As Integer) As IntPtr
+        Public Function GetSystemMenu(hWnd As IntPtr, revert As Integer) As IntPtr
         End Function
 
         <DllImport("user32")>
-        Public Function EnableMenuItem(ByVal hWndMenu As IntPtr, ByVal itemID As Integer, ByVal enable As Integer) As Integer
+        Public Function EnableMenuItem(hWndMenu As IntPtr, itemID As Integer, enable As Integer) As Integer
         End Function
     End Module
 End Namespace

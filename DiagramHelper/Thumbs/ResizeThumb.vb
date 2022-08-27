@@ -44,18 +44,18 @@ Friend Class ResizeThumb
             Return GetValue(DesignerItemProperty)
         End Get
 
-        Set(ByVal value As ListBoxItem)
+        Set(value As ListBoxItem)
             SetValue(DesignerItemProperty, value)
         End Set
     End Property
 
-    Public Shared ReadOnly DesignerItemProperty As DependencyProperty = _
-                           DependencyProperty.Register("DesignerItem", _
+    Public Shared ReadOnly DesignerItemProperty As DependencyProperty =
+                           DependencyProperty.Register("DesignerItem",
                            GetType(ListBoxItem), GetType(ResizeThumb))
 
     Dim OldState As PropertyState
 
-    Private Sub ResizeThumb_DragStarted(ByVal sender As Object, ByVal e As DragStartedEventArgs)
+    Private Sub ResizeThumb_DragStarted(sender As Object, e As DragStartedEventArgs)
 
         ResizeThumb.MeasurementsVisibilty = Windows.Visibility.Visible
 
@@ -93,7 +93,7 @@ Friend Class ResizeThumb
 
     End Sub
 
-    Private Sub ResizeThumb_DragDelta(ByVal sender As Object, ByVal e As DragDeltaEventArgs)
+    Private Sub ResizeThumb_DragDelta(sender As Object, e As DragDeltaEventArgs)
         ResizeThumb.MeasurementsVisibilty = Visibility.Visible
         Dim deltaVertical, deltaHorizontal As Double
 
@@ -167,7 +167,7 @@ Friend Class ResizeThumb
         e.Handled = True
     End Sub
 
-    Private Sub ResizeThumb_DragCompleted(ByVal sender As Object, ByVal e As DragCompletedEventArgs)
+    Private Sub ResizeThumb_DragCompleted(sender As Object, e As DragCompletedEventArgs)
         ResizeThumb.MeasurementsVisibilty = Visibility.Collapsed
         ReportChanges()
     End Sub
@@ -185,10 +185,7 @@ Friend Class ResizeThumb
 
         If Me.Cursor Is Cursors.None OrElse Me.ResizeCursor.Angle <> TotalAngle Then
             Me.ResizeCursor.Angle = TotalAngle
-            Try
-                Me.Cursor.Dispose()
-            Catch
-            End Try
+            Me.Cursor?.Dispose()
             Me.Cursor = CursorHelper.CreateCursor(Me.ResizeCursor, -1, -1)
         End If
     End Sub
@@ -214,7 +211,7 @@ Friend Class ResizeThumb
 
     Protected Overrides Sub Finalize()
         Try
-            Me.Cursor.Dispose()
+            Me.Cursor?.Dispose()
         Catch
         End Try
 

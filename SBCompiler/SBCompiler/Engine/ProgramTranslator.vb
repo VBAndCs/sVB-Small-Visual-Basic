@@ -12,7 +12,7 @@ Namespace Microsoft.SmallBasic.Engine
             Get
                 Return _Compiler
             End Get
-            Private Set(ByVal value As Compiler)
+            Private Set(value As Compiler)
                 _Compiler = value
             End Set
         End Property
@@ -21,7 +21,7 @@ Namespace Microsoft.SmallBasic.Engine
             Get
                 Return _ProgramInstructions
             End Get
-            Private Set(ByVal value As List(Of Instruction))
+            Private Set(value As List(Of Instruction))
                 _ProgramInstructions = value
             End Set
         End Property
@@ -30,12 +30,12 @@ Namespace Microsoft.SmallBasic.Engine
             Get
                 Return _SubroutineInstructions
             End Get
-            Private Set(ByVal value As Dictionary(Of String, List(Of Instruction)))
+            Private Set(value As Dictionary(Of String, List(Of Instruction)))
                 _SubroutineInstructions = value
             End Set
         End Property
 
-        Public Sub New(ByVal compiler As Compiler)
+        Public Sub New(compiler As Compiler)
             Me.Compiler = compiler
         End Sub
 
@@ -50,13 +50,13 @@ Namespace Microsoft.SmallBasic.Engine
             TranslateStatements(ProgramInstructions, Compiler.Parser.ParseTree)
         End Sub
 
-        Public Sub TranslateStatements(ByVal instructions As List(Of Instruction), ByVal statements As List(Of Statement))
+        Public Sub TranslateStatements(instructions As List(Of Instruction), statements As List(Of Statement))
             For Each statement In statements
                 TranslateStatement(instructions, statement)
             Next
         End Sub
 
-        Private Sub TranslateStatement(ByVal instructions As List(Of Instruction), ByVal statement As Statement)
+        Private Sub TranslateStatement(instructions As List(Of Instruction), statement As Statement)
             If TypeOf statement Is AssignmentStatement Then
                 TranslateAssignmentStatement(instructions, TryCast(statement, AssignmentStatement))
             ElseIf TypeOf statement Is ForStatement Then
@@ -78,7 +78,7 @@ Namespace Microsoft.SmallBasic.Engine
             End If
         End Sub
 
-        Private Sub TranslateAssignmentStatement(ByVal instructions As List(Of Instruction), ByVal statement As AssignmentStatement)
+        Private Sub TranslateAssignmentStatement(instructions As List(Of Instruction), statement As AssignmentStatement)
             Dim identifierExpression As IdentifierExpression = TryCast(statement.LeftValue, IdentifierExpression)
 
             If identifierExpression IsNot Nothing Then
@@ -127,7 +127,7 @@ Namespace Microsoft.SmallBasic.Engine
             End If
         End Sub
 
-        Private Sub TranslateForStatement(ByVal instructions As List(Of Instruction), ByVal statement As ForStatement)
+        Private Sub TranslateForStatement(instructions As List(Of Instruction), statement As ForStatement)
             Dim labelName As String = CreateNewLabel()
             Dim labelName2 As String = CreateNewLabel()
             Dim labelName3 As String = CreateNewLabel()
@@ -146,13 +146,13 @@ Namespace Microsoft.SmallBasic.Engine
                 instructions.Add(New IfGotoInstruction With {
                     .Condition = New BinaryExpression With {
                         .LeftHandSide = New LiteralExpression With {
-                            .Literal = New TokenInfo With {
-                                .Token = Token.NumericLiteral,
+                            .Literal = New Token With {
+                                .Type = TokenType.NumericLiteral,
                                 .Text = "0"
                             }
                         },
-                        .Operator = New TokenInfo With {
-                            .Token = Token.LessThan
+                        .Operator = New Token With {
+                            .Type = TokenType.LessThan
                         },
                         .RightHandSide = statement.StepValue
                     },
@@ -165,8 +165,8 @@ Namespace Microsoft.SmallBasic.Engine
                             .Identifier = statement.Iterator,
                             .Subroutine = SubroutineStatement.Current
                         },
-                        .Operator = New TokenInfo With {
-                            .Token = Token.LessThan
+                        .Operator = New Token With {
+                            .Type = TokenType.LessThan
                         },
                         .RightHandSide = statement.FinalValue
                     },
@@ -189,8 +189,8 @@ Namespace Microsoft.SmallBasic.Engine
                         .Identifier = statement.Iterator,
                         .Subroutine = SubroutineStatement.Current
                     },
-                    .Operator = New TokenInfo With {
-                        .Token = Token.GreaterThan
+                    .Operator = New Token With {
+                        .Type = TokenType.GreaterThan
                     },
                     .RightHandSide = statement.FinalValue
                 },
@@ -209,12 +209,12 @@ Namespace Microsoft.SmallBasic.Engine
                         .Identifier = statement.Iterator,
                         .Subroutine = SubroutineStatement.Current
                     },
-                    .Operator = New TokenInfo With {
-                        .Token = Token.Addition
+                    .Operator = New Token With {
+                        .Type = TokenType.Addition
                     },
                     .RightHandSide = (If(statement.StepValue IsNot Nothing, statement.StepValue, New LiteralExpression With {
-                        .Literal = New TokenInfo With {
-                            .Token = Token.NumericLiteral,
+                        .Literal = New Token With {
+                            .Type = TokenType.NumericLiteral,
                             .Text = "1"
                         }
                     }))
@@ -231,14 +231,14 @@ Namespace Microsoft.SmallBasic.Engine
             })
         End Sub
 
-        Private Sub TranslateGotoStatement(ByVal instructions As List(Of Instruction), ByVal statement As GotoStatement)
+        Private Sub TranslateGotoStatement(instructions As List(Of Instruction), statement As GotoStatement)
             instructions.Add(New GotoInstruction With {
                 .LabelName = statement.Label.NormalizedText,
                 .LineNumber = statement.StartToken.Line
             })
         End Sub
 
-        Private Sub TranslateIfStatement(ByVal instructions As List(Of Instruction), ByVal statement As IfStatement)
+        Private Sub TranslateIfStatement(instructions As List(Of Instruction), statement As IfStatement)
             Dim labelName As String = CreateNewLabel()
             Dim labelName2 As String = CreateNewLabel()
             instructions.Add(New IfNotGotoInstruction With {
@@ -283,34 +283,34 @@ Namespace Microsoft.SmallBasic.Engine
             })
         End Sub
 
-        Private Sub TranslateLabelStatement(ByVal instructions As List(Of Instruction), ByVal statement As LabelStatement)
+        Private Sub TranslateLabelStatement(instructions As List(Of Instruction), statement As LabelStatement)
             instructions.Add(New LabelInstruction With {
                 .LineNumber = statement.StartToken.Line,
                 .LabelName = statement.LabelToken.NormalizedText
             })
         End Sub
 
-        Private Sub TranslateMethodCallStatement(ByVal instructions As List(Of Instruction), ByVal statement As MethodCallStatement)
+        Private Sub TranslateMethodCallStatement(instructions As List(Of Instruction), statement As MethodCallStatement)
             instructions.Add(New MethodCallInstruction With {
                 .LineNumber = statement.StartToken.Line,
                 .MethodExpression = statement.MethodCallExpression
             })
         End Sub
 
-        Private Sub TranslateSubroutineStatement(ByVal statement As SubroutineStatement)
+        Private Sub TranslateSubroutineStatement(statement As SubroutineStatement)
             Dim list As List(Of Instruction) = New List(Of Instruction)()
             SubroutineInstructions(statement.Name.NormalizedText) = list
             TranslateStatements(list, statement.Body)
         End Sub
 
-        Private Sub TranslateSubroutineCallStatement(ByVal instructions As List(Of Instruction), ByVal statement As SubroutineCallStatement)
+        Private Sub TranslateSubroutineCallStatement(instructions As List(Of Instruction), statement As SubroutineCallStatement)
             instructions.Add(New SubroutineCallInstruction With {
                 .LineNumber = statement.StartToken.Line,
                 .SubroutineName = statement.Name.NormalizedText
             })
         End Sub
 
-        Private Sub TranslateWhileStatement(ByVal instructions As List(Of Instruction), ByVal statement As WhileStatement)
+        Private Sub TranslateWhileStatement(instructions As List(Of Instruction), statement As WhileStatement)
             Dim labelName As String = CreateNewLabel()
             Dim labelName2 As String = CreateNewLabel()
             instructions.Add(New LabelInstruction With {

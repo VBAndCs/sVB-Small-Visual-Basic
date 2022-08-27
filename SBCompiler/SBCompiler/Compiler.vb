@@ -34,7 +34,8 @@ Namespace Microsoft.SmallBasic
 
             _errors.Clear()
             _Parser.Parse(source, autoCompletion)
-            If _errors.Count = 0 Then
+
+            If Not autoCompletion AndAlso _errors.Count = 0 Then
                 Dim semanticAnalyzer As New SemanticAnalyzer(_Parser, _TypeInfoBag)
                 semanticAnalyzer.Analyze()
             End If
@@ -42,7 +43,7 @@ Namespace Microsoft.SmallBasic
             Return _errors
         End Function
 
-        Public Function Build(ByVal source As TextReader, ByVal outputName As String, ByVal directory As String) As List(Of [Error])
+        Public Function Build(source As TextReader, outputName As String, directory As String) As List(Of [Error])
             If source Is Nothing Then
                 Throw New ArgumentNullException("source")
             End If
@@ -65,7 +66,7 @@ Namespace Microsoft.SmallBasic
             Return _errors
         End Function
 
-        Private Sub CopyLibraryAssemblies(ByVal directory As String)
+        Private Sub CopyLibraryAssemblies(directory As String)
             Dim location = GetType(Primitive).Assembly.Location
             Dim fileName = Path.GetFileName(location)
 
@@ -144,7 +145,7 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Private Function AddAssemblyTypesToList(ByVal assembly As Assembly) As Boolean
+        Private Function AddAssemblyTypesToList(assembly As Assembly) As Boolean
             If assembly Is Nothing Then Return False
 
 
@@ -162,7 +163,7 @@ Namespace Microsoft.SmallBasic
             Return result
         End Function
 
-        Private Sub AddTypeToList(ByVal type As Type)
+        Private Sub AddTypeToList(type As Type)
             Dim typeInfo As New TypeInfo()
             typeInfo.Type = type
             typeInfo.HideFromIntellisense = type.GetCustomAttributes(GetType(HideFromIntellisenseAttribute), inherit:=False).Length > 0
@@ -200,7 +201,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Function CanAddMethod(ByVal methodInfo As MethodInfo) As Boolean
+        Private Function CanAddMethod(methodInfo As MethodInfo) As Boolean
             If Not methodInfo.IsGenericMethod AndAlso
                     Not methodInfo.IsConstructor AndAlso
                     Not methodInfo.ContainsGenericParameters AndAlso
@@ -220,7 +221,7 @@ Namespace Microsoft.SmallBasic
             Return False
         End Function
 
-        Private Function CanAddProperty(ByVal propertyInfo As PropertyInfo) As Boolean
+        Private Function CanAddProperty(propertyInfo As PropertyInfo) As Boolean
             If Not propertyInfo.IsSpecialName Then
                 Return propertyInfo.PropertyType Is GetType(Primitive)
             End If
@@ -228,7 +229,7 @@ Namespace Microsoft.SmallBasic
             Return False
         End Function
 
-        Private Function CanAddEvent(ByVal eventInfo As EventInfo) As Boolean
+        Private Function CanAddEvent(eventInfo As EventInfo) As Boolean
             If Not eventInfo.IsSpecialName Then
                 Return eventInfo.EventHandlerType Is GetType(SmallBasicCallback)
             End If

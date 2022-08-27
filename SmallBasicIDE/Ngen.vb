@@ -18,7 +18,7 @@ Namespace Microsoft.SmallBasic
             InitializeComponent()
         End Sub
 
-        Public Overrides Sub Install(ByVal stateSaver As IDictionary)
+        Public Overrides Sub Install(stateSaver As IDictionary)
             MyBase.Install(stateSaver)
 
             Try
@@ -38,7 +38,7 @@ Namespace Microsoft.SmallBasic
             End Try
         End Sub
 
-        Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        Protected Overrides Sub Dispose(disposing As Boolean)
             If disposing AndAlso components IsNot Nothing Then
                 components.Dispose()
             End If

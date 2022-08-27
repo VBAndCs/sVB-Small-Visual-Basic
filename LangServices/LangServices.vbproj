@@ -89,14 +89,14 @@
     <Import Include="System.Windows.Navigation" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="circularlist.xaml.vb">
-      <DependentUpon>circularlist.xaml</DependentUpon>
+    <Compile Include="CircularList.xaml.vb">
+      <DependentUpon>CircularList.xaml</DependentUpon>
     </Compile>
     <Compile Include="CircularListItem.vb" />
     <Compile Include="CompilerService.vb" />
     <Compile Include="CompletionAdornment.vb" />
     <Compile Include="CompletionAdornmentComponent.vb" />
-    <Compile Include="CompletionAdornmentProvider.vb" />
+    <Compile Include="CompletionProvider.vb" />
     <Compile Include="completionadornmentsurface.xaml.vb">
       <DependentUpon>completionadornmentsurface.xaml</DependentUpon>
     </Compile>
@@ -135,7 +135,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="circularlist.xaml">
+    <Page Include="CircularList.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

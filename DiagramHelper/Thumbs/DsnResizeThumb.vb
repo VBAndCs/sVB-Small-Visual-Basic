@@ -36,7 +36,7 @@ Friend Class DsnResizeThumb
 
     Dim OldState As PropertyState
 
-    Private Sub ResizeThumb_DragStarted(ByVal sender As Object, ByVal e As DragStartedEventArgs)
+    Private Sub ResizeThumb_DragStarted(sender As Object, e As DragStartedEventArgs)
 
         DsnResizeThumb.MeasurementsVisibilty = Windows.Visibility.Visible
 
@@ -46,7 +46,7 @@ Friend Class DsnResizeThumb
 
     End Sub
 
-    Private Sub ResizeThumb_DragDelta(ByVal sender As Object, ByVal e As DragDeltaEventArgs)
+    Private Sub ResizeThumb_DragDelta(sender As Object, e As DragDeltaEventArgs)
         DsnResizeThumb.MeasurementsVisibilty = Visibility.Visible
         Dim deltaVertical, deltaHorizontal As Double
 
@@ -72,7 +72,7 @@ Friend Class DsnResizeThumb
         e.Handled = True
     End Sub
 
-    Private Sub ResizeThumb_DragCompleted(ByVal sender As Object, ByVal e As DragCompletedEventArgs)
+    Private Sub ResizeThumb_DragCompleted(sender As Object, e As DragCompletedEventArgs)
         DsnResizeThumb.MeasurementsVisibilty = Visibility.Collapsed
         ReportChanges()
     End Sub
@@ -89,7 +89,7 @@ Friend Class DsnResizeThumb
 
     Protected Overrides Sub Finalize()
         Try
-            Me.Cursor.Dispose()
+            Me.Cursor?.Dispose()
         Catch
         End Try
 

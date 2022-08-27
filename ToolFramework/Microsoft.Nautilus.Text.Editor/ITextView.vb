@@ -31,6 +31,7 @@ Namespace Microsoft.Nautilus.Text.Editor
         ReadOnly Property ViewportWidth As Double
 
         ReadOnly Property ViewportHeight As Double
+
         Event LayoutChanged As EventHandler(Of TextViewLayoutChangedEventArgs)
         Event ViewportLeftChanged As EventHandler
         Event ViewportHeightChanged As EventHandler

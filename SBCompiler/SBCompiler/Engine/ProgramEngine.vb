@@ -33,7 +33,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _Breakpoints
                 End Get
-                Private Set(ByVal value As List(Of Integer))
+                Private Set(value As List(Of Integer))
                     _Breakpoints = value
                 End Set
             End Property
@@ -42,7 +42,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _CurrentInstruction
                 End Get
-                Private Set(ByVal value As Instruction)
+                Private Set(value As Instruction)
                     _CurrentInstruction = value
                 End Set
             End Property
@@ -51,7 +51,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _DebuggerCommand
                 End Get
-                Private Set(ByVal value As DebuggerCommand)
+                Private Set(value As DebuggerCommand)
                     _DebuggerCommand = value
                 End Set
             End Property
@@ -60,7 +60,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _DebuggerExecution
                 End Get
-                Private Set(ByVal value As ManualResetEvent)
+                Private Set(value As ManualResetEvent)
                     _DebuggerExecution = value
                 End Set
             End Property
@@ -69,7 +69,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _DebuggerState
                 End Get
-                Private Set(ByVal value As DebuggerState)
+                Private Set(value As DebuggerState)
                     _DebuggerState = value
                 End Set
             End Property
@@ -78,7 +78,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _Instructions
                 End Get
-                Private Set(ByVal value As List(Of Instruction))
+                Private Set(value As List(Of Instruction))
                     _Instructions = value
                 End Set
             End Property
@@ -87,7 +87,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _Fields
                 End Get
-                Private Set(ByVal value As Dictionary(Of String, Primitive))
+                Private Set(value As Dictionary(Of String, Primitive))
                     _Fields = value
                 End Set
             End Property
@@ -96,7 +96,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _LabelMap
                 End Get
-                Private Set(ByVal value As Dictionary(Of String, Integer))
+                Private Set(value As Dictionary(Of String, Integer))
                     _LabelMap = value
                 End Set
             End Property
@@ -105,7 +105,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _SubroutineInstructions
                 End Get
-                Private Set(ByVal value As Dictionary(Of String, List(Of Instruction)))
+                Private Set(value As Dictionary(Of String, List(Of Instruction)))
                     _SubroutineInstructions = value
                 End Set
             End Property
@@ -114,7 +114,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Get
                     Return _TypeInfoBag
                 End Get
-                Private Set(ByVal value As TypeInfoBag)
+                Private Set(value As TypeInfoBag)
                     _TypeInfoBag = value
                 End Set
             End Property
@@ -132,7 +132,7 @@ Namespace Microsoft.SmallBasic.Engine
                 DebuggerExecution = New ManualResetEvent(initialState:=True)
             End Sub
 
-            Private Sub ChangeDebuggerState(ByVal state As DebuggerState)
+            Private Sub ChangeDebuggerState(state As DebuggerState)
                 If DebuggerState <> state Then
                     DebuggerState = state
                     RaiseEvent DebuggerStateChanged(Me, EventArgs.Empty)
@@ -182,7 +182,7 @@ Namespace Microsoft.SmallBasic.Engine
                 [Continue]()
             End Sub
 
-            Public Sub RunProgram(ByVal stopOnFirstInstruction As Boolean)
+            Public Sub RunProgram(stopOnFirstInstruction As Boolean)
                 If stopOnFirstInstruction Then
                     DebuggerExecution.Reset()
                 End If
@@ -192,7 +192,7 @@ Namespace Microsoft.SmallBasic.Engine
                 thread.Start()
             End Sub
 
-            Private Sub ExecuteInstructions(ByVal instructions As List(Of Instruction))
+            Private Sub ExecuteInstructions(instructions As List(Of Instruction))
                 For i = 0 To instructions.Count - 1
                     Dim labelInstruction As LabelInstruction = TryCast(instructions(i), LabelInstruction)
 
@@ -220,7 +220,7 @@ Namespace Microsoft.SmallBasic.Engine
                 ChangeDebuggerState(DebuggerState.Finished)
             End Sub
 
-            Private Function ExecuteInstruction(ByVal instruction As Instruction) As String
+            Private Function ExecuteInstruction(instruction As Instruction) As String
                 Select Case instruction.InstructionType
                     Case InstructionType.ArrayAssignment
                         Return ExecuteArrayAssignmentInstruction(TryCast(instruction, ArrayAssignmentInstruction))
@@ -247,12 +247,12 @@ Namespace Microsoft.SmallBasic.Engine
                 End Select
             End Function
 
-            Private Function ExecuteArrayAssignmentInstruction(ByVal instruction As ArrayAssignmentInstruction) As String
+            Private Function ExecuteArrayAssignmentInstruction(instruction As ArrayAssignmentInstruction) As String
                 SetArrayValue(instruction.ArrayExpression, EvaluateExpression(instruction.RightSide))
                 Return Nothing
             End Function
 
-            Private Sub SetArrayValue(ByVal lvalue As ArrayExpression, ByVal value As Primitive)
+            Private Sub SetArrayValue(lvalue As ArrayExpression, value As Primitive)
                 Dim identifierExpression As IdentifierExpression = TryCast(lvalue.LeftHand, IdentifierExpression)
                 Dim value2 As Primitive = Nothing
 
@@ -273,17 +273,17 @@ Namespace Microsoft.SmallBasic.Engine
                 End If
             End Sub
 
-            Private Function ExecuteEventAssignmentInstruction(ByVal instruction As EventAssignmentInstruction) As String
+            Private Function ExecuteEventAssignmentInstruction(instruction As EventAssignmentInstruction) As String
                 instruction.EventInfo.AddEventHandler(Nothing, CType(Sub() ExecuteInstructions(SubroutineInstructions(instruction.SubroutineName)), SmallBasicCallback))
                 Return Nothing
             End Function
 
-            Private Function ExecuteFieldAssignmentInstruction(ByVal instruction As FieldAssignmentInstruction) As String
+            Private Function ExecuteFieldAssignmentInstruction(instruction As FieldAssignmentInstruction) As String
                 Fields(instruction.FieldName) = EvaluateExpression(instruction.RightSide)
                 Return Nothing
             End Function
 
-            Private Function ExecuteIfGotoInstruction(ByVal instruction As IfGotoInstruction) As String
+            Private Function ExecuteIfGotoInstruction(instruction As IfGotoInstruction) As String
                 If Primitive.ConvertToBoolean(EvaluateExpression(instruction.Condition)) Then
                     Return instruction.LabelName
                 End If
@@ -291,7 +291,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Return Nothing
             End Function
 
-            Private Function ExecuteIfNotGotoInstruction(ByVal instruction As IfNotGotoInstruction) As String
+            Private Function ExecuteIfNotGotoInstruction(instruction As IfNotGotoInstruction) As String
                 If Not Primitive.ConvertToBoolean(EvaluateExpression(instruction.Condition)) Then
                     Return instruction.LabelName
                 End If
@@ -299,17 +299,17 @@ Namespace Microsoft.SmallBasic.Engine
                 Return Nothing
             End Function
 
-            Private Function EvaluateMethodCallInstruction(ByVal instruction As MethodCallInstruction) As String
+            Private Function EvaluateMethodCallInstruction(instruction As MethodCallInstruction) As String
                 EvaluateMethodCallExpression(instruction.MethodExpression)
                 Return Nothing
             End Function
 
-            Private Function ExecutePropertyAssignmentInstruction(ByVal instruction As PropertyAssignmentInstruction) As String
+            Private Function ExecutePropertyAssignmentInstruction(instruction As PropertyAssignmentInstruction) As String
                 instruction.PropertyInfo.SetValue(Nothing, EvaluateExpression(instruction.RightSide), Nothing)
                 Return Nothing
             End Function
 
-            Private Function ExecuteSubroutineCallInstruction(ByVal instruction As SubroutineCallInstruction) As String
+            Private Function ExecuteSubroutineCallInstruction(instruction As SubroutineCallInstruction) As String
                 Dim debuggerCommand = Me.DebuggerCommand
 
                 If Me.DebuggerCommand = DebuggerCommand.StepOver Then
@@ -323,7 +323,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Return Nothing
             End Function
 
-            Private Function EvaluateExpression(ByVal expression As Expression) As Primitive
+            Private Function EvaluateExpression(expression As Expression) As Primitive
                 If TypeOf expression Is ArrayExpression Then
                     Return EvaluateArrayExpression(TryCast(expression, ArrayExpression))
                 End If
@@ -355,7 +355,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Return Nothing
             End Function
 
-            Private Function EvaluateArrayExpression(ByVal expression As ArrayExpression) As Primitive
+            Private Function EvaluateArrayExpression(expression As ArrayExpression) As Primitive
                 Dim identifierExpression As IdentifierExpression = TryCast(expression.LeftHand, IdentifierExpression)
                 Dim value As Primitive = Nothing
 
@@ -376,41 +376,41 @@ Namespace Microsoft.SmallBasic.Engine
                 Return Nothing
             End Function
 
-            Private Function EvaluateBinaryExpression(ByVal expression As BinaryExpression) As Primitive
+            Private Function EvaluateBinaryExpression(expression As BinaryExpression) As Primitive
                 Dim primitive = EvaluateExpression(expression.LeftHandSide)
                 Dim primitive2 = EvaluateExpression(expression.RightHandSide)
 
-                Select Case expression.Operator.Token
-                    Case Token.Addition
+                Select Case expression.Operator.Type
+                    Case TokenType.Addition
                         Return primitive.Add(primitive2)
-                    Case Token.And
+                    Case TokenType.And
                         Return Primitive.op_And(primitive, primitive2)
-                    Case Token.Division
+                    Case TokenType.Division
                         Return primitive.Divide(primitive2)
-                    Case Token.Equals
+                    Case TokenType.Equals
                         Return primitive.EqualTo(primitive2)
-                    Case Token.GreaterThan
+                    Case TokenType.GreaterThan
                         Return primitive.GreaterThan(primitive2)
-                    Case Token.GreaterThanEqualTo
+                    Case TokenType.GreaterThanEqualTo
                         Return primitive.GreaterThanOrEqualTo(primitive2)
-                    Case Token.LessThan
+                    Case TokenType.LessThan
                         Return primitive.LessThan(primitive2)
-                    Case Token.LessThanEqualTo
+                    Case TokenType.LessThanEqualTo
                         Return primitive.LessThanOrEqualTo(primitive2)
-                    Case Token.Multiplication
+                    Case TokenType.Multiplication
                         Return primitive.Multiply(primitive2)
-                    Case Token.NotEqualTo
+                    Case TokenType.NotEqualTo
                         Return primitive.NotEqualTo(primitive2)
-                    Case Token.Or
+                    Case TokenType.Or
                         Return Primitive.op_Or(primitive, primitive2)
-                    Case Token.Subtraction
+                    Case TokenType.Subtraction
                         Return primitive.Subtract(primitive2)
                     Case Else
                         Return Nothing
                 End Select
             End Function
 
-            Private Function EvaluateIdentifierExpression(ByVal expression As IdentifierExpression) As Primitive
+            Private Function EvaluateIdentifierExpression(expression As IdentifierExpression) As Primitive
                 Dim value As Primitive = Nothing
 
                 If Fields.TryGetValue(expression.Identifier.NormalizedText, value) Then
@@ -420,15 +420,15 @@ Namespace Microsoft.SmallBasic.Engine
                 Return Nothing
             End Function
 
-            Private Function EvaluateLiteralExpression(ByVal expression As LiteralExpression) As Primitive
-                If expression.Literal.Token = Token.StringLiteral Then
+            Private Function EvaluateLiteralExpression(expression As LiteralExpression) As Primitive
+                If expression.Literal.Type = TokenType.StringLiteral Then
                     Return New Primitive(expression.Literal.Text.Trim(""""c))
                 End If
 
                 Return New Primitive(expression.Literal.Text)
             End Function
 
-            Private Function EvaluateMethodCallExpression(ByVal expression As MethodCallExpression) As Primitive
+            Private Function EvaluateMethodCallExpression(expression As MethodCallExpression) As Primitive
                 Dim typeInfo = TypeInfoBag.Types(expression.TypeName.NormalizedText)
                 Dim methodInfo = typeInfo.Methods(expression.MethodName.NormalizedText)
                 Dim list As List(Of Object) = New List(Of Object)()
@@ -446,11 +446,11 @@ Namespace Microsoft.SmallBasic.Engine
                 Return Nothing
             End Function
 
-            Private Function EvaluateNegativeExpression(ByVal expression As NegativeExpression) As Primitive
+            Private Function EvaluateNegativeExpression(expression As NegativeExpression) As Primitive
                 Return -EvaluateExpression(expression.Expression)
             End Function
 
-            Private Function EvaluatePropertyExpression(ByVal expression As PropertyExpression) As Primitive
+            Private Function EvaluatePropertyExpression(expression As PropertyExpression) As Primitive
                 Dim typeInfo = TypeInfoBag.Types(expression.TypeName.NormalizedText)
                 Dim propertyInfo = typeInfo.Properties(expression.PropertyName.NormalizedText)
                 Dim value = propertyInfo.GetValue(Nothing, Nothing)
@@ -473,7 +473,7 @@ Namespace Microsoft.SmallBasic.Engine
             Get
                 Return _DebuggerAppDomain
             End Get
-            Private Set(ByVal value As AppDomain)
+            Private Set(value As AppDomain)
                 _DebuggerAppDomain = value
             End Set
         End Property
@@ -482,7 +482,7 @@ Namespace Microsoft.SmallBasic.Engine
             Get
                 Return _Compiler
             End Get
-            Private Set(ByVal value As Compiler)
+            Private Set(value As Compiler)
                 _Compiler = value
             End Set
         End Property
@@ -491,7 +491,7 @@ Namespace Microsoft.SmallBasic.Engine
             Get
                 Return _CurrentDebuggerState
             End Get
-            Private Set(ByVal value As DebuggerState)
+            Private Set(value As DebuggerState)
                 _CurrentDebuggerState = value
             End Set
         End Property
@@ -500,7 +500,7 @@ Namespace Microsoft.SmallBasic.Engine
             Get
                 Return _CurrentInstruction
             End Get
-            Private Set(ByVal value As Instruction)
+            Private Set(value As Instruction)
                 _CurrentInstruction = value
             End Set
         End Property
@@ -515,7 +515,7 @@ Namespace Microsoft.SmallBasic.Engine
             Get
                 Return _Translator
             End Get
-            Private Set(ByVal value As ProgramTranslator)
+            Private Set(value As ProgramTranslator)
                 _Translator = value
             End Set
         End Property
@@ -525,7 +525,7 @@ Namespace Microsoft.SmallBasic.Engine
         Public Event EngineUnloaded As EventHandler
         Public Event LineNumberChanged As EventHandler
 
-        Public Sub New(ByVal compiler As Compiler)
+        Public Sub New(compiler As Compiler)
             Me.Compiler = compiler
             Translator = New ProgramTranslator(Me.Compiler)
             Translator.TranslateProgram()
@@ -549,7 +549,7 @@ Namespace Microsoft.SmallBasic.Engine
             AddHandler Runner.LineNumberChanged, Sub() Engine.RaiseLineNumberChangedEvent(Runner.CurrentInstruction)
         End Sub
 
-        Public Sub AddBreakpoint(ByVal lineNumber As Integer)
+        Public Sub AddBreakpoint(lineNumber As Integer)
             DebuggerAppDomain.DoCallBack(Sub() Runner.Breakpoints.Add(lineNumber))
         End Sub
 
@@ -561,12 +561,12 @@ Namespace Microsoft.SmallBasic.Engine
             DebuggerAppDomain.DoCallBack(Sub() Runner.Pause())
         End Sub
 
-        Private Sub RaiseDebuggerStateChangedEvent(ByVal currentState As DebuggerState)
+        Private Sub RaiseDebuggerStateChangedEvent(currentState As DebuggerState)
             CurrentDebuggerState = currentState
             RaiseEvent DebuggerStateChanged(Me, EventArgs.Empty)
         End Sub
 
-        Private Sub RaiseLineNumberChangedEvent(ByVal currentInstruction As Instruction)
+        Private Sub RaiseLineNumberChangedEvent(currentInstruction As Instruction)
             Me.CurrentInstruction = currentInstruction
             RaiseEvent LineNumberChanged(Me, EventArgs.Empty)
         End Sub
@@ -587,7 +587,7 @@ Namespace Microsoft.SmallBasic.Engine
             DebuggerAppDomain.DoCallBack(Sub() Runner.RunProgram(stopOnFirstInstruction:=False))
         End Sub
 
-        Public Sub RunProgram(ByVal stopOnFirstInstruction As Boolean)
+        Public Sub RunProgram(stopOnFirstInstruction As Boolean)
             DebuggerAppDomain.DoCallBack(Sub() Runner.RunProgram(stopOnFirstInstruction:=True))
         End Sub
     End Class

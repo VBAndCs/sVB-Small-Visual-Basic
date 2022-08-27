@@ -18,7 +18,7 @@ Namespace Microsoft.SmallBasic
 
         Public ReadOnly Property Labels As New Dictionary(Of String, Label)
 
-        Friend Function CreateLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As TokenInfo) As LocalBuilder
+        Friend Function CreateLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As Token) As LocalBuilder
             Dim varBuilder = GetLocalBuilder(Subroutine, varIdentifier)
             If varBuilder Is Nothing Then
                 varBuilder = _ILGenerator.DeclareLocal(GetType(Library.Primitive))
@@ -29,7 +29,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
 
-        Friend Function GetLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As TokenInfo) As LocalBuilder
+        Friend Function GetLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As Token) As LocalBuilder
             Dim key = ""
             If Subroutine Is Nothing Then
                 key = varIdentifier.NormalizedText
@@ -37,19 +37,19 @@ Namespace Microsoft.SmallBasic
                 key = $"{Subroutine.Name.NormalizedText}.{varIdentifier.NormalizedText}"
             End If
 
-            If Not _SymbolTable.Locals.ContainsKey(key) Then Return Nothing
+            If Not _SymbolTable.LocalVariables.ContainsKey(key) Then Return Nothing
 
             If _locals.ContainsKey(key) Then Return _locals(key)
 
             Dim varBuilder = _ILGenerator.DeclareLocal(GetType(Library.Primitive))
-            Dim var = _SymbolTable.Locals(key)
+            Dim var = _SymbolTable.LocalVariables(key)
             varBuilder.SetLocalSymInfo(var.Identifier.NormalizedText)
             _locals(key) = varBuilder
             Return varBuilder
 
         End Function
 
-        Private Sub AddLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As TokenInfo, localVarBuilder As LocalBuilder)
+        Private Sub AddLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As Token, localVarBuilder As LocalBuilder)
             Dim key = ""
             If Subroutine Is Nothing Then
                 key = varIdentifier.NormalizedText
@@ -66,7 +66,7 @@ Namespace Microsoft.SmallBasic
                 Return _parent
             End Get
 
-            Set(ByVal value As CodeGenScope)
+            Set(value As CodeGenScope)
                 _parent = value
                 _fields = value._Fields
                 _Labels = value._Labels

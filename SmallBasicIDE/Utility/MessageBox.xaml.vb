@@ -30,7 +30,7 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return descriptionField
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 descriptionField = value
                 RaisePropertyChangeEvent("Description")
             End Set
@@ -40,7 +40,7 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return optionalContentField
             End Get
-            Set(ByVal value As Object)
+            Set(value As Object)
                 optionalContentField = value
                 RaisePropertyChangeEvent("OptionalContent")
             End Set
@@ -50,7 +50,7 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return footerField
             End Get
-            Set(ByVal value As Object)
+            Set(value As Object)
                 footerField = value
                 RaisePropertyChangeEvent("Footer")
             End Set
@@ -60,7 +60,7 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return isCancelableField
             End Get
-            Set(ByVal value As Boolean)
+            Set(value As Boolean)
                 isCancelableField = value
                 RaisePropertyChangeEvent("IsCancelable")
             End Set
@@ -70,7 +70,7 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return notificationButtonsField
             End Get
-            Set(ByVal value As NotificationButtons)
+            Set(value As NotificationButtons)
                 notificationButtonsField = value
                 RaisePropertyChangeEvent("NotificationButtons")
             End Set
@@ -80,7 +80,7 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return defaultButtonField
             End Get
-            Set(ByVal value As NotificationButtons)
+            Set(value As NotificationButtons)
                 defaultButtonField = value
                 RaisePropertyChangeEvent("DefaultButton")
             End Set
@@ -90,7 +90,7 @@ Namespace Microsoft.SmallBasic.Utility
             Get
                 Return notificationIconField
             End Get
-            Set(ByVal value As NotificationIcon)
+            Set(value As NotificationIcon)
                 notificationIconField = value
                 RaisePropertyChangeEvent("NotificationIcon")
             End Set
@@ -109,7 +109,7 @@ Namespace Microsoft.SmallBasic.Utility
             Return selectedButton
         End Function
 
-        Public Shared Function Show(ByVal description As String, ByVal title As String, ByVal optionalContent As Object, ByVal buttons As NotificationButtons, ByVal icon As NotificationIcon) As NotificationButtons
+        Public Shared Function Show(description As String, title As String, optionalContent As Object, buttons As NotificationButtons, icon As NotificationIcon) As NotificationButtons
             Dim messageBox As MessageBox = New MessageBox()
             messageBox.Description = description
             messageBox.Title = title
@@ -222,7 +222,7 @@ Namespace Microsoft.SmallBasic.Utility
             End If
         End Sub
 
-        Private Sub RaisePropertyChangeEvent(ByVal propertyName As String)
+        Private Sub RaisePropertyChangeEvent(propertyName As String)
             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
         End Sub
 
@@ -250,7 +250,7 @@ Namespace Microsoft.SmallBasic.Utility
             Return result
         End Function
 
-        Private Sub OnButtonClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnButtonClick(sender As Object, e As RoutedEventArgs)
             If sender Is Me.closeButton Then
                 selectedButton = NotificationButtons.Close
             ElseIf sender Is Me.cancelButton Then
@@ -270,13 +270,13 @@ Namespace Microsoft.SmallBasic.Utility
             closeInvokedInternally = False
         End Sub
 
-        Private Sub OnCloseButtonClick(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnCloseButtonClick(sender As Object, e As RoutedEventArgs)
             closeInvokedInternally = True
             Close()
             closeInvokedInternally = False
         End Sub
 
-        Protected Overrides Sub OnClosing(ByVal e As CancelEventArgs)
+        Protected Overrides Sub OnClosing(e As CancelEventArgs)
             If Not closeInvokedInternally AndAlso Not isCancelableField Then
                 e.Cancel = True
             End If
@@ -284,7 +284,7 @@ Namespace Microsoft.SmallBasic.Utility
             MyBase.OnClosing(e)
         End Sub
 
-        Protected Overrides Sub OnClosed(ByVal e As EventArgs)
+        Protected Overrides Sub OnClosed(e As EventArgs)
             If hwndSource IsNot Nothing Then
                 hwndSource.Dispose()
                 hwndSource = Nothing
@@ -293,7 +293,7 @@ Namespace Microsoft.SmallBasic.Utility
             MyBase.OnClosed(e)
         End Sub
 
-        Protected Overrides Sub OnKeyDown(ByVal e As KeyEventArgs)
+        Protected Overrides Sub OnKeyDown(e As KeyEventArgs)
             If e.Key = Key.Cancel OrElse e.Key = Key.Escape Then
                 Close()
             End If
@@ -301,7 +301,7 @@ Namespace Microsoft.SmallBasic.Utility
             MyBase.OnKeyDown(e)
         End Sub
 
-        Protected Overrides Sub OnSourceInitialized(ByVal e As EventArgs)
+        Protected Overrides Sub OnSourceInitialized(e As EventArgs)
             hwndSource = CType(PresentationSource.FromVisual(Me), HwndSource)
             SetWindowCloseButtonState()
             MyBase.OnSourceInitialized(e)

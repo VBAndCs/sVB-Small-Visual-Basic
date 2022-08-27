@@ -71,18 +71,17 @@ Namespace Microsoft.Nautilus.Text
             If _currentPosition = -1 Then
                 Throw New ObjectDisposedException("TextSnapshotToTextReader")
             End If
-            If _readLastLine Then
-                Return Nothing
-            End If
-            Dim lineFromPosition As ITextSnapshotLine = _snapshot.GetLineFromPosition(_currentPosition)
-            Dim endIncludingLineBreak1 As Integer = lineFromPosition.EndIncludingLineBreak
-            Dim text As String = _snapshot.GetText(_currentPosition, endIncludingLineBreak1 - _currentPosition)
-            _currentPosition = endIncludingLineBreak1
-            If lineFromPosition.LineBreakLength = 0 Then
-                _readLastLine = True
-            End If
+
+            If _readLastLine Then Return Nothing
+
+            Dim line = _snapshot.GetLineFromPosition(_currentPosition)
+            Dim pos = line.EndIncludingLineBreak
+            Dim text As String = _snapshot.GetText(_currentPosition, pos - _currentPosition)
+            _currentPosition = pos
+            If line.LineBreakLength = 0 Then _readLastLine = True
             Return text
         End Function
+
         Public Overrides Function ReadToEnd() As String
             Dim text As String = _snapshot.GetText(_currentPosition, _snapshot.Length - _currentPosition)
             _currentPosition = _snapshot.Length

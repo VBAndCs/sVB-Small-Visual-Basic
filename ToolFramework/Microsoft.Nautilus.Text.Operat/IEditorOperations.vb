@@ -102,5 +102,10 @@ Namespace Microsoft.Nautilus.Text.Operations
         Sub CutSelection(undoHistory1 As UndoHistory)
 
         Sub Paste(undoHistory1 As UndoHistory)
+
+        Function GetCurrentWordSpan() As Span
+
+        Function GetCurrentWord() As String
+        Sub [Select](start As Integer, length As Integer)
     End Interface
 End Namespace

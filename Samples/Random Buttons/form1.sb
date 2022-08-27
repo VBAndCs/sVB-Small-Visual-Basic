@@ -1,0 +1,29 @@
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   id = Rnd(10000)
+   newButton = Form1.AddButton(
+      "Button" + 2 + id, ' add 2 to avoid Button1
+      Rnd(700),
+      Rnd(500),
+      30 + Rnd(100),
+      20 + Rnd(70)
+   )
+   newButton.Text = "Random" + id
+   newButton.BackColor = Color.GetRandomColor()
+   newButton.ForeColor = Color.GetRandomColor()
+   newButton.OnClick = Button1_OnClick
+   
+EndSub
+
+
+
+
+'------------------------------------------------
+' Generates a random number between Zero and `maxNumber`
+Function Rnd(
+      maxNumber ' the upper limit of the generated ramdom number
+   )
+   Return Math.GetRandomNumber(maxNumber)
+EndFunction ' a random number

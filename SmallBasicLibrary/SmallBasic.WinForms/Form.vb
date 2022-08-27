@@ -4,6 +4,7 @@ Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows.Media
 
 Namespace WinForms
+
     <SmallBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Form
@@ -23,6 +24,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new TextBox control to the form
         ''' </summary>
+        ''' <param name="textBoxName">A unigue name of the new TextBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -67,6 +69,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Label control to the form
         ''' </summary>
+        ''' <param name="labelName">A unigue name of the new Label.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -111,6 +114,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new IamgeBox control to the form
         ''' </summary>
+        ''' <param name="imageBoxName">A unigue name of the new ImageBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -164,6 +168,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Button control to the form
         ''' </summary>
+        ''' <param name="buttonName">A unigue name of the new Button.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -213,6 +218,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Button control to the form
         ''' </summary>
+        ''' <param name="listBoxName">A unigue name of the new ListBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -434,34 +440,74 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+#Region "Events"
+        ''' <summary>
+        ''' Fired after the form is shown and all controls are rendered and are ready to use their properties.
+        ''' </summary>
+        Public Shared Custom Event OnShown As SmallBasicCallback
+            AddHandler(handler As SmallBasicCallback)
+                App.Invoke(
+                     Sub()
+                         Dim form = CType(Forms.GetForm([Event].SenderForm), System.Windows.Window)
+                         Try
+                             AddHandler form.ContentRendered,
+                                 Sub(sender As Object, e As EventArgs)
+                                     Try
+                                         Dim win = CType(sender, System.Windows.Window)
+                                         [Event].SenderControl = win.Name
+                                         [Event].SenderForm = win.Name
+
+                                         Call handler()
+                                         [Event].Handled = False
+
+                                     Catch ex As Exception
+                                         MsgBox($"The event handler sub `{handler.Method.Name}` fired by the `{[Event].SenderForm}.{NameOf(OnShown)}`event,  caused this error: {ex.Message}")
+                                     End Try
+                                 End Sub
+
+                         Catch ex As Exception
+                             [Event].ShowErrorMessage(NameOf(OnShown), ex.Message)
+                         End Try
+                     End Sub)
+            End AddHandler
+
+            RemoveHandler(handler As SmallBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
         ''' <summary>
         ''' Fired jsut before the form is closed.
         ''' Use Event.Handled = True if you want to cancel closing the form.
         ''' </summary>
         Public Shared Custom Event OnClosing As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = CType(Control.GetControl([Event].SenderForm, ""), System.Windows.Window)
-                Try
-                    AddHandler VisualElement.Closing,
-                        Sub(sender As Object, e As ComponentModel.CancelEventArgs)
-                            Try
-                                Dim win = CType(sender, System.Windows.Window)
-                                [Event].SenderControl = win.Name
-                                [Event].SenderForm = win.Name
+                App.Invoke(
+                     Sub()
+                         Dim form = Forms.GetForm([Event].SenderForm)
+                         Try
+                             AddHandler form.Closing,
+                                 Sub(sender As Object, e As ComponentModel.CancelEventArgs)
+                                     Try
+                                         Dim win = CType(sender, System.Windows.Window)
+                                         [Event].SenderControl = win.Name
+                                         [Event].SenderForm = win.Name
 
-                                Call handler()
+                                         Call handler()
 
-                                ' the handler may set the Handled property. We will use it and reset it.
-                                e.Cancel = [Event].Handled
-                                [Event].Handled = False
-                            Catch ex As Exception
-                                MsgBox($"The event handler sub `{handler.Method.Name}` fired by the `{[Event].SenderForm}.{NameOf(OnClosing)}`event,  caused this error: {ex.Message}")
-                            End Try
-                        End Sub
-                Catch ex As Exception
-                    [Event].ShowErrorMessage(NameOf(OnClosing), ex.Message)
-                End Try
-
+                                         ' the handler may set the Handled property. We will use it and reset it.
+                                         e.Cancel = [Event].Handled
+                                         [Event].Handled = False
+                                     Catch ex As Exception
+                                         MsgBox($"The event handler sub `{handler.Method.Name}` fired by the `{[Event].SenderForm}.{NameOf(OnClosing)}`event,  caused this error: {ex.Message}")
+                                     End Try
+                                 End Sub
+                         Catch ex As Exception
+                             [Event].ShowErrorMessage(NameOf(OnClosing), ex.Message)
+                         End Try
+                     End Sub)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -476,25 +522,27 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnClosed As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = CType(Control.GetControl([Event].SenderForm, ""), System.Windows.Window)
-                Try
-                    AddHandler VisualElement.Closed,
-                        Sub(sender As Object, e As EventArgs)
-                            Try
-                                Dim win = CType(sender, System.Windows.Window)
-                                [Event].SenderControl = win.Name
-                                [Event].SenderForm = win.Name
+                App.Invoke(
+                     Sub()
+                         Dim form = Forms.GetForm([Event].SenderForm)
+                         Try
+                             AddHandler form.Closed,
+                                 Sub(sender As Object, e As EventArgs)
+                                     Try
+                                         Dim win = CType(sender, System.Windows.Window)
+                                         [Event].SenderControl = win.Name
+                                         [Event].SenderForm = win.Name
 
-                                Call handler()
-                                [Event].Handled = False
-                            Catch ex As Exception
-                                MsgBox($"The event handler sub `{handler.Method.Name}` fired by the `{[Event].SenderForm}.{NameOf(OnClosing)}`event,  caused this error: {ex.Message}")
-                            End Try
-                        End Sub
-                Catch ex As Exception
-                    [Event].ShowErrorMessage(NameOf(OnClosing), ex.Message)
-                End Try
-
+                                         Call handler()
+                                         [Event].Handled = False
+                                     Catch ex As Exception
+                                         MsgBox($"The event handler sub `{handler.Method.Name}` fired by the `{[Event].SenderForm}.{NameOf(OnClosing)}`event,  caused this error: {ex.Message}")
+                                     End Try
+                                 End Sub
+                         Catch ex As Exception
+                             [Event].ShowErrorMessage(NameOf(OnClosing), ex.Message)
+                         End Try
+                     End Sub)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -503,5 +551,8 @@ Namespace WinForms
             RaiseEvent()
             End RaiseEvent
         End Event
+
+#End Region
+
     End Class
 End Namespace

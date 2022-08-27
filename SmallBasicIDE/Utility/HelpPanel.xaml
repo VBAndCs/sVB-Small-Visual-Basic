@@ -1,61 +1,82 @@
-﻿<Grid x:Class="Microsoft.SmallBasic.Utility.HelpPanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sb="clr-namespace:Microsoft.SmallBasic" xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" x:Name="helpPanel">
-  <FrameworkElement.Resources>
-    <ResourceDictionary>
-      <BooleanToVisibilityConverter x:Key="b2v" />
-      <Style x:Key="paramsNameStyle" TargetType="{x:Type lu:TextRun}">
-        <Setter Property="FontSize" Value="18" />
-        <Setter Property="Foreground" Value="#346D84" />
-        <Setter Property="FontWeight" Value="Bold" />
-      </Style>
-      <Style x:Key="paramsDescriptionStyle" TargetType="{x:Type lu:TextRun}">
-        <Setter Property="FontSize" Value="16" />
-        <Setter Property="Foreground" Value="#FF000000" />
-      </Style>
-      <Style x:Key="membersStyle" TargetType="{x:Type lu:TextRun}">
-        <Setter Property="FontSize" Value="16" />
-        <Setter Property="Foreground" Value="#555555" />
-        <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="Inline.BaselineAlignment" Value="Top" />
-      </Style>
-      <Style x:Key="usageStyle" TargetType="{x:Type lu:TextRun}">
-        <Setter Property="FontSize" Value="16" />
-        <Setter Property="Foreground" Value="#d84523" />
-        <Setter Property="FontWeight" Value="Bold" />
-      </Style>
-      <Style x:Key="typeStyle" TargetType="{x:Type lu:TextRun}">
-        <Setter Property="FontSize" Value="22" />
-        <Setter Property="Foreground" Value="#346D84" />
-        <Setter Property="FontWeight" Value="Bold" />
-      </Style>
-      <Style x:Key="codeExampleStyle" TargetType="{x:Type lu:TextRun}">
-        <Setter Property="FontSize" Value="15" />
-        <Setter Property="Foreground" Value="#FF000000" />
-        <Setter Property="FontFamily" Value="Consolas" />
-      </Style>
-    </ResourceDictionary>
-  </FrameworkElement.Resources>
-  <Border Background="#80dfefff" CornerRadius="1" BorderBrush="#d0dfefff" BorderThickness="1" Grid.Column="2">
-    <FlowDocumentScrollViewer Padding="0">
-      <FlowDocument Name="helpDocument" 
-                    FontFamily="Segoe UI" FontSize="16" 
-                    PagePadding="4" TextAlignment="Left" 
-                    IsHyphenationEnabled="True" 
-                    FlowDirection="{x:Static sb:App.FlowDirection}">
-        <Paragraph Margin="2">
-          <Image Name="symbolImage" Width="64" Height="64" /> 
-            <lu:TextRun x:Name="symbolType" FontSize="10" 
-              BaselineAlignment="Top" />
-            <LineBreak />
-            <lu:TextRun FontSize="20" Foreground="#346D84" 
-                  Text="{Binding Path=Display}" />
-            <LineBreak />
-            <lu:TextRun FontWeight="Bold" Foreground="#555555" 
-                  Text="{Binding Path=Documentation.Summary}" /> 
-            <Separator HorizontalAlignment="Stretch" Margin="0,4,0,4" 
-                  Width="800" />
-        </Paragraph>
-        <Paragraph Name="detailsParagraph" />
-      </FlowDocument>
-    </FlowDocumentScrollViewer>
-  </Border>
+﻿<Grid 
+    x:Class="Microsoft.SmallBasic.Utility.HelpPanel" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:sb="clr-namespace:Microsoft.SmallBasic" 
+    xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" 
+    x:Name="helpPanel">
+    
+    <FrameworkElement.Resources>
+        <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="b2v" />
+
+            <Style x:Key="paramsNameStyle" TargetType="{x:Type lu:TextRun}">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Foreground" Value="#346D84" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+
+            <Style x:Key="paramsDescriptionStyle" TargetType="{x:Type lu:TextRun}">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Foreground" Value="#FF000000" />
+            </Style>
+
+            <Style x:Key="membersStyle" TargetType="{x:Type lu:TextRun}">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Foreground" Value="#555555" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Inline.BaselineAlignment" Value="Top" />
+            </Style>
+
+            <Style x:Key="usageStyle" TargetType="{x:Type lu:TextRun}">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="Foreground" Value="#d84523" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+
+            <Style x:Key="typeStyle" TargetType="{x:Type lu:TextRun}">
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Foreground" Value="Brown" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+
+            <Style x:Key="selectedStyle" TargetType="{x:Type lu:TextRun}">
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Foreground" Value="Red" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>            
+            
+            <Style x:Key="linkStyle" TargetType="{x:Type lu:TextRun}">
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Foreground" Value="Blue" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+            
+            <Style x:Key="codeExampleStyle" TargetType="{x:Type lu:TextRun}">
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="Foreground" Value="#FF000000" />
+                <Setter Property="FontFamily" Value="Consolas" />
+            </Style>
+
+            <Style TargetType="{x:Type Paragraph}">
+                  <Setter Property="Margin" Value="0"/>
+            </Style>
+        </ResourceDictionary>
+    </FrameworkElement.Resources>
+    
+        <Border Background="AliceBlue" CornerRadius="1" 
+                BorderBrush="#d0dfefff" 
+                BorderThickness="1" 
+                Grid.Column="2"
+                HorizontalAlignment="Left">
+            
+              <FlowDocumentScrollViewer Padding="0" Margin="5">
+            <FlowDocument Name="helpDocument" 
+                            FontFamily="Segoe UI" FontSize="16" 
+                            PagePadding="4" TextAlignment="Left"
+                            FlowDirection="{x:Static sb:App.FlowDirection}">
+            </FlowDocument>
+        </FlowDocumentScrollViewer>
+        </Border>
+
 </Grid>

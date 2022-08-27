@@ -23,17 +23,17 @@ Public Class UndoRedoStack(Of T)
 
     Public MaxUndos As Integer = 100
 
-    Public Event UndoRedoStateChanged(ByVal CanUndo As Boolean, ByVal CanRedo As Boolean)
+    Public Event UndoRedoStateChanged(CanUndo As Boolean, CanRedo As Boolean)
 
     Sub New()
 
     End Sub
 
-    Sub New(ByVal MaxUndos As Integer)
+    Sub New(MaxUndos As Integer)
         Me.MaxUndos = MaxUndos
     End Sub
 
-    Sub New(ByVal MaxUndos As Integer, ByVal InitialState As T)
+    Sub New(MaxUndos As Integer, InitialState As T)
         Me.MaxUndos = MaxUndos
         pUndo.Push(InitialState)
     End Sub
@@ -63,7 +63,7 @@ Public Class UndoRedoStack(Of T)
         Return R
     End Function
 
-    Sub ReportChanges(ByVal State As T, Optional HoldAsLastChange As Boolean = True)
+    Sub ReportChanges(State As T, Optional HoldAsLastChange As Boolean = True)
         pRedo.Clear()
         pUndo.Push(State)
         If pUndo.Count > MaxUndos + 1 Then

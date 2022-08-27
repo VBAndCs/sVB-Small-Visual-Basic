@@ -24,9 +24,9 @@ Namespace Microsoft.SmallBasic
                 AnalyzeStatement(item)
             Next
 
-            If _parser.Errors.Count <> 0 Then Return
+            If _parser.Errors.Count > 0 Then Return
 
-            For Each variable In _symbolTable.Variables
+            For Each variable In _symbolTable.GlobalVariables
                 If Not _symbolTable.InitializedVariables.ContainsKey(variable.Key) Then
                     _parser.AddError(variable.Value, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("VariableNotInitialized"), New Object(0) {variable.Value.Text}))
                 End If
@@ -95,7 +95,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzeBinaryExpression(ByVal binaryExpression As BinaryExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
+        Private Sub AnalyzeBinaryExpression(binaryExpression As BinaryExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
             If binaryExpression.LeftHandSide IsNot Nothing Then
                 AnalyzeExpression(binaryExpression.LeftHandSide, leaveValueInStack, mustBeAssignable)
             End If
@@ -105,7 +105,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzeArrayExpression(ByVal arrayExpression As ArrayExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
+        Private Sub AnalyzeArrayExpression(arrayExpression As ArrayExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
             If arrayExpression.LeftHand IsNot Nothing Then
                 AnalyzeExpression(arrayExpression.LeftHand, leaveValueInStack, mustBeAssignable)
             End If
@@ -129,8 +129,8 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzeIdentifierExpression(ByVal identifierExpression As IdentifierExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
-            If identifierExpression.Identifier.Token <> 0 Then
+        Private Sub AnalyzeIdentifierExpression(identifierExpression As IdentifierExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
+            If identifierExpression.Identifier.Type <> 0 Then
                 NoteVariableReference(identifierExpression.Identifier)
 
                 If Not _symbolTable.IsDefined(identifierExpression) Then
@@ -140,10 +140,10 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzeMethodCallExpression(methodCall As MethodCallExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
+        Private Sub AnalyzeMethodCallExpression(methodCall As MethodCallExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
             NoteMethodCallReference(methodCall, leaveValueInStack, mustBeAssignable)
 
-            If methodCall.TypeName.Token = Token.Illegal Then ' Function Call
+            If methodCall.TypeName.Type = TokenType.Illegal Then ' Function Call
                 Dim subName = methodCall.MethodName.NormalizedText
                 If Not _symbolTable.Subroutines.ContainsKey(subName) Then
                     _parser.AddError(methodCall.MethodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {methodCall.MethodName.Text}))
@@ -160,7 +160,7 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Private Sub AnalyzeNegativeExpression(ByVal negativeExpression As NegativeExpression, ByVal leaveValueInStack As Boolean, ByVal mustBeAssignable As Boolean)
+        Private Sub AnalyzeNegativeExpression(negativeExpression As NegativeExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
             If negativeExpression.Expression IsNot Nothing Then
                 AnalyzeExpression(negativeExpression.Expression, leaveValueInStack, mustBeAssignable)
             End If
@@ -170,11 +170,11 @@ Namespace Microsoft.SmallBasic
             NotePropertyReference(propertyExpression, leaveValueInStack, mustBeAssignable)
         End Sub
 
-        Private Sub AnalyzeAssignmentStatement(ByVal assignmentStatement As AssignmentStatement)
-            Dim identifierExpression = TryCast(assignmentStatement.RightValue, IdentifierExpression)
+        Private Sub AnalyzeAssignmentStatement(assignmentStatement As AssignmentStatement)
+            Dim idExpr = TryCast(assignmentStatement.RightValue, IdentifierExpression)
 
-            If identifierExpression IsNot Nothing AndAlso _symbolTable.Subroutines.ContainsKey(identifierExpression.Identifier.NormalizedText) Then
-                NoteEventReference(assignmentStatement.LeftValue, identifierExpression.Identifier)
+            If idExpr IsNot Nothing AndAlso _symbolTable.Subroutines.ContainsKey(idExpr.Identifier.NormalizedText) Then
+                NoteEventReference(assignmentStatement.LeftValue, idExpr.Identifier)
                 Return
             End If
 
@@ -187,7 +187,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzeElseIfStatement(ByVal elseIfStatement As ElseIfStatement)
+        Private Sub AnalyzeElseIfStatement(elseIfStatement As ElseIfStatement)
             If elseIfStatement.Condition IsNot Nothing Then
                 AnalyzeExpression(elseIfStatement.Condition, leaveValueInStack:=True, mustBeAssignable:=False)
             End If
@@ -197,8 +197,8 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Private Sub AnalyzeForStatement(ByVal forStatement As ForStatement)
-            If forStatement.Iterator.Token <> 0 Then
+        Private Sub AnalyzeForStatement(forStatement As ForStatement)
+            If forStatement.Iterator.Type <> 0 Then
                 NoteVariableReference(forStatement.Iterator)
             End If
 
@@ -221,8 +221,8 @@ Namespace Microsoft.SmallBasic
 
         Private Sub AnalyzeGotoStatement(gotoStatement As GotoStatement)
             Dim label = gotoStatement.Label
-            If label.Token <> 0 Then
-                If label.Token <> 0 AndAlso Not _symbolTable.Labels.ContainsKey(label.NormalizedText) Then
+            If label.Type <> 0 Then
+                If label.Type <> 0 AndAlso Not _symbolTable.Labels.ContainsKey(label.NormalizedText) Then
                     _parser.AddError(label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("LabelNotFound"), New Object(0) {label.Text}))
                 Else
                     Dim labelStatement = CType(_symbolTable.Labels(label.NormalizedText).Parent, LabelStatement)
@@ -233,7 +233,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzeIfStatement(ByVal ifStatement As IfStatement)
+        Private Sub AnalyzeIfStatement(ifStatement As IfStatement)
             If ifStatement.Condition IsNot Nothing Then
                 AnalyzeExpression(ifStatement.Condition, leaveValueInStack:=True, mustBeAssignable:=False)
             End If
@@ -251,7 +251,7 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Private Sub AnalyzeMethodCallStatement(ByVal methodCallStatement As MethodCallStatement)
+        Private Sub AnalyzeMethodCallStatement(methodCallStatement As MethodCallStatement)
             If methodCallStatement.MethodCallExpression IsNot Nothing Then
                 AnalyzeExpression(methodCallStatement.MethodCallExpression, leaveValueInStack:=False, mustBeAssignable:=False)
             End If
@@ -268,15 +268,15 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Sub AnalyzeSubroutineCallStatement(subroutineCall As SubroutineCallStatement)
-            If subroutineCall.Name.Token <> 0 Then
-                Dim subroutineName = subroutineCall.Name
+            Dim subroutineName = subroutineCall.Name
+            If subroutineName.Type <> 0 Then
                 Dim subName = subroutineName.NormalizedText
                 If Not _symbolTable.Subroutines.ContainsKey(subName) Then
                     _parser.AddError(subroutineName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {subroutineName.Text}))
                 Else
                     Dim pNo = GetParamNo(subName)
                     If pNo <> subroutineCall.Args.Count Then
-                        _parser.AddError(subroutineCall.Name, $"`{subroutineCall.Name.Text}` expects {pNo} arguments.")
+                        _parser.AddError(subroutineName, $"`{subroutineName.Text}` expects {pNo} arguments.")
                     End If
                 End If
 
@@ -292,14 +292,14 @@ Namespace Microsoft.SmallBasic
                 _parser.AddError(subroutine.Name, "_ is not a valid name")
             End If
 
-            Select Case subroutine.StartToken.Token
-                Case Token.Sub
-                    If subroutine.EndSubToken.Token <> Token.EndSub Then
+            Select Case subroutine.StartToken.Type
+                Case TokenType.Sub
+                    If subroutine.EndSubToken.Type <> TokenType.EndSub Then
                         _parser.AddError(subroutine.EndSubToken, "Sub must end with EndSub")
                     End If
 
                 Case Else
-                    If subroutine.EndSubToken.Token <> Token.EndFunction Then
+                    If subroutine.EndSubToken.Type <> TokenType.EndFunction Then
                         _parser.AddError(subroutine.EndSubToken, "Function must end with EndFunction")
                     End If
 
@@ -313,7 +313,7 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Private Sub AnalyzeWhileStatement(ByVal whileStatement As WhileStatement)
+        Private Sub AnalyzeWhileStatement(whileStatement As WhileStatement)
             If whileStatement.Condition IsNot Nothing Then
                 AnalyzeExpression(whileStatement.Condition, leaveValueInStack:=True, mustBeAssignable:=False)
             End If
@@ -323,14 +323,14 @@ Namespace Microsoft.SmallBasic
             Next
         End Sub
 
-        Private Sub NoteEventReference(ByVal leftValue As Expression, ByVal subroutineName As TokenInfo)
+        Private Sub NoteEventReference(leftValue As Expression, subroutineName As Token)
             Dim propertyExpression = TryCast(leftValue, PropertyExpression)
 
             If propertyExpression IsNot Nothing Then
                 Dim typeName = propertyExpression.TypeName
                 Dim propertyName = propertyExpression.PropertyName
 
-                If typeName.Token = Token.Illegal OrElse propertyName.Token = Token.Illegal Then
+                If typeName.Type = TokenType.Illegal OrElse propertyName.Type = TokenType.Illegal Then
                     Return
                 End If
 
@@ -348,11 +348,11 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub NoteMethodCallReference(ByVal methodExpression As MethodCallExpression, ByVal leaveValueInStack As Boolean, ByVal isAssignable As Boolean)
+        Private Sub NoteMethodCallReference(methodExpression As MethodCallExpression, leaveValueInStack As Boolean, isAssignable As Boolean)
             Dim typeNameInfo = methodExpression.TypeName
             Dim methodName = methodExpression.MethodName
 
-            If typeNameInfo.Token = Token.Illegal OrElse methodName.Token = Token.Illegal Then
+            If typeNameInfo.Type = TokenType.Illegal OrElse methodName.Type = TokenType.Illegal Then
                 Return
             End If
 
@@ -385,7 +385,7 @@ Namespace Microsoft.SmallBasic
             Dim typeNameInfo = propExpr.TypeName
             Dim propertyNameInfo = propExpr.PropertyName
 
-            If typeNameInfo.Token = Token.Illegal OrElse propertyNameInfo.Token = Token.Illegal Then
+            If typeNameInfo.Type = TokenType.Illegal OrElse propertyNameInfo.Type = TokenType.Illegal Then
                 Return
             End If
 
@@ -437,8 +437,8 @@ Namespace Microsoft.SmallBasic
         End Sub
 
 
-        Private Sub NoteVariableReference(ByVal variable As TokenInfo)
-            If variable.Token <> 0 AndAlso Not _symbolTable.Variables.ContainsKey(variable.NormalizedText) AndAlso
+        Private Sub NoteVariableReference(variable As Token)
+            If variable.Type <> 0 AndAlso Not _symbolTable.GlobalVariables.ContainsKey(variable.NormalizedText) AndAlso
                        _symbolTable.Subroutines.ContainsKey(variable.NormalizedText) Then
                 _parser.AddError(variable, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineUsedAsVariable"), New Object(0) {variable.Text}))
             End If

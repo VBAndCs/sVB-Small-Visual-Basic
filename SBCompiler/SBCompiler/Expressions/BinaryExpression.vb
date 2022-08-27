@@ -9,7 +9,7 @@ Namespace Microsoft.SmallBasic.Expressions
         Inherits Expression
 
         Public Property LeftHandSide As Expression
-        Public Property [Operator] As TokenInfo
+        Public Property [Operator] As Token
         Public Property RightHandSide As Expression
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
@@ -30,30 +30,30 @@ Namespace Microsoft.SmallBasic.Expressions
         Public Overrides Sub EmitIL(scope As CodeGenScope)
             Dim methodInfo As MethodInfo = Nothing
 
-            Select Case [Operator].Token
-                Case Token.Addition
+            Select Case [Operator].Type
+                Case TokenType.Addition
                     methodInfo = scope.TypeInfoBag.Add
-                Case Token.Subtraction
+                Case TokenType.Subtraction
                     methodInfo = scope.TypeInfoBag.Subtract
-                Case Token.Multiplication
+                Case TokenType.Multiplication
                     methodInfo = scope.TypeInfoBag.Multiply
-                Case Token.Division
+                Case TokenType.Division
                     methodInfo = scope.TypeInfoBag.Divide
-                Case Token.Equals
+                Case TokenType.Equals
                     methodInfo = scope.TypeInfoBag.EqualTo
-                Case Token.NotEqualTo
+                Case TokenType.NotEqualTo
                     methodInfo = scope.TypeInfoBag.NotEqualTo
-                Case Token.GreaterThan
+                Case TokenType.GreaterThan
                     methodInfo = scope.TypeInfoBag.GreaterThan
-                Case Token.GreaterThanEqualTo
+                Case TokenType.GreaterThanEqualTo
                     methodInfo = scope.TypeInfoBag.GreaterThanOrEqualTo
-                Case Token.LessThan
+                Case TokenType.LessThan
                     methodInfo = scope.TypeInfoBag.LessThan
-                Case Token.LessThanEqualTo
+                Case TokenType.LessThanEqualTo
                     methodInfo = scope.TypeInfoBag.LessThanOrEqualTo
-                Case Token.And
+                Case TokenType.And
                     methodInfo = scope.TypeInfoBag.And
-                Case Token.Or
+                Case TokenType.Or
                     methodInfo = scope.TypeInfoBag.Or
             End Select
 

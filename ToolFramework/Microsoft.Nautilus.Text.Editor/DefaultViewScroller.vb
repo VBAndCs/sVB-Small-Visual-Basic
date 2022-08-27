@@ -11,6 +11,7 @@ Namespace Microsoft.Nautilus.Text.Editor
             If textView Is Nothing Then
                 Throw New ArgumentNullException("textView")
             End If
+
             _textView = textView
         End Sub
 
@@ -19,10 +20,14 @@ Namespace Microsoft.Nautilus.Text.Editor
                 Throw New ArgumentOutOfRangeException("pixelsToScroll")
             End If
 
-            Dim formattedTextLines1 As IFormattedTextLineCollection = _textView.FormattedTextLines
+            Dim formattedTextLines1 = _textView.FormattedTextLines
             If formattedTextLines1.Count > 0 Then
-                Dim firstFullyVisibleLine1 As ITextLine = formattedTextLines1.FirstFullyVisibleLine
-                _textView.DisplayTextLineContainingCharacter(firstFullyVisibleLine1.LineSpan.Start, firstFullyVisibleLine1.Top + pixelsToScroll, ViewRelativePosition.Top)
+                Dim firstFullyVisibleLine1 = formattedTextLines1.FirstFullyVisibleLine
+                _textView.DisplayTextLineContainingCharacter(
+                        firstFullyVisibleLine1.LineSpan.Start,
+                        firstFullyVisibleLine1.Top + pixelsToScroll,
+                        ViewRelativePosition.Top
+                )
             End If
         End Sub
 
@@ -32,9 +37,7 @@ Namespace Microsoft.Nautilus.Text.Editor
             End If
 
             Dim formattedTextLines1 As IFormattedTextLineCollection = _textView.FormattedTextLines
-            If formattedTextLines1.Count <= 0 Then
-                Return
-            End If
+            If formattedTextLines1.Count <= 0 Then Return
 
             Dim indexOfTextLine As Integer = formattedTextLines1.GetIndexOfTextLine(formattedTextLines1.FirstFullyVisibleLine)
             If direction = ScrollDirection.Up Then
@@ -42,6 +45,7 @@ Namespace Microsoft.Nautilus.Text.Editor
                     Dim textLine As ITextLine = formattedTextLines1(indexOfTextLine - 1)
                     _textView.DisplayTextLineContainingCharacter(textLine.LineSpan.Start, 0.0, ViewRelativePosition.Top)
                 End If
+
             ElseIf indexOfTextLine < formattedTextLines1.Count - 1 Then
                 Dim textLine2 As ITextLine = formattedTextLines1(indexOfTextLine + 1)
                 _textView.DisplayTextLineContainingCharacter(textLine2.LineSpan.Start, 0.0, ViewRelativePosition.Top)
@@ -62,6 +66,7 @@ Namespace Microsoft.Nautilus.Text.Editor
                 Dim index As Integer = Math.Max(0, formattedTextLines1.GetIndexOfTextLine(formattedTextLines1.FirstFullyVisibleLine) - 1)
                 Dim textLine As ITextLine = formattedTextLines1(index)
                 _textView.DisplayTextLineContainingCharacter(textLine.LineSpan.Start, 0.0, ViewRelativePosition.Bottom)
+
                 Dim num As Integer = formattedTextLines1.GetIndexOfTextLine(textLine) + 1
                 If num < formattedTextLines1.Count Then
                     Dim firstFullyVisibleLine1 As ITextLine = formattedTextLines1.FirstFullyVisibleLine
@@ -69,6 +74,7 @@ Namespace Microsoft.Nautilus.Text.Editor
                         _textView.DisplayTextLineContainingCharacter(firstFullyVisibleLine1.LineSpan.Start, 0.0, ViewRelativePosition.Top)
                     End If
                 End If
+
             Else
                 Dim index2 As Integer = Math.Min(formattedTextLines1.Count - 1, formattedTextLines1.GetIndexOfTextLine(formattedTextLines1.LastFullyVisibleLine) + 1)
                 Dim textLine As ITextLine = formattedTextLines1(index2)
@@ -80,6 +86,7 @@ Namespace Microsoft.Nautilus.Text.Editor
             If Double.IsNaN(pixelsToScroll) Then
                 Throw New ArgumentOutOfRangeException("pixelsToScroll")
             End If
+
             _textView.ViewportLeft += pixelsToScroll
         End Sub
 
@@ -110,10 +117,13 @@ Namespace Microsoft.Nautilus.Text.Editor
             If startIsNotVisible Then
                 If endIsNotVisible Then Return False
                 _textView.DisplayTextLineContainingCharacter(span.Start, verticalPadding, ViewRelativePosition.Top)
+
             ElseIf endIsNotVisible Then
                 _textView.DisplayTextLineContainingCharacter(span.End, verticalPadding, ViewRelativePosition.Bottom)
+
             ElseIf startTextLine?.Top < verticalPadding Then
                 _textView.DisplayTextLineContainingCharacter(span.Start, verticalPadding, ViewRelativePosition.Top)
+
             ElseIf endTextLine?.Bottom + verticalPadding > _textView.ViewportHeight Then
                 _textView.DisplayTextLineContainingCharacter(span.End, verticalPadding, ViewRelativePosition.Bottom)
             End If

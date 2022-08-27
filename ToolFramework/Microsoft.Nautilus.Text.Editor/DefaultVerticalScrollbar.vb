@@ -206,6 +206,8 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Sub OnVerticalScrollBarScrolled(sender As Object, e As ScrollEventArgs)
+            _textView.OnScrollChanged(e)
+            If e.Handled Then Return
 
             Select Case e.ScrollEventType
 

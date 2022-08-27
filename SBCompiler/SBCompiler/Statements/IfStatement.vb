@@ -13,28 +13,29 @@ Namespace Microsoft.SmallBasic.Statements
         Public ElseIfStatements As New List(Of ElseIfStatement)()
         Public ElseStatements As New List(Of Statement)()
         Public Condition As Expression
-        Public IfToken As TokenInfo
-        Public ThenToken As TokenInfo
-        Public ElseToken As TokenInfo
-        Public EndIfToken As TokenInfo
+        Public IfToken As Token
+        Public ThenToken As Token
+        Public ElseToken As Token
+        Public EndIfToken As Token
 
-        Public Overrides Function GetStatement(lineNumber) As Statement
+
+        Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
             If lineNumber <= ThenToken.Line Then Return Me
             If lineNumber > EndIfToken.Line Then Return Nothing
 
             For Each statment In ThenStatements
-                Dim st = statment.GetStatement(lineNumber)
+                Dim st = statment.GetStatementAt(lineNumber)
                 If st IsNot Nothing Then Return st
             Next
 
             For Each statment In ElseIfStatements
-                Dim st = statment.GetStatement(lineNumber)
+                Dim st = statment.GetStatementAt(lineNumber)
                 If st IsNot Nothing Then Return st
             Next
 
             For Each statment In ElseStatements
-                Dim st = statment.GetStatement(lineNumber)
+                Dim st = statment.GetStatementAt(lineNumber)
                 If st IsNot Nothing Then Return st
             Next
 
@@ -42,8 +43,6 @@ Namespace Microsoft.SmallBasic.Statements
 
             Return Nothing
         End Function
-
-
 
         Public Overrides Function GetKeywords() As LegalTokens
             Dim spans As New LegalTokens
@@ -59,7 +58,6 @@ Namespace Microsoft.SmallBasic.Statements
             spans.Add(EndIfToken)
             Return spans
         End Function
-
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
@@ -89,7 +87,7 @@ Namespace Microsoft.SmallBasic.Statements
             Next
         End Sub
 
-        Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
+        Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
             For Each thenStatement In ThenStatements
                 thenStatement.PrepareForEmit(scope)
             Next
@@ -103,7 +101,7 @@ Namespace Microsoft.SmallBasic.Statements
             Next
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
             Dim endIfLabel As Label = scope.ILGenerator.DefineLabel()
             Dim elseIfLabel As Label = scope.ILGenerator.DefineLabel()
             Condition.EmitIL(scope)
@@ -140,46 +138,54 @@ Namespace Microsoft.SmallBasic.Statements
         End Sub
 
         Public Overrides Sub PopulateCompletionItems(
-                                         completionBag As CompletionBag,
-                                         line As Integer,
-                                         column As Integer,
-                                         globalScope As Boolean
-                                  )
+                          completionBag As CompletionBag,
+                          line As Integer,
+                          column As Integer,
+                          globalScope As Boolean
+                   )
 
-            Select Case line
-                Case StartToken.Line
-                    If column < IfToken.EndColumn Then
-                        CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
-                    Else
-                        CompletionHelper.FillLogicalExpressionItems(completionBag)
-                        CompletionHelper.FillKeywords(completionBag, Token.Then)
+            If ThenToken.IsIllegal OrElse line <= ThenToken.Line Then
+                If column < IfToken.EndColumn Then
+                    CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
+                Else
+                    CompletionHelper.FillSubroutines(completionBag, True)
+                    CompletionHelper.FillLogicalExpressionItems(completionBag)
+                    CompletionHelper.FillKeywords(completionBag, TokenType.Then)
+                End If
+
+            ElseIf (From statement In ElseIfStatements
+                    Where line >= statement.ElseIfToken.Line AndAlso
+                        (statement.ThenToken.IsIllegal OrElse line <= statement.ThenToken.Line)
+                     ).Any Then
+                CompletionHelper.FillSubroutines(completionBag, True)
+                CompletionHelper.FillLogicalExpressionItems(completionBag)
+                CompletionHelper.FillKeywords(completionBag, TokenType.Then)
+
+            ElseIf Not ElseToken.IsIllegal AndAlso line = ElseToken.Line Then
+                completionBag.CompletionItems.Clear()
+                CompletionHelper.FillKeywords(completionBag, TokenType.ElseIf, TokenType.EndIf)
+
+            ElseIf Not EndIfToken.IsIllegal AndAlso line = EndIfToken.Line Then
+                completionBag.CompletionItems.Clear()
+                CompletionHelper.FillKeywords(completionBag, TokenType.EndIf)
+            Else
+                CompletionHelper.FillKeywords(completionBag, TokenType.EndIf, TokenType.Else, TokenType.ElseIf)
+                Dim statement = GetStatementContaining(ElseStatements, line)
+
+                If statement Is Nothing Then
+                    statement = GetStatementContaining(ElseIfStatements.OfType(Of Statement).ToList(), line)
+                    If statement Is Nothing Then
+                        statement = GetStatementContaining(ThenStatements, line)
                     End If
-
-                Case ElseToken.Line
-                    CompletionHelper.FillKeywords(completionBag, Token.Else, Token.EndIf)
-                    CompletionHelper.FillAllGlobalItems(completionBag, inGlobalScope:=False)
-
-                Case EndIfToken.Line
-                    CompletionHelper.FillKeywords(completionBag, Token.EndIf)
-                    CompletionHelper.FillAllGlobalItems(completionBag, inGlobalScope:=False)
-
-                Case Else
-                    CompletionHelper.FillKeywords(completionBag, Token.EndIf, Token.Else, Token.ElseIf)
-                    Dim statementContaining = GetStatementContaining(ElseStatements, line)
-                    If statementContaining Is Nothing Then
-                        statementContaining = GetStatementContaining(ElseIfStatements.OfType(Of Statement).ToList(), line)
-                        If statementContaining Is Nothing Then
-                            statementContaining = GetStatementContaining(ThenStatements, line)
-                        End If
-                    End If
-                    statementContaining?.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
-            End Select
+                End If
+                statement?.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
+            End If
         End Sub
 
 
         Public Overrides Function ToString() As String
-            Dim stringBuilder As StringBuilder = New StringBuilder()
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1} {2}" & VisualBasic.Constants.vbCrLf, New Object(2) {IfToken.Text, Condition, ThenToken.Text})
+            Dim stringBuilder As New StringBuilder()
+            stringBuilder.AppendLine($"{IfToken.Text} {Condition} {ThenToken.Text}")
 
             For Each thenStatement In ThenStatements
                 stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {thenStatement})
@@ -189,7 +195,7 @@ Namespace Microsoft.SmallBasic.Statements
                 stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {elseIfStatement})
             Next
 
-            If ElseToken.TokenType <> 0 Then
+            If ElseToken.ParseType <> 0 Then
                 stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {ElseToken.Text})
 
                 For Each elseStatement In ElseStatements

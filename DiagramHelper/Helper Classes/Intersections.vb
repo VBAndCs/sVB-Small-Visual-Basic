@@ -15,7 +15,7 @@
         Return False
     End Function
 
-    Shared Function LinesIntersect(ByVal p1 As Point, ByVal p2 As Point, ByVal p3 As Point, ByVal p4 As Point) As Boolean
+    Shared Function LinesIntersect(p1 As Point, p2 As Point, p3 As Point, p4 As Point) As Boolean
         Dim P As New Point(Double.NaN, Double.NaN)
         Dim a1 As Double = Double.NaN
         Dim a2 As Double = Double.NaN

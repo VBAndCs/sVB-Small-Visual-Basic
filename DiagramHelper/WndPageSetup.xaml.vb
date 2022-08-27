@@ -6,7 +6,7 @@
             Return GetValue(PageWidthProperty)
         End Get
 
-        Set(ByVal value As Double)
+        Set(value As Double)
             SetValue(PageWidthProperty, value)
         End Set
     End Property
@@ -21,7 +21,7 @@
             Return GetValue(PageHeightProperty)
         End Get
 
-        Set(ByVal value As Double)
+        Set(value As Double)
             SetValue(PageHeightProperty, value)
         End Set
     End Property

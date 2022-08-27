@@ -24,7 +24,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         Private compiler As Compiler
         Public Event ClassificationChanged As EventHandler(Of ClassificationChangedEventArgs) Implements IClassifier.ClassificationChanged
 
-        Public Sub New(ByVal textBuffer As ITextBuffer, ByVal classificationTypeRegistry As IClassificationTypeRegistry)
+        Public Sub New(textBuffer As ITextBuffer, classificationTypeRegistry As IClassificationTypeRegistry)
             If Not textBuffer.Properties.TryGetProperty(GetType(Compiler), compiler) Then
                 compiler = New Compiler()
                 textBuffer.Properties.AddProperty(GetType(Compiler), compiler)
@@ -46,74 +46,89 @@ Namespace Microsoft.SmallBasic.LanguageService
             unknownType = classificationTypeRegistry.GetClassificationType("SB_Unknown")
         End Sub
 
-        Private Sub OnUnitUpdated(ByVal sender As Object, ByVal e As EventArgs)
-            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, CType(Function()
-                                                                                       If ClassificationChangedEvent IsNot Nothing Then
-                                                                                           Dim changeSpan = textBuffer.CurrentSnapshot.CreateTextSpan(0, textBuffer.CurrentSnapshot.Length, SpanTrackingMode.EdgeInclusive)
-                                                                                           RaiseEvent ClassificationChanged(Me, New ClassificationChangedEventArgs(changeSpan))
-                                                                                       End If
+        Private Sub OnUnitUpdated(sender As Object, e As EventArgs)
+            Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal,
+                CType(Function()
+                          If ClassificationChangedEvent IsNot Nothing Then
+                              Dim snapshot = textBuffer.CurrentSnapshot
+                              Dim changeSpan = snapshot.CreateTextSpan(
+                                      0, snapshot.Length,
+                                      SpanTrackingMode.EdgeInclusive)
+                              RaiseEvent ClassificationChanged(Me,
+                                       New ClassificationChangedEventArgs(changeSpan))
+                          End If
 
-                                                                                       Return Nothing
-                                                                                   End Function, DispatcherOperationCallback), Nothing)
+                          Return Nothing
+                      End Function, DispatcherOperationCallback), Nothing)
         End Sub
 
-        Private Function GetClassificationForType(ByVal tokenInfo As TokenInfo, ByVal previousToken As TokenInfo, ByVal previousPreviousToken As TokenInfo) As IClassificationType
+        Private Function GetClassificationForType(
+                        token As Token,
+                        previousToken As Token,
+                        previousPreviousToken As Token
+                     ) As IClassificationType
+
             Dim value As TypeInfo = Nothing
 
-            If tokenInfo.TokenType = TokenType.Identifier Then
-                Dim normalizedText = tokenInfo.NormalizedText
+            If token.ParseType = ParseType.Identifier Then
+                Dim normalizedText = token.NormalizedText
 
                 If compiler.TypeInfoBag.Types.ContainsKey(normalizedText) Then
                     Return typeType
                 End If
 
-                If (previousToken.Token = Token.Dot OrElse previousToken.Token = Token.lookup) AndAlso previousPreviousToken.TokenType = TokenType.Identifier AndAlso compiler.TypeInfoBag.Types.TryGetValue(previousPreviousToken.NormalizedText, value) AndAlso (value.Events.ContainsKey(normalizedText) OrElse value.Methods.ContainsKey(normalizedText) OrElse value.Properties.ContainsKey(normalizedText)) Then
+                If (previousToken.Type = TokenType.Dot OrElse previousToken.Type = TokenType.Lookup) AndAlso previousPreviousToken.ParseType = ParseType.Identifier AndAlso compiler.TypeInfoBag.Types.TryGetValue(previousPreviousToken.NormalizedText, value) AndAlso (value.Events.ContainsKey(normalizedText) OrElse value.Methods.ContainsKey(normalizedText) OrElse value.Properties.ContainsKey(normalizedText)) Then
                     Return memberType
                 End If
 
                 Return identifierType
             End If
 
-            Select Case tokenInfo.TokenType
-                Case TokenType.Comment
+            Select Case token.ParseType
+                Case ParseType.Comment
                     Return commentType
-                Case TokenType.Delimiter
+                Case ParseType.Delimiter
                     Return delimiterType
-                Case TokenType.Identifier
+                Case ParseType.Identifier
                     Return identifierType
-                Case TokenType.Illegal
+                Case ParseType.Illegal
                     Return textType
-                Case TokenType.Keyword
+                Case ParseType.Keyword
                     Return keywordType
-                Case TokenType.NumericLiteral
+                Case ParseType.NumericLiteral
                     Return numericType
-                Case TokenType.Operator
+                Case ParseType.Operator
                     Return operatorType
-                Case TokenType.StringLiteral
+                Case ParseType.StringLiteral
                     Return stringType
                 Case Else
                     Return textType
             End Select
         End Function
 
-        Public Function GetClassificationSpans(ByVal textSpan As SnapshotSpan) As IList(Of ClassificationSpan) Implements IClassifier.GetClassificationSpans
+        Public Function GetClassificationSpans(textSpan As SnapshotSpan) As IList(Of ClassificationSpan) Implements IClassifier.GetClassificationSpans
             Dim classifications As New List(Of ClassificationSpan)
             Dim startLineNo = textSpan.Snapshot.GetLineNumberFromPosition(textSpan.Start)
             Dim endLineNo = textSpan.Snapshot.GetLineNumberFromPosition(textSpan.End)
+            Dim snapshot = textSpan.Snapshot
 
             For i = startLineNo To endLineNo
-                Dim line = textSpan.Snapshot.GetLineFromLineNumber(i)
+                Dim line = snapshot.GetLineFromLineNumber(i)
                 Dim tokenList = LineScanner.GetTokenEnumerator(line.GetText(), i)
-                Dim tokenInfo = sb.TokenInfo.Illegal
-                Dim tokenInfo2 = sb.TokenInfo.Illegal
-                Dim illegal = TokenInfo.Illegal
+                Dim token = sb.Token.Illegal
+                Dim prevToken = sb.Token.Illegal
+                Dim illegal = Token.Illegal
 
                 Do
-                    illegal = tokenInfo2
-                    tokenInfo2 = tokenInfo
-                    tokenInfo = tokenList.Current
-                    Dim classification = GetClassificationForType(tokenInfo, tokenInfo2, illegal)
-                    Dim span = textSpan.Snapshot.CreateTextSpan(line.Start + tokenInfo.Column, If(Not Equals(tokenInfo.Text, Nothing), tokenInfo.Text.Length, 0), SpanTrackingMode.EdgeInclusive)
+                    illegal = prevToken
+                    prevToken = token
+                    token = tokenList.Current
+                    Dim classification = GetClassificationForType(token, prevToken, illegal)
+                    Dim span = snapshot.CreateTextSpan(
+                             line.Start + token.Column,
+                             If(token.Text <> "", token.Text.Length, 0),
+                             SpanTrackingMode.EdgeInclusive
+                    )
                     classifications.Add(New ClassificationSpan(span, classification))
                 Loop While tokenList.MoveNext()
             Next

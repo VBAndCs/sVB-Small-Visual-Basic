@@ -9,7 +9,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         <ContentType("text.smallbasic")>
         <Export(GetType(ClassifierProvider))>
-        Public Function CreateClassifier(ByVal textBuffer As ITextBuffer) As IClassifier
+        Public Function CreateClassifier(textBuffer As ITextBuffer) As IClassifier
             Return New SmallBasicClassifier(textBuffer, ClassificationTypeRegistry)
         End Function
     End Class

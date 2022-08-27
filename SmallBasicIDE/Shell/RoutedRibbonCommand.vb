@@ -30,7 +30,7 @@ Namespace Microsoft.SmallBasic.Shell
 
                 Return Nothing
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 nameField = value
             End Set
         End Property
@@ -39,7 +39,7 @@ Namespace Microsoft.SmallBasic.Shell
             Get
                 Return CStr(GetValue(DescriptionProperty))
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 SetValue(DescriptionProperty, value)
             End Set
         End Property
@@ -59,11 +59,11 @@ Namespace Microsoft.SmallBasic.Shell
             End RaiseEvent
         End Event
 
-        Public Function CanExecute(ByVal parameter As Object) As Boolean Implements ICommand.CanExecute
+        Public Function CanExecute(parameter As Object) As Boolean Implements ICommand.CanExecute
             Return Command.CanExecute(parameter, Keyboard.FocusedElement)
         End Function
 
-        Public Sub Execute(ByVal parameter As Object) Implements ICommand.Execute
+        Public Sub Execute(parameter As Object) Implements ICommand.Execute
             Command.Execute(parameter, Keyboard.FocusedElement)
         End Sub
     End Class

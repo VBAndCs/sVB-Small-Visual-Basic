@@ -23,11 +23,11 @@ Friend Class CursorHelper
     End Function
 
     <DllImport("user32.dll")> _
-    Private Shared Function GetIconInfo(ByVal hIcon As IntPtr, ByRef pIconInfo As IconInfo) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    Private Shared Function GetIconInfo(hIcon As IntPtr, ByRef pIconInfo As IconInfo) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
 
-    Private Shared Function InternalCreateCursor(ByVal bmp As System.Drawing.Bitmap, ByVal xHotSpot As Integer, ByVal yHotSpot As Integer) As Cursor
+    Private Shared Function InternalCreateCursor(bmp As System.Drawing.Bitmap, xHotSpot As Integer, yHotSpot As Integer) As Cursor
         Dim tmp As New IconInfo()
         GetIconInfo(bmp.GetHicon(), tmp)
         tmp.xHotspot = xHotSpot
@@ -39,7 +39,7 @@ Friend Class CursorHelper
         Return CursorInteropHelper.Create(handle)
     End Function
 
-    Public Shared Function CreateCursor(ByVal element As UIElement, ByVal xHotSpot As Integer, ByVal yHotSpot As Integer) As Cursor
+    Public Shared Function CreateCursor(element As UIElement, xHotSpot As Integer, yHotSpot As Integer) As Cursor
         Dim Brdr As New Border
         Brdr.Child = element
         Brdr.Measure(New Size(Double.PositiveInfinity, Double.PositiveInfinity))

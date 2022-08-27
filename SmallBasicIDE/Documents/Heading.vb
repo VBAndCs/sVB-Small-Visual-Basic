@@ -6,7 +6,7 @@ Namespace Microsoft.SmallBasic
     Public Class Heading
         Inherits Span
 
-        Public Sub New(ByVal text As String)
+        Public Sub New(text As String)
             FontSize = 24.0
             FontWeight = FontWeights.Bold
             Foreground = New SolidColorBrush(Color.FromRgb(52, 109, 132))

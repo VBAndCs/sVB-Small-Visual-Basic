@@ -8,10 +8,11 @@ Imports System.Threading
 Imports System.Windows
 
 Namespace Microsoft.SmallBasic
-    Public Partial Class App
+    Partial Public Class App
         Inherits Application
 
         Public Shared GlobalDomain As ComponentDomain
+
         Public Shared Property FlowDirection As FlowDirection
 
         Protected Overrides Sub OnStartup(e As StartupEventArgs)
@@ -57,7 +58,9 @@ Namespace Microsoft.SmallBasic
             FlowDirection = If(currentUICulture.TextInfo.IsRightToLeft, FlowDirection.RightToLeft, FlowDirection.LeftToRight)
             CreateComponentDomain()
             AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf CatchAppExceptions
-            GetMainWindow().Show()
+
+            Me.MainWindow = GetMainWindow()
+            Me.MainWindow.Show()
             MyBase.OnStartup(e)
         End Sub
 
@@ -104,7 +107,15 @@ Namespace Microsoft.SmallBasic
             End Try
         End Function
 
+        Public Shared CntxMenuIsOpened As Boolean
 
-        'Friend Shared wndMain As MainWindow
+        Sub CntxMenu_Opened()
+            CntxMenuIsOpened = True
+        End Sub
+
+        Sub CntxMenu_Closed()
+            CntxMenuIsOpened = False
+        End Sub
+
     End Class
 End Namespace

@@ -195,7 +195,7 @@ Public Class ProjectExplorer
             Return GetValue(DesignerProperty)
         End Get
 
-        Set(ByVal value As Designer)
+        Set(value As Designer)
             SetValue(DesignerProperty, value)
         End Set
     End Property

@@ -18,6 +18,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports Microsoft.SmallBasic.LanguageService
 Imports System.Windows
+Imports System.Windows.Controls.Primitives
 
 Namespace Microsoft.SmallBasic.Documents
     Public Class TextDocument
@@ -32,20 +33,20 @@ Namespace Microsoft.SmallBasic.Documents
         Private _errorListControl As ErrorListControl
         Private _errors As New ObservableCollection(Of String)()
         Private _caretPositionText As String
-        Private _programDetails As Object
+        Private _programDetails As com.smallbasic.ProgramDetails
+
         Public Property BaseId As String
 
-        Public Property WordHighlightColor As System.Windows.Media.Color = System.Windows.Media.Colors.LightGray
+        Public Property WordHighlightColor As Media.Color = Media.Colors.LightGray
 
-        Public Property MatchingPairsHighlightColor As System.Windows.Media.Color = System.Windows.Media.Colors.LightGreen
-
+        Public Property MatchingPairsHighlightColor As Media.Color = Media.Colors.LightGreen
 
         Public Property CaretPositionText As String
             Get
                 Return _caretPositionText
             End Get
 
-            Private Set(ByVal value As String)
+            Private Set(value As String)
                 _caretPositionText = value
                 NotifyProperty("CaretPositionText")
             End Set
@@ -70,12 +71,12 @@ Namespace Microsoft.SmallBasic.Documents
             End Get
         End Property
 
-        Public Property ProgramDetails As Object
+        Public Property ProgramDetails As com.smallbasic.ProgramDetails
             Get
                 Return _programDetails
             End Get
 
-            Set(ByVal value As Object)
+            Set(value As com.smallbasic.ProgramDetails)
                 _programDetails = value
                 NotifyProperty("ProgramDetails")
             End Set
@@ -134,8 +135,8 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public ReadOnly Property Text As String
             Get
-                Dim currentSnapshot = TextBuffer.CurrentSnapshot
-                Return currentSnapshot.GetText(0, currentSnapshot.Length)
+                Dim snapshot = TextBuffer.CurrentSnapshot
+                Return snapshot.GetText(0, snapshot.Length)
             End Get
         End Property
 
@@ -186,10 +187,25 @@ Namespace Microsoft.SmallBasic.Documents
 
 
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
-            If IgnoreCaretPosChange Or StillWorking Then Return
+            If IgnoreCaretPosChange OrElse StillWorking Then Return
+            If _formatting Then
+                _formatting = False
+                Return
+            End If
+
             EditorControl.Dispatcher.BeginInvoke(
                     Sub()
                         StillWorking = True
+                        If needsToFormat And e IsNot Nothing Then
+                            Dim snapshot = e.TextView.TextSnapshot
+                            Dim line1 = snapshot.GetLineNumberFromPosition(e.OldPosition.TextInsertionIndex)
+                            Dim line2 = snapshot.GetLineNumberFromPosition(e.NewPosition.TextInsertionIndex)
+                            If line1 <> line2 Then
+                                needsToFormat = False
+                                FormatLine(line1)
+                            End If
+                        End If
+
                         Try
                             Dim handlerName = GetCurrentSubName()
                             _MdiView.FreezeCmbEvents = True
@@ -221,7 +237,7 @@ Namespace Microsoft.SmallBasic.Documents
 
                                 If sourceCodeChanged Then
                                     sourceCodeChanged = False
-                                    reCompileSourceCode = True
+                                    needsToreCompile = True
                                     _editorControl.ClearHighlighting()
                                 End If
 
@@ -250,11 +266,13 @@ Namespace Microsoft.SmallBasic.Documents
                 Dim span = sel.ActiveSnapshotSpan
                 Dim token = LineScanner.GetToken(span.GetText().ToLower())
                 Dim tokenType = LineScanner.GetTokenType(token)
-                If tokenType = TokenType.Keyword Then
+
+                If tokenType = ParseType.Keyword Then
                     Dim pos = span.Start
                     Dim line = snapshot.GetLineFromPosition(pos)
                     HighlightBlockKeywords(line.LineNumber, snapshot, token)
                 End If
+
                 Return
             End If
 
@@ -337,10 +355,10 @@ Namespace Microsoft.SmallBasic.Documents
             Dim line = snapshot.GetLineFromPosition(index)
             Dim pos = index - line.Start
 
-            For Each tokenInfo In LineScanner.GetTokens(line.GetText(), line.LineNumber)
-                If pos >= tokenInfo.Column AndAlso pos <= tokenInfo.EndColumn Then
-                    If tokenInfo.TokenType = TokenType.Keyword Then
-                        HighlightBlockKeywords(line.LineNumber, snapshot, tokenInfo.Token)
+            For Each token In LineScanner.GetTokens(line.GetText(), line.LineNumber)
+                If pos >= token.Column AndAlso pos <= token.EndColumn Then
+                    If token.ParseType = ParseType.Keyword Then
+                        HighlightBlockKeywords(line.LineNumber, snapshot, token.Type)
                     End If
                     Return
                 End If
@@ -349,25 +367,25 @@ Namespace Microsoft.SmallBasic.Documents
 
         Dim highlightCompiler As New Compiler()
 
-        Private Sub HighlightBlockKeywords(lineNumber As Integer, snapshot As ITextSnapshot, token As Token)
+        Private Sub HighlightBlockKeywords(lineNumber As Integer, snapshot As ITextSnapshot, token As TokenType)
             Select Case token
-                Case Token.Sub, Token.EndSub, Token.Function, Token.EndFunction, Token.Return
+                Case TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction, TokenType.Return
                     Dim statement = GetBlock(lineNumber, GetType(Statements.SubroutineStatement))
                     _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
-                Case Token.If, Token.Then, Token.ElseIf, Token.Else, Token.EndIf
+                Case TokenType.If, TokenType.Then, TokenType.ElseIf, TokenType.Else, TokenType.EndIf
                     Dim statement = GetBlock(lineNumber, GetType(Statements.IfStatement))
                     _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
-                Case Token.For, Token.To, Token.Step, Token.Next, Token.EndFor
+                Case TokenType.For, TokenType.To, TokenType.Step, TokenType.Next, TokenType.EndFor
                     Dim statement = GetBlock(lineNumber, GetType(Statements.ForStatement))
                     _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
-                Case Token.While, Token.Wend, Token.EndWhile
+                Case TokenType.While, TokenType.Wend, TokenType.EndWhile
                     Dim statement = GetBlock(lineNumber, GetType(Statements.WhileStatement))
                     _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
-                Case Token.ContinueLoop, Token.ExitLoop
+                Case TokenType.ContinueLoop, TokenType.ExitLoop
                     Dim statement = GetLoopBlock(lineNumber)
                     _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
             End Select
@@ -375,17 +393,21 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public Function GetBlock(lineNumber As Integer, statementType As Type) As Statements.Statement
 
-            If reCompileSourceCode Then
-                reCompileSourceCode = False
+            If needsToreCompile Then
+                needsToreCompile = False
                 highlightCompiler.Compile(New StringReader(Me.Text))
             End If
 
-            Dim statement = Completion.CompletionHelper.GetStatement(highlightCompiler, lineNumber)
+            Dim allStatements = highlightCompiler.Parser.SymbolTable.AllStatements
+            Dim statement = If(allStatements.ContainsKey(lineNumber),
+                    allStatements(lineNumber), ' some lines belong to other statements, so they will not appear here
+                    Completion.CompletionHelper.GetStatement(highlightCompiler, lineNumber)
+            )
 
             If statement Is Nothing Then Return Nothing
             If statementType IsNot Nothing AndAlso statement.GetType() Is statementType Then Return statement
 
-            statement = statement.GetStatement(lineNumber)
+            statement = statement.GetStatementAt(lineNumber)
 
             ' Get parent block
             If statement IsNot Nothing Then
@@ -401,15 +423,15 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public Function GetLoopBlock(lineNumber As Integer) As Statements.Statement
 
-            If reCompileSourceCode Then
-                reCompileSourceCode = False
+            If needsToreCompile Then
+                needsToreCompile = False
                 highlightCompiler.Compile(New StringReader(Me.Text))
             End If
 
             Dim statement = Completion.CompletionHelper.GetStatement(highlightCompiler, lineNumber)
             If statement Is Nothing Then Return Nothing
 
-            Dim jumpStatement = TryCast(statement.GetStatement(lineNumber), Statements.JumpLoopStatement)
+            Dim jumpStatement = TryCast(statement.GetStatementAt(lineNumber), Statements.JumpLoopStatement)
             If jumpStatement Is Nothing Then Return Nothing
 
             Dim loopsCount = jumpStatement.UpLevel + 1
@@ -420,15 +442,15 @@ Namespace Microsoft.SmallBasic.Documents
 
         Private Function GetCurrentSubText(lineNumber As Integer) As String
             Dim snapshot = _editorControl.TextView.TextSnapshot
-            Dim start = snapshot.Lines(CompilerService.FindCurrentSubStart(snapshot, lineNumber)).Start
-            Dim [end] = snapshot.Lines(CompilerService.FindCurrentSubEnd(snapshot, lineNumber)).End
+            Dim start = snapshot.GetLineFromLineNumber(CompilerService.FindCurrentSubStart(snapshot, lineNumber)).Start
+            Dim [end] = snapshot.GetLineFromLineNumber(CompilerService.FindCurrentSubEnd(snapshot, lineNumber)).End
             Return Me.Text.Substring(start, [end] - start + 1)
         End Function
 
-        Public Function GetSpans(tokens As List(Of TokenInfo)) As (Integer, Integer)()
+        Public Function GetSpans(tokens As List(Of Token)) As Span()
             If tokens Is Nothing Then Return Nothing
 
-            Dim spans As New List(Of (Start As Integer, Length As Integer))
+            Dim spans As New List(Of Span)
             Dim snapshot = _editorControl.TextView.TextSnapshot
             Dim lineNum = -1
             Dim linestart = 0
@@ -439,7 +461,7 @@ Namespace Microsoft.SmallBasic.Documents
                     linestart = snapshot.GetLineFromLineNumber(token.Line).Start
                 End If
 
-                spans.Add((
+                spans.Add(New Span(
                     linestart + token.Column,
                     token.EndColumn - token.Column
                 ))
@@ -465,10 +487,6 @@ Namespace Microsoft.SmallBasic.Documents
         End Sub
 
         Public Sub Save()
-            If IsNew Then
-                Throw New InvalidOperationException("Can't save a transient document.")
-            End If
-
             Using stream As Stream = Open()
                 stream.SetLength(0L)
 
@@ -478,10 +496,11 @@ Namespace Microsoft.SmallBasic.Documents
             End Using
 
             _undoHistory.ReplaceMarkerOnTop(saveMarker, True)
+            IsNew = False
             IsDirty = False
         End Sub
 
-        Public Sub SaveAs(ByVal filePath As String)
+        Public Sub SaveAs(filePath As String)
             Dim filePath2 = MyBase.FilePath
             MyBase.FilePath = filePath
 
@@ -494,16 +513,17 @@ Namespace Microsoft.SmallBasic.Documents
         End Sub
 
         Private Sub CreateBuffer()
-            If IsNew Then
+            If IsNew OrElse FilePath = "" Then
                 _textBuffer = New BufferFactory().CreateTextBuffer()
-            Else
 
+            Else
                 Using reader As StreamReader = New StreamReader(FilePath)
                     _textBuffer = New BufferFactory().CreateTextBuffer(reader, GetContentTypeFromFileExtension())
                 End Using
             End If
 
             AddHandler _textBuffer.Changed, AddressOf OnTextBufferChanged
+            AddProperty("WordHighlightColor", _WordHighlightColor)
         End Sub
 
         Private Function GetContentTypeFromFileExtension() As String
@@ -543,11 +563,14 @@ Namespace Microsoft.SmallBasic.Documents
         Dim _formatting As Boolean
 
         Dim sourceCodeChanged As Boolean = True
-        Dim reCompileSourceCode As Boolean
+        Dim needsToreCompile As Boolean
+        Dim needsToFormat As Boolean = True
 
         Private Sub OnTextBufferChanged(sender As Object, e As TextChangedEventArgs)
             sourceCodeChanged = True
+            needsToFormat = True
             IsDirty = True
+            _editorControl.ClearHighlighting()
             If _formatting OrElse _IgnoreCaretPosChange OrElse StillWorking Then Return
 
             StillWorking = True
@@ -555,22 +578,33 @@ Namespace Microsoft.SmallBasic.Documents
                 EditorControl.Dispatcher.BeginInvoke(
                   Sub()
                       StillWorking = True
-                      UpdateGlobalSubsList()
 
+                      UpdateGlobalSubsList()
                       ' re-format if lines changed
                       For Each change In e.Changes
-                          If change.Delta > 2 AndAlso change.NewText.Contains(vbLf) AndAlso change.NewText.Trim() <> "" Then
-                              FormatSub()
-                              Exit For
+                          Dim n = CountLines(change.NewText)
+                          If change.Delta > 2 AndAlso change.NewText.Trim() <> "" Then
+                              If n = 1 Then
+                                  FormatSub()
+                                  Exit For
+                              ElseIf n > 1 Then
+                                  FormatDocument(_editorControl.TextView.TextBuffer)
+                                  Exit For
+                              End If
                           End If
 
-                          If change.OldText.Contains(vbLf) Then
+                          n = CountLines(change.OldText)
+                          If n = 1 Then
                               FormatSub()
+                              Exit For
+                          ElseIf n > 1 Then
+                              FormatDocument(_editorControl.TextView.TextBuffer)
                               Exit For
                           End If
                       Next
 
                       StillWorking = False
+
                       OnCaretPositionChanged(Nothing, Nothing)
                   End Sub, DispatcherPriority.ContextIdle)
 
@@ -581,6 +615,8 @@ Namespace Microsoft.SmallBasic.Documents
         End Sub
 
         Private Sub AutoCompleteBlocks(sender As Object, e As System.Windows.Input.KeyEventArgs)
+            If (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Control) <> 0 Then Return
+
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
             Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
@@ -669,32 +705,45 @@ Namespace Microsoft.SmallBasic.Documents
             Dim L = line.Length
             Dim text = textView.TextSnapshot
             Dim addBlockEnd = True
+            Dim parser As New Parser
+            Dim isSubroutine = (keyword = "sub" OrElse keyword = "function")
 
-            If endBlock <> "" AndAlso endBlock <> "EndSub" AndAlso endBlock <> "EndFunction" Then
+            If endBlock <> "" Then
                 For i = line.LineNumber + 1 To text.LineCount - 1
                     Dim nextLine = text.GetLineFromLineNumber(i)
                     Dim LineCode = nextLine.GetText()
                     If LineCode.Trim(" "c, vbTab, "(").ToLower() <> "" Then
                         Dim indent_Keyword = leadingSpace & keyword
-                        If LineCode = leadingSpace & endBlock Then
+                        If (isSubroutine AndAlso (LineCode = "EndSub" OrElse LineCode = "EndFunction")) OrElse LineCode = leadingSpace & endBlock Then
                             L += nextLine.Length + 2
                             Try
                                 nextLine = text.GetLineFromLineNumber(i + 1)
-                                LineCode = nextLine.GetText()
-                                If LineCode.Trim(" "c, vbTab, "(").ToLower() = "" Then
+                                LineCode = nextLine.GetText().ToLower()
+                                If LineCode.Trim(" "c, vbTab, "(") = "" Then
                                     L += 2
                                 End If
                             Catch ex As Exception
 
                             End Try
-                        ElseIf LineCode.StartsWith(indent_Keyword) Then
+                        ElseIf (isSubroutine AndAlso (LineCode.StartsWith("sub") OrElse LineCode.StartsWith("function"))
+                                    ) OrElse LineCode.StartsWith(indent_Keyword) Then
+                            addBlockEnd = isSubroutine
                             Exit For
                         Else
                             For j = i + 1 To text.LineCount - 1
                                 nextLine = text.GetLineFromLineNumber(j)
                                 LineCode = nextLine.GetText()
-                                If LineCode.StartsWith(indent_Keyword) Then Exit For
-                                If LineCode = leadingSpace & endBlock Then
+
+                                If isSubroutine Then
+                                    If LineCode.StartsWith("Sub ") OrElse LineCode.StartsWith("Function ") Then
+                                        addBlockEnd = True
+                                        Exit For
+                                    ElseIf LineCode = "EndSub" OrElse LineCode = "EndFunction" Then
+                                        addBlockEnd = False
+                                        Exit For
+                                    End If
+
+                                ElseIf LineCode = leadingSpace & endBlock Then
                                     addBlockEnd = False
                                     Exit For
                                 End If
@@ -717,9 +766,10 @@ Namespace Microsoft.SmallBasic.Documents
                     If(addBlockEnd, nl & endBlock & nl, ""),
                 _undoHistory
             )
+
             textView.Caret.MoveTo(line.Start + inden + Len(keyword) + 1 + n)
             stopFormatingLine = line.LineNumber
-            _formatting = False
+            '_formatting = False
         End Sub
 
         Friend Sub Focus(Optional moveToStart As Boolean = False)
@@ -728,6 +778,7 @@ Namespace Microsoft.SmallBasic.Documents
             If moveToStart Then
                 txtView.Caret.MoveTo(0)
             End If
+            txtView.Caret.EnsureVisible()
         End Sub
 
         Private Sub UndoRedoHappened(sender As Object, e As UndoRedoEventArgs)
@@ -771,6 +822,7 @@ Namespace Microsoft.SmallBasic.Documents
 
             Set(value As String)
                 _form = value
+                AddProperty("FormName", value)
                 NotifyProperty("Title")
             End Set
         End Property
@@ -861,7 +913,7 @@ Namespace Microsoft.SmallBasic.Documents
                 _form = formName
                 _ControlsInfo = controlsInfoList
                 AddProperty("ControlsInfo", _ControlsInfo)
-                AddProperty("ControlNames", _ControlNames)
+                AddProperty("ControlNames", controlNamesList)
 
                 ' Note that ControlNames Property is bound to a combobox, so keep the existing collection
                 controlNamesList.Sort()
@@ -881,12 +933,7 @@ Namespace Microsoft.SmallBasic.Documents
         End Function
 
         Sub AddProperty(name As String, value As Object)
-            Try
-                TextBuffer.Properties.AddProperty(name, value)
-            Catch
-                TextBuffer.Properties.RemoveProperty(name)
-                TextBuffer.Properties.AddProperty(name, value)
-            End Try
+            TextBuffer.Properties.AddOrModifyProperty(name, value)
         End Sub
 
         Public Function GetCodeBehind(Optional ToCompile As Boolean = False) As String
@@ -930,7 +977,7 @@ Namespace Microsoft.SmallBasic.Documents
             Next
 
             AddProperty("ControlsInfo", _ControlsInfo)
-            AddProperty("ControlNames", _ControlNames)
+            AddProperty("ControlNames", info.ControlNames)
         End Sub
 
         Friend Shared Function FromCode(code As String) As TextDocument
@@ -960,7 +1007,7 @@ EndFunction
 "
         Public Property IgnoreCaretPosChange As Boolean
 
-        Public Function AddEventHandler(controlName As String, eventName As String) As Boolean
+        Public Function AddEventHandler(controlName As String, eventName As String, Optional selectSubName As Boolean = True) As Boolean
             Dim alreadyExists = False
             Dim isGlobal = (controlName = "(Global)")
             Dim handlerName = If(isGlobal, "", controlName & "_") &
@@ -1009,7 +1056,7 @@ EndFunction
                     _GlobalSubs.Add(handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
                     caret.MoveTo(Text.Length - If(isSub, SubBodyLength, FuncBodyLength))
-                    SelectCurrentWord()
+                    If selectSubName Then SelectCurrentWord()
                     _ControlEvents.Add(handlerName)
 
                 Else
@@ -1022,15 +1069,19 @@ EndFunction
             Else
                 alreadyExists = True
                 caret.MoveTo(pos)
-                SelectCurrentWord()
+                If selectSubName Then SelectCurrentWord()
             End If
 
             Me.Focus()
 
             Me.MdiView.CmbControlNames.SelectedItem = controlName
             Me.MdiView.SelectEventName(If(isGlobal, handlerName, eventName))
-            _IgnoreCaretPosChange = False
 
+            If Not (selectSubName OrElse alreadyExists) Then
+                _editorControl.EditorOperations.MoveLineDown(False)
+            End If
+
+            _IgnoreCaretPosChange = False
             Return Not alreadyExists
         End Function
 
@@ -1054,16 +1105,19 @@ EndFunction
             Dim caret = _editorControl.TextView.Caret
             Dim ops = _editorControl.EditorOperations
             Dim sv = _editorControl.TextView.ViewScroller
+
             ops.ResetSelection()
             caret.EnsureVisible()
             sv.ScrollViewportVerticallyByPage(Nautilus.Text.Editor.ScrollDirection.Down)
             caret.EnsureVisible()
             sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
+
             If Not viewAtTop Then
                 sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
                 sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
                 sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
             End If
+
             ops.SelectCurrentWord()
             Focus()
         End Sub
@@ -1089,13 +1143,13 @@ EndFunction
             For i = lineNumber To 0 Step -1
                 Dim line = text.GetLineFromLineNumber(i)
                 Dim Tokens = LineScanner.GetTokenEnumerator(line.GetText(), i)
-                Dim token = Tokens.Current.Token
-                If token = Token.Sub OrElse token = Token.Function Then
-                    If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
+                Dim token = Tokens.Current.Type
+                If token = TokenType.Sub OrElse token = TokenType.Function Then
+                    If Tokens.MoveNext() AndAlso Tokens.Current.Type = TokenType.Identifier Then
                         Return Tokens.Current.Text
                     End If
 
-                ElseIf (token = Token.EndSub OrElse token = Token.EndFunction) AndAlso lineNumber <> i Then
+                ElseIf (token = TokenType.EndSub OrElse token = TokenType.EndFunction) AndAlso lineNumber <> i Then
                     Return ""
                 End If
             Next
@@ -1113,6 +1167,21 @@ EndFunction
             stopFormatingLine = -1
         End Sub
 
+        Sub FormatLine(lineNum As Integer)
+            _formatting = True
+            Dim textView = _editorControl.TextView
+            Dim lineText = textView.TextSnapshot.GetLineFromLineNumber(lineNum).GetText()
+
+            Select Case LineScanner.GetFirstToken(lineText, lineNum).Type
+                Case TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
+                    lineNum = -1 ' format the document
+            End Select
+
+            CompilerService.FormatDocument(textView.TextBuffer, lineNum, stopFormatingLine = -1)
+            _formatting = False
+            stopFormatingLine = -1
+        End Sub
+
         Public Function GetEndSubPos(pos As Integer) As Integer
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
@@ -1121,12 +1190,12 @@ EndFunction
             Dim line As ITextSnapshotLine
             For i = lineNumber To textView.TextSnapshot.LineCount - 1
                 line = text.GetLineFromLineNumber(i)
-                Dim tokenInfo = LineScanner.GetFirstToken(line.GetText(), i)
-                Select Case tokenInfo.Token
-                    Case Token.Sub, Token.Function
+                Dim token = LineScanner.GetFirstToken(line.GetText(), i)
+                Select Case token.Type
+                    Case TokenType.Sub, TokenType.Function
                         Return -1
-                    Case Token.EndSub, Token.EndFunction
-                        Return line.Start + tokenInfo.Column
+                    Case TokenType.EndSub, TokenType.EndFunction
+                        Return line.Start + token.Column
                 End Select
             Next
 
@@ -1141,8 +1210,8 @@ EndFunction
                 If code = "" Then Continue For
 
                 Dim Tokens = LineScanner.GetTokenEnumerator(line.GetText(), line.LineNumber)
-                If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
-                    If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
+                If Tokens.Current.Type = TokenType.Sub OrElse Tokens.Current.Type = TokenType.Function Then
+                    If Tokens.MoveNext() AndAlso Tokens.Current.Type = TokenType.Identifier Then
                         If Tokens.Current.NormalizedText = name Then Return line.Start + Tokens.Current.Column
                     End If
                 End If
@@ -1163,12 +1232,12 @@ EndFunction
             For i = 0 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
                 Dim lineText = line.GetText()
-                Dim tokenInfo = LineScanner.GetFirstToken(lineText, i)
-                Dim token = tokenInfo.Token
-                If token = token.Sub OrElse token = token.Function Then
-                    tokenInfo = LineScanner.GetFirstToken(lineText.Substring(tokenInfo.EndColumn), i)
-                    If tokenInfo.Token = token.Identifier Then
-                        Dim subName = tokenInfo.Text
+                Dim token = LineScanner.GetFirstToken(lineText, i)
+                Dim type = token.Type
+                If type = TokenType.Sub OrElse type = TokenType.Function Then
+                    token = LineScanner.GetFirstToken(lineText.Substring(token.EndColumn), i)
+                    If token.Type = TokenType.Identifier Then
+                        Dim subName = token.Text
                         If Not _EventHandlers.ContainsKey(subName) Then
                             ' If name has the form Control_Event, add ot to EventHandlers.
                             Dim info = GetHandlerInfo(subName.ToLower())
@@ -1230,8 +1299,8 @@ EndFunction
             For i = 0 To text.LineCount - 1
                 Dim line = text.GetLineFromLineNumber(i)
                 Dim Tokens = LineScanner.GetTokenEnumerator(line.GetText(), i)
-                If Tokens.Current.Token = Token.Sub OrElse Tokens.Current.Token = Token.Function Then
-                    If Tokens.MoveNext() AndAlso Tokens.Current.Token = Token.Identifier Then
+                If Tokens.Current.Type = TokenType.Sub OrElse Tokens.Current.Type = TokenType.Function Then
+                    If Tokens.MoveNext() AndAlso Tokens.Current.Type = TokenType.Identifier Then
                         Dim subName = Tokens.Current.Text
                         If _EventHandlers.ContainsKey(subName) Then
                             found.Add(subName)

@@ -46,7 +46,7 @@ Namespace Microsoft.SmallBasic.Shell
         Private document As TextDocument
         Private Shared previousLocation As String
 
-        Public Sub New(ByVal document As TextDocument)
+        Public Sub New(document As TextDocument)
             If document Is Nothing Then
                 Throw New ArgumentNullException("document")
             End If
@@ -55,7 +55,7 @@ Namespace Microsoft.SmallBasic.Shell
             Me.InitializeComponent()
         End Sub
 
-        Private Sub LaunchProject(ByVal projectPath As String)
+        Private Sub LaunchProject(projectPath As String)
             Dim pszOut As StringBuilder = New StringBuilder(1024)
             Dim pcchOut = 1024UI
 
@@ -86,7 +86,7 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub OnClickContinue(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnClickContinue(sender As Object, e As RoutedEventArgs)
             Me.statusPanel.Visibility = Visibility.Visible
             Me.statusText.Text = ResourceHelper.GetString("Converting")
             document.Errors.Clear()
@@ -111,7 +111,7 @@ Namespace Microsoft.SmallBasic.Shell
             Me.continueButton.IsEnabled = False
         End Sub
 
-        Private Sub OnClickBrowse(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnClickBrowse(sender As Object, e As RoutedEventArgs)
             Dim folderBrowserDialog As FolderBrowserDialog = New FolderBrowserDialog()
 
             If Equals(previousLocation, Nothing) Then
@@ -127,13 +127,13 @@ Namespace Microsoft.SmallBasic.Shell
             End If
         End Sub
 
-        Private Sub OnClickInstall(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Private Sub OnClickInstall(sender As Object, e As RoutedEventArgs)
             Process.Start("http://www.microsoft.com/express/vb/")
         End Sub
 
         <DllImport("Shlwapi.dll", CharSet:=CharSet.Auto, SetLastError:=True)>
-        Private Shared Function AssocQueryString(ByVal flags As AssocF, ByVal str As AssocStr, ByVal pszAssoc As String, ByVal pszExtra As String,
-        <Out> ByVal pszOut As StringBuilder,
+        Private Shared Function AssocQueryString(flags As AssocF, str As AssocStr, pszAssoc As String, pszExtra As String,
+        <Out> pszOut As StringBuilder,
         <[In]>
         <Out> ByRef pcchOut As UInteger) As UInteger
         End Function

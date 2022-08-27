@@ -60,7 +60,13 @@
     </ResourceDictionary>
   </FrameworkElement.Resources>
 
-    <Popup Name="CompletionPopup" StaysOpen="False" Width="360" Height="140" Placement="Relative" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" Closed="OnCompletionClosed" MouseWheel="CompletionPopup_MouseWheel">
+    <Popup Name="CompletionPopup" 
+           StaysOpen="False" Width="360" Height="140" 
+           Placement="Relative" AllowsTransparency="True" 
+           Focusable="False" PopupAnimation="Fade" 
+           Closed="OnCompletionClosed" 
+           MouseWheel="CompletionPopup_MouseWheel">
+        
     <Border Name="popupContent" BorderThickness="1" BorderBrush="#999999" CornerRadius="5">
       <Border.Background>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">

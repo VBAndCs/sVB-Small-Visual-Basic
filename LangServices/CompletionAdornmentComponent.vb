@@ -14,15 +14,15 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         <Export(GetType(AdornmentProviderFactory))>
         <ContentType("text.smallbasic")>
-        Public Function CreateAdornmentProvider(ByVal textView As ITextView) As IAdornmentProvider
-            Dim completionAdornmentProvider As CompletionAdornmentProvider = New CompletionAdornmentProvider(textView, EditorOperationsProvider, UndoHistoryRegistry)
-            textView.Properties.AddProperty(GetType(CompletionAdornmentProvider), completionAdornmentProvider)
-            Return completionAdornmentProvider
+        Public Function CreateAdornmentProvider(textView As ITextView) As IAdornmentProvider
+            Dim provider As New CompletionProvider(textView, EditorOperationsProvider, UndoHistoryRegistry)
+            textView.Properties.AddProperty(GetType(CompletionProvider), provider)
+            Return provider
         End Function
 
         <AdornmentDiscriminator(GetType(CompletionAdornment))>
         <Export(GetType(AdornmentSurfaceFactory))>
-        Public Function CreateCompletionItemsSurface(ByVal textView As IAvalonTextView) As IAdornmentSurface
+        Public Function CreateCompletionItemsSurface(textView As IAvalonTextView) As IAdornmentSurface
             Dim completionAdornmentSurface As CompletionAdornmentSurface = New CompletionAdornmentSurface(textView)
             textView.Properties.AddProperty(GetType(CompletionAdornmentSurface), completionAdornmentSurface)
             Return completionAdornmentSurface

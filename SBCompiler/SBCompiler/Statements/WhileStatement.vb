@@ -9,17 +9,17 @@ Namespace Microsoft.SmallBasic.Statements
     Public Class WhileStatement
         Inherits LoopStatement
 
-        Public WhileToken As TokenInfo
+        Public WhileToken As Token
         Public Condition As Expression
 
-        Public Overrides Function GetStatement(lineNumber) As Statement
+        Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
             If lineNumber > EndLoopToken.Line Then Return Nothing
 
             If lineNumber <= Condition?.EndToken.Line Then Return Me
 
             For Each statment In Body
-                Dim st = statment.GetStatement(lineNumber)
+                Dim st = statment.GetStatementAt(lineNumber)
                 If st IsNot Nothing Then Return st
             Next
 
@@ -38,7 +38,7 @@ Namespace Microsoft.SmallBasic.Statements
             Return spans
         End Function
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             WhileToken.Parent = Me
             EndLoopToken.Parent = Me
@@ -54,13 +54,13 @@ Namespace Microsoft.SmallBasic.Statements
             Next
         End Sub
 
-        Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
+        Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
             For Each item In Body
                 item.PrepareForEmit(scope)
             Next
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
             ExitLabel = scope.ILGenerator.DefineLabel()
             ContinueLabel = scope.ILGenerator.DefineLabel()
 
@@ -77,22 +77,32 @@ Namespace Microsoft.SmallBasic.Statements
             scope.ILGenerator.MarkLabel(ExitLabel)
         End Sub
 
-        Public Overrides Sub PopulateCompletionItems(ByVal completionBag As CompletionBag, ByVal line As Integer, ByVal column As Integer, ByVal globalScope As Boolean)
+        Public Overrides Sub PopulateCompletionItems(
+                            completionBag As CompletionBag,
+                            line As Integer,
+                            column As Integer,
+                            globalScope As Boolean
+                   )
+
             If StartToken.Line = line Then
                 If column <= WhileToken.EndColumn Then
                     CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
                 Else
+                    CompletionHelper.FillSubroutines(completionBag, functionsOnly:=True)
                     CompletionHelper.FillLogicalExpressionItems(completionBag)
                 End If
 
-                Return
-            End If
+            ElseIf Not EndLoopToken.IsIllegal AndAlso line = EndLoopToken.Line Then
+                completionBag.CompletionItems.Clear()
+                CompletionHelper.FillKeywords(completionBag, EndLoopToken.Type)
 
-            Dim statementContaining = GetStatementContaining(Body, line)
+            Else
+                Dim statementContaining = GetStatementContaining(Body, line)
 
-            If statementContaining IsNot Nothing Then
-                CompletionHelper.FillKeywords(completionBag, Token.EndWhile, Token.Wend)
-                statementContaining.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
+                If statementContaining IsNot Nothing Then
+                    CompletionHelper.FillKeywords(completionBag, TokenType.EndWhile, TokenType.Wend)
+                    statementContaining.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
+                End If
             End If
         End Sub
 

@@ -5,7 +5,7 @@ Namespace Microsoft.SmallBasic
     Friend NotInheritable Class Program
         Private _text3 As String = VisualBasic.Constants.vbCrLf & "i = 15" & VisualBasic.Constants.vbCrLf & "j = 23" & VisualBasic.Constants.vbCrLf & "if (j >= i AND j <= i * 20) then" & VisualBasic.Constants.vbCrLf & "TextWindow.WriteLine(""Foo"")" & VisualBasic.Constants.vbCrLf & "endif" & VisualBasic.Constants.vbCrLf & "TextWindow.Pause()" & VisualBasic.Constants.vbCrLf & VisualBasic.Constants.vbCrLf & "Sub MySub" & VisualBasic.Constants.vbCrLf & "  TextWindow.WriteLine(i)" & VisualBasic.Constants.vbCrLf & "EndSub" & VisualBasic.Constants.vbCrLf
 
-        Public Shared Sub Main(ByVal args As String())
+        Public Shared Sub Main(args As String())
             Dim program As Program = New Program()
 
             If args.Length <> 1 Then
@@ -15,7 +15,7 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub Run(ByVal file As String)
+        Private Sub Run(file As String)
             If Not IO.File.Exists(file) Then
                 Console.WriteLine("{0} doesn't exist.", file)
                 Return
@@ -74,10 +74,10 @@ Namespace Microsoft.SmallBasic
                     Console.Write(_text)
                     Console.WriteLine(": {0} errors.", parser.Errors.Count)
 
-                    If parser.SymbolTable.Variables.Count > 0 Then
+                    If parser.SymbolTable.GlobalVariables.Count > 0 Then
                         Console.WriteLine("** Variables **")
 
-                        For Each value In parser.SymbolTable.Variables.Values
+                        For Each value In parser.SymbolTable.GlobalVariables.Values
                             Console.Write(value.Text & "; ")
                         Next
 

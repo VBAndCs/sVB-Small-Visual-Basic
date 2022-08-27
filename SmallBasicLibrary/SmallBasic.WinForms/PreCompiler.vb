@@ -5,29 +5,30 @@ Imports Microsoft.SmallBasic.Library
 Namespace WinForms
     Public NotInheritable Class PreCompiler
 
-        Private Shared ModuleInfo As New Dictionary(Of String, List(Of String))
-        Private Shared EventsInfo As New Dictionary(Of String, List(Of String))
-        Private Shared DeafaultControlEvents As New Dictionary(Of String, String)
-        Private Shared Types As New List(Of Type)
+        Private Shared moduleInfo As New Dictionary(Of String, List(Of String))
+        Private Shared eventsInfo As New Dictionary(Of String, List(Of String))
+        Private Shared deafaultControlEvents As New Dictionary(Of String, String)
+        Private Shared types As New List(Of Type)
 
         Shared Sub New()
-            ListModuleMembers(GetType(Forms))
-            ListModuleMembers(GetType(Form))
-            ListModuleMembers(GetType(Control))
-            ListModuleMembers(GetType(TextBox))
-            ListModuleMembers(GetType(Label))
-            ListModuleMembers(GetType(Button))
-            ListModuleMembers(GetType(ListBox))
-            ListModuleMembers(GetType(ImageBox))
+            FillModuleMembers(GetType(Forms))
+            FillModuleMembers(GetType(Form))
+            FillModuleMembers(GetType(Control))
+            FillModuleMembers(GetType(TextBox))
+            FillModuleMembers(GetType(Label))
+            FillModuleMembers(GetType(Button))
+            FillModuleMembers(GetType(ListBox))
+            FillModuleMembers(GetType(ImageBox))
 
-            DeafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
-            DeafaultControlEvents(NameOf(ListBox).ToLower()) = "OnSelection"
+            deafaultControlEvents(NameOf(Form).ToLower()) = "OnShown"
+            deafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
+            deafaultControlEvents(NameOf(ListBox).ToLower()) = "OnSelection"
         End Sub
 
         Public Shared Function GetDefaultEvent(controlName As String) As String
             controlName = controlName?.ToLower()
-            If controlName <> "" AndAlso DeafaultControlEvents.ContainsKey(controlName) Then
-                Return DeafaultControlEvents(controlName)
+            If controlName <> "" AndAlso deafaultControlEvents.ContainsKey(controlName) Then
+                Return deafaultControlEvents(controlName)
             Else
                 Return "OnClick"
             End If
@@ -52,19 +53,25 @@ Namespace WinForms
         Dim PrimativeType As Type = GetType(Primitive)
         Private Const WinFormsNS As String = "Microsoft.SmallBasic.WinForms."
 
-        Private Shared Sub ListModuleMembers(t As Type)
-            Types.Add(t)
+        Private Shared Sub FillModuleMembers(t As Type)
+            types.Add(t)
 
-            Dim members = (From m In t.GetMembers()
-                           Select m.Name.ToLower()).ToList
+            Dim lcMembers As New List(Of String)
 
-            ModuleInfo(t.Name) = members
+            For Each m In t.GetMembers()
+                lcMembers.Add(m.Name.ToLower)
+            Next
 
-            Dim events = (From e In t.GetEvents()
-                          Where e.EventHandlerType Is GetType(SmallBasicCallback)
-                          Select e.Name).ToList()
+            moduleInfo(t.Name) = lcMembers
 
-            EventsInfo(t.Name) = events
+            Dim events As New List(Of String)
+            For Each e In t.GetEvents()
+                If e.EventHandlerType Is GetType(SmallBasicCallback) Then
+                    events.Add(e.Name)
+                End If
+            Next
+
+            eventsInfo(t.Name) = events
         End Sub
 
         Public Shared Function GetEvents(controlName As String) As List(Of String)
@@ -72,13 +79,13 @@ Namespace WinForms
             If controlName = NameOf(Forms) Then Return events
 
             If controlName <> NameOf(ImageBox) Then
-                For Each e In EventsInfo(NameOf(Control))
+                For Each e In eventsInfo(NameOf(Control))
                     events.Add(e)
                 Next
             End If
 
             If controlName <> NameOf(Control) Then
-                For Each e In EventsInfo(controlName)
+                For Each e In eventsInfo(controlName)
                     If Not events.Contains(e) Then events.Add(e)
                 Next
             End If
@@ -90,16 +97,17 @@ Namespace WinForms
         Public Shared Function GetMethodInfo(controlName As String, methodName As String) As ([Module] As String, ParamsCount As Integer, secondIsControl As Boolean)
             Dim method = methodName.ToLower()
             Dim moduleName = ""
-            If ModuleInfo(controlName).Contains(method) Then
+
+            If moduleInfo(controlName).Contains(method) Then
                 moduleName = controlName
 
             ElseIf controlName = NameOf(ImageBox) Then
                 Return ("", 0, False)
 
-            ElseIf ModuleInfo(NameOf(Control)).Contains(method) Then
+            ElseIf moduleInfo(NameOf(Control)).Contains(method) Then
                 moduleName = NameOf(Control)
 
-            ElseIf ModuleInfo(NameOf(Forms)).Contains(method) Then
+            ElseIf moduleInfo(NameOf(Forms)).Contains(method) Then
                 moduleName = NameOf(Forms)
 
             Else
@@ -188,7 +196,7 @@ Namespace WinForms
         End Function
 
         Public Shared Function GetEventModule(controlName As String, eventName As String) As String
-            If EventsInfo(controlName).Contains(eventName) Then
+            If eventsInfo(controlName).Contains(eventName) Then
                 Return controlName
             Else
                 Return NameOf(Control)
@@ -196,13 +204,14 @@ Namespace WinForms
         End Function
 
         Public Shared Function GetModuleName(name As String) As String
-            If ModuleInfo.ContainsKey(name) Then Return name
+            If moduleInfo.ContainsKey(name) Then Return name
             Return NameOf(Control)
         End Function
 
         Public Shared Function GetModuleFromVarName(varName As String) As String
             varName = varName.ToLower
-            For Each key In ModuleInfo.Keys
+
+            For Each key In moduleInfo.Keys
                 Dim controlName = key.ToLower
                 If varName.StartsWith(controlName) OrElse varName.EndsWith(controlName) Then
                     Return key
@@ -212,7 +221,7 @@ Namespace WinForms
         End Function
 
         Public Shared Function GetTypes() As List(Of Type)
-            Return Types
+            Return types
         End Function
 
 

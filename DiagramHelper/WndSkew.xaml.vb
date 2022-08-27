@@ -5,7 +5,7 @@
             Return GetValue(SkewTransformProperty)
         End Get
 
-        Set(ByVal value As SkewTransform)
+        Set(value As SkewTransform)
             SetValue(SkewTransformProperty, value)
         End Set
     End Property

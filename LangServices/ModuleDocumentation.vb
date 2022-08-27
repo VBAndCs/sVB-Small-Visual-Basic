@@ -67,31 +67,30 @@ Namespace Microsoft.SmallBasic.LanguageService
                 For Each item As XmlNode In xmlNodeList
                     Dim xmlAttribute = item.Attributes("name")
 
-                    If xmlAttribute Is Nothing Then
-                        Continue For
-                    End If
+                    If xmlAttribute Is Nothing Then Continue For
 
                     Dim value = xmlAttribute.Value
-                    Dim completionItemDocumentation As CompletionItemDocumentation = New CompletionItemDocumentation()
-                    _itemDocMap(value) = completionItemDocumentation
-                    Dim xmlNode2 = item.SelectSingleNode("summary")
-                    completionItemDocumentation.Summary = GetTextFromXmlNode(xmlNode2)
-                    Dim xmlNode3 = item.SelectSingleNode("returns")
-                    completionItemDocumentation.Returns = GetTextFromXmlNode(xmlNode3)
-                    Dim xmlNode4 = item.SelectSingleNode("example")
-                    completionItemDocumentation.Example = GetTextFromXmlNode(xmlNode4)
-                    Dim xmlNodeList2 = item.SelectNodes("param")
+                    Dim documentation As New CompletionItemDocumentation()
+                    _itemDocMap(value) = documentation
 
-                    If xmlNodeList2 Is Nothing Then
-                        Continue For
-                    End If
+                    Dim xmlNode2 = item.SelectSingleNode("summary")
+                    documentation.Summary = GetTextFromXmlNode(xmlNode2)
+
+                    Dim xmlNode3 = item.SelectSingleNode("returns")
+                    documentation.Returns = GetTextFromXmlNode(xmlNode3)
+
+                    Dim xmlNode4 = item.SelectSingleNode("example")
+                    documentation.Example = GetTextFromXmlNode(xmlNode4)
+
+                    Dim xmlNodeList2 = item.SelectNodes("param")
+                    If xmlNodeList2 Is Nothing Then Continue For
 
                     For Each item2 As XmlNode In xmlNodeList2
                         Dim xmlAttribute2 = item2.Attributes("name")
 
                         If xmlAttribute2 IsNot Nothing Then
                             Dim value2 = xmlAttribute2.Value
-                            completionItemDocumentation.ParamsDoc(value2) = GetTextFromXmlNode(item2)
+                            documentation.ParamsDoc(value2) = GetTextFromXmlNode(item2)
                         End If
                     Next
                 Next
@@ -100,29 +99,21 @@ Namespace Microsoft.SmallBasic.LanguageService
             End Try
         End Sub
 
-        Private Function GetTextFromXmlNode(ByVal xmlNode As XmlNode) As String
-            If xmlNode Is Nothing Then
-                Return Nothing
-            End If
+        Private Function GetTextFromXmlNode(xmlNode As XmlNode) As String
+            If xmlNode Is Nothing Then Return Nothing
 
-            Dim stringBuilder As StringBuilder = New StringBuilder()
-            Dim stringReader As StringReader = New StringReader(xmlNode.InnerText.Trim())
+            Dim stringBuilder As New StringBuilder()
+            Dim stringReader As New StringReader(xmlNode.InnerText.Trim())
 
-            While True
+            Do
                 Dim text As String = stringReader.ReadLine()
+                If text Is Nothing Then Exit Do
 
-                If Equals(text, Nothing) Then
-                    Exit While
-                End If
-
-                If text.StartsWith("            ") Then
-                    text = text.Substring(12)
-                End If
-
+                If text.StartsWith("            ") Then text = text.Substring(12)
                 stringBuilder.AppendLine(text)
-            End While
+            Loop
 
-            Return stringBuilder.ToString()
+            Return stringBuilder.ToString().TrimEnd
         End Function
     End Class
 End Namespace

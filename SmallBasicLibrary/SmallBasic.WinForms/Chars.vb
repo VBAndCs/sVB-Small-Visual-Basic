@@ -1,5 +1,8 @@
 ﻿Imports Microsoft.SmallBasic.Library
 
+''' <summary>
+''' Contains spme useful non-printed characters, such as the Escap and new line characters. 
+''' </summary>
 <SmallBasicType>
 Public NotInheritable Class Chars
 

@@ -73,7 +73,10 @@
             _selectedItem = value
             Designer.SelectedToolBoxItem = value
             If value Is Nothing Then
-                Designer.Cursor = Nothing
+                If Designer.Cursor IsNot Nothing Then
+                    Designer.Cursor.Dispose()
+                    Designer.Cursor = Nothing
+                End If
             Else
                 Designer.Cursor = Cursors.Pen
             End If
@@ -92,7 +95,7 @@
             Return GetValue(DesignerProperty)
         End Get
 
-        Set(ByVal value As Designer)
+        Set(value As Designer)
             SetValue(DesignerProperty, value)
         End Set
     End Property

@@ -11,32 +11,32 @@ Namespace Microsoft.SmallBasic.Expressions
             MyBase.New()
         End Sub
 
-        Public Sub New(literal As TokenInfo)
+        Public Sub New(literal As Token)
             _Literal = literal
         End Sub
 
-        Public Property Literal As TokenInfo
+        Public Property Literal As Token
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             _Literal.Parent = Me.Parent
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
-            Select Case Literal.Token
-                Case Token.StringLiteral
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
+            Select Case Literal.Type
+                Case TokenType.StringLiteral
                     scope.ILGenerator.Emit(OpCodes.Ldstr, Literal.Text.Trim(""""c))
                     scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.StringToPrimitive, Nothing)
 
-                Case Token.True
+                Case TokenType.True
                     scope.ILGenerator.Emit(OpCodes.Ldstr, "True")
                     scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.StringToPrimitive, Nothing)
 
-                Case Token.False
+                Case TokenType.False
                     scope.ILGenerator.Emit(OpCodes.Ldstr, "False")
                     scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.StringToPrimitive, Nothing)
 
-                Case Token.NumericLiteral
+                Case TokenType.NumericLiteral
                     scope.ILGenerator.Emit(OpCodes.Ldc_R8, Double.Parse(Literal.Text, CultureInfo.InvariantCulture))
                     scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
             End Select

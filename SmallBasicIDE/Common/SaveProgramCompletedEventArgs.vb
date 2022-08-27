@@ -19,7 +19,7 @@ Namespace Microsoft.SmallBasic.com.smallbasic
             End Get
         End Property
 
-        Friend Sub New(ByVal results As Object(), ByVal exception As Exception, ByVal cancelled As Boolean, ByVal userState As Object)
+        Friend Sub New(results As Object(), exception As Exception, cancelled As Boolean, userState As Object)
             MyBase.New(exception, cancelled, userState)
             Me.results = results
         End Sub

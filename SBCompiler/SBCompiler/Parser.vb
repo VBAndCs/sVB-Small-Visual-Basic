@@ -23,40 +23,40 @@ Namespace Microsoft.SmallBasic
 
         Public ReadOnly Property SymbolTable As SymbolTable
 
-        Private Function ConstructWhileStatement(ByVal tokenEnumerator As TokenEnumerator) As WhileStatement
+        Private Function ConstructWhileStatement(tokenEnum As TokenEnumerator) As WhileStatement
             Dim whileStatement As New WhileStatement()
-            whileStatement.StartToken = tokenEnumerator.Current
-            whileStatement.WhileToken = tokenEnumerator.Current
+            whileStatement.StartToken = tokenEnum.Current
+            whileStatement.WhileToken = tokenEnum.Current
             Dim whileStatement2 = whileStatement
-            tokenEnumerator.MoveNext()
+            tokenEnum.MoveNext()
 
-            If EatLogicalExpression(tokenEnumerator, whileStatement2.Condition) Then
-                ExpectEndOfLine(tokenEnumerator)
+            If EatLogicalExpression(tokenEnum, whileStatement2.Condition) Then
+                ExpectEndOfLine(tokenEnum)
             End If
 
-            tokenEnumerator = ReadNextLine()
+            tokenEnum = ReadNextLine()
             Dim flag = False
 
-            While tokenEnumerator IsNot Nothing
+            While tokenEnum IsNot Nothing
 
-                If tokenEnumerator.Current.Token = Token.EndWhile OrElse tokenEnumerator.Current.Token = Token.Wend Then
-                    whileStatement2.EndLoopToken = tokenEnumerator.Current
+                If tokenEnum.Current.Type = TokenType.EndWhile OrElse tokenEnum.Current.Type = TokenType.Wend Then
+                    whileStatement2.EndLoopToken = tokenEnum.Current
                     flag = True
                     Exit While
                 End If
 
-                If tokenEnumerator.Current.Token = Token.Sub OrElse tokenEnumerator.Current.Token = Token.EndSub OrElse
-                            tokenEnumerator.Current.Token = Token.Function OrElse tokenEnumerator.Current.Token = Token.EndFunction Then
+                If tokenEnum.Current.Type = TokenType.Sub OrElse tokenEnum.Current.Type = TokenType.EndSub OrElse
+                            tokenEnum.Current.Type = TokenType.Function OrElse tokenEnum.Current.Type = TokenType.EndFunction Then
                     Exit While
                 End If
 
-                whileStatement2.Body.Add(GetStatementFromTokens(tokenEnumerator))
-                tokenEnumerator = ReadNextLine()
+                whileStatement2.Body.Add(GetStatementFromTokens(tokenEnum))
+                tokenEnum = ReadNextLine()
             End While
 
             If flag Then
-                tokenEnumerator.MoveNext()
-                ExpectEndOfLine(tokenEnumerator)
+                tokenEnum.MoveNext()
+                ExpectEndOfLine(tokenEnum)
             Else
                 AddError(ResourceHelper.GetString("EndWhileExpected"))
             End If
@@ -64,47 +64,68 @@ Namespace Microsoft.SmallBasic
             Return whileStatement2
         End Function
 
-        Private Function ConstructForStatement(ByVal tokenEnumerator As TokenEnumerator) As ForStatement
+        Dim commaLine As Integer = -1
+        Dim commaColumn As Integer = -1
+        Dim callerInfo As CallerInfo
+
+        Public Shared Function GetCommaCallerInfo(
+                        source As String,
+                        line As Integer,
+                        column As Integer
+                  ) As CallerInfo
+
+            Dim parser As New Parser()
+            parser.commaLine = line
+            parser.commaColumn = column
+            parser.Parse(New StringReader(source), True)
+            Return parser.callerInfo
+        End Function
+
+        Private Function ConstructForStatement(tokenEnum As TokenEnumerator) As ForStatement
             Dim forStatement As New ForStatement() With {
-                .StartToken = tokenEnumerator.Current,
-                .ForToken = tokenEnumerator.Current,
+                .StartToken = tokenEnum.Current,
+                .ForToken = tokenEnum.Current,
                 .Subroutine = SubroutineStatement.Current
             }
 
-            tokenEnumerator.MoveNext()
-            If EatSimpleIdentifier(tokenEnumerator, forStatement.Iterator) AndAlso
-                    EatToken(tokenEnumerator, Token.Equals, forStatement.EqualsToken) AndAlso
-                    EatExpression(tokenEnumerator, forStatement.InitialValue) AndAlso
-                    EatToken(tokenEnumerator, Token.To, forStatement.ToToken) AndAlso
-                    EatExpression(tokenEnumerator, forStatement.FinalValue) AndAlso
-                    (Not EatOptionalToken(tokenEnumerator, Token.Step, forStatement.StepToken) OrElse
-                        EatExpression(tokenEnumerator, forStatement.StepValue)) Then
-                ExpectEndOfLine(tokenEnumerator)
+            tokenEnum.MoveNext()
+            If EatSimpleIdentifier(tokenEnum, forStatement.Iterator) AndAlso
+                    EatToken(tokenEnum, TokenType.Equals, forStatement.EqualsToken) AndAlso
+                    EatExpression(tokenEnum, forStatement.InitialValue) AndAlso
+                    EatToken(tokenEnum, TokenType.To, forStatement.ToToken) AndAlso
+                    EatExpression(tokenEnum, forStatement.FinalValue) AndAlso
+                    (Not EatOptionalToken(tokenEnum, TokenType.Step, forStatement.StepToken) OrElse
+                        EatExpression(tokenEnum, forStatement.StepValue)) Then
+
+                If commaLine = -2 Then Return Nothing
+                ExpectEndOfLine(tokenEnum)
             End If
 
-            tokenEnumerator = ReadNextLine()
+            If commaLine = -2 Then Return Nothing
+
+            tokenEnum = ReadNextLine()
             Dim flag = False
 
-            While tokenEnumerator IsNot Nothing
+            While tokenEnum IsNot Nothing
 
-                If tokenEnumerator.Current.Token = Token.EndFor OrElse tokenEnumerator.Current.Token = Token.Next Then
-                    forStatement.EndLoopToken = tokenEnumerator.Current
+                If tokenEnum.Current.Type = TokenType.EndFor OrElse tokenEnum.Current.Type = TokenType.Next Then
+                    forStatement.EndLoopToken = tokenEnum.Current
                     flag = True
                     Exit While
                 End If
 
-                If tokenEnumerator.Current.Token = Token.Sub OrElse tokenEnumerator.Current.Token = Token.EndSub OrElse
-                        tokenEnumerator.Current.Token = Token.Function OrElse tokenEnumerator.Current.Token = Token.EndFunction Then
+                If tokenEnum.Current.Type = TokenType.Sub OrElse tokenEnum.Current.Type = TokenType.EndSub OrElse
+                        tokenEnum.Current.Type = TokenType.Function OrElse tokenEnum.Current.Type = TokenType.EndFunction Then
                     Exit While
                 End If
 
-                forStatement.Body.Add(GetStatementFromTokens(tokenEnumerator))
-                tokenEnumerator = ReadNextLine()
+                forStatement.Body.Add(GetStatementFromTokens(tokenEnum))
+                tokenEnum = ReadNextLine()
             End While
 
             If flag Then
-                tokenEnumerator.MoveNext()
-                ExpectEndOfLine(tokenEnumerator)
+                tokenEnum.MoveNext()
+                ExpectEndOfLine(tokenEnum)
             Else
                 AddError(ResourceHelper.GetString("EndForExpected"))
             End If
@@ -121,7 +142,7 @@ Namespace Microsoft.SmallBasic
             tokenEnum.MoveNext()
 
             If EatLogicalExpression(tokenEnum, ifStatement.Condition) AndAlso
-                        EatToken(tokenEnum, Token.Then, ifStatement.ThenToken) Then
+                        EatToken(tokenEnum, TokenType.Then, ifStatement.ThenToken) Then
                 ExpectEndOfLine(tokenEnum)
             End If
 
@@ -132,27 +153,27 @@ Namespace Microsoft.SmallBasic
 
             While tokenEnum IsNot Nothing
 
-                If tokenEnum.Current.Token = Token.EndIf Then
+                If tokenEnum.Current.Type = TokenType.EndIf Then
                     ifStatement.EndIfToken = tokenEnum.Current
                     foundEndIf = True
                     Exit While
                 End If
 
-                If tokenEnum.Current.Token = Token.Else Then
+                If tokenEnum.Current.Type = TokenType.Else Then
                     ifStatement.ElseToken = tokenEnum.Current
                     foundElse = True
                     Exit While
                 End If
 
-                If tokenEnum.Current.Token = Token.ElseIf Then
+                If tokenEnum.Current.Type = TokenType.ElseIf Then
                     foundElseIf = True
                     Exit While
                 End If
 
-                If tokenEnum.Current.Token = Token.Sub OrElse
-                            tokenEnum.Current.Token = Token.EndSub OrElse
-                            tokenEnum.Current.Token = Token.Function OrElse
-                            tokenEnum.Current.Token = Token.EndFunction Then
+                If tokenEnum.Current.Type = TokenType.Sub OrElse
+                            tokenEnum.Current.Type = TokenType.EndSub OrElse
+                            tokenEnum.Current.Type = TokenType.Function OrElse
+                            tokenEnum.Current.Type = TokenType.EndFunction Then
                     Exit While
                 End If
 
@@ -162,21 +183,21 @@ Namespace Microsoft.SmallBasic
 
             If foundElseIf Then
                 While tokenEnum IsNot Nothing
-                    If tokenEnum.Current.Token = Token.EndIf Then
+                    If tokenEnum.Current.Type = TokenType.EndIf Then
                         ifStatement.EndIfToken = tokenEnum.Current
                         foundEndIf = True
                         Exit While
                     End If
 
-                    If tokenEnum.Current.Token = Token.Else Then
+                    If tokenEnum.Current.Type = TokenType.Else Then
                         ifStatement.ElseToken = tokenEnum.Current
                         foundElse = True
                         Exit While
                     End If
 
-                    If tokenEnum.Current.Token = Token.Sub OrElse tokenEnum.Current.Token = Token.EndSub OrElse
-                              tokenEnum.Current.Token = Token.Function OrElse tokenEnum.Current.Token = Token.EndFunction OrElse
-                              tokenEnum.Current.Token <> Token.ElseIf Then
+                    If tokenEnum.Current.Type = TokenType.Sub OrElse tokenEnum.Current.Type = TokenType.EndSub OrElse
+                              tokenEnum.Current.Type = TokenType.Function OrElse tokenEnum.Current.Type = TokenType.EndFunction OrElse
+                              tokenEnum.Current.Type <> TokenType.ElseIf Then
                         Exit While
                     End If
 
@@ -191,17 +212,17 @@ Namespace Microsoft.SmallBasic
 
                 While tokenEnum IsNot Nothing
 
-                    If tokenEnum.Current.Token = Token.EndIf Then
+                    If tokenEnum.Current.Type = TokenType.EndIf Then
                         ifStatement.EndIfToken = tokenEnum.Current
                         foundEndIf = True
                         Exit While
                     End If
 
-                    If tokenEnum.Current.Token = Token.Sub OrElse
-                                tokenEnum.Current.Token = Token.EndSub OrElse
-                                tokenEnum.Current.Token = Token.Function OrElse
-                                tokenEnum.Current.Token = Token.EndFunction OrElse
-                                tokenEnum.Current.Token = Token.Else Then
+                    If tokenEnum.Current.Type = TokenType.Sub OrElse
+                                tokenEnum.Current.Type = TokenType.EndSub OrElse
+                                tokenEnum.Current.Type = TokenType.Function OrElse
+                                tokenEnum.Current.Type = TokenType.EndFunction OrElse
+                                tokenEnum.Current.Type = TokenType.Else Then
                         Exit While
                     End If
 
@@ -229,20 +250,20 @@ Namespace Microsoft.SmallBasic
             tokenEnum.MoveNext()
 
             If EatLogicalExpression(tokenEnum, elseIfStatement.Condition) AndAlso
-                        EatToken(tokenEnum, Token.Then, elseIfStatement.ThenToken) Then
+                        EatToken(tokenEnum, TokenType.Then, elseIfStatement.ThenToken) Then
                 ExpectEndOfLine(tokenEnum)
             End If
 
             tokenEnum = ReadNextLine()
 
             While tokenEnum IsNot Nothing AndAlso
-                        tokenEnum.Current.Token <> Token.EndIf AndAlso
-                        tokenEnum.Current.Token <> Token.Else AndAlso
-                        tokenEnum.Current.Token <> Token.ElseIf AndAlso
-                        tokenEnum.Current.Token <> Token.Sub AndAlso
-                        tokenEnum.Current.Token <> Token.EndSub AndAlso
-                        tokenEnum.Current.Token <> Token.Function AndAlso
-                        tokenEnum.Current.Token <> Token.EndFunction
+                        tokenEnum.Current.Type <> TokenType.EndIf AndAlso
+                        tokenEnum.Current.Type <> TokenType.Else AndAlso
+                        tokenEnum.Current.Type <> TokenType.ElseIf AndAlso
+                        tokenEnum.Current.Type <> TokenType.Sub AndAlso
+                        tokenEnum.Current.Type <> TokenType.EndSub AndAlso
+                        tokenEnum.Current.Type <> TokenType.Function AndAlso
+                        tokenEnum.Current.Type <> TokenType.EndFunction
 
                 elseIfStatement.ThenStatements.Add(GetStatementFromTokens(tokenEnum))
                 tokenEnum = ReadNextLine()
@@ -251,25 +272,25 @@ Namespace Microsoft.SmallBasic
             Return elseIfStatement
         End Function
 
-        Private Function ConstructSubStatement(tokenEnumerator As TokenEnumerator) As SubroutineStatement
+        Private Function ConstructSubStatement(tokenEnum As TokenEnumerator) As SubroutineStatement
             Dim subroutine As New SubroutineStatement() With {
-                .StartToken = tokenEnumerator.Current,
-                .SubToken = tokenEnumerator.Current
+                .StartToken = tokenEnum.Current,
+                .SubToken = tokenEnum.Current
             }
+
             Dim tempRoutine = SubroutineStatement.Current
             SubroutineStatement.Current = subroutine
 
-            tokenEnumerator.MoveNext()
-            EatSimpleIdentifier(tokenEnumerator, subroutine.Name)
+            tokenEnum.MoveNext()
+            EatSimpleIdentifier(tokenEnum, subroutine.Name)
 
-            Dim params As List(Of String) = Nothing
-            If tokenEnumerator.Current.Token = Token.LeftParens Then
-                tokenEnumerator.MoveNext()
-                subroutine.Params = ParseParamList(tokenEnumerator, Token.RightParens)
-                tokenEnumerator.MoveNext()
+            If tokenEnum.Current.Type = TokenType.LeftParens Then
+                tokenEnum.MoveNext()
+                subroutine.Params = ParseParamList(tokenEnum, TokenType.RightParens)
+                tokenEnum.MoveNext()
 
-                params = (From param In subroutine.Params
-                          Select param.Text).ToList
+                Dim params = (From param In subroutine.Params
+                              Select param.Text).ToList
 
                 If params.Count > 0 Then
                     Dim paramDef As New System.Text.StringBuilder()
@@ -277,59 +298,102 @@ Namespace Microsoft.SmallBasic
                         paramDef.AppendLine($"{param} = Stack.PopValue(""_sVB_Arguments"")")
                     Next
 
-                    Dim _parser = Parser.Parse(paramDef.ToString(), New SymbolTable(New List(Of [Error]), _TypeInfoBag), _TypeInfoBag)
-                    For Each statment As AssignmentStatement In _parser._ParseTree
+                    Dim _parser = Parser.Parse(
+                            paramDef.ToString(),
+                            New SymbolTable(New List(Of [Error]), _TypeInfoBag),
+                            _TypeInfoBag,
+                            tokenEnum.Current.Line
+                   )
+
+                    Dim paramsStatements = _parser._ParseTree
+                    For i = 0 To _parser._ParseTree.Count - 1
+                        Dim statment As AssignmentStatement = paramsStatements(i)
                         statment.IsLocalVariable = True
+                        Dim idExpr = CType(statment.LeftValue, IdentifierExpression)
+                        idExpr.IsParam = True
+                        subroutine.FillParamsComments()
+                        idExpr.Identifier = subroutine.Params(i)
+                        idExpr.Parent = subroutine
+                        statment.LeftValue = idExpr
                         subroutine.Body.Add(statment)
                     Next
                 End If
             End If
 
-            ExpectEndOfLine(tokenEnumerator)
-            tokenEnumerator = ReadNextLine()
+            ExpectEndOfLine(tokenEnum)
+            tokenEnum = ReadNextLine()
             Dim flag = False
 
+            While tokenEnum IsNot Nothing
+                If tokenEnum.Current.Type = TokenType.EndSub OrElse tokenEnum.Current.Type = TokenType.EndFunction Then
+                    subroutine.EndSubToken = tokenEnum.Current
+                    flag = True
+                    Exit While
+                End If
 
-            Dim returnLabelToken As New TokenInfo() With {
+                If tokenEnum.Current.Type = TokenType.Sub OrElse tokenEnum.Current.Type = TokenType.Function Then
+                    RewindLine()
+                    Exit While
+                End If
+
+                Dim statement = GetStatementFromTokens(tokenEnum)
+                subroutine.Body.Add(statement)
+                tokenEnum = ReadNextLine()
+            End While
+
+            If subroutine.StartToken.Type = TokenType.Function Then
+                ' add `Return ""` at the end of body,
+                ' as fall safe if not all pathes of code returns a value
+
+                Dim emptyString As New Token() With {
+                        .Type = TokenType.StringLiteral,
+                        .ParseType = ParseType.StringLiteral,
+                        .Text = ControlChars.Quote & ControlChars.Quote,
+                        .Parent = subroutine
+                    }
+
+                Dim defaultReturnStatement As New ReturnStatement() With {
+                    .ReturnExpression = New LiteralExpression() With {
+                        .StartToken = emptyString,
+                        .EndToken = emptyString,
+                        .Literal = emptyString,
+                        .Parent = subroutine
+                    },
+                    .StartToken = New Token() With {
+                        .Type = TokenType.Return,
+                        .ParseType = ParseType.Keyword,
+                        .Text = "Return",
+                        .Parent = subroutine
+                     },
+                    .Subroutine = subroutine
+                }
+
+                subroutine.Body.Add(defaultReturnStatement)
+            End If
+
+            Dim returnLabelToken As New Token() With {
                     .Text = $"_EXIT_SUB_{subroutine.Name.NormalizedText}",
-                    .Token = Token.Identifier,
-                    .TokenType = TokenType.Identifier
+                    .Type = TokenType.Identifier,
+                    .ParseType = ParseType.Identifier
                 }
 
             Dim returnLabelStatement As New LabelStatement() With {
-                .ColonToken = New TokenInfo With {
+                .ColonToken = New Token With {
                         .Text = ":",
-                        .Token = Token.Colon,
-                        .TokenType = TokenType.Delimiter
+                        .Type = TokenType.Colon,
+                        .ParseType = ParseType.Delimiter
                 },
                 .StartToken = returnLabelToken,
                 .LabelToken = returnLabelToken,
                 .subroutine = subroutine
             }
 
-            While tokenEnumerator IsNot Nothing
-                If tokenEnumerator.Current.Token = Token.EndSub OrElse tokenEnumerator.Current.Token = Token.EndFunction Then
-                    subroutine.EndSubToken = tokenEnumerator.Current
-                    flag = True
-                    Exit While
-                End If
-
-                If tokenEnumerator.Current.Token = Token.Sub OrElse tokenEnumerator.Current.Token = Token.Function Then
-                    RewindLine()
-                    Exit While
-                End If
-
-                Dim statement = GetStatementFromTokens(tokenEnumerator)
-                subroutine.Body.Add(statement)
-                tokenEnumerator = ReadNextLine()
-            End While
-
             subroutine.Body.Add(returnLabelStatement)
             SubroutineStatement.Current = tempRoutine
 
             If flag Then
-                tokenEnumerator.MoveNext()
-                ExpectEndOfLine(tokenEnumerator)
+                tokenEnum.MoveNext()
+                ExpectEndOfLine(tokenEnum)
             Else
                 AddError(ResourceHelper.GetString("EndSubExpected"))
             End If
@@ -337,122 +401,131 @@ Namespace Microsoft.SmallBasic
             Return subroutine
         End Function
 
-        Private Function ConstructGotoStatement(ByVal tokenEnumerator As TokenEnumerator) As GotoStatement
+        Private Function ConstructGotoStatement(tokenEnum As TokenEnumerator) As GotoStatement
             Dim gotoStatement As New GotoStatement() With {
-                .StartToken = tokenEnumerator.Current,
-                .GotoToken = tokenEnumerator.Current,
+                .StartToken = tokenEnum.Current,
+                .GotoToken = tokenEnum.Current,
                 .subroutine = SubroutineStatement.Current
             }
-            tokenEnumerator.MoveNext()
-            EatSimpleIdentifier(tokenEnumerator, gotoStatement.Label)
-            ExpectEndOfLine(tokenEnumerator)
+            tokenEnum.MoveNext()
+            EatSimpleIdentifier(tokenEnum, gotoStatement.Label)
+            ExpectEndOfLine(tokenEnum)
             Return gotoStatement
         End Function
 
-        Private Function ConstructLabelStatement(ByVal tokenEnumerator As TokenEnumerator) As LabelStatement
+        Private Function ConstructLabelStatement(tokenEnum As TokenEnumerator) As LabelStatement
             Dim labelStatement As New LabelStatement() With {
-                .StartToken = tokenEnumerator.Current,
-                .LabelToken = tokenEnumerator.Current,
+                .StartToken = tokenEnum.Current,
+                .LabelToken = tokenEnum.Current,
                 .subroutine = SubroutineStatement.Current
             }
-            tokenEnumerator.MoveNext()
+            tokenEnum.MoveNext()
 
-            If EatToken(tokenEnumerator, Token.Colon, labelStatement.ColonToken) Then
-                ExpectEndOfLine(tokenEnumerator)
+            If EatToken(tokenEnum, TokenType.Colon, labelStatement.ColonToken) Then
+                ExpectEndOfLine(tokenEnum)
             End If
 
             Return labelStatement
         End Function
 
-        Private Function ConstructIdentifierStatement(ByVal tokenEnumerator As TokenEnumerator) As Statement
-            Dim current = tokenEnumerator.Current
-            Dim tokenInfo As TokenInfo = tokenEnumerator.PeekNext()
+        Private Function ConstructIdentifierStatement(tokenEnum As TokenEnumerator) As Statement
+            Dim current = tokenEnum.Current
+            Dim token As Token = tokenEnum.PeekNext()
 
-            If tokenInfo.Token = Token.Illegal Then
-                AddError(tokenEnumerator.Current, ResourceHelper.GetString("UnrecognizedStatement"))
-                Dim leftValue = BuildIdentifierTerm(tokenEnumerator)
+            If token.Type = TokenType.Illegal Then
+                AddError(tokenEnum.Current, ResourceHelper.GetString("UnrecognizedStatement"))
+                Dim leftValue = BuildIdentifierTerm(tokenEnum)
                 Return New AssignmentStatement() With {
                     .StartToken = current,
                     .LeftValue = leftValue
                 }
             End If
 
-            If tokenInfo.Token = Token.Colon Then
-                Return ConstructLabelStatement(tokenEnumerator)
+            If token.Type = TokenType.Colon Then
+                Return ConstructLabelStatement(tokenEnum)
             End If
 
-            If tokenInfo.Token = Token.LeftParens Then
-                Return ConstructSubroutineCallStatement(tokenEnumerator)
+            If token.Type = TokenType.LeftParens Then
+                Return ConstructSubroutineCallStatement(tokenEnum)
             End If
 
-            Dim expression = BuildIdentifierTerm(tokenEnumerator)
+            Dim expression = BuildIdentifierTerm(tokenEnum)
 
             If TypeOf expression Is MethodCallExpression Then
-                ExpectEndOfLine(tokenEnumerator)
-                Dim methodCallStatement As New MethodCallStatement()
-                methodCallStatement.StartToken = current
-                methodCallStatement.MethodCallExpression = TryCast(expression, MethodCallExpression)
-                Return methodCallStatement
+                ExpectEndOfLine(tokenEnum)
+                Return New MethodCallStatement() With {
+                    .StartToken = current,
+                    .MethodCallExpression = TryCast(expression, MethodCallExpression)
+                }
             End If
 
             Dim assignStatement As New AssignmentStatement() With {.StartToken = current, .LeftValue = expression}
 
-            If EatOptionalToken(tokenEnumerator, Token.Equals, assignStatement.EqualsToken) Then
-                assignStatement.RightValue = BuildArithmeticExpression(tokenEnumerator)
+            If EatOptionalToken(tokenEnum, TokenType.Equals, assignStatement.EqualsToken) Then
+                assignStatement.RightValue = BuildArithmeticExpression(tokenEnum)
 
                 If assignStatement.RightValue Is Nothing Then
-                    AddError(tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected"))
+                    If commaLine = -2 Then Return Nothing
+                    AddError(tokenEnum.Current, ResourceHelper.GetString("ExpressionExpected"))
                 End If
 
-                ExpectEndOfLine(tokenEnumerator)
+                ExpectEndOfLine(tokenEnum)
 
             Else
-                AddError(tokenEnumerator.Current, ResourceHelper.GetString("UnrecognizedStatement"))
+                AddError(tokenEnum.Current, ResourceHelper.GetString("UnrecognizedStatement"))
             End If
 
             Return assignStatement
         End Function
 
-        Private Function ConstructSubroutineCallStatement(tokenEnumerator As TokenEnumerator) As Statement
+        Private Function ConstructSubroutineCallStatement(tokenEnum As TokenEnumerator) As Statement
             Dim subroutineCall As New SubroutineCallStatement() With {
-                .StartToken = tokenEnumerator.Current,
-                .Name = tokenEnumerator.Current,
-                .OuterSubRoutine = SubroutineStatement.Current
+                .StartToken = tokenEnum.Current,
+                .Name = tokenEnum.Current,
+                .OuterSubroutine = SubroutineStatement.Current
             }
 
-            tokenEnumerator.MoveNext()
+            tokenEnum.MoveNext()
 
-            If EatToken(tokenEnumerator, Token.LeftParens) Then
-                subroutineCall.Args = ParseCommaSepList(tokenEnumerator, Token.RightParens, False)
-                If EatToken(tokenEnumerator, Token.RightParens) Then ExpectEndOfLine(tokenEnumerator)
+            Dim openP = tokenEnum.Current
+            If EatToken(tokenEnum, TokenType.LeftParens) Then
+                Dim caller = (subroutineCall.Name.Line, subroutineCall.Name.EndColumn)
+                If openP.Line = commaLine AndAlso openP.Column = commaColumn Then
+                    callerInfo = New CallerInfo(caller.Line, caller.EndColumn, 0)
+                    commaLine = -2
+                    Return Nothing
+                End If
+
+                subroutineCall.Args = ParseCommaSepList(tokenEnum, TokenType.RightParens, caller, False)
+                If commaLine = -2 Then Return Nothing
+                If EatToken(tokenEnum, TokenType.RightParens) Then ExpectEndOfLine(tokenEnum)
             End If
 
             Return subroutineCall
         End Function
 
-        Public Function BuildArithmeticExpression(tokenEnumerator As TokenEnumerator) As Expression
-            Return BuildExpression(tokenEnumerator, includeLogical:=True)
+        Public Function BuildArithmeticExpression(tokenEnum As TokenEnumerator) As Expression
+            Return BuildExpression(tokenEnum, includeLogical:=True)
         End Function
 
-        Public Function BuildLogicalExpression(ByVal tokenEnumerator As TokenEnumerator) As Expression
-            Return BuildExpression(tokenEnumerator, includeLogical:=True)
+        Public Function BuildLogicalExpression(tokenEnum As TokenEnumerator) As Expression
+            Return BuildExpression(tokenEnum, includeLogical:=True)
         End Function
 
-        Private Function BuildExpression(ByVal tokenEnumerator As TokenEnumerator, ByVal includeLogical As Boolean) As Expression
-            If tokenEnumerator.IsEndOfList Then
+        Private Function BuildExpression(tokenEnum As TokenEnumerator, includeLogical As Boolean) As Expression
+            If tokenEnum.IsEndOfList Then
                 Return Nothing
             End If
 
-            Dim current = tokenEnumerator.Current
+            Dim current = tokenEnum.Current
 
-            Dim leftHandExpr = BuildTerm(tokenEnumerator, includeLogical)
+            Dim leftHandExpr = BuildTerm(tokenEnum, includeLogical)
             If leftHandExpr Is Nothing Then Return Nothing
 
-            While IsValidOperator(tokenEnumerator.Current.Token, includeLogical)
-                Dim current2 = tokenEnumerator.Current
-                tokenEnumerator.MoveNext()
-                Dim rightHandExpr = BuildTerm(tokenEnumerator, includeLogical)
-
+            While IsValidOperator(tokenEnum.Current.Type, includeLogical)
+                Dim current2 = tokenEnum.Current
+                tokenEnum.MoveNext()
+                Dim rightHandExpr = BuildTerm(tokenEnum, includeLogical)
                 If rightHandExpr Is Nothing Then Return Nothing
 
                 leftHandExpr = MergeExpression(leftHandExpr, rightHandExpr, current2)
@@ -460,77 +533,76 @@ Namespace Microsoft.SmallBasic
             End While
 
             leftHandExpr.StartToken = current
-            leftHandExpr.EndToken = tokenEnumerator.Current
+            leftHandExpr.EndToken = tokenEnum.Current
             Return leftHandExpr
         End Function
 
-        Private Function BuildTerm(tokenEnumerator As TokenEnumerator, includeLogical As Boolean) As Expression
-            Dim current = tokenEnumerator.Current
+        Private Function BuildTerm(tokenEnum As TokenEnumerator, includeLogical As Boolean) As Expression
+            Dim current = tokenEnum.Current
 
-            If tokenEnumerator.IsEndOfList OrElse tokenEnumerator.Current.Token = Token.Illegal Then
+            If tokenEnum.IsEndOfList OrElse tokenEnum.Current.Type = TokenType.Illegal Then
                 Return Nothing
             End If
 
             Dim expression As Expression
-            Select Case tokenEnumerator.Current.Token
-                Case Token.StringLiteral, Token.NumericLiteral, Token.True, Token.False
-                    expression = New LiteralExpression(tokenEnumerator.Current)
+            Select Case tokenEnum.Current.Type
+                Case TokenType.StringLiteral, TokenType.NumericLiteral, TokenType.True, TokenType.False
+                    expression = New LiteralExpression(tokenEnum.Current)
                     expression.Precedence = 9
-                    tokenEnumerator.MoveNext()
+                    tokenEnum.MoveNext()
 
-                Case Token.LeftParens
-                    tokenEnumerator.MoveNext()
-                    expression = BuildExpression(tokenEnumerator, includeLogical)
+                Case TokenType.LeftParens
+                    tokenEnum.MoveNext()
+                    expression = BuildExpression(tokenEnum, includeLogical)
                     If expression Is Nothing Then Return Nothing
                     expression.Precedence = 9
-                    If Not EatToken(tokenEnumerator, Token.RightParens) Then Return Nothing
+                    If Not EatToken(tokenEnum, TokenType.RightParens) Then Return Nothing
 
-                Case Token.LeftCurlyBracket
-                    tokenEnumerator.MoveNext()
+                Case TokenType.LeftCurlyBracket
+                    tokenEnum.MoveNext()
                     Dim initExpr As New InitializerExpression(
                         precedence:=9,
-                        arguments:=ParseCommaSepList(tokenEnumerator, Token.RightCurlyBracket, False)
+                        arguments:=ParseCommaSepList(tokenEnum, TokenType.RightCurlyBracket, Nothing, False)
                    )
+
+                    If commaLine = -2 Then Return Nothing
 
                     If initExpr.Arguments.Count = 0 Then Return Nothing
                     expression = initExpr
-                    tokenEnumerator.MoveNext() ' }
+                    tokenEnum.MoveNext() ' }
 
-                Case Token.Identifier
-                    expression = BuildIdentifierTerm(tokenEnumerator)
+                Case TokenType.Identifier
+                    expression = BuildIdentifierTerm(tokenEnum)
                     If expression Is Nothing Then Return Nothing
 
                 Case Else
-                    If tokenEnumerator.Current.Token <> Token.Subtraction Then
+                    If tokenEnum.Current.Type <> TokenType.Subtraction Then
                         Return Nothing
                     End If
 
-                    tokenEnumerator.MoveNext()
-                    Dim expression2 = BuildTerm(tokenEnumerator, includeLogical)
-
-                    If expression2 Is Nothing Then
-                        Return Nothing
-                    End If
+                    tokenEnum.MoveNext()
+                    Dim expression2 = BuildTerm(tokenEnum, includeLogical)
+                    If expression2 Is Nothing Then Return Nothing
 
                     expression = New NegativeExpression() With {
-                        .Negation = tokenEnumerator.Current,
+                        .Negation = tokenEnum.Current,
                         .Expression = expression2,
                         .Precedence = 9
                     }
             End Select
 
             expression.StartToken = current
-            expression.EndToken = tokenEnumerator.Current
+            expression.EndToken = tokenEnum.Current
             Return expression
         End Function
 
-        Private Function MergeExpression(ByVal leftHandExpr As Expression, ByVal rightHandExpr As Expression, ByVal operatorToken As TokenInfo) As Expression
+        Private Function MergeExpression(leftHandExpr As Expression, rightHandExpr As Expression, operatorToken As Token) As Expression
             If TypeOf leftHandExpr Is InitializerExpression OrElse TypeOf rightHandExpr Is InitializerExpression Then
                 AddError(operatorToken, "Array initializer can't be used as an operand in binary operations")
                 Return Nothing
             End If
 
-            Dim operatorPriority = GetOperatorPriority(operatorToken.Token)
+            Dim operatorPriority = GetOperatorPriority(operatorToken.Type)
 
             If operatorPriority <= leftHandExpr.Precedence Then
                 Return New BinaryExpression() With {
@@ -570,22 +642,32 @@ Namespace Microsoft.SmallBasic
             Return Nothing
         End Function
 
-        Private Function BuildIdentifierTerm(ByVal tokenEnumerator As TokenEnumerator) As Expression
-            Dim current = tokenEnumerator.Current
-            tokenEnumerator.MoveNext()
-            Dim variable As TokenInfo = Nothing
+        Private Function BuildIdentifierTerm(tokenEnum As TokenEnumerator) As Expression
+            Dim current = tokenEnum.Current
+            tokenEnum.MoveNext()
+            Dim variable As Token = Nothing
 
-            Dim t = tokenEnumerator.Current.Token
-            If t = Token.Dot OrElse t = Token.Lookup Then
-                tokenEnumerator.MoveNext()
+            Dim t = tokenEnum.Current.Type
+            Dim openP As Token
 
-                If Not EatSimpleIdentifier(tokenEnumerator, variable) Then
+            If t = TokenType.Dot OrElse t = TokenType.Lookup Then
+                tokenEnum.MoveNext()
+
+                If Not EatSimpleIdentifier(tokenEnum, variable) Then
                     Return Nothing
                 End If
 
-                If EatOptionalToken(tokenEnumerator, Token.LeftParens) Then
-                    If t = Token.Lookup Then
-                        AddError(tokenEnumerator.Current, "The ! operator can't be used to call methods")
+                openP = tokenEnum.Current
+                If EatOptionalToken(tokenEnum, TokenType.LeftParens) Then
+                    If t = TokenType.Lookup Then
+                        AddError(tokenEnum.Current, "The ! operator can't be used to call methods")
+                    End If
+
+                    Dim caller = (variable.Line, variable.EndColumn)
+                    If openP.Line = commaLine AndAlso openP.Column = commaColumn Then
+                        callerInfo = New CallerInfo(caller.Line, caller.EndColumn, 0)
+                        commaLine = -2
+                        Return Nothing
                     End If
 
                     Dim methodCallExpression As New MethodCallExpression(
@@ -593,12 +675,13 @@ Namespace Microsoft.SmallBasic
                         precedence:=9,
                         typeName:=current,
                         methodName:=variable,
-                        arguments:=ParseCommaSepList(tokenEnumerator, Token.RightParens, False)
+                        arguments:=ParseCommaSepList(tokenEnum, TokenType.RightParens, caller, False)
                    )
 
+                    If commaLine = -2 Then Return Nothing
                     methodCallExpression.OuterSubRoutine = SubroutineStatement.Current
-                    methodCallExpression.EndToken = tokenEnumerator.Current
-                    tokenEnumerator.MoveNext()
+                    methodCallExpression.EndToken = tokenEnum.Current
+                    tokenEnum.MoveNext()
                     Return methodCallExpression
                 End If
 
@@ -608,11 +691,11 @@ Namespace Microsoft.SmallBasic
                     .Precedence = 9,
                     .TypeName = current,
                     .PropertyName = variable,
-                    .IsDynamic = (t = Token.Lookup)
+                    .IsDynamic = (t = TokenType.Lookup)
                 }
             End If
 
-            If tokenEnumerator.Current.Token = Token.LeftBracket Then
+            If tokenEnum.Current.Type = TokenType.LeftBracket Then
                 Dim leftHand As Expression = New IdentifierExpression() With {
                     .StartToken = current,
                     .Identifier = current,
@@ -624,23 +707,24 @@ Namespace Microsoft.SmallBasic
                 Dim indexerExpression As Expression = Nothing
 
                 While True
-                    EatToken(tokenEnumerator, Token.LeftBracket)
-                    indexerExpression = BuildArithmeticExpression(tokenEnumerator)
+                    EatToken(tokenEnum, TokenType.LeftBracket)
+                    indexerExpression = BuildArithmeticExpression(tokenEnum)
 
                     If indexerExpression Is Nothing Then
-                        AddError(tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected"))
+                        If commaLine = -2 Then Return Nothing
+                        AddError(tokenEnum.Current, ResourceHelper.GetString("ExpressionExpected"))
                         Exit While
                     End If
 
-                    EatToken(tokenEnumerator, Token.RightBracket)
+                    EatToken(tokenEnum, TokenType.RightBracket)
 
-                    If tokenEnumerator.Current.Token <> Token.LeftBracket Then
+                    If tokenEnum.Current.Type <> TokenType.LeftBracket Then
                         Exit While
                     End If
 
                     Dim arrayExpression As New ArrayExpression() With {
                         .StartToken = current,
-                        .EndToken = tokenEnumerator.Current,
+                        .EndToken = tokenEnum.Current,
                         .Precedence = 9,
                         .LeftHand = leftHand,
                         .Indexer = indexerExpression
@@ -650,25 +734,35 @@ Namespace Microsoft.SmallBasic
 
                 Return New ArrayExpression() With {
                     .StartToken = current,
-                    .EndToken = tokenEnumerator.Current,
+                    .EndToken = tokenEnum.Current,
                     .Precedence = 9,
                     .LeftHand = leftHand,
                     .Indexer = indexerExpression
                 }
             End If
 
-            If EatOptionalToken(tokenEnumerator, Token.LeftParens) Then
+            openP = tokenEnum.Current
+            If EatOptionalToken(tokenEnum, TokenType.LeftParens) Then
+                Dim caller = (current.Line, current.EndColumn)
+                If openP.Line = commaLine AndAlso openP.Column = commaColumn Then
+                    callerInfo = New CallerInfo(caller.Line, caller.EndColumn, 0)
+                    commaLine = -2
+                    Return Nothing
+                End If
+
                 Dim methodCallExpression As New MethodCallExpression(
                         startToken:=current,
                         precedence:=9,
-                        typeName:=TokenInfo.Illegal,
+                        typeName:=Token.Illegal,
                         methodName:=current,
-                        arguments:=ParseCommaSepList(tokenEnumerator, Token.RightParens, False)
+                        arguments:=ParseCommaSepList(tokenEnum, TokenType.RightParens, caller, False)
                 )
 
+                If commaLine = -2 Then Return Nothing
+
                 methodCallExpression.OuterSubRoutine = SubroutineStatement.Current
-                methodCallExpression.EndToken = tokenEnumerator.Current
-                tokenEnumerator.MoveNext()
+                methodCallExpression.EndToken = tokenEnum.Current
+                tokenEnum.MoveNext()
                 _FunctionsCall.Add(methodCallExpression)
                 Return methodCallExpression
             End If
@@ -686,94 +780,131 @@ Namespace Microsoft.SmallBasic
                           args As String,
                           lineNumber As Integer,
                           lines As List(Of String),
-                          openToken As Token
+                          openToken As TokenType
                     ) As List(Of Expression)
 
-            Dim closeToken As Token
+            Dim closeToken As TokenType
             Select Case openToken
-                Case Token.LeftParens
+                Case TokenType.LeftParens
                     args = "(" + args
-                    closeToken = Token.RightParens
-                Case Token.LeftBracket
+                    closeToken = TokenType.RightParens
+                Case TokenType.LeftBracket
                     args = "[" + args
-                    closeToken = Token.RightBracket
-                Case Token.LeftCurlyBracket
+                    closeToken = TokenType.RightBracket
+                Case TokenType.LeftCurlyBracket
                     args = "{" + args
-                    closeToken = Token.RightCurlyBracket
+                    closeToken = TokenType.RightCurlyBracket
             End Select
 
             Dim tokens = LineScanner.GetTokenEnumerator(args, lineNumber, lines)
             tokens.MoveNext()
             Dim parser As New Parser()
-            Dim argExprs = parser.ParseCommaSepList(tokens, closeToken, False)
-
+            Dim argExprs = parser.ParseCommaSepList(tokens, closeToken, Nothing, False)
             If parser.Errors.Count > 0 Then Return Nothing
             Return argExprs
         End Function
 
-        Private Function ParseCommaSepList(tokenEnumerator As TokenEnumerator, closingToken As Token, Optional commaIsOptional As Boolean = True) As List(Of Expression)
+        Private Function ParseCommaSepList(
+                           tokenEnum As TokenEnumerator,
+                           closingToken As TokenType,
+                           caller? As (Line As Integer, EndColumn As Integer),
+                           Optional commaIsOptional As Boolean = True
+                  ) As List(Of Expression)
+
             Dim items As New List(Of Expression)
 
-            While tokenEnumerator.Current.Token <> closingToken
-                Dim expression = BuildArithmeticExpression(tokenEnumerator)
+            Do
+                Dim current = tokenEnum.Current
+                If current.Type = closingToken Then
+                    If current.Line = commaLine AndAlso current.Column = commaColumn Then
+                        If caller.HasValue Then
+                            callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count - 1)
+                            commaLine = -2
+                            Return Nothing
+                        End If
+                    End If
+                    Exit Do
+                End If
+
+                Dim expression = BuildArithmeticExpression(tokenEnum)
 
                 If expression Is Nothing Then
-                    AddError(tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected"))
-                    Exit While
+                    If commaLine = -2 Then Return Nothing
+                    AddError(tokenEnum.Current, ResourceHelper.GetString("ExpressionExpected"))
+                    Exit Do
                 End If
 
                 items.Add(expression)
-                If Not EatOptionalToken(tokenEnumerator, Token.Comma) Then
-                    If Not commaIsOptional Then
-                        If tokenEnumerator.Current.Token <> closingToken Then
-                            AddError(tokenEnumerator.Current, "Comma is expected here but not found.")
+                Dim comma = tokenEnum.Current
+                If EatOptionalToken(tokenEnum, TokenType.Comma) Then
+                    If comma.Line = commaLine AndAlso comma.Column = commaColumn Then
+                        If caller.HasValue Then
+                            callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count)
+                            commaLine = -2
+                            Return Nothing
                         End If
-                        Exit While
                     End If
+
+                ElseIf Not commaIsOptional Then
+                    current = tokenEnum.Current
+                    If current.Type = closingToken Then
+                        If current.Line = commaLine AndAlso current.Column = commaColumn Then
+                            If caller.HasValue Then
+                                callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count - 1)
+                                commaLine = -2
+                                Return Nothing
+                            End If
+                        End If
+
+                    Else
+                        AddError(current, "Comma is expected here but not found.")
+                    End If
+
+                    Exit Do
                 End If
 
-                If tokenEnumerator.IsEndOfNonCommentList Then
-                    AddError(tokenEnumerator.Current, ResourceHelper.GetString("UnexpectedMethodCallEOL"))
-                    Exit While
+                If tokenEnum.IsEndOfNonCommentList Then
+                    AddError(tokenEnum.Current, ResourceHelper.GetString("UnexpectedMethodCallEOL"))
+                    Exit Do
                 End If
-            End While
+            Loop
 
             Return items
         End Function
 
-        Private Function ParseParamList(tokenEnumerator As TokenEnumerator, closingToken As Token) As List(Of TokenInfo)
-            Dim items As New List(Of TokenInfo)
+        Private Function ParseParamList(tokenEnum As TokenEnumerator, closingToken As TokenType) As List(Of Token)
+            Dim items As New List(Of Token)
 
+            Do Until tokenEnum.Current.Type = closingToken
 
-            While tokenEnumerator.Current.Token <> closingToken
-                If tokenEnumerator.Current.Token <> Token.Identifier Then
-                    AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
-                    Exit While
+                If tokenEnum.Current.Type <> TokenType.Identifier Then
+                    AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnum.Current.Text))
+                    Exit Do
                 End If
 
-                items.Add(tokenEnumerator.Current)
-                tokenEnumerator.MoveNext()
+                items.Add(tokenEnum.Current)
+                tokenEnum.MoveNext()
 
-                If Not EatOptionalToken(tokenEnumerator, Token.Comma) Then
-                    If tokenEnumerator.Current.TokenType = TokenType.Comment Then
-                        Dim nextToken = tokenEnumerator.PeekNext
-                        If tokenEnumerator.Current.Token <> closingToken Then
-                            AddError(tokenEnumerator.Current, "Comma is expected here but not found.")
+                If Not EatOptionalToken(tokenEnum, TokenType.Comma) Then
+                    If tokenEnum.Current.ParseType = ParseType.Comment Then
+                        Dim nextToken = tokenEnum.PeekNext
+                        If tokenEnum.Current.Type <> closingToken Then
+                            AddError(tokenEnum.Current, "Comma is expected here but not found.")
                         End If
-                        Exit While
+                        Exit Do
                     End If
                 End If
 
-                If tokenEnumerator.IsEndOfNonCommentList Then
-                    AddError(tokenEnumerator.Current, ResourceHelper.GetString("UnexpectedTokenAtLocation"))
-                    Exit While
+                If tokenEnum.IsEndOfNonCommentList Then
+                    AddError(tokenEnum.Current, ResourceHelper.GetString("UnexpectedTokenAtLocation"))
+                    Exit Do
                 End If
-            End While
+            Loop
 
             Return items
         End Function
 
-        Private Function IsValidOperator(ByVal token As Token, ByVal includeLogical As Boolean) As Boolean
+        Private Function IsValidOperator(token As TokenType, includeLogical As Boolean) As Boolean
             Dim operatorPriority = GetOperatorPriority(token)
 
             If includeLogical Then
@@ -783,19 +914,19 @@ Namespace Microsoft.SmallBasic
             Return operatorPriority >= 7
         End Function
 
-        Friend Shared Function GetOperatorPriority(ByVal token As Token) As Integer
+        Friend Shared Function GetOperatorPriority(token As TokenType) As Integer
             Select Case token
-                Case Token.Division, Token.Multiplication
+                Case TokenType.Division, TokenType.Multiplication
                     Return 8
-                Case Token.Addition, Token.Subtraction
+                Case TokenType.Addition, TokenType.Subtraction
                     Return 7
-                Case Token.LessThan, Token.LessThanEqualTo, Token.GreaterThan, Token.GreaterThanEqualTo
+                Case TokenType.LessThan, TokenType.LessThanEqualTo, TokenType.GreaterThan, TokenType.GreaterThanEqualTo
                     Return 6
-                Case Token.Equals, Token.NotEqualTo
+                Case TokenType.Equals, TokenType.NotEqualTo
                     Return 5
-                Case Token.And
+                Case TokenType.And
                     Return 4
-                Case Token.Or
+                Case TokenType.Or
                     Return 3
                 Case Else
                     Return 0
@@ -815,12 +946,12 @@ Namespace Microsoft.SmallBasic
 
 
         Dim keepSymbols As Boolean
+        Dim lineOffset As Integer
 
         Public Sub Parse(reader As TextReader, Optional autoCompletion As Boolean = False)
             If reader Is Nothing Then
                 Throw New ArgumentNullException("reader")
             End If
-
 
             _TypeInfoBag = TypeInfoBag
 
@@ -843,39 +974,66 @@ Namespace Microsoft.SmallBasic
 
             BuildParseTree()
 
+            If commaLine <> -1 Then Return
+
             For Each item In _ParseTree
                 item.AddSymbols(_SymbolTable)
+            Next
+
+            For Each e In _SymbolTable.PossibleEventHandlers
+                If _SymbolTable.Subroutines.ContainsKey(e.Id.NormalizedText) Then
+                    Dim id = _SymbolTable.AllIdentifiers(e.index)
+                    id.SymbolType = Completion.CompletionItemType.SubroutineName
+                    _SymbolTable.AllIdentifiers(e.index) = id
+                End If
             Next
 
             For Each funcCall In _FunctionsCall
                 Dim funcName = funcCall.MethodName.NormalizedText
                 If _SymbolTable.Subroutines.ContainsKey(funcName) Then
                     Dim subInfo = _SymbolTable.Subroutines(funcName)
-                    If subInfo.Token = Token.Sub Then
-                        AddError(funcCall.MethodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineEventAssignment"), funcCall.MethodName.Text))
+                    If subInfo.Type = TokenType.Sub Then
+                        AddError(
+                            funcCall.MethodName,
+                            String.Format(
+                                    CultureInfo.CurrentUICulture,
+                                    ResourceHelper.GetString("SubroutineEventAssignment"),
+                                    funcCall.MethodName.Text
+                           ) & vbCrLf & "       Don't add `( )` after the sub name when used as an event handler"
+                       )
                     End If
                 End If
             Next
             _SymbolTable.autoCompletion = False
         End Sub
 
-        Public Shared Function Parse(code As String, symbolTable As SymbolTable, typeInfoBag As TypeInfoBag) As Parser
-            Dim _parser As New Parser()
-            _parser._SymbolTable = symbolTable
-            _parser._TypeInfoBag = typeInfoBag
-            _parser.keepSymbols = True
+        Public Shared Function Parse(
+                         code As String,
+                         symbolTable As SymbolTable,
+                         typeInfoBag As TypeInfoBag,
+                         lineOffset As Integer
+                   ) As Parser
+
+            Dim _parser As New Parser() With {
+                   ._SymbolTable = symbolTable,
+                   ._TypeInfoBag = typeInfoBag,
+                   .keepSymbols = True,
+                   .lineOffset = lineOffset
+            }
+
             _parser.Parse(New IO.StringReader(code))
             Return _parser
         End Function
 
         Private Sub BuildParseTree()
+            _FunctionsCall.Clear()
             _currentLine = -1
 
             While True
-                Dim tokenEnumerator = ReadNextLine()
-                If tokenEnumerator Is Nothing Then Exit While
+                Dim tokenEnum = ReadNextLine()
+                If tokenEnum Is Nothing Then Exit While
 
-                Dim statement = GetStatementFromTokens(tokenEnumerator)
+                Dim statement = GetStatementFromTokens(tokenEnum)
                 _ParseTree.Add(statement)
             End While
         End Sub
@@ -886,10 +1044,11 @@ Namespace Microsoft.SmallBasic
                 Return _currentLineEnumerator
             End If
 
+            LineScanner.SubLineComments.Clear()
             _currentLine += 1
             If _currentLine >= codeLines.Count Then Return Nothing
 
-            _currentLineEnumerator = LineScanner.GetTokenEnumerator(codeLines(_currentLine), _currentLine, codeLines)
+            _currentLineEnumerator = LineScanner.GetTokenEnumerator(codeLines(_currentLine), _currentLine, codeLines, lineOffset)
             Return _currentLineEnumerator
         End Function
 
@@ -897,50 +1056,53 @@ Namespace Microsoft.SmallBasic
             _rewindRequested = True
         End Sub
 
-        Friend Function GetStatementFromTokens(tokenEnumerator As TokenEnumerator) As Statement
-            If tokenEnumerator.IsEndOfList Then
+        Friend Function GetStatementFromTokens(tokenEnum As TokenEnumerator) As Statement
+            If tokenEnum.IsEndOfList Then
                 Return New EmptyStatement() With {
-                    .StartToken = New TokenInfo With {
-                        .Line = tokenEnumerator.LineNumber
+                    .StartToken = New Token With {
+                        .Line = tokenEnum.LineNumber
                     }
                 }
             End If
 
             Dim statement As Statement = Nothing
 
-            Select Case tokenEnumerator.Current.Token
-                Case Token.While
-                    statement = ConstructWhileStatement(tokenEnumerator)
+            Select Case tokenEnum.Current.Type
+                Case TokenType.While
+                    statement = ConstructWhileStatement(tokenEnum)
 
-                Case Token.For
-                    statement = ConstructForStatement(tokenEnumerator)
+                Case TokenType.For
+                    statement = ConstructForStatement(tokenEnum)
 
-                Case Token.Goto
-                    statement = ConstructGotoStatement(tokenEnumerator)
+                Case TokenType.Goto
+                    statement = ConstructGotoStatement(tokenEnum)
 
-                Case Token.If
-                    statement = ConstructIfStatement(tokenEnumerator)
+                Case TokenType.If
+                    statement = ConstructIfStatement(tokenEnum)
 
-                Case Token.ElseIf
-                    AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("ElseIfUnexpected"), tokenEnumerator.Current.Text))
-                    Return New IllegalStatement(tokenEnumerator.Current)
+                Case TokenType.ElseIf
+                    AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("ElseIfUnexpected"), tokenEnum.Current.Text))
+                    Return New IllegalStatement(tokenEnum.Current)
 
-                Case Token.Sub, Token.Function
-                    statement = ConstructSubStatement(tokenEnumerator)
+                Case TokenType.Sub, TokenType.Function
+                    statement = ConstructSubStatement(tokenEnum)
 
-                Case Token.Identifier
-                    statement = ConstructIdentifierStatement(tokenEnumerator)
+                Case TokenType.Identifier
+                    statement = ConstructIdentifierStatement(tokenEnum)
+                    If commaLine = -2 Then Return Nothing
 
-                Case Token.Comment
+                Case TokenType.Comment
                     Dim emptyStatement As New EmptyStatement()
-                    emptyStatement.StartToken = tokenEnumerator.Current
+                    Dim comment = tokenEnum.Current
+                    emptyStatement.StartToken = comment
                     statement = emptyStatement
+                    _SymbolTable.AllCommentLines.Add(comment)
 
-                Case Token.Return
+                Case TokenType.Return
                     Dim returnExpr As Expression = Nothing
-                    Dim returnToken = tokenEnumerator.Current
-                    tokenEnumerator.MoveNext()
-                    If Not tokenEnumerator.IsEndOfNonCommentList Then EatExpression(tokenEnumerator, returnExpr)
+                    Dim returnToken = tokenEnum.Current
+                    tokenEnum.MoveNext()
+                    If Not tokenEnum.IsEndOfNonCommentList Then EatExpression(tokenEnum, returnExpr)
                     Dim subroutine = SubroutineStatement.Current
                     statement = New ReturnStatement With {
                         .StartToken = returnToken,
@@ -950,57 +1112,57 @@ Namespace Microsoft.SmallBasic
 
                     If subroutine Is Nothing Then
                         AddError(returnToken, "Return can only appear insid Sub and Function blocks")
-                    ElseIf subroutine.SubToken.Token = Token.Sub AndAlso returnExpr IsNot Nothing Then
+                    ElseIf subroutine.SubToken.Type = TokenType.Sub AndAlso returnExpr IsNot Nothing Then
                         AddError(returnToken, "Sub routines can't return values")
                     End If
 
-                Case Token.ExitLoop, Token.ContinueLoop
+                Case TokenType.ExitLoop, TokenType.ContinueLoop
                     statement = New JumpLoopStatement With {
-                        .StartToken = tokenEnumerator.Current,
-                        .UpLevel = GetLevel(tokenEnumerator)
+                        .StartToken = tokenEnum.Current,
+                        .UpLevel = GetLevel(tokenEnum)
                     }
             End Select
 
             If statement Is Nothing Then
-                AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
-                Return New IllegalStatement(tokenEnumerator.Current)
+                AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnum.Current.Text))
+                Return New IllegalStatement(tokenEnum.Current)
             End If
 
-            If tokenEnumerator.Current.Token = Token.Comment Then
-                statement.EndingComment = tokenEnumerator.Current
+            If tokenEnum.Current.Type = TokenType.Comment Then
+                statement.EndingComment = tokenEnum.Current
             End If
 
             Return statement
         End Function
 
-        Private Function GetLevel(tokenEnumerator As TokenEnumerator) As Integer
-            tokenEnumerator.MoveNext()
+        Private Function GetLevel(tokenEnum As TokenEnumerator) As Integer
+            tokenEnum.MoveNext()
             Dim upLevel = 0
-            Do Until tokenEnumerator.IsEndOfNonCommentList
-                If tokenEnumerator.Current.Token = Token.Subtraction Then
+            Do Until tokenEnum.IsEndOfNonCommentList
+                If tokenEnum.Current.Type = TokenType.Subtraction Then
                     If upLevel < 1000 Then
                         upLevel += 1
                     Else
-                        AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
+                        AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnum.Current.Text))
                         Exit Do
                     End If
-                ElseIf tokenEnumerator.Current.Token = Token.Multiplication Then
+                ElseIf tokenEnum.Current.Type = TokenType.Multiplication Then
                     If upLevel = 0 Then
                         upLevel = 1000
                     Else
-                        AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
+                        AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnum.Current.Text))
                         Exit Do
                     End If
                 Else
-                    AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnumerator.Current.Text))
+                    AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnum.Current.Text))
                     Exit Do
                 End If
-                tokenEnumerator.MoveNext()
+                tokenEnum.MoveNext()
             Loop
             Return upLevel
         End Function
 
-        Friend Sub AddError(ByVal errorDescription As String)
+        Friend Sub AddError(errorDescription As String)
             AddError(_currentLine, 0, errorDescription)
         End Sub
 
@@ -1012,11 +1174,11 @@ Namespace Microsoft.SmallBasic
             _Errors.Add(New [Error](line, subLine, column, errorDescription))
         End Sub
 
-        Friend Sub AddError(ByVal tokenInfo As TokenInfo, ByVal errorDescription As String)
-            _Errors.Add(New [Error](tokenInfo, errorDescription))
+        Friend Sub AddError(token As Token, errorDescription As String)
+            _Errors.Add(New [Error](token, errorDescription))
         End Sub
 
-        Public Shared Function EvaluateExpression(ByVal expression As Expression) As Primitive
+        Public Shared Function EvaluateExpression(expression As Expression) As Primitive
             Try
                 Dim literalExpression As LiteralExpression = TryCast(expression, LiteralExpression)
 
@@ -1036,32 +1198,32 @@ Namespace Microsoft.SmallBasic
                     Dim primitive = EvaluateExpression(binaryExpression.LeftHandSide)
                     Dim primitive2 = EvaluateExpression(binaryExpression.RightHandSide)
 
-                    Select Case binaryExpression.Operator.Token
-                        Case Token.Addition
+                    Select Case binaryExpression.Operator.Type
+                        Case TokenType.Addition
                             Return primitive + primitive2
-                        Case Token.Subtraction
+                        Case TokenType.Subtraction
                             Return primitive - primitive2
-                        Case Token.Multiplication
+                        Case TokenType.Multiplication
                             Return primitive * primitive2
-                        Case Token.Division
+                        Case TokenType.Division
                             Return primitive / primitive2
-                        Case Token.NotEqualTo
+                        Case TokenType.NotEqualTo
                             Return primitive.NotEqualTo(primitive2)
-                        Case Token.Equals
+                        Case TokenType.Equals
                             Return primitive.EqualTo(primitive2)
-                        Case Token.And
+                        Case TokenType.And
                             Return Primitive.op_And(primitive, primitive2)
-                        Case Token.Or
+                        Case TokenType.Or
                             Return Primitive.op_Or(primitive, primitive2)
-                        Case Token.LessThan
+                        Case TokenType.LessThan
                             Return primitive.LessThan(primitive2)
-                        Case Token.LessThanEqualTo
+                        Case TokenType.LessThanEqualTo
                             Return primitive.LessThanOrEqualTo(primitive2)
-                        Case Token.GreaterThan
+                        Case TokenType.GreaterThan
                             Return primitive.GreaterThan(primitive2)
-                        Case Token.GreaterThanEqualTo
+                        Case TokenType.GreaterThanEqualTo
                             Return primitive.GreaterThanOrEqualTo(primitive2)
-                        Case Token.Dot, Token.Lookup, Token.LeftParens, Token.RightParens, Token.LeftBracket, Token.RightBracket
+                        Case TokenType.Dot, TokenType.Lookup, TokenType.LeftParens, TokenType.RightParens, TokenType.LeftBracket, TokenType.RightBracket
                     End Select
                 End If
 
@@ -1071,80 +1233,105 @@ Namespace Microsoft.SmallBasic
             Return 0
         End Function
 
-        Friend Function EatToken(ByVal tokenEnumerator As TokenEnumerator, ByVal expectedToken As Token, <Out> ByRef tokenInfo As TokenInfo) As Boolean
-            If Not tokenEnumerator.IsEndOfList AndAlso tokenEnumerator.Current.Token = expectedToken Then
-                tokenInfo = tokenEnumerator.Current
-                tokenEnumerator.MoveNext()
+        Friend Function EatToken(tokenEnum As TokenEnumerator, expectedToken As TokenType, <Out> ByRef token As Token) As Boolean
+            If Not tokenEnum.IsEndOfList AndAlso tokenEnum.Current.Type = expectedToken Then
+                token = tokenEnum.Current
+                tokenEnum.MoveNext()
                 Return True
             End If
 
-            tokenInfo = TokenInfo.Illegal
-            AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("TokenExpected"), expectedToken))
+            token = Token.Illegal
+            AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("TokenExpected"), expectedToken))
             Return False
         End Function
 
-        Friend Function EatToken(ByVal tokenEnumerator As TokenEnumerator, ByVal expectedToken As Token) As Boolean
-            Dim tokenInfo As TokenInfo
-            Return EatToken(tokenEnumerator, expectedToken, tokenInfo)
+        Friend Function EatToken(tokenEnum As TokenEnumerator, expectedToken As TokenType) As Boolean
+            Dim token As Token
+            Return EatToken(tokenEnum, expectedToken, token)
         End Function
 
-        Friend Function EatOptionalToken(ByVal tokenEnumerator As TokenEnumerator, ByVal optionalToken As Token, <Out> ByRef tokenInfo As TokenInfo) As Boolean
-            If Not tokenEnumerator.IsEndOfList AndAlso tokenEnumerator.Current.Token = optionalToken Then
-                tokenInfo = tokenEnumerator.Current
-                tokenEnumerator.MoveNext()
+        Friend Function EatOptionalToken(
+                         tokenEnum As TokenEnumerator,
+                         optionalToken As TokenType,
+                         <Out> ByRef token As Token
+                   ) As Boolean
+
+            If Not tokenEnum.IsEndOfList AndAlso tokenEnum.Current.Type = optionalToken Then
+                token = tokenEnum.Current
+                tokenEnum.MoveNext()
                 Return True
             End If
 
-            tokenInfo = TokenInfo.Illegal
+            token = Token.Illegal
             Return False
         End Function
 
-        Friend Function EatOptionalToken(ByVal tokenEnumerator As TokenEnumerator, ByVal optionalToken As Token) As Boolean
-            Dim tokenInfo As TokenInfo
-            Return EatOptionalToken(tokenEnumerator, optionalToken, tokenInfo)
+        Friend Function EatOptionalToken(tokenEnum As TokenEnumerator, optionalToken As TokenType) As Boolean
+            Dim token As Token
+            Return EatOptionalToken(tokenEnum, optionalToken, token)
         End Function
 
-        Friend Function EatSimpleIdentifier(ByVal tokenEnumerator As TokenEnumerator, <Out> ByRef tokenInfo As TokenInfo) As Boolean
-            If Not tokenEnumerator.IsEndOfList AndAlso tokenEnumerator.Current.Token = Token.Identifier Then
-                tokenInfo = tokenEnumerator.Current
-                tokenEnumerator.MoveNext()
-                If tokenInfo.Text <> "_" Then Return True
+        Friend Function EatSimpleIdentifier(
+                          tokenEnum As TokenEnumerator,
+                          <Out> ByRef token As Token
+                    ) As Boolean
+
+            If Not tokenEnum.IsEndOfList AndAlso tokenEnum.Current.Type = TokenType.Identifier Then
+                token = tokenEnum.Current
+                tokenEnum.MoveNext()
+                If token.Text <> "_" Then Return True
             End If
 
-            tokenInfo = TokenInfo.Illegal
-            AddError(tokenEnumerator.Current, ResourceHelper.GetString("IdentifierExpected"))
+            token = Token.Illegal
+            AddError(tokenEnum.Current, ResourceHelper.GetString("IdentifierExpected"))
             Return False
         End Function
 
 
-        Friend Function EatExpression(ByVal tokenEnumerator As TokenEnumerator, <Out> ByRef expression As Expression) As Boolean
-            expression = BuildArithmeticExpression(tokenEnumerator)
+        Friend Function EatExpression(
+                          tokenEnum As TokenEnumerator,
+                          <Out> ByRef expression As Expression
+                   ) As Boolean
+
+            expression = BuildArithmeticExpression(tokenEnum)
 
             If expression IsNot Nothing Then Return True
 
-            AddError(tokenEnumerator.Current, ResourceHelper.GetString("ExpressionExpected"))
+            AddError(tokenEnum.Current, ResourceHelper.GetString("ExpressionExpected"))
             Return False
         End Function
 
-        Friend Function EatLogicalExpression(ByVal tokenEnumerator As TokenEnumerator, <Out> ByRef expression As Expression) As Boolean
-            expression = BuildLogicalExpression(tokenEnumerator)
+        Friend Function EatLogicalExpression(tokenEnum As TokenEnumerator, <Out> ByRef expression As Expression) As Boolean
+            expression = BuildLogicalExpression(tokenEnum)
 
             If expression IsNot Nothing Then
                 Return True
             End If
 
-            AddError(tokenEnumerator.Current, ResourceHelper.GetString("ConditionExpected"))
+            AddError(tokenEnum.Current, ResourceHelper.GetString("ConditionExpected"))
             Return False
         End Function
 
-        Friend Function ExpectEndOfLine(ByVal tokenEnumerator As TokenEnumerator) As Boolean
-            If tokenEnumerator.IsEndOfNonCommentList Then
+        Friend Function ExpectEndOfLine(tokenEnum As TokenEnumerator) As Boolean
+            If tokenEnum.IsEndOfNonCommentList Then
                 Return True
             End If
 
-            AddError(tokenEnumerator.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenFound"), tokenEnumerator.Current.Text))
+            AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenFound"), tokenEnum.Current.Text))
             Return False
         End Function
 
+    End Class
+
+    Public Class CallerInfo
+        Public Line As Integer
+        Public EndColumn As Integer
+        Public ParamIndex As Integer
+
+        Public Sub New(line As Integer, endColumn As Integer, paramIndex As Integer)
+            Me.Line = line
+            Me.EndColumn = endColumn
+            Me.ParamIndex = paramIndex
+        End Sub
     End Class
 End Namespace

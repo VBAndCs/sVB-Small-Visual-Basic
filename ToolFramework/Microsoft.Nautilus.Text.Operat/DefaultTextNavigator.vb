@@ -32,12 +32,12 @@ Namespace Microsoft.Nautilus.Text.Operations
                 Throw New ArgumentException("currentPosition TextBuffer does not match to the current TextBuffer")
             End If
 
-            Dim position1 As Integer = currentPosition.Position
+            Dim pos = currentPosition.Position
             If currentPosition.Position >= currentPosition.Snapshot.Length - 1 Then
-                Return New TextExtent(position1, currentPosition.Snapshot.Length - position1, isSignificant:=True)
+                Return New TextExtent(pos, currentPosition.Snapshot.Length - pos, isSignificant:=True)
             End If
 
-            Return New TextExtent(position1, 1, isSignificant:=True)
+            Return New TextExtent(pos, 1, isSignificant:=True)
         End Function
     End Class
 End Namespace

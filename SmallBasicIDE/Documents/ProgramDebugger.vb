@@ -35,7 +35,7 @@ Namespace Microsoft.SmallBasic.Documents
             Get
                 Return _Document
             End Get
-            Private Set(ByVal value As TextDocument)
+            Private Set(value As TextDocument)
                 _Document = value
             End Set
         End Property
@@ -44,7 +44,7 @@ Namespace Microsoft.SmallBasic.Documents
             Get
                 Return _IsDebuggerActive
             End Get
-            Private Set(ByVal value As Boolean)
+            Private Set(value As Boolean)
                 _IsDebuggerActive = value
             End Set
         End Property
@@ -53,7 +53,7 @@ Namespace Microsoft.SmallBasic.Documents
             Get
                 Return _ProgramEngine
             End Get
-            Private Set(ByVal value As ProgramEngine)
+            Private Set(value As ProgramEngine)
                 _ProgramEngine = value
             End Set
         End Property
@@ -72,12 +72,12 @@ Namespace Microsoft.SmallBasic.Documents
             End Get
         End Property
 
-        Private Sub New(ByVal document As TextDocument)
+        Private Sub New(document As TextDocument)
             Me.Document = document
             DocumentTracker.SetDocumentProperty(Me.Document, Me)
         End Sub
 
-        Private Sub EnsureDebuggerIsActive(ByVal breakOnStart As Boolean)
+        Private Sub EnsureDebuggerIsActive(breakOnStart As Boolean)
             If Not IsDebuggerActive Then
                 Document.Errors.Clear()
                 Dim compiler = CompilerService.Compile(Document.Text, Document.Errors)
@@ -94,7 +94,7 @@ Namespace Microsoft.SmallBasic.Documents
             End If
         End Sub
 
-        Public Shared Function GetDebugger(ByVal document As TextDocument) As ProgramDebugger
+        Public Shared Function GetDebugger(document As TextDocument) As ProgramDebugger
             Dim programDebugger = DocumentTracker.GetDocumentProperty(Of ProgramDebugger)(document)
 
             If programDebugger Is Nothing Then
@@ -104,7 +104,7 @@ Namespace Microsoft.SmallBasic.Documents
             Return programDebugger
         End Function
 
-        Private Sub OnDebuggerCurrentStateChanged(ByVal sender As Object, ByVal e As EventArgs)
+        Private Sub OnDebuggerCurrentStateChanged(sender As Object, e As EventArgs)
             Dim lineNumber = ProgramEngine.CurrentInstruction.LineNumber
             Dim currentState = ProgramEngine.CurrentDebuggerState
             Dispatcher.BeginInvoke(Sub()
@@ -136,7 +136,7 @@ Namespace Microsoft.SmallBasic.Documents
             End If
         End Sub
 
-        Private Sub OnDebuggerUnloaded(ByVal sender As Object, ByVal e As EventArgs)
+        Private Sub OnDebuggerUnloaded(sender As Object, e As EventArgs)
             RemoveHandler ProgramEngine.DebuggerStateChanged, AddressOf OnDebuggerCurrentStateChanged
             RemoveHandler ProgramEngine.EngineUnloaded, AddressOf OnDebuggerUnloaded
             IsDebuggerActive = False

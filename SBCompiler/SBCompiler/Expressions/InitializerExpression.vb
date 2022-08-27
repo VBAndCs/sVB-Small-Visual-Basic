@@ -23,7 +23,7 @@ Namespace Microsoft.SmallBasic.Expressions
 
         Public ReadOnly Property Arguments As New List(Of Expression)
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
 
             For Each argument In Arguments
@@ -57,16 +57,17 @@ Namespace Microsoft.SmallBasic.Expressions
             Return code.ToString()
         End Function
 
-        Public Function LowerAndEmit(leftValue As String, scope As CodeGenScope) As Expression
+        Public Function LowerAndEmit(leftValue As String, scope As CodeGenScope, lineOffset As Integer) As Expression
             Dim code = Me.Lower(leftValue)
             Dim subroutine = SubroutineStatement.GetSubroutine(Me)
             If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
-            Return ArrayExpression.ParseAndEmit(code, subroutine, scope)
+            Return ArrayExpression.ParseAndEmit(code, subroutine, scope, lineOffset)
         End Function
 
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-            LowerAndEmit("", scope).EmitIL(scope)
+            ' Lefyhand value must be an empty string
+            LowerAndEmit("", scope, StartToken.Line).EmitIL(scope)
         End Sub
 
         Public Overrides Function ToString() As String

@@ -24,7 +24,7 @@ Namespace Microsoft.SmallBasic.com.smallbasic
             Get
                 Return idField
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 idField = value
             End Set
         End Property
@@ -33,7 +33,7 @@ Namespace Microsoft.SmallBasic.com.smallbasic
             Get
                 Return titleField
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 titleField = value
             End Set
         End Property
@@ -42,7 +42,7 @@ Namespace Microsoft.SmallBasic.com.smallbasic
             Get
                 Return descriptionField
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 descriptionField = value
             End Set
         End Property
@@ -51,7 +51,7 @@ Namespace Microsoft.SmallBasic.com.smallbasic
             Get
                 Return categoryField
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 categoryField = value
             End Set
         End Property
@@ -60,7 +60,7 @@ Namespace Microsoft.SmallBasic.com.smallbasic
             Get
                 Return myRatingField
             End Get
-            Set(ByVal value As Double)
+            Set(value As Double)
                 myRatingField = value
             End Set
         End Property
@@ -69,7 +69,7 @@ Namespace Microsoft.SmallBasic.com.smallbasic
             Get
                 Return ratingField
             End Get
-            Set(ByVal value As Double)
+            Set(value As Double)
                 ratingField = value
             End Set
         End Property
@@ -78,7 +78,7 @@ Namespace Microsoft.SmallBasic.com.smallbasic
             Get
                 Return popularityField
             End Get
-            Set(ByVal value As Integer)
+            Set(value As Integer)
                 popularityField = value
             End Set
         End Property
@@ -87,7 +87,7 @@ Namespace Microsoft.SmallBasic.com.smallbasic
             Get
                 Return numberOfRatingsField
             End Get
-            Set(ByVal value As Integer)
+            Set(value As Integer)
                 numberOfRatingsField = value
             End Set
         End Property

@@ -9,8 +9,8 @@ Namespace Microsoft.SmallBasic.Expressions
     Public Class PropertyExpression
         Inherits Expression
 
-        Public Property TypeName As TokenInfo
-        Public Property PropertyName As TokenInfo
+        Public Property TypeName As Token
+        Public Property PropertyName As Token
 
         Public IsDynamic As Boolean
         Public isSet As Boolean
@@ -19,18 +19,32 @@ Namespace Microsoft.SmallBasic.Expressions
             MyBase.AddSymbols(symbolTable)
             _TypeName.Parent = Me.Parent
             _PropertyName.Parent = Me.Parent
+
             Dim name = TypeName.NormalizedText
+            _TypeName.SymbolType = Completion.CompletionItemType.GlobalVariable
+            symbolTable.AllIdentifiers.Add(_TypeName)
+
             If IsDynamic OrElse name.StartsWith("data") Or name.EndsWith("data") Then
                 symbolTable.AddDynamic(Me)
             End If
+
+            ' IsDynamic can change after calling AddDynamic
+            If IsDynamic Then
+                _PropertyName.SymbolType = Completion.CompletionItemType.DynamicPropertyName
+            Else
+                _PropertyName.SymbolType = Completion.CompletionItemType.PropertyName
+                symbolTable.FixNames(_TypeName, _PropertyName, False)
+            End If
+
+            symbolTable.AllIdentifiers.Add(_PropertyName)
         End Sub
 
-        Public Overrides Sub EmitIL(ByVal scope As CodeGenScope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
             If IsDynamic Then
                 Dim code = $"_sVB_dynamic_Data_ = {TypeName.Text}[""{PropertyName.Text}""]"
                 Dim subroutine = SubroutineStatement.GetSubroutine(Me)
                 If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
-                ArrayExpression.ParseAndEmit(code, subroutine, scope).EmitIL(scope)
+                ArrayExpression.ParseAndEmit(code, subroutine, scope, StartToken.Line).EmitIL(scope)
             Else
                 Dim typeInfo = scope.TypeInfoBag.Types(TypeName.NormalizedText)
                 Dim propertyInfo = typeInfo.Properties(PropertyName.NormalizedText)

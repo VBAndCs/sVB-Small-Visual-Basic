@@ -19,7 +19,7 @@ Namespace Microsoft.SmallBasic.Shell
             Get
                 Return nameField
             End Get
-            Set(ByVal value As String)
+            Set(value As String)
                 nameField = value
                 Notify("Name")
             End Set
@@ -27,7 +27,7 @@ Namespace Microsoft.SmallBasic.Shell
 
         Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
 
-        Private Sub Notify(ByVal propName As String)
+        Private Sub Notify(propName As String)
             RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propName))
         End Sub
     End Class

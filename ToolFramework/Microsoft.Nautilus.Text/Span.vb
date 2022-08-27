@@ -24,7 +24,7 @@ Namespace Microsoft.Nautilus.Text
                 Throw New ArgumentOutOfRangeException("start")
             End If
 
-            If start + length < start Then
+            If length < 0 Then
                 Throw New ArgumentOutOfRangeException("length")
             End If
 
@@ -90,5 +90,10 @@ Namespace Microsoft.Nautilus.Text
         Public Shared Operator <>(span1 As Span, span2 As Span) As Boolean
             Return Not (span1 = span2)
         End Operator
+
+        Public Shared Widening Operator CType(tuple As (Start As Integer, Length As Integer)) As Span
+            Return New Span(tuple.Start, tuple.Length)
+        End Operator
+
     End Structure
 End Namespace

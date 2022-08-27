@@ -28,11 +28,11 @@ Namespace Microsoft.SmallBasic
 
         Public Shared IgnoreVarErrors As Boolean
 
-        Public Shared Sub LowerAndEmit(code As String, scope As CodeGenScope, Subroutine As Statements.SubroutineStatement)
+        Public Shared Sub LowerAndEmit(code As String, scope As CodeGenScope, Subroutine As Statements.SubroutineStatement, lineOffset As Integer)
             IgnoreVarErrors = True
             Dim tempRoutine = Statements.SubroutineStatement.Current
             Statements.SubroutineStatement.Current = Subroutine
-            Dim _parser = Parser.Parse(code, scope.SymbolTable, scope.TypeInfoBag)
+            Dim _parser = Parser.Parse(code, scope.SymbolTable, scope.TypeInfoBag, lineOffset)
 
             'Dim semantic As New SemanticAnalyzer(_parser, scope.TypeInfoBag)
             'semantic.Analyze()
@@ -65,7 +65,7 @@ Namespace Microsoft.SmallBasic
             Return True
         End Function
 
-        Private Function EmitModule(ByVal moduleBuilder As ModuleBuilder) As Boolean
+        Private Function EmitModule(moduleBuilder As ModuleBuilder) As Boolean
             Dim typeBuilder = moduleBuilder.DefineType("_SmallBasicProgram", TypeAttributes.Sealed)
             _entryPoint = typeBuilder.DefineMethod("_Main", MethodAttributes.Static)
             Dim methodBuilder = CType(_entryPoint, MethodBuilder)
@@ -91,10 +91,10 @@ Namespace Microsoft.SmallBasic
             Return True
         End Function
 
-        Private Sub BuildFields(ByVal typeBuilder As TypeBuilder)
+        Private Sub BuildFields(typeBuilder As TypeBuilder)
             Dim symbolTable = _parser.SymbolTable
 
-            For Each key In symbolTable.Variables.Keys
+            For Each key In symbolTable.GlobalVariables.Keys
                 Dim value = typeBuilder.DefineField(key, GetType(Primitive), FieldAttributes.Private Or FieldAttributes.Static)
                 _currentScope.Fields.Add(key, value)
             Next

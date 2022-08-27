@@ -9,22 +9,22 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public ThenStatements As New List(Of Statement)()
         Public Condition As Expression
-        Public ElseIfToken As TokenInfo
-        Public ThenToken As TokenInfo
+        Public ElseIfToken As Token
+        Public ThenToken As Token
 
-        Public Overrides Function GetStatement(lineNumber) As Statement
+        Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
             If lineNumber <= ThenToken.Line Then Return Me
 
             For Each statment In ThenStatements
-                Dim st = statment.GetStatement(lineNumber)
+                Dim st = statment.GetStatementAt(lineNumber)
                 If st IsNot Nothing Then Return st
             Next
 
             Return Nothing
         End Function
 
-        Public Overrides Sub AddSymbols(ByVal symbolTable As SymbolTable)
+        Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             ElseIfToken.Parent = Me
             ThenToken.Parent = Me
@@ -40,7 +40,7 @@ Namespace Microsoft.SmallBasic.Statements
             Next
         End Sub
 
-        Public Overrides Sub PrepareForEmit(ByVal scope As CodeGenScope)
+        Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
             For Each thenStatement In ThenStatements
                 thenStatement.PrepareForEmit(scope)
             Next

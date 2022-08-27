@@ -12,7 +12,7 @@ Namespace Microsoft.SmallBasic.Shell
             End Get
         End Property
 
-        Public Sub New(ByVal item As Object)
+        Public Sub New(item As Object)
             If item Is Nothing Then
                 Throw New ArgumentNullException("item")
             End If

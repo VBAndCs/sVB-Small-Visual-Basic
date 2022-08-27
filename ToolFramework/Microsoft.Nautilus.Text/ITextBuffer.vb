@@ -7,7 +7,9 @@ Namespace Microsoft.Nautilus.Text
         ReadOnly Property CurrentSnapshot As ITextSnapshot
 
         ReadOnly Property ReadOnlyRegionManager As ReadOnlyRegionManager
+
         Event Changed As EventHandler(Of TextChangedEventArgs)
+
         Event ContentTypeChanged As EventHandler
 
         Function CreateEdit(sourceToken As Object) As ITextEdit

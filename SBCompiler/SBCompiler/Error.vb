@@ -6,8 +6,8 @@
         Public ReadOnly Property Column As Integer
         Public ReadOnly Property Description As String
 
-        Public Sub New(tokenInfo As TokenInfo, description As String)
-            Me.New(tokenInfo.Line, tokenInfo.subLine, tokenInfo.Column, description)
+        Public Sub New(token As Token, description As String)
+            Me.New(token.Line, token.subLine, token.Column, description)
         End Sub
 
         Public Sub New(line As Integer, subLine As Integer, column As Integer, description As String)

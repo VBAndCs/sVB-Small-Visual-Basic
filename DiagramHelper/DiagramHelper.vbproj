@@ -65,7 +65,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="WpfDialogs, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\WpfDialogs.dll</HintPath>
+      <HintPath>..\SmallBasicIDE\SB.Lib\WpfDialogs.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +203,5 @@
     </None>
     <AppDesigner Include="My Project\" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

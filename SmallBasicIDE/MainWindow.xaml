@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v1.4.2" Loaded="Window_Loaded"
+        Title="Small Visual Basic v1.6" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
     
@@ -293,18 +293,22 @@
                         </shell:Ribbon>
 
                         <Grid Row="1">
-                            <Grid.ColumnDefinitions>
+                            <!--<Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="200" />
-                            </Grid.ColumnDefinitions>
+                            </Grid.ColumnDefinitions>-->
+                           
                             <shell:MdiViewsControl x:Name="viewsControl" 
                                 RequestItemClose="OnCloseItem" 
-                                Grid.Column="0" Grid.ColumnSpan="3" 
                                 ActiveDocumentChanged="viewsControl_ActiveDocumentChanged"/>
 
-                            <lu:HelpPanel x:Name="helpPanel" Column="1" />
+                            <Popup x:Name="popHelp" MaxHeight="250" 
+                                   StaysOpen="True" Placement="Relative"
+                                   Opened="popHelp_Opened">
+                                <lu:HelpPanel x:Name="helpPanel" Width="Auto"/>
+                            </Popup>
 
-                            <GridSplitter Name="gridSplitter" Grid.Column="1" Width="4" Background="#cc333363" Opacity="0.05" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Left" ResizeBehavior="PreviousAndCurrent">
+                            <!--<GridSplitter Name="gridSplitter" Grid.Column="1" Width="4" Background="#cc333363" Opacity="0.05" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Left" ResizeBehavior="PreviousAndCurrent">
                                 <FrameworkElement.Triggers>
                                     <EventTrigger RoutedEvent="Mouse.MouseEnter">
                                         <BeginStoryboard>
@@ -321,7 +325,7 @@
                                         </BeginStoryboard>
                                     </EventTrigger>
                                 </FrameworkElement.Triggers>
-                            </GridSplitter>
+                            </GridSplitter>-->
                         </Grid>
                     </Grid>
 
@@ -357,6 +361,7 @@
         <StackPanel x:Name="stkInfo"
                     Orientation="Horizontal" HorizontalAlignment="Right" 
                     VerticalAlignment="Center"   Margin="0,0,5,0">
+            
             <Grid x:Name="grdNameText">
                 <Grid.ColumnDefinitions >
                     <ColumnDefinition/>
