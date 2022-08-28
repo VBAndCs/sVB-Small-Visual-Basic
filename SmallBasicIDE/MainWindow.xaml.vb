@@ -250,6 +250,7 @@ Namespace Microsoft.SmallBasic
             e.CanExecute = ActiveDocument IsNot Nothing AndAlso Not ActiveDocument.EditorControl.TextView.Selection.IsEmpty
         End Sub
 
+
         Private Sub OnEditCopy(sender As Object, e As RoutedEventArgs)
             ActiveDocument.EditorControl.EditorOperations.CopySelection()
         End Sub

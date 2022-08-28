@@ -18,13 +18,13 @@ Namespace Microsoft.Nautilus.Text.Operations
                 Throw New ArgumentNullException("textView")
             End If
 
-            Dim [property] As IEditorOperations = Nothing
-            If Not textView.Properties.TryGetProperty(Of IEditorOperations)(GetType(EditorOperationsProvider), [property]) Then
-                [property] = New EditorOperations(textView, _textStructureNavigatorFactory)
-                textView.Properties.AddProperty(GetType(EditorOperationsProvider), [property])
+            Dim editorOperations As IEditorOperations = Nothing
+            If Not textView.Properties.TryGetProperty(Of IEditorOperations)(GetType(EditorOperationsProvider), editorOperations) Then
+                editorOperations = New EditorOperations(textView, _TextStructureNavigatorFactory)
+                textView.Properties.AddProperty(GetType(EditorOperationsProvider), editorOperations)
             End If
 
-            Return [property]
+            Return EditorOperations
         End Function
     End Class
 End Namespace

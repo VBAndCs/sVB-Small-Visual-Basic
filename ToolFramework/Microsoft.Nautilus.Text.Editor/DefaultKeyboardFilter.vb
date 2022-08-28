@@ -29,10 +29,10 @@ Namespace Microsoft.Nautilus.Text.Editor
             Set(value As IEnumerable(Of CommandKeyBinding))
                 _commandKeyBindings = value
                 _commandKeyBindingsMap = New Dictionary(Of String, CommandKeyBinding)
-                For Each commandKeyBinding1 As CommandKeyBinding In _commandKeyBindings
-                    Dim key As String = commandKeyBinding1.KeySequence.ToLowerInvariant()
+                For Each keyBinding In _commandKeyBindings
+                    Dim key = keyBinding.KeySequence.ToLowerInvariant()
                     If Not _commandKeyBindingsMap.ContainsKey(key) Then
-                        _commandKeyBindingsMap(key) = commandKeyBinding1
+                        _commandKeyBindingsMap(key) = keyBinding
                     End If
                 Next
             End Set
@@ -47,10 +47,10 @@ Namespace Microsoft.Nautilus.Text.Editor
             Set(value As IEnumerable(Of ImportInfo(Of Action(Of IAvalonTextView))))
                 _commandHandlers = value
                 _commandHandlerMap = New Dictionary(Of String, Action(Of IAvalonTextView))
-                For Each commandHandler1 As ImportInfo(Of Action(Of IAvalonTextView)) In _commandHandlers
-                    Dim key As String = TryCast(commandHandler1.Metadata("CommandName"), String)
+                For Each handler In _commandHandlers
+                    Dim key = TryCast(handler.Metadata("CommandName"), String)
                     If Not _commandHandlerMap.ContainsKey(key) Then
-                        _commandHandlerMap(key) = commandHandler1.GetBoundValue()
+                        _commandHandlerMap(key) = handler.GetBoundValue()
                     End If
                 Next
             End Set

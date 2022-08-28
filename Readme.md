@@ -13,13 +13,13 @@
 1. Some bug fixes in compiler and other tools.
 2. Add `OnShown` event to the Form. It is fired after the content of the form is rendered. If you use it, you should add all initialization into it, as you can't know for sure if it will occur before or after the code in the global section is executed! But you can be sure that all the controls are rendered and ready for use.
 `OnShown` is the default event for the Form, and you can add a handler to it by just double-clicking the form surface in the form designer.
-3. I got rid of the side help panel to save space, and showed the help info in a tip window that pops up after 2 seconds from moving the caret to any word in the code editor, and stays open for 10 seconds unlice you move to another position, move the scroll, or press Esc key. I prevent showing the help for the same word unless toy move to another one, but you can force to show the help by pressing `F1`.
+3. I got rid of the side help panel to save space, and showed the help info in a tip window that pops up after 2 seconds from moving the caret to any word in the code editor, and stays open for 10 seconds unless you move to another position, move the scroll, or press Esc key. I prevent showing the help for the same word unless toy move to another one, but you can force to show the help by pressing `F1`.
 You can magnify the font of the popup help by pressing Ctrl and moving the mouse wheel. This is one of many functionalites built-in the WPF FlowDocument control that is used to show the help.
 You can say I brought the VS intellisense to sVB. The pop up help offers valuable info about the current code token, including:
  * The scope (local or global var).
  * The definition signature (Type, Property, Dynamic Property, Event, Method Parameters).
- * If the tokens is a `variable`, a `sub` or a `function`, it will be shown as a link, so, you can click it to go to its definition line. If the token it the name of the form or a control on it, clicking the link will select the form or the control on the form designer.
-* The documentation including a summery, and info about parameters and return value. You can add a summery for user defined types by adding one or more comment lines above the var, sub, or function definitions. You can also add one more comment line at the end of the definition line. For subs and functions, you can add the additional summery line after the opining parans if you split the params over multi lines which also allows you to add a comment for each parameter to be used as a documentation. For Functions, the comment placed after the closing parans will be used as the documentation info for the return value. For subs, it will be considered an additional line of the summery. Ex:
+ * If the token is a `variable`, a `sub` or a `function`, it will be shown as a link, so, you can click it to go to its definition line. If the token it the name of the form or a control on it, clicking the link will select the form or the control on the form designer.
+* The documentation includes a summery, and info about parameters and return value. You can add a summery for user defined types by adding one or more comment lines above the var, sub, or function definitions. You can also add one more comment line at the end of the definition line. For subs and functions, you can add the additional summery line after the opining parans if you split the params over multi lines which also allows you to add a comment for each parameter to be used as a documentation. For Functions, the comment placed after the closing parans will be used as the documentation info for the return value. For subs, it will be considered an additional line of the summery. Ex:
 ```VB
 XPos = 1   ' the horizontal position 
 
@@ -38,11 +38,11 @@ Function InRange( ' Checks if the pos is withing the givin range
 EndFunction
 ```
 
-[Image]
+![image](https://user-images.githubusercontent.com/48354902/187048217-0f626439-8e90-4e90-b838-41cd3312ae4b.png)
 
-while typing the arguments of the method call, the popup help will highlight the current param with a red color, and show only the info about this param, so you can focus only on the task in hand.
+While typing the arguments of the method call, the popup help will highlight the current param with a red color, and show only the info about this param, so you can focus only on the task in hand.
 
-[Image]
+![image](https://user-images.githubusercontent.com/48354902/187048339-8861202b-9b86-41ce-9af9-b09c4dc3d7d1.png)
 
 4. The editor formats the current sub after leaving a line that has changes. Formatting doesn't only include indentation, but also pretty listing of space between tokens, and fixing the casing of keywords, labels, type and method names. It also enforces using lower-case initial letters for local variables, and upper-case initial letters for global variables, labels, subs and functions.
 
@@ -50,7 +50,7 @@ while typing the arguments of the method call, the popup help will highlight the
 
 6. Many enhancements to the completion list to make it smarter, such as :
  * Filtering completion names by partial words (for ex: typing name can select MyName) 
- * Filtered out names don't apper in the list anymore.
+ * Filtered out names don't appear in the list anymore.
  * The list remembers last selected object for each first letter.
  * The list remembers last selected method for each object.
 

@@ -857,12 +857,16 @@ Namespace Microsoft.Nautilus.Text.Operations
             EditorTrace.TraceTextCopyStart()
 
             If Not _TextView.Selection.IsEmpty Then
-                Dim text As String = _TextView.Selection.ActiveSnapshotSpan.GetText()
-                Try
-                    Clipboard.SetDataObject(New DataObject(GetType(String), text), copy:=True)
-                Catch __unusedExternalException1__ As ExternalException
-
-                End Try
+                Dim avalonTextView = TryCast(_TextView, IAvalonTextView)
+                If avalonTextView IsNot Nothing AndAlso EditorCommands.Current IsNot Nothing Then
+                    EditorCommands.Current.CopyHandler(avalonTextView)
+                Else
+                    Dim text = _TextView.Selection.ActiveSnapshotSpan.GetText()
+                    Try
+                        Clipboard.SetDataObject(New DataObject(GetType(String), text), copy:=True)
+                    Catch
+                    End Try
+                End If
             End If
 
             EditorTrace.TraceTextCopyEnd()

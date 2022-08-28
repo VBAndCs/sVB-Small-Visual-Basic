@@ -18,21 +18,20 @@ Namespace Microsoft.Nautilus.Text.Classification
                 Throw New ArgumentNullException("textBuffer")
             End If
 
-            Dim classifierAggregator1 As ClassifierAggregator = Nothing
-            Dim typeFromHandle As Type = GetType(ClassifierAggregator)
-            Dim [property] As WeakReference = Nothing
+            Dim aggregatorType As Type = GetType(ClassifierAggregator)
+            Dim aggregator As WeakReference = Nothing
 
-            If Not textBuffer.Properties.TryGetProperty(typeFromHandle, [property]) Then
+            If Not textBuffer.Properties.TryGetProperty(aggregatorType, aggregator) Then
                 Return CreateAndAddAggregator(textBuffer)
             End If
 
-            Dim target1 As Object = [property].Target
-            If target1 Is Nothing Then
-                textBuffer.Properties.RemoveProperty(typeFromHandle)
+            Dim target = aggregator.Target
+            If target Is Nothing Then
+                textBuffer.Properties.RemoveProperty(aggregatorType)
                 Return CreateAndAddAggregator(textBuffer)
             End If
 
-            Return CType(target1, ClassifierAggregator)
+            Return CType(target, ClassifierAggregator)
         End Function
 
         Private Function CreateAndAddAggregator(textBuffer As ITextBuffer) As ClassifierAggregator

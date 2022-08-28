@@ -9,6 +9,11 @@ Imports Microsoft.Nautilus.Text.Editor
 
 Namespace Microsoft.Nautilus.Text.Operations
     Public NotInheritable Class EditorCommands
+        Public Shared Current As EditorCommands
+
+        Public Sub New()
+            Current = Me
+        End Sub
 
         <Import>
         Public Property EditorOperationsProvider As IEditorOperationsProvider
@@ -29,9 +34,9 @@ Namespace Microsoft.Nautilus.Text.Operations
         <Export(GetType(CommandHandler))>
         <ExportProperty("CommandName", "Microsoft.Editor.Yank.CurrentLine")>
         Public Sub YankCurrentLineHandler(textView As IAvalonTextView)
-            Dim editorOperations As IEditorOperations = _editorOperationsProvider.GetEditorOperations(textView)
-            Dim undoHistory1 As UndoHistory = GetUndoHistory(textView.TextBuffer)
-            editorOperations.YankCurrentLine(undoHistory1)
+            Dim editorOperations = _EditorOperationsProvider.GetEditorOperations(textView)
+            Dim undoHistory = GetUndoHistory(textView.TextBuffer)
+            editorOperations.YankCurrentLine(undoHistory)
         End Sub
 
         <ExportProperty("CommandName", "Microsoft.Editor.Delete.PreviousWord")>
@@ -442,7 +447,7 @@ Namespace Microsoft.Nautilus.Text.Operations
             Dim dataObj As New DataObject
             dataObj.SetData(DataFormats.Rtf, sbText.ToString())
             dataObj.SetData(DataFormats.Text, activeSnapshotSpan.GetText())
-            Clipboard.SetDataObject(dataObj)
+            Clipboard.SetDataObject(dataObj, True)
         End Sub
     End Class
 End Namespace
