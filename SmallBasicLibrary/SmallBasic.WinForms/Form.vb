@@ -9,16 +9,16 @@ Namespace WinForms
     <HideFromIntellisense>
     Public NotInheritable Class Form
 
-        Shared Sub ShowSubError(formName As String, memberName As String, msg As String)
-            MsgBox($"Calling {formName}.{memberName} caused an error: {vbCrLf}{msg}")
+        Shared Sub ShowSubError(formName As String, memberName As String, ex As Exception)
+            ReportError($"Calling {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
-        Shared Sub ShowErrorMesssage(formName As String, memberName As String, msg As String)
-            MsgBox($"Reading {formName}.{memberName} caused an error: {vbCrLf}{msg}")
+        Shared Sub ShowErrorMesssage(formName As String, memberName As String, ex As Exception)
+            ReportError($"Reading {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
-        Shared Sub ShowErrorMesssage(formName As String, memberName As String, value As String, msg As String)
-            MsgBox($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{msg}")
+        Shared Sub ShowErrorMesssage(formName As String, memberName As String, value As String, ex As Exception)
+            ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
         ''' <summary>
@@ -36,15 +36,11 @@ Namespace WinForms
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive) As Primitive
 
+            Dim key = ValidateArgs(formName, textBoxName)
             App.Invoke(
                  Sub()
                      Try
-                         Dim frm = Forms.GetForm(formName)
-
-                         If ContainsControl(formName, textBoxName) Then
-                             Return
-                             MsgBox($"There is another control with the name '{textBoxName}' on the ''{formName} form")
-                         End If
+                         Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                          Dim textBox1 As New Wpf.TextBox With {
                            .Name = textBoxName,
@@ -57,13 +53,14 @@ Namespace WinForms
 
                          Dim cnv As Wpf.Canvas = frm.Content
                          cnv.Children.Add(textBox1)
-                         AddToDictionary(formName, textBox1)
+                         Forms._controls(key) = textBox1
+
                      Catch ex As Exception
-                         ShowSubError(formName, "AddTexBox", ex.Message)
+                         ShowSubError(formName, "AddTexBox", ex)
                      End Try
                  End Sub)
 
-            Return textBoxName
+            Return key
         End Function
 
         ''' <summary>
@@ -81,15 +78,11 @@ Namespace WinForms
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive) As Primitive
 
+            Dim key = ValidateArgs(formName, labelName)
             App.Invoke(
                     Sub()
                         Try
-                            Dim frm = Forms.GetForm(formName)
-
-                            If ContainsControl(formName, labelName) Then
-                                Return
-                                MsgBox($"There is another control with the name '{labelName}' on the ''{formName} form")
-                            End If
+                            Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                             Dim label1 As New Wpf.Label With {
                                .Name = labelName,
@@ -102,13 +95,14 @@ Namespace WinForms
 
                             Dim cnv As Wpf.Canvas = frm.Content
                             cnv.Children.Add(label1)
-                            AddToDictionary(formName, label1)
+                            Forms._controls(key) = label1
+
                         Catch ex As Exception
-                            ShowSubError(formName, "AddLabel", ex.Message)
+                            ShowSubError(formName, "AddLabel", ex)
                         End Try
                     End Sub)
 
-            Return labelName
+            Return key
         End Function
 
         ''' <summary>
@@ -123,24 +117,22 @@ Namespace WinForms
         <ExMethod>
         Public Shared Function AddImageBox(formName As Primitive,
                          imageBoxName As Primitive,
-                         left As Primitive, top As Primitive,
-                         width As Primitive, height As Primitive,
-                         fileName As Primitive) As Primitive
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive,
+                         fileName As Primitive
+                   ) As Primitive
 
+            Dim key = ValidateArgs(formName, imageBoxName)
             App.Invoke(
                     Sub()
                         Try
-                            Dim frm = Forms.GetForm(formName)
-
-                            If ContainsControl(formName, imageBoxName) Then
-                                MsgBox($"There is another control with the name '{imageBoxName}' on the ''{formName} form")
-                                Return
-                            End If
-
+                            Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
                             Dim img As New Wpf.Image With {
-                               .Name = imageBoxName,
-                               .Width = width,
-                               .Height = height
+                                .Name = imageBoxName,
+                                .Width = width,
+                                .Height = height
                             }
 
                             If Not IO.Path.IsPathRooted(fileName) Then
@@ -155,14 +147,48 @@ Namespace WinForms
 
                             Dim cnv As Wpf.Canvas = frm.Content
                             cnv.Children.Add(img)
-                            AddToDictionary(formName, img)
+                            Forms._controls(key) = img
 
                         Catch ex As Exception
-                            ShowSubError(formName, "AddImageBox", ex.Message)
+                            ShowSubError(formName, "AddImageBox", ex)
                         End Try
                     End Sub)
 
-            Return imageBoxName
+            Return key
+        End Function
+
+        Private Shared Function ValidateArgs(formName As String, controlName As String) As String
+            If formName = "" Then
+                Dim msg = "`formName` can't be empty string"
+                Dim ex As New ArgumentException(msg)
+                ReportError(msg, ex)
+                Throw ex
+            End If
+
+            If controlName = "" Then
+                Dim msg = "`buttonName` can't be empty string"
+                Dim ex As New ArgumentException(msg)
+                ReportError(msg, ex)
+                Throw ex
+            End If
+
+            Dim frmName = formName.ToString().ToLower
+            If Not Forms._forms.ContainsKey(frmName) Then
+                Dim msg = $"The Form `{formName}`doesn't exist"
+                Dim ex As New ArgumentException(msg)
+                ReportError(msg, ex)
+                Throw ex
+            End If
+
+            Dim key = frmName & "." & controlName.ToString().ToLower()
+            If Forms._controls.ContainsKey(key) Then
+                Dim msg = $"There is another control with the name '{controlName}' on the ''{formName} form"
+                Dim ex As New ArgumentException(msg)
+                ReportError(msg, ex)
+                Throw ex
+            End If
+
+            Return key
         End Function
 
         ''' <summary>
@@ -175,20 +201,20 @@ Namespace WinForms
         ''' <param name="height">The height of the control.</param>
         ''' <returns>The neame of the button</returns>
         <ExMethod>
-        Public Shared Function AddButton(formName As Primitive,
+        Public Shared Function AddButton(
+                         formName As Primitive,
                          buttonName As Primitive,
-                         left As Primitive, top As Primitive,
-                         width As Primitive, height As Primitive) As Primitive
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive
+                    ) As Primitive
 
+            Dim key = ValidateArgs(formName, buttonName)
             App.Invoke(
                   Sub()
                       Try
-                          Dim frm = Forms.GetForm(formName)
-
-                          If ContainsControl(formName, buttonName) Then
-                              Return
-                              MsgBox($"There is another control with the name '{buttonName}' on the ''{formName} form")
-                          End If
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim button1 As New Wpf.Button With {
                                .Name = buttonName,
@@ -201,22 +227,19 @@ Namespace WinForms
 
                           Dim cnv As Wpf.Canvas = frm.Content
                           cnv.Children.Add(button1)
+                          Forms._controls(key) = button1
 
-                          AddToDictionary(formName, button1)
                       Catch ex As Exception
-                          ShowSubError(formName, "AddButton", ex.Message)
+                          ShowSubError(formName, "AddButton", ex)
                       End Try
                   End Sub)
 
-            Return buttonName
+            Return key
         End Function
 
-        Private Shared Sub AddToDictionary(FormKey As String, control As System.Windows.FrameworkElement)
-            Forms._forms(FormKey.ToLower()).Add(control.Name.ToLower(), control)
-        End Sub
 
         ''' <summary>
-        ''' Adds a new Button control to the form
+        ''' Adds a new ListBox control to the form
         ''' </summary>
         ''' <param name="listBoxName">A unigue name of the new ListBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
@@ -227,18 +250,17 @@ Namespace WinForms
         <ExMethod>
         Public Shared Function AddListBox(formName As Primitive,
                          listBoxName As Primitive,
-                         left As Primitive, top As Primitive,
-                         width As Primitive, height As Primitive) As Primitive
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive
+                  ) As Primitive
 
+            Dim key = ValidateArgs(formName, listBoxName)
             App.Invoke(
                   Sub()
                       Try
-                          Dim frm = Forms.GetForm(formName)
-
-                          If ContainsControl(formName, listBoxName) Then
-                              Return
-                              MsgBox($"There is another control with the name '{listBoxName}' on the ''{formName} form")
-                          End If
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim listBox1 As New Wpf.ListBox With {
                                  .Name = listBoxName,
@@ -251,13 +273,14 @@ Namespace WinForms
 
                           Dim cnv As Wpf.Canvas = frm.Content
                           cnv.Children.Add(listBox1)
-                          AddToDictionary(formName, listBox1)
+                          Forms._controls(key) = listBox1
+
                       Catch ex As Exception
-                          ShowSubError(formName, "AddListBox", ex.Message)
+                          ShowSubError(formName, "AddListBox", ex)
                       End Try
                   End Sub)
 
-            Return listBoxName
+            Return key
         End Function
 
         ''' <summary>
@@ -269,22 +292,24 @@ Namespace WinForms
             Dim frmName = CStr(formName).ToLower()
             If frmName = "" Then
                 Dim msg = "Form name can't be an empty string."
-                MsgBox(msg)
-                Throw New Exception(msg)
+                Dim ex As New ArgumentException(msg)
+                ReportError(msg, ex)
+                Throw ex
             End If
 
-            Dim cntrName = CStr(controlName).ToLower()
-            If cntrName = "" Then
+            If CStr(controlName) = "" Then
                 Dim msg = "Control name can't be an empty string."
-                MsgBox(msg)
-                Throw New Exception(msg)
+                Dim ex As New ArgumentException(msg)
+                ReportError(msg, ex)
+                Throw ex
             End If
+
+            Dim key = frmName & "." & controlName.ToString().ToLower()
 
             Try
-                Return Forms._forms.ContainsKey(frmName) AndAlso
-                        Forms._forms(frmName).ContainsKey(cntrName)
+                Return Forms._controls.ContainsKey(key)
             Catch ex As Exception
-                MsgBox(ex.Message)
+                ReportError(ex.Message, ex)
                 Throw ex
             End Try
 
@@ -297,14 +322,21 @@ Namespace WinForms
         <ExMethod>
         Public Shared Function GetControls(formName As Primitive) As Primitive
             If Not Forms._forms.ContainsKey(formName) Then
-                ShowSubError(formName, "GetControls", $"There is no form named `{formName}`")
+                ShowSubError(formName, "GetControls", New Exception($"There is no form named `{formName}`"))
                 Return ""
             End If
 
             Dim map = New Dictionary(Of Primitive, Primitive)
+            Dim frmName = formName.ToString().ToLower()
+            Dim prefix = frmName & "."
+            Dim suffex = "." & frmName
+            Dim controls = Forms._controls
             Dim num = 0
-            For Each key In Forms._forms(formName).Keys
-                If num > 0 Then map(num) = key ' The first key is the form itself
+
+            For Each key In Forms._controls.Keys
+                If key.StartsWith(prefix) AndAlso Not key.EndsWith(suffex) Then
+                    map(num) = key
+                End If
                 num += 1
             Next
             Return Primitive.ConvertFromMap(map)
@@ -322,7 +354,7 @@ Namespace WinForms
                         wnd.Show()
                         wnd.Activate()
                     Catch ex As Exception
-                        ShowSubError(formName, "Show", ex.Message)
+                        ShowSubError(formName, "Show", ex)
                     End Try
 
                 End Sub)
@@ -339,7 +371,7 @@ Namespace WinForms
                        Dim wnd = Forms.GetForm(formName)
                        ShowDialog = wnd.ShowDialog().GetValueOrDefault
                    Catch ex As Exception
-                       ShowSubError(formName, "ShowDialog", ex.Message)
+                       ShowSubError(formName, "ShowDialog", ex)
                    End Try
                End Sub)
         End Function
@@ -356,7 +388,7 @@ Namespace WinForms
                     Try
                         System.Windows.MessageBox.Show(Forms.GetForm(ownerFormName), message.ToString(), title.ToString())
                     Catch ex As Exception
-                        ShowSubError(ownerFormName, "ShowMessage", ex.Message)
+                        ShowSubError(ownerFormName, "ShowMessage", ex)
                     End Try
                 End Sub)
         End Sub
@@ -371,7 +403,7 @@ Namespace WinForms
                     Try
                         Forms.GetForm(formName).Hide()
                     Catch ex As Exception
-                        ShowSubError(formName, "Hide", ex.Message)
+                        ShowSubError(formName, "Hide", ex)
                     End Try
                 End Sub)
         End Sub
@@ -386,7 +418,7 @@ Namespace WinForms
                     Try
                         Forms.GetForm(formName).Close()
                     Catch ex As Exception
-                        ShowSubError(formName, "Close", ex.Message)
+                        ShowSubError(formName, "Close", ex)
                     End Try
                 End Sub)
         End Sub
@@ -401,7 +433,7 @@ Namespace WinForms
                     Try
                         GetText = Forms.GetForm(formName).Title
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, "Text", ex.Message)
+                        ShowErrorMesssage(formName, "Text", ex)
                     End Try
                 End Sub)
         End Function
@@ -413,7 +445,7 @@ Namespace WinForms
                     Try
                         Forms.GetForm(formName).Title = value
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, "Text", value, ex.Message)
+                        ShowErrorMesssage(formName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -435,7 +467,7 @@ Namespace WinForms
                         canvas.Focusable = True
                         AddHandler canvas.PreviewMouseDown, Sub() canvas.Focus()
                     Catch ex As Exception
-                        MsgBox(ex.Message)
+                        ReportError(ex.Message, ex)
                     End Try
                 End Sub)
         End Sub
@@ -448,25 +480,23 @@ Namespace WinForms
             AddHandler(handler As SmallBasicCallback)
                 App.Invoke(
                      Sub()
-                         Dim form = CType(Forms.GetForm([Event].SenderForm), System.Windows.Window)
+                         Dim form = CType(Forms.GetForm([Event].SenderControl), System.Windows.Window)
                          Try
                              AddHandler form.ContentRendered,
                                  Sub(sender As Object, e As EventArgs)
                                      Try
                                          Dim win = CType(sender, System.Windows.Window)
-                                         [Event].SenderControl = win.Name
-                                         [Event].SenderForm = win.Name
-
+                                         [Event].SenderControl = win.Name & "." & win.Name
                                          Call handler()
                                          [Event].Handled = False
 
                                      Catch ex As Exception
-                                         MsgBox($"The event handler sub `{handler.Method.Name}` fired by the `{[Event].SenderForm}.{NameOf(OnShown)}`event,  caused this error: {ex.Message}")
+                                         ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnShown)}`event,  caused this error: {ex.Message}", ex)
                                      End Try
                                  End Sub
 
                          Catch ex As Exception
-                             [Event].ShowErrorMessage(NameOf(OnShown), ex.Message)
+                             [Event].ShowErrorMessage(NameOf(OnShown), ex)
                          End Try
                      End Sub)
             End AddHandler
@@ -486,14 +516,13 @@ Namespace WinForms
             AddHandler(handler As SmallBasicCallback)
                 App.Invoke(
                      Sub()
-                         Dim form = Forms.GetForm([Event].SenderForm)
+                         Dim form = Forms.GetForm([Event].SenderControl)
                          Try
                              AddHandler form.Closing,
                                  Sub(sender As Object, e As ComponentModel.CancelEventArgs)
                                      Try
                                          Dim win = CType(sender, System.Windows.Window)
-                                         [Event].SenderControl = win.Name
-                                         [Event].SenderForm = win.Name
+                                         [Event].SenderControl = win.Name & "." & win.Name
 
                                          Call handler()
 
@@ -501,11 +530,11 @@ Namespace WinForms
                                          e.Cancel = [Event].Handled
                                          [Event].Handled = False
                                      Catch ex As Exception
-                                         MsgBox($"The event handler sub `{handler.Method.Name}` fired by the `{[Event].SenderForm}.{NameOf(OnClosing)}`event,  caused this error: {ex.Message}")
+                                         ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)
                                      End Try
                                  End Sub
                          Catch ex As Exception
-                             [Event].ShowErrorMessage(NameOf(OnClosing), ex.Message)
+                             [Event].ShowErrorMessage(NameOf(OnClosing), ex)
                          End Try
                      End Sub)
             End AddHandler
@@ -524,23 +553,22 @@ Namespace WinForms
             AddHandler(handler As SmallBasicCallback)
                 App.Invoke(
                      Sub()
-                         Dim form = Forms.GetForm([Event].SenderForm)
+                         Dim form = Forms.GetForm([Event].SenderControl)
                          Try
                              AddHandler form.Closed,
                                  Sub(sender As Object, e As EventArgs)
                                      Try
                                          Dim win = CType(sender, System.Windows.Window)
-                                         [Event].SenderControl = win.Name
-                                         [Event].SenderForm = win.Name
+                                         [Event].SenderControl = win.Name & "." & win.Name
 
                                          Call handler()
                                          [Event].Handled = False
                                      Catch ex As Exception
-                                         MsgBox($"The event handler sub `{handler.Method.Name}` fired by the `{[Event].SenderForm}.{NameOf(OnClosing)}`event,  caused this error: {ex.Message}")
+                                         ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)
                                      End Try
                                  End Sub
                          Catch ex As Exception
-                             [Event].ShowErrorMessage(NameOf(OnClosing), ex.Message)
+                             [Event].ShowErrorMessage(NameOf(OnClosing), ex)
                          End Try
                      End Sub)
             End AddHandler

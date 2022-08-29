@@ -5,19 +5,24 @@
 '}
 
 Me = "Form1"
-Button1 = "button1"
-TextBox1 = "textbox1"
-Form1 = Forms.LoadForm("Form1", "Form1.xaml")
+Button1 = "form1.button1"
+TextBox1 = "form1.textbox1"
+Form1 = Forms.LoadForm("Form1", "form1.xaml")
 Form.AllowTransparency(Form1)
 Form.Show(Form1)
 
 '#Events{
 '    Form1: OnMouseMove OnPreviewKeyDown
+'    Button1: OnClick
 '}
 
 ' Form1 Events:
-Control.HandleEvents(Form1, Form1)
+Control.HandleEvents(Form1)
 Control.OnMouseMove = Form1_OnMouseMove
 Control.OnPreviewKeyDown = Form1_OnPreviewKeyDown
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
 
 

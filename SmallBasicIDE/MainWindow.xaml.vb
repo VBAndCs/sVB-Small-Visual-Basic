@@ -1095,7 +1095,8 @@ Namespace Microsoft.SmallBasic
                 End If
 
                 Dim pos = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
-                Dim obj As String = errMsg.Substring(pos, errMsg.Length - pos - 2).ToLower()
+                Dim objName = errMsg.Substring(pos, errMsg.Length - pos - 2)
+                Dim obj = objName.ToLower()
 
                 Dim controlName = controlNames(obj)
                 'use (lineNum) to be passed by value
@@ -1136,31 +1137,14 @@ Namespace Microsoft.SmallBasic
                         Dim argsCount = argsExprList.Count
                         Dim paramsCount = methodInfo.ParamsCount
                         If paramsCount = 0 OrElse paramsCount <= argsCount OrElse
-                                  (ModuleName <> "Form" AndAlso argsCount > paramsCount - 2) Then
+                                  argsCount > paramsCount - 1 Then
                             errors(i) = New [Error](err.Line, 0, methodPos, "Wrong number of parameters.")
                             Continue For
                         End If
 
-                        Select Case paramsCount
-                            Case 1
-                                lines(lineNum) = prevText &
-                                        $"{ModuleName}.{method}({obj}" &
-                                        restText
-                            Case argsCount + 1
-                                lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({obj}, " &
-                                            restText
-                            Case 2
-                                Dim secondParam = If(methodInfo.secondIsControl, obj & ", ", "")
-                                lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({doc.Form}, {secondParam}" &
-                                            restText
-                            Case Else
-                                Dim secondParam = If(methodInfo.secondIsControl, obj & ", ", "")
-                                lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({doc.Form}, {secondParam} " &
-                                            restText
-                        End Select
+                        lines(lineNum) = prevText &
+                                $"{ModuleName}.{method}({objName}, " &
+                                restText
 
                         errors.RemoveAt(i)
                         ReRun = True
@@ -1184,33 +1168,27 @@ Namespace Microsoft.SmallBasic
                             Dim method = $"Set{propName}"
                             Dim methodInfo = sb.PreCompiler.GetMethodInfo(controlName, method)
                             Dim ModuleName = methodInfo.Module
+
                             If ModuleName = "" Then
                                 errors(i) = New [Error](err.Line, 0, methodPos, $"`{propName}` doesn't exist.")
                                 Continue For
                             End If
 
+                            If methodInfo.ParamsCount <> 2 Then
+                                errors(i) = New [Error](err.Line, 0, methodPos, $"`{method}` definition is not supported.")
+                                Continue For
+                            End If
+
                             pos = tokens(objId + 3).Column
-
-                            Select Case methodInfo.ParamsCount
-                                Case 2
-                                    lines(lineNum) = prevText &
-                                            $"{ModuleName}.{method}({obj}, {line.Substring(pos + 1).Trim}"
-                                Case 3
-                                    lines(lineNum) = prevText &
-                                             $"{ModuleName}.{method}({doc.Form}, {obj}, {line.Substring(pos + 1).Trim}"
-                                Case Else
-                                    errors(i) = New [Error](err.Line, 0, methodPos, $"`{method}` definition is not supported.")
-                                    Continue For
-                            End Select
-
+                            lines(lineNum) = prevText &
+                                    $"{ModuleName}.{method}({obj}, {line.Substring(pos + 1).Trim}"
                             lines(lineNum + tokens.Last.subLine) += ")"
-
                             errors.RemoveAt(i)
                             ReRun = True
 
                         Else ' Event
                             Dim ModuleName = propInfo.Module
-                            lines.Insert(lineNum, $"Control.HandleEvents({doc.Form}, {obj})")
+                            lines.Insert(lineNum, $"Control.HandleEvents({obj})")
                             lines(lineNum + 1) = prevText & $"{ModuleName}.{nextText}"
                             errors.RemoveAt(i)
                             ReRun = True
@@ -1226,28 +1204,21 @@ Namespace Microsoft.SmallBasic
                         Dim method = $"Get{propName}"
                         Dim methodInfo = sb.PreCompiler.GetMethodInfo(controlName, method)
                         Dim ModuleName = methodInfo.Module
+
                         If ModuleName = "" Then
                             errors(i) = New [Error](err.Line, 0, methodPos, $"`{propName}` doesn't exist.")
                             Continue For
                         End If
 
-                        Select Case methodInfo.ParamsCount
-                            Case 1
-                                lines(lineNum) =
-                                            prevText &
-                                            $"{ModuleName}.{method}({obj})" &
-                                            nextText.Substring(propName.Length)
-                            Case 2
-                                lines(lineNum) =
-                                            prevText &
-                                            $"{ModuleName}.{method}({doc.Form}, {obj})" &
-                                            nextText.Substring(propName.Length)
-
-                            Case Else
-                                errors(i) = New [Error](err.Line, 0, methodPos, $"`{method}` definition is not supported.")
-                                Continue For
-
-                        End Select
+                        If methodInfo.ParamsCount = 1 Then
+                            lines(lineNum) =
+                                    prevText &
+                                    $"{ModuleName}.{method}({obj})" &
+                                    nextText.Substring(propName.Length)
+                        Else
+                            errors(i) = New [Error](err.Line, 0, methodPos, $"`{method}` definition is not supported.")
+                            Continue For
+                        End If
 
                         errors.RemoveAt(i)
                         ReRun = True

@@ -94,7 +94,11 @@ Namespace WinForms
             Return events
         End Function
 
-        Public Shared Function GetMethodInfo(controlName As String, methodName As String) As ([Module] As String, ParamsCount As Integer, secondIsControl As Boolean)
+        Public Shared Function GetMethodInfo(
+                         controlName As String,
+                         methodName As String
+                   ) As ([Module] As String, ParamsCount As Integer)
+
             Dim method = methodName.ToLower()
             Dim moduleName = ""
 
@@ -102,7 +106,7 @@ Namespace WinForms
                 moduleName = controlName
 
             ElseIf controlName = NameOf(ImageBox) Then
-                Return ("", 0, False)
+                Return ("", 0)
 
             ElseIf moduleInfo(NameOf(Control)).Contains(method) Then
                 moduleName = NameOf(Control)
@@ -111,14 +115,15 @@ Namespace WinForms
                 moduleName = NameOf(Forms)
 
             Else
-                Return ("", 0, False)
+                Return ("", 0)
             End If
 
             Dim t = Type.GetType(WinFormsNS & moduleName)
             Dim params = t?.GetMethods.Where(
                    Function(m) m.IsPublic AndAlso m.Name.ToLower() = method
-                ).FirstOrDefault?.GetParameters()
-            Return (moduleName, If(params Is Nothing, 0, params.Length), moduleName <> NameOf(Form))
+            ).FirstOrDefault?.GetParameters()
+
+            Return (moduleName, If(params Is Nothing, 0, params.Length))
         End Function
 
         Public Shared Function ParseFormHints(txt As String) As FormInfo

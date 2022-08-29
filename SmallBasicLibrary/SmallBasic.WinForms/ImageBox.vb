@@ -8,23 +8,10 @@ Namespace WinForms
     <HideFromIntellisense>
     Public NotInheritable Class ImageBox
 
-        Private Shared Function GetImageBox(formName As String, imageBoxName As String) As Wpf.Image
-            formName = formName.ToLower()
-            If Not Forms._forms.ContainsKey(formName) Then
-                Throw New Exception($"There is no form named `{formName}`.")
-            End If
+        Private Shared Function GetImageBox(imageBoxName As String) As Wpf.Image
 
-            Dim _controls = Forms._forms(formName)
-            If imageBoxName = "" Then
-                Throw New Exception($"imageBoxName can't be empty")
-            End If
-
-            Dim name = imageBoxName.ToLower()
-            If Not _controls.ContainsKey(name) Then
-                Throw New Exception($"There is no ImageBox named `{imageBoxName}` on form {formName}.")
-            End If
-
-            Dim imgBox = TryCast(_controls(name), Wpf.Image)
+            Dim c = Control.GetFrameworkElement(imageBoxName)
+            Dim imgBox = TryCast(c, Wpf.Image)
             If imgBox Is Nothing Then
                 Throw New Exception($"{imageBoxName} is not a name of a ImageBox.")
             End If
@@ -35,11 +22,11 @@ Namespace WinForms
         ''' Gets or sets the path of the image that is displayed in the control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetFileName(formName As Primitive, ImageBoxName As Primitive) As Primitive
+        Public Shared Function GetFileName(ImageBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        Dim img = GetImageBox(formName, ImageBoxName)
+                        Dim img = GetImageBox(ImageBoxName)
                         Dim src = CType(img.Source, BitmapImage)
                         If src IsNot Nothing Then
                             GetFileName = src.UriSource?.AbsolutePath
@@ -48,13 +35,13 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Image", ex.Message)
+                        Control.ShowErrorMesssage(ImageBoxName, "Image", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetFileName(formName As Primitive, ImageBoxName As Primitive, imageFile As Primitive)
+        Public Shared Sub SetFileName(ImageBoxName As Primitive, imageFile As Primitive)
             App.Invoke(
                 Sub()
                     Try
@@ -63,9 +50,9 @@ Namespace WinForms
                             path = IO.Path.GetDirectoryName(path)
                             imageFile = IO.Path.Combine(path, imageFile)
                         End If
-                        GetImageBox(formName, ImageBoxName).Source = New BitmapImage(New Uri(imageFile))
+                        GetImageBox(ImageBoxName).Source = New BitmapImage(New Uri(imageFile))
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Text", imageFile, ex.Message)
+                        Control.ShowErrorMesssage(ImageBoxName, "Text", imageFile, ex)
                     End Try
                 End Sub)
         End Sub
@@ -75,25 +62,25 @@ Namespace WinForms
         ''' The x-pos of the control on its parent control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetLeft(formName As Primitive, ImageBoxName As Primitive) As Primitive
+        Public Shared Function GetLeft(ImageBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetLeft = Wpf.Canvas.GetLeft(GetImageBox(formName, ImageBoxName))
+                        GetLeft = Wpf.Canvas.GetLeft(GetImageBox(ImageBoxName))
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Left", ex.Message)
+                        Control.ShowErrorMesssage(ImageBoxName, "Left", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetLeft(formName As Primitive, ImageBoxName As Primitive, value As Primitive)
+        Public Shared Sub SetLeft(ImageBoxName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Wpf.Canvas.SetLeft(GetImageBox(formName, ImageBoxName), value)
+                        Wpf.Canvas.SetLeft(GetImageBox(ImageBoxName), value)
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Left", value, ex.Message)
+                        Control.ShowPropertyMesssage(ImageBoxName, "Left", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -102,25 +89,25 @@ Namespace WinForms
         ''' The y-pos of the control on its parent control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetTop(formName As Primitive, ImageBoxName As Primitive) As Primitive
+        Public Shared Function GetTop(ImageBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetTop = Wpf.Canvas.GetTop(GetImageBox(formName, ImageBoxName))
+                        GetTop = Wpf.Canvas.GetTop(GetImageBox(ImageBoxName))
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Top", ex.Message)
+                        Control.ShowErrorMesssage(ImageBoxName, "Top", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetTop(formName As Primitive, ImageBoxName As Primitive, value As Primitive)
+        Public Shared Sub SetTop(ImageBoxName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Wpf.Canvas.SetTop(GetImageBox(formName, ImageBoxName), value)
+                        Wpf.Canvas.SetTop(GetImageBox(ImageBoxName), value)
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Top", value, ex.Message)
+                        Control.ShowPropertyMesssage(ImageBoxName, "Top", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -129,25 +116,25 @@ Namespace WinForms
         ''' The width of the control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetWidth(formName As Primitive, ImageBoxName As Primitive) As Primitive
+        Public Shared Function GetWidth(ImageBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetWidth = GetImageBox(formName, ImageBoxName).ActualWidth
+                        GetWidth = GetImageBox(ImageBoxName).ActualWidth
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Width", ex.Message)
+                        Control.ShowErrorMesssage(ImageBoxName, "Width", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetWidth(formName As Primitive, ImageBoxName As Primitive, value As Primitive)
+        Public Shared Sub SetWidth(ImageBoxName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        GetImageBox(formName, ImageBoxName).Width = value
+                        GetImageBox(ImageBoxName).Width = value
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Width", value, ex.Message)
+                        Control.ShowPropertyMesssage(ImageBoxName, "Width", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -156,25 +143,25 @@ Namespace WinForms
         ''' The height of the control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetHeight(formName As Primitive, ImageBoxName As Primitive) As Primitive
+        Public Shared Function GetHeight(ImageBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetHeight = GetImageBox(formName, ImageBoxName).ActualHeight
+                        GetHeight = GetImageBox(ImageBoxName).ActualHeight
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Height", ex.Message)
+                        Control.ShowErrorMesssage(ImageBoxName, "Height", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetHeight(formName As Primitive, ImageBoxName As Primitive, value As Primitive)
+        Public Shared Sub SetHeight(ImageBoxName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        GetImageBox(formName, ImageBoxName).Height = value
+                        GetImageBox(ImageBoxName).Height = value
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, ImageBoxName, "Height", value, ex.Message)
+                        Control.ShowPropertyMesssage(ImageBoxName, "Height", value, ex)
                     End Try
                 End Sub)
         End Sub

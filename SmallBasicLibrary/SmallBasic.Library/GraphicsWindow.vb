@@ -965,10 +965,10 @@ Namespace Library
         ''' <param name="title">
         ''' The title for the message box.
         ''' </param>
-        Public Shared Sub ShowMessage(text As Primitive, title1 As Primitive)
+        Public Shared Sub ShowMessage(text As Primitive, title As Primitive)
             VerifyAccess()
             Invoke(Sub()
-                       MessageBox.Show(_window, text, title1)
+                       MessageBox.Show(_window, text, title)
                    End Sub)
         End Sub
 

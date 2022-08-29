@@ -9,19 +9,9 @@ Namespace WinForms
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class [Event]
-        Shared Sub ShowErrorMessage(eventName As String, msg As String)
-            MsgBox($"Setting the handler for {[Event].SenderForm}.{[Event].SenderControl}.{eventName} caused an error: {vbCrLf}{msg}")
+        Shared Sub ShowErrorMessage(eventName As String, ex As Exception)
+            ReportError($"Setting the handler for {[Event].SenderControl}.{eventName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
-
-        ''' <summary>
-        ''' Gets or sets the name of the form that raised the event
-        ''' </summary>
-        ''' <remarks>
-        ''' If you are adding an event handler manually, You must set Event.SenderForm and Event.SenderControl before adding an event handler, or just call `Event.HandleEventsOf(form, control)` to do this.
-        ''' But it is easier to add event handlers from the upper lists in the code editor, so the designer hides all these details in the .sb.gen file.
-        ''' If you use one sub to handle an event of more than one control, read SenderForm and SenderControl to get info about which contol is firing the event now.
-        ''' </remarks>
-        Public Shared Property SenderForm As Primitive
 
         ''' <summary>
         ''' Gets or sets the name of the control that raised the event
@@ -75,8 +65,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="FormName"></param>
         ''' <param name="ControlName"></param>
-        Public Shared Sub HandleEventsOf(FormName As Primitive, ControlName As Primitive)
-            _SenderForm = FormName
+        Public Shared Sub HandleEventsOf(ControlName As Primitive)
             _SenderControl = ControlName
         End Sub
 
@@ -90,21 +79,14 @@ Namespace WinForms
                     If CType(Sender, Wpf.Label).Content IsNot Nothing Then Return
                 End If
 
-
                 _SenderControl = Sender.Name
-                If TypeOf Sender Is Window Then
-                    _SenderForm = Sender.Name
-                Else
-                    _SenderForm = CType(Control.GetParent(Sender, GetType(Window)), Window).Name
-                End If
-
                 Call userEventHandler()
 
                 ' the handler may set the Handled property. We will use it and reset it.
                 e.Handled = _Handled
                 _Handled = False
             Catch ex As Exception
-                MsgBox($"The event handler sub `{userEventHandler.Method.Name}` caused this error: {ex.Message}")
+                ReportError($"The event handler sub `{userEventHandler.Method.Name}` caused this error: {ex.Message}", ex)
             End Try
         End Sub
 

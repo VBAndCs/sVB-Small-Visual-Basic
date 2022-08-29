@@ -2,16 +2,16 @@
 
 '------------------------------------------------
 
-lastX = 0
-lastY = 0
+LastX = 0
+LastY = 0
 
 Sub Form1_OnMouseMove
    If Event.IsLeftButtonDown Then
-      Me.Left = Me.Left + Event.MouseX - lastX
-      Me.Top = Me.Top + Event.MouseY - lastY
+      Me.Left = Me.Left + Event.MouseX - LastX
+      Me.Top = Me.Top + Event.MouseY - LastY
    EndIf
-   lastX = Event.MouseX
-   lastY = Event.MouseY
+   LastX = Event.MouseX
+   LastY = Event.MouseY
 EndSub
 
 
@@ -23,3 +23,9 @@ Sub Form1_OnPreviewKeyDown
    EndIf
 EndSub
 
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   Me.Close()
+EndSub

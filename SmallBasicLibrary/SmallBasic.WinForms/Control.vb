@@ -11,27 +11,55 @@ Namespace WinForms
     <SmallBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Control
-        Shared Sub ShowSubError(formName As String, controlName As String, memberName As String, msg As String)
+
+        Shared Sub ShowSubError(key As String, memberName As String, ex As Exception)
+            If Not key.Contains(".") Then
+                key &= "." & key
+            End If
+            Dim names = key.Split(".")
+            ShowSubError(names(0), names(1), ex)
+        End Sub
+
+
+        Shared Sub ShowSubError(formName As String, controlName As String, memberName As String, ex As Exception)
+            Dim msg = ex.Message
             If controlName.ToLower() = formName.ToLower Then
-                MsgBox($"Calling {formName}.{memberName} caused an error: {vbCrLf}{msg}")
+                ReportError($"Calling {formName}.{memberName} caused an error: {vbCrLf}{msg}", ex)
             Else
-                MsgBox($"Calling {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{msg}")
+                ReportError($"Calling {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{msg}", ex)
             End If
         End Sub
 
-        Shared Sub ShowErrorMesssage(formName As String, controlName As String, memberName As String, msg As String)
+        Shared Sub ShowErrorMesssage(key As String, memberName As String, ex As Exception)
+            If Not key.Contains(".") Then
+                key &= "." & key
+            End If
+            Dim names = key.Split(".")
+            ShowErrorMesssage(names(0), names(1), memberName, ex)
+        End Sub
+
+        Shared Sub ShowErrorMesssage(formName As String, controlName As String, memberName As String, ex As Exception)
             If controlName.ToLower() = formName.ToLower Then
-                MsgBox($"Reading {formName}.{memberName} caused an error: {vbCrLf}{msg}")
+                ReportError($"Reading {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             Else
-                MsgBox($"Reading {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{msg}")
+                ReportError($"Reading {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             End If
         End Sub
 
-        Shared Sub ShowErrorMesssage(formName As String, controlName As String, memberName As String, value As String, msg As String)
+        Shared Sub ShowPropertyMesssage(key As String, memberName As String, value As String, ex As Exception)
+            If Not key.Contains(".") Then
+                key &= "." & key
+            End If
+            Dim names = key.Split(".")
+            ShowPropertyMesssage(names(0), names(1), memberName, value, ex)
+        End Sub
+
+
+        Shared Sub ShowPropertyMesssage(formName As String, controlName As String, memberName As String, value As String, ex As Exception)
             If controlName.ToLower() = formName.ToLower Then
-                MsgBox($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{msg}")
+                ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             Else
-                MsgBox($"Sending `{value}` to {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{msg}")
+                ReportError($"Sending `{value}` to {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             End If
         End Sub
 
@@ -41,13 +69,13 @@ Namespace WinForms
         ''' </summary>
         ''' <remarks>You can't change the control name at runtime. Use the designer to change the name</remarks>
         <ExProperty>
-        Public Shared Function GetName(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetName(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetName = GetControl(formName, controlName).Name
+                        GetName = GetControl(controlName).Name
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Name", ex.Message)
+                        ShowErrorMesssage(controlName, "Name", ex)
                     End Try
                 End Sub)
         End Function
@@ -56,28 +84,28 @@ Namespace WinForms
         ''' The x-pos of the control on its parent control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetLeft(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetLeft(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetLeft = Wpf.Canvas.GetLeft(GetControl(formName, controlName))
+                        GetLeft = Wpf.Canvas.GetLeft(GetControl(controlName))
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Left", ex.Message)
+                        ShowErrorMesssage(controlName, "Left", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetLeft(formName As Primitive, controlName As Primitive, value As Primitive)
+        Public Shared Sub SetLeft(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Dim obj = GetControl(formName, controlName)
+                        Dim obj = GetControl(controlName)
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
                         Wpf.Canvas.SetLeft(obj, CDbl(value))
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Left", value, ex.Message)
+                        ShowPropertyMesssage(controlName, "Left", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -86,28 +114,28 @@ Namespace WinForms
         ''' The y-pos of the control on its parent control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetTop(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetTop(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetTop = Wpf.Canvas.GetTop(GetControl(formName, controlName))
+                        GetTop = Wpf.Canvas.GetTop(GetControl(controlName))
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Top", ex.Message)
+                        ShowErrorMesssage(controlName, "Top", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetTop(formName As Primitive, controlName As Primitive, value As Primitive)
+        Public Shared Sub SetTop(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Dim obj = GetControl(formName, controlName)
+                        Dim obj = GetControl(controlName)
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
                         Wpf.Canvas.SetTop(obj, value)
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Top", value, ex.Message)
+                        ShowPropertyMesssage(controlName, "Top", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -116,28 +144,28 @@ Namespace WinForms
         ''' The width of the control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetWidth(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetWidth(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        Dim obj = GetControl(formName, controlName)
+                        Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
                             GetWidth = CType(CType(obj, Window).Content, Wpf.Canvas).ActualWidth
                         Else
                             GetWidth = obj.ActualWidth
                         End If
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Width", ex.Message)
+                        ShowErrorMesssage(controlName, "Width", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetWidth(formName As Primitive, controlName As Primitive, value As Primitive)
+        Public Shared Sub SetWidth(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Dim obj = GetControl(formName, controlName)
+                        Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
                             ' Remove any animation effect to allow setting the new value
                             obj.BeginAnimation(Wpf.Canvas.WidthProperty, Nothing)
@@ -148,7 +176,7 @@ Namespace WinForms
                             obj.Width = value
                         End If
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Width", value, ex.Message)
+                        ShowPropertyMesssage(controlName, "Width", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -157,28 +185,28 @@ Namespace WinForms
         ''' The height of the control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetHeight(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetHeight(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        Dim obj = GetControl(formName, controlName)
+                        Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
                             GetHeight = CType(CType(obj, Window).Content, Wpf.Canvas).ActualHeight
                         Else
                             GetHeight = obj.ActualHeight
                         End If
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Height", ex.Message)
+                        ShowErrorMesssage(controlName, "Height", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetHeight(formName As Primitive, controlName As Primitive, value As Primitive)
+        Public Shared Sub SetHeight(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Dim obj = GetControl(formName, controlName)
+                        Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
                             ' Remove any animation effect to allow setting the new value
                             obj.BeginAnimation(Wpf.Canvas.HeightProperty, Nothing)
@@ -189,7 +217,7 @@ Namespace WinForms
                             obj.Height = value
                         End If
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Height", value, ex.Message)
+                        ShowPropertyMesssage(controlName, "Height", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -199,25 +227,25 @@ Namespace WinForms
         ''' When its value = 0 (or False),  the control is disabled, and user can't interact with it.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetEnabled(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetEnabled(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetEnabled = GetControl(formName, controlName).IsEnabled
+                        GetEnabled = GetControl(controlName).IsEnabled
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Ebabled", ex.Message)
+                        ShowErrorMesssage(controlName, "Ebabled", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetEnabled(formName As Primitive, controlName As Primitive, value As Primitive)
+        Public Shared Sub SetEnabled(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        GetControl(formName, controlName).IsEnabled = value
+                        GetControl(controlName).IsEnabled = value
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Enabled", value, ex.Message)
+                        ShowPropertyMesssage(controlName, "Enabled", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -227,25 +255,25 @@ Namespace WinForms
         ''' When its value = 0 (or False),  the control is hidden.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetVisible(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetVisible(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetVisible = GetControl(formName, controlName).IsVisible
+                        GetVisible = GetControl(controlName).IsVisible
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Visible", ex.Message)
+                        ShowErrorMesssage(controlName, "Visible", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetVisible(formName As Primitive, controlName As Primitive, value As Primitive)
+        Public Shared Sub SetVisible(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        GetControl(formName, controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden)
+                        GetControl(controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden)
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Visible", value, ex.Message)
+                        ShowPropertyMesssage(controlName, "Visible", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -283,14 +311,14 @@ Namespace WinForms
         ''' Use values from the Color object, such as Color.Yellow
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetBackColor(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetBackColor(controlName As Primitive) As Primitive
             App.Invoke(
                  Sub()
                      Try
-                         Dim c = GetControl(formName, controlName)
+                         Dim c = GetControl(controlName)
                          GetBackColor = GetBackColor(c).ToString()
                      Catch ex As Exception
-                         ShowErrorMesssage(formName, controlName, "BackColor", ex.Message)
+                         ShowErrorMesssage(controlName, "BackColor", ex)
                      End Try
                  End Sub)
         End Function
@@ -323,17 +351,17 @@ Namespace WinForms
         End Function
 
         <ExProperty>
-        Public Shared Sub SetBackColor(formName As Primitive, controlName As Primitive, value As Primitive)
+        Public Shared Sub SetBackColor(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
                         Dim _color = Color.FromString(value)
-                        Dim obj = GetControl(formName, controlName)
+                        Dim obj = GetControl(controlName)
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(BackColorProperty, Nothing)
                         obj.SetValue(BackColorProperty, _color)
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "BackColor", value, ex.Message)
+                        ShowPropertyMesssage(controlName, "BackColor", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -348,11 +376,11 @@ Namespace WinForms
         ''' Use values from the Color object, such as Color.Red
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetForeColor(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetForeColor(controlName As Primitive) As Primitive
             App.Invoke(
                   Sub()
                       Try
-                          Dim c = GetControl(formName, controlName)
+                          Dim c = GetControl(controlName)
                           Dim brush = TryCast(c.Foreground, SolidColorBrush)
                           If brush IsNot Nothing Then
                               GetForeColor = brush.Color.ToString()
@@ -360,22 +388,22 @@ Namespace WinForms
                               GetForeColor = CStr(c.GetValue(ForeColorProperty))
                           End If
                       Catch ex As Exception
-                          ShowErrorMesssage(formName, controlName, "ForeColor", ex.Message)
+                          ShowErrorMesssage(controlName, "ForeColor", ex)
                       End Try
                   End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetForeColor(formName As Primitive, controlName As Primitive, value As Primitive)
+        Public Shared Sub SetForeColor(controlName As Primitive, value As Primitive)
             App.Invoke(
                    Sub()
                        Try
-                           Dim c = GetControl(formName, controlName)
+                           Dim c = GetControl(controlName)
                            Dim _color = Color.FromString(value)
                            c.Foreground = New SolidColorBrush(_color)
                            c.SetValue(ForeColorProperty, value.ToString())
                        Catch ex As Exception
-                           ShowErrorMesssage(formName, controlName, "ForeColor", value, ex.Message)
+                           ShowPropertyMesssage(controlName, "ForeColor", value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -384,14 +412,14 @@ Namespace WinForms
         ''' The mouse x-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's width.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetMouseX(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetMouseX(controlName As Primitive) As Primitive
             App.Invoke(
                    Sub()
                        Try
-                           Dim c = GetControl(formName, controlName)
+                           Dim c = GetControl(controlName)
                            GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X)
                        Catch ex As Exception
-                           ShowErrorMesssage(formName, controlName, "MouseX", ex.Message)
+                           ShowErrorMesssage(controlName, "MouseX", ex)
                        End Try
                    End Sub)
         End Function
@@ -400,14 +428,14 @@ Namespace WinForms
         ''' The mouse y-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's.height.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetMouseY(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetMouseY(controlName As Primitive) As Primitive
             App.Invoke(
                     Sub()
                         Try
-                            Dim c = GetControl(formName, controlName)
+                            Dim c = GetControl(controlName)
                             GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y)
                         Catch ex As Exception
-                            ShowErrorMesssage(formName, controlName, "MouseY", ex.Message)
+                            ShowErrorMesssage(controlName, "MouseY", ex)
                         End Try
                     End Sub)
         End Function
@@ -417,13 +445,13 @@ Namespace WinForms
         ''' Gets or sets the rotation angle of the control.
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetAngle(formName As Primitive, controlName As Primitive) As Primitive
+        Public Shared Function GetAngle(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetAngle = GetAngle(GetControl(formName, controlName))
+                        GetAngle = GetAngle(GetControl(controlName))
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Angle", ex.Message)
+                        ShowErrorMesssage(controlName, "Angle", ex)
                     End Try
                 End Sub)
         End Function
@@ -438,13 +466,13 @@ Namespace WinForms
 
 
         <ExProperty>
-        Public Shared Sub SetAngle(formName As Primitive, controlName As Primitive, value As Primitive)
+        Public Shared Sub SetAngle(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        SetAngle(GetControl(formName, controlName), value)
+                        SetAngle(GetControl(controlName), value)
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, controlName, "Angle", value, ex.Message)
+                        ShowPropertyMesssage(controlName, "Angle", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -490,13 +518,13 @@ Namespace WinForms
         ''' Moves focus to the control, so it beccomes the active control that recives the keybored keys.
         ''' </summary>
         <ExMethod>
-        Public Shared Sub Focus(formName As Primitive, controlName As Primitive)
+        Public Shared Sub Focus(controlName As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        GetControl(formName, controlName).Focus()
+                        GetControl(controlName).Focus()
                     Catch ex As Exception
-                        ShowSubError(formName, controlName, "Focus", ex.Message)
+                        ShowSubError(controlName, "Focus", ex)
                     End Try
                 End Sub)
         End Sub
@@ -509,12 +537,12 @@ Namespace WinForms
         ''' The angle to rotate the shape by. It will be added to the shape current angle.
         ''' </param>
         <ExMethod>
-        Public Shared Sub Rotate(formName As Primitive, controlName As Primitive, angle As Primitive)
+        Public Shared Sub Rotate(controlName As Primitive, angle As Primitive)
             Try
-                Dim obj = GetControl(formName, controlName)
+                Dim obj = GetControl(controlName)
                 App.BeginInvoke(Sub() SetAngle(obj, GetAngle(obj) + CDbl(angle)))
             Catch ex As Exception
-                ShowSubError(formName, controlName, "Rotate", ex.Message)
+                ShowSubError(controlName, "Rotate", ex)
             End Try
         End Sub
 
@@ -532,9 +560,9 @@ Namespace WinForms
         ''' The time for the animation, in milliseconds.
         ''' </param>
         <ExMethod>
-        Public Shared Sub AnimateColor(formName As Primitive, controlName As Primitive, newColor As Primitive, duration As Primitive)
+        Public Shared Sub AnimateColor(controlName As Primitive, newColor As Primitive, duration As Primitive)
             Try
-                Dim obj = GetControl(formName, controlName)
+                Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
                         Dim animation As New Animation.ColorAnimation() With {
@@ -545,7 +573,7 @@ Namespace WinForms
                         obj.BeginAnimation(BackColorProperty, animation)
                     End Sub)
             Catch ex As Exception
-                ShowSubError(formName, controlName, "AnimateColor", ex.Message)
+                ShowSubError(controlName, "AnimateColor", ex)
             End Try
         End Sub
 
@@ -559,13 +587,13 @@ Namespace WinForms
         ''' The time for the animation, in milliseconds.
         ''' </param>
         <ExMethod>
-        Public Shared Sub AnimateTransparency(formName As Primitive, controlName As Primitive, transparency As Primitive, duration As Primitive)
+        Public Shared Sub AnimateTransparency(controlName As Primitive, transparency As Primitive, duration As Primitive)
             Try
-                Dim c = GetBackColor(formName, controlName)
+                Dim c = GetBackColor(controlName)
                 c = Color.SetTransparency(c, transparency)
-                AnimateColor(formName, controlName, c, duration)
+                AnimateColor(controlName, c, duration)
             Catch ex As Exception
-                ShowSubError(formName, controlName, "AnimateColor", ex.Message)
+                ShowSubError(controlName, "AnimateColor", ex)
             End Try
         End Sub
 
@@ -583,16 +611,16 @@ Namespace WinForms
         ''' The time for the animation, in milliseconds.
         ''' </param>
         <ExMethod>
-        Public Shared Sub AnimatePos(formName As Primitive, controlName As Primitive, x As Primitive, y As Primitive, duration As Primitive)
+        Public Shared Sub AnimatePos(controlName As Primitive, x As Primitive, y As Primitive, duration As Primitive)
             Try
-                Dim obj = GetControl(formName, controlName)
+                Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
                         GraphicsWindow.DoubleAnimateProperty(obj, Wpf.Canvas.LeftProperty, x, CDbl(duration))
                         GraphicsWindow.DoubleAnimateProperty(obj, Wpf.Canvas.TopProperty, y, CDbl(duration))
                     End Sub)
             Catch ex As Exception
-                ShowSubError(formName, controlName, "AnimatePos", ex.Message)
+                ShowSubError(controlName, "AnimatePos", ex)
             End Try
         End Sub
 
@@ -610,16 +638,16 @@ Namespace WinForms
         ''' The time for the animation, in milliseconds.
         ''' </param>
         <ExMethod>
-        Public Shared Sub AnimateSize(formName As Primitive, controlName As Primitive, width As Primitive, height As Primitive, duration As Primitive)
+        Public Shared Sub AnimateSize(controlName As Primitive, width As Primitive, height As Primitive, duration As Primitive)
             Try
-                Dim obj = GetControl(formName, controlName)
+                Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
                         GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.WidthProperty, width, duration)
                         GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.HeightProperty, height, duration)
                     End Sub)
             Catch ex As Exception
-                ShowSubError(formName, controlName, "AnimateSize", ex.Message)
+                ShowSubError(controlName, "AnimateSize", ex)
             End Try
         End Sub
 
@@ -633,15 +661,15 @@ Namespace WinForms
         ''' The time for the animation, in milliseconds.
         ''' </param>
         <ExMethod>
-        Public Shared Sub AnimateAngle(formName As Primitive, controlName As Primitive, angle As Primitive, duration As Primitive)
+        Public Shared Sub AnimateAngle(controlName As Primitive, angle As Primitive, duration As Primitive)
             Try
-                Dim obj = GetControl(formName, controlName)
+                Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
                         GraphicsWindow.DoubleAnimateProperty(obj, AngleProperty, CDbl(angle), CDbl(duration))
                     End Sub)
             Catch ex As Exception
-                ShowSubError(formName, controlName, "AnimateAngle", ex.Message)
+                ShowSubError(controlName, "AnimateAngle", ex)
             End Try
         End Sub
 
@@ -650,14 +678,13 @@ Namespace WinForms
 #Region "Events"
 
         <ExMethod>
-        Public Shared Sub HandleEvents(FormName As Primitive, ControlName As Primitive)
-            [Event].SenderForm = FormName
+        Public Shared Sub HandleEvents(ControlName As Primitive)
             [Event].SenderControl = ControlName
         End Sub
 
         Shared Function GetVisualElemet(eventNmae As String, Optional getForm As Boolean = False) As FrameworkElement
             Try
-                Dim VisualElement = CType(GetControl([Event].SenderForm, [Event].SenderControl), FrameworkElement)
+                Dim VisualElement = CType(GetControl([Event].SenderControl), FrameworkElement)
                 If TypeOf VisualElement Is Window AndAlso Not getForm Then
                     App.Invoke(
                            Sub()
@@ -672,8 +699,9 @@ Namespace WinForms
                 Return VisualElement
 
             Catch ex As Exception
-                [Event].ShowErrorMessage(eventNmae, ex.Message)
+                [Event].ShowErrorMessage(eventNmae, ex)
             End Try
+
             Return Nothing
         End Function
 
@@ -700,7 +728,8 @@ Namespace WinForms
         Public Shared Custom Event OnClick As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Dim VisualElement = GetVisualElemet(NameOf(OnClick))
-                AddHandler VisualElement.PreviewMouseLeftButtonUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                AddHandler VisualElement.PreviewMouseLeftButtonUp,
+                    Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -916,21 +945,22 @@ Namespace WinForms
         End Event
 #End Region
 
+        Friend Shared Function GetControl(key As String) As Wpf.Control
+            Return GetFrameworkElement(key)
+        End Function
 
-        Friend Shared Function GetControl(formName As String, controlName As String) As Wpf.Control
-            formName = formName.ToLower()
-            If Not Forms._forms.ContainsKey(formName) Then
-                Throw New Exception($"There is no form named `{formName}`.")
+        Friend Shared Function GetFrameworkElement(key As String) As FrameworkElement
+            key = key.ToLower()
+            If Not key.Contains(".") Then
+                key &= "." & key
             End If
 
-            Dim _controls = Forms._forms(formName)
-            If controlName = "" Then Return CType(_controls(formName), Wpf.Control)
-
-            Dim name = controlName.ToLower()
-            If Not _controls.ContainsKey(name) Then
-                Throw New Exception($"There is no control named `{controlName}` on form {formName}.")
+            If Not Forms._controls.ContainsKey(key) Then
+                Dim names = key.Split("."c)
+                Throw New Exception($"There is no control named `{names(1)}` on form {names(0)}.")
             End If
-            Return CType(_controls(name), Wpf.Control)
+
+            Return CType(Forms._controls(key), Wpf.Control)
         End Function
 
         Shared Function GetParent(child As DependencyObject, parentType As Type) As UIElement

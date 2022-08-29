@@ -7,11 +7,11 @@
 '}
 
 Me = "Form1"
-Triangle1 = "triangle1"
-Button1 = "button1"
-Rectangle1 = "rectangle1"
-Ellipse1 = "ellipse1"
-Form1 = Forms.LoadForm("Form1", "Form1.xaml")
+Triangle1 = "form1.triangle1"
+Button1 = "form1.button1"
+Rectangle1 = "form1.rectangle1"
+Ellipse1 = "form1.ellipse1"
+Form1 = Forms.LoadForm("Form1", "form1.xaml")
 Form.Show(Form1)
 
 '#Events{
@@ -19,7 +19,7 @@ Form.Show(Form1)
 '}
 
 ' Button1 Events:
-Control.HandleEvents(Form1, Button1)
+Control.HandleEvents(Button1)
 Control.OnClick = Button1_OnClick
 
 

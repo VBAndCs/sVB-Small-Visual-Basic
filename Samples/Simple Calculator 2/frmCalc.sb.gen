@@ -12,15 +12,15 @@
 '}
 
 Me = "frmCalc"
-lblNum1 = "lblnum1"
-txtNum1 = "txtnum1"
-lblNum2 = "lblnum2"
-txtNum2 = "txtnum2"
-btnAdd = "btnadd"
-btnSubtract = "btnsubtract"
-btnMultply = "btnmultply"
-btnDivide = "btndivide"
-lblResult = "lblresult"
+lblNum1 = "frmcalc.lblnum1"
+txtNum1 = "frmcalc.txtnum1"
+lblNum2 = "frmcalc.lblnum2"
+txtNum2 = "frmcalc.txtnum2"
+btnAdd = "frmcalc.btnadd"
+btnSubtract = "frmcalc.btnsubtract"
+btnMultply = "frmcalc.btnmultply"
+btnDivide = "frmcalc.btndivide"
+lblResult = "frmcalc.lblresult"
 frmCalc = Forms.LoadForm("frmCalc", "frmcalc.xaml")
 Form.Show(frmCalc)
 
@@ -32,19 +32,19 @@ Form.Show(frmCalc)
 '}
 
 ' btnAdd Events:
-Control.HandleEvents(frmCalc, btnAdd)
+Control.HandleEvents(btnAdd)
 Control.OnClick = btnAdd_OnClick
 
 ' btnSubtract Events:
-Control.HandleEvents(frmCalc, btnSubtract)
+Control.HandleEvents(btnSubtract)
 Control.OnClick = btnSubtract_OnClick
 
 ' btnMultply Events:
-Control.HandleEvents(frmCalc, btnMultply)
+Control.HandleEvents(btnMultply)
 Control.OnClick = btnMultply_OnClick
 
 ' btnDivide Events:
-Control.HandleEvents(frmCalc, btnDivide)
+Control.HandleEvents(btnDivide)
 Control.OnClick = btnDivide_OnClick
 
 

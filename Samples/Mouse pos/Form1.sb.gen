@@ -3,21 +3,23 @@
 '    TextBox1: TextBox
 '    TextBox2: TextBox
 '    Label1: Label
+'    Button1: Button
 '}
 
 Me = "Form1"
-TextBox1 = "textbox1"
-TextBox2 = "textbox2"
-Label1 = "label1"
-Form1 = Forms.LoadForm("Form1", "Form1.xaml")
+TextBox1 = "form1.textbox1"
+TextBox2 = "form1.textbox2"
+Label1 = "form1.label1"
+Button1 = "form1.button1"
+Form1 = Forms.LoadForm("Form1", "form1.xaml")
 Form.Show(Form1)
 
 '#Events{
-'    Form1: OnMouseMove
+'    Button1: OnClick
 '}
 
-' Form1 Events:
-Control.HandleEvents(Form1, Form1)
-Control.OnMouseMove = Form1_OnMouseMove
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
 
 

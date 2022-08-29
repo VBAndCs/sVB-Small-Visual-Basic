@@ -8,8 +8,8 @@ Namespace WinForms
     <HideFromIntellisense>
     Public NotInheritable Class Label
 
-        Private Shared Function GetLabel(formName As String, labelName As String) As Wpf.Label
-            Dim c = Control.GetControl(formName, labelName)
+        Private Shared Function GetLabel(labelName As String) As Wpf.Label
+            Dim c = Control.GetControl(labelName)
             Dim t = TryCast(c, Wpf.Label)
             If t Is Nothing Then
                 Throw New Exception($"{labelName} is not a name of a Label.")
@@ -21,26 +21,26 @@ Namespace WinForms
         ''' Gets or sets the text that is displayed on the label
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetText(formName As Primitive, labelName As Primitive) As Primitive
+        Public Shared Function GetText(labelName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetText = GetLabel(formName, labelName).Content.ToString()
+                        GetText = GetLabel(labelName).Content.ToString()
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, labelName, "Text", ex.Message)
+                        Control.ShowErrorMesssage(labelName, "Text", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetText(formName As Primitive, labelName As Primitive, value As Primitive)
+        Public Shared Sub SetText(labelName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
                         Dim strValue = CStr(value)
-                        GetLabel(formName, labelName).Content = strValue
+                        GetLabel(labelName).Content = strValue
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, labelName, "Text", value, ex.Message)
+                        Control.ShowPropertyMesssage(labelName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -49,11 +49,11 @@ Namespace WinForms
         ''' Gets or sets the path of the image that is displayed on the label
         ''' </summary>
         <ExProperty>
-        Public Shared Function GetImage(formName As Primitive, labelName As Primitive) As Primitive
+        Public Shared Function GetImage(labelName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        Dim content = GetLabel(formName, labelName).Content
+                        Dim content = GetLabel(labelName).Content
                         Dim img = TryCast(content, Wpf.Image)
                         If img IsNot Nothing Then
                             GetImage = CType(img.Source, BitmapImage).UriSource.AbsolutePath
@@ -62,13 +62,13 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, labelName, "Image", ex.Message)
+                        Control.ShowErrorMesssage(labelName, "Image", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetImage(formName As Primitive, labelName As Primitive, imageFile As Primitive)
+        Public Shared Sub SetImage(labelName As Primitive, imageFile As Primitive)
             App.Invoke(
                 Sub()
                     Try
@@ -77,9 +77,9 @@ Namespace WinForms
                             path = IO.Path.GetDirectoryName(path)
                             imageFile = IO.Path.Combine(path, imageFile)
                         End If
-                        GetLabel(formName, labelName).Content = New Wpf.Image() With {.Source = New BitmapImage(New Uri(imageFile))}
+                        GetLabel(labelName).Content = New Wpf.Image() With {.Source = New BitmapImage(New Uri(imageFile))}
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(formName, labelName, "Text", imageFile, ex.Message)
+                        Control.ShowErrorMesssage(labelName, "Text", imageFile, ex)
                     End Try
                 End Sub)
         End Sub

@@ -6,19 +6,19 @@
 '}
 
 Me = "Form1"
-TextBox1 = "textbox1"
-Label1 = "label1"
-Label2 = "label2"
-Form1 = Forms.LoadForm("Form1", "Form1.xaml")
+TextBox1 = "form1.textbox1"
+Label1 = "form1.label1"
+Label2 = "form1.label2"
+Form1 = Forms.LoadForm("Form1", "form1.xaml")
 Form.Show(Form1)
 
 '#Events{
-'    TextBox1: OnTextInput OnTextChamged
+'    TextBox1: OnTextInput OnTextChanged
 '}
 
 ' TextBox1 Events:
-Control.HandleEvents(Form1, TextBox1)
+Control.HandleEvents(TextBox1)
 TextBox.OnTextInput = TextBox1_OnTextInput
-TextBox.OnTextChamged = TextBox1_OnTextChamged
+TextBox.OnTextChanged = TextBox1_OnTextChanged
 
 

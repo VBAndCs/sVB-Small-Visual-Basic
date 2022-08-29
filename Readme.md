@@ -11,9 +11,30 @@
 
 # What's new in sVB v1.6
 1. Some bug fixes in compiler and other tools.
-2. Add `OnShown` event to the Form. It is fired after the content of the form is rendered. If you use it, you should add all initialization into it, as you can't know for sure if it will occur before or after the code in the global section is executed! But you can be sure that all the controls are rendered and ready for use.
+
+2. Make it easy to crate a new form and show it from code:
+```vb
+form2 = Forms.AddForm("form2")
+form2.Text = "Form2"
+newButton = onForm.AddButton(
+      "Button 1"
+      100,  ' left
+      100,  ' Top
+      400,  ' Width
+      250   ' Height
+)
+newButton.Text = "Hello"
+newButton.OnClick = Button1_OnClick
+form2.Show()
+``
+
+This code can't run before sVB 1.6.5, because all controls were assumed to belong to Form1!. Now they belong to the forms that creates them using AddXXX methods (like AddButton, AddListBox... etc).
+You can see an interesting example of this in the `Random Buttons` app in the Samples folder.
+
+3. Add `OnShown` event to the Form. It is fired after the content of the form is rendered. If you use it, you should add all initialization into it, as you can't know for sure if it will occur before or after the code in the global section is executed! But you can be sure that all the controls are rendered and ready for use.
 `OnShown` is the default event for the Form, and you can add a handler to it by just double-clicking the form surface in the form designer.
-3. I got rid of the side help panel to save space, and showed the help info in a tip window that pops up after 2 seconds from moving the caret to any word in the code editor, and stays open for 10 seconds unless you move to another position, move the scroll, or press Esc key. I prevent showing the help for the same word unless toy move to another one, but you can force to show the help by pressing `F1`.
+
+4. I got rid of the side help panel to save space, and showed the help info in a tip window that pops up after 2 seconds from moving the caret to any word in the code editor, and stays open for 10 seconds unless you move to another position, move the scroll, or press Esc key. I prevent showing the help for the same word unless toy move to another one, but you can force to show the help by pressing `F1`.
 You can magnify the font of the popup help by pressing Ctrl and moving the mouse wheel. This is one of many functionalites built-in the WPF FlowDocument control that is used to show the help.
 You can say I brought the VS intellisense to sVB. The pop up help offers valuable info about the current code token, including:
  * The scope (local or global var).
@@ -44,11 +65,11 @@ While typing the arguments of the method call, the popup help will highlight the
 
 ![image](https://user-images.githubusercontent.com/48354902/187048339-8861202b-9b86-41ce-9af9-b09c4dc3d7d1.png)
 
-4. The editor formats the current sub after leaving a line that has changes. Formatting doesn't only include indentation, but also pretty listing of space between tokens, and fixing the casing of keywords, labels, type and method names. It also enforces using lower-case initial letters for local variables, and upper-case initial letters for global variables, labels, subs and functions.
+5. The editor formats the current sub after leaving a line that has changes. Formatting doesn't only include indentation, but also pretty listing of space between tokens, and fixing the casing of keywords, labels, type and method names. It also enforces using lower-case initial letters for local variables, and upper-case initial letters for global variables, labels, subs and functions.
 
-5. The editor highlights every occurrence of the current identifier (variable, sub, function, label, type, method) name. Similar to highlighted block keywords, you can navigate between highlighted identifiers by pressing `F4` or `Ctrl+Shift+Up` or `Ctrl+Shift+down`
+6. The editor highlights every occurrence of the current identifier (variable, sub, function, label, type, method) name. Similar to highlighted block keywords, you can navigate between highlighted identifiers by pressing `F4` or `Ctrl+Shift+Up` or `Ctrl+Shift+down`
 
-6. Many enhancements to the completion list to make it smarter, such as :
+7. Many enhancements to the completion list to make it smarter, such as :
  * Filtering completion names by partial words (for ex: typing name can select MyName) 
  * Filtered out names don't appear in the list anymore.
  * The list remembers last selected object for each first letter.

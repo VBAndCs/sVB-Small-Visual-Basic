@@ -855,7 +855,7 @@ Namespace Microsoft.SmallBasic.Documents
                     controlsInfoList(name.ToLower()) = typeName
                     controlNamesList.Add(name)
                     hint.AppendLine($"'    {name}: {typeName}")
-                    declaration.AppendLine($"{name} = ""{name.ToLower()}""")
+                    declaration.AppendLine($"{name} = ""{formName.ToLower()}.{name.ToLower()}""")
                 End If
             Next
 
@@ -891,7 +891,7 @@ Namespace Microsoft.SmallBasic.Documents
                 For Each ev In controlEvents
                     hint.Append($"'    {ev.ControlName}:")
                     sbHandlers.AppendLine($"' {ev.ControlName} Events:")
-                    sbHandlers.AppendLine($"Control.HandleEvents({formName}, {ev.ControlName})")
+                    sbHandlers.AppendLine($"Control.HandleEvents({ev.ControlName})")
                     For Each info In ev.EventInfo
                         Dim controlName = ev.ControlName.ToLower
                         If controlsInfoList.ContainsKey(controlName) Then

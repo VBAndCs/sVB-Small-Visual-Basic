@@ -12,15 +12,19 @@ Namespace WinForms
     <SmallBasicType>
     Public NotInheritable Class Forms
 
-        Friend Shared _forms As New Dictionary(Of String, ControlsDictionay)
+        Friend Shared _forms As New ControlsDictionay
+        Friend Shared _controls As New ControlsDictionay
 
         Friend Shared Function GetForm(name As String) As Window
             name = name.ToLower()
-            If Not _forms.ContainsKey(name) Then Return Nothing
+            Dim wnd As Window
+            Dim dictionary = If(name.Contains("."), _controls, _forms)
 
-            Dim wnd = _forms(name)(name)
+            If Not dictionary.ContainsKey(name) Then Return Nothing
+            wnd = dictionary(name)
+
             If wnd Is Nothing Then
-                MsgBox($"`{name}` is not a form or it is closed")
+                ReportError($"`{name}` is not a form or it is closed", Nothing)
             End If
 
             Return wnd
@@ -51,12 +55,13 @@ Namespace WinForms
         ''' <param name="xamlPath">the path pf the xaml file that contains the form design</param>
         ''' <returns>The name of the form</returns>
         Public Shared Function LoadForm(formName As Primitive, xamlPath As Primitive) As Primitive
-            Dim name = CStr(formName).ToLower()
-            If name = "" Then
-                MsgBox("Form name can't be an empty string.")
+            Dim form_Name = CStr(formName).ToLower()
+            If form_Name = "" Then
+                Dim ex As New ArgumentException("Form name can't be an empty string.")
+                ReportError(ex.Message, ex)
             End If
 
-            If _forms.ContainsKey(name) Then Return name
+            If _forms.ContainsKey(form_Name) Then Return form_Name
 
             SyncLock _syncLock
                 SmallBasicApplication.Invoke(
@@ -66,7 +71,7 @@ Namespace WinForms
                             Dim xaml = CStr(xamlPath)
 
                             If xaml = "" Then
-                                canvas = LoadContent(name & ".xaml")
+                                canvas = LoadContent(form_Name & ".xaml")
                             ElseIf xaml.StartsWith("<") Then
                                 canvas = XamlReader.Load(Xml.XmlReader.Create(New IO.StringReader(xaml)))
                             Else
@@ -76,7 +81,7 @@ Namespace WinForms
                             Dim wnd As New Window() With {
                                    .SizeToContent = SizeToContent.WidthAndHeight,
                                    .WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                                   .Name = name,
+                                   .Name = form_Name,
                                    .Title = Automation.AutomationProperties.GetHelpText(canvas),
                                    .Content = canvas,
                                    .ResizeMode = ResizeMode.CanMinimize
@@ -85,9 +90,8 @@ Namespace WinForms
                             AddHandler wnd.Closing, AddressOf Form_Closing
                             AddHandler wnd.Closed, AddressOf Form_Closed
 
-                            Dim _controls = New ControlsDictionay()
-                            _controls(name) = wnd
-                            _forms(name) = _controls
+                            _forms(form_Name) = wnd
+                            _controls(form_Name & "." & form_Name) = wnd
 
                             ' Add control names:
                             Dim controls = canvas.GetChildren().ToList()
@@ -102,7 +106,7 @@ Namespace WinForms
                                 End If
 
                                 If TypeOf ui Is Wpf.Control Then
-                                    _controls(controlName.ToLower()) = ui
+                                    _controls(form_Name & "." & controlName.ToLower()) = ui
                                     CType(ui, Wpf.Control).Name = controlName
                                 Else
                                     Dim left = Canvas.GetLeft(ui)
@@ -123,13 +127,13 @@ Namespace WinForms
                                     canvas.Children.Add(lb)
                                     Canvas.SetLeft(lb, left)
                                     Canvas.SetTop(lb, top)
-                                    _controls(controlName.ToLower()) = lb
+                                    _controls(form_Name & "." & controlName.ToLower()) = lb
                                 End If
 
                                 SetControlText(ui, GetControlText(ui))
                             Next
                         Catch ex As Exception
-                            MsgBox("LoadForm caused an error: " & ex.Message)
+                            ReportError("LoadForm caused an error: " & ex.Message, ex)
                         End Try
                     End Sub)
 
@@ -139,7 +143,7 @@ Namespace WinForms
             ' to create a global hanler for the PreviewKeyDown event
             Dim __ = Keyboard.LastKey
 
-            Return name
+            Return form_Name
         End Function
 
         Private Shared Sub SetControlText(control As UIElement, value As String)
@@ -188,7 +192,7 @@ Namespace WinForms
                 End If
 
             Catch ex As Exception
-                MsgBox("AddForm cuased this error: " & ex.Message)
+                ReportError("AddForm cuased this error: " & ex.Message, ex)
             End Try
             Return formName
         End Function
@@ -253,7 +257,7 @@ Namespace WinForms
             Try
                 SmallBasicApplication.Invoke(Sub() System.Windows.MessageBox.Show(message.ToString(), title.ToString()))
             Catch ex As Exception
-                MsgBox("ShowMessage caused this error: " & ex.Message)
+                ReportError("ShowMessage caused this error: " & ex.Message, ex)
             End Try
         End Sub
     End Class

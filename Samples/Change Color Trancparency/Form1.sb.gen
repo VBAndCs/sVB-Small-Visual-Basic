@@ -6,10 +6,10 @@
 '}
 
 Me = "Form1"
-TextBox1 = "textbox1"
-Button1 = "button1"
-Button2 = "button2"
-Form1 = Forms.LoadForm("Form1", "Form1.xaml")
+TextBox1 = "form1.textbox1"
+Button1 = "form1.button1"
+Button2 = "form1.button2"
+Form1 = Forms.LoadForm("Form1", "form1.xaml")
 Form.Show(Form1)
 
 '#Events{
@@ -18,11 +18,11 @@ Form.Show(Form1)
 '}
 
 ' Button1 Events:
-Control.HandleEvents(Form1, Button1)
+Control.HandleEvents(Button1)
 Control.OnClick = Button1_OnClick
 
 ' Button2 Events:
-Control.HandleEvents(Form1, Button2)
+Control.HandleEvents(Button2)
 Control.OnClick = Button2_OnClick
 
 

@@ -9,13 +9,13 @@
 '}
 
 Me = "frmShapes"
-Control1 = "control1"
-Elps2 = "elps2"
-Control2 = "control2"
-Button1 = "button1"
-Label1 = "label1"
-TextBox1 = "textbox1"
-frmShapes = Forms.LoadForm("frmShapes", "frmShapes.xaml")
+Control1 = "frmshapes.control1"
+Elps2 = "frmshapes.elps2"
+Control2 = "frmshapes.control2"
+Button1 = "frmshapes.button1"
+Label1 = "frmshapes.label1"
+TextBox1 = "frmshapes.textbox1"
+frmShapes = Forms.LoadForm("frmShapes", "frmshapes.xaml")
 Form.Show(frmShapes)
 
 '#Events{
@@ -23,7 +23,7 @@ Form.Show(frmShapes)
 '}
 
 ' Button1 Events:
-Control.HandleEvents(frmShapes, Button1)
+Control.HandleEvents(Button1)
 Control.OnClick = Button1_OnClick
 
 
