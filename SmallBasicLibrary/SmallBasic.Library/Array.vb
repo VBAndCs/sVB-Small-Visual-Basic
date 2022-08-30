@@ -12,14 +12,65 @@ Namespace Library
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class Array
-        Private Shared _arrayMap As New Dictionary(Of Primitive, Dictionary(Of Primitive, Primitive))
+
+        ''' <summary>
+        ''' Creates an empty array. You can also use x = {} to create an empty array.
+        ''' </summary>
+        ''' <returns>an empty array</returns>
+        Public Shared ReadOnly Property EmptyArray As Primitive
+            Get
+                Dim arr As Primitive = ""
+                arr._isArray = True
+                Return arr
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Adds an item to the array.
+        ''' </summary>
+        ''' <param name="array">the input array</param>
+        ''' <param name="value">the item you want to add after the last item in the array.</param>
+        ''' <returns>a new array with the new item added. The input array will bot be cahmged</returns>
+        Public Shared Function AddItem(array As Primitive, value As Primitive) As Primitive
+            Dim map = array._arrayMap
+            If map Is Nothing Then
+                Return SetValue(array, 1, value)
+            Else
+                Return SetValue(array, map.Count + 1, value)
+            End If
+        End Function
+
+        ''' <summary>
+        ''' Adds an item to the array, with the given key and value
+        ''' </summary>
+        ''' <param name="array">the input array</param>
+        ''' <param name="key">the key of the item. If there is already an item with this key, it's value will be modified</param>
+        ''' <param name="value">the value of the item</param>
+        ''' <returns>a new arry with the item added. the input array will not be changed</returns>
+        Public Shared Function AddKeyValue(array As Primitive, key As Primitive, value As Primitive) As Primitive
+            Return SetValue(array, key, value)
+        End Function
 
         Public Shared Function GetItemAt(array As Primitive, index As Primitive) As Primitive
             Return array(index)
         End Function
-        Public Shared Sub SetItemAt(array As Primitive, index As Primitive, value As Primitive)
+
+        ''' <summary>
+        ''' 
+        ''' </summary>
+        ''' <param name="array">the input array.</param>
+        ''' <param name="index">the index or the key of the item you want to change</param>
+        ''' <param name="value">the value of the item</param>
+        ''' <returns>a new array with the value set. The input array will bot be cahmged</returns>
+        Public Shared Function SetItemAt(
+                          array As Primitive,
+                          index As Primitive,
+                          value As Primitive
+                   ) As Primitive
+
             array(index) = value
-        End Sub
+            Return array
+        End Function
 
         ''' <summary>
         ''' Gets whether or not the array contains the specified index.  This is very useful when deciding if the array's index was initialized by some value or not.
@@ -97,26 +148,20 @@ Namespace Library
         ''' <summary>
         ''' Sets a value for a given array and index.
         ''' </summary>
-        ''' <param name="arrayName">
-        ''' The name of the array.
-        ''' </param>
-        ''' <param name="index">
-        ''' Name of the index.
-        ''' </param>
-        ''' <param name="value">
-        ''' The value to set.
-        ''' </param>
+        ''' <param name="array">the input array</param>
+        ''' <param name="index">the index or the key of the item.</param>
+        ''' <param name="value">the value to set.''' </param>
+        ''' <returns>a new array with the value set. The input array will bot be cahmged</returns>
         <HideFromIntellisense>
-        Public Shared Sub SetValue(arrayName As Primitive, index As Primitive, value As Primitive)
-            If Not arrayName.IsEmpty Then
-                Dim value2 As Collections.Generic.Dictionary(Of Primitive, Primitive) = Nothing
-                If Not _arrayMap.TryGetValue(arrayName, value2) Then
-                    value2 = New Dictionary(Of Primitive, Primitive)
-                    _arrayMap(arrayName) = value2
-                End If
-                value2(index) = value
-            End If
-        End Sub
+        Public Shared Function SetValue(
+                            array As Primitive,
+                            index As Primitive,
+                            value As Primitive
+                    ) As Primitive
+
+            If Not array.IsEmpty Then array(index) = value
+            Return array
+        End Function
 
         ''' <summary>
         ''' Gets a value for a given array and index.
@@ -132,40 +177,27 @@ Namespace Library
         ''' </returns>
         <HideFromIntellisense>
         Public Shared Function GetValue(arrayName As Primitive, index As Primitive) As Primitive
-            Dim array1 As Dictionary(Of Primitive, Primitive) = GetArray(arrayName)
-            If array1 Is Nothing Then
+            Dim map = arrayName._arrayMap
+            If map Is Nothing OrElse Not map.ContainsKey(index) Then
                 Return ""
             End If
 
-            Dim value As Primitive = Nothing
-            If array1.TryGetValue(index, value) Then
-                Return value
-            End If
-
-            Return ""
+            Return map(index)
         End Function
 
         ''' <summary>
         ''' Removes the array item at the specified index.
         ''' </summary>
-        ''' <param name="arrayName">
+        ''' <param name="array">
         ''' The name of the array.
         ''' </param>
         ''' <param name="index">
         ''' The index of the item to remove.
         ''' </param>
         <HideFromIntellisense>
-        Public Shared Sub RemoveValue(arrayName As Primitive, index As Primitive)
-            GetArray(arrayName)?.Remove(index)
+        Public Shared Sub RemoveItem(array As Primitive, index As Primitive)
+            array._arrayMap?.Remove(index)
         End Sub
 
-        Friend Shared Function GetArray(arrayName As Primitive) As Dictionary(Of Primitive, Primitive)
-            Dim value As Collections.Generic.Dictionary(Of Primitive, Primitive) = Nothing
-            If _arrayMap.TryGetValue(arrayName, value) Then
-                Return value
-            End If
-
-            Return Nothing
-        End Function
     End Class
 End Namespace

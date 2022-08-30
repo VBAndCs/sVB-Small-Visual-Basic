@@ -16,8 +16,8 @@ Imports System.Windows
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("LanguageService")>
 <Assembly: AssemblyCopyright("Copyright @  2021")>
-<Assembly: AssemblyTrademark("")> 
-<Assembly: ComVisible(false)>
+<Assembly: AssemblyTrademark("")>
+<Assembly: ComVisible(False)>
 
 'In order to begin building localizable applications, set
 '<UICulture>CultureYouAreCodingWith</UICulture> in your .vbproj file

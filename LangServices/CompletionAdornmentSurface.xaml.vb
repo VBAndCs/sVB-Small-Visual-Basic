@@ -258,7 +258,8 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Function
 
         Function GetInputText() As String
-            Dim text = _adornment.ReplaceSpan.GetText(_adornment.ReplaceSpan.TextBuffer.CurrentSnapshot)
+            Dim replaceSpan = _adornment.ReplaceSpan
+            Dim text = replaceSpan.GetText(textView.TextSnapshot)
             If text.Length = 0 Then
                 text = CType(textView, AvalonTextView).Editor.EditorOperations.GetCurrentWord
                 If text.Trim.Length = 0 OrElse text.StartsWith(".") OrElse text.StartsWith("!") Then Return ""
@@ -267,11 +268,16 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim tokens = LineScanner.GetTokens(text, 0)
             If tokens.Count = 0 Then Return ""
             Dim token = tokens.Last
-            If token.ParseType = ParseType.Operator AndAlso Not (
-                         token.Type = TokenType.Or OrElse token.Type = TokenType.And) Then
-                Return ""
-            End If
 
+            If token.ParseType = ParseType.Operator Then
+                Select Case token.Type
+                    Case token.Type = TokenType.Or, TokenType.And,
+                                       TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
+
+                    Case Else
+                        Return ""
+                End Select
+            End If
             Return token.NormalizedText
         End Function
 

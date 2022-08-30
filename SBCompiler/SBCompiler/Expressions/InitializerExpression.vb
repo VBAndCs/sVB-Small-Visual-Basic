@@ -35,6 +35,7 @@ Namespace Microsoft.SmallBasic.Expressions
         Private Shared counter = 0
 
         Private Function Lower(leftValue As String) As String
+            If Arguments.Count = 0 Then Return $"{leftValue} = Array.EmptyArray"
             counter += 1
             Dim tmpVar = "__tmpArray__" & counter
             Dim code As New StringBuilder($"{tmpVar} = """"")

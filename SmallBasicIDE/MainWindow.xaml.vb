@@ -1057,7 +1057,8 @@ Namespace Microsoft.SmallBasic
                     Dim d = Date.ParseExact(
                             IO.Path.GetFileNameWithoutExtension(directory),
                             "yy-MM-dd-HH-mm-ss",
-                            New Globalization.CultureInfo("Ar-eg"))
+                            New Globalization.CultureInfo("Ar-eg")
+                    )
                     If (Date.Now - d).TotalDays > 10 Then
                         Global.My.Computer.FileSystem.DeleteDirectory(directory, FileIO.DeleteDirectoryOption.DeleteAllContents)
                     End If

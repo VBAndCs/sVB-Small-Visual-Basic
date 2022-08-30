@@ -30,17 +30,18 @@ Namespace Library
         End Class
 
 
-        Private _primitive As String
+        Private _stringValue As String
 
-        Private _primitiveAsDecimal As Decimal?
+        Private _decimalValue As Decimal?
 
         Friend _arrayMap As Dictionary(Of Primitive, Primitive)
+        Friend _isArray As Boolean
 
-        Default Public Property item(index As Primitive) As Primitive
+        Default Public Property Items(index As Primitive) As Primitive
             Get
                 ConstructArrayMap()
                 If _arrayMap.Count = 0 Then
-                    Dim s = If(CStr(_primitive), "")
+                    Dim s = If(_stringValue, "")
                     If index < 1 OrElse index > s.Length Then Return ""
                     Return s(index - 1).ToString()
 
@@ -53,54 +54,55 @@ Namespace Library
 
             Set(Value As Primitive)
                 ConstructArrayMap()
-                If _arrayMap.Count = 0 AndAlso CStr(_primitive) <> "" Then
-                    Dim s = CStr(_primitive)
+                If _arrayMap.Count = 0 AndAlso _stringValue <> "" Then
                     If index < 1 Then
-                        _primitive = CStr(Value) & Space(-index) & s
-                    ElseIf index > s.Length Then
-                        _primitive = s & Space(index - s.Length - 1) & CStr(Value)
+                        Me._stringValue = CStr(Value) & Space(-index) & _stringValue
+                    ElseIf index > _stringValue.Length Then
+                        Me._stringValue &= Space(index - _stringValue.Length - 1) & CStr(Value)
                     Else
-                        _primitive = s.Substring(0, index - 1) & CStr(Value) & s.Substring(index)
+                        Me._stringValue = _stringValue.Substring(0, index - 1) & CStr(Value) & _stringValue.Substring(index)
                     End If
 
                 Else
-                    Dim primitive1 As Primitive = SetArrayValue(Value, Me, index)
-                    _primitive = primitive1._primitive
-                    _arrayMap = primitive1._arrayMap
-                    _primitiveAsDecimal = primitive1._primitiveAsDecimal
+                    Dim primitive As Primitive = SetArrayValue(Value, Me, index)
+                    _stringValue = primitive._stringValue
+                    _arrayMap = primitive._arrayMap
+                    _decimalValue = primitive._decimalValue
                 End If
             End Set
         End Property
 
         Friend ReadOnly Property AsString As String
             Get
-                If _primitive IsNot Nothing Then Return _primitive
+                If _stringValue IsNot Nothing Then Return _stringValue
 
-                If _primitiveAsDecimal.HasValue Then
-                    _primitive = _primitiveAsDecimal.Value.ToString()
+                If _decimalValue.HasValue Then
+                    _stringValue = _decimalValue.Value.ToString()
 
                 ElseIf _arrayMap IsNot Nothing Then
-                    Dim stringBuilder1 As New StringBuilder
-                    For Each item As KeyValuePair(Of Primitive, Primitive) In _arrayMap
-                        stringBuilder1.AppendFormat("{0}={1};", Escape(item.Key), Escape(item.Value))
+                    Dim sb As New StringBuilder
+                    For Each entry In _arrayMap
+                        sb.AppendFormat("{0}={1};", Escape(entry.Key), Escape(entry.Value))
                     Next
 
-                    _primitive = stringBuilder1.ToString()
+                    _stringValue = sb.ToString()
                 End If
 
-                Return _primitive
+                Return _stringValue
             End Get
         End Property
 
         Friend ReadOnly Property IsArray As Boolean
             Get
+                If _isArray Then Return True
                 ConstructArrayMap()
                 Return _arrayMap.Count > 0
             End Get
         End Property
+
         Friend ReadOnly Property IsEmpty As Boolean
             Get
-                If String.IsNullOrEmpty(_primitive) AndAlso Not _primitiveAsDecimal.HasValue Then
+                If String.IsNullOrEmpty(_stringValue) AndAlso Not _decimalValue.HasValue Then
                     If _arrayMap IsNot Nothing Then
                         Return _arrayMap.Count = 0
                     End If
@@ -111,10 +113,11 @@ Namespace Library
                 Return False
             End Get
         End Property
+
         Friend ReadOnly Property IsNumber As Boolean
             Get
                 Dim result As Decimal = 0D
-                If Not _primitiveAsDecimal.HasValue Then
+                If Not _decimalValue.HasValue Then
                     Return Decimal.TryParse(AsString, NumberStyles.Float, CultureInfo.InvariantCulture, result)
                 End If
 
@@ -126,20 +129,20 @@ Namespace Library
             If primitiveText Is Nothing Then
                 Throw New ArgumentNullException("primitiveText")
             End If
-            _primitive = primitiveText
-            _primitiveAsDecimal = Nothing
+            _stringValue = primitiveText
+            _decimalValue = Nothing
             _arrayMap = Nothing
         End Sub
 
         Public Sub New(primitiveInteger As Integer)
-            _primitiveAsDecimal = primitiveInteger
-            _primitive = Nothing
+            _decimalValue = primitiveInteger
+            _stringValue = Nothing
             _arrayMap = Nothing
         End Sub
 
         Public Sub New(primitiveDecimal As Decimal)
-            _primitiveAsDecimal = primitiveDecimal
-            _primitive = Nothing
+            _decimalValue = primitiveDecimal
+            _stringValue = Nothing
             _arrayMap = Nothing
         End Sub
 
@@ -156,29 +159,29 @@ Namespace Library
         End Sub
 
         Public Sub New(primitiveLong As Long)
-            _primitiveAsDecimal = primitiveLong
-            _primitive = Nothing
+            _decimalValue = primitiveLong
+            _stringValue = Nothing
             _arrayMap = Nothing
         End Sub
 
         Public Sub New(primitiveObject As Object)
-            _primitive = primitiveObject.ToString()
-            _primitiveAsDecimal = Nothing
+            _stringValue = primitiveObject.ToString()
+            _decimalValue = Nothing
             _arrayMap = Nothing
         End Sub
 
         Public Sub New(primitiveBool As Boolean)
-            _primitiveAsDecimal = Nothing
-            If primitiveBool Then
-                _primitive = "True"
+            _decimalValue = Nothing
+            If CBool(primitiveBool) Then
+                _stringValue = "True"
             Else
-                _primitive = "False"
+                _stringValue = "False"
             End If
             _arrayMap = Nothing
         End Sub
 
-        Public Function Append(primitive1 As Primitive) As Primitive
-            Return New Primitive(AsString & primitive1.AsString)
+        Public Function Append(primitive As Primitive) As Primitive
+            Return New Primitive(AsString & primitive.AsString)
         End Function
 
         Public Function Add(addend As Primitive) As Primitive
@@ -256,11 +259,11 @@ Namespace Library
 
         Public Overrides Function Equals(obj As Object) As Boolean
             If AsString Is Nothing Then
-                _primitive = ""
+                _stringValue = ""
             End If
 
             If TypeOf obj Is Primitive Then
-                Dim p1 As Primitive = CType(obj, Primitive)
+                Dim p1 = CType(obj, Primitive)
                 Dim s1 = p1.AsString()
                 Dim s2 = Me.AsString()
                 Dim b1 = s1.ToLower(CultureInfo.InvariantCulture)
@@ -284,7 +287,7 @@ Namespace Library
 
         Public Overrides Function GetHashCode() As Integer
             If AsString Is Nothing Then
-                _primitive = ""
+                _stringValue = ""
             End If
 
             Return AsString.ToUpper(CultureInfo.InvariantCulture).GetHashCode()
@@ -300,47 +303,45 @@ Namespace Library
 
             If IsEmpty Then Return
 
-            Dim source As Char() = AsString.ToCharArray()
+            Dim source = AsString.ToCharArray()
 
             Dim index As Integer = 0
-            While True
-                Dim value As String = Unescape(source, index)
-                If String.IsNullOrEmpty(value) Then
-                    Exit While
-                End If
-                Dim text As String = Unescape(source, index)
-                If text Is Nothing Then
-                    Exit While
-                End If
-                _arrayMap(value) = text
-            End While
+            Do
+                Dim key = Unescape(source, index)
+                If key = "" Then Exit Do
+
+                Dim value = Unescape(source, index)
+                If value = "" Then Exit Do
+
+                _arrayMap(key) = value
+            Loop
         End Sub
 
         Friend Function TryGetAsDecimal() As Decimal?
             If IsEmpty Then
                 Return Nothing
             End If
-            If _primitiveAsDecimal.HasValue Then
-                Return _primitiveAsDecimal
+            If _decimalValue.HasValue Then
+                Return _decimalValue
             End If
             Dim result As Decimal = 0D
             If Decimal.TryParse(AsString, NumberStyles.Float, CultureInfo.InvariantCulture, result) Then
-                _primitiveAsDecimal = result
+                _decimalValue = result
             End If
 
-            Return _primitiveAsDecimal
+            Return _decimalValue
         End Function
 
         Friend Function GetAsDecimal() As Decimal
             If IsEmpty Then
                 Return 0D
             End If
-            If _primitiveAsDecimal.HasValue Then
-                Return _primitiveAsDecimal.Value
+            If _decimalValue.HasValue Then
+                Return _decimalValue.Value
             End If
             Dim result As Decimal = 0D
             If Decimal.TryParse(AsString, NumberStyles.Float, CultureInfo.InvariantCulture, result) Then
-                _primitiveAsDecimal = result
+                _decimalValue = result
             End If
 
             Return result
@@ -373,6 +374,7 @@ Namespace Library
         Public Shared Widening Operator CType(value As Primitive) As Boolean
             Dim s = CStr(value)
             If s Is Nothing Then Return False
+            If value.IsArray AndAlso value._arrayMap?.Count > 0 Then Return True
             If s.ToLower() = "true" Then Return True
             If Not IsNumeric(s) Then Return False
             If Double.Parse(s) = 0 Then Return False
@@ -431,12 +433,12 @@ Namespace Library
             Return op_And(primitive1, primitive2)
         End Operator
 
-        Public Shared Operator IsTrue(primitive1 As Primitive) As Boolean
-            Return primitive1
+        Public Shared Operator IsTrue(primitive As Primitive) As Boolean
+            Return CBool(primitive)
         End Operator
 
-        Public Shared Operator IsFalse(primitive1 As Primitive) As Boolean
-            Return Not CBool(primitive1)
+        Public Shared Operator IsFalse(primitive As Primitive) As Boolean
+            Return Not CBool(primitive)
         End Operator
 
         Public Shared Function op_And(primitive1 As Primitive, primitive2 As Primitive) As Primitive
@@ -504,7 +506,12 @@ Namespace Library
         End Function
 
 
-        Public Shared Function SetArrayValue(value As Primitive, array As Primitive, indexer As Primitive) As Primitive
+        Public Shared Function SetArrayValue(
+                        value As Primitive,
+                        array As Primitive,
+                        indexer As Primitive
+                   ) As Primitive
+
             array.ConstructArrayMap()
             If array.GetItemCount = 0 AndAlso CStr(array) <> "" Then
                 ' imdex the string
@@ -525,8 +532,8 @@ Namespace Library
 
         Public Shared Function ConvertFromMap(map As Dictionary(Of Primitive, Primitive)) As Primitive
             Dim result As Primitive = CType(Nothing, Primitive)
-            result._primitive = Nothing
-            result._primitiveAsDecimal = Nothing
+            result._stringValue = Nothing
+            result._decimalValue = Nothing
             result._arrayMap = map
             Return result
         End Function

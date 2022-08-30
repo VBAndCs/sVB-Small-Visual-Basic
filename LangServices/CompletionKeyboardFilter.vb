@@ -80,8 +80,11 @@ Namespace Microsoft.SmallBasic.LanguageService
             If textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), completionSurface) Then
                 If completionSurface.IsAdornmentVisible Then
                     Select Case args.Text
-                        Case "+", "-", "*", "/", "="
+                        Case "+", "-", "*", "/"
                             args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ")
+
+                        Case "="
+                            args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ", True)
 
                         Case "!"
                             CommitConditionally(textView, completionSurface)
@@ -98,7 +101,8 @@ Namespace Microsoft.SmallBasic.LanguageService
         Private Function CommitConditionally(
                                 textView As IAvalonTextView,
                                 completionSurface As CompletionAdornmentSurface,
-                                Optional extraText As String = ""
+                                Optional extraText As String = "",
+                                Optional showCompletionAdornmentAgain As Boolean = False
                        ) As Boolean
 
             If Not completionSurface.IsFaded AndAlso completionSurface.CompletionListBox.SelectedItem IsNot Nothing Then
@@ -107,7 +111,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Dim itemWrapper = CType(compList.SelectedItem, CompletionItemWrapper)
                 Dim item = itemWrapper.CompletionItem
                 Dim repWith = item.ReplacementText
-                Dim replaceSpan = completionSurface.Adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
+                Dim provider = textView.Properties.GetProperty(Of CompletionProvider)()
+                Dim replaceSpan = provider.GetReplacementSpane()
 
                 Dim key = item.HistoryKey
                 If key <> "" Then CompletionProvider.compHistory(key) = item.DisplayName
@@ -121,18 +126,27 @@ Namespace Microsoft.SmallBasic.LanguageService
                     repWith & extraText,
                     UndoHistoryRegistry.GetHistory(textView.TextBuffer))
 
-                If extraText = ", " OrElse repWith.EndsWith("(") Then
-                    Dim provider = textView.Properties.GetProperty(Of CompletionProvider)()
-                    provider.ShowHelp(True)
+                If completionSurface.Adornment IsNot Nothing Then
+                    completionSurface.Adornment.Dismiss(force:=False)
                 End If
-                CommitConditionally = True
+
+                textView.VisualElement.Focus()
+
+                If extraText = ", " OrElse repWith.EndsWith("(") Then
+                    provider.ShowHelp(True)
+                ElseIf showCompletionAdornmentAgain Then
+                    provider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex)
+                End If
+                Return True
+
+            Else
+                If completionSurface.Adornment IsNot Nothing Then
+                    completionSurface.Adornment.Dismiss(force:=False)
+                End If
+                textView.VisualElement.Focus()
+                Return False
             End If
 
-            If completionSurface.Adornment IsNot Nothing Then
-                completionSurface.Adornment.Dismiss(force:=False)
-            End If
-
-            textView.VisualElement.Focus()
         End Function
 
         Private Function CommitItem(textView As IAvalonTextView, adornmentSurface As CompletionAdornmentSurface) As Boolean

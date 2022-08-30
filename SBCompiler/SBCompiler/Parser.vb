@@ -20,7 +20,6 @@ Namespace Microsoft.SmallBasic
 
         Public ReadOnly Property ParseTree As List(Of Statement)
 
-
         Public ReadOnly Property SymbolTable As SymbolTable
 
         Private Function ConstructWhileStatement(tokenEnum As TokenEnumerator) As WhileStatement
@@ -567,7 +566,7 @@ Namespace Microsoft.SmallBasic
 
                     If commaLine = -2 Then Return Nothing
 
-                    If initExpr.Arguments.Count = 0 Then Return Nothing
+                    'If initExpr.Arguments.Count = 0 Then Return Nothing
                     expression = initExpr
                     tokenEnum.MoveNext() ' }
 

@@ -212,7 +212,9 @@ Namespace Microsoft.SmallBasic
                 Dim parameters = methodInfo.GetParameters()
 
                 For Each paramInfo In parameters
-                    If paramInfo.ParameterType IsNot GetType(Primitive) Then Return False
+                    If Not paramInfo.ParameterType Is GetType(Primitive) Then
+                        Return False
+                    End If
                 Next
 
                 Return True

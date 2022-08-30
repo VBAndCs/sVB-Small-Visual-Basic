@@ -4,7 +4,7 @@ Imports Microsoft.SmallBasic.Expressions
 
 Namespace Microsoft.SmallBasic
     Public Class SymbolTable
-        Friend autoCompletion As Boolean
+        Friend AutoCompletion As Boolean
         Friend AllCommentLines As New List(Of Token)
         Public AllIdentifiers As New List(Of Token)
         Public AllStatements As New Dictionary(Of Integer, Statements.Statement)
@@ -157,7 +157,7 @@ CouldBeAControl:
                 Return
             End If
 
-            If memberName.Comment <> memberName.Text Then
+            If memberName.Comment <> "" AndAlso memberName.Comment <> memberName.Text Then
                 AllLibMembers.Add(memberName)
             End If
 

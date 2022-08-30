@@ -58,13 +58,59 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Dim key = item.HistoryKey
                 If key <> "" Then compHistory(key) = item.DisplayName
                 Dim repText = item.ReplacementText
-                Dim replaceSpan = adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
+                Dim replaceSpan = GetReplacementSpane()
                 editorOperations.ReplaceText(replaceSpan, repText, undoHistory)
                 DismissAdornment(force:=True)
                 TryCast(textView, Control)?.Focus()
                 If repText.EndsWith("(") Then ShowHelp()
             End If
         End Sub
+
+        Friend Function GetReplacementSpane() As SnapshotSpan
+            Dim replaceSpan = adornment.ReplaceSpan
+            Dim snapshot = textView.TextSnapshot
+            Dim span = replaceSpan.GetSpan(snapshot)
+            Dim text = replaceSpan.GetText(replaceSpan.TextBuffer.CurrentSnapshot)
+
+            Dim start As Integer = span.Start
+            Dim newStart = start
+            Dim tokens = LineScanner.GetTokens(text, 0)
+            Dim n = tokens.Count - 1
+            Dim startIndex = 0
+
+            For i = 0 To n
+                If tokens(i).ParseType = ParseType.Operator Then
+                    If tokens(i).Type = TokenType.Or OrElse tokens(i).Type = TokenType.And Then
+                        Exit For
+                    ElseIf i < n Then
+                        newStart = start + tokens(i + 1).Column
+                        startIndex = i
+                    Else
+                        newStart = start + tokens(i).EndColumn
+                        startIndex = i
+                    End If
+                Else
+                    Exit For
+                End If
+            Next
+
+            Dim [end] = span.End
+            For i = n To startIndex + 1 Step -1
+                If tokens(i).ParseType = ParseType.Operator Then
+                    If tokens(i).Type = TokenType.Or OrElse tokens(i).Type = TokenType.And Then
+                        Exit For
+                    ElseIf i > 0 Then
+                        [end] = start + tokens(i - 1).EndColumn
+                    Else
+                        [end] = start + tokens(i).Column
+                    End If
+                Else
+                    Exit For
+                End If
+            Next
+
+            Return New SnapshotSpan(snapshot, newStart, [end] - newStart)
+        End Function
 
         Public Sub DismissAdornment(force As Boolean)
             If adornment Is Nothing Then Return
@@ -549,6 +595,8 @@ Namespace Microsoft.SmallBasic.LanguageService
             needsToReCompile = True
 
             Dim textChange = e.Changes(0)
+            Dim newText = textChange.NewText.Trim(" "c, vbTab)
+
             Dim pos = textView.Caret.Position.TextInsertionIndex
             If pos - textChange.Position > 1 OrElse pos < textChange.Position Then
                 popHelp.IsOpen = False
@@ -565,8 +613,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                 End If
                 popHelp.IsOpen = False
 
-            ElseIf textChange.NewText.Length = 1 Then
-                Dim c = textChange.NewText(0)
+            ElseIf newText <> "" Then
+                Dim c = newText.Last
                 If Char.IsLetter(c) Then
                     popHelp.IsOpen = False
                     ShowCompletionAdornment(e.After, newEnd)
@@ -608,54 +656,11 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
             Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
 
-            currentToken = Token.Illegal
             Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
-            Dim prevToken = Token.Illegal
-            Dim b4PrevToken = Token.Illegal
-            Dim index = -1
             Dim n = tokens.Count - 1
-
-            For i = 0 To n
-                Dim token = tokens(i)
-                If token.Column > column Then Exit For
-                If column >= token.Column AndAlso column <= token.EndColumn Then
-                    If token.ParseType = ParseType.Operator AndAlso i < n AndAlso tokens(i + 1).Column = token.EndColumn Then
-                        b4PrevToken = currentToken
-                        prevToken = token
-                        currentToken = tokens(i + 1)
-                        index = i + 1
-                    Else
-                        b4PrevToken = prevToken
-                        prevToken = currentToken
-                        currentToken = token
-                        index = i
-                    End If
-                    Exit For
-                End If
-
-                If i = n Then
-                    If column <= token.EndColumn Then
-                        If Not (token.ParseType = ParseType.Operator AndAlso column = currentToken.EndColumn) Then
-                            b4PrevToken = prevToken
-                            prevToken = currentToken
-                            currentToken = token
-                            index = i
-                        End If
-                    Else
-                        b4PrevToken = prevToken
-                        prevToken = currentToken
-                        currentToken = Token.Illegal
-                        index = i + 1
-                    End If
-
-                Else
-                    b4PrevToken = prevToken
-                    prevToken = currentToken
-                    currentToken = token
-                    index = i
-                End If
-
-            Next
+            Dim prevToken As Token = Nothing
+            Dim b4PrevToken As Token = Nothing
+            Dim index = ParseTokens(tokens, column, currentToken, prevToken, b4PrevToken)
 
             Dim isFirstToken = (index < 1)
             Dim identifierToken = Token.Illegal
@@ -744,11 +749,17 @@ Namespace Microsoft.SmallBasic.LanguageService
             If addGlobals OrElse newBag Is Nothing OrElse newBag.CompletionItems.Count = 0 Then
                 If Not (currentToken.Type = TokenType.StringLiteral OrElse currentToken.Type = TokenType.Comment) Then
                     CompletionHelper.ForHelp = forHelp
+
+                    ' Fix prevToken if current token not found,
+                    If currentToken = Token.Illegal AndAlso index > 0 Then
+                        prevToken = tokens(index - 1)
+                    End If
+
                     Dim bag = completionHelper.GetCompletionItems(
                             source, needsToReCompile,
                             line.LineNumber, column,
-                            prevToken.Type = TokenType.Equals,
-                            prevToken.ParseType = ParseType.Operator AndAlso prevToken.Type <> TokenType.RightBracket AndAlso prevToken.Type <> TokenType.RightParens
+                            prevToken.Type = TokenType.Equals OrElse currentToken.Type = TokenType.Equals,
+                            IsCompletionOperator(prevToken) OrElse IsCompletionOperator(currentToken)
                     )
                     CompletionHelper.ForHelp = False
                     If bag.ShowCompletion Then
@@ -771,6 +782,79 @@ Namespace Microsoft.SmallBasic.LanguageService
             CompletionHelper.DoNotAddGlobals = False
             newBag.IsFirstToken = isFirstToken
             Return newBag
+        End Function
+
+        Private Shared Function ParseTokens(
+                            tokens As List(Of Token),
+                            column As Integer,
+                            ByRef currentToken As Token,
+                            ByRef prevToken As Token,
+                            ByRef b4PrevToken As Token
+                     ) As Integer
+
+            Dim n = tokens.Count - 1
+            currentToken = Token.Illegal
+            prevToken = Token.Illegal
+            b4PrevToken = Token.Illegal
+            Dim index = -1
+
+            For i = 0 To n
+                Dim token = tokens(i)
+                If token.Column > column Then Exit For
+                If column >= token.Column AndAlso column <= token.EndColumn Then
+                    If token.ParseType = ParseType.Operator Then
+                        If column = token.Column AndAlso (token.Type = TokenType.RightBracket OrElse token.Type = TokenType.RightParens OrElse token.Type = TokenType.RightCurlyBracket) Then
+                            Exit For
+                        ElseIf i < n AndAlso tokens(i + 1).Column = token.EndColumn Then
+                            b4PrevToken = currentToken
+                            prevToken = token
+                            currentToken = tokens(i + 1)
+                            index = i + 1
+                        Else
+                            b4PrevToken = prevToken
+                            prevToken = currentToken
+                            currentToken = token
+                            index = i
+                        End If
+                    Else
+                        b4PrevToken = prevToken
+                        prevToken = currentToken
+                        currentToken = token
+                        index = i
+                    End If
+                    Exit For
+                End If
+
+                If i = n Then
+                    If column <= token.EndColumn Then
+                        If Not (token.ParseType = ParseType.Operator AndAlso column = currentToken.EndColumn) Then
+                            b4PrevToken = prevToken
+                            prevToken = currentToken
+                            currentToken = token
+                            index = i
+                        End If
+                    Else
+                        b4PrevToken = prevToken
+                        prevToken = currentToken
+                        currentToken = Token.Illegal
+                        index = i + 1
+                    End If
+
+                Else
+                    b4PrevToken = prevToken
+                    prevToken = currentToken
+                    currentToken = token
+                    index = i
+                End If
+
+            Next
+            Return index
+        End Function
+
+        Private Function IsCompletionOperator(token As Token) As Boolean
+            Return token.ParseType = ParseType.Operator AndAlso
+                token.Type <> TokenType.RightBracket AndAlso
+                token.Type <> TokenType.RightParens
         End Function
 
         Public Sub ShowCompletionAdornment(snapshot As ITextSnapshot, caretPosition As Integer)
