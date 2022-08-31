@@ -103,7 +103,6 @@
     <Compile Include="CompletionItemDocumentation.vb" />
     <Compile Include="CompletionItemWrapper.vb" />
     <Compile Include="CompletionKeyboardFilter.vb" />
-    <Compile Include="CurrentCompletionItemChangedEventArgs.vb" />
     <Compile Include="IndentationKeyboardFilter.vb" />
     <Compile Include="ModuleDocumentation.vb" />
     <Compile Include="MoveDirection.vb" />

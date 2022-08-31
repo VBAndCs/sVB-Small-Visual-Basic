@@ -23,6 +23,12 @@ Namespace Microsoft.SmallBasic.LanguageService
             End Get
         End Property
 
+        Public ReadOnly Property Summary As String
+            Get
+                Return _documentation?.Summary
+            End Get
+        End Property
+
         Public ReadOnly Property Description As String
             Get
                 Return _item.MemberInfo?.Name

@@ -10,7 +10,7 @@ Imports Microsoft.SmallBasic.Library.Internal
 
 Namespace Library
     ''' <summary>
-    ''' This class provides access to an online Dictionary service.
+    ''' Provides access to an online Dictionary service.
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class Dictionary

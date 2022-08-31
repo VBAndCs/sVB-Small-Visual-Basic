@@ -194,8 +194,7 @@ Namespace Library
         ''' <param name="index">
         ''' The index of the item to remove.
         ''' </param>
-        <HideFromIntellisense>
-        Public Shared Sub RemoveItem(array As Primitive, index As Primitive)
+        Public Shared Sub RemoveItemAt(array As Primitive, index As Primitive)
             array._arrayMap?.Remove(index)
         End Sub
 

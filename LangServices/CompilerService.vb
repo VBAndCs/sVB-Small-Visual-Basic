@@ -20,8 +20,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             End Get
         End Property
 
-        Public Event CurrentCompletionItemChanged As EventHandler(Of CurrentCompletionItemChangedEventArgs)
-
         Public Function Compile(programText As String, outputFilePath As String, errors As ICollection(Of String)) As Boolean
             Try
                 Dim compiler As New Compiler()
@@ -55,11 +53,6 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Return Nothing
             End Try
         End Function
-
-        Public Sub UpdateCurrentCompletionItem(completionItemWrapper As CompletionItemWrapper)
-            RaiseEvent CurrentCompletionItemChanged(Nothing,
-                   New CurrentCompletionItemChangedEventArgs(completionItemWrapper))
-        End Sub
 
         Public Sub FormatDocument(textBuffer As ITextBuffer, Optional lineNumber As Integer = -1, Optional prettyListing As Boolean = True)
             Dim snapshot = textBuffer.CurrentSnapshot

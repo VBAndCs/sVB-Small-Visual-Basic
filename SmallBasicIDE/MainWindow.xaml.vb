@@ -191,11 +191,6 @@ Namespace Microsoft.SmallBasic
 
             mdiViews = New ObservableCollection(Of MdiView)()
             Me.viewsControl.ItemsSource = mdiViews
-            AddHandler CompilerService.CurrentCompletionItemChanged, AddressOf OnCurrentCompletionItemChanged
-            'OnFileNew(Me, Nothing)
-            helpUpdateTimer = New DispatcherTimer(TimeSpan.FromMilliseconds(200.0), DispatcherPriority.ApplicationIdle, AddressOf OnHelpUpdate, Dispatcher)
-            'ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf OnCheckVersion))
-
         End Sub
 
         Private Sub OnFileNew(sender As Object, e As RoutedEventArgs)
@@ -866,22 +861,6 @@ Namespace Microsoft.SmallBasic
             Next
             Return newFile & ".exe"
         End Function
-
-        Private Sub OnCurrentCompletionItemChanged(sender As Object, e As CurrentCompletionItemChangedEventArgs)
-            currentCompletionItem = e.CurrentCompletionItem
-
-            If currentCompletionItem IsNot Nothing Then
-                helpUpdateTimer.Start()
-            End If
-        End Sub
-
-        Private Sub OnHelpUpdate(sender As Object, e As EventArgs)
-            helpUpdateTimer.Stop()
-
-            If currentCompletionItem IsNot Nothing Then
-                Me.helpPanel.CompletionItemWrapper = currentCompletionItem
-            End If
-        End Sub
 
         Private Sub OnCheckVersion(state As Object)
             Thread.Sleep(20000)

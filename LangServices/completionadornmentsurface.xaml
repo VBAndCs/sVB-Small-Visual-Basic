@@ -111,16 +111,15 @@
                                  Text="{Binding Path=SelectedItem.Name, ElementName=CompletionListBox}" />
                       <Border BorderBrush="#e0e0e0" BorderThickness="0,0,0,1" HorizontalAlignment="Stretch" />
                       <TextBlock Margin="0,4,2,0" FontSize="16" 
-                                 TextWrapping="Wrap" 
-                                 Text="{Binding Path=Summary}" />
+                                TextWrapping="Wrap" 
+                                Text="{Binding Path=SelectedItem.Summary, ElementName=CompletionListBox}" />
                     </StackPanel>
                   </ScrollViewer>
                 </DataTemplate>
               </ContentControl.ContentTemplate>
             </ContentControl>
           </Border>
-          <l:CircularList x:Name="CompletionListBox" 
-               SelectionChanged="OnCurrentCompletionItemChanged" 
+          <l:CircularList x:Name="CompletionListBox"                 
                MouseDoubleClick="OnCompletionListDoubleClicked" 
                Focusable="False" BorderThickness="0" 
                Background="#00FFFFFF" 

@@ -20,26 +20,11 @@ Namespace Microsoft.SmallBasic.LanguageService
         Implements IAdornmentSurface
 
         Private textView As IAvalonTextView
-        Private _adornment As CompletionAdornment
         Private filteredCompletionItems As List(Of CompletionItemWrapper)
-
-        Public ReadOnly Property CanNegotiateSurfaceSpace As Boolean Implements IAdornmentSurface.CanNegotiateSurfaceSpace
-            Get
-                Return False
-            End Get
-        End Property
-
-        Public ReadOnly Property SurfacePosition As SurfacePosition Implements IAdornmentSurface.SurfacePosition
-            Get
-                Return SurfacePosition.AboveText
-            End Get
-        End Property
-
-        Public ReadOnly Property SurfacePanel As Panel Implements IAdornmentSurface.SurfacePanel
-            Get
-                Return Me
-            End Get
-        End Property
+        Public ReadOnly Property Adornment As CompletionAdornment
+        Public ReadOnly Property CanNegotiateSurfaceSpace As Boolean = False Implements IAdornmentSurface.CanNegotiateSurfaceSpace
+        Public ReadOnly Property SurfacePosition As SurfacePosition = SurfacePosition.AboveText Implements IAdornmentSurface.SurfacePosition
+        Public ReadOnly Property SurfacePanel As Panel = Me Implements IAdornmentSurface.SurfacePanel
 
         Public ReadOnly Property IsAdornmentVisible As Boolean
             Get
@@ -47,11 +32,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             End Get
         End Property
 
-        Public ReadOnly Property Adornment As CompletionAdornment
-            Get
-                Return _adornment
-            End Get
-        End Property
 
         Public ReadOnly Property TextFlowDirection As FlowDirection
             Get
@@ -166,16 +146,9 @@ Namespace Microsoft.SmallBasic.LanguageService
             If IsAdornmentVisible Then FilterItems()
         End Sub
 
-        Private Sub OnCurrentCompletionItemChanged(sender As Object, e As SelectionChangedEventArgs)
-            'If CompletionListBox.SelectedItem IsNot Nothing Then
-            '    UpdateCurrentCompletionItem(
-            '            TryCast(CompletionListBox.SelectedItem, CompletionItemWrapper))
-            'End If
-        End Sub
-
         Private Sub BuildFilteredCompletionList(inputText As String)
             filteredCompletionItems = New List(Of CompletionItemWrapper)
-            Dim bag = _adornment.CompletionBag
+            Dim bag = _Adornment.CompletionBag
             Dim completionItems = bag.CompletionItems
 
             Dim items As New List(Of CompletionItemWrapper)

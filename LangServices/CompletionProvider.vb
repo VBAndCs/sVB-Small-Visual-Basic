@@ -220,7 +220,6 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Dim item = helpCashe(span)
                 If item IsNot Nothing Then
                     item.CompletionItem.ParamIndex = paramIndex
-                    UpdateCurrentCompletionItem(item)
                 End If
                 lastSpan = span
                 Return
@@ -424,7 +423,6 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                     Dim wrapper = New CompletionItemWrapper(item, bag)
                     helpCashe(span) = wrapper
-                    UpdateCurrentCompletionItem(wrapper)
                     Return
                 End If
             Next
