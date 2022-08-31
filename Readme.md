@@ -16,7 +16,7 @@
 ```vb
 form2 = Forms.AddForm("form2")
 form2.Text = "Form2"
-newButton = onForm.AddButton(
+newButton = form2.AddButton(
       "Button 1"
       100,  ' left
       100,  ' Top
@@ -26,7 +26,7 @@ newButton = onForm.AddButton(
 newButton.Text = "Hello"
 newButton.OnClick = Button1_OnClick
 form2.Show()
-``
+```
 
 This code can't run before sVB 1.6.5, because all controls were assumed to belong to Form1!. Now they belong to the forms that creates them using AddXXX methods (like AddButton, AddListBox... etc).
 You can see an interesting example of this in the `Random Buttons` app in the Samples folder.

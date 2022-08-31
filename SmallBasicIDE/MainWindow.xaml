@@ -302,10 +302,10 @@
                                 RequestItemClose="OnCloseItem" 
                                 ActiveDocumentChanged="viewsControl_ActiveDocumentChanged"/>
 
-                            <Popup x:Name="popHelp" MaxHeight="250" 
+                            <Popup x:Name="PopHelp" MaxHeight="250" 
                                    StaysOpen="True" Placement="Relative"
-                                   Opened="popHelp_Opened">
-                                <lu:HelpPanel x:Name="helpPanel" Width="Auto"/>
+                                   Opened="popHelp_Opened"  >
+                                <lu:HelpPanel x:Name="HelpPanel" Width="Auto"/>
                             </Popup>
 
                             <!--<GridSplitter Name="gridSplitter" Grid.Column="1" Width="4" Background="#cc333363" Opacity="0.05" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Left" ResizeBehavior="PreviousAndCurrent">

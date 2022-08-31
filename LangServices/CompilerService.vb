@@ -9,6 +9,12 @@ Namespace Microsoft.SmallBasic.LanguageService
     Public Module CompilerService
         Private _compiler As Compiler
 
+        Public Event HelpUpdated(itemWrapper As CompletionItemWrapper)
+
+        Public Sub ShowPopupHelp(itemWrapper As CompletionItemWrapper)
+            RaiseEvent HelpUpdated(itemWrapper)
+        End Sub
+
         Public ReadOnly Property DummyCompiler As Compiler
             Get
 

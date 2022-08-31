@@ -217,9 +217,10 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Dim editor = CType(textView, AvalonTextView).Editor
                 editor.HighlightWords(WordHighlightColor, highlightCashe(span))
 
-                Dim item = helpCashe(span)
-                If item IsNot Nothing Then
-                    item.CompletionItem.ParamIndex = paramIndex
+                Dim wrapper = helpCashe(span)
+                If wrapper IsNot Nothing Then
+                    wrapper.CompletionItem.ParamIndex = paramIndex
+                    ShowPopupHelp(wrapper)
                 End If
                 lastSpan = span
                 Return
@@ -422,6 +423,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     End If
 
                     Dim wrapper = New CompletionItemWrapper(item, bag)
+                    ShowPopupHelp(wrapper)
                     helpCashe(span) = wrapper
                     Return
                 End If

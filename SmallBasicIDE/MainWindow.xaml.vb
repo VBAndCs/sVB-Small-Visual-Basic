@@ -188,9 +188,10 @@ Namespace Microsoft.SmallBasic
 
         Public Sub New()
             Me.InitializeComponent()
-
             mdiViews = New ObservableCollection(Of MdiView)()
             Me.viewsControl.ItemsSource = mdiViews
+            AddHandler CompilerService.HelpUpdated,
+                    Sub(wrapper) HelpPanel.CompletionItemWrapper = wrapper
         End Sub
 
         Private Sub OnFileNew(sender As Object, e As RoutedEventArgs)
@@ -1614,7 +1615,7 @@ Namespace Microsoft.SmallBasic
 
         End Sub
 
-        Dim closePopHelp As New RunAfter(Sub() popHelp.IsOpen = False)
+        Dim closePopHelp As New RunAfter(Sub() PopHelp.IsOpen = False)
         Private Sub popHelp_Opened(sender As Object, e As EventArgs)
             closePopHelp.After(10000)
         End Sub
