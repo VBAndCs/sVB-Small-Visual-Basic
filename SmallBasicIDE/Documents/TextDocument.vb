@@ -377,8 +377,27 @@ Namespace Microsoft.SmallBasic.Documents
                     Dim statement = GetBlock(lineNumber, GetType(Statements.IfStatement))
                     _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
-                Case TokenType.For, TokenType.To, TokenType.Step, TokenType.Next, TokenType.EndFor
+                Case TokenType.For, TokenType.To, TokenType.Step, TokenType.EndFor
                     Dim statement = GetBlock(lineNumber, GetType(Statements.ForStatement))
+                    _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
+
+                Case TokenType.ForEach, TokenType.In
+                    Dim statement = GetBlock(lineNumber, GetType(Statements.ForEachStatement))
+                    _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
+
+                Case TokenType.Next
+                    Dim statement1 = GetBlock(lineNumber, GetType(Statements.ForStatement))
+                    Dim statement2 = GetBlock(lineNumber, GetType(Statements.ForEachStatement))
+                    Dim statement As Statements.Statement
+                    If statement1 Is Nothing Then
+                        statement = statement2
+                    ElseIf statement2 Is Nothing Then
+                        statement = statement1
+                    ElseIf statement1.StartToken.IsBefore(statement2.StartToken.Line, statement2.StartToken.Column) Then
+                        statement = statement2
+                    Else
+                        statement = statement1
+                    End If
                     _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
 
                 Case TokenType.While, TokenType.Wend, TokenType.EndWhile
@@ -398,15 +417,9 @@ Namespace Microsoft.SmallBasic.Documents
                 highlightCompiler.Compile(New StringReader(Me.Text))
             End If
 
-            Dim allStatements = highlightCompiler.Parser.SymbolTable.AllStatements
-            Dim statement = If(allStatements.ContainsKey(lineNumber),
-                    allStatements(lineNumber), ' some lines belong to other statements, so they will not appear here
-                    Completion.CompletionHelper.GetStatement(highlightCompiler, lineNumber)
-            )
+            Dim statement = Completion.CompletionHelper.GetStatement(highlightCompiler, lineNumber)
 
             If statement Is Nothing Then Return Nothing
-            If statementType IsNot Nothing AndAlso statement.GetType() Is statementType Then Return statement
-
             statement = statement.GetStatementAt(lineNumber)
 
             ' Get parent block
@@ -667,7 +680,10 @@ Namespace Microsoft.SmallBasic.Documents
                         AutoCompleteBlock(textView, line, code, keyword, $"ElseIf {paran} Then#   ", "", paran.Length)
 
                     Case "for"
-                        AutoCompleteBlock(textView, line, code, keyword, $"For  = ? To ? #   ", "Next", paran.Length)
+                        AutoCompleteBlock(textView, line, code, keyword, $"For  = ? To ?#   ", "Next", paran.Length)
+
+                    Case "foreach"
+                        AutoCompleteBlock(textView, line, code, keyword, $"ForEach  In ?#   ", "Next", paran.Length)
 
                     Case "while"
                         AutoCompleteBlock(textView, line, code, keyword, $"While {paran}#   ", "Wend", paran.Length)

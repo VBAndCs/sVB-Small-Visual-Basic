@@ -19,8 +19,10 @@
         EndWhile
         [Wend]
         [For]
+        ForEach
         [Goto]
         [If]
+        [In]
         [Step]
         [Sub]
         [Function]

@@ -10,6 +10,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the value of Pi
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Pi As Primitive
             Get
                 Return System.Math.PI
@@ -25,6 +26,7 @@ Namespace Library
         ''' <returns>
         ''' The absolute value of the given number.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Abs(number As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Abs(CDbl(number)))
         End Function
@@ -39,6 +41,7 @@ Namespace Library
         ''' <returns>
         ''' The ceiling value of the given number.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Ceiling(number As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Ceiling(CDbl(number)))
         End Function
@@ -53,6 +56,7 @@ Namespace Library
         ''' <returns>
         ''' The floor value of the given number.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Floor(number As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Floor(CDbl(number)))
         End Function
@@ -66,6 +70,7 @@ Namespace Library
         ''' <returns>
         ''' The natural log value of the given number.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function NaturalLog(number As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Log(number))
         End Function
@@ -79,6 +84,7 @@ Namespace Library
         ''' <returns>
         ''' The log value of the given number
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Log(number As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Log10(number))
         End Function
@@ -92,6 +98,7 @@ Namespace Library
         ''' <returns>
         ''' The cosine of the given angle.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Cos(angle As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Cos(angle))
         End Function
@@ -105,6 +112,7 @@ Namespace Library
         ''' <returns>
         ''' The sine of the given angle
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Sin(angle As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Sin(angle))
         End Function
@@ -118,6 +126,7 @@ Namespace Library
         ''' <returns>
         ''' The tangent of the given angle.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Tan(angle As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Tan(angle))
         End Function
@@ -131,6 +140,7 @@ Namespace Library
         ''' <returns>
         ''' The angle (in radians) for the given sine Value.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ArcSin(sinValue As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Asin(sinValue))
         End Function
@@ -144,6 +154,7 @@ Namespace Library
         ''' <returns>
         ''' The angle (in radians) for the given cosine Value.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ArcCos(cosValue As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Acos(cosValue))
         End Function
@@ -157,6 +168,7 @@ Namespace Library
         ''' <returns>
         ''' The angle (in radians) for the given tangent Value.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ArcTan(tanValue As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Atan(tanValue))
         End Function
@@ -170,6 +182,7 @@ Namespace Library
         ''' <returns>
         ''' The converted angle in degrees.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetDegrees(angle As Primitive) As Primitive
             Return DoubleToDecimal(180.0 * CDbl(angle) / System.Math.PI Mod 360.0)
         End Function
@@ -183,6 +196,7 @@ Namespace Library
         ''' <returns>
         ''' The converted angle in radians.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetRadians(angle As Primitive) As Primitive
             Return DoubleToDecimal(CDbl(angle) Mod 360.0 * System.Math.PI / 180.0)
         End Function
@@ -196,6 +210,7 @@ Namespace Library
         ''' <returns>
         ''' The square root value of the given number.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function SquareRoot(number As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Sqrt(number))
         End Function
@@ -212,6 +227,7 @@ Namespace Library
         ''' <returns>
         ''' The base number raised to the specified exponent.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Power(baseNumber As Primitive, exponent As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Pow(baseNumber, exponent))
         End Function
@@ -226,6 +242,7 @@ Namespace Library
         ''' <returns>
         ''' The rounded value of the given number.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Round(number As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Round(CDbl(number)))
         End Function
@@ -242,6 +259,7 @@ Namespace Library
         ''' <returns>
         ''' The greater value of the two numbers.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Max(number1 As Primitive, number2 As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Max(CDbl(number1), CDbl(number2)))
         End Function
@@ -258,9 +276,11 @@ Namespace Library
         ''' <returns>
         ''' The smaller value of the two numbers.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Min(number1 As Primitive, number2 As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Min(CDbl(number1), CDbl(number2)))
         End Function
+
         ''' <summary>
         ''' Divides the first number by the second and returns the remainder.
         ''' </summary>
@@ -273,6 +293,7 @@ Namespace Library
         ''' <returns>
         ''' The remainder after the division.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Remainder(dividend As Primitive, divisor As Primitive) As Primitive
             Return CDbl(DoubleToDecimal(dividend)) Mod CDbl(divisor)
         End Function
@@ -286,10 +307,12 @@ Namespace Library
         ''' <returns>
         ''' A Random number that is less than or equal to the specified max.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetRandomNumber(maxNumber As Primitive) As Primitive
             If CBool((maxNumber < 1)) Then
                 maxNumber = 1
             End If
+
             If _random Is Nothing Then
                 _random = New Random(Now.Ticks Mod Integer.MaxValue)
             End If
@@ -307,12 +330,12 @@ Namespace Library
         ''' The output number
         ''' </returns>
         Private Shared Function DoubleToDecimal(number As Double) As Primitive
-            If Double.IsNaN(number) Then
-                Return New Primitive(0)
-            End If
+            If Double.IsNaN(number) Then Return New Primitive(0)
+
             If Double.IsPositiveInfinity(number) Then
                 Return New Primitive(Decimal.MaxValue)
             End If
+
             If Double.IsNegativeInfinity(number) Then
                 Return New Primitive(Decimal.MinValue)
             End If

@@ -72,6 +72,9 @@ Namespace Microsoft.SmallBasic
             ElseIf type Is GetType(ForStatement) Then
                 AnalyzeForStatement(CType(statement, ForStatement))
 
+            ElseIf type Is GetType(ForeachStatement) Then
+                AnalyzeForEachStatement(CType(statement, ForEachStatement))
+
             ElseIf type Is GetType(GotoStatement) Then
                 AnalyzeGotoStatement(CType(statement, GotoStatement))
 
@@ -218,6 +221,22 @@ Namespace Microsoft.SmallBasic
                 AnalyzeStatement(item)
             Next
         End Sub
+
+        Private Sub AnalyzeForEachStatement(forEach As ForEachStatement)
+            If forEach.Iterator.Type <> 0 Then
+                NoteVariableReference(forEach.Iterator)
+            End If
+
+
+            If forEach.ArrayExpression IsNot Nothing Then
+                AnalyzeExpression(forEach.ArrayExpression, leaveValueInStack:=True, mustBeAssignable:=False)
+            End If
+
+            For Each item In forEach.Body
+                AnalyzeStatement(item)
+            Next
+        End Sub
+
 
         Private Sub AnalyzeGotoStatement(gotoStatement As GotoStatement)
             Dim label = gotoStatement.Label

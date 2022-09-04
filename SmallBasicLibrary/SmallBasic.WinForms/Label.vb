@@ -20,6 +20,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the text that is displayed on the label
         ''' </summary>
+        <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetText(labelName As Primitive) As Primitive
             App.Invoke(
@@ -48,6 +49,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the path of the image that is displayed on the label
         ''' </summary>
+        <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetImage(labelName As Primitive) As Primitive
             App.Invoke(

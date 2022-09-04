@@ -10,11 +10,18 @@ Namespace Microsoft.SmallBasic
         Public AllStatements As New Dictionary(Of Integer, Statements.Statement)
         Public AllDynamicProperties As New Dictionary(Of String, List(Of Token))
         Public AllLibMembers As New List(Of Token)
-        Public ControlNames As List(Of String)
-        Public ModuleNames As Dictionary(Of String, String)
+        Public Property ControlNames As List(Of String)
+        Public Property ModuleNames As Dictionary(Of String, String)
 
-        Dim _typeInfoBag As TypeInfoBag
+        Friend _typeInfoBag As TypeInfoBag
         Friend ReadOnly PossibleEventHandlers As New List(Of (Id As Token, index As Integer))
+        Friend IsLoweredCode As Boolean
+
+        Friend Sub AddIdentifier(identifier As Token)
+            If IsLoweredCode Then Return
+            AllIdentifiers.Add(identifier)
+        End Sub
+
         Public ReadOnly Property Errors As List(Of [Error])
 
         Public ReadOnly Property InitializedVariables As New Dictionary(Of String, Token)
@@ -36,7 +43,7 @@ Namespace Microsoft.SmallBasic
                     propertyNameInfo.Type = TokenType.Illegal Then Return
 
             typeNameInfo.SymbolType = Completion.CompletionItemType.TypeName
-            AllIdentifiers.Add(typeNameInfo)
+            AddIdentifier(typeNameInfo)
 
             Dim value As TypeInfo = Nothing
             Dim typeName = typeNameInfo.NormalizedText
@@ -66,8 +73,6 @@ Namespace Microsoft.SmallBasic
                           }
                     )
 
-
-
                 Dim subroutine = If(_GlobalVariables.ContainsKey(typeName), Nothing, Statements.SubroutineStatement.GetSubroutine(prop))
                 Dim idExpr = New IdentifierExpression() With {
                         .Identifier = typeNameInfo,
@@ -75,7 +80,7 @@ Namespace Microsoft.SmallBasic
                  }
 
                 propertyNameInfo.SymbolType = Completion.CompletionItemType.DynamicPropertyName
-                AllIdentifiers.Add(propertyNameInfo)
+                AddIdentifier(propertyNameInfo)
 
                 AddVariable(idExpr, $"Dynamic {If(prop.IsDynamic, "", "(Data)")} object. Use {If(prop.IsDynamic, "`!`", ".")} to add properties to this object or to read them", subroutine IsNot Nothing)
                 AddVariableInitialization(typeNameInfo)
@@ -84,9 +89,40 @@ Namespace Microsoft.SmallBasic
             prop.IsDynamic = True
         End Sub
 
+        Public Property InferedTypes As New Dictionary(Of String, VariableType)
+
+        Public Function GetInferedType(var As Token) As VariableType
+            Return GetInferedType(GetKey(var))
+        End Function
+
+        Public Function GetInferedType(key As String) As VariableType
+            If InferedTypes.ContainsKey(key) Then
+                Return InferedTypes(key)
+            Else
+                Return VariableType.None
+            End If
+        End Function
+
         Friend Sub FixNames(typeName As Token, memberName As Token, isMethod As Boolean)
-            If ControlNames Is Nothing Then Return
-            If typeName.IsIllegal Then Return
+            If _typeInfoBag Is Nothing Then Return
+
+            Dim type = GetTypeInfo(typeName)
+            If type Is Nothing Then Return
+
+            If typeName.Comment <> "" AndAlso typeName.Comment <> typeName.Text Then
+                AllLibMembers.Add(typeName)
+            End If
+
+            If GetMemberInfo(memberName, type, isMethod) Is Nothing Then Return
+
+            If memberName.Comment <> "" AndAlso memberName.Comment <> memberName.Text Then
+                AllLibMembers.Add(memberName)
+            End If
+
+        End Sub
+
+        Friend Function GetTypeInfo(ByRef typeName As Token) As TypeInfo
+            If typeName.IsIllegal Then Return Nothing
 
             Dim type As TypeInfo
             Dim typeKey = typeName.NormalizedText
@@ -100,68 +136,130 @@ Namespace Microsoft.SmallBasic
                 typeName.Comment = type.Type.Name
 
             Else
-                For Each controlName In ControlNames
-                    If controlName.ToLower = typeKey Then
-                        typeName.Comment = controlName
-                        typeKey = ModuleNames(typeKey).ToLower()
-                        Exit For
-                    End If
-                Next
+                Dim varType = GetInferedType(typeName)
+                Select Case varType
+                    Case VariableType.String
+                        typeKey = NameOf(WinForms.TextEx).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
 
-                If typeName.Comment = "" Then
-                    Dim name = WinForms.PreCompiler.GetModuleFromVarName(typeKey)
-                    If name = "" Then Return
-                    type = _typeInfoBag.Types(name.ToLower())
-                Else
-                    type = _typeInfoBag.Types(typeKey)
-                End If
+                    Case VariableType.Double
+                        typeKey = NameOf(WinForms.MathEx).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
 
+                    Case VariableType.Array
+                        typeKey = NameOf(WinForms.ArrayEx).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
+
+                    Case VariableType.Color
+                        typeKey = NameOf(WinForms.ColorEx).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
+
+                    Case VariableType.Control
+                        typeKey = NameOf(WinForms.Control).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
+
+                    Case VariableType.Form
+                        typeKey = NameOf(WinForms.Form).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
+
+                    Case VariableType.TextBox
+                        typeKey = NameOf(WinForms.TextBox).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
+
+                    Case VariableType.ListBox
+                        typeKey = NameOf(WinForms.ListBox).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
+
+                    Case VariableType.Label
+                        typeKey = NameOf(WinForms.Label).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
+
+                    Case VariableType.Button
+                        typeKey = NameOf(WinForms.Button).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
+
+                    Case VariableType.ImageBox
+                        typeKey = NameOf(WinForms.ImageBox).ToLower()
+                        type = _typeInfoBag.Types(typeKey)
+
+                    Case Else
+                        If ControlNames Is Nothing Then Return Nothing
+
+                        For Each controlName In ControlNames
+                            If controlName.ToLower = typeKey Then
+                                typeName.Comment = controlName
+                                typeKey = ModuleNames(typeKey).ToLower()
+                                Exit For
+                            End If
+                        Next
+
+                        If typeName.Comment = "" Then
+                            Dim name = WinForms.PreCompiler.GetModuleFromVarName(typeKey)
+                            If name = "" Then Return Nothing
+                            type = _typeInfoBag.Types(name.ToLower())
+                        Else
+                            type = _typeInfoBag.Types(typeKey)
+                        End If
+                End Select
             End If
 
-            If typeName.Comment <> "" AndAlso typeName.Comment <> typeName.Text Then
-                AllLibMembers.Add(typeName)
-            End If
+            Return type
+        End Function
 
-            Dim firstTime = True
-
-CouldBeAControl:
+        Friend Function GetMemberInfo(ByRef memberName As Token, type As TypeInfo, isMethod As Boolean) As System.Reflection.MemberInfo
             Dim memberKey = memberName.NormalizedText
+            Dim memberInfo As System.Reflection.MemberInfo
+
             If isMethod Then
                 If type.Methods.ContainsKey(memberKey) Then
-                    memberName.Comment = type.Methods(memberKey).Name
-                    firstTime = False
+                    memberInfo = type.Methods(memberKey)
+                    memberName.Comment = memberInfo.Name
+                    Return memberInfo
                 End If
 
             ElseIf type.Properties.ContainsKey(memberKey) Then
-                memberName.Comment = type.Properties(memberKey).Name
-                firstTime = False
+                memberInfo = type.Properties(memberKey)
+                memberName.Comment = memberInfo.Name
+                Return memberInfo
 
             ElseIf type.Events.ContainsKey(memberKey) Then
-                memberName.Comment = type.Events(memberKey).Name
-                firstTime = False
+                memberInfo = type.Events(memberKey)
+                memberName.Comment = memberInfo.Name
+                Return memberInfo
 
             Else
                 memberKey = "get" & memberKey
                 If type.Methods.ContainsKey(memberKey) Then
-                    memberName.Comment = type.Methods(memberKey).Name.Substring(3)
-                    firstTime = False
+                    memberInfo = type.Methods(memberKey)
+                    memberName.Comment = memberInfo.Name.Substring(3)
+                    Return memberInfo
                 End If
             End If
 
-            If firstTime Then
-                type = _typeInfoBag.Types("control")
-                firstTime = False
-                GoTo CouldBeAControl
-
-            ElseIf typeName.Comment = "" Then
-                Return
+            If type.Key <> "control" Then
+                Return GetMemberInfo(memberName, _typeInfoBag.Types("control"), isMethod)
+            ElseIf memberName.Comment = "" Then
+                Return Nothing
+            Else
+                Return memberInfo
             End If
 
-            If memberName.Comment <> "" AndAlso memberName.Comment <> memberName.Text Then
-                AllLibMembers.Add(memberName)
-            End If
+        End Function
 
-        End Sub
+        Public Function GetReturnValueType(typeName As Token, memberName As Token, isMethod As Boolean) As VariableType
+            If _typeInfoBag Is Nothing Then Return VariableType.None
+
+            Dim type = GetTypeInfo(typeName)
+            If type Is Nothing Then Return VariableType.None
+
+            Dim memberInfo = GetMemberInfo(memberName, type, isMethod)
+            If memberInfo Is Nothing Then Return VariableType.None
+
+            Dim attrs = memberInfo.GetCustomAttributes(GetType(WinForms.ReturnValueTypeAttribute), False)
+            If attrs Is Nothing OrElse attrs.Count = 0 Then Return VariableType.None
+
+            Return CType(attrs(0), WinForms.ReturnValueTypeAttribute).ReturnTypeValue
+        End Function
 
         Public ReadOnly Property Labels As New Dictionary(Of String, Token)
 
@@ -198,6 +296,7 @@ CouldBeAControl:
             _GlobalVariables.Clear()
             _LocalVariables.Clear()
             _Dynamics.Clear()
+            InferedTypes.Clear()
 
             AllCommentLines.Clear()
             AllStatements.Clear()
@@ -207,17 +306,17 @@ CouldBeAControl:
             PossibleEventHandlers.Clear()
         End Sub
 
-        Public Sub AddVariable(
+        Public Function AddVariable(
                          variable As Expressions.IdentifierExpression,
                          comment As String,
                          Optional isLocal As Boolean = False
-                   )
+                   ) As String
 
             Dim variableName = variable.Identifier.NormalizedText
 
             If variableName = "_" Then
                 Errors.Add(New [Error](variable.Identifier, "_ is not a valid name"))
-                Return
+                Return ""
             End If
 
             Dim Subroutine = variable.Subroutine
@@ -226,21 +325,27 @@ CouldBeAControl:
             Dim newGlobal = Not _GlobalVariables.ContainsKey(variableName)
 
             If isLocal Then   ' There can be a local var and a global var with the same name. 
-                AddLocalVar(variable)
+                Return AddLocalVar(variable)
 
             ElseIf Subroutine Is Nothing Then
-                If newGlobal Then _GlobalVariables.Add(variableName, variable.Identifier)
+                If newGlobal Then
+                    _GlobalVariables.Add(variableName, variable.Identifier)
+                    Return variableName
+                End If
 
             ElseIf newGlobal Then
-                AddLocalVar(variable)
+                Return AddLocalVar(variable)
             End If
-        End Sub
 
-        Private Sub AddLocalVar(variable As IdentifierExpression)
+            Return ""
+        End Function
+
+        Private Function AddLocalVar(variable As IdentifierExpression) As String
             Dim key = GetKey(variable)
-            If _LocalVariables.ContainsKey(key) Then Return
+            If _LocalVariables.ContainsKey(key) Then Return ""
             _LocalVariables.Add(key, variable)
-        End Sub
+            Return key
+        End Function
 
         Public Function IsGlobalVar(variable As IdentifierExpression) As Boolean
             If IsLocalVar(variable) Then Return False

@@ -22,7 +22,7 @@ Namespace Microsoft.SmallBasic.Expressions
 
             Dim name = TypeName.NormalizedText
             _TypeName.SymbolType = Completion.CompletionItemType.GlobalVariable
-            symbolTable.AllIdentifiers.Add(_TypeName)
+            symbolTable.AddIdentifier(_TypeName)
 
             If IsDynamic OrElse name.StartsWith("data") Or name.EndsWith("data") Then
                 symbolTable.AddDynamic(Me)
@@ -36,7 +36,7 @@ Namespace Microsoft.SmallBasic.Expressions
                 symbolTable.FixNames(_TypeName, _PropertyName, False)
             End If
 
-            symbolTable.AllIdentifiers.Add(_PropertyName)
+            symbolTable.AddIdentifier(_PropertyName)
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)

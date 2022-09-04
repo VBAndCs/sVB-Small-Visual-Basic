@@ -18,7 +18,7 @@ Namespace Microsoft.SmallBasic.Expressions
             If Identifier.SymbolType = Completion.CompletionItemType.None Then
                 Identifier.SymbolType = If(symbolTable.IsLocalVar(Me), Completion.CompletionItemType.LocalVariable, Completion.CompletionItemType.GlobalVariable)
             End If
-            symbolTable.AllIdentifiers.Add(Identifier)
+            symbolTable.AddIdentifier(Identifier)
         End Sub
 
         Public Sub AddSymbolInitialization(symbolTable As SymbolTable)

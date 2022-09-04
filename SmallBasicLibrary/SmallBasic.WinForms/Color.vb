@@ -13,6 +13,7 @@ Namespace WinForms
         ''' <returns>
         ''' A valid random color.
         ''' </returns>
+        <ReturnValueType(VariableType.Color)>
         Public Shared Function GetRandomColor() As Primitive
             If _random Is Nothing Then
                 _random = New Random(Now.Ticks Mod Integer.MaxValue)
@@ -32,7 +33,8 @@ Namespace WinForms
         ''' <param name="red">the 0 to 255 value of the red component</param>
         ''' <param name="green">the 0 to 255 value of the green component</param>
         ''' <param name="blue">the 0 to 255 value of the blue component</param>
-        ''' <returns>a string represents the color</returns>
+        ''' <returns>a string representing the color</returns>
+        <ReturnValueType(VariableType.Color)>
         Public Shared Function FromRGB(red As Primitive, green As Primitive, blue As Primitive) As Primitive
             Dim R = InRange(red, 0, 255)
             Dim G = InRange(green, 0, 255)
@@ -47,7 +49,8 @@ Namespace WinForms
         ''' <param name="red">the 0 to 255 value of the red component</param>
         ''' <param name="green">the 0 to 255 value of the green component</param>
         ''' <param name="blue">the 0 to 255 value of the blue component</param>
-        ''' <returns>a string represents the color</returns>
+        ''' <returns>a string representing the color</returns>
+        <ReturnValueType(VariableType.Color)>
         Public Shared Function FromARGB(alpha As Primitive, red As Primitive, green As Primitive, blue As Primitive) As Primitive
             Dim A = InRange(alpha, 0, 255)
             Dim R = InRange(red, 0, 255)
@@ -57,11 +60,11 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Changes the transparency of the color
+        ''' Crates a new color based on the given colr, with the transparency set to the given value.
         ''' </summary>
         ''' <param name="color">the color you want to change its transparency</param>
         ''' <param name="percentage">a 0 to 100 value that represents the percentage of the transparency of the color</param>
-        ''' <returns>a string represent the new color with the given transparency</returns>
+        ''' <returns>a new color with the given transparency</returns>
         Public Shared Function SetTransparency(color As Primitive, percentage As Primitive) As Primitive
             Dim _color = FromString(color)
             Dim A As Byte = System.Math.Round((100 - InRange(percentage, 0, 100)) * 255 / 100)
@@ -73,6 +76,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="color">the color you want to get its transparency percentage</param>
         ''' <returns>a 0 to 100 value represents the transparency percentage of the color</returns>
+        <ReturnValueType(VariableType.Double)>
         Public Shared Function GetTransparency(color As Primitive) As Primitive
             Dim _color = FromString(color)
             Return System.Math.Round(100 - _color.A * 100 / 255, 1)
@@ -91,6 +95,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="color">the color you want to get its name</param>
         ''' <returns>the English name name of the color</returns>
+        <ReturnValueType(VariableType.String)>
         Public Shared Function GetName(color As Primitive) As Primitive
             Return DoGetName(color, True)
         End Function
@@ -100,6 +105,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="color">the color you want to get its name</param>
         ''' <returns>the English name name of the color, followed by the transparency percentage of the color</returns>
+        <ReturnValueType(VariableType.String)>
         Public Shared Function GetNameAndTransparency(color As Primitive) As Primitive
             Return DoGetName(color, False)
         End Function
@@ -119,6 +125,76 @@ Namespace WinForms
             Else
                 Return color
             End If
+        End Function
+
+        ''' <summary>
+        ''' Gets the red component of the color
+        ''' </summary>
+        ''' <param name="color">the input color</param>
+        ''' <returns>A number betwwen 0 and 255 thet represents the red ration in the color</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetRedRatio(color As Primitive) As Primitive
+            Dim _color = FromString(color)
+            Return _color.R
+        End Function
+
+        ''' <summary>
+        ''' Gets the green component of the color
+        ''' </summary>
+        ''' <param name="color">the input color</param>
+        ''' <returns>A number betwwen 0 and 255 thet represents the green ration in the color</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetGreenRatio(color As Primitive) As Primitive
+            Dim _color = FromString(color)
+            Return _color.G
+        End Function
+
+        ''' <summary>
+        ''' Gets the blue component of the color
+        ''' </summary>
+        ''' <param name="color">the input color</param>
+        ''' <returns>A number betwwen 0 and 255 thet represents the blue ration in the color</returns>
+
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetBlueRatio(color As Primitive) As Primitive
+            Dim _color = FromString(color)
+            Return _color.B
+        End Function
+
+        ''' <summary>
+        ''' Creates a new color based on the given color, with the red component changed to the given value.
+        ''' </summary>
+        ''' <param name="color">the input color</param>
+        ''' <param name="value">the new value of the red component</param>
+        ''' <returns>a new color with the red component changed to the given value</returns>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared Function SetRedRatio(color As Primitive, value As Primitive) As Primitive
+            Dim _color = FromString(color)
+            Return FromARGB(_color.A, value, _color.G, _color.B)
+        End Function
+
+        ''' <summary>
+        ''' Creates a new color based on the given color, with the green component changed to the given value.
+        ''' </summary>
+        ''' <param name="color">the input color</param>
+        ''' <param name="value">the new value of the green component</param>
+        ''' <returns>a new color with the green component changed to the given value</returns>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared Function SetGreenRatio(color As Primitive, value As Primitive) As Primitive
+            Dim _color = FromString(color)
+            Return FromARGB(_color.A, _color.R, value, _color.B)
+        End Function
+
+        ''' <summary>
+        ''' Creates a new color based on the given color, with the blue component changed to the given value.
+        ''' </summary>
+        ''' <param name="color">the input color</param>
+        ''' <param name="value">the new value of the blue component</param>
+        ''' <returns>a new color with the blue component changed to the given value</returns>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared Function SetBlueRatio(color As Primitive, value As Primitive) As Primitive
+            Dim _color = FromString(color)
+            Return FromARGB(_color.A, _color.R, _color.G, value)
         End Function
 
         Private Shared _colorNames As New Dictionary(Of String, String) From {

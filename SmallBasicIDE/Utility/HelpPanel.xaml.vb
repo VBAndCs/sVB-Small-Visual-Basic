@@ -67,10 +67,10 @@ Namespace Microsoft.SmallBasic.Utility
 
                     Case SymbolType.Property, SymbolType.Event, SymbolType.Type
                         methodType = " " & value.SymbolType.ToString()
-                        Dim type = CompletionItemWrapper.CompletionItem.MemberInfo.DeclaringType?.Name
+                        Dim type = GetTypeName()
                         Dim definition As New Span()
                         FillTitle(definition)
-                        FillDescription(definition, If(type Is Nothing, "", type & "."))
+                        FillDescription(definition, If(type = "", "", type & "."))
 
                     Case Else
                         popHelp.IsOpen = False
@@ -91,8 +91,26 @@ Namespace Microsoft.SmallBasic.Utility
             End Set
         End Property
 
+        Private Function GetTypeName() As String
+            Dim type = _itemWrapper.CompletionItem.MemberInfo?.DeclaringType
+            If type Is Nothing Then Return ""
+
+            Select Case type.Name
+                Case NameOf(WinForms.ArrayEx)
+                    Return NameOf(Library.Array)
+                Case NameOf(WinForms.MathEx)
+                    Return NameOf(Library.Math)
+                Case NameOf(WinForms.TextEx)
+                    Return NameOf(Library.Text)
+                Case NameOf(WinForms.ColorEx)
+                    Return NameOf(WinForms.Color)
+                Case Else
+                    Return type.Name
+            End Select
+        End Function
+
         Private Sub OnScrollChaged(senmder As Object, e As ScrollEventArgs)
-            Dim popHelp = MainWindow.popHelp
+            Dim popHelp = MainWindow.PopHelp
             popHelp.IsOpen = False
             Dim textView = CType(popHelp.Tag, Microsoft.Nautilus.Text.Editor.IAvalonTextView)
             If textView IsNot Nothing Then
@@ -188,7 +206,7 @@ Namespace Microsoft.SmallBasic.Utility
         Private Sub FillInfo(hasParams As Boolean)
             Dim documentation = _itemWrapper.Documentation
             Dim item = _itemWrapper.CompletionItem
-            Dim name = item.MemberInfo?.DeclaringType.Name
+            Dim name = GetTypeName()
             Dim definition As New Span()
             Dim params = documentation.ParamsDoc.Keys
             Dim paramIndex = item.ParamIndex

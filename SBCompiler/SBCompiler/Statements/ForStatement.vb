@@ -68,7 +68,7 @@ Namespace Microsoft.SmallBasic.Statements
                     .Subroutine = Subroutine
                 }
                 Iterator.SymbolType = If(Subroutine Is Nothing, CompletionItemType.GlobalVariable, CompletionItemType.LocalVariable)
-                symbolTable.AllIdentifiers.Add(Iterator)
+                symbolTable.AddIdentifier(Iterator)
                 symbolTable.AddVariable(id, "The for loop counter (iterator)", Subroutine IsNot Nothing)
                 If symbolTable.IsGlobalVar(id) Then
                     id.AddSymbolInitialization(symbolTable)
@@ -189,8 +189,7 @@ Namespace Microsoft.SmallBasic.Statements
             If ForToken.Line = line AndAlso column <= ForToken.EndColumn Then
                 CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
 
-            ElseIf EqualsToken.IsIllegal OrElse line < EqualsToken.Line OrElse
-                        (line = EqualsToken.Line AndAlso column < EqualsToken.Column) Then
+            ElseIf AfterIterator(line, column) Then
                 CompletionHelper.FillLocals(completionBag, Subroutine?.Name.NormalizedText)
                 If Not Iterator.IsIllegal AndAlso Subroutine Is Nothing Then
                     completionBag.CompletionItems.Add(New CompletionItem() With {
@@ -202,20 +201,31 @@ Namespace Microsoft.SmallBasic.Statements
                 End If
 
             ElseIf InForHeader(line) Then
-                CompletionHelper.FillKeywords(completionBag, TokenType.To, TokenType.Step)
+                CompletionHelper.FillKeywords(completionBag, {TokenType.To, TokenType.Step})
                 CompletionHelper.FillExpressionItems(completionBag)
                 CompletionHelper.FillSubroutines(completionBag, True)
 
             ElseIf Not EndLoopToken.IsIllegal AndAlso line = EndLoopToken.Line Then
                 completionBag.CompletionItems.Clear()
-                CompletionHelper.FillKeywords(completionBag, EndLoopToken.Type)
+                CompletionHelper.FillKeywords(completionBag, {EndLoopToken.Type})
 
             Else
                 Dim statement = GetStatementContaining(Body, line)
-                CompletionHelper.FillKeywords(completionBag, TokenType.EndFor, TokenType.Next)
+                CompletionHelper.FillKeywords(completionBag, {TokenType.EndFor, TokenType.Next})
                 statement?.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
             End If
         End Sub
+
+        Private Function AfterIterator(line As Integer, column As Integer) As Boolean
+            If EqualsToken.IsIllegal Then
+                If Iterator.IsIllegal Then Return line = ForToken.Line
+                Return line = Iterator.Line
+            End If
+
+            If line < EqualsToken.Line Then Return True
+            If line > EqualsToken.Line Then Return False
+            Return column < EqualsToken.Column
+        End Function
 
         Private Function InForHeader(line As Integer) As Boolean
             Dim line2 As Integer

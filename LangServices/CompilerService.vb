@@ -104,7 +104,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                             indentationLevel = 0
                             AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
 
-                        Case TokenType.If, TokenType.For, TokenType.While
+                        Case TokenType.If, TokenType.For, TokenType.ForEach, TokenType.While
                             AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
                             indentationLevel += 1
 
@@ -240,13 +240,15 @@ CheckLineEnd:
 
             Using textEdit = textBuffer.CreateEdit()
                 For lineNum = 0 To lines.Count - 1
-                    Dim line = snapshot.GetLineFromLineNumber(lineNum + start)
                     Dim tokens = LineScanner.GetTokens(lines(lineNum), lineNum, lines)
 
-                    For Each t In tokens
-                        If t.ParseType = ParseType.Keyword OrElse t.Type = TokenType.And OrElse t.Type = TokenType.Or Then
-                            Dim keyword = t.Type.ToString()
-                            If t.Text <> keyword Then textEdit.Replace(line.Start + t.Column, t.EndColumn - t.Column, keyword)
+                    For Each token In tokens
+                        If token.ParseType = ParseType.Keyword OrElse token.Type = TokenType.And OrElse token.Type = TokenType.Or Then
+                            Dim keyword = token.Type.ToString()
+                            If token.Text <> keyword Then
+                                Dim line = snapshot.GetLineFromLineNumber(token.Line + start)
+                                textEdit.Replace(line.Start + token.Column, token.EndColumn - token.Column, keyword)
+                            End If
                         End If
                     Next
                 Next
@@ -363,6 +365,7 @@ CheckLineEnd:
 
         Private Function FixToken(token As Token, lineStart As Integer, dictionary As Dictionary(Of String, Token), textEdit As ITextEdit)
             Dim key = token.NormalizedText
+            If key.StartsWith("__foreach__") Then Return True
 
             If dictionary.ContainsKey(key) Then
                 Dim name = dictionary(key).Text
@@ -564,5 +567,21 @@ CheckLineEnd:
                 End Select
             End If
         End Sub
+
+        Public Function GetLastTokenIndex(line As ITextSnapshotLine, caretPosition As Integer, tokens As List(Of Token)) As Integer
+            Dim lineNumber = line.LineNumber
+            Dim column = caretPosition - line.Start
+
+            Dim n As Integer
+            For n = 0 To tokens.Count - 1
+                Dim token = tokens(n)
+                Dim tokenLine = token.Line
+                If tokenLine > lineNumber Then Exit For
+                If tokenLine = lineNumber AndAlso token.Column > column Then Exit For
+            Next
+
+            Return n - 1
+        End Function
+
     End Module
 End Namespace

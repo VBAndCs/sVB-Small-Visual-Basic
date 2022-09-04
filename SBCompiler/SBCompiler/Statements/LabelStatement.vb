@@ -23,7 +23,7 @@ Namespace Microsoft.SmallBasic.Statements
             If Not LabelToken.IsIllegal Then
                 symbolTable.AddLabelDefinition(LabelToken)
                 LabelToken.SymbolType = Completion.CompletionItemType.Label
-                symbolTable.AllIdentifiers.Add(LabelToken)
+                symbolTable.AddIdentifier(LabelToken)
             End If
         End Sub
 

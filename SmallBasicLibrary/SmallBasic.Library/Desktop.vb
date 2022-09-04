@@ -12,6 +12,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the screen width of the primary desktop.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Width As Primitive
             Get
                 Return SystemParameters.PrimaryScreenWidth
@@ -21,6 +22,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the screen height of the primary desktop.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Height As Primitive
             Get
                 Return SystemParameters.PrimaryScreenHeight
@@ -44,18 +46,20 @@ Namespace Library
             If fileNameOrUrl.IsEmpty Then
                 Return fileNameOrUrl
             End If
+
             Dim localFile As String = Path.GetTempFileName()
-            SmallBasicApplication.Invoke(Sub()
-                                             Dim bitmapImage1 As BitmapImage = ImageList.LoadImageFromFile(fileNameOrUrl)
-                                             If bitmapImage1 IsNot Nothing Then
-                                                 Dim bmpBitmapEncoder1 As New BmpBitmapEncoder
-                                                 Dim item As BitmapFrame = BitmapFrame.Create(bitmapImage1)
-                                                 bmpBitmapEncoder1.Frames.Add(item)
-                                                 Using stream1 As Stream = IO.File.Create(localFile)
-                                                     bmpBitmapEncoder1.Save(stream1)
-                                                 End Using
-                                             End If
-                                         End Sub)
+            SmallBasicApplication.Invoke(
+                Sub()
+                    Dim bitmap = ImageList.LoadImageFromFile(fileNameOrUrl)
+                    If bitmap IsNot Nothing Then
+                        Dim bmpEncoder As New BmpBitmapEncoder
+                        Dim item = BitmapFrame.Create(bitmap)
+                        bmpEncoder.Frames.Add(item)
+                        Using stream = IO.File.Create(localFile)
+                            bmpEncoder.Save(stream)
+                        End Using
+                    End If
+                End Sub)
             Return New Primitive(localFile)
         End Function
     End Class

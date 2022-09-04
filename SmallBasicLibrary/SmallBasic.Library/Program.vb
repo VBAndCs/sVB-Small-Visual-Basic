@@ -15,6 +15,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the number of command-line arguments passed to this program.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property ArgumentCount As Primitive
             Get
                 Return If((args.Length <> 0), (args.Length - 1), 0)
@@ -24,6 +25,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the executing program's directory.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property Directory As Primitive
             Get
                 Dim entryAssembly As Assembly = Assembly.GetEntryAssembly()
@@ -57,6 +59,7 @@ Namespace Library
         ''' <returns>
         ''' The command-line argument at the specified index.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetArgument(index As Primitive) As Primitive
             Dim num As Integer = index
             If num >= 1 AndAlso num < args.Length Then

@@ -34,6 +34,7 @@ Namespace Library
         ''' <returns>
         ''' The number of items in the specified stack.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetCount(stackName As Primitive) As Primitive
             Dim value As Collections.Generic.Stack(Of Primitive) = Nothing
             If Not _stackMap.TryGetValue(stackName, value) Then

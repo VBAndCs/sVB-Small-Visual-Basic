@@ -35,10 +35,10 @@ Namespace Microsoft.SmallBasic.Expressions
             Next
 
             _TypeName.SymbolType = Completion.CompletionItemType.GlobalVariable
-            symbolTable.AllIdentifiers.Add(_TypeName)
+            symbolTable.AddIdentifier(_TypeName)
 
             _MethodName.SymbolType = If(_TypeName.IsIllegal, Completion.CompletionItemType.SubroutineName, Completion.CompletionItemType.MethodName)
-            symbolTable.AllIdentifiers.Add(_MethodName)
+            symbolTable.AddIdentifier(_MethodName)
 
             symbolTable.FixNames(_TypeName, _MethodName, True)
         End Sub
@@ -52,6 +52,7 @@ Namespace Microsoft.SmallBasic.Expressions
                     .OuterSubroutine = OuterSubRoutine
                 }
                 subroutine.EmitIL(scope)
+
             Else
                 Dim methodInfo = GetMethodInfo(scope)
 

@@ -11,6 +11,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current system time.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Date)>
         Public Shared ReadOnly Property Time As Primitive
             Get
                 Dim instance As DateTimeFormatInfo = DateTimeFormatInfo.GetInstance(CultureInfo.CurrentCulture)
@@ -21,6 +22,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current system date.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Date)>
         Public Shared ReadOnly Property [Date] As Primitive
             Get
                 Dim instance As DateTimeFormatInfo = DateTimeFormatInfo.GetInstance(CultureInfo.CurrentCulture)
@@ -31,6 +33,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current year.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Year As Primitive
             Get
                 Return DateTime.Now.Year
@@ -40,6 +43,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current Month.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Month As Primitive
             Get
                 Return DateTime.Now.Month
@@ -49,6 +53,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current day of the month.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Day As Primitive
             Get
                 Return DateTime.Now.Day
@@ -58,6 +63,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current day of the week.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property WeekDay As Primitive
             Get
                 Return DateTime.Now.ToString("dddd", CultureInfo.CurrentUICulture)
@@ -67,6 +73,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current Hour.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Hour As Primitive
             Get
                 Return DateTime.Now.Hour
@@ -76,6 +83,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current Minute.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Minute As Primitive
             Get
                 Return DateTime.Now.Minute
@@ -85,6 +93,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current Second.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Second As Primitive
             Get
                 Return DateTime.Now.Second
@@ -94,6 +103,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the current Millisecond.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Millisecond As Primitive
             Get
                 Return DateTime.Now.Millisecond
@@ -103,6 +113,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the number of milliseconds that have elapsed since 1900.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property ElapsedMilliseconds As Primitive
             Get
                 Return (DateTime.Now - New DateTime(1900, 1, 1)).TotalMilliseconds

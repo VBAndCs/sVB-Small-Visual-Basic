@@ -28,7 +28,7 @@ Namespace Microsoft.SmallBasic.Statements
             Next
 
             Name.SymbolType = CompletionItemType.SubroutineName
-            symbolTable.AllIdentifiers.Add(Name)
+            symbolTable.AddIdentifier(Name)
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)

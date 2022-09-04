@@ -12,6 +12,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the foreground color of the text to be output in the text window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property ForegroundColor As Primitive
             Get
                 VerifyAccess()
@@ -21,6 +22,7 @@ Namespace Library
             Set(Value As Primitive)
                 VerifyAccess()
                 Try
+                    Value = WinForms.Color.GetName(Value)
                     Console.ForegroundColor = CType([Enum].Parse(GetType(ConsoleColor), Value, ignoreCase:=True), ConsoleColor)
                 Catch
 
@@ -31,6 +33,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the background color of the text to be output in the text window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property BackgroundColor As Primitive
             Get
                 VerifyAccess()
@@ -40,6 +43,7 @@ Namespace Library
             Set(Value As Primitive)
                 VerifyAccess()
                 Try
+                    Value = WinForms.Color.GetName(Value)
                     Console.BackgroundColor = CType([Enum].Parse(GetType(ConsoleColor), Value, ignoreCase:=True), ConsoleColor)
                 Catch
 
@@ -50,6 +54,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the cursor's column position on the text window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property CursorLeft As Primitive
             Get
                 VerifyAccess()
@@ -65,6 +70,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the cursor's row position on the text window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property CursorTop As Primitive
             Get
                 VerifyAccess()
@@ -80,6 +86,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Left position of the Text Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Left As Primitive
             Get
                 VerifyAccess()
@@ -101,6 +108,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Title for the text window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Property Title As Primitive
             Get
                 VerifyAccess()
@@ -116,6 +124,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Top position of the Text Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Top As Primitive
             Get
                 VerifyAccess()
@@ -206,6 +215,7 @@ Namespace Library
         ''' <returns>
         ''' The text that was read from the text window
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Read() As Primitive
             VerifyAccess()
             Return New Primitive(Console.ReadLine())
@@ -218,6 +228,7 @@ Namespace Library
         ''' The character that was read from the text window.
         ''' </returns>
         <HideFromIntellisense>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadKey() As Primitive
             VerifyAccess()
             Return New String(Console.ReadKey(intercept:=True).KeyChar, 1)
@@ -229,6 +240,7 @@ Namespace Library
         ''' <returns>
         ''' The number that was read from the text window
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ReadNumber() As Primitive
             VerifyAccess()
             Dim stringBuilder1 As New StringBuilder

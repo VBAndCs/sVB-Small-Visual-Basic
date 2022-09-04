@@ -11,6 +11,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the mouse cursor's x co-ordinate.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property MouseX As Primitive
             Get
                 Return New Primitive(Cursor.Position.X)
@@ -24,6 +25,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the mouse cursor's x co-ordinate.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property X As Primitive
             Get
                 Return New Primitive(Cursor.Position.X)
@@ -38,6 +40,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the mouse cursor's y co-ordinate.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property MouseY As Primitive
             Get
                 Return New Primitive(Cursor.Position.Y)
@@ -51,6 +54,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the mouse cursor's y co-ordinate.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Y As Primitive
             Get
                 Return New Primitive(Cursor.Position.Y)
@@ -64,6 +68,7 @@ Namespace Library
         ''' <summary>
         ''' Gets whether or not the left button is pressed.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared ReadOnly Property IsLeftButtonDown As Primitive
             Get
                 Return New Primitive((Control.MouseButtons And MouseButtons.Left) = MouseButtons.Left)
@@ -73,6 +78,7 @@ Namespace Library
         ''' <summary>
         ''' Gets whether or not the right button is pressed.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared ReadOnly Property IsRightButtonDown As Primitive
             Get
                 Return New Primitive((Control.MouseButtons And MouseButtons.Right) = MouseButtons.Right)

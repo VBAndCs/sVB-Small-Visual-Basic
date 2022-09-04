@@ -33,6 +33,7 @@ Namespace Library
         ''' <returns>
         ''' A file URL for Flickr's picture of the moment
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetPictureOfMoment() As Primitive
             Dim random1 As New Random(Now.Ticks Mod Integer.MaxValue)
             Dim url As String = $"{_urlTemplate}&method=flickr.photos.getRecent&per_page=50&page={random1.Next(10) + 1}"
@@ -49,6 +50,7 @@ Namespace Library
         ''' <returns>
         ''' A file URL for Flickr's random picture
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetRandomPicture(tag As Primitive) As Primitive
             Dim random1 As New Random(Now.Ticks Mod Integer.MaxValue)
             If CStr(tag) = _cachedTag AndAlso _cachedTagDocument IsNot Nothing AndAlso _cachedTagDocumentHitCount < 10 Then
@@ -72,11 +74,11 @@ Namespace Library
                 Dim source As IEnumerable(Of XElement) = document.Descendants("photo")
                 Dim random1 As New Random(Now.Ticks Mod Integer.MaxValue)
                 Dim xElement1 As XElement = source.ElementAt(random1.Next(source.Count()))
-                Dim value1 As String = xElement1.Attribute("id").Value
-                Dim value2 As String = xElement1.Attribute("secret").Value
-                Dim value3 As String = xElement1.Attribute("server").Value
-                Dim value4 As String = xElement1.Attribute("farm").Value
-                Return String.Format(_picUrlTemplate, value4, value3, value1, value2)
+                Dim id = xElement1.Attribute("id").Value
+                Dim secret = xElement1.Attribute("secret").Value
+                Dim server = xElement1.Attribute("server").Value
+                Dim farm = xElement1.Attribute("farm").Value
+                Return String.Format(_picUrlTemplate, farm, server, id, secret)
             Catch
 
             End Try

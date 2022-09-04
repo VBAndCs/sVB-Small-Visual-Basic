@@ -6,8 +6,11 @@
         Public ReadOnly Property Column As Integer
         Public ReadOnly Property Description As String
 
+        Public ReadOnly Property Token As Token
+
         Public Sub New(token As Token, description As String)
             Me.New(token.Line, token.subLine, token.Column, description)
+            _Token = token
         End Sub
 
         Public Sub New(line As Integer, subLine As Integer, column As Integer, description As String)

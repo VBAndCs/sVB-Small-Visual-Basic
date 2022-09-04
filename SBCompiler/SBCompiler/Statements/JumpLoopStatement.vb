@@ -46,7 +46,8 @@ Namespace Microsoft.SmallBasic.Statements
                 parentStatement = parentStatement.Parent
 
                 If TypeOf parentStatement Is ForStatement OrElse
-                            TypeOf parentStatement Is WhileStatement Then
+                        TypeOf parentStatement Is ForEachStatement OrElse
+                        TypeOf parentStatement Is WhileStatement Then
                     loops.Add(parentStatement)
                     level -= 1
                 End If

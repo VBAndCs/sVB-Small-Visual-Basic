@@ -19,7 +19,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                       provider As CompletionProvider,
                        completionBag As CompletionBag,
                        adornmentSpan As ITextSpan,
-                       replaceSpan As ITextSpan)
+                       replaceSpan As ITextSpan
+                   )
 
             _AdornmentProvider = provider
             _CompletionBag = completionBag

@@ -90,6 +90,7 @@ Namespace Microsoft.SmallBasic.Statements
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
             If lineNumber > EndSubToken.Line Then Return Nothing
+            If lineNumber = EndSubToken.Line Then Return Me
 
             For Each statment In Body
                 Dim st = statment.GetStatementAt(lineNumber)
@@ -135,14 +136,14 @@ Namespace Microsoft.SmallBasic.Statements
                 For Each param In Params
                     param.Parent = Me
                     param.SymbolType = CompletionItemType.LocalVariable
-                    symbolTable.AllIdentifiers.Add(param)
+                    symbolTable.AddIdentifier(param)
                 Next
             End If
 
             If Not Name.IsIllegal Then
                 symbolTable.AddSubroutine(Name, StartToken.Type)
                 Name.SymbolType = CompletionItemType.SubroutineName
-                symbolTable.AllIdentifiers.Add(Name)
+                symbolTable.AddIdentifier(Name)
             End If
 
             For Each item In Body
@@ -202,7 +203,7 @@ Namespace Microsoft.SmallBasic.Statements
             If StartToken.Line = line AndAlso Name.IsAfter(line, column) Then
                 CompletionHelper.FillAllGlobalItems(bag, globalScope)
 
-            ElseIf Name.Contains(line, column, CompletionHelper.ForHelp) Then
+            ElseIf Name.Contains(line, column, bag.ForHelp) Then
                 bag.CompletionItems.Add(
                             New Completion.CompletionItem() With {
                                      .DisplayName = Name.Text,
@@ -216,7 +217,7 @@ Namespace Microsoft.SmallBasic.Statements
                            line <= Params.Last.Line
                       ) Then
 
-                If CompletionHelper.ForHelp Then
+                If bag.ForHelp Then
                     For Each param In Params
                         bag.CompletionItems.Add(
                             New Completion.CompletionItem() With {
@@ -234,9 +235,9 @@ Namespace Microsoft.SmallBasic.Statements
                 Dim statement = GetStatementContaining(Body, line)
                 If statement IsNot Nothing Then
                     If StartToken.Type = TokenType.Sub Then
-                        CompletionHelper.FillKeywords(bag, TokenType.EndSub)
+                        CompletionHelper.FillKeywords(bag, {TokenType.EndSub})
                     Else
-                        CompletionHelper.FillKeywords(bag, TokenType.EndFunction)
+                        CompletionHelper.FillKeywords(bag, {TokenType.EndFunction})
                     End If
 
                     statement.PopulateCompletionItems(bag, line, column, globalScope:=False)

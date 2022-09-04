@@ -12,6 +12,37 @@ Namespace Microsoft.SmallBasic.Completion
             _compiler = New Compiler()
         End Sub
 
+        Public Function GetInferedType(identifier As Token) As String
+            Select Case identifier.Type
+                Case TokenType.StringLiteral
+                    Return NameOf(WinForms.TextEx)
+
+                Case TokenType.NumericLiteral
+                    Return NameOf(WinForms.MathEx)
+
+                Case TokenType.RightCurlyBracket
+                    Return NameOf(WinForms.ArrayEx)
+
+                Case Else
+                    Dim symbolTable = _compiler.Parser.SymbolTable
+                    identifier.Parent = GetStatement(_compiler, identifier.Line)
+                    Dim varType = symbolTable.GetInferedType(identifier)
+
+                    Select Case varType
+                        Case VariableType.String
+                            Return NameOf(WinForms.TextEx)
+                        Case VariableType.Double
+                            Return NameOf(WinForms.MathEx)
+                        Case VariableType.Array
+                            Return NameOf(WinForms.ArrayEx)
+                        Case VariableType.Color
+                            Return NameOf(WinForms.ColorEx)
+                        Case Else
+                            Return ""
+                    End Select
+            End Select
+        End Function
+
         Public Function GetEmptyCompletionBag() As CompletionBag
             Return New CompletionBag(
                 _compiler.TypeInfoBag,
@@ -39,26 +70,21 @@ Namespace Microsoft.SmallBasic.Completion
             Return Nothing
         End Function
 
-        Public Shared Property ForHelp As Boolean
-
-
         Public Function GetCompletionItems(
                          source As TextReader,
-                         needsToReCompile As Boolean,
                          line As Integer,
                          column As Integer,
                          nextToEquals As Boolean,
-                         nextToOperator As Boolean
-                    ) As CompletionBag
+                         nextToOperator As Boolean,
+                         forHelp As Boolean
+                   ) As CompletionBag
 
-            If needsToReCompile Then
-                _compiler.Compile(source, True)
-                completionBagCashe.Clear()
-            ElseIf completionBagCashe.ContainsKey(line) Then
+            If completionBagCashe.ContainsKey(line) Then
                 Return completionBagCashe(line)
             End If
 
             Dim bag = GetEmptyCompletionBag()
+            bag.ForHelp = forHelp
             bag.NextToEquals = nextToEquals
             bag.NextToOperator = nextToOperator
 
@@ -114,7 +140,7 @@ Namespace Microsoft.SmallBasic.Completion
 
             If inGlobalScope Then
                 FillLocals(completionBag, "")
-                FillKeywords(completionBag, TokenType.Sub, TokenType.Function)
+                FillKeywords(completionBag, {TokenType.Sub, TokenType.Function})
             End If
 
             FillExpressionItems(completionBag)
@@ -123,18 +149,35 @@ Namespace Microsoft.SmallBasic.Completion
 
         End Sub
 
+        Private Shared allKeywords As List(Of CompletionItem)
+
         Public Shared Sub FillAllKeywords(completionBag As CompletionBag)
             If DoNotAddGlobals Then Return
 
-            FillKeywords(completionBag, TokenType.If, TokenType.For, TokenType.Goto, TokenType.While, TokenType.Return, TokenType.ExitLoop, TokenType.ContinueLoop)
+            If AllKeywords Is Nothing Then
+                AllKeywords = New List(Of CompletionItem)
+                FillKeywords(
+                        completionBag, {
+                                TokenType.If,
+                                TokenType.Goto,
+                                TokenType.For,
+                                TokenType.ForEach,
+                                TokenType.While,
+                                TokenType.Return,
+                                TokenType.ExitLoop,
+                                TokenType.ContinueLoop
+                        }, True
+                      )
+            Else
+                completionBag.CompletionItems.AddRange(AllKeywords)
+            End If
         End Sub
 
 
-        Public Shared Sub FillLogicalExpressionItems(completionBag As CompletionBag)
+        Public Shared Sub FillLogicalExpressionItems(bag As CompletionBag)
             If DoNotAddGlobals Then Return
 
-            FillExpressionItems(completionBag)
-            FillKeywords(completionBag, TokenType.And, TokenType.Or)
+            FillExpressionItems(bag)
         End Sub
 
         Public Shared Sub FillExpressionItems(bag As CompletionBag)
@@ -178,33 +221,38 @@ Namespace Microsoft.SmallBasic.Completion
             Next
         End Sub
 
-        Public Shared Sub FillBooleanLitrals(bag As CompletionBag)
-            If DoNotAddGlobals Then Return
-
-            bag.CompletionItems.Add(New CompletionItem() With {
-                .Key = "True",
-                .DisplayName = "True",
-                .ItemType = CompletionItemType.Keyword
-            })
-
-            bag.CompletionItems.Add(New CompletionItem() With {
-                .Key = "False",
-                .DisplayName = "False",
-                .ItemType = CompletionItemType.Keyword
-            })
-
-            If Not bag.NextToOperator Then
-                bag.CompletionItems.Add(New CompletionItem() With {
+        Private Shared booleanLitrals() As CompletionItem = {
+                New CompletionItem() With {
+                    .Key = "True",
+                    .DisplayName = "True",
+                    .ItemType = CompletionItemType.Keyword
+                },
+                New CompletionItem() With {
+                    .Key = "False",
+                    .DisplayName = "False",
+                    .ItemType = CompletionItemType.Keyword
+                },
+                New CompletionItem() With {
                     .Key = "Or",
                     .DisplayName = "Or",
                     .ItemType = CompletionItemType.Keyword
-                })
-
-                bag.CompletionItems.Add(New CompletionItem() With {
+                },
+                New CompletionItem() With {
                     .Key = "And",
                     .DisplayName = "And",
                     .ItemType = CompletionItemType.Keyword
-                })
+                }
+        }
+
+        Public Shared Sub FillBooleanLitrals(bag As CompletionBag)
+            If DoNotAddGlobals Then Return
+
+            bag.CompletionItems.Add(BooleanLitrals(0)) ' True
+            bag.CompletionItems.Add(booleanLitrals(1)) ' False
+
+            If Not bag.NextToOperator Then
+                bag.CompletionItems.Add(booleanLitrals(2)) ' Or
+                bag.CompletionItems.Add(booleanLitrals(3)) ' And
             End If
         End Sub
 
@@ -212,16 +260,16 @@ Namespace Microsoft.SmallBasic.Completion
         Public Shared CurrentLine As Integer
         Public Shared CurrentColumn As Integer
 
-        Public Shared Sub FillVariables(completionBag As CompletionBag)
+        Public Shared Sub FillVariables(bag As CompletionBag)
             If DoNotAddGlobals Then Return
 
-            For Each variable In completionBag.SymbolTable.GlobalVariables
+            For Each variable In bag.SymbolTable.GlobalVariables
                 Dim varName = variable.Value
 
                 ' Prevent shwoing new var names while typing
-                If Not forHelp AndAlso varName.Line = CurrentLine AndAlso varName.EndColumn = CurrentColumn Then Continue For
+                If Not bag.ForHelp AndAlso varName.Line = CurrentLine AndAlso varName.EndColumn = CurrentColumn Then Continue For
 
-                completionBag.CompletionItems.Add(New CompletionItem() With {
+                bag.CompletionItems.Add(New CompletionItem() With {
                     .Key = variable.Key,
                     .DisplayName = varName.Text,
                     .ItemType = CompletionItemType.GlobalVariable,
@@ -230,11 +278,11 @@ Namespace Microsoft.SmallBasic.Completion
             Next
         End Sub
 
-        Public Shared Sub FillLocals(completionBag As CompletionBag, subroutine As String)
+        Public Shared Sub FillLocals(bag As CompletionBag, subroutine As String)
             If DoNotAddGlobals Then Return
             Dim prfx = subroutine & "."
 
-            For Each variable In completionBag.SymbolTable.LocalVariables
+            For Each variable In bag.SymbolTable.LocalVariables
                 If subroutine = "" Then
                     If variable.Key.Contains(".") Then Continue For
                 ElseIf Not variable.Key.StartsWith(prfx) Then
@@ -242,9 +290,9 @@ Namespace Microsoft.SmallBasic.Completion
                 End If
 
                 Dim varName = variable.Value.Identifier
-                If Not ForHelp AndAlso varName.Line = CurrentLine AndAlso varName.EndColumn = CurrentColumn Then Continue For
+                If Not bag.ForHelp AndAlso varName.Line = CurrentLine AndAlso varName.EndColumn = CurrentColumn Then Continue For
 
-                completionBag.CompletionItems.Add(New CompletionItem() With {
+                bag.CompletionItems.Add(New CompletionItem() With {
                         .Key = variable.Key,
                         .DisplayName = varName.Text,
                         .ItemType = CompletionItemType.LocalVariable,
@@ -253,73 +301,100 @@ Namespace Microsoft.SmallBasic.Completion
             Next
         End Sub
 
+        Private Shared typeCompletionItems As List(Of CompletionItem)
+        Private Shared membersCompletionItems As New Dictionary(Of String, List(Of CompletionItem))
 
         Public Shared Sub FillTypeNames(bag As CompletionBag)
             If DoNotAddGlobals Then Return
 
-            For Each type In bag.TypeInfoBag.Types
-                If Not type.Value.HideFromIntellisense Then
-                    bag.CompletionItems.Add(New CompletionItem() With {
-                        .Key = type.Key,
-                        .DisplayName = type.Value.Type.Name,
-                        .ItemType = CompletionItemType.TypeName,
-                        .MemberInfo = type.Value.Type
-                    })
-                End If
-            Next
+            If typeCompletionItems Is Nothing Then
+                typeCompletionItems = New List(Of CompletionItem)
 
-            bag.CompletionItems.Add(New CompletionItem() With {
+                For Each type In bag.TypeInfoBag.Types
+                    If Not type.Value.HideFromIntellisense Then
+                        typeCompletionItems.Add(New CompletionItem() With {
+                            .Key = type.Key,
+                            .DisplayName = type.Value.Type.Name,
+                            .ItemType = CompletionItemType.TypeName,
+                            .MemberInfo = type.Value.Type
+                        })
+                    End If
+                Next
+
+                typeCompletionItems.Add(New CompletionItem() With {
                         .ObjectName = "Form",
                         .Key = "Me",
                         .DisplayName = "Me",
                         .ItemType = CompletionItemType.Control,
                         .DefinitionIdintifier = New Token With {.Line = -1, .Type = TokenType.Identifier}
-            })
+                 })
+            End If
+
+            bag.CompletionItems.AddRange(typeCompletionItems)
+
         End Sub
 
-        Public Shared Sub FillMemberNames(completionBag As CompletionBag, typeInfo As TypeInfo, objName As String)
-            For Each method In typeInfo.Methods
-                If Not IsHiddenFromIntellisense(method.Value) Then
-                    Dim completionItem As New CompletionItem() With {
-                        .Key = method.Key,
-                        .DisplayName = method.Value.Name,
-                        .ObjectName = objName,
-                        .ItemType = CompletionItemType.MethodName,
-                        .MemberInfo = method.Value,
-                        .ReplacementText = method.Value.Name & "("
-                    }
+        Public Shared Sub FillMemberNames(
+                        completionBag As CompletionBag,
+                        typeInfo As TypeInfo,
+                        objName As String
+                   )
 
-                    If method.Value.GetParameters().Length = 0 Then
-                        completionItem.ReplacementText &= ")"
+            Dim typeName = typeInfo.Type.Name.ToLower()
+            If Not membersCompletionItems.ContainsKey(typeName) Then
+                Dim members As New List(Of CompletionItem)
+
+                For Each method In typeInfo.Methods
+                    If Not IsHiddenFromIntellisense(method.Value) Then
+                        Dim completionItem As New CompletionItem() With {
+                                .Key = method.Key,
+                                .DisplayName = method.Value.Name,
+                                .ObjectName = objName,
+                                .ItemType = CompletionItemType.MethodName,
+                                .MemberInfo = method.Value,
+                                .ReplacementText = method.Value.Name & "("
+                         }
+
+                        If method.Value.GetParameters().Length = 0 Then
+                            completionItem.ReplacementText &= ")"
+                        End If
+
+                        members.Add(completionItem)
                     End If
+                Next
 
-                    completionBag.CompletionItems.Add(completionItem)
-                End If
-            Next
+                For Each [property] In typeInfo.Properties
+                    If Not IsHiddenFromIntellisense([property].Value) Then
+                        members.Add(New CompletionItem() With {
+                                .Key = [property].Key,
+                                .DisplayName = [property].Value.Name,
+                                .ObjectName = objName,
+                                .ItemType = CompletionItemType.PropertyName,
+                                .MemberInfo = [property].Value
+                         })
+                    End If
+                Next
 
-            For Each [property] In typeInfo.Properties
-                If Not IsHiddenFromIntellisense([property].Value) Then
-                    completionBag.CompletionItems.Add(New CompletionItem() With {
-                        .Key = [property].Key,
-                        .DisplayName = [property].Value.Name,
-                        .ObjectName = objName,
-                        .ItemType = CompletionItemType.PropertyName,
-                        .MemberInfo = [property].Value
-                    })
-                End If
-            Next
+                For Each [event] In typeInfo.Events
+                    If Not IsHiddenFromIntellisense([event].Value) Then
+                        members.Add(New CompletionItem() With {
+                            .Key = [event].Key,
+                            .DisplayName = [event].Value.Name,
+                            .ObjectName = objName,
+                            .ItemType = CompletionItemType.EventName,
+                            .MemberInfo = [event].Value
+                        })
+                    End If
+                Next
 
-            For Each [event] In typeInfo.Events
-                If Not IsHiddenFromIntellisense([event].Value) Then
-                    completionBag.CompletionItems.Add(New CompletionItem() With {
-                        .Key = [event].Key,
-                        .DisplayName = [event].Value.Name,
-                        .ObjectName = objName,
-                        .ItemType = CompletionItemType.EventName,
-                        .MemberInfo = [event].Value
-                    })
-                End If
-            Next
+                membersCompletionItems(typeName) = members
+                completionBag.CompletionItems.AddRange(members)
+
+            Else
+                completionBag.CompletionItems.AddRange(membersCompletionItems(typeName))
+            End If
+
+
         End Sub
 
         Public Shared Sub FillWords(completionBag As CompletionBag, ParamArray words As String())
@@ -332,15 +407,22 @@ Namespace Microsoft.SmallBasic.Completion
             Next
         End Sub
 
-        Public Shared Sub FillKeywords(completionBag As CompletionBag, ParamArray keywords As TokenType())
+        Public Shared Sub FillKeywords(
+                    completionBag As CompletionBag,
+                   Optional keywords() As TokenType = Nothing,
+                   Optional fillAllKeywords As Boolean = False
+                )
+
             If DoNotAddGlobals Then Return
 
             For Each token In keywords
-                completionBag.CompletionItems.Add(New CompletionItem() With {
+                Dim item = New CompletionItem() With {
                     .Key = token.ToString(),
                     .DisplayName = token.ToString(),
                     .ItemType = CompletionItemType.Keyword
-                })
+                }
+                completionBag.CompletionItems.Add(item)
+                If fillAllKeywords Then AllKeywords.Add(item)
             Next
         End Sub
 
@@ -360,7 +442,7 @@ Namespace Microsoft.SmallBasic.Completion
                 End If
             Next
 
-            ' Then add similat objects to add more completion properties
+            ' Then add similar objects to add more completion properties
             For Each type In bag.SymbolTable.Dynamics
                 Dim y = TrimData(type.Key)
                 If x = y Then Continue For ' Add before
@@ -388,7 +470,7 @@ Namespace Microsoft.SmallBasic.Completion
 
             For Each prop In members.Values
                 ' Avoid showing new property names in completion while being typed
-                If Not ForHelp AndAlso prop.Line = CurrentLine AndAlso prop.EndColumn = CurrentColumn Then Continue For
+                If Not bag.ForHelp AndAlso prop.Line = CurrentLine AndAlso prop.EndColumn = CurrentColumn Then Continue For
 
                 Dim Found = False
                 For Each item In bag.CompletionItems
@@ -411,7 +493,10 @@ Namespace Microsoft.SmallBasic.Completion
 
         End Sub
 
-        Public Sub Compile(source As TextReader)
+        Public Sub Compile(source As TextReader, controlNames As List(Of String), moduleNames As Dictionary(Of String, String))
+            _compiler.Parser.SymbolTable.ControlNames = controlNames
+            _compiler.Parser.SymbolTable.ModuleNames = moduleNames
+
             _compiler.Compile(source, True)
             completionBagCashe.Clear()
         End Sub

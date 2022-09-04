@@ -66,6 +66,7 @@ Namespace Microsoft.SmallBasic
         Dim commaLine As Integer = -1
         Dim commaColumn As Integer = -1
         Dim callerInfo As CallerInfo
+        Private Shared callerInfoParser As New Parser()
 
         Public Shared Function GetCommaCallerInfo(
                         source As String,
@@ -73,11 +74,17 @@ Namespace Microsoft.SmallBasic
                         column As Integer
                   ) As CallerInfo
 
-            Dim parser As New Parser()
-            parser.commaLine = line
-            parser.commaColumn = column
-            parser.Parse(New StringReader(source), True)
-            Return parser.callerInfo
+            With callerInfoParser
+                .commaLine = line
+                .commaColumn = column
+                .callerInfo = Nothing
+
+                .Parse(New StringReader(source), True)
+
+                .commaLine = -1
+                .commaColumn = -1
+                Return .callerInfo
+            End With
         End Function
 
         Private Function ConstructForStatement(tokenEnum As TokenEnumerator) As ForStatement
@@ -130,6 +137,53 @@ Namespace Microsoft.SmallBasic
             End If
 
             Return forStatement
+        End Function
+
+        Private Function ConstructForEachStatement(tokenEnum As TokenEnumerator) As ForEachStatement
+            Dim forEach As New ForEachStatement() With {
+                .StartToken = tokenEnum.Current,
+                .ForEachToken = tokenEnum.Current,
+                .Subroutine = SubroutineStatement.Current
+            }
+
+            tokenEnum.MoveNext()
+            If EatSimpleIdentifier(tokenEnum, forEach.Iterator) AndAlso
+                    EatToken(tokenEnum, TokenType.In, forEach.InToken) AndAlso
+                    EatExpression(tokenEnum, forEach.ArrayExpression) Then
+
+                If commaLine = -2 Then Return Nothing
+                ExpectEndOfLine(tokenEnum)
+            End If
+
+            If commaLine = -2 Then Return Nothing
+
+            tokenEnum = ReadNextLine()
+            Dim nextFound = False
+
+            While tokenEnum IsNot Nothing
+                If tokenEnum.Current.Type = TokenType.Next Then
+                    forEach.EndLoopToken = tokenEnum.Current
+                    nextFound = True
+                    Exit While
+                End If
+
+                If tokenEnum.Current.Type = TokenType.Sub OrElse tokenEnum.Current.Type = TokenType.EndSub OrElse
+                        tokenEnum.Current.Type = TokenType.Function OrElse tokenEnum.Current.Type = TokenType.EndFunction Then
+                    Exit While
+                End If
+
+                forEach.Body.Add(GetStatementFromTokens(tokenEnum))
+                tokenEnum = ReadNextLine()
+            End While
+
+            If nextFound Then
+                tokenEnum.MoveNext()
+                ExpectEndOfLine(tokenEnum)
+            Else
+                AddError(ResourceHelper.GetString("EndForExpected"))
+            End If
+
+            Return forEach
         End Function
 
         Private Function ConstructIfStatement(tokenEnum As TokenEnumerator) As IfStatement
@@ -1020,7 +1074,10 @@ Namespace Microsoft.SmallBasic
                    .lineOffset = lineOffset
             }
 
+            symbolTable.IsLoweredCode = True
             _parser.Parse(New IO.StringReader(code))
+            symbolTable.IsLoweredCode = False
+
             Return _parser
         End Function
 
@@ -1072,6 +1129,9 @@ Namespace Microsoft.SmallBasic
 
                 Case TokenType.For
                     statement = ConstructForStatement(tokenEnum)
+
+                Case TokenType.ForEach
+                    statement = ConstructForEachStatement(tokenEnum)
 
                 Case TokenType.Goto
                     statement = ConstructGotoStatement(tokenEnum)

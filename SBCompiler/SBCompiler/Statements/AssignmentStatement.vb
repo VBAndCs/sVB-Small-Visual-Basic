@@ -20,7 +20,6 @@ Namespace Microsoft.SmallBasic.Statements
             Return Nothing
         End Function
 
-
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             EqualsToken.Parent = Me
@@ -44,14 +43,58 @@ Namespace Microsoft.SmallBasic.Statements
             End If
 
             If TypeOf LeftValue Is IdentifierExpression Then
-                Dim identifierExpression = CType(LeftValue, IdentifierExpression)
-                symbolTable.AddVariable(identifierExpression, Me.GetSummery(), IsLocalVariable)
+                Dim identifierExpression = TryCast(LeftValue, IdentifierExpression)
+                Dim key = symbolTable.AddVariable(identifierExpression, Me.GetSummery(), IsLocalVariable)
+                If key <> "" Then
+                    Dim literalExpr = TryCast(RightValue, LiteralExpression)
+                    If literalExpr IsNot Nothing Then
+                        Select Case literalExpr.Literal.Type
+                            Case TokenType.NumericLiteral
+                                symbolTable.InferedTypes(key) = VariableType.Double
+                            Case TokenType.True, False
+                                symbolTable.InferedTypes(key) = VariableType.Boolean
+                            Case TokenType.StringLiteral
+                                symbolTable.InferedTypes(key) = VariableType.String
+                            Case Else
+                                Dim name = identifierExpression.Identifier.NormalizedText
+                                If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
+                                    symbolTable.InferedTypes(key) = VariableType.Color
+                                End If
+                        End Select
+
+                    ElseIf TypeOf RightValue Is NegativeExpression Then
+                        symbolTable.InferedTypes(key) = VariableType.Double
+
+                    ElseIf TypeOf RightValue Is InitializerExpression Then
+                        symbolTable.InferedTypes(key) = VariableType.Array
+
+                    ElseIf TypeOf RightValue Is IdentifierExpression Then
+                        symbolTable.InferedTypes(key) = symbolTable.GetInferedType(CType(RightValue, IdentifierExpression).Identifier)
+
+                    ElseIf TypeOf RightValue Is MethodCallExpression Then
+                        Dim methodExpr = CType(RightValue, MethodCallExpression)
+                        symbolTable.InferedTypes(key) = symbolTable.GetReturnValueType(methodExpr.TypeName, methodExpr.MethodName, True)
+
+                    ElseIf TypeOf RightValue Is PropertyExpression Then
+                        Dim propExpr = CType(RightValue, PropertyExpression)
+                        symbolTable.InferedTypes(key) = symbolTable.GetReturnValueType(propExpr.TypeName, propExpr.PropertyName, False)
+                    Else
+                        Dim name = identifierExpression.Identifier.NormalizedText
+                        If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
+                            symbolTable.InferedTypes(key) = VariableType.Color
+                        End If
+                    End If
+                End If
+
                 identifierExpression.AddSymbolInitialization(symbolTable)
 
             ElseIf TypeOf LeftValue Is ArrayExpression Then
                 Dim arrayExpression = CType(LeftValue, ArrayExpression)
+                Dim key = symbolTable.AddVariable(arrayExpression.LeftHand, Me.GetSummery(), IsLocalVariable)
                 If TypeOf arrayExpression.LeftHand Is IdentifierExpression Then
-                    symbolTable.AddVariable(arrayExpression.LeftHand, Me.GetSummery(), IsLocalVariable)
+                    If key <> "" Then
+                        symbolTable.InferedTypes(key) = VariableType.Array
+                    End If
                 End If
                 arrayExpression.AddSymbolInitialization(symbolTable)
             End If

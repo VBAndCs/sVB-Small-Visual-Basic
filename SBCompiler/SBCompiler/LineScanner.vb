@@ -439,10 +439,14 @@ Namespace Microsoft.SmallBasic
                     Return TokenType.Wend
                 Case "for"
                     Return TokenType.For
+                Case "foreach"
+                    Return TokenType.ForEach
                 Case "goto"
                     Return TokenType.Goto
                 Case "if"
                     Return TokenType.If
+                Case "in"
+                    Return TokenType.In
                 Case "or"
                     Return TokenType.Or
                 Case "step"
@@ -483,7 +487,17 @@ Namespace Microsoft.SmallBasic
                 Case TokenType.Identifier
                     Return ParseType.Identifier
 
-                Case TokenType.Else, TokenType.ElseIf, TokenType.EndFor, TokenType.Next, TokenType.EndIf, TokenType.EndSub, TokenType.EndFunction, TokenType.EndWhile, TokenType.Wend, TokenType.For, TokenType.Goto, TokenType.Return, TokenType.ExitLoop, TokenType.ContinueLoop, TokenType.If, TokenType.Step, TokenType.Sub, TokenType.Function, TokenType.Then, TokenType.To, TokenType.While, TokenType.True, TokenType.False
+                Case TokenType.Else, TokenType.ElseIf,
+                         TokenType.EndFor, TokenType.Next,
+                         TokenType.EndIf, TokenType.EndSub,
+                         TokenType.EndFunction, TokenType.EndWhile,
+                         TokenType.Wend, TokenType.For, TokenType.ForEach,
+                         TokenType.Goto, TokenType.Return,
+                         TokenType.ExitLoop, TokenType.ContinueLoop,
+                         TokenType.If, TokenType.Step,
+                         TokenType.Sub, TokenType.Function,
+                         TokenType.Then, TokenType.To, TokenType.In, TokenType.While,
+                         TokenType.True, TokenType.False
                     Return ParseType.Keyword
 
                 Case TokenType.And, TokenType.Or,

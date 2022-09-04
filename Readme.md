@@ -9,73 +9,51 @@
 - SB Code Enhancements:
 - ToDo:
 
-# What's new in sVB v1.6
-1. Some bug fixes in compiler and other tools.
-
-2. Make it easy to crate a new form and show it from code:
+# What's new in sVB v1.7
+1. Add `ForEach` statement to the language. It is easier for iterating through arrays that have items with string keys. Ex:
 ```vb
-form2 = Forms.AddForm("form2")
-form2.Text = "Form2"
-newButton = form2.AddButton(
-      "Button 1"
-      100,  ' left
-      100,  ' Top
-      400,  ' Width
-      250   ' Height
-)
-newButton.Text = "Hello"
-newButton.OnClick = Button1_OnClick
-form2.Show()
+   arr[1] = "One" 
+   arr["test"] = "Hello"
+   arr!Name = "Ahmad"  
+   ForEach item In arr
+      TextWindow.WriteLine(item)
+   Next
 ```
 
-This code can't run before sVB 1.6.5, because all controls were assumed to belong to Form1!. Now they belong to the forms that creates them using AddXXX methods (like AddButton, AddListBox... etc).
-You can see an interesting example of this in the `Random Buttons` app in the Samples folder.
+The above code will print:
+```
+One
+Hello
+Ahmad
+```
 
-3. Add `OnShown` event to the Form. It is fired after the content of the form is rendered. If you use it, you should add all initialization into it, as you can't know for sure if it will occur before or after the code in the global section is executed! But you can be sure that all the controls are rendered and ready for use.
-`OnShown` is the default event for the Form, and you can add a handler to it by just double-clicking the form surface in the form designer.
+2. Add `Append` and `AppendLine` methods to the TextBox control. See the `For Each` Sample in the Samples folder.
 
-4. I got rid of the side help panel to save space, and showed the help info in a tip window that pops up after 2 seconds from moving the caret to any word in the code editor, and stays open for 10 seconds unless you move to another position, move the scroll, or press Esc key. I prevent showing the help for the same word unless toy move to another one, but you can force to show the help by pressing `F1`.
-You can magnify the font of the popup help by pressing Ctrl and moving the mouse wheel. This is one of many functionalites built-in the WPF FlowDocument control that is used to show the help.
-You can say I brought the VS intellisense to sVB. The pop up help offers valuable info about the current code token, including:
- * The scope (local or global var).
- * The definition signature (Type, Property, Dynamic Property, Event, Method Parameters).
- * If the token is a `variable`, a `sub` or a `function`, it will be shown as a link, so, you can click it to go to its definition line. If the token it the name of the form or a control on it, clicking the link will select the form or the control on the form designer.
-* The documentation includes a summery, and info about parameters and return value. You can add a summery for user defined types by adding one or more comment lines above the var, sub, or function definitions. You can also add one more comment line at the end of the definition line. For subs and functions, you can add the additional summery line after the opining parans if you split the params over multi lines which also allows you to add a comment for each parameter to be used as a documentation. For Functions, the comment placed after the closing parans will be used as the documentation info for the return value. For subs, it will be considered an additional line of the summery. Ex:
+3. Infer var types from initial valuse. This allows to call some methods directly from the var name. For example:
 ```VB
-XPos = 1   ' the horizontal position 
-
-' adds x to the pos
-Sub Move(
-    x ' The increment value to add to the pos
-)
-   XPos = XPos + x
-EndSub
-
-Function InRange( ' Checks if the pos is withing the givin range
-    start, ' the start position
-    end  ' the end position
-) ' True if the pos is in range, False otherwise.
-   Return XPos >= start And XPos <= end
-EndFunction
+x = "abc"
+x = x.Append("efg")
+TextWindow.WriteLine(x) ' abcefg
 ```
 
-![image](https://user-images.githubusercontent.com/48354902/187048217-0f626439-8e90-4e90-b838-41cd3312ae4b.png)
+Note That:
+ * string variables call methods of the `Text` class.
+ * double (numertic) variables call methods of the `Math` class.
+ * color variables call methods of the `Color` class.
+ * array variables call methods of the `Array` class.
 
-While typing the arguments of the method call, the popup help will highlight the current param with a red color, and show only the info about this param, so you can focus only on the task in hand.
+The editor intellisense provides you with info about the var type and auto completion list shows the available methods it can call.
+Note that:
+ * sVB is still a dynamic type language, so, you can still store any value in the variable regardless its infered type. I don't advice you to do that, as you should keep your code clean and readable.
+ * sVB can't infer the type in some cases, such as:
+- you intialize the var from a call to a function you wrote.
+- you intialize the var from a calcualted expression or operator, even a simple addition one, as sVB will decide the value at runtime only.
 
-![image](https://user-images.githubusercontent.com/48354902/187048339-8861202b-9b86-41ce-9af9-b09c4dc3d7d1.png)
+In such cases, you can initialze the var with `""` for strings, `0` for numerics, or `{}` for arrays. 
 
-5. The editor formats the current sub after leaving a line that has changes. Formatting doesn't only include indentation, but also pretty listing of space between tokens, and fixing the casing of keywords, labels, type and method names. It also enforces using lower-case initial letters for local variables, and upper-case initial letters for global variables, labels, subs and functions.
+4. Variables that contains the word `color` is considered to be a Color and when you assign a value for them, the auto completion list suggests the `Colos` class to choose a color from it's members.
+The same for the word key, whic is considered to be a Key, and auto completion offers the Keys class to choose from its members. This makes it easy to deal with the preesd key in Keyboard events, such as using the `Event.LastKey` property.
 
-6. The editor highlights every occurrence of the current identifier (variable, sub, function, label, type, method) name. Similar to highlighted block keywords, you can navigate between highlighted identifiers by pressing `F4` or `Ctrl+Shift+Up` or `Ctrl+Shift+down`
-
-7. Many enhancements to the completion list to make it smarter, such as :
- * Filtering completion names by partial words (for ex: typing name can select MyName) 
- * Filtered out names don't appear in the list anymore.
- * The list remembers last selected object for each first letter.
- * The list remembers last selected method for each object.
-
-The aim of this release is to make coding with sVB easier, educational and fun!
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
@@ -108,7 +86,7 @@ To make this work, each form created by the designer has 3 files:
 
 # Using the source code:
 sVB is fully written with VB.NET, and targets .NET framework 4.8. You can run the source code in VS.NET 2019 and later.
-befor running the code, please copy the two folders `Lib` and `Toolbar` from the `SmallBasicIDE\SB.Lib` folder to the `SmallBasicIDE\bin\Debug` folder, ass obviously git execluds this folder, and I prefer it this way.
+before running the code, please copy the two folders `Lib` and `Toolbar` from the `SmallBasicIDE\SB.Lib` folder to the `SmallBasicIDE\bin\Debug` folder, as obviously `Git` execluds this folder, and I prefer it this way.
 
 # Download the language:
 
@@ -174,7 +152,7 @@ I looked at some SB alternative IDEs but they are either:
 - more complex (too advanced to do nothing important with a language meant to be a leering toy),
 - or simple enough to draw the controls and generate some code for them, but still can't overcome the SB syntax limitations when dealing with objects.
 
-This is when I decides to do something, and here we are.
+This is when I decided to do something, and here we are.
 
 # Form designer Features:
 I will write this later, but the form designer is too easy to use, so, enjoy trying it.
@@ -241,9 +219,9 @@ And you can use it like this:
 x = Sum(1, 2)
 ```
 
-8. SB doesn't have variable scope, as all variables are considered global, and you can define them in any place in the file and use them from any other place in the file (up or down). sVB has cleaned this mess, which is a break change that can prevent some SB code from running probably in sVB, but it is a necessary step to make the kid organize his code and write clean code. This is also necessary to make sub and function params work correctly, and allow you to use recursive subs and functions. The mew scope rules are:
-- Sub and function params are local, and hides any global vars with the same names.
-- The For loop counter(iterator) in local and hodes any global var with the same name.
+8. SB doesn't have variable scope, as all variables are considered global, and you can define them in any place in the file and use them from any other place in the file (up or down). sVB has cleaned this mess, which is a break change that can prevent some SB code from running probably in sVB, but it is a necessary step to make the kid organize his code and write clean code. This is also necessary to make sub and function params work correctly, and allow you to use recursive subs and functions. The new scope rules are:
+- Sub and function params are local, and hide any global vars with the same names.
+- The For loop counter(iterator) in subs and functiins is local and hides any global var with the same name.
 - Any var defined inside the sub or the function is local unless there is a global var with the same name is defined above of the sub function. If the global var is defined below, then the local var will hide it.
 
 So, as a good practice:
@@ -348,6 +326,69 @@ the caret on on of them. You can move to the next highlighted token by pressing 
 You can also press such shortcuts keys on any line even there is no highlighted keywords.  
 This will highlight the nearest block that contains the statement, and move to the neareest  
 keyword up or down according to the shourtcut keys you are using.
+
+21. Make it easy to crate a new form and show it from code:
+```vb
+form2 = Forms.AddForm("form2")
+form2.Text = "Form2"
+newButton = form2.AddButton(
+      "Button 1"
+      100,  ' left
+      100,  ' Top
+      400,  ' Width
+      250   ' Height
+)
+newButton.Text = "Hello"
+newButton.OnClick = Button1_OnClick
+form2.Show()
+```
+
+This code can't run before sVB 1.6.5, because all controls were assumed to belong to Form1!. Now they belong to the forms that creates them using AddXXX methods (like AddButton, AddListBox... etc).
+You can see an interesting example of this in the `Random Buttons` app in the Samples folder.
+
+22. Add `OnShown` event to the Form. It is fired after the content of the form is rendered. If you use it, you should add all initialization into it, as you can't know for sure if it will occur before or after the code in the global section is executed! But you can be sure that all the controls are rendered and ready for use.
+`OnShown` is the default event for the Form, and you can add a handler to it by just double-clicking the form surface in the form designer.
+
+23. I got rid of the side help panel to save space, and showed the help info in a tip window that pops up after 2 seconds from moving the caret to any word in the code editor, and stays open for 10 seconds unless you move to another position, move the scroll, or press Esc key. I prevent showing the help for the same word unless toy move to another one, but you can force to show the help by pressing `F1`.
+You can magnify the font of the popup help by pressing Ctrl and moving the mouse wheel. This is one of many functionalites built-in the WPF FlowDocument control that is used to show the help.
+You can say I brought the VS intellisense to sVB. The pop up help offers valuable info about the current code token, including:
+ * The scope (local or global var).
+ * The definition signature (Type, Property, Dynamic Property, Event, Method Parameters).
+ * If the token is a `variable`, a `sub` or a `function`, it will be shown as a link, so, you can click it to go to its definition line. If the token it the name of the form or a control on it, clicking the link will select the form or the control on the form designer.
+* The documentation includes a summery, and info about parameters and return value. You can add a summery for user defined types by adding one or more comment lines above the var, sub, or function definitions. You can also add one more comment line at the end of the definition line. For subs and functions, you can add the additional summery line after the opining parans if you split the params over multi lines which also allows you to add a comment for each parameter to be used as a documentation. For Functions, the comment placed after the closing parans will be used as the documentation info for the return value. For subs, it will be considered an additional line of the summery. Ex:
+```VB
+XPos = 1   ' the horizontal position 
+
+' adds x to the pos
+Sub Move(
+    x ' The increment value to add to the pos
+)
+   XPos = XPos + x
+EndSub
+
+Function InRange( ' Checks if the pos is withing the givin range
+    start, ' the start position
+    end  ' the end position
+) ' True if the pos is in range, False otherwise.
+   Return XPos >= start And XPos <= end
+EndFunction
+```
+
+![image](https://user-images.githubusercontent.com/48354902/187048217-0f626439-8e90-4e90-b838-41cd3312ae4b.png)
+
+While typing the arguments of the method call, the popup help will highlight the current param with a red color, and show only the info about this param, so you can focus only on the task in hand.
+
+![image](https://user-images.githubusercontent.com/48354902/187048339-8861202b-9b86-41ce-9af9-b09c4dc3d7d1.png)
+
+24. The editor formats the current sub after leaving a line that has changes. Formatting doesn't only include indentation, but also pretty listing of space between tokens, and fixing the casing of keywords, labels, type and method names. It also enforces using lower-case initial letters for local variables, and upper-case initial letters for global variables, labels, subs and functions.
+
+25. The editor highlights every occurrence of the current identifier (variable, sub, function, label, type, method) name. Similar to highlighted block keywords, you can navigate between highlighted identifiers by pressing `F4` or `Ctrl+Shift+Up` or `Ctrl+Shift+down`
+
+26. Many enhancements to the completion list to make it smarter, such as :
+ * Filtering completion names by partial words (for ex: typing name can select MyName) 
+ * Filtered out names don't appear in the list anymore.
+ * The list remembers last selected object for each first letter.
+ * The list remembers last selected method for each object.
 
 # ToDo:
 - Add more controls to the winForms library.

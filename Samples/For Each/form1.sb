@@ -1,0 +1,14 @@
+TextBox1.MuliLine = True
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   arr = {1, 2, 3, 4, 5}
+   arr["test"] = "Hello"
+   arr!Name = "Ahmad"
+   
+   ForEach item In arr
+      TextBox1.AppendLine(item)
+   Next
+   
+EndSub

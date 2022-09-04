@@ -150,7 +150,7 @@ Namespace Microsoft.SmallBasic.Statements
                 Else
                     CompletionHelper.FillSubroutines(completionBag, True)
                     CompletionHelper.FillLogicalExpressionItems(completionBag)
-                    CompletionHelper.FillKeywords(completionBag, TokenType.Then)
+                    CompletionHelper.FillKeywords(completionBag, {TokenType.Then})
                 End If
 
             ElseIf (From statement In ElseIfStatements
@@ -159,17 +159,17 @@ Namespace Microsoft.SmallBasic.Statements
                      ).Any Then
                 CompletionHelper.FillSubroutines(completionBag, True)
                 CompletionHelper.FillLogicalExpressionItems(completionBag)
-                CompletionHelper.FillKeywords(completionBag, TokenType.Then)
+                CompletionHelper.FillKeywords(completionBag, {TokenType.Then})
 
             ElseIf Not ElseToken.IsIllegal AndAlso line = ElseToken.Line Then
                 completionBag.CompletionItems.Clear()
-                CompletionHelper.FillKeywords(completionBag, TokenType.ElseIf, TokenType.EndIf)
+                CompletionHelper.FillKeywords(completionBag, {TokenType.ElseIf, TokenType.EndIf})
 
             ElseIf Not EndIfToken.IsIllegal AndAlso line = EndIfToken.Line Then
                 completionBag.CompletionItems.Clear()
-                CompletionHelper.FillKeywords(completionBag, TokenType.EndIf)
+                CompletionHelper.FillKeywords(completionBag, {TokenType.EndIf})
             Else
-                CompletionHelper.FillKeywords(completionBag, TokenType.EndIf, TokenType.Else, TokenType.ElseIf)
+                CompletionHelper.FillKeywords(completionBag, {TokenType.EndIf, TokenType.Else, TokenType.ElseIf})
                 Dim statement = GetStatementContaining(ElseStatements, line)
 
                 If statement Is Nothing Then

@@ -25,4 +25,26 @@ Namespace WinForms
         End Function
 
     End Module
+
+
+    Public Class ExPropertyAttribute
+        Inherits Attribute
+
+    End Class
+
+    Public Class ExMethodAttribute
+        Inherits Attribute
+
+    End Class
+
+    Public Class ReturnValueTypeAttribute
+        Inherits Attribute
+
+        Public ReturnTypeValue As VariableType
+
+        Public Sub New(type As VariableType)
+            ReturnTypeValue = type
+        End Sub
+    End Class
+
 End Namespace

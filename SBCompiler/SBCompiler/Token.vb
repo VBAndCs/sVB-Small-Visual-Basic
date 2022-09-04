@@ -77,14 +77,14 @@ Namespace Microsoft.SmallBasic
             Return token1.Line <> token2.Line OrElse token1.Column <> token2.Column
         End Operator
 
-        Friend Function IsBefore(line As Integer, column As Integer) As Boolean
+        Public Function IsBefore(line As Integer, column As Integer) As Boolean
             If Me.Type = TokenType.Illegal Then Return False
             If Me.Line > line Then Return False
             If Me.Line < line Then Return True
             Return Me.EndColumn < column
         End Function
 
-        Friend Function IsAfter(line As Integer, column As Integer) As Boolean
+        Public Function IsAfter(line As Integer, column As Integer) As Boolean
             If Me.Type = TokenType.Illegal Then Return True
             If Me.Line < line Then Return True
             If Me.Line > line Then Return False

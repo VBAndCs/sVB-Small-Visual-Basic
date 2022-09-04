@@ -21,7 +21,7 @@ Namespace Microsoft.SmallBasic.Statements
             GotoToken.Parent = Me
             Label.Parent = Me
             Label.SymbolType = CompletionItemType.Label
-            symbolTable.AllIdentifiers.Add(Label)
+            symbolTable.AddIdentifier(Label)
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)

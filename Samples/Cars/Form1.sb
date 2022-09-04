@@ -6,9 +6,9 @@ ScreenHeight = Me.Height
 ScreenWidth = Me.Width - 25
 
 
-Cars = ""
+Cars = {}
 CarsCount = 0
-MyCarSpeed = 0
+MyCarSpeed = 80
 
 
 MoveDirection = 0
@@ -21,12 +21,12 @@ Direction_Right = 4
 StartMove = False
 EndGame = False
 Braking = False
-A = 0.2
+A = 0.5
 
 MyCar = CreateCar(
    "MyCar",   		' name
    255,        		' maxSpeed
-   30,          	' speed
+   MyCarSpeed,          ' speed
    Me.Width / 2 - 25,  ' left
    Me.Height - 250,  ' top
    "Cars\0.gif"      ' image
@@ -124,7 +124,7 @@ Sub MoveMyCar
          If Braking Then
             A = A + 0.01
          Else
-            A = 0.2
+            A = 0.5
          EndIf
          
          
@@ -288,7 +288,7 @@ EndSub
 Sub EndMove()
    StartMove = False
    Braking = False
-   A = 0.2
+   A = 0.5
 EndSub
 
 '---------------------------------------------------------------------
@@ -327,13 +327,23 @@ EndSub
 '---------------------------------------------------------------------
 Sub Form1_OnKeyDown()
    If Event.LastKey = Keys.Up Then
+      If Keyboard.CtrlPressed Then
+         A = 1
+      EndIf
       SpeedUp()
+      
    ElseIf Event.LastKey = Keys.Down Then
+      If Keyboard.CtrlPressed Then
+         A = 1
+      EndIf
       SpeedDown()
+      
    ElseIf Event.LastKey = Keys.Left Then
       MoveLeft()
+      
    ElseIf Event.LastKey = Keys.Right Then
       MoveRight()
+      
    ElseIf Event.LastKey = Keys.Space Then
       Brake()
    EndIf

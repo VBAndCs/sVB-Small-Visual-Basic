@@ -20,6 +20,7 @@ Namespace WinForms
         ''' Gets or sets the test that is displayed on the button
         ''' </summary>
         <ExProperty>
+        <ReturnValueType(VariableType.String)>
         Public Shared Function GetText(buttonName As Primitive) As Primitive
             App.Invoke(
                 Sub()

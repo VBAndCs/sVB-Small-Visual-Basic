@@ -17,6 +17,7 @@ Namespace Library
         ''' Creates an empty array. You can also use x = {} to create an empty array.
         ''' </summary>
         ''' <returns>an empty array</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared ReadOnly Property EmptyArray As Primitive
             Get
                 Dim arr As Primitive = ""
@@ -31,6 +32,7 @@ Namespace Library
         ''' <param name="array">the input array</param>
         ''' <param name="value">the item you want to add after the last item in the array.</param>
         ''' <returns>a new array with the new item added. The input array will bot be cahmged</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function AddItem(array As Primitive, value As Primitive) As Primitive
             Dim map = array._arrayMap
             If map Is Nothing Then
@@ -41,16 +43,40 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Adds many items to the array.
+        ''' </summary>
+        ''' <param name="array">the input array</param>
+        ''' <param name="items">an array containing the items to add eact of them as a single item at the end of the array.</param>
+        ''' <returns>a new array with the new items added. The input array will bot be cahmged</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        Public Shared Function AddItems(array As Primitive, items As Primitive) As Primitive
+            If items.IsEmpty Then Return array
+            If items.IsArray Then
+                Dim index As Integer = array.GetItemCount() + 1
+                For Each item In items._arrayMap.Values
+                    array(index) = item
+                    index += 1
+                Next
+                Return array
+            Else
+                Return AddItem(array, items)
+            End If
+        End Function
+
+
+        ''' <summary>
         ''' Adds an item to the array, with the given key and value
         ''' </summary>
         ''' <param name="array">the input array</param>
         ''' <param name="key">the key of the item. If there is already an item with this key, it's value will be modified</param>
         ''' <param name="value">the value of the item</param>
         ''' <returns>a new arry with the item added. the input array will not be changed</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function AddKeyValue(array As Primitive, key As Primitive, value As Primitive) As Primitive
             Return SetValue(array, key, value)
         End Function
 
+        <HideFromIntellisense>
         Public Shared Function GetItemAt(array As Primitive, index As Primitive) As Primitive
             Return array(index)
         End Function
@@ -62,6 +88,8 @@ Namespace Library
         ''' <param name="index">the index or the key of the item you want to change</param>
         ''' <param name="value">the value of the item</param>
         ''' <returns>a new array with the value set. The input array will bot be cahmged</returns>
+        <HideFromIntellisense>
+        <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function SetItemAt(
                           array As Primitive,
                           index As Primitive,
@@ -82,9 +110,9 @@ Namespace Library
         ''' The index to check.
         ''' </param>
         ''' <returns>
-        ''' "True" or "False" depending on if the index was present in the specified.
-        ''' array.
+        '''True" or "False" depending on if the index was present in the specified array.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function ContainsIndex(array As Primitive, index As Primitive) As Primitive
             Return array.ContainsKey(index)
         End Function
@@ -99,9 +127,9 @@ Namespace Library
         ''' The value to check.
         ''' </param>
         ''' <returns>
-        ''' "True" or "False" depending on if the value was present in the specified.
-        ''' array.
+        ''' "True" or "False" depending on if the value was present in the specified array.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function ContainsValue(array As Primitive, value As Primitive) As Primitive
             Return array.ContainsValue(value)
         End Function
@@ -115,6 +143,7 @@ Namespace Library
         ''' <returns>
         ''' An array filled with all the indices of the specified array.  The index of the returned array starts from 1.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function GetAllIndices(array As Primitive) As Primitive
             Return array.GetAllIndices()
         End Function
@@ -128,6 +157,7 @@ Namespace Library
         ''' <returns>
         ''' The number of items in the specified array.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetItemCount(array As Primitive) As Primitive
             Return array.GetItemCount()
         End Function
@@ -141,6 +171,7 @@ Namespace Library
         ''' <returns>
         ''' "True" if the specified variable is an array.  "False" otherwise.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function IsArray(array As Primitive) As Primitive
             Return array.IsArray
         End Function
@@ -152,6 +183,7 @@ Namespace Library
         ''' <param name="index">the index or the key of the item.</param>
         ''' <param name="value">the value to set.''' </param>
         ''' <returns>a new array with the value set. The input array will bot be cahmged</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
         <HideFromIntellisense>
         Public Shared Function SetValue(
                             array As Primitive,
@@ -188,9 +220,7 @@ Namespace Library
         ''' <summary>
         ''' Removes the array item at the specified index.
         ''' </summary>
-        ''' <param name="array">
-        ''' The name of the array.
-        ''' </param>
+        ''' <param name="array">The name of the array.</param>
         ''' <param name="index">
         ''' The index of the item to remove.
         ''' </param>
@@ -198,5 +228,12 @@ Namespace Library
             array._arrayMap?.Remove(index)
         End Sub
 
+        ''' <summary>
+        ''' Removes all items from the array.
+        ''' </summary>
+        ''' <param name="array">The name of the array.</param>
+        Public Shared Sub Clear(array As Primitive)
+            array._arrayMap?.Clear()
+        End Sub
     End Class
 End Namespace

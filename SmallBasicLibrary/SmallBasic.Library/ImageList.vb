@@ -9,6 +9,7 @@ Namespace Library
     <SmallBasicType>
     Public NotInheritable Class ImageList
         Private Shared _savedImages As New Dictionary(Of String, BitmapSource)
+
         ''' <summary>
         ''' Loads an image from a file or the Internet into memory.
         ''' </summary>
@@ -18,13 +19,14 @@ Namespace Library
         ''' <returns>
         ''' Returns the name of the image that was loaded.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function LoadImage(fileNameOrUrl As Primitive) As Primitive
             If fileNameOrUrl.IsEmpty Then
                 Return ""
             End If
-            Dim text As String = Shapes.GenerateNewName("ImageList")
-            _savedImages(text) = LoadImageFromFile(fileNameOrUrl)
-            Return text
+            Dim imageName = Shapes.GenerateNewName("ImageList")
+            _savedImages(imageName) = LoadImageFromFile(fileNameOrUrl)
+            Return imageName
         End Function
 
         ''' <summary>
@@ -36,6 +38,7 @@ Namespace Library
         ''' <returns>
         ''' The width of the specified image.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetWidthOfImage(imageName As Primitive) As Primitive
             Dim image As BitmapSource = GetBitmap(imageName)
             If image Is Nothing Then
@@ -54,13 +57,16 @@ Namespace Library
         ''' <returns>
         ''' The height of the specified image.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetHeightOfImage(imageName As Primitive) As Primitive
             Dim image As BitmapSource = GetBitmap(imageName)
             If image Is Nothing Then
                 Return 0
             End If
 
-            Return CType(GraphicsWindow.InvokeWithReturn(Function() CType(image.PixelHeight, Primitive)), Primitive)
+            Return CType(GraphicsWindow.InvokeWithReturn(
+                        Function() CType(image.PixelHeight, Primitive)
+                ), Primitive)
         End Function
 
         Friend Shared Function GetBitmap(imageName As Primitive) As BitmapSource

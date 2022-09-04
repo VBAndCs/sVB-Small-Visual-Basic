@@ -22,6 +22,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the count of the items in the ListBox
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetItemsCount(ListBoxName As Primitive) As Primitive
             App.Invoke(
@@ -43,6 +44,7 @@ Namespace WinForms
         ''' If you set the selectedItem to a value that doesn't existed in the list, 
         ''' no item will be selected.
         ''' </remarks>
+        <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetSelectedItem(ListBoxName As Primitive) As Primitive
             App.Invoke(
@@ -72,6 +74,7 @@ Namespace WinForms
         ''' Gets or sets the index of the selected item in the ListBox. 
         ''' Zero indicates that no item is selected.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetSelectedIndex(ListBoxName As Primitive) As Primitive
             App.Invoke(
@@ -119,6 +122,7 @@ Namespace WinForms
         ''' otherwise, this method will return an empty string.
         ''' </param>
         ''' <returns>the value of the item</returns>
+        <ReturnValueType(VariableType.String)>
         <ExMethod>
         Public Shared Function GetItemAt(ListBoxName As Primitive, index As Primitive) As Primitive
             App.Invoke(
@@ -173,6 +177,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="value">The item you want to add to the list. You can send an array to add all its items</param>
         ''' <returns>the index of the newly added item</returns>
+        <ReturnValueType(VariableType.Double)>
         <ExMethod>
         Public Shared Function AddItem(ListBoxName As Primitive, value As Primitive) As Primitive
             App.Invoke(
@@ -281,6 +286,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="value">the value of the item you ant to check it exists in the list</param>
         ''' <returns>True if the item found or False otherwise</returns>
+        <ReturnValueType(VariableType.Boolean)>
         <ExMethod>
         Public Shared Function ContainsItem(ListBoxName As Primitive, value As Primitive) As Primitive
             App.Invoke(
@@ -298,6 +304,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="value">The item you want to find</param>
         ''' <returns>the index of the item if found, or 0 otherwise</returns>
+        <ReturnValueType(VariableType.Double)>
         <ExMethod>
         Public Shared Function FindItem(ListBoxName As Primitive, value As Primitive) As Primitive
             App.Invoke(
@@ -318,6 +325,7 @@ Namespace WinForms
         ''' <param name="endIndex">the array index the seach ends at</param>
         ''' <returns>the index of the item if found, or 0 otherwise</returns>
         <ExMethod>
+        <ReturnValueType(VariableType.Double)>
         Public Shared Function FindItemAt(ListBoxName As Primitive, value As Primitive, startIndex As Primitive, endIndex As Primitive) As Primitive
             App.Invoke(
                 Sub()
@@ -330,8 +338,8 @@ Namespace WinForms
                         End If
 
                         Dim items = lst.Items
-                        Dim st As Integer = Math.Max(0, startIndex - 1)
-                        Dim en As Integer = Math.Min(endIndex - 1, items.Count - 1)
+                        Dim st As Integer = System.Math.Max(0, startIndex - 1)
+                        Dim en As Integer = System.Math.Min(endIndex - 1, items.Count - 1)
                         Dim str = CStr(value)
 
                         For i = st To en Step If(st > en, -1, 1)

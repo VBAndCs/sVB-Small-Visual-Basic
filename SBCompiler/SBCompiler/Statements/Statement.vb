@@ -15,7 +15,10 @@ Namespace Microsoft.SmallBasic.Statements
             StartToken.Parent = Me
             EndingComment.Parent = Me
             If TypeOf Me Is EmptyStatement Then Return
-            symbolTable.AllStatements(StartToken.Line) = Me
+
+            If Not symbolTable.IsLoweredCode AndAlso Not symbolTable.AllStatements.ContainsKey(StartToken.Line) Then
+                symbolTable.AllStatements(StartToken.Line) = Me
+            End If
 
             Dim comments = symbolTable.AllCommentLines
             Dim line = StartToken.Line - 1

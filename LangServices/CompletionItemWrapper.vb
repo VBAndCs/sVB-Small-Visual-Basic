@@ -159,7 +159,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Case SymbolType.GlobalVariable
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = "Global Variable: ",
-                            .Suffix = If(item.ObjectName = "", "", $" As {item.ObjectName}"),
+                            .Suffix = If(item.ObjectName = "", InferType(item.Key, bag), $" As {item.ObjectName}"),
                             .Summary = item.DefinitionIdintifier.Comment
                     }
 
@@ -171,7 +171,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = If(varExpr.IsParam, "Parameter: " & varExpr.Subroutine.Name.Text & ".", "Local Variable: "),
-                            .Suffix = If(item.ObjectName = "", "", $" As {item.ObjectName}"),
+                            .Suffix = If(item.ObjectName = "", InferType(item.Key, bag), $" As {item.ObjectName}"),
                             .Summary = varExpr.Identifier.Comment
                     }
 
@@ -194,6 +194,15 @@ Namespace Microsoft.SmallBasic.LanguageService
 
 
         End Sub
+
+        Private Function InferType(key As String, bag As CompletionBag) As String
+            Dim varType = bag.SymbolTable.GetInferedType(key)
+            If varType <> VariableType.None Then
+                Return " As " & varType.ToString
+            Else
+                Return ""
+            End If
+        End Function
 
         Private Function GetNormalizedModuleName() As String
             Dim text = If(Not _item.MemberInfo IsNot Nothing, GetType(Primitive).Module.FullyQualifiedName, _item.MemberInfo.Module.FullyQualifiedName)

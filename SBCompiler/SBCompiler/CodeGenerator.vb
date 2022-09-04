@@ -34,10 +34,6 @@ Namespace Microsoft.SmallBasic
             Statements.SubroutineStatement.Current = Subroutine
             Dim _parser = Parser.Parse(code, scope.SymbolTable, scope.TypeInfoBag, lineOffset)
 
-            'Dim semantic As New SemanticAnalyzer(_parser, scope.TypeInfoBag)
-            'semantic.Analyze()
-
-            ' EmitIL
             For Each item In _parser.ParseTree
                 item.PrepareForEmit(scope)
             Next

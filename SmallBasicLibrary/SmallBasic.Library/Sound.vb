@@ -261,9 +261,9 @@ Namespace Library
                 Else
                     Select Case c
                         Case ">"c
-                            _octave = Math.Min(8, _octave + 1)
+                            _octave = System.Math.Min(8, _octave + 1)
                         Case "<"c
-                            _octave = Math.Max(0, _octave - 1)
+                            _octave = System.Math.Max(0, _octave - 1)
                     End Select
                 End If
             End While
@@ -284,7 +284,7 @@ Namespace Library
             If Not _notes.TryGetValue(note, value) Then
                 value = 0
             End If
-            octave = Math.Min(Math.Max(0, octave), 8)
+            octave = System.Math.Min(System.Math.Max(0, octave), 8)
             Dim number As Integer = octave * 12 + value
             PlayNote(number)
             Thread.Sleep(num)

@@ -68,6 +68,7 @@ Namespace WinForms
         ''' Gets the name of the control.           
         ''' </summary>
         ''' <remarks>You can't change the control name at runtime. Use the designer to change the name</remarks>
+        <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetName(controlName As Primitive) As Primitive
             App.Invoke(
@@ -83,6 +84,7 @@ Namespace WinForms
         ''' <summary>
         ''' The x-pos of the control on its parent control.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetLeft(controlName As Primitive) As Primitive
             App.Invoke(
@@ -113,6 +115,7 @@ Namespace WinForms
         ''' <summary>
         ''' The y-pos of the control on its parent control.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetTop(controlName As Primitive) As Primitive
             App.Invoke(
@@ -143,6 +146,7 @@ Namespace WinForms
         ''' <summary>
         ''' The width of the control.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetWidth(controlName As Primitive) As Primitive
             App.Invoke(
@@ -184,6 +188,7 @@ Namespace WinForms
         ''' <summary>
         ''' The height of the control.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetHeight(controlName As Primitive) As Primitive
             App.Invoke(
@@ -226,6 +231,7 @@ Namespace WinForms
         ''' When its value = 1 (or True), user can interact with the control.
         ''' When its value = 0 (or False),  the control is disabled, and user can't interact with it.
         ''' </summary>
+        <ReturnValueType(VariableType.Boolean)>
         <ExProperty>
         Public Shared Function GetEnabled(controlName As Primitive) As Primitive
             App.Invoke(
@@ -254,6 +260,7 @@ Namespace WinForms
         ''' When its value = 1 (or True), the control is shown at the form.
         ''' When its value = 0 (or False),  the control is hidden.
         ''' </summary>
+        <ReturnValueType(VariableType.Boolean)>
         <ExProperty>
         Public Shared Function GetVisible(controlName As Primitive) As Primitive
             App.Invoke(
@@ -310,6 +317,7 @@ Namespace WinForms
         ''' The backgeound color of the control.
         ''' Use values from the Color object, such as Color.Yellow
         ''' </summary>
+        <ReturnValueType(VariableType.Color)>
         <ExProperty>
         Public Shared Function GetBackColor(controlName As Primitive) As Primitive
             App.Invoke(
@@ -375,6 +383,7 @@ Namespace WinForms
         ''' The foregeound color used to draw the text of the control.
         ''' Use values from the Color object, such as Color.Red
         ''' </summary>
+        <ReturnValueType(VariableType.Color)>
         <ExProperty>
         Public Shared Function GetForeColor(controlName As Primitive) As Primitive
             App.Invoke(
@@ -411,6 +420,7 @@ Namespace WinForms
         ''' <summary>
         ''' The mouse x-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's width.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetMouseX(controlName As Primitive) As Primitive
             App.Invoke(
@@ -427,6 +437,7 @@ Namespace WinForms
         ''' <summary>
         ''' The mouse y-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's.height.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetMouseY(controlName As Primitive) As Primitive
             App.Invoke(
@@ -444,6 +455,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the rotation angle of the control.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetAngle(controlName As Primitive) As Primitive
             App.Invoke(

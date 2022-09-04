@@ -34,6 +34,7 @@ Namespace WinForms
         ''' Returns an array containing the names of all forms you created.
         ''' </summary>
         ''' <returns></returns>
+        <ReturnValueType(VariableType.Array)>
         Public Shared Function GetForms() As Primitive
             Dim map = New Dictionary(Of Primitive, Primitive)
             Dim num = 1
@@ -44,6 +45,7 @@ Namespace WinForms
             Return Primitive.ConvertFromMap(map)
         End Function
 
+        <ReturnValueType(VariableType.String)>
         Public Shared Property AppPath As Primitive
 
         Private Shared _syncLock As New Object
@@ -54,6 +56,7 @@ Namespace WinForms
         ''' <param name="formName">the name of the form</param>
         ''' <param name="xamlPath">the path pf the xaml file that contains the form design</param>
         ''' <returns>The name of the form</returns>
+        <ReturnValueType(VariableType.Form)>
         Public Shared Function LoadForm(formName As Primitive, xamlPath As Primitive) As Primitive
             Dim form_Name = CStr(formName).ToLower()
             If form_Name = "" Then
@@ -183,6 +186,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="formName">the name of the form</param>
         ''' <returns>the name of the form</returns>
+        <ReturnValueType(VariableType.Form)>
         Public Shared Function AddForm(formName As Primitive) As Primitive
             Try
                 Dim frm = GetForm(formName)

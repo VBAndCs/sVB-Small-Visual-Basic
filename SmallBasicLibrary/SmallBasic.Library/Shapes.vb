@@ -28,20 +28,21 @@ Namespace Library
         ''' <returns>
         ''' The Rectangle shape that was just added to the Graphics Window.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function AddRectangle(width As Primitive, height As Primitive) As Primitive
             Dim name As String = GenerateNewName("Rectangle")
-            GraphicsWindow.Invoke(Sub()
-                                      GraphicsWindow.VerifyAccess()
-                                      Dim shape As New Rectangle With
-                                      {
-                                      .Width = width,
-                                      .Height = height,
-                                      .Fill = GraphicsWindow._fillBrush,
-                                      .Stroke = GraphicsWindow._pen.Brush,
-                                      .StrokeThickness = GraphicsWindow._pen.Thickness
-                                      }
-                                      GraphicsWindow.AddShape(name, shape)
-                                  End Sub)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim shape As New Rectangle With {
+                            .Width = width,
+                            .Height = height,
+                            .Fill = GraphicsWindow._fillBrush,
+                            .Stroke = GraphicsWindow._pen.Brush,
+                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                     }
+                    GraphicsWindow.AddShape(name, shape)
+                End Sub)
             Return name
         End Function
 
@@ -57,20 +58,21 @@ Namespace Library
         ''' <returns>
         ''' The Ellipse shape that was just added to the Graphics Window.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function AddEllipse(width As Primitive, height As Primitive) As Primitive
             Dim name As String = GenerateNewName("Ellipse")
-            GraphicsWindow.Invoke(Sub()
-                                      GraphicsWindow.VerifyAccess()
-                                      Dim shape As New Ellipse With
-                                      {
-                                      .Width = width,
-                                      .Height = height,
-                                      .Fill = GraphicsWindow._fillBrush,
-                                      .Stroke = GraphicsWindow._pen.Brush,
-                                      .StrokeThickness = GraphicsWindow._pen.Thickness
-                                      }
-                                      GraphicsWindow.AddShape(name, shape)
-                                  End Sub)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim shape As New Ellipse With {
+                            .Width = width,
+                            .Height = height,
+                            .Fill = GraphicsWindow._fillBrush,
+                            .Stroke = GraphicsWindow._pen.Brush,
+                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                     }
+                    GraphicsWindow.AddShape(name, shape)
+                End Sub)
             Return name
         End Function
 
@@ -98,18 +100,27 @@ Namespace Library
         ''' <returns>
         ''' The Triangle shape that was just added to the Graphics Window.
         ''' </returns>
-        Public Shared Function AddTriangle(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive, x3 As Primitive, y3 As Primitive) As Primitive
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function AddTriangle(
+                         x1 As Primitive, y1 As Primitive,
+                         x2 As Primitive, y2 As Primitive,
+                         x3 As Primitive, y3 As Primitive
+                     ) As Primitive
+
             Dim name As String = GenerateNewName("Triangle")
-            GraphicsWindow.Invoke(Sub()
-                                      Dim polygon1 As New Polygon
-                                      GraphicsWindow.AddShape(name, polygon1)
-                                      polygon1.Points.Add(New Point(x1, y1))
-                                      polygon1.Points.Add(New Point(x2, y2))
-                                      polygon1.Points.Add(New Point(x3, y3))
-                                      polygon1.Fill = GraphicsWindow._fillBrush
-                                      polygon1.Stroke = GraphicsWindow._pen.Brush
-                                      polygon1.StrokeThickness = GraphicsWindow._pen.Thickness
-                                  End Sub)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.AddShape(name, New Polygon With {
+                        .Points = New PointCollection() From {
+                            New Point(x1, y1),
+                            New Point(x2, y2),
+                            New Point(x3, y3)
+                        },
+                        .Fill = GraphicsWindow._fillBrush,
+                        .Stroke = GraphicsWindow._pen.Brush,
+                        .StrokeThickness = GraphicsWindow._pen.Thickness
+                    })
+                End Sub)
             Return name
         End Function
 
@@ -131,18 +142,24 @@ Namespace Library
         ''' <returns>
         ''' The line that was just added to the Graphics Window.
         ''' </returns>
-        Public Shared Function AddLine(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive) As Primitive
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function AddLine(
+                          x1 As Primitive, y1 As Primitive,
+                          x2 As Primitive, y2 As Primitive
+                    ) As Primitive
+
             Dim name As String = GenerateNewName("Line")
-            GraphicsWindow.Invoke(Sub()
-                                      Dim line1 As New Line
-                                      GraphicsWindow.AddShape(name, line1)
-                                      line1.X1 = x1
-                                      line1.Y1 = y1
-                                      line1.X2 = x2
-                                      line1.Y2 = y2
-                                      line1.Stroke = GraphicsWindow._pen.Brush
-                                      line1.StrokeThickness = GraphicsWindow._pen.Thickness
-                                  End Sub)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.AddShape(name, New Line With {
+                        .X1 = x1,
+                        .Y1 = y1,
+                        .X2 = x2,
+                        .Y2 = y2,
+                        .Stroke = GraphicsWindow._pen.Brush,
+                        .StrokeThickness = GraphicsWindow._pen.Thickness
+                    })
+                End Sub)
             Return name
         End Function
 
@@ -155,20 +172,22 @@ Namespace Library
         ''' <returns>
         ''' The image that was just added to the Graphics Window.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function AddImage(imageName As Primitive) As Primitive
             Dim name As String = GenerateNewName("Image")
-            GraphicsWindow.Invoke(Sub()
-                                      Dim image1 As New Image
-                                      Dim bitmap As BitmapSource = ImageList.GetBitmap(imageName)
-                                      If bitmap IsNot Nothing Then
-                                          image1.Source = bitmap
-                                          If bitmap.PixelWidth <> 0 AndAlso bitmap.PixelHeight <> 0 Then
-                                              image1.Width = bitmap.PixelWidth
-                                              image1.Height = bitmap.PixelHeight
-                                          End If
-                                          GraphicsWindow.AddShape(name, image1)
-                                      End If
-                                  End Sub)
+            GraphicsWindow.Invoke(
+                Sub()
+                    Dim image1 As New Image
+                    Dim bitmap As BitmapSource = ImageList.GetBitmap(imageName)
+                    If bitmap IsNot Nothing Then
+                        image1.Source = bitmap
+                        If bitmap.PixelWidth <> 0 AndAlso bitmap.PixelHeight <> 0 Then
+                            image1.Width = bitmap.PixelWidth
+                            image1.Height = bitmap.PixelHeight
+                        End If
+                        GraphicsWindow.AddShape(name, image1)
+                    End If
+                End Sub)
             Return name
         End Function
 
@@ -181,21 +200,22 @@ Namespace Library
         ''' <returns>
         ''' The text shape that was just added to the Graphics Window.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function AddText(text As Primitive) As Primitive
             Dim name As String = GenerateNewName("Text")
-            GraphicsWindow.Invoke(Sub()
-                                      GraphicsWindow.VerifyAccess()
-                                      Dim shape As New TextBlock With
-                                      {
-                                      .Text = text,
-                                      .Foreground = GraphicsWindow._fillBrush,
-                                      .FontFamily = GraphicsWindow._fontFamily,
-                                      .FontStyle = GraphicsWindow._fontStyle,
-                                      .FontSize = GraphicsWindow._fontSize,
-                                      .FontWeight = GraphicsWindow._fontWeight
-                                      }
-                                      GraphicsWindow.AddShape(name, shape)
-                                  End Sub)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim shape As New TextBlock With {
+                        .Text = text,
+                        .Foreground = GraphicsWindow._fillBrush,
+                        .FontFamily = GraphicsWindow._fontFamily,
+                        .FontStyle = GraphicsWindow._fontStyle,
+                        .FontSize = GraphicsWindow._fontSize,
+                        .FontWeight = GraphicsWindow._fontWeight
+                     }
+                    GraphicsWindow.AddShape(name, shape)
+                End Sub)
             Return name
         End Function
 
@@ -367,6 +387,7 @@ Namespace Library
         ''' <returns>
         ''' The left co-ordinate of the shape.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetLeft(shapeName As Primitive) As Primitive
             Dim __ As UIElement = Nothing
             If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, __) Then
@@ -390,6 +411,7 @@ Namespace Library
         ''' <returns>
         ''' The top co-ordinate of the shape.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetTop(shapeName As Primitive) As Primitive
             Dim __ As UIElement = Nothing
             If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, __) Then
@@ -413,6 +435,7 @@ Namespace Library
         ''' <returns>
         ''' The opacity of the object as a value between 0 and 100.  0 is completely transparent and 100 is completely opaque.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetOpacity(shapeName As Primitive) As Primitive
             Dim obj As UIElement = Nothing
             If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then

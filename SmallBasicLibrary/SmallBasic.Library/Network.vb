@@ -17,6 +17,7 @@ Namespace Library
         ''' <returns>
         ''' A local file name that the remote file was downloaded as.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function DownloadFile(url As Primitive) As Primitive
             If url.IsEmpty Then
                 Return url
@@ -57,6 +58,7 @@ Namespace Library
         ''' <returns>
         ''' The contents of the specified web page.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetWebPageContents(url As Primitive) As Primitive
             If url.IsEmpty Then
                 Return url

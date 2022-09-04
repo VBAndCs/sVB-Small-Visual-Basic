@@ -60,6 +60,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Background color of the Graphics Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property BackgroundColor As Primitive
             Get
                 VerifyAccess()
@@ -68,16 +69,18 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                _backgroundBrush = New SolidColorBrush(GetColorFromString(Value))
-                                _window.Background = _backgroundBrush
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        _backgroundBrush = New SolidColorBrush(GetColorFromString(Value))
+                        _window.Background = _backgroundBrush
+                    End Sub)
             End Set
         End Property
 
         ''' <summary>
         ''' Gets or sets the brush color to be used to fill shapes drawn on the Graphics Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property BrushColor As Primitive
             Get
                 VerifyAccess()
@@ -96,6 +99,7 @@ Namespace Library
         ''' <summary>
         ''' Specifies whether or not the Graphics Window can be resized by the user.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Property CanResize As Primitive
             Get
                 VerifyAccess()
@@ -117,6 +121,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the width of the pen used to draw shapes on the Graphics Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property PenWidth As Primitive
             Get
                 VerifyAccess()
@@ -135,6 +140,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the color of the pen used to draw shapes on the Graphics Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property PenColor As Primitive
             Get
                 VerifyAccess()
@@ -143,17 +149,19 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                Dim colorFromString As Media.Color = GetColorFromString(Value)
-                                _pen = New Media.Pen(New SolidColorBrush(colorFromString), _pen.Thickness)
-                                _pen.Freeze()
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        Dim colorFromString As Media.Color = GetColorFromString(Value)
+                        _pen = New Media.Pen(New SolidColorBrush(colorFromString), _pen.Thickness)
+                        _pen.Freeze()
+                    End Sub)
             End Set
         End Property
 
         ''' <summary>
         ''' Gets or sets the Font Name to be used when drawing text on the Graphics Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Property FontName As Primitive
             Get
                 Return CStr(InvokeWithReturn(Function() If((_fontFamily IsNot Nothing), _fontFamily.Source, "Tahoma")))
@@ -169,6 +177,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Font Size to be used when drawing text on the Graphics Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property FontSize As Primitive
             Get
                 Return New Primitive(_fontSize)
@@ -184,6 +193,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets whether or not the font to be used when drawing text on the Graphics Window, is bold.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Property FontBold As Primitive
             Get
                 Return _fontWeight = FontWeights.Bold
@@ -203,6 +213,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets whether or not the font to be used when drawing text on the Graphics Window, is italic.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Property FontItalic As Primitive
             Get
                 Return _fontStyle = FontStyles.Italic
@@ -222,6 +233,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the title for the graphics window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Property Title As Primitive
             Get
                 VerifyAccess()
@@ -239,6 +251,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Height of the graphics window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Height As Primitive
             Get
                 VerifyAccess()
@@ -256,6 +269,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Width of the graphics window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Width As Primitive
             Get
                 VerifyAccess()
@@ -273,6 +287,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Left Position of the graphics window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Left As Primitive
             Get
                 VerifyAccess()
@@ -290,6 +305,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Top Position of the graphics window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Top As Primitive
             Get
                 VerifyAccess()
@@ -307,6 +323,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the last key that was pressed or released.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Key)>
         Public Shared ReadOnly Property LastKey As Primitive
             Get
                 Return _lastKey.ToString()
@@ -316,6 +333,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the last text that was entered on the Graphics Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property LastText As Primitive
             Get
                 Return _lastText.ToString()
@@ -325,6 +343,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the x-position of the mouse relative to the Graphics Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property MouseX As Primitive
             Get
                 Return _mouseX
@@ -334,6 +353,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the y-position of the mouse relative to the Graphics Window.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property MouseY As Primitive
             Get
                 Return _mouseY
@@ -890,6 +910,7 @@ Namespace Library
         ''' <returns>
         ''' The color of the pixel.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Function GetPixel(x As Primitive, y As Primitive) As Primitive
             VerifyAccess()
             If x < 0 Then x = 0
@@ -900,10 +921,10 @@ Namespace Library
             Return CType(InvokeWithReturn(
                 Function() As Primitive
                     Rasterize()
-                    Dim array As Byte() = New Byte(3) {}
+                    Dim colorBGR As Byte() = New Byte(3) {}
                     Dim stride = CInt(_renderBitmap.Width * (_renderBitmap.Format.BitsPerPixel + 7) / 8)
-                    _renderBitmap.CopyPixels(New Int32Rect(x, y, 1, 1), array, stride, 0)
-                    Return CType($"#{array(2):X2}{array(1):X2}{array(0):X2}", Primitive)
+                    _renderBitmap.CopyPixels(New Int32Rect(x, y, 1, 1), colorBGR, stride, 0)
+                    Return CType($"#{colorBGR(2):X2}{colorBGR(1):X2}{colorBGR(0):X2}", Primitive)
                 End Function), Primitive)
         End Function
 
@@ -913,6 +934,7 @@ Namespace Library
         ''' <returns>
         ''' A valid random color.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Function GetRandomColor() As Primitive
             If _random Is Nothing Then
                 _random = New Random(Now.Ticks Mod Integer.MaxValue)
@@ -936,6 +958,7 @@ Namespace Library
         ''' <returns>
         ''' Returns a color that can be used to set the brush or pen color.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Function GetColorFromRGB(red As Primitive, green As Primitive, blue As Primitive) As Primitive
             Dim num As Integer = Math.Abs(CInt(red) Mod 256)
             Dim num2 As Integer = Math.Abs(CInt(green) Mod 256)
@@ -1164,9 +1187,9 @@ Namespace Library
             obj.BeginAnimation([property], animation)
         End Sub
 
-        Friend Shared Function GetColorFromString(color1 As String) As Media.Color
+        Friend Shared Function GetColorFromString(color As String) As Media.Color
             Try
-                Return Media.ColorConverter.ConvertFromString(color1)
+                Return Media.ColorConverter.ConvertFromString(color)
             Catch __unusedException1__ As Exception
 
             End Try

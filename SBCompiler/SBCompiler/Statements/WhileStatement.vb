@@ -94,13 +94,13 @@ Namespace Microsoft.SmallBasic.Statements
 
             ElseIf Not EndLoopToken.IsIllegal AndAlso line = EndLoopToken.Line Then
                 completionBag.CompletionItems.Clear()
-                CompletionHelper.FillKeywords(completionBag, EndLoopToken.Type)
+                CompletionHelper.FillKeywords(completionBag, {EndLoopToken.Type})
 
             Else
                 Dim statementContaining = GetStatementContaining(Body, line)
 
                 If statementContaining IsNot Nothing Then
-                    CompletionHelper.FillKeywords(completionBag, TokenType.EndWhile, TokenType.Wend)
+                    CompletionHelper.FillKeywords(completionBag, {TokenType.EndWhile, TokenType.Wend})
                     statementContaining.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
                 End If
             End If

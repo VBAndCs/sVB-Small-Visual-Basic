@@ -343,7 +343,11 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                 If sourceCodeChanged Then
                     callerCashe.Clear()
-                    caller = Parser.GetCommaCallerInfo(editor.Text, line.LineNumber, column - If(prevIsSep, 1, 0))
+                    caller = Parser.GetCommaCallerInfo(
+                            editor.Text,
+                            line.LineNumber,
+                            column - If(prevIsSep, 1, 0)
+                    )
                     callerCashe(span) = caller
 
                 ElseIf callerCashe.ContainsKey(span) Then
@@ -623,6 +627,11 @@ Namespace Microsoft.SmallBasic.LanguageService
                         Case "."c, "!"c
                             popHelp.IsOpen = False
                             ShowCompletionAdornment(e.After, newEnd)
+
+                        Case "="c, ">"c, "<"c
+                            popHelp.IsOpen = False
+                            ShowCompletionAdornment(e.After, newEnd, True)
+
                         Case "("c
                             OnHelpUpdate("(", Nothing)
                         Case ")"c
@@ -642,10 +651,10 @@ Namespace Microsoft.SmallBasic.LanguageService
         Dim byConventionName As String
 
         Public Function GetCompletionBag(
-                              line As ITextSnapshotLine,
-                              column As Integer,
-                              <Out> ByRef currentToken As Token,
-                              Optional forHelp As Boolean = False
+                          line As ITextSnapshotLine,
+                          column As Integer,
+                          <Out> ByRef currentToken As Token,
+                          Optional forHelp As Boolean = False
                     ) As CompletionBag
 
             CompletionHelper.CurrentLine = line.LineNumber
@@ -670,6 +679,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             If prevToken.Type = TokenType.Dot OrElse isLookup Then
                 identifierToken = b4PrevToken
                 CompletionHelper.DoNotAddGlobals = True
+
             Else
                 isLookup = (currentToken.Type = TokenType.Lookup)
                 If currentToken.Type = TokenType.Dot OrElse isLookup Then
@@ -684,11 +694,12 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             Dim source = New TextBufferReader(line.TextSnapshot)
             If needsToReCompile Then
-                completionHelper.Compile(source)
+                completionHelper.Compile(source, controlNames, controlsInfo)
                 needsToReCompile = False
             End If
 
             Dim newBag = completionHelper.GetEmptyCompletionBag()
+            newBag.ForHelp = forHelp
             Dim addGlobals = False
 
             If identifierToken.IsIllegal Then
@@ -700,7 +711,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                                        Where name(0) <> "("c AndAlso (
                                            (forHelp AndAlso name.ToLower() = txt) OrElse
                                            (Not forHelp AndAlso name.ToLower().StartsWith(txt))
-                                        )
+                                       )
 
                         If controls.Count = 0 Then
                             Dim moduleName = WinForms.PreCompiler.GetModuleFromVarName(txt)
@@ -712,14 +723,14 @@ Namespace Microsoft.SmallBasic.LanguageService
                         Else
                             For Each name In controls
                                 newBag.CompletionItems.Add(
-                                         New CompletionItem With {
-                                               .ObjectName = controlsInfo(name.ToLower()),
-                                               .DisplayName = name,
-                                               .ItemType = CompletionItemType.Control,
-                                               .ReplacementText = name,
-                                               .DefinitionIdintifier = New Token() With {.Line = -1, .Type = TokenType.Identifier}
-                                         }
-                                    )
+                                    New CompletionItem With {
+                                        .ObjectName = controlsInfo(name.ToLower()),
+                                        .DisplayName = name,
+                                        .ItemType = CompletionItemType.Control,
+                                        .ReplacementText = name,
+                                        .DefinitionIdintifier = New Token() With {.Line = -1, .Type = TokenType.Identifier}
+                                    }
+                                )
                             Next
                         End If
                     End If
@@ -732,23 +743,22 @@ Namespace Microsoft.SmallBasic.LanguageService
                     CompletionHelper.FillMemberNames(newBag, value, identifierToken.Text)
                 ElseIf isLookup OrElse name.StartsWith("data") OrElse name.EndsWith("data") Then
                     completionHelper.FillDynamicMembers(newBag, identifierToken.Text)
-                End If
-
-                Dim controlName = identifierToken.NormalizedText
-                If controlsInfo?.ContainsKey(controlName) Then
-                    FillMemberNames(newBag, controlsInfo(controlName), identifierToken.Text)
+                ElseIf controlsInfo?.ContainsKey(name) Then
+                    FillMemberNames(newBag, controlsInfo(name), identifierToken.Text)
                 Else
-                    Dim moduleName = WinForms.PreCompiler.GetModuleFromVarName(controlName)
+                    Dim moduleName = completionHelper.GetInferedType(identifierToken)
+                    If moduleName = "" Then
+                        moduleName = WinForms.PreCompiler.GetModuleFromVarName(name)
+                    End If
                     If moduleName <> "" Then
-                        FillMemberNames(newBag, moduleName, identifierToken.Text)
-                        If forHelp Then byConventionName = moduleName
+                            FillMemberNames(newBag, moduleName, identifierToken.Text)
+                            If forHelp Then byConventionName = moduleName
+                        End If
                     End If
                 End If
-            End If
 
             If addGlobals OrElse newBag Is Nothing OrElse newBag.CompletionItems.Count = 0 Then
                 If Not (currentToken.Type = TokenType.StringLiteral OrElse currentToken.Type = TokenType.Comment) Then
-                    CompletionHelper.ForHelp = forHelp
 
                     ' Fix prevToken if current token not found,
                     If currentToken = Token.Illegal AndAlso index > 0 Then
@@ -756,12 +766,11 @@ Namespace Microsoft.SmallBasic.LanguageService
                     End If
 
                     Dim bag = completionHelper.GetCompletionItems(
-                            source, needsToReCompile,
-                            line.LineNumber, column,
+                            source, line.LineNumber, column,
                             prevToken.Type = TokenType.Equals OrElse currentToken.Type = TokenType.Equals,
-                            IsCompletionOperator(prevToken) OrElse IsCompletionOperator(currentToken)
+                            IsCompletionOperator(prevToken) OrElse IsCompletionOperator(currentToken),
+                            forHelp
                     )
-                    CompletionHelper.ForHelp = False
                     If bag.ShowCompletion Then
                         bag.CompletionItems.AddRange(newBag.CompletionItems)
                     End If
@@ -805,7 +814,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     If token.ParseType = ParseType.Operator Then
                         If column = token.Column AndAlso (token.Type = TokenType.RightBracket OrElse token.Type = TokenType.RightParens OrElse token.Type = TokenType.RightCurlyBracket) Then
                             Exit For
-                        ElseIf i < n AndAlso tokens(i + 1).Column = token.EndColumn Then
+                        ElseIf i < n AndAlso tokens(i + 1).Column = token.EndColumn AndAlso tokens(i + 1).ParseType <> ParseType.Operator Then
                             b4PrevToken = currentToken
                             prevToken = token
                             currentToken = tokens(i + 1)
@@ -852,13 +861,44 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Function
 
         Private Function IsCompletionOperator(token As Token) As Boolean
-            Return token.ParseType = ParseType.Operator AndAlso
-                token.Type <> TokenType.RightBracket AndAlso
-                token.Type <> TokenType.RightParens
+            ' `Return False` means we can ahow `And` and `Or`
+            If token.Type = TokenType.RightBracket Then Return False
+            If token.Type = TokenType.RightCurlyBracket Then Return False
+            If token.Type = TokenType.RightParens Then Return False
+
+            If token.Type = TokenType.True Then Return False
+            If token.Type = TokenType.False Then Return False
+
+            If token.ParseType = ParseType.Keyword Then Return True
+            Return token.ParseType = ParseType.Operator
         End Function
 
-        Public Sub ShowCompletionAdornment(snapshot As ITextSnapshot, caretPosition As Integer)
+        Public Sub ShowCompletionAdornment(
+                              snapshot As ITextSnapshot,
+                              caretPosition As Integer,
+                              Optional checkEspecialItem As Boolean = False
+                    )
+
+            Dim especialItem = ""
             Dim line = snapshot.GetLineFromPosition(caretPosition)
+            If checkEspecialItem Then
+                Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
+                If tokens.Count < 2 Then Return
+
+                Dim n = GetLastTokenIndex(line, caretPosition, tokens)
+                Select Case tokens(n).Type
+                    Case TokenType.Equals, TokenType.NotEqualTo, TokenType.GreaterThan, TokenType.LessThan, TokenType.GreaterThanEqualTo, TokenType.LessThanEqualTo
+                        Dim name = If(n = 0, "", tokens(n - 1).NormalizedText)
+                        If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
+                            especialItem = "colors"
+                        ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then
+                            especialItem = "keys"
+                        Else
+                            Return
+                        End If
+                End Select
+            End If
+
             Dim currentToken As Token
             Dim bag = GetCompletionBag(line, caretPosition - line.Start, currentToken)
 
@@ -866,14 +906,16 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Return
             End If
 
+            bag.SelectEspecialItem = especialItem
+
             Dim adornmentSpan = GetTextSpanFromToken(line, currentToken)
             Dim textSpan = adornmentSpan
 
             If textSpan.GetSpan(line.TextSnapshot).IsEmpty AndAlso line.TextSnapshot.Length > 0 Then
                 If currentToken.Column = 0 Then
-                    adornmentSpan = New TextSpan(line.TextSnapshot, line.Start, Math.Min(currentToken.EndColumn - currentToken.Column + 1, line.TextSnapshot.Length), SpanTrackingMode.EdgeInclusive)
+                    adornmentSpan = New TextSpan(line.TextSnapshot, line.Start, System.Math.Min(currentToken.EndColumn - currentToken.Column + 1, line.TextSnapshot.Length), SpanTrackingMode.EdgeInclusive)
                 Else
-                    adornmentSpan = New TextSpan(line.TextSnapshot, line.Start + currentToken.Column - 1, Math.Min(currentToken.EndColumn - currentToken.Column + 1, line.TextSnapshot.Length), SpanTrackingMode.EdgeInclusive)
+                    adornmentSpan = New TextSpan(line.TextSnapshot, line.Start + currentToken.Column - 1, System.Math.Min(currentToken.EndColumn - currentToken.Column + 1, line.TextSnapshot.Length), SpanTrackingMode.EdgeInclusive)
                 End If
             End If
 
@@ -888,6 +930,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     End Function, DispatcherOperationCallback), Nothing)
             End If
         End Sub
+
 
         Private Function GetTextSpanFromToken(line As ITextSnapshotLine, token As Token) As ITextSpan
             If token.IsIllegal AndAlso token.Column = 0 Then
@@ -914,7 +957,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Return Token.Illegal
         End Function
 
-        Private Shared CompletionItems As New Dictionary(Of String, List(Of CompletionItem))
+        Private Shared completionItems As New Dictionary(Of String, List(Of CompletionItem))
 
         Dim WordHighlightColor As Media.Color
 
@@ -974,16 +1017,27 @@ Namespace Microsoft.SmallBasic.LanguageService
                 End If
             Next
 
-            CompletionItems.Add(type.Name, compList)
+            completionItems.Add(type.Name, compList)
 
         End Sub
 
-        Private Sub FillMemberNames(completionBag As CompletionBag, moduleName As String, objName As String)
+        Private Sub FillMemberNames(
+                                completionBag As CompletionBag,
+                                moduleName As String,
+                                objName As String
+                     )
+
             Dim controlModule = NameOf(WinForms.Control)
             Select Case moduleName
-                Case NameOf(WinForms.ImageBox), NameOf(WinForms.Forms)
+                Case NameOf(WinForms.ImageBox),
+                         NameOf(WinForms.Forms),
+                         NameOf(WinForms.ColorEx),
+                         NameOf(WinForms.TextEx),
+                         NameOf(WinForms.ArrayEx),
+                         NameOf(WinForms.MathEx)
+
                 Case Else
-                    For Each item In CompletionItems(controlModule)
+                    For Each item In completionItems(controlModule)
                         item.ObjectName = objName
                         completionBag.CompletionItems.Add(item)
                     Next

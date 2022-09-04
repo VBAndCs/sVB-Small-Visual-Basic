@@ -21,6 +21,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the path of the image that is displayed in the control.
         ''' </summary>
+        <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetFileName(ImageBoxName As Primitive) As Primitive
             App.Invoke(
@@ -61,6 +62,7 @@ Namespace WinForms
         ''' <summary>
         ''' The x-pos of the control on its parent control.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetLeft(ImageBoxName As Primitive) As Primitive
             App.Invoke(
@@ -88,6 +90,7 @@ Namespace WinForms
         ''' <summary>
         ''' The y-pos of the control on its parent control.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetTop(ImageBoxName As Primitive) As Primitive
             App.Invoke(
@@ -115,6 +118,7 @@ Namespace WinForms
         ''' <summary>
         ''' The width of the control.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetWidth(ImageBoxName As Primitive) As Primitive
             App.Invoke(
@@ -142,6 +146,7 @@ Namespace WinForms
         ''' <summary>
         ''' The height of the control.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetHeight(ImageBoxName As Primitive) As Primitive
             App.Invoke(

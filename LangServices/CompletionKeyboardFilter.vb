@@ -43,7 +43,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Case Key.Return
                         args.Handled = CommitConditionally(textView, completionSurface)
 
-                    Case Key.Space, Key.Tab, Key.OemPeriod, Key.Oem4 ' !
+                    Case Key.Space, Key.Tab, Key.OemPeriod
                         CommitConditionally(textView, completionSurface)
 
                 End Select
@@ -53,7 +53,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                 If provider Is Nothing Then Return
 
                 If args.Key = Key.Space AndAlso args.KeyboardDevice.Modifiers = ModifierKeys.Control Then
-                    provider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex)
+                    provider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex, True)
                     args.Handled = True
 
                 ElseIf args.Key = Key.F1 Then
@@ -84,9 +84,15 @@ Namespace Microsoft.SmallBasic.LanguageService
                             args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ")
 
                         Case "="
-                            args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ", True)
+                            Dim pos = textView.Caret.Position.CharacterIndex
+                            Select Case textView.TextSnapshot.GetText(pos - 1, 1)
+                                Case ">", "<"
 
-                        Case "!"
+                                Case Else
+                                    args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ", True)
+                            End Select
+
+                        Case "!", ")", "[", "]", "{", "}"
                             CommitConditionally(textView, completionSurface)
 
                         Case ",", "("
@@ -135,7 +141,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                 If extraText = ", " OrElse repWith.EndsWith("(") Then
                     provider.ShowHelp(True)
                 ElseIf showCompletionAdornmentAgain Then
-                    provider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex)
+                    provider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex, True)
                 End If
                 Return True
 

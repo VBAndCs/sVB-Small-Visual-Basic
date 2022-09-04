@@ -19,6 +19,10 @@ Namespace WinForms
             FillModuleMembers(GetType(Button))
             FillModuleMembers(GetType(ListBox))
             FillModuleMembers(GetType(ImageBox))
+            FillModuleMembers(GetType(TextEx))
+            FillModuleMembers(GetType(MathEx))
+            FillModuleMembers(GetType(ArrayEx))
+            FillModuleMembers(GetType(ColorEx))
 
             deafaultControlEvents(NameOf(Form).ToLower()) = "OnShown"
             deafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
@@ -52,17 +56,18 @@ Namespace WinForms
 
         Dim PrimativeType As Type = GetType(Primitive)
         Private Const WinFormsNS As String = "Microsoft.SmallBasic.WinForms."
+        Private Const LibraryNS As String = "Microsoft.SmallBasic.Library."
 
         Private Shared Sub FillModuleMembers(t As Type)
             types.Add(t)
 
-            Dim lcMembers As New List(Of String)
+            Dim members As New List(Of String)
 
             For Each m In t.GetMembers()
-                lcMembers.Add(m.Name.ToLower)
+                members.Add(m.Name.ToLower)
             Next
 
-            moduleInfo(t.Name) = lcMembers
+            moduleInfo(t.Name) = members
 
             Dim events As New List(Of String)
             For Each e In t.GetEvents()
@@ -96,8 +101,24 @@ Namespace WinForms
 
         Public Shared Function GetMethodInfo(
                          controlName As String,
+                         varType As VariableType,
                          methodName As String
                    ) As ([Module] As String, ParamsCount As Integer)
+
+            If controlName = "" Then
+                Select Case varType
+                    Case VariableType.String
+                        controlName = NameOf(TextEx)
+                    Case VariableType.Double
+                        controlName = NameOf(MathEx)
+                    Case VariableType.Array
+                        controlName = NameOf(ArrayEx)
+                    Case VariableType.Color
+                        controlName = NameOf(ColorEx)
+                    Case Else
+                        Return ("", 0)
+                End Select
+            End If
 
             Dim method = methodName.ToLower()
             Dim moduleName = ""
@@ -239,15 +260,5 @@ Namespace WinForms
         Public EventHandlers As Dictionary(Of String, (ControlName As String, EventName As String))
     End Class
 
-
-    Public Class ExPropertyAttribute
-        Inherits Attribute
-
-    End Class
-
-    Public Class ExMethodAttribute
-        Inherits Attribute
-
-    End Class
 
 End Namespace

@@ -21,6 +21,7 @@ Namespace WinForms
         ''' But it is easier to add event handlers from the upper lists in the code editor, so the designer hides all these details in the .sb.gen file.
         ''' If you use one sub to handle an event of more than one control, read SenderForm and SenderControl to get info about which contol is firing the event now.
         ''' </remarks>
+        <ReturnValueType(VariableType.Control)>
         Public Shared Property SenderControl As Primitive
 
         ''' <summary>
@@ -28,6 +29,7 @@ Namespace WinForms
         ''' For exanple, if you want to cancel writrting a key to the textbox, use `Event.Handled = True` inside OnKeyDown handler 
         ''' </summary>
         ''' <returns></returns>
+        <ReturnValueType(VariableType.Boolean)>
         Public Shared Property Handled As Primitive
 
         ''' <summary>
@@ -35,6 +37,7 @@ Namespace WinForms
         ''' Use The Keys enum members to check they key.
         ''' Examle: If Event.LastKey = Keys.A Then
         ''' </summary>
+        <ReturnValueType(VariableType.Key)>
         Public Shared ReadOnly Property LastKey As Primitive
             Get
                 Return Keyboard.LastKey
@@ -44,6 +47,7 @@ Namespace WinForms
         ''' <summary>
         ''' returns the last text that was about to be written to the TextBox
         ''' </summary>
+        <ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property LastTextInput As Primitive
             Get
                 Return Keyboard.LastTextInput
@@ -53,6 +57,7 @@ Namespace WinForms
         ''' <summary>
         ''' Returns the name of the last key pressed on the keyboard.
         ''' </summary>
+        <ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property LastKeyName As Primitive
             Get
                 Return Keyboard.LastKeyName
@@ -63,7 +68,6 @@ Namespace WinForms
         ''' Set the Evemt.SenderForm and Event.SenderControl. 
         ''' You must call this method before adding event handlers for contrl events.
         ''' </summary>
-        ''' <param name="FormName"></param>
         ''' <param name="ControlName"></param>
         Public Shared Sub HandleEventsOf(ControlName As Primitive)
             _SenderControl = ControlName
@@ -94,6 +98,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the mouse cursor's x co-ordinate.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property MouseX As Primitive
             Get
                 Return Mouse.MouseX
@@ -103,6 +108,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the mouse cursor's y co-ordinate.
         ''' </summary>
+        <ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property MouseY As Primitive
             Get
                 Return Mouse.MouseY
@@ -112,6 +118,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets whether or not the left button is pressed.
         ''' </summary>
+        <ReturnValueType(VariableType.Boolean)>
         Public Shared ReadOnly Property IsLeftButtonDown As Primitive
             Get
                 Return Mouse.IsLeftButtonDown
@@ -121,6 +128,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets whether or not the right button is pressed.
         ''' </summary>
+        <ReturnValueType(VariableType.Boolean)>
         Public Shared ReadOnly Property IsRightButtonDown As Primitive
             Get
                 Return Mouse.IsRightButtonDown

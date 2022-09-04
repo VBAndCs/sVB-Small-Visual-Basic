@@ -20,6 +20,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the text that is displayed on the label
         ''' </summary>
+        <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetText(textBoxName As Primitive) As Primitive
             App.Invoke(
@@ -47,6 +48,7 @@ Namespace WinForms
         ''' <summary>
         ''' Set this property to True  to allow the user to write more than one line in the TextBox
         ''' </summary>
+        <ReturnValueType(VariableType.Boolean)>
         <ExProperty>
         Public Shared Function GetMuliLine(textBoxName As Primitive) As Primitive
             App.Invoke(
@@ -113,6 +115,38 @@ Namespace WinForms
                         GetTextBox(textBoxName).SelectAll()
                     Catch ex As Exception
                         Control.ShowSubError(textBoxName, "SelectAll", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Adds the given text at the end of the TextBox
+        ''' </summary>
+        ''' <param name="text">the text that will be written at the end of the TextBox</param>
+        <ExMethod>
+        Public Shared Sub Append(textBoxName As Primitive, text As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTextBox(textBoxName).AppendText(CStr(text))
+                    Catch ex As Exception
+                        Control.ShowSubError(textBoxName, "Append", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Adds the given text at the end ot the TextBox then adds a new line cahracter, so the next text will be written in a new line
+        ''' </summary>
+        ''' <param name="lineText">the text that will be written at the end of the TextBox followed by a new line character.</param>
+        <ExMethod>
+        Public Shared Sub AppendLine(textBoxName As Primitive, lineText As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTextBox(textBoxName).AppendText(CStr(lineText) & vbCrLf)
+                    Catch ex As Exception
+                        Control.ShowSubError(textBoxName, "AppendLine", ex)
                     End Try
                 End Sub)
         End Sub

@@ -30,6 +30,7 @@ Namespace WinForms
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
         ''' <returns>The neame of the textBox</returns>
+        <ReturnValueType(VariableType.TextBox)>
         <ExMethod>
         Public Shared Function AddTexBox(formName As Primitive,
                          textBoxName As Primitive,
@@ -72,6 +73,7 @@ Namespace WinForms
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
         ''' <returns>The neame of the label</returns>
+        <ReturnValueType(VariableType.Label)>
         <ExMethod>
         Public Shared Function AddLabel(formName As Primitive,
                          labelName As Primitive,
@@ -114,6 +116,7 @@ Namespace WinForms
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
         ''' <returns>The neame of the ImageBox</returns>
+        <ReturnValueType(VariableType.ImageBox)>
         <ExMethod>
         Public Shared Function AddImageBox(formName As Primitive,
                          imageBoxName As Primitive,
@@ -200,6 +203,7 @@ Namespace WinForms
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
         ''' <returns>The neame of the button</returns>
+        <ReturnValueType(VariableType.Button)>
         <ExMethod>
         Public Shared Function AddButton(
                          formName As Primitive,
@@ -237,7 +241,6 @@ Namespace WinForms
             Return key
         End Function
 
-
         ''' <summary>
         ''' Adds a new ListBox control to the form
         ''' </summary>
@@ -247,6 +250,7 @@ Namespace WinForms
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
         ''' <returns>The neame of the listBox</returns>
+        <ReturnValueType(VariableType.ListBox)>
         <ExMethod>
         Public Shared Function AddListBox(formName As Primitive,
                          listBoxName As Primitive,
@@ -287,6 +291,7 @@ Namespace WinForms
         ''' Returns True if the form dsiplays a control with the given name.
         ''' </summary>
         ''' <returns>True or False</returns>
+        <ReturnValueType(VariableType.Boolean)>
         <ExMethod>
         Public Shared Function ContainsControl(formName As Primitive, controlName As Primitive) As Primitive
             Dim frmName = CStr(formName).ToLower()
@@ -319,6 +324,7 @@ Namespace WinForms
         ''' <summary>
         ''' Returns an array containg the names of all controls displayed on the form
         ''' </summary>
+        <ReturnValueType(VariableType.Array)>
         <ExMethod>
         Public Shared Function GetControls(formName As Primitive) As Primitive
             If Not Forms._forms.ContainsKey(formName) Then
@@ -363,6 +369,7 @@ Namespace WinForms
         ''' <summary>
         ''' Displayes the form on the screen as a modal dialog, so the user must close it first to ba able to accees other forms of your app.
         ''' </summary>
+        <ReturnValueType(VariableType.Boolean)>
         <ExMethod>
         Public Shared Function ShowDialog(formName As Primitive) As Primitive
             App.Invoke(
@@ -426,6 +433,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the title of the form
         ''' </summary>
+        <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetText(formName As Primitive) As Primitive
             App.Invoke(

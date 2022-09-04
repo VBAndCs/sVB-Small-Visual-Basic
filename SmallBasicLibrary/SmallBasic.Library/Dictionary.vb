@@ -25,6 +25,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinition(word As Primitive) As Primitive
             Return GetDefinitionEnglishToEnglish(word)
         End Function
@@ -38,6 +39,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionEnglishToEnglish(word As Primitive) As Primitive
             Return GetDefinition(word, "EDICT", "{FEF89077-4F4D-4803-A8BF-228083F70EAA}")
         End Function
@@ -51,6 +53,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionSimplifiedChineseToEnglish(word As Primitive) As Primitive
             Return GetDefinition(word, "2052/1033/4", "{03D4CECF-0578-4DBF-BDEB-F55502662B51}")
         End Function
@@ -64,6 +67,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionEnglishToGerman(word As Primitive) As Primitive
             Return GetDefinition(word, "1033/1031/4", "0FDEA0C3-A12B-4BD8-983E-96BBAE93B097")
         End Function
@@ -77,6 +81,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionEnglishToSimplifiedChinese(word As Primitive) As Primitive
             Return GetDefinition(word, "1033/2052/4", "{2D4205BC-1D59-43B4-9156-19F8B8AEF1A4}")
         End Function
@@ -90,6 +95,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionEnglishToFrench(word As Primitive) As Primitive
             Return GetDefinition(word, "1033/1036/4", "{30C1B7BD-93FF-44A6-928F-D848AEE0BDD6}")
         End Function
@@ -103,6 +109,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionGermanToEnglish(word As Primitive) As Primitive
             Return GetDefinition(word, "1031/1033/4", "{63D351DB-D12E-448B-8541-9F794E1EC973}")
         End Function
@@ -116,6 +123,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionEnglishToJapanese(word As Primitive) As Primitive
             Return GetDefinition(word, "1033/1041/4", "{871E52A8-6A33-4753-B3D3-A1A6A723BC9F}")
         End Function
@@ -129,6 +137,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionFrenchToEnglish(word As Primitive) As Primitive
             Return GetDefinition(word, "1036/1033/4", "{FE5F4005-127F-4885-8366-68CF00CED317}")
         End Function
@@ -142,6 +151,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionItalianToEnglish(word As Primitive) As Primitive
             Return GetDefinition(word, "1040/1033/4", "{A7F03864-B9E3-4824-9E30-D0BD52AE37DF}")
         End Function
@@ -155,6 +165,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionTraditionalChineseToEnglish(word As Primitive) As Primitive
             Return GetDefinition(word, "1028/1033/4", "{9FC92720-10A4-47FE-8066-E7567FBA0AB4}")
         End Function
@@ -168,6 +179,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionSpanishToEnglish(word As Primitive) As Primitive
             Return GetDefinition(word, "3082/1033/4", "{B7B7DDE2-AFFB-415B-BB77-BC1A0D4D694D}")
         End Function
@@ -181,6 +193,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionJapaneseToEnglish(word As Primitive) As Primitive
             Return GetDefinition(word, "1041/1033/4", "{C6032F4A-557E-4FC0-AFA8-46B918B626EB}")
         End Function
@@ -194,6 +207,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionEnglishToKorean(word As Primitive) As Primitive
             Return GetDefinition(word, "1033/1042/4", "{CF56F86E-4DBE-42BF-BB08-1C9BBF2B26F2}")
         End Function
@@ -207,6 +221,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionEnglishToTraditionalChinese(word As Primitive) As Primitive
             Return GetDefinition(word, "1033/1028/4", "{F08B2224-AAA5-42E9-B668-A448BFC16D5B}")
         End Function
@@ -220,6 +235,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionKoreanToEnglish(word As Primitive) As Primitive
             Return GetDefinition(word, "1042/1033/4", "{F1A3E34D-7A0A-4118-84F2-17D2CAB58F18}")
         End Function
@@ -233,6 +249,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionEnglishToItalian(word As Primitive) As Primitive
             Return GetDefinition(word, "1033/1040/4", "{F8EB68DA-29AF-4CE1-B188-3D5384A7259A}")
         End Function
@@ -246,6 +263,7 @@ Namespace Library
         ''' <returns>
         ''' The definition(s) of the specified word.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetDefinitionEnglishToSpanish(word As Primitive) As Primitive
             Return GetDefinition(word, "1033/3082/4", "{FE0FEFA5-ED3B-4D8E-AC1A-A308A9210C34}")
         End Function

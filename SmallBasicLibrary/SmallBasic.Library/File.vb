@@ -28,6 +28,7 @@ Namespace Library
         ''' <returns>
         ''' The entire contents of the file.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadContents(filePath As Primitive) As Primitive
             LastError = ""
             Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
@@ -64,6 +65,7 @@ Namespace Library
         ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
         ''' </para>
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function WriteContents(filePath As Primitive, contents As Primitive) As Primitive
             LastError = ""
             Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
@@ -93,6 +95,7 @@ Namespace Library
         ''' <returns>
         ''' The text at the specified line of the specified file.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadLine(filePath As Primitive, lineNumber As Primitive) As Primitive
             LastError = ""
             Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
@@ -145,6 +148,7 @@ Namespace Library
         ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
         ''' </para>
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function WriteLine(filePath As Primitive, lineNumber As Primitive, contents As Primitive) As Primitive
             LastError = ""
             Dim path1 As String = Environment.ExpandEnvironmentVariables(filePath)
@@ -211,6 +215,7 @@ Namespace Library
         ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
         ''' </para>
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function InsertLine(filePath As Primitive, lineNumber As Primitive, contents As Primitive) As Primitive
             LastError = ""
             Dim path1 As String = Environment.ExpandEnvironmentVariables(filePath)
@@ -270,6 +275,7 @@ Namespace Library
         ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
         ''' </para>
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function AppendContents(filePath As Primitive, contents As Primitive) As Primitive
             LastError = ""
             Environment.ExpandEnvironmentVariables(filePath)
@@ -305,6 +311,7 @@ Namespace Library
         ''' <returns>
         ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function CopyFile(sourceFilePath As Primitive, destinationFilePath As Primitive) As Primitive
             LastError = ""
             Dim text As String = Environment.ExpandEnvironmentVariables(sourceFilePath)
@@ -342,6 +349,7 @@ Namespace Library
         ''' <returns>
         ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function DeleteFile(filePath As Primitive) As Primitive
             LastError = ""
             Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
@@ -364,6 +372,7 @@ Namespace Library
         ''' <returns>
         ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function CreateDirectory(directoryPath As Primitive) As Primitive
             LastError = ""
             Environment.ExpandEnvironmentVariables(directoryPath)
@@ -386,6 +395,7 @@ Namespace Library
         ''' <returns>
         ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function DeleteDirectory(directoryPath As Primitive) As Primitive
             LastError = ""
             Environment.ExpandEnvironmentVariables(directoryPath)
@@ -408,6 +418,7 @@ Namespace Library
         ''' <returns>
         ''' If the operation was successful, this will return the files as an array.  Otherwise, it will return "FAILED".
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function GetFiles(directoryPath As Primitive) As Primitive
             LastError = ""
             Environment.ExpandEnvironmentVariables(directoryPath)
@@ -440,6 +451,7 @@ Namespace Library
         ''' <returns>
         ''' If the operation was successful, this will return the list of directories as an array.  Otherwise, it will return "FAILED".
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function GetDirectories(directoryPath As Primitive) As Primitive
             LastError = ""
             Environment.ExpandEnvironmentVariables(directoryPath)
@@ -472,6 +484,7 @@ Namespace Library
         ''' <returns>
         ''' The full file path of the temporary file.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetTemporaryFilePath() As Primitive
             Return Path.GetTempFileName()
         End Function
@@ -484,6 +497,7 @@ Namespace Library
         ''' <returns>
         ''' The full path of the settings file specific for this program.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetSettingsFilePath() As Primitive
             Dim entryAssemblyPath As String = SmallBasicApplication.GetEntryAssemblyPath()
             Return Path.ChangeExtension(entryAssemblyPath, ".settings")

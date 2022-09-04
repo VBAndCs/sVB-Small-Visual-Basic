@@ -200,7 +200,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             If Not isFirstToken Then
                 Select Case displayName
                     Case "If", "ElseIf", "Else", "EndIf",
-                             "For", "Next", "EndFor",
+                             "For", "ForEach", "Next", "EndFor",
                              "While", "Wend", "EndWhile",
                              "ExitLoop", "ContinueLoop", "GoTo",
                              "Function", "EndFunction", "Sub", "EndSub", "Return"
@@ -231,7 +231,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Function
 
         Function GetInputText() As String
-            Dim replaceSpan = _adornment.ReplaceSpan
+            Dim replaceSpan = _Adornment.ReplaceSpan
             Dim text = replaceSpan.GetText(textView.TextSnapshot)
             If text.Length = 0 Then
                 text = CType(textView, AvalonTextView).Editor.EditorOperations.GetCurrentWord
@@ -255,6 +255,10 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Function
 
         Private Function GetSelectedItemIndex(text As String) As Integer
+            If _Adornment.CompletionBag.SelectEspecialItem <> "" Then
+                text = _Adornment.CompletionBag.SelectEspecialItem
+            End If
+
             Dim textLength = text.Length
 
             If textLength < 2 Then

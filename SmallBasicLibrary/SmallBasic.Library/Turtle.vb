@@ -29,6 +29,7 @@ Namespace Library
         ''' <summary>
         ''' Specifies how fast the turtle should move.  Valid values are 1 to 10.  If Speed is set to 10, the turtle moves and rotates instantly.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Speed As Primitive
             Get
                 Return _speed
@@ -47,6 +48,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the current angle of the turtle.  While setting, this will turn the turtle instantly to the new angle.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Angle As Primitive
             Get
                 Return _angle
@@ -70,6 +72,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the X location of the Turtle.  While setting, this will move the turtle instantly to the new location.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property X As Primitive
             Get
                 Return _currentX
@@ -84,6 +87,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the Y location of the Turtle.  While setting, this will move the turtle instantly to the new location.
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Y As Primitive
             Get
                 Return _currentY
@@ -138,13 +142,13 @@ Namespace Library
         ''' </param>
         Public Shared Sub Move(distance As Primitive)
             VerifyAccess()
-            Dim animateTime As Double = Math.Abs(CDbl(distance.GetAsDecimal()) * 320.0 / CDbl((_speed * _speed)))
+            Dim animateTime = System.Math.Abs(CDbl(distance.GetAsDecimal()) * 320.0 / CDbl((_speed * _speed)))
             If _speed = 10 Then
                 animateTime = 5.0
             End If
-            Dim num As Double = _angle / 180.0 * System.Math.PI
-            Dim newY As Double = _currentY - distance * Math.Cos(num)
-            Dim newX As Double = _currentX + distance * Math.Sin(num)
+            Dim num = _angle / 180.0 * System.Math.PI
+            Dim newY = _currentY - CDbl(distance) * System.Math.Cos(num)
+            Dim newX = _currentX + CDbl(distance) * System.Math.Sin(num)
             Shapes.Animate("_turtle", newX, newY, animateTime)
             If _penDown Then
                 GraphicsWindow.Invoke(
@@ -214,7 +218,7 @@ Namespace Library
         ''' </param>
         Public Shared Sub Turn(angle1 As Primitive)
             VerifyAccess()
-            Dim animateTime As Double = Math.Abs(CDbl(angle1.GetAsDecimal()) * 200.0 / CDbl((_speed * _speed)))
+            Dim animateTime = System.Math.Abs(CDbl(angle1.GetAsDecimal()) * 200.0 / CDbl((_speed * _speed)))
             If _speed = 10 Then
                 animateTime = 5.0
             End If
