@@ -36,6 +36,29 @@ Namespace WinForms
         End Function
 
         ''' <summary>
+        ''' Gets an array containing the items of the ListBox
+        ''' </summary>
+        <ReturnValueType(VariableType.Array)>
+        <ExProperty>
+        Public Shared Function GetItems(ListBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim map = New Dictionary(Of Primitive, Primitive)
+                        Dim num = 1
+                        For Each item In GetListBox(ListBoxName).Items
+                            map(num) = CStr(item)
+                            num += 1
+                        Next
+                        GetItems = Primitive.ConvertFromMap(map)
+
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(ListBoxName, "ItemsCount", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        ''' <summary>
         ''' Gets or sets the item that is curruntly selected in the ListBox
         ''' </summary>
         ''' <remarks>This property returns empty string if there is no item selected.
@@ -246,6 +269,21 @@ Namespace WinForms
                             RemoveItem(value, lst)
                         End If
 
+                    Catch ex As Exception
+                        Control.ShowSubError(ListBoxName, "RenoveItem", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Reomves all the items from the listbox
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub RemoveAllItems(ListBoxName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetListBox(ListBoxName).Items.Clear()
                     Catch ex As Exception
                         Control.ShowSubError(ListBoxName, "RenoveItem", ex)
                     End Try

@@ -27,9 +27,9 @@ Hello
 Ahmad
 ```
 
-2. Add `Append` and `AppendLine` methods to the TextBox control. See the `For Each` Sample in the Samples folder.
+2. Add `Append` and `AppendLine` methods to the TextBox control, and `Items` and `RemoveAllItems` to the ListBox control. See the [For Each](https://github.com/VBAndCs/sVB-Small-Visual-Basic/tree/master/Samples/For%20Each) Sample in the Samples folder.
 
-3. Infer var types from initial valuse. This allows to call some methods directly from the var name. For example:
+3. Infer var types from initial values. This allows to call some methods directly from the var name. For example:
 ```VB
 x = "abc"
 x = x.Append("efg")
@@ -44,16 +44,16 @@ Note That:
 
 The editor intellisense provides you with info about the var type and auto completion list shows the available methods it can call.
 Note that:
- * sVB is still a dynamic type language, so, you can still store any value in the variable regardless its infered type. I don't advice you to do that, as you should keep your code clean and readable.
+ * sVB is still a dynamic type language, so, you can still store any value in the variable regardless its inferred type. I don't advice you to do that, as you should keep your code clean and readable.
  * sVB can't infer the type in some cases, such as:
-- you intialize the var from a call to a function you wrote.
-- you intialize the var from a calcualted expression or operator, even a simple addition one, as sVB will decide the value at runtime only.
+- you initialize the var from a call to a function you wrote.
+- you initialize the var from a calculated expression or operator, even a simple addition one, as sVB will decide the value at runtime only.
+- sub and function params can't be inferred unless you named them using one of the naming conventions for data, controls, colors and keys.
 
-In such cases, you can initialze the var with `""` for strings, `0` for numerics, or `{}` for arrays. 
+In such cases, you can initialize the var with `""` for strings, `0` for numerics, or `{}` for arrays, then add the value to it in the next line.
 
-4. Variables that contains the word `color` is considered to be a Color and when you assign a value for them, the auto completion list suggests the `Colos` class to choose a color from it's members.
-The same for the word key, whic is considered to be a Key, and auto completion offers the Keys class to choose from its members. This makes it easy to deal with the preesd key in Keyboard events, such as using the `Event.LastKey` property.
-
+4. Variables that contain the word `color` is considered to be a `Color` and when you assign a value for them, the auto completion list suggests the `Colors` class to choose a color from it's members.
+The same for the word key, which is considered to be a `Key`, and auto completion offers the Keys class to choose from its members. This makes it easy to deal with the pressed key in Keyboard events, such as using the `Event.LastKey` property.
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 

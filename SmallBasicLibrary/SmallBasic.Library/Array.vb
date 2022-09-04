@@ -191,7 +191,7 @@ Namespace Library
                             value As Primitive
                     ) As Primitive
 
-            If Not array.IsEmpty Then array(index) = value
+            array(index) = value
             Return array
         End Function
 

@@ -1,14 +1,60 @@
 TextBox1.MuliLine = True
 
+Arr = {1, 2, 3, 4, 5}
+Arr["test"] = "Hello"
+Arr!Name = "Ahmad"
+
+ForEach Item In Arr
+   ListBox1.AddItem(Item)
+Next
 
 '------------------------------------------------
 Sub Button1_OnClick()
-   arr = {1, 2, 3, 4, 5}
-   arr["test"] = "Hello"
-   arr!Name = "Ahmad"
+   TextBox1.Text = ""
    
-   ForEach item In arr
+   ForEach item In ListBox1.Items
       TextBox1.AppendLine(item)
    Next
    
 EndSub
+
+
+'------------------------------------------------
+Sub Button2_OnClick()
+   lines = GetLines(TextBox1.Text)
+   
+   ListBox1.RemoveAllItems()
+   
+   ForEach line In lines
+      ListBox1.AddItem(line)
+   Next
+   
+EndSub
+
+
+
+'------------------------------------------------
+Function GetLines(text)
+   str = ""
+   str = text
+   pos = 1
+   a = {}
+   length = str.Length
+   
+   For i = 1 To length
+      If str[i] = Chars.Cr Then
+         a = a.AddItem(str.SubText(pos, i - pos)
+         If i < length And str[i + 1] = Chars.CrLf Then
+            i = i + 1
+         EndIf
+         pos = i + 1
+         
+      ElseIf str[i] = Chars.Lf Then
+         a = a.AddItem(str.SubText(pos, i - pos)
+         pos = i + 1
+      EndIf
+   Next
+   a = Array.AddItem(a, Text.GetSubText(str, pos, length - pos + 1))
+   
+   Return a
+EndFunction

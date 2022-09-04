@@ -64,10 +64,13 @@ Namespace Library
                     End If
 
                 Else
-                    Dim primitive As Primitive = SetArrayValue(Value, Me, index)
-                    _stringValue = primitive._stringValue
-                    _arrayMap = primitive._arrayMap
-                    _decimalValue = primitive._decimalValue
+                    _stringValue = Nothing
+                    _decimalValue = Nothing
+                    If CStr(Value) = "" Then
+                        _arrayMap.Remove(index)
+                    Else
+                        _arrayMap(index) = Value
+                    End If
                 End If
             End Set
         End Property
@@ -531,7 +534,7 @@ Namespace Library
         End Function
 
         Public Shared Function ConvertFromMap(map As Dictionary(Of Primitive, Primitive)) As Primitive
-            Dim result As Primitive = CType(Nothing, Primitive)
+            Dim result = CType(Nothing, Primitive)
             result._stringValue = Nothing
             result._decimalValue = Nothing
             result._arrayMap = map

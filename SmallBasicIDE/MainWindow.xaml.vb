@@ -1240,15 +1240,15 @@ Namespace Microsoft.SmallBasic
             _compiler.Parser.SymbolTable.ModuleNames = doc.ControlsInfo
             _compiler.Parser.SymbolTable.ControlNames = doc.ControlNames.ToList()
 
-            ' Try
-            Dim fileName = Path.GetFileNameWithoutExtension(outputFilePath)
+            Try
+                Dim fileName = Path.GetFileNameWithoutExtension(outputFilePath)
                 Dim directoryName As String = Path.GetDirectoryName(outputFilePath)
                 errors = _compiler.Build(New StringReader(code), fileName, directoryName)
 
-            'Catch ex As Exception
-            '    If errors Is Nothing Then errors = New List(Of [Error])
-            '    errors.Add(New [Error](-1, 0, 0, ex.Message))
-            'End Try
+            Catch ex As Exception
+                If errors Is Nothing Then errors = New List(Of [Error])
+                errors.Add(New [Error](-1, 0, 0, ex.Message))
+            End Try
 
             Return errors
         End Function
