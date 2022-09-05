@@ -878,8 +878,12 @@ Namespace Microsoft.SmallBasic.Documents
             hint.AppendLine("'}")
             hint.AppendLine()
             hint.Append(declaration)
-            'hint.AppendLine($"Forms.AppPath = ""{xamlPath}""")
-            hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{Path.GetFileNameWithoutExtension(Me.FilePath)}.xaml"")")
+            ' Take the xaml path if exists, to consider the file name change in save as case.
+            Dim xamlFile = If(formDesigner.FileName = "",
+                    Path.GetFileNameWithoutExtension(Me.FilePath) & ".xaml",
+                    IO.Path.GetFileName(formDesigner.FileName)
+            )
+            hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{xamlFile}"")")
             If formDesigner.AllowTransparency Then
                 hint.AppendLine($"Form.AllowTransparency({formName})")
             End If

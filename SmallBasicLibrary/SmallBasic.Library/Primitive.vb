@@ -40,7 +40,7 @@ Namespace Library
         Default Public Property Items(index As Primitive) As Primitive
             Get
                 ConstructArrayMap()
-                If _arrayMap.Count = 0 Then
+                If Not IsArray Then
                     Dim s = If(_stringValue, "")
                     If index < 1 OrElse index > s.Length Then Return ""
                     Return s(index - 1).ToString()
@@ -54,7 +54,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 ConstructArrayMap()
-                If _arrayMap.Count = 0 AndAlso _stringValue <> "" Then
+                If Not IsArray AndAlso _stringValue <> "" Then
                     If index < 1 Then
                         Me._stringValue = CStr(Value) & Space(-index) & _stringValue
                     ElseIf index > _stringValue.Length Then
@@ -64,13 +64,8 @@ Namespace Library
                     End If
 
                 Else
-                    _stringValue = Nothing
                     _decimalValue = Nothing
-                    If CStr(Value) = "" Then
-                        _arrayMap.Remove(index)
-                    Else
-                        _arrayMap(index) = Value
-                    End If
+                    _arrayMap(index) = Value
                 End If
             End Set
         End Property
@@ -521,14 +516,9 @@ Namespace Library
                 array(indexer) = value
                 Return array
             Else
-                Dim dictionary1 As New Dictionary(Of Primitive, Primitive)(array._arrayMap, PrimitiveComparer.Instance)
-                If value.IsEmpty Then
-                    dictionary1.Remove(indexer)
-                Else
-                    dictionary1(indexer) = value
-                End If
-
-                Return ConvertFromMap(dictionary1)
+                Dim map As New Dictionary(Of Primitive, Primitive)(array._arrayMap, PrimitiveComparer.Instance)
+                map(indexer) = value
+                Return ConvertFromMap(map)
             End If
 
         End Function

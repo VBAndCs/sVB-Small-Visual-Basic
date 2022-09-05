@@ -40,21 +40,23 @@ Function GetLines(text)
    pos = 1
    a = {}
    length = str.Length
-   
+   n = 1
    For i = 1 To length
       If str[i] = Chars.Cr Then
-         a = a.AddItem(str.SubText(pos, i - pos)
-         If i < length And str[i + 1] = Chars.CrLf Then
+         a[n] = str.SubText(pos, i - pos)
+         If i < length And str[i + 1] = Chars.Lf Then
             i = i + 1
          EndIf
          pos = i + 1
+         n = n + 1
          
       ElseIf str[i] = Chars.Lf Then
-         a = a.AddItem(str.SubText(pos, i - pos)
+         a[n] = str.SubText(pos, i - pos)
          pos = i + 1
+         n = n + 1
       EndIf
    Next
-   a = Array.AddItem(a, Text.GetSubText(str, pos, length - pos + 1))
+   a[n] = str.SubText(pos, length - pos + 1)
    
    Return a
 EndFunction
