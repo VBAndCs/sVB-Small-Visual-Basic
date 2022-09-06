@@ -170,7 +170,7 @@ Namespace Library
 
         Public Sub New(primitiveBool As Boolean)
             _decimalValue = Nothing
-            If CBool(primitiveBool) Then
+            If primitiveBool Then
                 _stringValue = "True"
             Else
                 _stringValue = "False"
@@ -304,13 +304,13 @@ Namespace Library
             Dim source = AsString.ToCharArray()
 
             Dim index As Integer = 0
+            Dim L = source.Length
             Do
                 Dim key = Unescape(source, index)
-                If key = "" Then Exit Do
+                If key = "" OrElse index = L Then Return
 
                 Dim value = Unescape(source, index)
-                If value = "" Then Exit Do
-
+                If value Is Nothing Then Return
                 _arrayMap(key) = value
             Loop
         End Sub
@@ -370,13 +370,13 @@ Namespace Library
         End Operator
 
         Public Shared Widening Operator CType(value As Primitive) As Boolean
-            Dim s = CStr(value)
-            If s Is Nothing Then Return False
-            If value.IsArray AndAlso value._arrayMap?.Count > 0 Then Return True
-            If s.ToLower() = "true" Then Return True
-            If Not IsNumeric(s) Then Return False
-            If Double.Parse(s) = 0 Then Return False
-            Return True
+            If value.IsNumber Then Return CDec(value) <> 0
+            Dim s = CStr(value).ToLower()
+            If s = "" OrElse s = "false" Then Return False
+            If s = "true" Then Return True
+            If Not (s.Contains("=") AndAlso s.Contains(";")) Then Return False
+            If value.IsArray Then Return value._arrayMap?.Count > 0
+            Return False
         End Operator
 
         Public Shared Operator =(primitive1 As Primitive, primitive2 As Primitive) As Primitive
@@ -400,7 +400,11 @@ Namespace Library
         End Operator
 
         Public Shared Operator <=(primitive1 As Primitive, primitive2 As Primitive) As Primitive
-            Return primitive1.LessThanOrEqualTo(primitive2)
+            If primitive1.LessThanOrEqualTo(primitive2) Then
+                Return New Primitive(True)
+            Else
+                Return New Primitive(False)
+            End If
         End Operator
 
         Public Shared Operator +(primitive1 As Primitive, primitive2 As Primitive) As Primitive
@@ -460,7 +464,11 @@ Namespace Library
                 Return New Primitive("")
             End If
 
-            Return New Primitive(value)
+            Dim p As New Primitive(value)
+            If value.Contains("=") AndAlso value.Contains(";") Then
+                p.ConstructArrayMap()
+            End If
+            Return p
         End Operator
 
         Public Shared Widening Operator CType(value As Double) As Primitive
@@ -550,11 +558,12 @@ Namespace Library
         End Function
 
         Private Shared Function Unescape(source As Char(), ByRef index As Integer) As String
-            Dim flag As Boolean = False
-            Dim flag2 As Boolean = True
-            Dim num As Integer = source.Length
-            Dim stringBuilder1 As New StringBuilder
-            While index < num
+            Dim flag = False
+            Dim flag2 = True
+            Dim length = source.Length
+            Dim sb As New StringBuilder
+
+            While index < length
                 Dim c As Char = source(index)
                 index += 1
                 If Not flag Then
@@ -562,20 +571,21 @@ Namespace Library
                         flag = True
                         Continue While
                     End If
+
                     If c = "="c OrElse c = ";"c Then
+                        Return sb.ToString()
                         Exit While
                     End If
                 Else
                     flag = False
                 End If
-                flag2 = False
-                stringBuilder1.Append(c)
-            End While
-            If flag2 Then
-                Return Nothing
-            End If
 
-            Return stringBuilder1.ToString()
+                flag2 = False
+                sb.Append(c)
+            End While
+
+            If flag2 Then Return Nothing
+            Return sb.ToString()
         End Function
     End Structure
 End Namespace

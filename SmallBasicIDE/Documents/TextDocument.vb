@@ -31,7 +31,6 @@ Namespace Microsoft.SmallBasic.Documents
         Private _undoHistory As UndoHistory
         Private _editorControl As CodeEditorControl
         Private _errorListControl As ErrorListControl
-        Private _errors As New ObservableCollection(Of String)()
         Private _caretPositionText As String
         Private _programDetails As com.smallbasic.ProgramDetails
 
@@ -65,11 +64,7 @@ Namespace Microsoft.SmallBasic.Documents
             End Set
         End Property
 
-        Public ReadOnly Property Errors As ObservableCollection(Of String)
-            Get
-                Return _errors
-            End Get
-        End Property
+        Public ReadOnly Property Errors As New ObservableCollection(Of String)
 
         Public Property ProgramDetails As com.smallbasic.ProgramDetails
             Get
@@ -584,6 +579,7 @@ Namespace Microsoft.SmallBasic.Documents
             needsToFormat = True
             IsDirty = True
             _editorControl.ClearHighlighting()
+            ErrorListControl.Close()
             If _formatting OrElse _IgnoreCaretPosChange OrElse StillWorking Then Return
 
             StillWorking = True
@@ -831,6 +827,8 @@ Namespace Microsoft.SmallBasic.Documents
         Public Property EventHandlers As New Dictionary(Of String, (ControlName As String, EventName As String))
 
         Dim _form As String
+        Friend ReadOnly ErrorTokens As New List(Of Token)
+
         Public Property Form As String
             Get
                 Return _form

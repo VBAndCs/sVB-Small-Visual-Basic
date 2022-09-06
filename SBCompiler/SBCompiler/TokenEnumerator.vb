@@ -7,13 +7,14 @@ Namespace Microsoft.SmallBasic
 
         Public Property LineNumber As Integer
 
-        Public ReadOnly Property IsEndOfList As Boolean
+        Public ReadOnly Property IsEnd As Boolean
             Get
                 Return _currentIndex = _tokenList.Count
             End Get
         End Property
 
-        Public ReadOnly Property IsEndOfNonCommentList As Boolean
+
+        Public ReadOnly Property IsEndOrComment As Boolean
             Get
                 If _currentIndex = _tokenList.Count Then Return True
                 Return _Current.ParseType = ParseType.Comment
@@ -72,7 +73,6 @@ Namespace Microsoft.SmallBasic
             _currentIndex = 0
             _Current = If(_currentIndex < _tokenList.Count, _tokenList(_currentIndex), Nothing)
         End Sub
-
 
     End Class
 

@@ -549,9 +549,13 @@ Namespace Microsoft.SmallBasic
                     Return Nothing
                 End If
 
-                subroutineCall.Args = ParseCommaSepList(tokenEnum, TokenType.RightParens, caller, False)
+                Dim closeTokenFound = False
+                subroutineCall.Args = ParseCommaSepaeatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
                 If commaLine = -2 Then Return Nothing
-                If EatToken(tokenEnum, TokenType.RightParens) Then ExpectEndOfLine(tokenEnum)
+                If closeTokenFound Then
+                    tokenEnum.MoveNext()
+                    ExpectEndOfLine(tokenEnum)
+                End If
             End If
 
             Return subroutineCall
@@ -566,7 +570,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Function BuildExpression(tokenEnum As TokenEnumerator, includeLogical As Boolean) As Expression
-            If tokenEnum.IsEndOfList Then
+            If tokenEnum.IsEnd Then
                 Return Nothing
             End If
 
@@ -593,7 +597,7 @@ Namespace Microsoft.SmallBasic
         Private Function BuildTerm(tokenEnum As TokenEnumerator, includeLogical As Boolean) As Expression
             Dim current = tokenEnum.Current
 
-            If tokenEnum.IsEndOfList OrElse tokenEnum.Current.Type = TokenType.Illegal Then
+            If tokenEnum.IsEnd OrElse tokenEnum.Current.Type = TokenType.Illegal Then
                 Return Nothing
             End If
 
@@ -613,16 +617,15 @@ Namespace Microsoft.SmallBasic
 
                 Case TokenType.LeftCurlyBracket
                     tokenEnum.MoveNext()
+                    Dim closeTokenFound = False
                     Dim initExpr As New InitializerExpression(
                         precedence:=9,
-                        arguments:=ParseCommaSepList(tokenEnum, TokenType.RightCurlyBracket, Nothing, False)
-                   )
+                        arguments:=ParseCommaSepaeatedList(tokenEnum, TokenType.RightCurlyBracket, closeTokenFound, Nothing, False)
+                    )
 
                     If commaLine = -2 Then Return Nothing
-
-                    'If initExpr.Arguments.Count = 0 Then Return Nothing
                     expression = initExpr
-                    tokenEnum.MoveNext() ' }
+                    If closeTokenFound Then tokenEnum.MoveNext()
 
                 Case TokenType.Identifier
                     expression = BuildIdentifierTerm(tokenEnum)
@@ -723,18 +726,19 @@ Namespace Microsoft.SmallBasic
                         Return Nothing
                     End If
 
+                    Dim closeTokenFound = False
                     Dim methodCallExpression As New MethodCallExpression(
                         startToken:=current,
                         precedence:=9,
                         typeName:=current,
                         methodName:=variable,
-                        arguments:=ParseCommaSepList(tokenEnum, TokenType.RightParens, caller, False)
+                        arguments:=ParseCommaSepaeatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
                    )
 
                     If commaLine = -2 Then Return Nothing
                     methodCallExpression.OuterSubRoutine = SubroutineStatement.Current
                     methodCallExpression.EndToken = tokenEnum.Current
-                    tokenEnum.MoveNext()
+                    If closeTokenFound Then tokenEnum.MoveNext()
                     Return methodCallExpression
                 End If
 
@@ -803,19 +807,20 @@ Namespace Microsoft.SmallBasic
                     Return Nothing
                 End If
 
+                Dim closeTokenFound = False
                 Dim methodCallExpression As New MethodCallExpression(
                         startToken:=current,
                         precedence:=9,
                         typeName:=Token.Illegal,
                         methodName:=current,
-                        arguments:=ParseCommaSepList(tokenEnum, TokenType.RightParens, caller, False)
+                        arguments:=ParseCommaSepaeatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
                 )
 
                 If commaLine = -2 Then Return Nothing
 
                 methodCallExpression.OuterSubRoutine = SubroutineStatement.Current
                 methodCallExpression.EndToken = tokenEnum.Current
-                tokenEnum.MoveNext()
+                If closeTokenFound Then tokenEnum.MoveNext()
                 _FunctionsCall.Add(methodCallExpression)
                 Return methodCallExpression
             End If
@@ -852,23 +857,27 @@ Namespace Microsoft.SmallBasic
             Dim tokens = LineScanner.GetTokenEnumerator(args, lineNumber, lines)
             tokens.MoveNext()
             Dim parser As New Parser()
-            Dim argExprs = parser.ParseCommaSepList(tokens, closeToken, Nothing, False)
+            Dim closeTokenFound = False
+            Dim argExprs = parser.ParseCommaSepaeatedList(tokens, closeToken, closeTokenFound, Nothing, False)
+            If closeTokenFound Then tokens.MoveNext()
             If parser.Errors.Count > 0 Then Return Nothing
             Return argExprs
         End Function
 
-        Private Function ParseCommaSepList(
+        Private Function ParseCommaSepaeatedList(
                            tokenEnum As TokenEnumerator,
-                           closingToken As TokenType,
+                           closeToken As TokenType,
+                           <Out> ByRef closeTokenFound As Boolean,
                            caller? As (Line As Integer, EndColumn As Integer),
                            Optional commaIsOptional As Boolean = True
                   ) As List(Of Expression)
 
             Dim items As New List(Of Expression)
+            closeTokenFound = False
 
             Do
                 Dim current = tokenEnum.Current
-                If current.Type = closingToken Then
+                If current.Type = closeToken Then
                     If current.Line = commaLine AndAlso current.Column = commaColumn Then
                         If caller.HasValue Then
                             callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count - 1)
@@ -876,6 +885,7 @@ Namespace Microsoft.SmallBasic
                             Return Nothing
                         End If
                     End If
+                    closeTokenFound = True
                     Exit Do
                 End If
 
@@ -888,6 +898,8 @@ Namespace Microsoft.SmallBasic
                 End If
 
                 items.Add(expression)
+                If tokenEnum.IsEndOrComment Then Exit Do
+
                 Dim comma = tokenEnum.Current
                 If EatOptionalToken(tokenEnum, TokenType.Comma) Then
                     If comma.Line = commaLine AndAlso comma.Column = commaColumn Then
@@ -900,30 +912,59 @@ Namespace Microsoft.SmallBasic
 
                 ElseIf Not commaIsOptional Then
                     current = tokenEnum.Current
-                    If current.Type = closingToken Then
-                        If current.Line = commaLine AndAlso current.Column = commaColumn Then
-                            If caller.HasValue Then
-                                callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count - 1)
-                                commaLine = -2
-                                Return Nothing
+                    Select Case current.Type
+                        Case closeToken
+                            If current.Line = commaLine AndAlso current.Column = commaColumn Then
+                                If caller.HasValue Then
+                                    callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count - 1)
+                                    commaLine = -2
+                                    Return Nothing
+                                End If
                             End If
-                        End If
+                            closeTokenFound = True
 
-                    Else
-                        AddError(current, "Comma is expected here but not found.")
-                    End If
+                        Case TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
+                            ' outer list is closed, and the inner list misses the closeToken
+                        Case Else
+                            TokenIsExpected(tokenEnum, TokenType.Comma)
+                    End Select
 
                     Exit Do
                 End If
 
-                If tokenEnum.IsEndOfNonCommentList Then
-                    AddError(tokenEnum.Current, ResourceHelper.GetString("UnexpectedMethodCallEOL"))
+                If tokenEnum.IsEndOrComment Then
+                    If closeTokenFound Then
+                        AddError(tokenEnum.Current, ResourceHelper.GetString("UnexpectedMethodCallEOL"))
+                    End If
                     Exit Do
                 End If
             Loop
 
+            If Not closeTokenFound Then
+                TokenIsExpected(tokenEnum, closeToken)
+            End If
             Return items
         End Function
+
+        Private Sub TokenIsExpected(tokenEnum As TokenEnumerator, expectedToken As TokenType)
+            Dim current = tokenEnum.Current
+            Dim token As New Token With {
+                .Line = current.Line,
+                .Column = If(tokenEnum.IsEnd, current.EndColumn, current.Column)
+            }
+            Dim expectedChar = ""
+            Select Case expectedToken
+                Case TokenType.RightBracket
+                    expectedChar = "]"
+                Case TokenType.RightCurlyBracket
+                    expectedChar = "}"
+                Case TokenType.RightParens
+                    expectedChar = ")"
+                Case TokenType.Comma
+                    expectedChar = ","
+            End Select
+            AddError(token, $"`{expectedChar}` is expected here but not found")
+        End Sub
 
         Private Function ParseParamList(tokenEnum As TokenEnumerator, closingToken As TokenType) As List(Of Token)
             Dim items As New List(Of Token)
@@ -948,7 +989,7 @@ Namespace Microsoft.SmallBasic
                     End If
                 End If
 
-                If tokenEnum.IsEndOfNonCommentList Then
+                If tokenEnum.IsEnd Then
                     AddError(tokenEnum.Current, ResourceHelper.GetString("UnexpectedTokenAtLocation"))
                     Exit Do
                 End If
@@ -1015,7 +1056,7 @@ Namespace Microsoft.SmallBasic
                 _SymbolTable.Reset()
             End If
 
-            _SymbolTable.autoCompletion = autoCompletion
+            _SymbolTable.AutoCompletion = autoCompletion
 
             _ParseTree = New List(Of Statement)()
             codeLines = New List(Of String)
@@ -1057,7 +1098,7 @@ Namespace Microsoft.SmallBasic
                     End If
                 End If
             Next
-            _SymbolTable.autoCompletion = False
+            _SymbolTable.AutoCompletion = False
         End Sub
 
         Public Shared Function Parse(
@@ -1113,7 +1154,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Friend Function GetStatementFromTokens(tokenEnum As TokenEnumerator) As Statement
-            If tokenEnum.IsEndOfList Then
+            If tokenEnum.IsEnd Then
                 Return New EmptyStatement() With {
                     .StartToken = New Token With {
                         .Line = tokenEnum.LineNumber
@@ -1161,7 +1202,7 @@ Namespace Microsoft.SmallBasic
                     Dim returnExpr As Expression = Nothing
                     Dim returnToken = tokenEnum.Current
                     tokenEnum.MoveNext()
-                    If Not tokenEnum.IsEndOfNonCommentList Then EatExpression(tokenEnum, returnExpr)
+                    If Not tokenEnum.IsEnd Then EatExpression(tokenEnum, returnExpr)
                     Dim subroutine = SubroutineStatement.Current
                     statement = New ReturnStatement With {
                         .StartToken = returnToken,
@@ -1197,7 +1238,7 @@ Namespace Microsoft.SmallBasic
         Private Function GetLevel(tokenEnum As TokenEnumerator) As Integer
             tokenEnum.MoveNext()
             Dim upLevel = 0
-            Do Until tokenEnum.IsEndOfNonCommentList
+            Do Until tokenEnum.IsEnd
                 If tokenEnum.Current.Type = TokenType.Subtraction Then
                     If upLevel < 1000 Then
                         upLevel += 1
@@ -1293,7 +1334,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Friend Function EatToken(tokenEnum As TokenEnumerator, expectedToken As TokenType, <Out> ByRef token As Token) As Boolean
-            If Not tokenEnum.IsEndOfList AndAlso tokenEnum.Current.Type = expectedToken Then
+            If Not tokenEnum.IsEnd AndAlso tokenEnum.Current.Type = expectedToken Then
                 token = tokenEnum.Current
                 tokenEnum.MoveNext()
                 Return True
@@ -1315,7 +1356,7 @@ Namespace Microsoft.SmallBasic
                          <Out> ByRef token As Token
                    ) As Boolean
 
-            If Not tokenEnum.IsEndOfList AndAlso tokenEnum.Current.Type = optionalToken Then
+            If Not tokenEnum.IsEnd AndAlso tokenEnum.Current.Type = optionalToken Then
                 token = tokenEnum.Current
                 tokenEnum.MoveNext()
                 Return True
@@ -1335,7 +1376,7 @@ Namespace Microsoft.SmallBasic
                           <Out> ByRef token As Token
                     ) As Boolean
 
-            If Not tokenEnum.IsEndOfList AndAlso tokenEnum.Current.Type = TokenType.Identifier Then
+            If Not tokenEnum.IsEnd AndAlso tokenEnum.Current.Type = TokenType.Identifier Then
                 token = tokenEnum.Current
                 tokenEnum.MoveNext()
                 If token.Text <> "_" Then Return True
@@ -1372,12 +1413,12 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Friend Function ExpectEndOfLine(tokenEnum As TokenEnumerator) As Boolean
-            If tokenEnum.IsEndOfNonCommentList Then
+            If tokenEnum.IsEndOrComment Then
                 Return True
+            Else
+                AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenFound"), tokenEnum.Current.Text))
+                Return False
             End If
-
-            AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenFound"), tokenEnum.Current.Text))
-            Return False
         End Function
 
     End Class

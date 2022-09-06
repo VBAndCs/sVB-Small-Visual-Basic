@@ -9,7 +9,7 @@ Imports System.Windows.Markup
 Imports System.Windows.Media.Animation
 
 Namespace Microsoft.SmallBasic.Shell
-    Public Partial Class ErrorListControl
+    Partial Public Class ErrorListControl
         Inherits ListView
         Implements IComponentConnector
 
@@ -48,18 +48,10 @@ Namespace Microsoft.SmallBasic.Shell
                 Return
             End If
 
-            Dim text = TryCast(SelectedItem, String)
-
-            If text <> "" Then
-                Dim regex As New Regex("([0-9]*),([0-9]*): w*")
-                Dim match = regex.Match(text)
-
-                If match.Success Then
-                    Dim line = Integer.Parse(match.Groups(1).Value) - 1
-                    Dim column = Integer.Parse(match.Groups(2).Value) - 1
-                    _document.SelectWordAt(line, column, False)
-                End If
-            End If
+            Dim token = _document.ErrorTokens(SelectedIndex)
+            Dim lineStart = _document.EditorControl.TextView.TextSnapshot.GetLineFromLineNumber(token.Line).Start
+            _document.EditorControl.EditorOperations.Select(lineStart + token.Column, token.EndColumn - token.Column)
+            _document.Focus()
         End Sub
 
         Private Sub ErrorListControl_OnItemsChanged(sender As Object, e As ItemsChangedEventArgs)
@@ -71,12 +63,17 @@ Namespace Microsoft.SmallBasic.Shell
         End Sub
 
         Private Sub DoubleAnimateHeight(height As Double)
-            Dim animation As DoubleAnimation = New DoubleAnimation(height, New Duration(TimeSpan.FromMilliseconds(200.0)))
+            Dim animation As New DoubleAnimation(height, New Duration(TimeSpan.FromMilliseconds(200.0)))
             BeginAnimation(HeightProperty, animation)
         End Sub
 
         Private Sub OnCloseClick(sender As Object, e As RoutedEventArgs)
             DoubleAnimateHeight(0.0)
         End Sub
+
+        Public Sub Close()
+            DoubleAnimateHeight(0.0)
+        End Sub
+
     End Class
 End Namespace

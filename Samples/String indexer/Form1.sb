@@ -3,10 +3,11 @@
 '----------------------------
 Sub Button1_OnClick
    word = TextBox1.Text
-   result = ""
+   result = "?" ' Add any char to avoid numeric addition
    For i = 1 To Text.GetLength(word)
       result = result + word[i] + " "
    Next
+   result[1] = "" ' remove ?
    Label1.Text = result
 EndSub
 
@@ -15,7 +16,7 @@ EndSub
 Sub TextBox1_OnKeyDown
    ' Allow user to write one word only by previntong him from writing space
    If Keyboard.LastKey = Keys.Space Then
-      Event.Handled = true
+      Event.Handled = True
    EndIf
    
 EndSub

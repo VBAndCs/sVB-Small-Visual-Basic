@@ -650,6 +650,7 @@ Namespace Microsoft.SmallBasic
 
             code = code.Replace(VisualBasic.vbCrLf, VisualBasic.vbLf)
 
+            doc.ErrorTokens.Clear()
             doc.Errors.Clear()
             Dim errors As List(Of [Error])
 
@@ -657,6 +658,10 @@ Namespace Microsoft.SmallBasic
 
             If Not RunProgram(code, errors, outputFileName) Then
                 For Each err As [Error] In errors
+                    Dim token = err.Token
+                    token.Line -= lineOffset
+                    doc.ErrorTokens.Add(token)
+
                     If err.Line = -1 Then
                         doc.Errors.Add(err.Description)
                     Else
