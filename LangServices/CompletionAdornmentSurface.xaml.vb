@@ -265,8 +265,12 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Dim firstItem = filteredCompletionItems(0).CompletionItem
                 Dim key = firstItem.HistoryKey
                 If key <> "" AndAlso CompletionProvider.compHistory.ContainsKey(key) Then
-                    text = CompletionProvider.compHistory(key).ToLower()
-                    textLength = text.Length
+                    Dim word = CompletionProvider.compHistory(key).ToLower()
+                    If text = "" OrElse word.StartsWith(text) Then
+                        text = word
+                        textLength = text.Length
+                    End If
+
                 End If
             End If
 

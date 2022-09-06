@@ -16,6 +16,12 @@ Sub Button1_OnClick()
       TextBox1.AppendLine(item)
    Next
    
+   ' remove the extra empty line
+   txt = TextBox1.Text
+   If txt <> "" Then
+      TextBox1.Text = txt.SubText(1, txt.Length - 2)
+   EndIf
+   
 EndSub
 
 

@@ -43,7 +43,10 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Case Key.Return
                         args.Handled = CommitConditionally(textView, completionSurface)
 
-                    Case Key.Space, Key.Tab, Key.OemPeriod
+                    Case Key.Space, Key.Tab
+                        args.Handled = CommitConditionally(textView, completionSurface, " ")
+
+                    Case Key.OemPeriod
                         CommitConditionally(textView, completionSurface)
 
                 End Select

@@ -47,7 +47,6 @@ Namespace Microsoft.SmallBasic.Completion
             End Get
         End Property
 
-
         Public Overrides Function ToString() As String
             Return DisplayName
         End Function

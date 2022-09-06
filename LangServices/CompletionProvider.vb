@@ -972,7 +972,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim compList As New List(Of CompletionItem)
 
             Dim methods = type.GetMethods(System.Reflection.BindingFlags.Static Or System.Reflection.BindingFlags.Public)
-            Dim extensionParams = If(type.Name = "Form", 1, 2)
 
             For Each methodInfo In methods
                 Dim name = ""
@@ -983,7 +982,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     item.DisplayName = name
                     item.ItemType = CompletionItemType.MethodName
 
-                    If methodInfo.GetParameters().Length > extensionParams Then
+                    If methodInfo.GetParameters().Length > 1 Then
                         item.ReplacementText = name & "("
                     Else
                         item.ReplacementText = name & "()"

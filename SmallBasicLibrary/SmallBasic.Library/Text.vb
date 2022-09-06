@@ -58,7 +58,19 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Append(text1 As Primitive, text2 As Primitive) As Primitive
-            Return String.Concat(text1, text2)
+            If text1.IsArray Then
+                Dim map1 = text1._arrayMap
+                Dim maxKey = map1.Count
+                For Each index In map1.Keys
+                    Dim numIndex = index.TryGetAsDecimal()
+                    If numIndex > maxKey Then maxKey = numIndex
+                Next
+                map1(maxKey + 1) = text2
+                Return text1
+
+            Else
+                Return String.Concat(text1, text2)
+            End If
         End Function
 
         ''' <summary>
@@ -72,8 +84,8 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetLength(text As Primitive) As Primitive
-            If text.IsEmpty Then Return 0
-            Return CStr(text).Length
+            If text.IsArray Then Return text._arrayMap.Count
+            Return text.AsString.Length
         End Function
 
         ''' <summary>
@@ -91,7 +103,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function IsSubText(text As Primitive, subText As Primitive) As Primitive
             If text.IsEmpty OrElse subText.IsEmpty Then Return False
-            Return CStr(text).Contains(subText)
+            Return text.AsString().Contains(subText.AsString())
         End Function
 
         ''' <summary>
@@ -109,7 +121,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function EndsWith(text As Primitive, subText As Primitive) As Primitive
             If text.IsEmpty OrElse subText.IsEmpty Then Return False
-            Return CStr(text).EndsWith(subText)
+            Return text.AsString().EndsWith(subText.AsString())
         End Function
 
         ''' <summary>
@@ -127,7 +139,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function StartsWith(text As Primitive, subText As Primitive) As Primitive
             If text.IsEmpty OrElse subText.IsEmpty Then Return False
-            Return CStr(text).StartsWith(subText)
+            Return text.AsString().StartsWith(subText.AsString())
         End Function
 
         ''' <summary>
@@ -145,7 +157,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function Contains(text As Primitive, subText As Primitive) As Primitive
             If text.IsEmpty OrElse subText.IsEmpty Then Return False
-            Return CStr(text).Contains(subText)
+            Return text.AsString().Contains(subText.AsString())
         End Function
 
         ''' <summary>
@@ -167,15 +179,16 @@ Namespace Library
         Public Shared Function GetSubText(text As Primitive, start As Primitive, length As Primitive) As Primitive
             If text.IsEmpty OrElse start.IsEmpty OrElse length.IsEmpty Then Return ""
 
-            Dim strText = CStr(text)
-            Dim intStart = CInt(start)
-            Dim intLength = CInt(length)
+            Dim strText = text.AsString()
+            Dim textLength = strText.Length
 
-            If intStart > strText.Length OrElse intStart < 1 Then
-                Return ""
-            End If
+            Dim intStart = System.Math.Max(CInt(start), 1)
+            intStart = System.Math.Min(intStart, textLength)
 
-            If intStart + intLength <= strText.Length Then
+            Dim intLength = System.Math.Min(CInt(length), textLength)
+            intLength = System.Math.Max(0, intLength)
+
+            If intStart + intLength <= textLength Then
                 Return strText.Substring(intStart - 1, intLength)
             End If
 
@@ -198,12 +211,9 @@ Namespace Library
         Public Shared Function GetSubTextToEnd(text As Primitive, start As Primitive) As Primitive
             If text.IsEmpty OrElse start.IsEmpty Then Return ""
 
-            Dim strText = CStr(text)
-            Dim intStart = CInt(start)
-
-            If intStart > strText.Length OrElse intStart < 1 Then
-                Return ""
-            End If
+            Dim strText = text.AsString()
+            Dim intStart = System.Math.Max(CInt(start), 1)
+            intStart = System.Math.Min(intStart, strText.Length)
 
             Return strText.Substring(intStart - 1)
         End Function
@@ -223,7 +233,12 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetIndexOf(text As Primitive, subText As Primitive) As Primitive
             If text.IsEmpty OrElse subText.IsEmpty Then Return 0
-            Return CStr(text).IndexOf(subText) + 1
+            If text.IsArray Then
+                Dim index = Array.GetIndexOf(text, subText, 1, False)
+                If index.IsEmpty OrElse Not index.IsNumber Then Return 0
+                Return index.AsDecimal()
+            End If
+            Return text.AsString().IndexOf(subText) + 1
         End Function
 
         ''' <summary>

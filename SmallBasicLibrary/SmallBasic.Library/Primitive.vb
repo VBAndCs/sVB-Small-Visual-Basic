@@ -31,7 +31,6 @@ Namespace Library
 
 
         Private _stringValue As String
-
         Private _decimalValue As Decimal?
 
         Friend _arrayMap As Dictionary(Of Primitive, Primitive)
@@ -100,15 +99,9 @@ Namespace Library
 
         Friend ReadOnly Property IsEmpty As Boolean
             Get
-                If String.IsNullOrEmpty(_stringValue) AndAlso Not _decimalValue.HasValue Then
-                    If _arrayMap IsNot Nothing Then
-                        Return _arrayMap.Count = 0
-                    End If
-
-                    Return True
-                End If
-
-                Return False
+                Return _stringValue = "" AndAlso
+                        Not _decimalValue.HasValue AndAlso
+                        (_arrayMap Is Nothing OrElse _arrayMap.Count = 0)
             End Get
         End Property
 
@@ -116,7 +109,7 @@ Namespace Library
             Get
                 Dim result As Decimal = 0D
                 If Not _decimalValue.HasValue Then
-                    Return Decimal.TryParse(AsString, NumberStyles.Float, CultureInfo.InvariantCulture, result)
+                    Return Decimal.TryParse(_stringValue, NumberStyles.Float, CultureInfo.InvariantCulture, result)
                 End If
 
                 Return True
@@ -203,14 +196,25 @@ Namespace Library
 
         Public Function GetAllIndices() As Primitive
             ConstructArrayMap()
-            Dim dictionary1 As New Dictionary(Of Primitive, Primitive)(_arrayMap.Count, PrimitiveComparer.Instance)
-            Dim num As Integer = 1
-            For Each key1 As Primitive In _arrayMap.Keys
-                dictionary1(num) = key1
-                num += 1
-            Next
+            Dim indices As Dictionary(Of Primitive, Primitive)
 
-            Return ConvertFromMap(dictionary1)
+            If IsArray Then
+                indices = New Dictionary(Of Primitive, Primitive)(_arrayMap.Count, PrimitiveComparer.Instance)
+                Dim key = 1
+                For Each index In _arrayMap.Keys
+                    indices(key) = index
+                    key += 1
+                Next
+            Else
+                ' Treat string as array of characters
+                Dim count = AsString.Length
+                indices = New Dictionary(Of Primitive, Primitive)(count, PrimitiveComparer.Instance)
+                For index = 1 To count
+                    indices(index) = index
+                Next
+            End If
+
+            Return ConvertFromMap(Indices)
         End Function
 
         Public Function GetItemCount() As Primitive
@@ -219,32 +223,32 @@ Namespace Library
         End Function
 
         Public Function Subtract(addend As Primitive) As Primitive
-            Return New Primitive(GetAsDecimal() - addend.GetAsDecimal())
+            Return New Primitive(AsDecimal() - addend.AsDecimal())
         End Function
 
         Public Function Multiply(multiplicand As Primitive) As Primitive
-            Return New Primitive(GetAsDecimal() * multiplicand.GetAsDecimal())
+            Return New Primitive(AsDecimal() * multiplicand.AsDecimal())
         End Function
 
         Public Function Divide(divisor As Primitive) As Primitive
-            divisor.GetAsDecimal()
-            Return New Primitive(GetAsDecimal() / divisor.GetAsDecimal())
+            divisor.AsDecimal()
+            Return New Primitive(AsDecimal() / divisor.AsDecimal())
         End Function
 
         Public Function LessThan(comparer As Primitive) As Boolean
-            Return GetAsDecimal() < comparer.GetAsDecimal()
+            Return AsDecimal() < comparer.AsDecimal()
         End Function
 
         Public Function GreaterThan(comparer As Primitive) As Boolean
-            Return GetAsDecimal() > comparer.GetAsDecimal()
+            Return AsDecimal() > comparer.AsDecimal()
         End Function
 
         Public Function LessThanOrEqualTo(comparer As Primitive) As Boolean
-            Return GetAsDecimal() <= comparer.GetAsDecimal()
+            Return AsDecimal() <= comparer.AsDecimal()
         End Function
 
         Public Function GreaterThanOrEqualTo(comparer As Primitive) As Boolean
-            Return GetAsDecimal() >= comparer.GetAsDecimal()
+            Return AsDecimal() >= comparer.AsDecimal()
         End Function
 
         Public Function EqualTo(comparer As Primitive) As Boolean
@@ -256,9 +260,7 @@ Namespace Library
         End Function
 
         Public Overrides Function Equals(obj As Object) As Boolean
-            If AsString Is Nothing Then
-                _stringValue = ""
-            End If
+            If AsString Is Nothing Then _stringValue = ""
 
             If TypeOf obj Is Primitive Then
                 Dim p1 = CType(obj, Primitive)
@@ -267,14 +269,15 @@ Namespace Library
                 Dim b1 = s1.ToLower(CultureInfo.InvariantCulture)
                 Dim b2 = s2.ToLower(CultureInfo.InvariantCulture)
 
-                If s1 = "" Then
-                    If s2 = "" OrElse b1 = "false" Then Return True
-                ElseIf b1 = "true" Then
-                    Return If(Me.IsNumber, Me.GetAsDecimal() <> 0, b2 = "true")
-                ElseIf b1 = "false" Then
-                    Return If(Me.IsNumber, Me.GetAsDecimal() = 0, b2 = "" OrElse b2 = "false")
+                If b1 = "true" OrElse b1 = "false" Then
+                    Return CBool(Me) = Boolean.Parse(b1)
+
+                ElseIf b2 = "true" OrElse b2 = "false" Then
+                    Return CBool(p1) = Boolean.Parse(b2)
+
                 ElseIf Me.IsNumber AndAlso p1.IsNumber Then
-                    Return Me.GetAsDecimal() = p1.GetAsDecimal()
+                    Return Me.AsDecimal() = p1.AsDecimal()
+
                 Else
                     Return s1 = s2
                 End If
@@ -284,9 +287,7 @@ Namespace Library
         End Function
 
         Public Overrides Function GetHashCode() As Integer
-            If AsString Is Nothing Then
-                _stringValue = ""
-            End If
+            If AsString Is Nothing Then _stringValue = ""
 
             Return AsString.ToUpper(CultureInfo.InvariantCulture).GetHashCode()
         End Function
@@ -316,29 +317,27 @@ Namespace Library
         End Sub
 
         Friend Function TryGetAsDecimal() As Decimal?
-            If IsEmpty Then
-                Return Nothing
-            End If
-            If _decimalValue.HasValue Then
-                Return _decimalValue
-            End If
-            Dim result As Decimal = 0D
-            If Decimal.TryParse(AsString, NumberStyles.Float, CultureInfo.InvariantCulture, result) Then
+            If _decimalValue.HasValue Then Return _decimalValue
+
+            If _stringValue = "" Then Return Nothing
+
+            Dim result As Decimal
+            If Decimal.TryParse(_stringValue, NumberStyles.Float, CultureInfo.InvariantCulture, result) Then
                 _decimalValue = result
             End If
 
             Return _decimalValue
         End Function
 
-        Friend Function GetAsDecimal() As Decimal
-            If IsEmpty Then
-                Return 0D
-            End If
+        Friend Function AsDecimal() As Decimal
             If _decimalValue.HasValue Then
                 Return _decimalValue.Value
             End If
+
+            If _stringValue = "" Then Return 0D
+
             Dim result As Decimal = 0D
-            If Decimal.TryParse(AsString, NumberStyles.Float, CultureInfo.InvariantCulture, result) Then
+            If Decimal.TryParse(_stringValue, NumberStyles.Float, CultureInfo.InvariantCulture, result) Then
                 _decimalValue = result
             End If
 
@@ -349,28 +348,30 @@ Namespace Library
             Return primitive
         End Function
 
-        Public Shared Widening Operator CType(primitive1 As Primitive) As String
-            If primitive1.AsString Is Nothing Then
-                Return ""
-            End If
-
-            Return primitive1.AsString
+        Public Shared Widening Operator CType(primitive As Primitive) As String
+            Return If(primitive.AsString, "")
         End Operator
 
-        Public Shared Widening Operator CType(primitive1 As Primitive) As Integer
-            Return CInt(primitive1.GetAsDecimal())
+        Public Shared Widening Operator CType(primitive As Primitive) As Integer
+            Return CInt(primitive.AsDecimal())
         End Operator
 
         Public Shared Widening Operator CType(primitive1 As Primitive) As Single
-            Return CSng(primitive1.GetAsDecimal())
+            Return CSng(primitive1.AsDecimal())
         End Operator
 
-        Public Shared Widening Operator CType(primitive1 As Primitive) As Double
-            Return CDbl(primitive1.GetAsDecimal())
+        Public Shared Widening Operator CType(primitive As Primitive) As Double
+            Return CDbl(primitive.AsDecimal())
+        End Operator
+
+        Public Shared Widening Operator CType(primitive As Primitive) As Decimal
+            Return primitive.AsDecimal()
         End Operator
 
         Public Shared Widening Operator CType(value As Primitive) As Boolean
-            If value.IsNumber Then Return CDec(value) <> 0
+            Dim d = value.TryGetAsDecimal()
+            If d.HasValue Then Return d <> 0
+
             Dim s = CStr(value).ToLower()
             If s = "" OrElse s = "false" Then Return False
             If s = "true" Then Return True
@@ -424,7 +425,7 @@ Namespace Library
         End Operator
 
         Public Shared Operator -(primitive1 As Primitive) As Primitive
-            Return -primitive1.GetAsDecimal()
+            Return -primitive1.AsDecimal()
         End Operator
 
         Public Shared Operator Or(primitive1 As Primitive, primitive2 As Primitive) As Primitive

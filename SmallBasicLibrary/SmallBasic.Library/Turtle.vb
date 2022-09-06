@@ -142,7 +142,7 @@ Namespace Library
         ''' </param>
         Public Shared Sub Move(distance As Primitive)
             VerifyAccess()
-            Dim animateTime = System.Math.Abs(CDbl(distance.GetAsDecimal()) * 320.0 / CDbl((_speed * _speed)))
+            Dim animateTime = System.Math.Abs(CDbl(distance.AsDecimal()) * 320.0 / CDbl((_speed * _speed)))
             If _speed = 10 Then
                 animateTime = 5.0
             End If
@@ -218,7 +218,7 @@ Namespace Library
         ''' </param>
         Public Shared Sub Turn(angle1 As Primitive)
             VerifyAccess()
-            Dim animateTime = System.Math.Abs(CDbl(angle1.GetAsDecimal()) * 200.0 / CDbl((_speed * _speed)))
+            Dim animateTime = System.Math.Abs(CDbl(angle1.AsDecimal()) * 200.0 / CDbl((_speed * _speed)))
             If _speed = 10 Then
                 animateTime = 5.0
             End If

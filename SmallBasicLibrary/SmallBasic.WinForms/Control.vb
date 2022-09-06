@@ -898,7 +898,15 @@ Namespace WinForms
         Public Shared Custom Event OnKeyDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Dim VisualElement = GetVisualElemet(NameOf(OnKeyDown), True)
-                AddHandler VisualElement.KeyDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                If TypeOf VisualElement Is Window OrElse TypeOf VisualElement Is Wpf.Canvas Then
+                    ' The form should not preview keys, to let controls handle them
+                    AddHandler VisualElement.KeyDown,
+                        Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Else
+                    ' Preview keydown can habdle space and other keys im TextBox
+                    AddHandler VisualElement.PreviewKeyDown,
+                        Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                End If
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -914,7 +922,8 @@ Namespace WinForms
         Public Shared Custom Event OnPreviewKeyDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Dim VisualElement = GetVisualElemet(NameOf(OnPreviewKeyDown), True)
-                AddHandler VisualElement.PreviewKeyDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler, True)
+                AddHandler VisualElement.PreviewKeyDown,
+                    Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler, True)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -930,7 +939,11 @@ Namespace WinForms
         Public Shared Custom Event OnKeyUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Dim VisualElement = GetVisualElemet(NameOf(OnKeyUp), True)
-                AddHandler VisualElement.KeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                If TypeOf VisualElement Is Window OrElse TypeOf VisualElement Is Wpf.Canvas Then
+                    AddHandler VisualElement.KeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Else
+                    AddHandler VisualElement.PreviewKeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                End If
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)

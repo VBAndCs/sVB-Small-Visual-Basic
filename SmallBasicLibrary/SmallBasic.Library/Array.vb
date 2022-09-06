@@ -235,5 +235,38 @@ Namespace Library
         Public Shared Sub Clear(array As Primitive)
             array._arrayMap?.Clear()
         End Sub
+
+        ''' <summary>
+        ''' Searches the array for the given value.
+        ''' </summary>
+        ''' <param name="array">the input array</param>
+        ''' <param name="value">the item to sarch for</param>
+        ''' <param name="start">an integer representing the array index to sratr swarching at</param>
+        ''' <param name="ignoreCase">set it to true if you want to do an case-insensetive search</param>
+        ''' <returns>the key of the item if found, otherwise empty string</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Friend Shared Function GetIndexOf(array As Primitive, value As Primitive, start As Primitive, ignoreCase As Primitive) As Primitive
+            If array.IsEmpty OrElse value.IsEmpty Then Return ""
+            Dim count = array._arrayMap.Count
+
+            Dim intStart = System.Math.Max(CInt(start), 1)
+            intStart = System.Math.Min(intStart, count)
+
+            Dim values = array._arrayMap.Values()
+            Dim ignCase = CBool(ignoreCase)
+            Dim lowercaseValue = value.AsString().ToLower()
+
+            For i = intStart To count
+                If ignCase Then
+                    If values(i).AsString().ToLower() = lowercaseValue Then
+                        Return array._arrayMap.Keys(i)
+                    End If
+                ElseIf values(i) = value Then
+                    Return array._arrayMap.Keys(i)
+                End If
+            Next
+
+            Return ""
+        End Function
     End Class
 End Namespace

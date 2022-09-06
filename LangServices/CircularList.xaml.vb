@@ -38,7 +38,6 @@ Namespace Microsoft.SmallBasic.LanguageService
                 index += 1
             Next
 
-            SelectedIndex = 0
             MyBase.OnItemsSourceChanged(oldValue, newValue)
         End Sub
 

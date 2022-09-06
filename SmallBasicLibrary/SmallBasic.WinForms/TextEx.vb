@@ -26,7 +26,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Boolean)>
         <ExProperty>
         Public Shared Function GetIsNumeric(text As Primitive) As Primitive
-            Return VisualBasic.IsNumeric(CStr(text))
+            Return Library.Text.IsNumeric(text)
         End Function
 
         ''' <summary>
@@ -41,7 +41,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.String)>
         <ExMethod>
         Public Shared Function Append(text1 As Primitive, text As Primitive) As Primitive
-            Return String.Concat(text1, text)
+            Return Library.Text.Append(text1, text)
         End Function
 
         ''' <summary>
@@ -53,7 +53,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Double)>
         <WinForms.ExProperty>
         Public Shared Function GetLength(text As Primitive) As Primitive
-            Return CStr(text).Length
+            Return Library.Text.GetLength(text)
         End Function
 
         ''' <summary>
@@ -183,9 +183,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.String)>
         <ExMethod>
         Public Shared Function GetCharacterAt(text As Primitive, pos As Primitive) As Primitive
-            Dim s = CStr(text)
-            If s = "" OrElse pos < 1 OrElse pos > s.Length Then Return ""
-            Return s(pos - 1)
+            Return Library.Text.GetCharacterAt(text, pos)
         End Function
 
     End Class
