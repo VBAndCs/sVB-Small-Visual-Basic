@@ -18,7 +18,11 @@ Namespace Microsoft.SmallBasic
 
         Public ReadOnly Property Labels As New Dictionary(Of String, Label)
 
-        Friend Function CreateLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As Token) As LocalBuilder
+        Friend Function CreateLocalBuilder(
+                          Subroutine As Statements.SubroutineStatement,
+                          varIdentifier As Token
+                    ) As LocalBuilder
+
             Dim varBuilder = GetLocalBuilder(Subroutine, varIdentifier)
             If varBuilder Is Nothing Then
                 varBuilder = _ILGenerator.DeclareLocal(GetType(Library.Primitive))
@@ -49,7 +53,12 @@ Namespace Microsoft.SmallBasic
 
         End Function
 
-        Private Sub AddLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As Token, localVarBuilder As LocalBuilder)
+        Private Sub AddLocalBuilder(
+                           Subroutine As Statements.SubroutineStatement,
+                           varIdentifier As Token,
+                           localVarBuilder As LocalBuilder
+                    )
+
             Dim key = ""
             If Subroutine Is Nothing Then
                 key = varIdentifier.NormalizedText

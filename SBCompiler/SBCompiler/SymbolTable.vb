@@ -381,24 +381,37 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Public Function IsDefined(variable As IdentifierExpression) As Boolean
-            Dim var = variable.Identifier.NormalizedText
-            If _GlobalVariables.ContainsKey(var) Then Return True
+            Return IsDefined(variable.Identifier)
+        End Function
 
-            Dim key = GetKey(variable)
+
+        Public Function IsDefined(identifier As Token, Optional usedAfterDefind As Boolean = False) As Boolean
+            Dim var = identifier.NormalizedText
+            Dim varDeclaration As Token
+            Dim key = GetKey(identifier)
+
             If _LocalVariables.ContainsKey(key) Then
-                If Not autoCompletion Then Return True
-
-                Dim varUse = variable.Identifier
-                Dim varDeclaration = _LocalVariables(key).Identifier
-                Select Case varUse.Line
-                    Case varDeclaration.Line
-                        Return varUse.Column = varDeclaration.Column
-                    Case Else
-                        Return varUse.Line > varDeclaration.Line
-                End Select
+                varDeclaration = _LocalVariables(key).Identifier
+            ElseIf _GlobalVariables.ContainsKey(var) Then
+                varDeclaration = _GlobalVariables(var)
+                If identifier.SubroutineName <> "" Then Return True
+            Else
+                Return usedAfterDefind
             End If
 
-            Return False
+            If Not usedAfterDefind AndAlso Not AutoCompletion Then Return True
+
+            Select Case identifier.Line
+                Case varDeclaration.Line
+                    Return identifier.Column = varDeclaration.Column
+                Case Else
+                    Return identifier.Line > varDeclaration.Line
+            End Select
+
+        End Function
+
+        Public Function UsedAfterDefind(identifier As Token)
+            Return IsDefined(identifier, True)
         End Function
 
         Public Sub AddVariableInitialization(variable As Token)

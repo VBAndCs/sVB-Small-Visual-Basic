@@ -454,58 +454,63 @@ CheckLineEnd:
                 Dim t = tokens(i)
                 If t.subLine <> subLine Then Return
 
-                Dim notLastToken = i < endAt AndAlso tokens(i + 1).subLine = subLine
+                Dim nextToken As Token
+                Dim notLastToken = False
+                If i < endAt Then
+                    nextToken = tokens(i + 1)
+                    notLastToken = nextToken.subLine = subLine
+                End If
 
                 Select Case t.Type
                     Case TokenType.Equals, TokenType.NotEqualTo, TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
                                    TokenType.LessThan, TokenType.LessThanEqualTo,
                                    TokenType.And, TokenType.Or,
                                    TokenType.Addition, TokenType.Multiplication, TokenType.Division
-                        If notLastToken Then FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+                        If notLastToken Then FixSpaces(textEdit, line, t, nextToken, 1)
 
                     Case TokenType.Subtraction
                         If notLastToken Then
-                            If i = 0 OrElse tokens(i - 1).ParseType = ParseType.Operator Then
-                                FixSpaces(textEdit, line, t, tokens(i + 1), If(tokens(i + 1).Type = TokenType.Subtraction, 0, 0))
+                            If i = 0 OrElse tokens(i - 1).ParseType = ParseType.Operator OrElse tokens(i - 1).ParseType = ParseType.Keyword Then
+                                FixSpaces(textEdit, line, t, nextToken, 0)
                             Else
-                                FixSpaces(textEdit, line, t, tokens(i + 1), If(tokens(i + 1).Type = TokenType.Subtraction, 0, 1))
+                                FixSpaces(textEdit, line, t, nextToken, If(nextToken.Type = TokenType.Subtraction, 0, 1))
                             End If
                         End If
 
                     Case TokenType.LeftBracket, TokenType.LeftCurlyBracket, TokenType.LeftParens
-                        If notLastToken Then FixSpaces(textEdit, line, t, tokens(i + 1), 0)
+                        If notLastToken Then FixSpaces(textEdit, line, t, nextToken, 0)
 
                     Case TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
                         If notLastToken Then
-                            Select Case tokens(i + 1).Type
+                            Select Case nextToken.Type
                                 Case TokenType.Comma, TokenType.LeftBracket, TokenType.LeftCurlyBracket, TokenType.LeftParens, TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
-                                    FixSpaces(textEdit, line, t, tokens(i + 1), 0)
+                                    FixSpaces(textEdit, line, t, nextToken, 0)
                                 Case Else
-                                    FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+                                    FixSpaces(textEdit, line, t, nextToken, 1)
                             End Select
                         End If
 
                     Case TokenType.Comma
-                        If notLastToken Then FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+                        If notLastToken Then FixSpaces(textEdit, line, t, nextToken, 1)
 
                     Case TokenType.Identifier, TokenType.StringLiteral, TokenType.NumericLiteral
                         If notLastToken Then
-                            Select Case tokens(i + 1).Type
+                            Select Case nextToken.Type
                                 Case TokenType.Dot, TokenType.Lookup, TokenType.Comma, TokenType.Colon,
                                         TokenType.LeftBracket, TokenType.LeftCurlyBracket, TokenType.LeftParens,
                                         TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
-                                    FixSpaces(textEdit, line, t, tokens(i + 1), 0)
+                                    FixSpaces(textEdit, line, t, nextToken, 0)
                                 Case Else
-                                    FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+                                    FixSpaces(textEdit, line, t, nextToken, 1)
                             End Select
                         End If
 
                     Case TokenType.Dot, TokenType.Lookup
-                        If notLastToken Then FixSpaces(textEdit, line, t, tokens(i + 1), 0)
+                        If notLastToken Then FixSpaces(textEdit, line, t, nextToken, 0)
 
                     Case Else
                         If t.ParseType = ParseType.Keyword Then
-                            If notLastToken Then FixSpaces(textEdit, line, t, tokens(i + 1), 1)
+                            If notLastToken Then FixSpaces(textEdit, line, t, nextToken, 1)
                         End If
                 End Select
 

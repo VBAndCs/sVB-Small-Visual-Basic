@@ -167,19 +167,44 @@ Namespace Microsoft.SmallBasic.Statements
             Next
         End Sub
 
-        Public Overrides Sub EmitIL(scope As CodeGenScope)
+        Private Shared loopNo As Integer
 
-            _InitialValue.EmitIL(scope)
+        Public Overrides Sub EmitIL(scope As CodeGenScope)
 
             Dim IsField = Subroutine Is Nothing
             Dim iteratorVar As LocalBuilder
             Dim iteratorField As System.Reflection.FieldInfo
 
-            Dim ConditionLabel = scope.ILGenerator.DefineLabel()
+            Dim conditionLabel = scope.ILGenerator.DefineLabel()
             Dim lblElseIf = scope.ILGenerator.DefineLabel()
             Dim loopBody = scope.ILGenerator.DefineLabel()
             ContinueLabel = scope.ILGenerator.DefineLabel()
             ExitLabel = scope.ILGenerator.DefineLabel()
+
+            loopNo += 1
+            _FinalValue.EmitIL(scope)
+
+            Dim token As New Token With {
+                .Text = $"__toValue__{loopNo}",
+                .Type = TokenType.Identifier,
+                .Parent = Me
+            }
+
+            Dim toValue = scope.CreateLocalBuilder(Subroutine, token)
+            scope.ILGenerator.Emit(OpCodes.Stloc, toValue)
+
+            If _StepValue IsNot Nothing Then
+                _StepValue.EmitIL(scope)
+            Else
+                scope.ILGenerator.Emit(OpCodes.Ldc_R8, 1.0)
+                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
+            End If
+
+            token.Text = $"__stepValue__{loopNo}"
+            Dim stepValue = scope.CreateLocalBuilder(Subroutine, token)
+            scope.ILGenerator.Emit(OpCodes.Stloc, stepValue)
+
+            _InitialValue.EmitIL(scope)
 
             If IsField Then
                 iteratorField = scope.Fields(Iterator.NormalizedText)
@@ -193,10 +218,10 @@ Namespace Microsoft.SmallBasic.Statements
                 scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
             End If
 
-            _FinalValue.EmitIL(scope)
+            scope.ILGenerator.Emit(OpCodes.Ldloc, toValue)
 
             If _StepValue IsNot Nothing Then
-                _StepValue.EmitIL(scope)
+                scope.ILGenerator.Emit(OpCodes.Ldloc, stepValue)
                 scope.ILGenerator.Emit(OpCodes.Ldc_R8, 0.0)
                 scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
                 scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.LessThan, Nothing)
@@ -226,13 +251,7 @@ Namespace Microsoft.SmallBasic.Statements
                 scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
             End If
 
-            If _StepValue IsNot Nothing Then
-                _StepValue.EmitIL(scope)
-            Else
-                scope.ILGenerator.Emit(OpCodes.Ldc_R8, 1.0)
-                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
-            End If
-
+            scope.ILGenerator.Emit(OpCodes.Ldloc, stepValue)
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.Add, Nothing)
 
             If IsField Then
@@ -246,10 +265,11 @@ Namespace Microsoft.SmallBasic.Statements
         End Sub
 
         Public Overrides Sub PopulateCompletionItems(
-                                 completionBag As CompletionBag,
-                                 line As Integer,
-                                 column As Integer,
-                                 globalScope As Boolean)
+                         completionBag As CompletionBag,
+                         line As Integer,
+                         column As Integer,
+                         globalScope As Boolean
+                   )
 
             If ForToken.Line = line AndAlso column <= ForToken.EndColumn Then
                 CompletionHelper.FillAllGlobalItems(completionBag, globalScope)

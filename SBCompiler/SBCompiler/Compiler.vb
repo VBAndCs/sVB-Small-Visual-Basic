@@ -36,8 +36,8 @@ Namespace Microsoft.SmallBasic
             _Parser.Parse(source, autoCompletion)
 
             If Not autoCompletion AndAlso _errors.Count = 0 Then
-                Dim semanticAnalyzer As New SemanticAnalyzer(_Parser, _TypeInfoBag)
-                semanticAnalyzer.Analyze()
+                Dim analyzer As New SemanticAnalyzer(_Parser, _TypeInfoBag)
+                analyzer.Analyze()
             End If
 
             Return _errors
