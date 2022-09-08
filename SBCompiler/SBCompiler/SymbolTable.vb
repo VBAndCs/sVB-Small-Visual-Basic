@@ -19,7 +19,9 @@ Namespace Microsoft.SmallBasic
 
         Friend Sub AddIdentifier(identifier As Token)
             If IsLoweredCode Then Return
-            AllIdentifiers.Add(identifier)
+            If AllIdentifiers.Count = 0 OrElse AllIdentifiers.Last <> identifier Then
+                AllIdentifiers.Add(identifier)
+            End If
         End Sub
 
         Public ReadOnly Property Errors As List(Of [Error])
@@ -411,7 +413,11 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Public Function UsedAfterDefind(identifier As Token)
-            Return IsDefined(identifier, True)
+            Select Case identifier.SymbolType
+                Case Completion.CompletionItemType.LocalVariable, Completion.CompletionItemType.GlobalVariable
+                    Return IsDefined(identifier, True)
+            End Select
+            Return True
         End Function
 
         Public Sub AddVariableInitialization(variable As Token)

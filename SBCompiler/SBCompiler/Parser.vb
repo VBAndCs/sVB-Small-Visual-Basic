@@ -1042,7 +1042,11 @@ Namespace Microsoft.SmallBasic
         Dim keepSymbols As Boolean
         Dim lineOffset As Integer
 
-        Public Sub Parse(reader As TextReader, Optional autoCompletion As Boolean = False)
+        Public Sub Parse(
+                        reader As TextReader,
+                        Optional autoCompletion As Boolean = False
+                   )
+
             If reader Is Nothing Then
                 Throw New ArgumentNullException("reader")
             End If
@@ -1066,12 +1070,15 @@ Namespace Microsoft.SmallBasic
                 codeLines.Add(line)
             Loop
 
+            Dim parentSub = SubroutineStatement.Current
+
             BuildParseTree()
 
             If commaLine <> -1 Then Return
 
-            For Each item In _ParseTree
-                item.AddSymbols(_SymbolTable)
+            For Each statement In _ParseTree
+                statement.Parent = parentSub
+                statement.AddSymbols(_SymbolTable)
             Next
 
             For Each e In _SymbolTable.PossibleEventHandlers
