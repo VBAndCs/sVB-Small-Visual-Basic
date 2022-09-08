@@ -142,13 +142,11 @@ Namespace Library
         ''' </param>
         Public Shared Sub Move(distance As Primitive)
             VerifyAccess()
-            Dim animateTime = System.Math.Abs(CDbl(distance.AsDecimal()) * 320.0 / CDbl((_speed * _speed)))
-            If _speed = 10 Then
-                animateTime = 5.0
-            End If
-            Dim num = _angle / 180.0 * System.Math.PI
-            Dim newY = _currentY - CDbl(distance) * System.Math.Cos(num)
-            Dim newX = _currentX + CDbl(distance) * System.Math.Sin(num)
+            Dim d = CDbl(distance)
+            Dim animateTime = If(_speed = 10, 5.0, System.Math.Abs(d * 320.0 / (_speed ^ 2)))
+            Dim angle = _angle / 180.0 * System.Math.PI
+            Dim newY = _currentY - d * System.Math.Cos(angle)
+            Dim newX = _currentX + d * System.Math.Sin(angle)
             Shapes.Animate("_turtle", newX, newY, animateTime)
             If _penDown Then
                 GraphicsWindow.Invoke(
@@ -184,29 +182,34 @@ Namespace Library
         ''' <summary>
         ''' Turns and moves the turtle to the specified location.  If the pen is down, it will draw a line as it moves.
         ''' </summary>
-        ''' <param name="x">
+        ''' <param name="newX">
         ''' The x co-ordinate of the destination point.
         ''' </param>
-        ''' <param name="y">
+        ''' <param name="newY">
         ''' The y co-ordinate of the destination point.
         ''' </param>
-        Public Shared Sub MoveTo(x2 As Primitive, y2 As Primitive)
-            Dim num As Double = (x2 - X) * (x2 - X) + (y2 - Y) * (y2 - Y)
-            If num <> 0.0 Then
-                Dim num2 As Double = System.Math.Sqrt(num)
-                Dim num3 As Double = Y - y2
-                Dim num4 As Double = System.Math.Acos(num3 / num2) * 180.0 / System.Math.PI
-                If x2 < X Then
-                    num4 = 360.0 - num4
+        Public Shared Sub MoveTo(newX As Primitive, newY As Primitive)
+            Dim x1 = CDbl(_currentX)
+            Dim x2 = CDbl(newX)
+            Dim y1 = CDbl(_currentY)
+            Dim y2 = CDbl(newY)
+
+            Dim d = (x2 - x1) ^ 2 + (y2 - y1) ^ 2
+            If d <> 0.0 Then
+                Dim distance = System.Math.Sqrt(d)
+                Dim delta = y1 - y2
+                Dim angle = System.Math.Acos(delta / distance) * 180.0 / System.Math.PI
+                If x2 < x1 Then
+                    angle = 360.0 - angle
                 End If
 
-                Dim num5 As Double = num4 - CDbl(Angle) Mod 360
-                If num5 > 180.0 Then
-                    num5 -= 360.0
+                Dim deltaAngle = angle - CDbl(Turtle.Angle) Mod 360
+                If deltaAngle > 180.0 Then
+                    deltaAngle -= 360.0
                 End If
 
-                Turn(num5)
-                Move(num2)
+                Turn(deltaAngle)
+                Move(distance)
             End If
         End Sub
 
@@ -216,13 +219,14 @@ Namespace Library
         ''' <param name="angle">
         ''' The angle to turn the turtle.
         ''' </param>
-        Public Shared Sub Turn(angle1 As Primitive)
+        Public Shared Sub Turn(angle As Primitive)
             VerifyAccess()
-            Dim animateTime = System.Math.Abs(CDbl(angle1.AsDecimal()) * 200.0 / CDbl((_speed * _speed)))
+            Dim a = CDbl(angle)
+            Dim animateTime = System.Math.Abs(a * 200.0 / (_speed ^ 2))
             If _speed = 10 Then
                 animateTime = 5.0
             End If
-            _angle += angle1
+            _angle += a
             GraphicsWindow.Invoke(
                 Sub()
                     Dim animation As New DoubleAnimation With {
@@ -285,6 +289,7 @@ Namespace Library
             If SmallBasicApplication.HasShutdown Then
                 Return
             End If
+
             Dim evt As New AutoResetEvent(initialState:=False)
             SmallBasicApplication.Invoke(
                 Sub()
@@ -297,6 +302,7 @@ Namespace Library
                     End Sub
                     dt.Start()
                 End Sub)
+
             Dim millisecondsTimeout As Integer = 100
             If SmallBasicApplication.Dispatcher.CheckAccess() Then
                 millisecondsTimeout = 10

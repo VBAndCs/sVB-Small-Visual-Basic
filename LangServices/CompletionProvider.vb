@@ -176,7 +176,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Private Sub OnHelpUpdate(sender As Object, e As EventArgs)
             helpUpdateTimer.Stop()
-            Dim snapshot = textView.TextSnapshot
+            Dim snapshot = textBuffer.CurrentSnapshot
             If snapshot.Length = 0 Then Return
 
             Dim pos = textView.Caret.Position.TextInsertionIndex
@@ -202,7 +202,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                 symbol = CType(sender, String)
             End If
 
-            Dim span As Span
+            Dim span As New Span(pos, 0)
 
             If Not ParseSepTokens(
                     tokens, startLine, currentLine, endLine,
@@ -225,6 +225,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                 lastSpan = span
                 Return
             End If
+
+            If symbol <> "" AndAlso line.Start + column = pos Then Return
 
             ShowHelpInfo(line, column, paramIndex, span)
 
@@ -597,6 +599,8 @@ Namespace Microsoft.SmallBasic.LanguageService
         Private Sub OnTextBufferChanged(sender As Object, e As Nautilus.Text.TextChangedEventArgs)
             sourceCodeChanged = True
             needsToReCompile = True
+            popHelp.IsOpen = False
+            helpUpdateTimer.Stop()
 
             Dim textChange = e.Changes(0)
             Dim newText = textChange.NewText.Trim(" "c, vbTab)
@@ -615,12 +619,11 @@ Namespace Microsoft.SmallBasic.LanguageService
                 If span.IsEmpty OrElse newEnd < span.Start OrElse newEnd > span.End Then
                     DismissAdornment(force:=False)
                 End If
-                popHelp.IsOpen = False
+
 
             ElseIf newText <> "" Then
                 Dim c = newText.Last
                 If Char.IsLetter(c) Then
-                    popHelp.IsOpen = False
                     ShowCompletionAdornment(e.After, newEnd)
                 Else
                     Select Case c
@@ -629,7 +632,6 @@ Namespace Microsoft.SmallBasic.LanguageService
                             ShowCompletionAdornment(e.After, newEnd)
 
                         Case "="c, ">"c, "<"c
-                            popHelp.IsOpen = False
                             ShowCompletionAdornment(e.After, newEnd, True)
 
                         Case "("c
@@ -638,12 +640,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                             OnHelpUpdate(")", Nothing)
                         Case ","c
                             OnHelpUpdate(",", Nothing)
-                        Case Else
-                            popHelp.IsOpen = False
                     End Select
                 End If
-            Else
-                popHelp.IsOpen = False
             End If
         End Sub
 
@@ -664,7 +662,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim properties = line.TextSnapshot.TextBuffer.Properties
             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
             Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
-
             Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
             Dim n = tokens.Count - 1
             Dim prevToken As Token = Nothing

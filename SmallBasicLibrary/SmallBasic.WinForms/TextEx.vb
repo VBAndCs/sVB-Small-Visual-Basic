@@ -130,7 +130,7 @@ Namespace WinForms
         ''' </returns>
         <ReturnValueType(VariableType.String)>
         <ExMethod>
-        Public Shared Function GetSubTextToEnd(text As Primitive, start As Primitive) As Primitive
+        Public Shared Function SubTextToEnd(text As Primitive, start As Primitive) As Primitive
             Return Library.Text.GetSubTextToEnd(text, start)
         End Function
 
@@ -186,5 +186,15 @@ Namespace WinForms
             Return Library.Text.GetCharacterAt(text, pos)
         End Function
 
+        ''' <summary>
+        ''' changes the char existing in the given posision to the givin value
+        ''' </summary>
+        ''' <param name="pos">The posision of the char</param>
+        ''' <returns>a new text with the char changed to the given value. The current text will not change</returns>
+        <ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function SetCharacterAt(text As Primitive, pos As Primitive, value As Primitive) As Primitive
+            Return Library.Text.SetCharacterAt(text, pos, value)
+        End Function
     End Class
 End Namespace

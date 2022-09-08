@@ -323,5 +323,32 @@ Namespace Library
                 Return Environment.NewLine
             End Get
         End Property
+
+
+        ''' <summary>
+        ''' changes the char existing in the given posision to the givin value
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <param name="pos">The posision of the char</param>
+        ''' <returns>a new text with the char changed to the given value. The input text will not change</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function SetCharacterAt(text As Primitive, pos As Primitive, value As Primitive) As Primitive
+            text(pos) = value
+            Return text
+        End Function
+
+        ''' <summary>
+        ''' Converts the input text to a number
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <returns>If text is numeric, returns the numeric value.
+        ''' If text contains only one character, returns the ascii code of this character</returns>
+        ''' Otherwise, returns 0.
+        Public Shared Function ToNumber(text As Primitive) As Primitive
+            If text.IsNumber Then Return text.AsDecimal
+            Dim x = text.AsString()
+            If x.Length > 1 Then Return 0D
+            Return AscW(x)
+        End Function
     End Class
 End Namespace

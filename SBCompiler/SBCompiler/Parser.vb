@@ -977,16 +977,16 @@ Namespace Microsoft.SmallBasic
                 End If
 
                 items.Add(tokenEnum.Current)
-                tokenEnum.MoveNext()
+                If Not tokenEnum.MoveNext() Then
+                    TokenIsExpected(tokenEnum, TokenType.RightParens)
+                    Exit Do
+                End If
 
                 If Not EatOptionalToken(tokenEnum, TokenType.Comma) Then
-                    If tokenEnum.Current.ParseType = ParseType.Comment Then
-                        Dim nextToken = tokenEnum.PeekNext
-                        If tokenEnum.Current.Type <> closingToken Then
-                            AddError(tokenEnum.Current, "Comma is expected here but not found.")
-                        End If
-                        Exit Do
+                    If tokenEnum.Current.Type <> closingToken Then
+                        TokenIsExpected(tokenEnum, TokenType.Comma)
                     End If
+                    Exit Do
                 End If
 
                 If tokenEnum.IsEnd Then

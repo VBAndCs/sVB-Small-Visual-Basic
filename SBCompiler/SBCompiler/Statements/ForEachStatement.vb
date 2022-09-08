@@ -149,13 +149,17 @@ Namespace Microsoft.SmallBasic.Statements
 
             ElseIf AfterIterator(line, column) Then
                 CompletionHelper.FillLocals(bag, Subroutine?.Name.NormalizedText)
-                If Not Iterator.IsIllegal AndAlso Subroutine Is Nothing Then
-                    bag.CompletionItems.Add(New CompletionItem() With {
-                        .Key = Iterator.Text,
-                        .DisplayName = Iterator.Text,
-                        .ItemType = CompletionItemType.GlobalVariable,
-                        .DefinitionIdintifier = bag.SymbolTable.GlobalVariables(Iterator.NormalizedText)
-                     })
+                If Subroutine Is Nothing Then
+                    If bag.ForHelp AndAlso Not Iterator.IsIllegal Then
+                        bag.CompletionItems.Add(New CompletionItem() With {
+                            .Key = Iterator.NormalizedText,
+                            .DisplayName = Iterator.Text,
+                            .ItemType = CompletionItemType.GlobalVariable,
+                            .DefinitionIdintifier = bag.SymbolTable.GlobalVariables(Iterator.NormalizedText)
+                         })
+                    Else
+                        CompletionHelper.FillVariables(bag)
+                    End If
                 End If
 
             ElseIf InForEachHeader(line) Then

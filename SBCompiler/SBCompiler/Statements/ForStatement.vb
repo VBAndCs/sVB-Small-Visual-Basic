@@ -10,9 +10,74 @@ Namespace Microsoft.SmallBasic.Statements
     Public Class ForStatement
         Inherits LoopStatement
 
-        Public InitialValue As Expression
-        Public FinalValue As Expression
-        Public StepValue As Expression
+
+        Dim _InitialValue As Expression
+        Public Property InitialValue As Expression
+            Get
+                Return _InitialValue
+            End Get
+
+            Set(value As Expression)
+                _InitialValue = ToNumber(value)
+            End Set
+        End Property
+
+        Private Function ToNumber(value As Expression) As Expression
+            If value Is Nothing Then Return Nothing
+
+            Dim valueToken = value.StartToken
+            Dim typeName = New Token With {
+                    .Line = valueToken.Line,
+                    .Column = valueToken.Column,
+                    .Type = TokenType.Identifier,
+                    .Text = "Text"
+            }
+
+            Dim methodName = New Token With {
+                    .Line = valueToken.Line,
+                    .Column = valueToken.Column + 5,
+                    .Type = TokenType.Identifier,
+                    .Text = "ToNumber"
+            }
+
+            Dim args As New List(Of Expression)
+            args.Add(value)
+
+            Return New MethodCallExpression(
+                valueToken,
+                9,
+                typeName,
+                methodName,
+                args
+            ) With {
+                .EndToken = value.EndToken,
+                .Parent = Me,
+                .OuterSubroutine = SubroutineStatement.Current
+            }
+        End Function
+
+        Dim _FinalValue As Expression
+        Public Property FinalValue As Expression
+            Get
+                Return _FinalValue
+            End Get
+
+            Set(value As Expression)
+                _FinalValue = ToNumber(value)
+            End Set
+        End Property
+
+        Dim _StepValue As Expression
+        Public Property StepValue As Expression
+            Get
+                Return _StepValue
+            End Get
+
+            Set(value As Expression)
+                _StepValue = ToNumber(value)
+            End Set
+        End Property
+
         Public Iterator As Token
         Public ForToken As Token
         Public ToToken As Token
@@ -25,11 +90,11 @@ Namespace Microsoft.SmallBasic.Statements
             If lineNumber > EndLoopToken.Line Then Return Nothing
             If lineNumber <= Iterator.Line Then Return Me
             If lineNumber <= EqualsToken.Line Then Return Me
-            If lineNumber <= InitialValue?.EndToken.Line Then Return Me
+            If lineNumber <= _InitialValue?.EndToken.Line Then Return Me
             If lineNumber <= ToToken.Line Then Return Me
-            If lineNumber <= FinalValue?.EndToken.Line Then Return Me
+            If lineNumber <= _FinalValue?.EndToken.Line Then Return Me
             If lineNumber <= StepToken.Line Then Return Me
-            If lineNumber <= StepValue?.EndToken.Line Then Return Me
+            If lineNumber <= _StepValue?.EndToken.Line Then Return Me
 
             For Each statment In Body
                 Dim st = statment.GetStatementAt(lineNumber)
@@ -75,19 +140,19 @@ Namespace Microsoft.SmallBasic.Statements
                 End If
             End If
 
-            If InitialValue IsNot Nothing Then
-                InitialValue.Parent = Me
-                InitialValue.AddSymbols(symbolTable)
+            If _InitialValue IsNot Nothing Then
+                _InitialValue.Parent = Me
+                _InitialValue.AddSymbols(symbolTable)
             End If
 
-            If FinalValue IsNot Nothing Then
-                FinalValue.Parent = Me
-                FinalValue.AddSymbols(symbolTable)
+            If _FinalValue IsNot Nothing Then
+                _FinalValue.Parent = Me
+                _FinalValue.AddSymbols(symbolTable)
             End If
 
-            If StepValue IsNot Nothing Then
-                StepValue.Parent = Me
-                StepValue.AddSymbols(symbolTable)
+            If _StepValue IsNot Nothing Then
+                _StepValue.Parent = Me
+                _StepValue.AddSymbols(symbolTable)
             End If
 
             For Each item In Body
@@ -104,7 +169,7 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
 
-            InitialValue.EmitIL(scope)
+            _InitialValue.EmitIL(scope)
 
             Dim IsField = Subroutine Is Nothing
             Dim iteratorVar As LocalBuilder
@@ -128,10 +193,10 @@ Namespace Microsoft.SmallBasic.Statements
                 scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
             End If
 
-            FinalValue.EmitIL(scope)
+            _FinalValue.EmitIL(scope)
 
-            If StepValue IsNot Nothing Then
-                StepValue.EmitIL(scope)
+            If _StepValue IsNot Nothing Then
+                _StepValue.EmitIL(scope)
                 scope.ILGenerator.Emit(OpCodes.Ldc_R8, 0.0)
                 scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
                 scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.LessThan, Nothing)
@@ -161,8 +226,8 @@ Namespace Microsoft.SmallBasic.Statements
                 scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
             End If
 
-            If StepValue IsNot Nothing Then
-                StepValue.EmitIL(scope)
+            If _StepValue IsNot Nothing Then
+                _StepValue.EmitIL(scope)
             Else
                 scope.ILGenerator.Emit(OpCodes.Ldc_R8, 1.0)
                 scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
@@ -191,13 +256,17 @@ Namespace Microsoft.SmallBasic.Statements
 
             ElseIf AfterIterator(line, column) Then
                 CompletionHelper.FillLocals(completionBag, Subroutine?.Name.NormalizedText)
-                If Not Iterator.IsIllegal AndAlso Subroutine Is Nothing Then
-                    completionBag.CompletionItems.Add(New CompletionItem() With {
-                        .Key = Iterator.Text,
-                        .DisplayName = Iterator.Text,
-                        .ItemType = CompletionItemType.GlobalVariable,
-                        .DefinitionIdintifier = completionBag.SymbolTable.GlobalVariables(Iterator.NormalizedText)
-                     })
+                If Subroutine Is Nothing Then
+                    If completionBag.ForHelp AndAlso Not Iterator.IsIllegal Then
+                        completionBag.CompletionItems.Add(New CompletionItem() With {
+                            .Key = Iterator.NormalizedText,
+                            .DisplayName = Iterator.Text,
+                            .ItemType = CompletionItemType.GlobalVariable,
+                            .DefinitionIdintifier = completionBag.SymbolTable.GlobalVariables(Iterator.NormalizedText)
+                         })
+                    Else
+                        CompletionHelper.FillVariables(completionBag)
+                    End If
                 End If
 
             ElseIf InForHeader(line) Then
@@ -233,20 +302,20 @@ Namespace Microsoft.SmallBasic.Statements
             ' Note that for loop parts can be split over multi lines using the _ symbol,
             ' and some of these parts can be missing while the user is typing code
 
-            If StepValue IsNot Nothing Then
-                line2 = StepValue.EndToken.Line
+            If _StepValue IsNot Nothing Then
+                line2 = _StepValue.EndToken.Line
 
             ElseIf Not StepToken.IsIllegal Then
                 line2 = StepToken.Line
 
-            ElseIf FinalValue IsNot Nothing Then
-                line2 = FinalValue.EndToken.Line
+            ElseIf _FinalValue IsNot Nothing Then
+                line2 = _FinalValue.EndToken.Line
 
             ElseIf Not ToToken.IsIllegal Then
                 line2 = ToToken.Line
 
-            ElseIf InitialValue IsNot Nothing Then
-                line2 = InitialValue.EndToken.Line
+            ElseIf _InitialValue IsNot Nothing Then
+                line2 = _InitialValue.EndToken.Line
 
             Else
                 line2 = EqualsToken.Line
@@ -257,10 +326,10 @@ Namespace Microsoft.SmallBasic.Statements
 
         Public Overrides Function ToString() As String
             Dim stringBuilder As StringBuilder = New StringBuilder()
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1} = {2} To {3}", ForToken.Text, Iterator.Text, InitialValue, FinalValue)
+            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1} = {2} To {3}", ForToken.Text, Iterator.Text, _InitialValue, _FinalValue)
 
             If StepToken.ParseType <> 0 Then
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1}", New Object(1) {StepToken.Text, StepValue})
+                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1}", New Object(1) {StepToken.Text, _StepValue})
             End If
 
             stringBuilder.AppendLine()

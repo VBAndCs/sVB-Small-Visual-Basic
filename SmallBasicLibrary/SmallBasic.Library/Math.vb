@@ -28,7 +28,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Abs(number As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Abs(CDbl(number)))
+            Return System.Math.Abs(number.AsDecimal)
         End Function
 
         ''' <summary>
@@ -43,7 +43,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Ceiling(number As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Ceiling(CDbl(number)))
+            Return System.Math.Ceiling(number.AsDecimal)
         End Function
 
         ''' <summary>
@@ -58,7 +58,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Floor(number As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Floor(CDbl(number)))
+            Return System.Math.Floor(number.AsDecimal)
         End Function
 
         ''' <summary>
@@ -184,7 +184,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetDegrees(angle As Primitive) As Primitive
-            Return DoubleToDecimal(180.0 * CDbl(angle) / System.Math.PI Mod 360.0)
+            Return DoubleToDecimal((180.0 * angle.AsDecimal / System.Math.PI) Mod 360.0)
         End Function
 
         ''' <summary>
@@ -198,7 +198,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetRadians(angle As Primitive) As Primitive
-            Return DoubleToDecimal(CDbl(angle) Mod 360.0 * System.Math.PI / 180.0)
+            Return DoubleToDecimal((angle.AsDecimal Mod 360.0) * System.Math.PI / 180.0)
         End Function
 
         ''' <summary>
@@ -244,7 +244,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Round(number As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Round(CDbl(number)))
+            Return System.Math.Round(number.AsDecimal)
         End Function
 
         ''' <summary>
@@ -261,7 +261,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Max(number1 As Primitive, number2 As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Max(CDbl(number1), CDbl(number2)))
+            Return System.Math.Max(number1.AsDecimal, number2.AsDecimal)
         End Function
 
         ''' <summary>
@@ -278,7 +278,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Min(number1 As Primitive, number2 As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Min(CDbl(number1), CDbl(number2)))
+            Return System.Math.Min(number1.AsDecimal, number2.AsDecimal)
         End Function
 
         ''' <summary>
@@ -295,7 +295,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Remainder(dividend As Primitive, divisor As Primitive) As Primitive
-            Return CDbl(DoubleToDecimal(dividend)) Mod CDbl(divisor)
+            Return dividend.AsDecimal Mod divisor.AsDecimal
         End Function
 
         ''' <summary>

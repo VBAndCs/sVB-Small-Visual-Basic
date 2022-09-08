@@ -269,14 +269,14 @@ Namespace Library
             End While
         End Sub
 
-        Private Shared Sub PlayNote(octave As Integer, note As String, length1 As Integer)
-            Dim num As Double = 1600.0 / CDbl(length1)
+        Private Shared Sub PlayNote(octave As Integer, note As String, length As Integer)
+            Dim num As Double = 1600.0 / CDbl(length)
             Select Case note
                 Case "P", "R"
                     Thread.Sleep(num)
                     Return
                 Case "L"
-                    _defaultLength = length1
+                    _defaultLength = length
                     Return
             End Select
 

@@ -125,7 +125,9 @@ Namespace Library
         Public Shared Property PenWidth As Primitive
             Get
                 VerifyAccess()
-                Return CDbl(InvokeWithReturn(Function() If((_pen IsNot Nothing), (CObj(_pen.Thickness)), (CObj(2.0)))))
+                Return CDbl(InvokeWithReturn(
+                        Function() If(_pen IsNot Nothing, _pen.Thickness, 2.0)
+                ))
             End Get
 
             Set(Value As Primitive)
@@ -594,12 +596,19 @@ Namespace Library
         ''' <param name="height">
         ''' The height of the ellipse.
         ''' </param>
-        Public Shared Sub DrawEllipse(x As Primitive, y As Primitive, width1 As Primitive, height1 As Primitive)
+        Public Shared Sub DrawEllipse(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
             BeginInvoke(Sub()
-                            Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
-                            drawingContext1.DrawEllipse(Nothing, _pen, New System.Windows.Point(CDbl(x) + CDbl(width1) / 2, CDbl(y) + CDbl(height1) / 2), CDbl(width1) / 2, CDbl(height1) / 2)
-                            drawingContext1.Close()
+                            Dim drawingContext = _mainDrawing.Append()
+                            Dim w = CDbl(width) / 2
+                            Dim h = CDbl(height) / 2
+                            drawingContext.DrawEllipse(
+                                    Nothing,
+                                    _pen, New System.Windows.Point(CDbl(x) + w, CDbl(y) + h),
+                                    w,
+                                    h
+                            )
+                            drawingContext.Close()
                             AddRasterizeOperationToQueue()
                         End Sub)
         End Sub
@@ -619,12 +628,20 @@ Namespace Library
         ''' <param name="height">
         ''' The height of the ellipse.
         ''' </param>
-        Public Shared Sub FillEllipse(x As Primitive, y As Primitive, width1 As Primitive, height1 As Primitive)
+        Public Shared Sub FillEllipse(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
             BeginInvoke(Sub()
-                            Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
-                            drawingContext1.DrawEllipse(_fillBrush, Nothing, New System.Windows.Point(CDbl(x) + CDbl(width1 / 2), CDbl(y) + CDbl(height1 / 2)), width1 / 2, height1 / 2)
-                            drawingContext1.Close()
+                            Dim drawingContext = _mainDrawing.Append()
+                            Dim w = CDbl(width) / 2
+                            Dim h = CDbl(height) / 2
+                            drawingContext.DrawEllipse(
+                                _fillBrush,
+                                Nothing,
+                                New System.Windows.Point(CDbl(x) + w, CDbl(y) + h),
+                                w,
+                                h
+                            )
+                            drawingContext.Close()
                             AddRasterizeOperationToQueue()
                         End Sub)
         End Sub
@@ -1175,7 +1192,7 @@ Namespace Library
         End Sub
 
         Friend Shared Sub DoubleAnimateProperty(obj As IAnimatable, [property] As DependencyProperty, [end] As Double, duration As Double)
-            Dim start As Double = CDbl(CType(obj, DependencyObject).GetValue([property]))
+            Dim start = CDbl(CType(obj, DependencyObject).GetValue([property]))
             If Double.IsNaN(start) Then start = 0.0
             Dim animation As New DoubleAnimation(
                     start,
