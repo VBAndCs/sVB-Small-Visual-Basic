@@ -412,12 +412,12 @@ Namespace Microsoft.SmallBasic
 
         End Function
 
-        Public Function UsedAfterDefind(identifier As Token)
+        Public Function UsedBeforeDefind(identifier As Token)
             Select Case identifier.SymbolType
                 Case Completion.CompletionItemType.LocalVariable, Completion.CompletionItemType.GlobalVariable
-                    Return IsDefined(identifier, True)
+                    Return Not IsDefined(identifier, True)
             End Select
-            Return True
+            Return False
         End Function
 
         Public Sub AddVariableInitialization(variable As Token)

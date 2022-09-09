@@ -85,7 +85,7 @@ Namespace Library
                     _stringValue = sb.ToString()
                 End If
 
-                Return _stringValue
+                Return If(_stringValue, "")
             End Get
         End Property
 
@@ -107,6 +107,8 @@ Namespace Library
 
         Friend ReadOnly Property IsNumber As Boolean
             Get
+                If _stringValue = "" Then Return True ' Consider it 0
+
                 Dim result As Decimal = 0D
                 If Not _decimalValue.HasValue Then
                     Return Decimal.TryParse(_stringValue, NumberStyles.Float, CultureInfo.InvariantCulture, result)
@@ -319,7 +321,7 @@ Namespace Library
         Friend Function TryGetAsDecimal() As Decimal?
             If _decimalValue.HasValue Then Return _decimalValue
 
-            If _stringValue = "" Then Return Nothing
+            If _stringValue = "" Then Return 0D
 
             Dim result As Decimal
             If Decimal.TryParse(_stringValue, NumberStyles.Float, CultureInfo.InvariantCulture, result) Then

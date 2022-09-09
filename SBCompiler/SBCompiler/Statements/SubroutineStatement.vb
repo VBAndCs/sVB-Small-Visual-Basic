@@ -88,9 +88,10 @@ Namespace Microsoft.SmallBasic.Statements
 
 
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
+            If lineNumber = SubToken.Line Then Return Me
+            If lineNumber = EndSubToken.Line Then Return Me
             If lineNumber < StartToken.Line Then Return Nothing
             If lineNumber > EndSubToken.Line Then Return Nothing
-            If lineNumber = EndSubToken.Line Then Return Me
 
             For Each statment In Body
                 Dim st = statment.GetStatementAt(lineNumber)

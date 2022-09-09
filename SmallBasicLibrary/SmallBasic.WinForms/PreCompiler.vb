@@ -54,18 +54,21 @@ Namespace WinForms
             End Select
         End Function
 
-        Public Shared Function GetVarType(varName As String) As VariableType
-            varName = varName.ToLower
-            Dim VarType = VariableType.None
+        Public Shared Function GetVarType(variableName As String) As VariableType
+            Dim varName = variableName.ToLower()
+            Dim varType = VariableType.None
 
             For Each key In moduleInfo.Keys
                 Dim controlName = key.ToLower
                 If varName.StartsWith(controlName) OrElse varName.EndsWith(controlName) Then
-                    [Enum].TryParse(Of VariableType)(controlName, VarType)
-                    Exit For
+                    [Enum].TryParse(Of VariableType)(controlName, varType)
+                    Return varType
                 End If
             Next
-            Return VarType
+
+
+
+            Return varType
         End Function
 
         Dim PrimativeType As Type = GetType(Primitive)

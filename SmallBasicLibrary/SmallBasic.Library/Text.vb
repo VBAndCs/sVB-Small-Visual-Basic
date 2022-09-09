@@ -342,12 +342,13 @@ Namespace Library
         ''' </summary>
         ''' <param name="text">the input text</param>
         ''' <returns>If text is numeric, returns the numeric value.
-        ''' If text contains only one character, returns the ascii code of this character</returns>
+        ''' If text contains only one character, returns the ascii code of this character
         ''' Otherwise, returns 0.
+        ''' </returns>
         Public Shared Function ToNumber(text As Primitive) As Primitive
             If text.IsNumber Then Return text.AsDecimal
             Dim x = text.AsString()
-            If x.Length > 1 Then Return 0D
+            If x.Length > 1 Then Return New Primitive(0D)
             Return AscW(x)
         End Function
     End Class

@@ -1107,7 +1107,7 @@ Namespace Microsoft.SmallBasic
             Next
 
             For Each identifier In _SymbolTable.AllIdentifiers
-                If Not _SymbolTable.UsedAfterDefind(identifier) Then
+                If _SymbolTable.UsedBeforeDefind(identifier) Then
                     Errors.Add(New [Error](identifier, $"The variable `{identifier.Text}` is used before being initialized."))
                 End If
             Next

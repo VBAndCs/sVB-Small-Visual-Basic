@@ -196,5 +196,18 @@ Namespace WinForms
         Public Shared Function SetCharacterAt(text As Primitive, pos As Primitive, value As Primitive) As Primitive
             Return Library.Text.SetCharacterAt(text, pos, value)
         End Function
+
+        ''' <summary>
+        ''' Converts the current text to a number
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <returns>If text is numeric, returns the numeric value.
+        ''' If text contains only one character, returns the ASCII code of this character
+        ''' Otherwise, returns 0.
+        ''' </returns>
+        Public Shared Function ToNumber(text As Primitive) As Primitive
+            Return Library.Text.ToNumber(text)
+        End Function
+
     End Class
 End Namespace
