@@ -46,7 +46,7 @@ Namespace Microsoft.SmallBasic.Statements
                 Dim identifierExpression = TryCast(LeftValue, IdentifierExpression)
                 Dim key = symbolTable.AddVariable(identifierExpression, Me.GetSummery(), IsLocalVariable)
                 If key <> "" Then
-                    Dim varType = WinForms.PreCompiler.GetVarType(identifierExpression.Identifier.NormalizedText)
+                    Dim varType = WinForms.PreCompiler.GetVarType(identifierExpression.Identifier.Text)
                     If varType <> VariableType.None Then
                         symbolTable.InferedTypes(key) = varType
                     Else
@@ -55,7 +55,7 @@ Namespace Microsoft.SmallBasic.Statements
                             Select Case literalExpr.Literal.Type
                                 Case TokenType.NumericLiteral
                                     symbolTable.InferedTypes(key) = VariableType.Double
-                                Case TokenType.True, False
+                                Case TokenType.True, TokenType.False
                                     symbolTable.InferedTypes(key) = VariableType.Boolean
                                 Case TokenType.StringLiteral
                                     symbolTable.InferedTypes(key) = VariableType.String

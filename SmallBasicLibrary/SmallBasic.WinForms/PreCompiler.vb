@@ -54,21 +54,42 @@ Namespace WinForms
             End Select
         End Function
 
+
+        Private Shared typeShortcuts() As (Shortcut As String, Type As VariableType) = {
+            ("Str", VariableType.String),
+            ("Arr", VariableType.Array),
+            ("Dbl", VariableType.Double),
+            ("Color", VariableType.Color),
+            ("Key", VariableType.Key),
+            ("Date", VariableType.Date),
+            ("Control", VariableType.Control),
+            ("Form", VariableType.Form),
+            ("TextBox", VariableType.TextBox),
+            ("Label", VariableType.Label),
+            ("Button", VariableType.Button),
+            ("ListBox", VariableType.ListBox),
+            ("ListBox", VariableType.ImageBox)
+        }
+
         Public Shared Function GetVarType(variableName As String) As VariableType
             Dim varName = variableName.ToLower()
-            Dim varType = VariableType.None
 
-            For Each key In moduleInfo.Keys
-                Dim controlName = key.ToLower
-                If varName.StartsWith(controlName) OrElse varName.EndsWith(controlName) Then
-                    [Enum].TryParse(Of VariableType)(controlName, varType)
-                    Return varType
+            For Each sh In typeShortcuts
+                Dim lowcaseShotrcut = sh.Shortcut(0).ToString.ToLower() & sh.Shortcut.Substring(1)
+                Dim n = sh.Shortcut.Length
+                If variableName.EndsWith(sh.Shortcut) Then Return sh.Type
+
+                If variableName.StartsWith(sh.Shortcut) OrElse variableName.StartsWith(lowcaseShotrcut) Then
+                    If variableName.Length = n Then Return sh.Type
+
+                    Dim x = variableName(n)
+                    If x = "_" OrElse IsNumeric(x) OrElse Char.IsUpper(x) Then
+                        Return sh.Type
+                    End If
                 End If
             Next
 
-
-
-            Return varType
+            Return VariableType.None
         End Function
 
         Dim PrimativeType As Type = GetType(Primitive)

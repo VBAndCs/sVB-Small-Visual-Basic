@@ -436,7 +436,6 @@ CheckLineEnd:
             Return textSnapshot.LineCount - 1
         End Function
 
-
         Private Sub FormatLine(
                          textEdit As ITextEdit,
                          line As ITextSnapshotLine,
@@ -510,7 +509,13 @@ CheckLineEnd:
 
                     Case Else
                         If t.ParseType = ParseType.Keyword Then
-                            If notLastToken Then FixSpaces(textEdit, line, t, nextToken, 1)
+                            If notLastToken Then
+                                If t.Type = TokenType.For AndAlso nextToken.NormalizedText = "each" Then
+                                    FixSpaces(textEdit, line, t, nextToken, 0)
+                                Else
+                                    FixSpaces(textEdit, line, t, nextToken, 1)
+                                End If
+                            End If
                         End If
                 End Select
 
