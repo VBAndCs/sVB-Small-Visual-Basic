@@ -164,6 +164,9 @@ Namespace WinForms
             If moduleInfo(controlName).Contains(method) Then
                 moduleName = controlName
 
+            ElseIf varType < VariableType.Control AndAlso varType <> VariableType.None Then
+                Return ("", 0)
+
             ElseIf controlName = NameOf(ImageBox) Then
                 Return ("", 0)
 

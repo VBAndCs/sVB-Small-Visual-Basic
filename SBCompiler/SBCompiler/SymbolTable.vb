@@ -18,10 +18,7 @@ Namespace Microsoft.SmallBasic
         Friend IsLoweredCode As Boolean
 
         Friend Sub AddIdentifier(identifier As Token)
-            If IsLoweredCode Then Return
-            If AllIdentifiers.Count = 0 OrElse AllIdentifiers.Last <> identifier Then
-                AllIdentifiers.Add(identifier)
-            End If
+            If Not IsLoweredCode Then AllIdentifiers.Add(identifier)
         End Sub
 
         Public ReadOnly Property Errors As List(Of [Error])

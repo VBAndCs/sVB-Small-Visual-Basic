@@ -3,6 +3,7 @@
     [String]
     [Double]
     Array
+    [Date]
     [Boolean]
     Color
     Key
@@ -13,5 +14,4 @@
     ImageBox
     Button
     ListBox
-    [Date]
 End Enum
