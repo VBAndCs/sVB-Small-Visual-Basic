@@ -559,7 +559,8 @@ Public Class Designer
                         tbItem As ToolBoxItem,
                         pos As Point,
                         Optional width As Double = -1,
-                        Optional height As Double = -1)
+                        Optional height As Double = -1
+                )
 
         If tbItem IsNot Nothing Then
             Dim newItem = tbItem.Child

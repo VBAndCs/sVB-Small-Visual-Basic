@@ -143,7 +143,7 @@ Namespace Library
         Public Shared Sub Move(distance As Primitive)
             VerifyAccess()
             Dim d = CDbl(distance)
-            Dim animateTime = If(_speed = 10, 5.0, System.Math.Abs(d * 320.0 / (_speed ^ 2)))
+            Dim animateTime = If(_speed = 10, 1.0, System.Math.Abs(d * 320.0 / (_speed ^ 2)))
             Dim angle = _angle / 180.0 * System.Math.PI
             Dim newY = _currentY - d * System.Math.Cos(angle)
             Dim newX = _currentX + d * System.Math.Sin(angle)
@@ -222,11 +222,9 @@ Namespace Library
         Public Shared Sub Turn(angle As Primitive)
             VerifyAccess()
             Dim a = CDbl(angle)
-            Dim animateTime = System.Math.Abs(a * 200.0 / (_speed ^ 2))
-            If _speed = 10 Then
-                animateTime = 5.0
-            End If
+            Dim animateTime = If(_speed = 10, 1.0, System.Math.Abs(a * 200.0 / (_speed ^ 2)))
             _angle += a
+
             GraphicsWindow.Invoke(
                 Sub()
                     Dim animation As New DoubleAnimation With {

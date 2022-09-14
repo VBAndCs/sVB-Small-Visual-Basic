@@ -242,7 +242,10 @@ Namespace Microsoft.SmallBasic.LanguageService
             If tokens.Count = 0 Then Return ""
             Dim token = tokens.Last
 
-            If token.ParseType = ParseType.Operator Then
+            If token.Type = TokenType.StringLiteral Then
+                Return token.NormalizedText.Trim("""")
+
+            ElseIf token.ParseType = ParseType.Operator Then
                 Select Case token.Type
                     Case token.Type = TokenType.Or, TokenType.And,
                                        TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens

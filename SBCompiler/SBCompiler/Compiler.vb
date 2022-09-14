@@ -243,6 +243,8 @@ Namespace Microsoft.SmallBasic
             Dim typeFromHandle = GetType(Primitive)
             _TypeInfoBag.StringToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(String)})
             _TypeInfoBag.NumberToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(Double)})
+            _TypeInfoBag.DateToPrimitive = typeFromHandle.GetMethod("DateToPrimitive")
+            _TypeInfoBag.TimeSpanToPrimitive = typeFromHandle.GetMethod("TimeSpanToPrimitive")
             _TypeInfoBag.PrimitiveToBoolean = typeFromHandle.GetMethod("ConvertToBoolean")
             _TypeInfoBag.Negation = typeFromHandle.GetMethod("op_UnaryNegation")
             _TypeInfoBag.Add = typeFromHandle.GetMethod("op_Addition")

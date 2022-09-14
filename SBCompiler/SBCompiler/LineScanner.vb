@@ -153,13 +153,13 @@ Namespace Microsoft.SmallBasic
             EatSpaces()
             token = Nothing
             token.Column = _currentIndex
-            Dim nextChar As Char = GetNextChar()
+            Dim currentChar As Char = GetNextChar()
 
-            If nextChar = VisualBasic.Strings.ChrW(0) Then
+            If currentChar = VisualBasic.Strings.ChrW(0) Then
                 Return False
             End If
 
-            Select Case nextChar
+            Select Case currentChar
                 Case "+"c
                     token.Type = TokenType.Addition
                     token.Text = "+"
@@ -223,8 +223,8 @@ Namespace Microsoft.SmallBasic
                     End Select
 
                 Case ">"c
-                    nextChar = GetNextChar()
-                    If nextChar = "="c Then
+                    currentChar = GetNextChar()
+                    If currentChar = "="c Then
                         token.Type = TokenType.GreaterThanEqualTo
                         token.Text = ">="
                     Else
@@ -245,29 +245,34 @@ Namespace Microsoft.SmallBasic
                 Case """"c
                     _currentIndex -= 1
                     token.Type = TokenType.StringLiteral
-                    token.Text = ReadStringLiteral()
+                    token.Text = ReadLiteral(currentChar)
+
+                Case "#"c
+                    _currentIndex -= 1
+                    token.Type = TokenType.DateLiteral
+                    token.Text = ReadLiteral(currentChar)
 
                 Case Else
                     Dim nextChar2 As Char = GetNextChar()
                     _currentIndex -= 1
 
-                    If Char.IsLetter(nextChar) OrElse nextChar = "_"c Then
+                    If Char.IsLetter(currentChar) OrElse currentChar = "_"c Then
                         _currentIndex -= 1
                         Dim text As String = ReadKeywordOrIdentifier()
-                        token.Type = GetToken(text)
+                        token.Type = GetTokenType(text)
                         token.Text = text
 
-                    ElseIf Char.IsDigit(nextChar) OrElse nextChar = "-"c OrElse nextChar = _decimalSeparator AndAlso Char.IsDigit(nextChar2) Then
+                    ElseIf Char.IsDigit(currentChar) OrElse currentChar = "-"c OrElse currentChar = _decimalSeparator AndAlso Char.IsDigit(nextChar2) Then
                         _currentIndex -= 1
                         Dim text2 As String = ReadNumericLiteral()
                         token.Type = TokenType.NumericLiteral
                         token.Text = text2
 
-                    ElseIf nextChar = "."c Then
+                    ElseIf currentChar = "."c Then
                         token.Type = TokenType.Dot
                         token.Text = "."
 
-                    ElseIf nextChar = "!"c Then
+                    ElseIf currentChar = "!"c Then
                         token.Type = TokenType.Lookup
                         token.Text = "!"
 
@@ -282,7 +287,7 @@ Namespace Microsoft.SmallBasic
                     Exit Select
             End Select
 
-            token.ParseType = GetTokenType(token.Type)
+            token.ParseType = GetParseType(token.Type)
             Return True
         End Function
 
@@ -347,28 +352,28 @@ Namespace Microsoft.SmallBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Shared Function ReadStringLiteral() As String
-            Dim stringBuilder As StringBuilder = New StringBuilder()
-            Dim nextChar As Char = GetNextChar()
-            stringBuilder.Append(nextChar)
-            nextChar = GetNextChar()
+        Private Shared Function ReadLiteral(enclosingChar As Char) As String
+            Dim stringBuilder As New StringBuilder()
+            Dim currentChar = GetNextChar()
+            stringBuilder.Append(currentChar)
+            currentChar = GetNextChar()
             Dim flag = False
 
-            While AscW(nextChar) <> 0
-                stringBuilder.Append(nextChar)
+            While AscW(currentChar) <> 0
+                stringBuilder.Append(currentChar)
 
-                If nextChar = """"c Then
-                    nextChar = GetNextChar()
+                If currentChar = enclosingChar Then
+                    currentChar = GetNextChar()
 
-                    If nextChar <> """"c Then
+                    If currentChar <> enclosingChar Then
                         flag = True
                         Exit While
                     End If
 
-                    stringBuilder.Append(nextChar)
+                    stringBuilder.Append(currentChar)
                 End If
 
-                nextChar = GetNextChar()
+                currentChar = GetNextChar()
             End While
 
             If flag Then
@@ -409,7 +414,7 @@ Namespace Microsoft.SmallBasic
             End Select
         End Function
 
-        Public Shared Function GetToken(tokenText As String) As TokenType
+        Public Shared Function GetTokenType(tokenText As String) As TokenType
             Select Case tokenText.ToLower(CultureInfo.InvariantCulture)
                 Case "and"
                     Return TokenType.And
@@ -470,7 +475,7 @@ Namespace Microsoft.SmallBasic
             End Select
         End Function
 
-        Public Shared Function GetTokenType(token As TokenType) As ParseType
+        Public Shared Function GetParseType(token As TokenType) As ParseType
             Select Case token
                 Case TokenType.Illegal
                     Return ParseType.Illegal
@@ -480,6 +485,9 @@ Namespace Microsoft.SmallBasic
 
                 Case TokenType.StringLiteral
                     Return ParseType.StringLiteral
+
+                Case TokenType.DateLiteral
+                    Return ParseType.DateLiteral
 
                 Case TokenType.NumericLiteral
                     Return ParseType.NumericLiteral

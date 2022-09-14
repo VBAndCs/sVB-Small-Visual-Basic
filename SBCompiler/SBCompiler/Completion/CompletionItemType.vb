@@ -13,5 +13,6 @@
         Label
         Identifier
         Control
+        Lireral
     End Enum
 End Namespace

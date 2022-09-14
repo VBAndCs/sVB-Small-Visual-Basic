@@ -19,16 +19,16 @@
 
     Dim IsFirstTab As Boolean = True
 
-    Sub AddTab(FolderName As String)
+    Sub AddTab(folderName As String)
         Dim Expan As New Expander With {.IsExpanded = IsFirstTab}
         Expan.Style = Me.FindResource("ExpanderStyle")
         IsFirstTab = False
-        Expan.Header = IO.Path.GetFileNameWithoutExtension(FolderName)
+        Expan.Header = IO.Path.GetFileNameWithoutExtension(folderName)
 
         Dim WrpPnl As New WrapPanel With {.Background = Brushes.White}
         Dim Scv As New ScrollViewer With {.VerticalScrollBarVisibility = ScrollBarVisibility.Auto, .MaxHeight = 120, .Margin = New Thickness(1), .Content = WrpPnl}
         Expan.Content = Scv
-        Dim Files = IO.Directory.GetFiles(FolderName, "*.xaml")
+        Dim Files = IO.Directory.GetFiles(folderName, "*.xaml")
         Array.Sort(Files)
         For Each FileName In Files
             If IO.Path.GetFileNameWithoutExtension(FileName).ToLower.EndsWith("style") Then

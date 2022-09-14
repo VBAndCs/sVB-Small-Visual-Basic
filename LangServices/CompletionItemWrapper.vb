@@ -97,6 +97,9 @@ Namespace Microsoft.SmallBasic.LanguageService
                         Case CompletionItemType.DynamicPropertyName
                             _symbolType = SymbolType.DynamicProperty
 
+                        Case CompletionItemType.Lireral
+                            _symbolType = SymbolType.Literal
+
                         Case Else
                             _symbolType = SymbolType.Unknown
                     End Select
@@ -154,6 +157,19 @@ Namespace Microsoft.SmallBasic.LanguageService
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = "Label: ",
                             .Summary = item.DefinitionIdintifier.Comment
+                    }
+
+                Case SymbolType.Literal
+                    Dim result = Parser.ParseDateLiteral(item.DisplayName)
+                    _documentation = New CompletionItemDocumentation() With {
+                            .Prefix = If(result.IsDate, "Date Literal: ", "Time Span Literal: "),
+                            .Summary = If(result.Ticks = 0,
+                                    $"Invalid {If(result.IsDate, "date", "time span")} format!",
+                                    "Value = """ & If(result.IsDate,
+                                            New Date(result.Ticks),
+                                            New TimeSpan(result.Ticks)
+                                    ).ToString() & """"
+                            )
                     }
 
                 Case SymbolType.GlobalVariable

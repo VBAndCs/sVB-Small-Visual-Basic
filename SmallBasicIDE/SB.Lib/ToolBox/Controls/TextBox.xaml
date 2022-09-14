@@ -2,6 +2,6 @@
      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
      DisplayImage="TextBox.png">    
             <d:SBControl.Control>
-                <TextBox d:Designer.FrameWidth="120" d:Designer.FrameHeight="40"/>
+                <TextBox d:Designer.FrameWidth="180" d:Designer.FrameHeight="40"/>
             </d:SBControl.Control>
 </d:SBControl>

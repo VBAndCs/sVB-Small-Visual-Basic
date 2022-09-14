@@ -61,8 +61,8 @@ Namespace Microsoft.SmallBasic.Utility
                         methodType = " Dynamic Property"
                         FillInfo(False)
 
-                    Case SymbolType.Control, SymbolType.Label,
-                             SymbolType.GlobalVariable, SymbolType.LocalVariable
+                    Case SymbolType.Control, SymbolType.Label, SymbolType.Literal,
+                        SymbolType.GlobalVariable, SymbolType.LocalVariable
                         FillInfo(False)
 
                     Case SymbolType.Property, SymbolType.Event, SymbolType.Type

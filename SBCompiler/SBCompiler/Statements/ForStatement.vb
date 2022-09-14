@@ -127,14 +127,19 @@ Namespace Microsoft.SmallBasic.Statements
             EndLoopToken.Parent = Me
             EqualsToken.Parent = Me
 
-            If Iterator.Type <> TokenType.Illegal Then
+            If Not Iterator.IsIllegal Then
                 Dim id As New IdentifierExpression() With {
                     .Identifier = Iterator,
                     .Subroutine = Subroutine
                 }
                 Iterator.SymbolType = If(Subroutine Is Nothing, CompletionItemType.GlobalVariable, CompletionItemType.LocalVariable)
                 symbolTable.AddIdentifier(Iterator)
-                symbolTable.AddVariable(id, "The for loop counter (iterator)", Subroutine IsNot Nothing)
+
+                Dim key = symbolTable.AddVariable(id, "The for loop counter (iterator)", Subroutine IsNot Nothing)
+                If key <> "" Then
+                    symbolTable.InferedTypes(key) = VariableType.Double
+                End If
+
                 If symbolTable.IsGlobalVar(id) Then
                     id.AddSymbolInitialization(symbolTable)
                 End If

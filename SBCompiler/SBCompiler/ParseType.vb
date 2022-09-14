@@ -3,6 +3,7 @@
         Illegal
         Identifier
         StringLiteral
+        DateLiteral
         NumericLiteral
         Comment
         Keyword

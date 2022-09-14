@@ -17,6 +17,9 @@ Namespace Microsoft.SmallBasic.Completion
                 Case TokenType.StringLiteral
                     Return NameOf(WinForms.TextEx)
 
+                Case TokenType.DateLiteral
+                    Return NameOf(WinForms.DateEx)
+
                 Case TokenType.NumericLiteral
                     Return NameOf(WinForms.MathEx)
 
@@ -27,19 +30,7 @@ Namespace Microsoft.SmallBasic.Completion
                     Dim symbolTable = _compiler.Parser.SymbolTable
                     identifier.Parent = GetStatement(_compiler, identifier.Line)
                     Dim varType = symbolTable.GetInferedType(identifier)
-
-                    Select Case varType
-                        Case VariableType.String
-                            Return NameOf(WinForms.TextEx)
-                        Case VariableType.Double
-                            Return NameOf(WinForms.MathEx)
-                        Case VariableType.Array
-                            Return NameOf(WinForms.ArrayEx)
-                        Case VariableType.Color
-                            Return NameOf(WinForms.ColorEx)
-                        Case Else
-                            Return ""
-                    End Select
+                    Return WinForms.PreCompiler.GetTypeName(varType)
             End Select
         End Function
 
@@ -71,7 +62,6 @@ Namespace Microsoft.SmallBasic.Completion
         End Function
 
         Public Function GetCompletionItems(
-                         source As TextReader,
                          line As Integer,
                          column As Integer,
                          nextToEquals As Boolean,

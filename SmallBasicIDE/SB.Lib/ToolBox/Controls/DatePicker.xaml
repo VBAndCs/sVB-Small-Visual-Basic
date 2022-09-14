@@ -1,0 +1,14 @@
+﻿<d:SBControl xmlns:d="clr-namespace:DiagramHelper;assembly=DiagramHelper"
+ 
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 
+     DisplayImage="DatePicker.png">
+
+         <d:SBControl.Control>
+
+            <DatePicker d:Designer.FrameWidth="180" d:Designer.FrameHeight="30"
+                        Background="White"      />
+
+         </d:SBControl.Control>
+
+</d:SBControl>

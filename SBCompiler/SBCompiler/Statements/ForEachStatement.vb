@@ -61,7 +61,15 @@ Namespace Microsoft.SmallBasic.Statements
                 }
                 Iterator.SymbolType = If(Subroutine Is Nothing, CompletionItemType.GlobalVariable, CompletionItemType.LocalVariable)
                 symbolTable.AddIdentifier(Iterator)
-                symbolTable.AddVariable(id, "The ForEach loop iterator", Subroutine IsNot Nothing)
+
+                Dim key = symbolTable.AddVariable(id, "The ForEach loop iterator", Subroutine IsNot Nothing)
+                If key <> "" Then
+                    Dim varType = WinForms.PreCompiler.GetVarType(Iterator.Text)
+                    If varType <> VariableType.None Then
+                        symbolTable.InferedTypes(key) = varType
+                    End If
+                End If
+
                 If symbolTable.IsGlobalVar(id) Then
                     id.AddSymbolInitialization(symbolTable)
                 End If

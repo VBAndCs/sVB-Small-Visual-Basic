@@ -4,6 +4,7 @@
         Comment
         StringLiteral
         NumericLiteral
+        DateLiteral
         [True]
         [False]
         Identifier

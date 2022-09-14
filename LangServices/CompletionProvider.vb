@@ -53,6 +53,21 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Public Shared compHistory As New Dictionary(Of String, String)
 
+        Private Shared _fontNames As New List(Of CompletionItem)
+        ReadOnly Property FontNames As List(Of CompletionItem)
+            Get
+                If _fontNames.Count = 0 Then
+                    For Each family In Fonts.SystemFontFamilies
+                        _fontNames.Add(New CompletionItem() With {
+                            .DisplayName = family.Source,
+                            .ReplacementText = $"""{family.Source}"""
+                        })
+                    Next
+                End If
+                Return _fontNames
+            End Get
+        End Property
+
         Public Sub CommitItem(item As CompletionItem)
             If adornment IsNot Nothing Then
                 Dim key = item.HistoryKey
@@ -411,7 +426,14 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             Dim tokenText = currentToken.NormalizedText
             For Each item In bag.CompletionItems
-                If item.DisplayName.ToLower() = tokenText Then
+                If item.Key = "##" Then
+                    Dim wrapper = New CompletionItemWrapper(item, bag)
+                    ShowPopupHelp(wrapper)
+                    helpCashe(span) = wrapper
+                    highlightCashe(span) = Nothing
+                    Return
+
+                ElseIf item.DisplayName.ToLower() = tokenText Then
                     Dim spans = HeighLightIdentifiers(currentToken, bag.SubroutineName, item.ItemType, bag.SymbolTable, textView.TextSnapshot)?.ToArray()
                     highlightCashe(span) = spans
                     editor.HighlightWords(WordHighlightColor, spans)
@@ -701,8 +723,27 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             If identifierToken.IsIllegal Then
                 addGlobals = True
-                If controlsInfo IsNot Nothing Then
-                    Dim txt = currentToken.NormalizedText
+                If currentToken.Type = TokenType.DateLiteral Then
+                    If forHelp Then
+                        newBag.CompletionItems.Add(New CompletionItem() With {
+                            .DisplayName = currentToken.Text,
+                            .Key = "##",
+                            .ItemType = CompletionItemType.Lireral
+                        })
+                    End If
+                    Return newBag
+
+                ElseIf currentToken.Type = TokenType.NumericLiteral Then
+                    Return newBag
+
+                ElseIf currentToken.Type = TokenType.StringLiteral Then
+                    If Not forHelp AndAlso prevToken.Type = TokenType.Equals AndAlso b4PrevToken.NormalizedText.Contains("fontname") Then
+                        newBag.CompletionItems.AddRange(FontNames)
+                    End If
+                    Return newBag
+
+                ElseIf controlsInfo IsNot Nothing Then
+                        Dim txt = currentToken.NormalizedText
                     If txt <> "" AndAlso controlNames IsNot Nothing Then
                         Dim controls = From name In controlNames
                                        Where name(0) <> "("c AndAlso (
@@ -763,7 +804,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     End If
 
                     Dim bag = completionHelper.GetCompletionItems(
-                            source, line.LineNumber, column,
+                            line.LineNumber, column,
                             prevToken.Type = TokenType.Equals OrElse currentToken.Type = TokenType.Equals,
                             IsCompletionOperator(prevToken) OrElse IsCompletionOperator(currentToken),
                             forHelp
@@ -1030,7 +1071,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                          NameOf(WinForms.ColorEx),
                          NameOf(WinForms.TextEx),
                          NameOf(WinForms.ArrayEx),
-                         NameOf(WinForms.MathEx)
+                         NameOf(WinForms.MathEx),
+                         NameOf(WinForms.DateEx)
 
                 Case Else
                     For Each item In completionItems(controlModule)

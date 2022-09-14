@@ -22,9 +22,14 @@ Namespace Microsoft.SmallBasic.LanguageService
         Private delimiterType As IClassificationType
         Private unknownType As IClassificationType
         Private compiler As Compiler
+
         Public Event ClassificationChanged As EventHandler(Of ClassificationChangedEventArgs) Implements IClassifier.ClassificationChanged
 
-        Public Sub New(textBuffer As ITextBuffer, classificationTypeRegistry As IClassificationTypeRegistry)
+        Public Sub New(
+                   textBuffer As ITextBuffer,
+                   classificationTypeRegistry As IClassificationTypeRegistry
+                )
+
             If Not textBuffer.Properties.TryGetProperty(GetType(Compiler), compiler) Then
                 compiler = New Compiler()
                 textBuffer.Properties.AddProperty(GetType(Compiler), compiler)
@@ -99,7 +104,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Return numericType
                 Case ParseType.Operator
                     Return operatorType
-                Case ParseType.StringLiteral
+                Case ParseType.StringLiteral, ParseType.DateLiteral
                     Return stringType
                 Case Else
                     Return textType

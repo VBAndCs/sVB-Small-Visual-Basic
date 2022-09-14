@@ -12,5 +12,6 @@
         LocalVariable
         Subroutine
         Label
+        Literal
     End Enum
 End Namespace

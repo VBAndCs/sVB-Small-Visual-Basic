@@ -21,7 +21,7 @@ Namespace Library
             End Sub
 
             Public Function Equals(x As Primitive, y As Primitive) As Boolean Implements Collections.Generic.IEqualityComparer(Of Microsoft.SmallBasic.Library.Primitive).Equals
-                Return String.Equals(x.AsString, y.AsString, StringComparison.InvariantCultureIgnoreCase)
+                Return String.Equals(x.AsString(), y.AsString(), StringComparison.InvariantCultureIgnoreCase)
             End Function
 
             Public Function GetHashCode(obj As Primitive) As Integer Implements Collections.Generic.IEqualityComparer(Of Microsoft.SmallBasic.Library.Primitive).GetHashCode
@@ -29,6 +29,37 @@ Namespace Library
             End Function
         End Class
 
+        Public Shared Function DateToPrimitive(ticks As Long) As Primitive
+            Return New Primitive(ticks, NumberType.Date)
+        End Function
+
+        Public Shared Function TimeSpanToPrimitive(ticks As Long) As Primitive
+            Return New Primitive(ticks, NumberType.TimeSpan)
+        End Function
+
+        Friend Function AsDate() As Date?
+            If IsEmpty OrElse IsArray Then Return Nothing
+            If _decimalValue.HasValue Then Return New Date(CLng(_decimalValue.Value))
+
+            Dim d As Date
+            If Date.TryParse(AsString(), d) Then
+                Return d
+            Else
+                Return Nothing
+            End If
+        End Function
+
+        Friend Function AsTimeSpan() As TimeSpan?
+            If IsEmpty OrElse IsArray Then Return Nothing
+            If _decimalValue.HasValue Then Return New TimeSpan(CLng(_decimalValue.Value))
+
+            Dim ts As TimeSpan
+            If TimeSpan.TryParse(AsString(), ts) Then
+                Return ts
+            Else
+                Return Nothing
+            End If
+        End Function
 
         Private _stringValue As String
         Private _decimalValue As Decimal?
@@ -69,25 +100,34 @@ Namespace Library
             End Set
         End Property
 
-        Friend ReadOnly Property AsString As String
-            Get
-                If _stringValue IsNot Nothing Then Return _stringValue
+        Friend Function AsString() As String
+            If _decimalValue.HasValue Then
+                Select Case numberType
+                    Case NumberType.Date
+                        Dim d = New Date(_decimalValue.Value)
+                        If d.Day = 1 AndAlso d.Month = 1 AndAlso d.Year = 1 Then
+                            _stringValue = d.ToLongTimeString()
+                        Else
+                            _stringValue = d.ToString()
+                        End If
 
-                If _decimalValue.HasValue Then
-                    _stringValue = _decimalValue.Value.ToString()
+                    Case NumberType.TimeSpan
+                        _stringValue = New TimeSpan(_decimalValue.Value).ToString()
+                    Case Else
+                        _stringValue = _decimalValue.Value.ToString()
+                End Select
 
-                ElseIf _arrayMap IsNot Nothing Then
-                    Dim sb As New StringBuilder
-                    For Each entry In _arrayMap
-                        sb.AppendFormat("{0}={1};", Escape(entry.Key), Escape(entry.Value))
-                    Next
+            ElseIf _arrayMap IsNot Nothing AndAlso _arrayMap.Count > 0 Then
+                Dim sb As New StringBuilder
+                For Each entry In _arrayMap
+                    sb.AppendFormat("{0}={1};", Escape(entry.Key), Escape(entry.Value))
+                Next
 
-                    _stringValue = sb.ToString()
-                End If
+                _stringValue = sb.ToString()
+            End If
 
-                Return If(_stringValue, "")
-            End Get
-        End Property
+            Return If(_stringValue, "")
+        End Function
 
         Friend ReadOnly Property IsArray As Boolean
             Get
@@ -119,10 +159,7 @@ Namespace Library
         End Property
 
         Public Sub New(primitiveText As String)
-            If primitiveText Is Nothing Then
-                Throw New ArgumentNullException("primitiveText")
-            End If
-            _stringValue = primitiveText
+            _stringValue = If(primitiveText, "")
             _decimalValue = Nothing
             _arrayMap = Nothing
         End Sub
@@ -133,10 +170,13 @@ Namespace Library
             _arrayMap = Nothing
         End Sub
 
-        Public Sub New(primitiveDecimal As Decimal)
+        Dim numberType As NumberType
+
+        Public Sub New(primitiveDecimal As Decimal, Optional numberType As NumberType = NumberType.Decimal)
             _decimalValue = primitiveDecimal
             _stringValue = Nothing
             _arrayMap = Nothing
+            Me.numberType = numberType
         End Sub
 
         Public Sub New(primitiveFloat As Single)
@@ -174,16 +214,16 @@ Namespace Library
         End Sub
 
         Public Function Append(primitive As Primitive) As Primitive
-            Return New Primitive(AsString & primitive.AsString)
+            Return New Primitive(AsString() & primitive.AsString())
         End Function
 
         Public Function Add(addend As Primitive) As Primitive
             Dim n1 = TryGetAsDecimal()
             Dim n2 = addend.TryGetAsDecimal()
             If n1.HasValue AndAlso n2.HasValue Then
-                Return n1.Value + n2.Value
+                Return New Primitive(n1.Value + n2.Value)
             End If
-            Return AsString() & addend.AsString()
+            Return New Primitive(AsString() & addend.AsString())
         End Function
 
         Public Function ContainsKey(key1 As Primitive) As Primitive
@@ -209,14 +249,14 @@ Namespace Library
                 Next
             Else
                 ' Treat string as array of characters
-                Dim count = AsString.Length
+                Dim count = AsString().Length
                 indices = New Dictionary(Of Primitive, Primitive)(count, PrimitiveComparer.Instance)
                 For index = 1 To count
                     indices(index) = index
                 Next
             End If
 
-            Return ConvertFromMap(Indices)
+            Return ConvertFromMap(indices)
         End Function
 
         Public Function GetItemCount() As Primitive
@@ -237,9 +277,21 @@ Namespace Library
             Return New Primitive(AsDecimal() / divisor.AsDecimal())
         End Function
 
+        Friend ReadOnly Property IsTimeSpan As Boolean
+            Get
+                Return numberType = NumberType.TimeSpan
+            End Get
+        End Property
+
         Public Function LessThan(comparer As Primitive) As Boolean
             Return AsDecimal() < comparer.AsDecimal()
         End Function
+
+        Friend ReadOnly Property IsDate As Boolean
+            Get
+                Return numberType = NumberType.Date
+            End Get
+        End Property
 
         Public Function GreaterThan(comparer As Primitive) As Boolean
             Return AsDecimal() > comparer.AsDecimal()
@@ -262,7 +314,7 @@ Namespace Library
         End Function
 
         Public Overrides Function Equals(obj As Object) As Boolean
-            If AsString Is Nothing Then _stringValue = ""
+            If AsString() Is Nothing Then _stringValue = ""
 
             If TypeOf obj Is Primitive Then
                 Dim p1 = CType(obj, Primitive)
@@ -289,37 +341,46 @@ Namespace Library
         End Function
 
         Public Overrides Function GetHashCode() As Integer
-            If AsString Is Nothing Then _stringValue = ""
+            If AsString() Is Nothing Then _stringValue = ""
 
-            Return AsString.ToUpper(CultureInfo.InvariantCulture).GetHashCode()
+            Return AsString().ToUpper(CultureInfo.InvariantCulture).GetHashCode()
         End Function
 
         Public Overrides Function ToString() As String
-            Return AsString
+            Return AsString()
         End Function
 
         Private Sub ConstructArrayMap()
-            If _arrayMap IsNot Nothing Then Return
+            If _arrayMap?.Count > 0 Then Return
+
             _arrayMap = New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
 
             If IsEmpty Then Return
 
-            Dim source = AsString.ToCharArray()
+            Dim source = AsString().ToCharArray()
 
             Dim index As Integer = 0
             Dim L = source.Length
             Do
                 Dim key = Unescape(source, index)
-                If key = "" OrElse index = L Then Return
+                If key = "" OrElse index = L Then
+                    _arrayMap.Clear()
+                    Return
+                End If
 
                 Dim value = Unescape(source, index)
-                If value Is Nothing Then Return
+                If value Is Nothing Then
+                    _arrayMap.Clear()
+                    Return
+                End If
                 _arrayMap(key) = value
-            Loop
+            Loop While index < L
         End Sub
 
         Friend Function TryGetAsDecimal() As Decimal?
             If _decimalValue.HasValue Then Return _decimalValue
+
+            If IsArray Then Return Nothing
 
             If _stringValue = "" Then Return 0D
 
@@ -347,11 +408,11 @@ Namespace Library
         End Function
 
         Public Shared Function ConvertToBoolean(primitive As Primitive) As Boolean
-            Return primitive
+            Return CBool(primitive)
         End Function
 
         Public Shared Widening Operator CType(primitive As Primitive) As String
-            Return If(primitive.AsString, "")
+            Return If(primitive.AsString(), "")
         End Operator
 
         Public Shared Widening Operator CType(primitive As Primitive) As Integer
@@ -371,15 +432,14 @@ Namespace Library
         End Operator
 
         Public Shared Widening Operator CType(value As Primitive) As Boolean
-            Dim d = value.TryGetAsDecimal()
-            If d.HasValue Then Return d <> 0
-
-            Dim s = CStr(value).ToLower()
-            If s = "" OrElse s = "false" Then Return False
+            Dim s = value.AsString()
+            If s = "" OrElse s = "0" Then Return False
+            s = s.ToLower()
+            If s = "false" Then Return False
             If s = "true" Then Return True
-            If Not (s.Contains("=") AndAlso s.Contains(";")) Then Return False
             If value.IsArray Then Return value._arrayMap?.Count > 0
-            Return False
+            Dim d = value.TryGetAsDecimal()
+            Return d.HasValue  ' we tested for zoro before, so, if it is numeric it is non zero, if it's not numeric, it is any string which means false
         End Operator
 
         Public Shared Operator =(primitive1 As Primitive, primitive2 As Primitive) As Primitive
@@ -562,7 +622,7 @@ Namespace Library
 
         Private Shared Function Unescape(source As Char(), ByRef index As Integer) As String
             Dim flag = False
-            Dim flag2 = True
+            Dim empty = True
             Dim length = source.Length
             Dim sb As New StringBuilder
 
@@ -575,20 +635,28 @@ Namespace Library
                         Continue While
                     End If
 
-                    If c = "="c OrElse c = ";"c Then
+                    If c = "="c Then
+                        If empty Then Return Nothing
                         Return sb.ToString()
-                        Exit While
+                    ElseIf c = ";"c Then
+                        Return sb.ToString()
                     End If
                 Else
                     flag = False
                 End If
 
-                flag2 = False
+                empty = False
                 sb.Append(c)
             End While
 
-            If flag2 Then Return Nothing
-            Return sb.ToString()
+            Return Nothing
         End Function
     End Structure
+
+    Public Enum NumberType
+        [Decimal]
+        [Date]
+        [TimeSpan]
+    End Enum
+
 End Namespace

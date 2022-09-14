@@ -603,7 +603,7 @@ Namespace Microsoft.SmallBasic
 
             Dim expression As Expression
             Select Case tokenEnum.Current.Type
-                Case TokenType.StringLiteral, TokenType.NumericLiteral, TokenType.True, TokenType.False
+                Case TokenType.StringLiteral, TokenType.NumericLiteral, TokenType.DateLiteral, TokenType.True, TokenType.False
                     expression = New LiteralExpression(tokenEnum.Current)
                     expression.Precedence = 9
                     tokenEnum.MoveNext()
@@ -1115,6 +1115,26 @@ Namespace Microsoft.SmallBasic
             _SymbolTable.AutoCompletion = False
         End Sub
 
+        Public Shared Function ParseDateLiteral(literal As String) As (Ticks As Long, IsDate As Boolean)
+            If literal(1) = "-" OrElse literal(1) = "+" Then
+                Dim s As TimeSpan
+                If TimeSpan.TryParse(literal.Trim("#"c, "+"c), CultureInfo.InvariantCulture, s) Then
+                    Return (s.Ticks, False)
+                Else
+                    Return (0, False)
+                End If
+            Else
+                Dim d As Date
+                If Date.TryParse(literal.Trim("#"), CultureInfo.InvariantCulture, DateTimeStyles.None, d) Then
+                    Return (d.Ticks, True)
+                Else
+                    Return (0, True)
+                End If
+            End If
+
+        End Function
+
+
         Public Shared Function Parse(
                          code As String,
                          symbolTable As SymbolTable,
@@ -1294,7 +1314,7 @@ Namespace Microsoft.SmallBasic
 
         Public Shared Function EvaluateExpression(expression As Expression) As Primitive
             Try
-                Dim literalExpression As LiteralExpression = TryCast(expression, LiteralExpression)
+                Dim literalExpression = TryCast(expression, LiteralExpression)
 
                 If literalExpression IsNot Nothing Then
                     Return New Primitive(literalExpression.Literal.Text)

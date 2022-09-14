@@ -1,4 +1,3 @@
-
 # Contents
 - Small Visual Basic (sVB):
 - Using the source code:
@@ -9,51 +8,6 @@
 - SB Code Enhancements:
 - ToDo:
 
-# What's new in sVB v1.7
-1. Add `ForEach` statement to the language. It is easier for iterating through arrays that have items with string keys. Ex:
-```vb
-   arr[1] = "One" 
-   arr["test"] = "Hello"
-   arr!Name = "Ahmad"  
-   ForEach item In arr
-      TextWindow.WriteLine(item)
-   Next
-```
-
-The above code will print:
-```
-One
-Hello
-Ahmad
-```
-
-2. Add `Append` and `AppendLine` methods to the TextBox control, and `Items` and `RemoveAllItems` to the ListBox control. See the [For Each](https://github.com/VBAndCs/sVB-Small-Visual-Basic/tree/master/Samples/For%20Each) Sample in the Samples folder.
-
-3. Infer var types from initial values. This allows to call some methods directly from the var name. For example:
-```VB
-x = "abc"
-x = x.Append("efg")
-TextWindow.WriteLine(x) ' abcefg
-```
-
-Note That:
- * string variables call methods of the `Text` class.
- * double (numertic) variables call methods of the `Math` class.
- * color variables call methods of the `Color` class.
- * array variables call methods of the `Array` class.
-
-The editor intellisense provides you with info about the var type and auto completion list shows the available methods it can call.
-Note that:
- * sVB is still a dynamic type language, so, you can still store any value in the variable regardless its inferred type. I don't advice you to do that, as you should keep your code clean and readable.
- * sVB can't infer the type in some cases, such as:
-- you initialize the var from a call to a function you wrote.
-- you initialize the var from a calculated expression or operator, even a simple addition one, as sVB will decide the value at runtime only.
-- sub and function params can't be inferred unless you named them using one of the naming conventions for data, controls, colors and keys.
-
-In such cases, you can initialize the var with `""` for strings, `0` for numerics, or `{}` for arrays, then add the value to it in the next line.
-
-4. Variables that contain the word `color` is considered to be a `Color` and when you assign a value for them, the auto completion list suggests the `Colors` class to choose a color from it's members.
-The same for the word key, which is considered to be a `Key`, and auto completion offers the Keys class to choose from its members. This makes it easy to deal with the pressed key in Keyboard events, such as using the `Event.LastKey` property.
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
@@ -389,6 +343,179 @@ While typing the arguments of the method call, the popup help will highlight the
  * Filtered out names don't appear in the list anymore.
  * The list remembers last selected object for each first letter.
  * The list remembers last selected method for each object.
+
+27. `ForEach` statement is added to the language. It is easier for iterating through arrays that have items with string keys. Ex:
+```vb
+   arr[1] = "One" 
+   arr["test"] = "Hello"
+   arr!Name = "Ahmad"  
+   ForEach item In arr
+      TextWindow.WriteLine(item)
+   Next
+```
+
+The above code will print:
+```
+One
+Hello
+Ahmad
+```
+
+28. Add `Append` and `AppendLine` methods to the TextBox control, and `Items` and `RemoveAllItems` to the ListBox control. See the [For Each](https://github.com/VBAndCs/sVB-Small-Visual-Basic/tree/master/Samples/For%20Each) Sample in the Samples folder.
+
+29. Infer var types from initial values. This allows to call some methods directly from the var name. For example:
+```VB
+x = "abc"
+x = x.Append("efg")
+TextWindow.WriteLine(x) ' abcefg
+```
+
+Note That:
+ * string variables call methods of the `Text` class.
+ * double (numertic) variables call methods of the `Math` class.
+ * color variables call methods of the `Color` class.
+ * array variables call methods of the `Array` class.
+
+The editor intellisense provides you with info about the var type and auto completion list shows the available methods it can call.
+Note that:
+ * sVB is still a dynamic type language, so, you can still store any value in the variable regardless its inferred type. I don't advice you to do that, as you should keep your code clean and readable.
+ * sVB can't infer the type in some cases, such as:
+- you initialize the var from a call to a function you wrote.
+- you initialize the var from a calculated expression or operator, even a simple addition one, as sVB will decide the value at runtime only.
+- sub and function params can't be inferred unless you named them using one of the naming conventions for data, controls, colors and keys.
+
+In such cases, you can initialize the var with `""` for strings, `0` for numerics, or `{}` for arrays, then add the value to it in the next line.
+
+30. Variables that contain the word `color` is considered to be a `Color` and when you assign a value for them, the auto completion list suggests the `Colors` class to choose a color from it's members.
+The same for the word key, which is considered to be a `Key`, and auto completion offers the Keys class to choose from its members. This makes it easy to deal with the pressed key in Keyboard events, such as using the `Event.LastKey` property.
+
+# What's new in sVB v1.8
+31. sVB made some breaking changes to fix some SB issues: 
+ a) this  funny code compiles in SB:
+```VB
+x = y
+y = 1
+```
+
+where y is considered declared because it is assigned in the second line, and it's value will be "" in the first line! This will not compile anymore in sVB :)
+
+ b) For loop final and step values can be changes in loop body in SB. For example, this loop is infinite in SB:
+```VB
+n = 5
+For i = 1 to n
+    TextWindow.RightLine(i)
+    n = n + 1
+EndIf
+```
+But now in sVB, final and step values are immune and can't be changed in loop body, so, the above for loop will print numbers from 1 to 5 and end normally, ignoring changes in `n` in loop body. This makes sVB consistent with VB6 and VB.NET, and it is also a good optimization, to avoid recalculating final and step expressions in every loop iteration.
+
+ c) Now, you can write a loop like this:
+```VB
+For i = "a" to "z"
+    TextBox1.AppendLine(i)
+Next
+```
+
+This will show the ASCII codes of letters from a to z.
+
+32. More enhancements in inferred variable types. For example, the For loop iterator\counter is now inferred as `Double`, and variables that are assigned to `Form.AddXX` methods are inferred as the type of the created control. In fact this was done already in previous version, but there was no auto-completion support for the variable unless it uses control naming convention. This is not necessary anymore, and auto-completion is supported for any name of the variable.
+
+33. Introducing basic types naming conventions:
+ * `str` for string variables.
+ * `dbl` for double variables.
+ * `date` for date variables.
+ * `arr` for array variables.
+These abbreviations can be use as prefixes or suffixes, but they should be distinguished from the rest of the word, by using _ (like `str_name`) or an uppercase letter for the next word (like `StrName`) or followed by a number (like `str1`), or if use them as a suffix, they should start with an upper case (like "myStr"). These rules will prevent confusing cases such as a variable named `strange` that starts with `str` but it is just a part of the word not a prefix, so, it will not be considered of type `String`, unless you named it `strStrange`, or `strAnge` :D.
+This feature makes it easy to work with complex expressions , function parameters, and ForEach iteration variables, as sVB can't infer their types directly. 
+
+34. sVB now fully supports working with dates:
+ * The `Date` type provides methods to create dates, read and modify date parts, and add values to them.
+ * Date variables can use `Date` methods as extension methods.
+ * You can use date literals directly in code. Ex:
+```vb
+d = #1/31/2022#
+TextWindow.WriteLine(d.LongDate)
+```
+
+In the above example, we used the English date format, where the month appears before the day. This is a must as long as you use month number in the `# #` literals. You can move the caret to the date literal, and the help popup window will show the date value in your system culture.
+But if you write the month name, you can put it in any order!
+```vb
+d = #1 Jan 2022#
+TextWindow.WriteLine(d.LongDate)
+```
+
+The date literal can also contain the time, like:
+```
+d = #12/27/2020 9:10:6 AM#
+```
+
+and if you omit the date part, the today date will be used:
+```vb
+d = #15:10:6.123#
+TextWindow.WriteLine(d.LongDate)
+```
+
+note that the ".123" is the milliseconds part, and here we used the 24 hour clock, so, we don't need to use the AM/PM part.
+In short: these are the exact same date formats used in VB.NET, and you can review them in MS docs.
+
+* You can also use TimeSpan literals directly in code, which is a specific feature for sVB that doesn't exist in VB.NET. Ex:
+```VB
+ts = #+1.10:14:30#
+TextWindow.WriteLine(ts.TotalHours)
+```
+
+This code will show the result `34.24`, as the time span (duration) contains 1 day, 10 hours and about one quarter of an hour, so, the TotalHours property gives us approximately `34.24`.
+Note that time span literal must start with a `+` or `-`, to distinguish it from date literal. The rest of the time span format is  similar to VB.NET. It can contain only days, hours, minutes, seconds, and milliseconds. Ex:
+```VB
+ts = #-1000.10:14:30.500#
+years = ts.TotalDays / 365
+TextWindow.WriteLine(years)
+```
+
+the above negative time span contains approximately `-2.74` years. There is no built in TotalMonths nor TotalYears in the Date class, as a monthe can contain 29, 30, or 31 days, and a year can contain 365 or 366 days, so, it is up to you to do the math according to the rules you see fit tour needs.
+
+* The Date class contains `Add` and `Subtract` methods, but you can do these operations directly using `+` and `-`. The trick here is that sVB stores dates and time spans as `ticks`. A tick is 1 over 10 million of a second (1 second = 10 million ticks). You can get the total ticks of a date or a time span by calling the `Date.GetTicks()` method, or the `Ticks` extension property. So, when using math operator with date and time span, sVB treats thesm as normal numbers. You can even multiply 2 dates but of course the result is meaningless :D.
+The following code show you 2 different ways to subtract 1000 days from the today's date:
+```VB
+date1 = Date.Now - #+1000.0:0#
+TextWindow.WriteLine(date1.DateAndTime)
+
+d = Date.Now
+TextWindow.WriteLine(d.AddDays(-1000))
+```
+
+Note that we had to use naming convention with variable `date1`, because sVB can't infer the type of an operator. You can use another way, be breaking the operation into two:
+```
+d = Date.Now
+d = d - #+1000.0:0#
+TextWindow.WriteLine(d)
+```
+
+Note that the above code will show the total ticks not the date! This is the result of the subtraction operation, which returns a new object that sVB thinks it is a normal number! This is why we have to call `DateAndTime`, `LongDate`, `shortDate`, `LongTime`, or `ShortTime` properties to show the date!:
+```
+d = Date.Now
+d = d - #+1000.0:0#
+TextWindow.WriteLine(d.DateAndTime)
+```
+
+We didn't need this when we used the `AddDays()` method, as sVB knows that the result is a date, so, it converts it to a string correctly.
+
+* You can also use comparison operators like `>`, `<` and `=` to compare tow dates or time spans. Ex:
+```vb
+D1 = Date.FromCulture("22/9/2022", "ar-EG")
+D2 = Date.Now
+If D1.ShortDate = D2.ShortDate Then
+   TextWindow.WriteLine("In the present")
+ElseIf D1 > D2 Then
+   TextWindow.WriteLine("In the future")
+Else
+   TextWindow.WriteLine("In the past")
+EndIf
+```
+
+* sVB toolbox now has a `DatePicker` control, to allow the user to select dates from a dropdown calendar. Use the `SelectedDate` to get or set the select date in the control, and use the `OnSelection` event to interact with the user after selection a date from the calendar.
+
+35. You can change controls font properties from code. Previously, this was only available via the form designer, but now every control has `FontName`, `FontSize`, `FontBold` and `FontItalic` properties. The auto-completion list will show font names available on your system when you setting the value of the FontName.
 
 # ToDo:
 - Add more controls to the winForms library.

@@ -18,16 +18,53 @@ Namespace WinForms
             FillModuleMembers(GetType(Label))
             FillModuleMembers(GetType(Button))
             FillModuleMembers(GetType(ListBox))
+            FillModuleMembers(GetType(DatePicker))
             FillModuleMembers(GetType(ImageBox))
             FillModuleMembers(GetType(TextEx))
             FillModuleMembers(GetType(MathEx))
             FillModuleMembers(GetType(ArrayEx))
             FillModuleMembers(GetType(ColorEx))
+            FillModuleMembers(GetType(DateEx))
 
             deafaultControlEvents(NameOf(Form).ToLower()) = "OnShown"
             deafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
             deafaultControlEvents(NameOf(ListBox).ToLower()) = "OnSelection"
+            deafaultControlEvents(NameOf(DatePicker).ToLower()) = "OnSelection"
         End Sub
+
+        Public Shared Function GetTypeName(varType As VariableType) As String
+            Select Case varType
+                Case VariableType.Control
+                    Return NameOf(WinForms.Control)
+                Case VariableType.Form
+                    Return NameOf(WinForms.Form)
+                Case VariableType.Label
+                    Return NameOf(WinForms.Label)
+                Case VariableType.TextBox
+                    Return NameOf(WinForms.TextBox)
+                Case VariableType.ListBox
+                    Return NameOf(WinForms.ListBox)
+                Case VariableType.Button
+                    Return NameOf(WinForms.Button)
+                Case VariableType.ImageBox
+                    Return NameOf(WinForms.ImageBox)
+                Case VariableType.DatePicker
+                    Return NameOf(WinForms.DatePicker)
+                Case VariableType.String
+                    Return NameOf(WinForms.TextEx)
+                Case VariableType.Double
+                    Return NameOf(WinForms.MathEx)
+                Case VariableType.Array
+                    Return NameOf(WinForms.ArrayEx)
+                Case VariableType.Color
+                    Return NameOf(WinForms.ColorEx)
+                Case VariableType.Date
+                    Return NameOf(WinForms.DateEx)
+                Case Else
+                    Return ""
+            End Select
+
+        End Function
 
         Public Shared Function GetDefaultEvent(controlName As String) As String
             controlName = controlName?.ToLower()
@@ -68,6 +105,7 @@ Namespace WinForms
             ("Label", VariableType.Label),
             ("Button", VariableType.Button),
             ("ListBox", VariableType.ListBox),
+            ("DatePicker", VariableType.DatePicker),
             ("ListBox", VariableType.ImageBox)
         }
 
@@ -77,9 +115,11 @@ Namespace WinForms
             For Each sh In typeShortcuts
                 Dim lowcaseShotrcut = sh.Shortcut(0).ToString.ToLower() & sh.Shortcut.Substring(1)
                 Dim n = sh.Shortcut.Length
+
+                If variableName.StartsWith(sh.Shortcut) Then Return sh.Type
                 If variableName.EndsWith(sh.Shortcut) Then Return sh.Type
 
-                If variableName.StartsWith(sh.Shortcut) OrElse variableName.StartsWith(lowcaseShotrcut) Then
+                If variableName.StartsWith(lowcaseShotrcut) Then
                     If variableName.Length = n Then Return sh.Type
 
                     Dim x = variableName(n)
@@ -87,6 +127,12 @@ Namespace WinForms
                         Return sh.Type
                     End If
                 End If
+
+                If variableName.EndsWith(lowcaseShotrcut) Then
+                    Dim x = variableName(variableName.Length - 1 - n)
+                    If x = "_" OrElse IsNumeric(x) Then Return sh.Type
+                End If
+
             Next
 
             Return VariableType.None
@@ -144,18 +190,8 @@ Namespace WinForms
                    ) As ([Module] As String, ParamsCount As Integer)
 
             If controlName = "" Then
-                Select Case varType
-                    Case VariableType.String
-                        controlName = NameOf(TextEx)
-                    Case VariableType.Double
-                        controlName = NameOf(MathEx)
-                    Case VariableType.Array
-                        controlName = NameOf(ArrayEx)
-                    Case VariableType.Color
-                        controlName = NameOf(ColorEx)
-                    Case Else
-                        Return ("", 0)
-                End Select
+                controlName = GetTypeName(varType)
+                If controlName = "" Then Return ("", 0)
             End If
 
             Dim method = methodName.ToLower()

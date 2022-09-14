@@ -10,6 +10,8 @@ Namespace Microsoft.SmallBasic
         Private _types As New Dictionary(Of String, TypeInfo)()
         Public StringToPrimitive As MethodInfo
         Public NumberToPrimitive As MethodInfo
+        Public DateToPrimitive As MethodInfo
+        Public TimeSpanToPrimitive As MethodInfo
         Public PrimitiveToBoolean As MethodInfo
         Public Negation As MethodInfo
         Public Add As MethodInfo

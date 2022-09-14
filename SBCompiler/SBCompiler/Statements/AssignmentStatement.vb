@@ -59,11 +59,8 @@ Namespace Microsoft.SmallBasic.Statements
                                     symbolTable.InferedTypes(key) = VariableType.Boolean
                                 Case TokenType.StringLiteral
                                     symbolTable.InferedTypes(key) = VariableType.String
-                                Case Else
-                                    Dim name = identifierExpression.Identifier.NormalizedText
-                                    If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
-                                        symbolTable.InferedTypes(key) = VariableType.Color
-                                    End If
+                                Case TokenType.DateLiteral
+                                    symbolTable.InferedTypes(key) = VariableType.Date
                             End Select
 
                         ElseIf TypeOf RightValue Is NegativeExpression Then

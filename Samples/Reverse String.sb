@@ -1,0 +1,9 @@
+
+TextWindow.WriteLine("Enter any text, to reverse it:")
+X = TextWindow.Read()
+Y = ""
+ForEach C In X
+   Y = C + Y
+Next
+
+TextWindow.WriteLine(Y)

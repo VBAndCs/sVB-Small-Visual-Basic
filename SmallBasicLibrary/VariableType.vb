@@ -14,4 +14,5 @@
     ImageBox
     Button
     ListBox
+    DatePicker
 End Enum

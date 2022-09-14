@@ -65,7 +65,7 @@ Namespace WinForms
         ''' <param name="color">the color you want to change its transparency</param>
         ''' <param name="percentage">a 0 to 100 value that represents the percentage of the transparency of the color</param>
         ''' <returns>a new color with the given transparency</returns>
-        Public Shared Function SetTransparency(color As Primitive, percentage As Primitive) As Primitive
+        Public Shared Function ChangeTransparency(color As Primitive, percentage As Primitive) As Primitive
             Dim _color = FromString(color)
             Dim A As Byte = System.Math.Round((100 - InRange(percentage, 0, 100)) * 255 / 100)
             Return $"#{A:X2}{_color.R:X2}{_color.G:X2}{_color.B:X2}"
@@ -168,7 +168,7 @@ Namespace WinForms
         ''' <param name="value">the new value of the red component</param>
         ''' <returns>a new color with the red component changed to the given value</returns>
         <ReturnValueType(VariableType.Color)>
-        Public Shared Function SetRedRatio(color As Primitive, value As Primitive) As Primitive
+        Public Shared Function ChangeRedRatio(color As Primitive, value As Primitive) As Primitive
             Dim _color = FromString(color)
             Return FromARGB(_color.A, value, _color.G, _color.B)
         End Function
@@ -180,7 +180,7 @@ Namespace WinForms
         ''' <param name="value">the new value of the green component</param>
         ''' <returns>a new color with the green component changed to the given value</returns>
         <ReturnValueType(VariableType.Color)>
-        Public Shared Function SetGreenRatio(color As Primitive, value As Primitive) As Primitive
+        Public Shared Function ChangeGreenRatio(color As Primitive, value As Primitive) As Primitive
             Dim _color = FromString(color)
             Return FromARGB(_color.A, _color.R, value, _color.B)
         End Function
@@ -192,7 +192,7 @@ Namespace WinForms
         ''' <param name="value">the new value of the blue component</param>
         ''' <returns>a new color with the blue component changed to the given value</returns>
         <ReturnValueType(VariableType.Color)>
-        Public Shared Function SetBlueRatio(color As Primitive, value As Primitive) As Primitive
+        Public Shared Function ChangeBlueRatio(color As Primitive, value As Primitive) As Primitive
             Dim _color = FromString(color)
             Return FromARGB(_color.A, _color.R, _color.G, value)
         End Function

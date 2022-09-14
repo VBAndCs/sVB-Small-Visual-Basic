@@ -197,7 +197,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Button control to the form
         ''' </summary>
-        ''' <param name="buttonName">A unigue name of the new Button.</param>
+        ''' <param name="datePickerName">A unigue name of the new Button.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -286,6 +286,51 @@ Namespace WinForms
 
             Return key
         End Function
+
+        ''' <summary>
+        ''' Adds a new DatePicker control to the form
+        ''' </summary>
+        ''' <param name="datePickerName">A unigue name of the new DatePicker.</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control.</param>
+        ''' <returns>The neame of the DatePicker</returns>
+        <ReturnValueType(VariableType.DatePicker)>
+        <ExMethod>
+        Public Shared Function AddDatePiker(
+                         formName As Primitive,
+                         datePickerName As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive
+                    ) As Primitive
+
+            Dim key = ValidateArgs(formName, datePickerName)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+
+                          Dim dp As New Wpf.DatePicker With {
+                               .Name = datePickerName,
+                               .Width = width
+                          }
+
+                          Wpf.Canvas.SetLeft(dp, left)
+                          Wpf.Canvas.SetTop(dp, top)
+
+                          Dim cnv As Wpf.Canvas = frm.Content
+                          cnv.Children.Add(dp)
+                          Forms._controls(key) = dp
+
+                      Catch ex As Exception
+                          ShowSubError(formName, "AddDatePiker", ex)
+                      End Try
+                  End Sub)
+
+            Return key
+        End Function
+
 
         ''' <summary>
         ''' Returns True if the form dsiplays a control with the given name.

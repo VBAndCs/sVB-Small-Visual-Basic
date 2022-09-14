@@ -193,11 +193,21 @@ Namespace Microsoft.SmallBasic.Documents
                         StillWorking = True
                         If needsToFormat And e IsNot Nothing Then
                             Dim snapshot = e.TextView.TextSnapshot
-                            Dim line1 = snapshot.GetLineNumberFromPosition(e.OldPosition.TextInsertionIndex)
-                            Dim line2 = snapshot.GetLineNumberFromPosition(e.NewPosition.TextInsertionIndex)
-                            If line1 <> line2 Then
-                                needsToFormat = False
-                                FormatLine(line1)
+                            Dim pos = _editorControl.TextView.Caret.Position.TextInsertionIndex
+
+                            Dim pos1 = e.OldPosition.TextInsertionIndex
+                            If pos1 > snapshot.Length Then pos1 = pos
+
+                            Dim pos2 = e.NewPosition.TextInsertionIndex
+                            If pos2 > snapshot.Length Then pos2 = pos
+
+                            If pos1 <> pos2 Then
+                                Dim line1 = snapshot.GetLineNumberFromPosition(pos1)
+                                Dim line2 = snapshot.GetLineNumberFromPosition(pos2)
+                                If line1 <> line2 Then
+                                    needsToFormat = False
+                                    FormatLine(line1)
+                                End If
                             End If
                         End If
 
@@ -259,8 +269,8 @@ Namespace Microsoft.SmallBasic.Documents
             Dim sel = textView.Selection
             If sel.ActiveSnapshotSpan.Length > 1 Then
                 Dim span = sel.ActiveSnapshotSpan
-                Dim token = LineScanner.GetToken(span.GetText().ToLower())
-                Dim tokenType = LineScanner.GetTokenType(token)
+                Dim token = LineScanner.GetTokenType(span.GetText().ToLower())
+                Dim tokenType = LineScanner.GetParseType(token)
 
                 If tokenType = ParseType.Keyword Then
                     Dim pos = span.Start

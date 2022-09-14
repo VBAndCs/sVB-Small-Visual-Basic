@@ -11,11 +11,11 @@ Namespace WinForms
         ''' Crates a new color based on the current color, with the transparency set to the given value.
         ''' </summary>
         ''' <param name="percentage">a 0 to 100 value that represents the percentage of the transparency of the color</param>
-        ''' <returns>a new color with the given transparency</returns>
+        ''' <returns>a new color with the given transparency. The current color will not change.</returns>
         <ReturnValueType(VariableType.Color)>
         <ExMethod>
-        Public Shared Function SetTransparency(color As Primitive, percentage As Primitive) As Primitive
-            Return WinForms.Color.SetTransparency(color, percentage)
+        Public Shared Function ChangeTransparency(color As Primitive, percentage As Primitive) As Primitive
+            Return WinForms.Color.ChangeTransparency(color, percentage)
         End Function
 
         ''' <summary>
@@ -83,33 +83,33 @@ Namespace WinForms
         ''' Creates a new color based on the current color, with the red component changed to the given value.
         ''' </summary>
         ''' <param name="value">the new value of the red component</param>
-        ''' <returns>a new color with the red component changed to the given value</returns>
+        ''' <returns>a new color with the red component changed to the given value. The current color will not change.</returns>
         <ReturnValueType(VariableType.Color)>
         <ExMethod>
-        Public Shared Function SetRedRatio(color As Primitive, value As Primitive) As Primitive
-            Return WinForms.Color.SetRedRatio(color, value)
+        Public Shared Function ChangeRedRatio(color As Primitive, value As Primitive) As Primitive
+            Return WinForms.Color.ChangeRedRatio(color, value)
         End Function
 
         ''' <summary>
         ''' Creates a new color based on the current color, with the green component changed to the given value.
         ''' </summary>
         ''' <param name="value">the new value of the green component</param>
-        ''' <returns>a new color with the green component changed to the given value</returns>
+        ''' <returns>a new color with the green component changed to the given value. The current color will not change.</returns>
         <ReturnValueType(VariableType.Color)>
         <ExMethod>
-        Public Shared Function SetGreenRatio(color As Primitive, value As Primitive) As Primitive
-            Return WinForms.Color.SetGreenRatio(color, value)
+        Public Shared Function ChangeGreenRatio(color As Primitive, value As Primitive) As Primitive
+            Return WinForms.Color.ChangeGreenRatio(color, value)
         End Function
 
         ''' <summary>
         ''' Creates a new color based on the current color, with the blue component changed to the given value.
         ''' </summary>
         ''' <param name="value">the new value of the blue component</param>
-        ''' <returns>a new color with the blue component changed to the given value</returns>
+        ''' <returns>a new color with the blue component changed to the given value. The current color will not change.</returns>
         <ReturnValueType(VariableType.Color)>
         <ExMethod>
-        Public Shared Function SetBlueRatio(color As Primitive, value As Primitive) As Primitive
-            Return WinForms.Color.SetBlueRatio(color, value)
+        Public Shared Function ChangeBlueRatio(color As Primitive, value As Primitive) As Primitive
+            Return WinForms.Color.ChangeBlueRatio(color, value)
         End Function
 
     End Class

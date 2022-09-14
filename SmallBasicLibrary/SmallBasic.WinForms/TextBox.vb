@@ -18,7 +18,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets or sets the text that is displayed on the label
+        ''' Gets or sets the text that is displayed by the TextBox
         ''' </summary>
         <ReturnValueType(VariableType.String)>
         <ExProperty>

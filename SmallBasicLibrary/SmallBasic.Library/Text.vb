@@ -85,7 +85,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetLength(text As Primitive) As Primitive
             If text.IsArray Then Return text._arrayMap.Count
-            Return text.AsString.Length
+            Return text.AsString().Length
         End Function
 
         ''' <summary>

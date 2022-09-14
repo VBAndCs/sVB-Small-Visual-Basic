@@ -417,6 +417,147 @@ Namespace WinForms
                    End Sub)
         End Sub
 
+
+        ''' <summary>
+        ''' Gets or sets the font name used to display the text of the control
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetFontName(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim _fontFamily = GetControl(controlName).FontFamily
+                        GetFontName = If((_fontFamily IsNot Nothing), _fontFamily.Source, "Tahoma")
+                    Catch ex As Exception
+                        ShowErrorMesssage(controlName, "FontName", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetFontName(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetControl(controlName).FontFamily = New Media.FontFamily(Value)
+                    Catch ex As Exception
+                        ShowPropertyMesssage(controlName, "FontName", Value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Gets or sets the font size used to display the text of the control.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetFontSize(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetFontSize = GetControl(controlName).FontSize
+                    Catch ex As Exception
+                        ShowErrorMesssage(controlName, "FontSize", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetFontSize(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetControl(controlName).FontSize = Value
+                    Catch ex As Exception
+                        ShowPropertyMesssage(controlName, "FontSize", Value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Gets or sets whether or not the font used to display the text of the control, is bold.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetFontBold(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetFontBold = (GetControl(controlName).FontWeight = FontWeights.Bold)
+                    Catch ex As Exception
+                        ShowErrorMesssage(controlName, "FontBold", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetFontBold(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           GetControl(controlName).FontWeight = If(CBool(Value), FontWeights.Bold, FontWeights.Normal)
+                       Catch ex As Exception
+                           ShowPropertyMesssage(controlName, "FontBold", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Gets or sets whether or not the font used to display the text of the control, is italic.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetFontItalic(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetFontItalic = (GetControl(controlName).FontStyle = FontStyles.Italic)
+                    Catch ex As Exception
+                        ShowErrorMesssage(controlName, "FontItalic", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetFontItalic(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           GetControl(controlName).FontStyle = If(CBool(Value), FontStyles.Italic, FontStyles.Normal)
+                       Catch ex As Exception
+                           ShowPropertyMesssage(controlName, "FontItalic", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Gets or sets whether the control content is displayed from right to left.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetRightToLeft(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetRightToLeft = (GetControl(controlName).FlowDirection = FlowDirection.RightToLeft)
+                    Catch ex As Exception
+                        ShowErrorMesssage(controlName, "RightToLeft", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetRightToLeft(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           GetControl(controlName).FlowDirection = If(CBool(Value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
+                       Catch ex As Exception
+                           ShowPropertyMesssage(controlName, "RightToLeft", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
+
         ''' <summary>
         ''' The mouse x-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's width.
         ''' </summary>
@@ -602,7 +743,7 @@ Namespace WinForms
         Public Shared Sub AnimateTransparency(controlName As Primitive, transparency As Primitive, duration As Primitive)
             Try
                 Dim c = GetBackColor(controlName)
-                c = Color.SetTransparency(c, transparency)
+                c = Color.ChangeTransparency(c, transparency)
                 AnimateColor(controlName, c, duration)
             Catch ex As Exception
                 ShowSubError(controlName, "AnimateColor", ex)
