@@ -67,7 +67,7 @@ Namespace Microsoft.SmallBasic.Utility
 
                     Case SymbolType.Property, SymbolType.Event, SymbolType.Type
                         methodType = " " & value.SymbolType.ToString()
-                        Dim type = GetTypeName()
+                        Dim type = GetTypeDisplayName()
                         Dim definition As New Span()
                         FillTitle(definition)
                         FillDescription(definition, If(type = "", "", type & "."))
@@ -91,22 +91,9 @@ Namespace Microsoft.SmallBasic.Utility
             End Set
         End Property
 
-        Private Function GetTypeName() As String
+        Private Function GetTypeDisplayName() As String
             Dim type = _itemWrapper.CompletionItem.MemberInfo?.DeclaringType
-            If type Is Nothing Then Return ""
-
-            Select Case type.Name
-                Case NameOf(WinForms.ArrayEx)
-                    Return NameOf(Library.Array)
-                Case NameOf(WinForms.MathEx)
-                    Return NameOf(Library.Math)
-                Case NameOf(WinForms.TextEx)
-                    Return NameOf(Library.Text)
-                Case NameOf(WinForms.ColorEx)
-                    Return NameOf(WinForms.Color)
-                Case Else
-                    Return type.Name
-            End Select
+            Return WinForms.PreCompiler.GetTypeDisplayName(type)
         End Function
 
         Private Sub OnScrollChaged(senmder As Object, e As ScrollEventArgs)
@@ -206,7 +193,7 @@ Namespace Microsoft.SmallBasic.Utility
         Private Sub FillInfo(hasParams As Boolean)
             Dim documentation = _itemWrapper.Documentation
             Dim item = _itemWrapper.CompletionItem
-            Dim name = GetTypeName()
+            Dim name = GetTypeDisplayName()
             Dim definition As New Span()
             Dim params = documentation.ParamsDoc.Keys
             Dim paramIndex = item.ParamIndex

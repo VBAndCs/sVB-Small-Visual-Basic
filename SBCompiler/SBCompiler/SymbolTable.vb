@@ -136,70 +136,32 @@ Namespace Microsoft.SmallBasic
 
             Else
                 Dim varType = GetInferedType(typeName)
-                Select Case varType
-                    Case VariableType.String
-                        typeKey = NameOf(WinForms.TextEx).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
+                Dim varTypeName = WinForms.PreCompiler.GetTypeName(varType)
 
-                    Case VariableType.Double
-                        typeKey = NameOf(WinForms.MathEx).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
+                If varTypeName <> "" Then
+                    typeKey = varTypeName.ToLower()
+                    type = _typeInfoBag.Types(typeKey)
 
-                    Case VariableType.Array
-                        typeKey = NameOf(WinForms.ArrayEx).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
+                ElseIf ControlNames Is Nothing Then
+                    Return Nothing
 
-                    Case VariableType.Color
-                        typeKey = NameOf(WinForms.ColorEx).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
-
-                    Case VariableType.Control
-                        typeKey = NameOf(WinForms.Control).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
-
-                    Case VariableType.Form
-                        typeKey = NameOf(WinForms.Form).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
-
-                    Case VariableType.TextBox
-                        typeKey = NameOf(WinForms.TextBox).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
-
-                    Case VariableType.ListBox
-                        typeKey = NameOf(WinForms.ListBox).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
-
-                    Case VariableType.Label
-                        typeKey = NameOf(WinForms.Label).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
-
-                    Case VariableType.Button
-                        typeKey = NameOf(WinForms.Button).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
-
-                    Case VariableType.ImageBox
-                        typeKey = NameOf(WinForms.ImageBox).ToLower()
-                        type = _typeInfoBag.Types(typeKey)
-
-                    Case Else
-                        If ControlNames Is Nothing Then Return Nothing
-
-                        For Each controlName In ControlNames
-                            If controlName.ToLower = typeKey Then
-                                typeName.Comment = controlName
-                                typeKey = ModuleNames(typeKey).ToLower()
-                                Exit For
-                            End If
-                        Next
-
-                        If typeName.Comment = "" Then
-                            Dim name = WinForms.PreCompiler.GetModuleFromVarName(typeKey)
-                            If name = "" Then Return Nothing
-                            type = _typeInfoBag.Types(name.ToLower())
-                        Else
-                            type = _typeInfoBag.Types(typeKey)
+                Else
+                    For Each controlName In ControlNames
+                        If controlName.ToLower = typeKey Then
+                            typeName.Comment = controlName
+                            typeKey = ModuleNames(typeKey).ToLower()
+                            Exit For
                         End If
-                End Select
+                    Next
+
+                    If typeName.Comment = "" Then
+                        Dim name = WinForms.PreCompiler.GetModuleFromVarName(typeKey)
+                        If name = "" Then Return Nothing
+                        type = _typeInfoBag.Types(name.ToLower())
+                    Else
+                        type = _typeInfoBag.Types(typeKey)
+                    End If
+                End If
             End If
 
             Return type

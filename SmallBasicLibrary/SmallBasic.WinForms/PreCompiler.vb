@@ -66,6 +66,25 @@ Namespace WinForms
 
         End Function
 
+        Public Shared Function GetTypeDisplayName(type As Type) As String
+            If type Is Nothing Then Return ""
+
+            Select Case type.Name
+                Case NameOf(ArrayEx)
+                    Return NameOf(Array)
+                Case NameOf(MathEx)
+                    Return NameOf(Math)
+                Case NameOf(TextEx)
+                    Return NameOf(Text)
+                Case NameOf(ColorEx)
+                    Return NameOf(Color)
+                Case NameOf(DateEx)
+                    Return NameOf(WinForms.Date)
+                Case Else
+                    Return type.Name
+            End Select
+        End Function
+
         Public Shared Function GetDefaultEvent(controlName As String) As String
             controlName = controlName?.ToLower()
             If controlName <> "" AndAlso deafaultControlEvents.ContainsKey(controlName) Then
