@@ -1334,14 +1334,14 @@ Namespace Microsoft.SmallBasic
             SaveDesignInfo(Nothing, False, saveAs)
             Dim doc = GetDocIfOpened()
 
-            If oldCodeFile.ToLower() = fileName.ToLower() Then
+            If oldCodeFile?.ToLower() = fileName.ToLower() Then
                 If doc IsNot Nothing Then doc.Save()
             Else
                 If File.Exists(fileName) Then File.Delete(fileName)
 
                 If doc IsNot Nothing Then
                     doc.SaveAs(fileName)
-                Else
+                ElseIf oldCodeFile <> "" Then
                     File.Copy(oldCodeFile, fileName)
                 End If
 
