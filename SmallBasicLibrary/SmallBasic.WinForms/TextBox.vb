@@ -46,6 +46,106 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
+        ''' Gets or sets the start pos of the selected text.
+        ''' </summary>
+        <ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetSelectionStart(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetSelectionStart = GetTextBox(textBoxName).SelectionStart + 1
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(textBoxName, "SelectionStart", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetSelectionStart(textBoxName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTextBox(textBoxName).SelectionStart = value - 1
+                    Catch ex As Exception
+                        Control.ShowPropertyMesssage(textBoxName, "SelectionStart", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Gets or sets the length of the selected text.
+        ''' </summary>
+        <ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetSelectionLength(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetSelectionLength = GetTextBox(textBoxName).SelectionLength
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(textBoxName, "SelectionLength", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetSelectionLength(textBoxName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTextBox(textBoxName).SelectionLength = value
+                    Catch ex As Exception
+                        Control.ShowPropertyMesssage(textBoxName, "SelectionLength", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Gets or sets the selected text.
+        ''' </summary>
+        <ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetSelectedText(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetSelectedText = GetTextBox(textBoxName).SelectedText
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(textBoxName, "SelectedText", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        ''' <summary>
+        ''' Gets or sets the current caret pos in the TextBox.
+        ''' </summary>
+        <ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetCaretIndex(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetCaretIndex = GetTextBox(textBoxName).CaretIndex + 1
+                    Catch ex As Exception
+                        Control.ShowErrorMesssage(textBoxName, "CaretIndex", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetCaretIndex(textBoxName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTextBox(textBoxName).CaretIndex = value - 1
+                    Catch ex As Exception
+                        Control.ShowPropertyMesssage(textBoxName, "CaretIndex", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
         ''' Set this property to True  to allow the user to write more than one line in the TextBox
         ''' </summary>
         <ReturnValueType(VariableType.Boolean)>

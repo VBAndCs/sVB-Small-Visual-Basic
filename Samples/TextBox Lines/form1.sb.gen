@@ -1,0 +1,28 @@
+'@Form Hints:
+'#Form1{
+'    TextBox1: TextBox
+'    BtnPrevLine: Button
+'    BtnNextLine: Button
+'}
+
+Me = "Form1"
+TextBox1 = "form1.textbox1"
+BtnPrevLine = "form1.btnprevline"
+BtnNextLine = "form1.btnnextline"
+Form1 = Forms.LoadForm("Form1", "form1.xaml")
+Form.Show(Form1)
+
+'#Events{
+'    BtnPrevLine: OnClick
+'    BtnNextLine: OnClick
+'}
+
+' BtnPrevLine Events:
+Control.HandleEvents(BtnPrevLine)
+Control.OnClick = BtnPrevLine_OnClick
+
+' BtnNextLine Events:
+Control.HandleEvents(BtnNextLine)
+Control.OnClick = BtnNextLine_OnClick
+
+

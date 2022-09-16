@@ -1,0 +1,37 @@
+TextBox1.MuliLine = True
+
+'------------------------------------------------
+
+Sub BtnNextLine_OnClick()
+   pos = TextBox1.CaretIndex
+   txt = TextBox1.Text
+   For i = pos To txt.Length
+      If txt[i] = Chars.Cr Then
+         If txt[i + 1] = Chars.Lf Then
+            TextBox1.CaretIndex = i + 1
+         Else
+            TextBox1.CaretIndex = i
+         EndIf
+         ExitLoop
+      EndIf
+   Next
+   TextBox1.Focus()
+EndSub
+
+
+'------------------------------------------------
+Sub BtnPrevLine_OnClick()
+   pos = TextBox1.CaretIndex
+   txt = TextBox1.Text
+   For i = pos To 1 Step -1
+      If txt[i] = Chars.Lf Then
+         If txt[i - 1] = Chars.Cr Then
+            TextBox1.CaretIndex = i - 1
+         Else
+            TextBox1.CaretIndex = i
+         EndIf
+         ExitLoop
+      EndIf
+   Next
+   TextBox1.Focus()
+EndSub
