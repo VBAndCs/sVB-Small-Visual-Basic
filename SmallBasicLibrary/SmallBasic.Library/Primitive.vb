@@ -275,11 +275,11 @@ Namespace Library
         End Function
 
         Private Function GetNumberType(numberType1 As NumberType, numberType2 As NumberType) As NumberType
-            If numberType2 = NumberType.Decimal Then Return NumberType.Decimal
 
             Select Case numberType1
                 Case NumberType.Decimal
                     Return NumberType.Decimal
+
                 Case NumberType.Date
                     If numberType2 = NumberType.Date Then
                         Return NumberType.TimeSpan
@@ -287,11 +287,7 @@ Namespace Library
                         Return NumberType.Date
                     End If
                 Case Else
-                    If numberType2 = NumberType.Date Then
-                        Return NumberType.Decimal
-                    Else
-                        Return NumberType.TimeSpan
-                    End If
+                    Return NumberType.TimeSpan
             End Select
         End Function
 

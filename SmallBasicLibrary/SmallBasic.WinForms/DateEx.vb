@@ -298,7 +298,7 @@ Namespace WinForms
         ''' <summary>
         ''' Creates a new date by adding the given years to the current date.
         ''' </summary>
-        ''' <param name="value">the number of years you want to add</param>
+        ''' <param name="value">the number of years you want to add. If the given date is a duration, the total days of the years will be calculated assuming that a year = 365.25 days.</param>
         ''' <returns>a new date with the added years. The input date will not Add</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
@@ -309,7 +309,7 @@ Namespace WinForms
         ''' <summary>
         ''' Creates a new date by adding the given months to the current date.
         ''' </summary>
-        ''' <param name="value">the number of months you want to add</param>
+        ''' <param name="value">the number of months you want to add. If the given date is a duration, the total days of the months will be calculated assuming that a month = 30.44 days in avarage.</param>
         ''' <returns>a new date with the added months. The input date will not Add</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
@@ -458,6 +458,58 @@ Namespace WinForms
         Public Shared Function ToCulture([date] As Primitive, cultureName As Primitive) As Primitive
             Return WinForms.Date.ToCulture([date], cultureName)
         End Function
+
+
+        ''' <summary>
+        ''' Get the integral days part of the current TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the days part of the current duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationDays(duration As Primitive)
+            Return WinForms.Date.GetDurationDays(duration)
+        End Function
+
+        ''' <summary>
+        ''' Get the integral hours part of the gdiven TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the hours part of the current duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationHours(duration As Primitive)
+            Return WinForms.Date.GetDurationHours(duration)
+        End Function
+
+        ''' <summary>
+        ''' Get the integral minutes part of the current TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the minutes part of the current duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationMinutes(duration As Primitive)
+            Return WinForms.Date.GetDurationMinutes(duration)
+        End Function
+
+        ''' <summary>
+        ''' Get the integral seconds part of the current TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the seconds part of the current duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationSeconds(duration As Primitive)
+            Return WinForms.Date.GetDurationSeconds(duration)
+        End Function
+
+        ''' <summary>
+        ''' Get the integral milliseconds part of the current TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the milliseconds part of the current duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationMilliseconds(duration As Primitive)
+            Return WinForms.Date.GetDurationMilliseconds(duration)
+        End Function
+
 
     End Class
 End Namespace

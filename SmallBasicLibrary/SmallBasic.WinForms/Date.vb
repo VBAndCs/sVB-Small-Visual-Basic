@@ -20,6 +20,20 @@ Namespace WinForms
         End Property
 
         ''' <summary>
+        ''' Creates a time span from given duration parts.
+        ''' </summary>
+        ''' <param name="days">the total days in the duration. For example, 1000 days approximatly represents 2 years and 9 months</param>
+        ''' <param name="hours">the hours part of the duration</param>
+        ''' <param name="minutes">the minutes part of the duration</param>
+        ''' <param name="seconds">the seconds part of the duration</param>
+        ''' <param name="milliseconds">the milliseconds part of the duration</param>
+        ''' <returns>a new duration</returns>
+        <ReturnValueType(VariableType.Date)>
+        Public Shared Function CreateDuration(days As Primitive, hours As Primitive, minutes As Primitive, seconds As Primitive, milliseconds As Primitive) As Primitive
+            Return New Primitive(New TimeSpan(days, hours, minutes, seconds, milliseconds).Ticks, NumberType.TimeSpan)
+        End Function
+
+        ''' <summary>
         ''' Creats a new date from the given text if its format is a valid date format for the given culture.
         ''' </summary>
         ''' <param name="dateText">the text that represents the date</param>
@@ -65,10 +79,22 @@ Namespace WinForms
         ''' <param name="ticks">the total ticks of the date</param>
         ''' <returns>a new date</returns>
         <ReturnValueType(VariableType.Date)>
-        Public Shared Function FromTicks(ticks As Primitive) As Primitive
+        Public Shared Function TicksToDate(ticks As Primitive) As Primitive
             If Not ticks.IsNumber Then Return ""
             Return New Primitive(ticks.AsDecimal, NumberType.Date)
         End Function
+
+        ''' <summary>
+        ''' Creats a new TimeSpan from the given ticks value. Note that the second contains 10 milion ticks.
+        ''' </summary>
+        ''' <param name="ticks">the total ticks of the date</param>
+        ''' <returns>a new duration</returns>
+        <ReturnValueType(VariableType.Date)>
+        Public Shared Function TicksToDuration(ticks As Primitive) As Primitive
+            If Not ticks.IsNumber Then Return ""
+            Return New Primitive(ticks.AsDecimal, NumberType.TimeSpan)
+        End Function
+
 
         ''' <summary>
         ''' Creats a new date from the given year, month and day values.
@@ -176,17 +202,28 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the full date and time representaion
+        ''' Gets the short date and time representaion
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
         ''' <returns>a string representing the full date and time</returns>
         <ReturnValueType(VariableType.String)>
-        Public Shared Function GetDateAndTime([date] As Primitive) As Primitive
+        Public Shared Function GetLongDateAndTime([date] As Primitive) As Primitive
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.ToString())
         End Function
 
+        ''' <summary>
+        ''' Gets the long date and time representaion
+        ''' </summary>
+        ''' <param name="date">the input date \ time</param>
+        ''' <returns>a string representing the long date and time</returns>
+        <ReturnValueType(VariableType.String)>
+        Public Shared Function GetDateAndTime([date] As Primitive) As Primitive
+            Dim d = [date].AsDate()
+            If d Is Nothing Then Return ""
+            Return New Primitive(d.Value.ToLongDateString() & " " & d.Value.ToLongTimeString())
+        End Function
 
         ''' <summary>
         ''' Gets the year or the given date.
@@ -355,9 +392,19 @@ Namespace WinForms
         ''' <returns>the total ticks</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetTicks([date] As Primitive) As Primitive
-            Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
-            Return New Primitive(d.Value.Ticks)
+            If [date].IsTimeSpan Then
+                Dim ts = [date].AsTimeSpan()
+                If ts Is Nothing Then Return ""
+                Return New Primitive(ts.Value.Ticks)
+            Else
+                Dim d = [date].AsDate()
+                If d Is Nothing Then
+                    Dim ts = [date].AsTimeSpan()
+                    If ts Is Nothing Then Return ""
+                    Return New Primitive(ts.Value.Ticks)
+                End If
+                Return New Primitive(d.Value.Ticks)
+            End If
         End Function
 
         ''' <summary>
@@ -367,8 +414,17 @@ Namespace WinForms
         ''' <returns>the number of milliseconds that have elapsed since 1900 until the given date</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetElapsedMilliseconds([date] As Primitive) As Primitive
+            If [date].IsTimeSpan Then
+                Return [date].AsDecimal \ 10000
+            End If
+
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then
+                Dim ts = [date].AsTimeSpan()
+                If ts Is Nothing Then Return 0
+                Return ts.Value.TotalMilliseconds
+            End If
+
             Return (d.Value - New DateTime(1900, 1, 1)).TotalMilliseconds
         End Function
 
@@ -473,7 +529,6 @@ Namespace WinForms
         <ReturnValueType(VariableType.Date)>
         Public Shared Function ChangeMinute([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
-
             Dim d = [date].AsDate()
             If d Is Nothing Then Return [date]
 
@@ -538,14 +593,21 @@ Namespace WinForms
         ''' Creates a new date by adding the given years to the given date.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <param name="value">the number of years you want to add</param>
+        ''' <param name="value">the number of years you want to add. If the given date is a duration, the total days of the years will be calculated assuming that a year = 365.25 days.</param>
         ''' <returns>a new date with the added years. The input date will not Add</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function AddYears([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
+            If [date].IsTimeSpan Then
+                Return [date] + New Primitive(TimeSpan.FromDays(value * 365.25).Ticks, NumberType.TimeSpan)
+            End If
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return [date]
+            If d Is Nothing Then
+                Dim ts = [date].AsTimeSpan()
+                If ts Is Nothing Then Return [date]
+                Return New Primitive(ts.Value.Ticks + TimeSpan.FromDays(value * 365.25).Ticks, NumberType.TimeSpan)
+            End If
 
             Try
                 Dim d2 = d.Value.AddYears(value)
@@ -557,17 +619,24 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Creates a new date by adding the given months to the given date.
+        ''' Creates a new date by adding the given months to the given date. 
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <param name="value">the number of months you want to add</param>
+        ''' <param name="value">the number of months you want to add. If the given date is a duration, the total days of the months will be calculated assuming that a month = 30.44 days in avarage.</param>
         ''' <returns>a new date with the added months. The input date will not Add</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function AddMonths([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
+            If [date].IsTimeSpan Then
+                Return [date] + New Primitive(TimeSpan.FromDays(value * 365.25 / 12).Ticks, NumberType.TimeSpan)
+            End If
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return [date]
+            If d Is Nothing Then
+                Dim ts = [date].AsTimeSpan()
+                If ts Is Nothing Then Return [date]
+                Return New Primitive(ts.Value.Ticks + TimeSpan.FromDays(value * 365.25 / 12).Ticks, NumberType.TimeSpan)
+            End If
 
             Try
                 Dim d2 = d.Value.AddMonths(value)
@@ -587,17 +656,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Date)>
         Public Shared Function AddDays([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
-
-            Dim d = [date].AsDate()
-            If d Is Nothing Then Return [date]
-
-            Try
-                Dim d2 = d.Value.AddDays(value)
-                Return New Primitive(d2.Ticks, NumberType.Date)
-            Catch
-            End Try
-
-            Return [date]
+            Return [date] + New Primitive(TimeSpan.FromDays(value).Ticks, NumberType.TimeSpan)
         End Function
 
         ''' <summary>
@@ -609,17 +668,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Date)>
         Public Shared Function AddHours([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
-
-            Dim d = [date].AsDate()
-            If d Is Nothing Then Return [date]
-
-            Try
-                Dim d2 = d.Value.AddHours(value)
-                Return New Primitive(d2.Ticks, NumberType.Date)
-            Catch
-            End Try
-
-            Return [date]
+            Return [date] + New Primitive(TimeSpan.FromHours(value).Ticks, NumberType.TimeSpan)
         End Function
 
         ''' <summary>
@@ -631,17 +680,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Date)>
         Public Shared Function AddMinutes([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
-
-            Dim d = [date].AsDate()
-            If d Is Nothing Then Return [date]
-
-            Try
-                Dim d2 = d.Value.AddMinutes(value)
-                Return New Primitive(d2.Ticks, NumberType.Date)
-            Catch
-            End Try
-
-            Return [date]
+            Return [date] + New Primitive(TimeSpan.FromMinutes(value).Ticks, NumberType.TimeSpan)
         End Function
 
         ''' <summary>
@@ -653,17 +692,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Date)>
         Public Shared Function AddSeconds([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
-
-            Dim d = [date].AsDate()
-            If d Is Nothing Then Return [date]
-
-            Try
-                Dim d2 = d.Value.AddSeconds(value)
-                Return New Primitive(d2.Ticks, NumberType.Date)
-            Catch
-            End Try
-
-            Return [date]
+            Return [date] + New Primitive(TimeSpan.FromSeconds(value).Ticks, NumberType.TimeSpan)
         End Function
 
         ''' <summary>
@@ -675,17 +704,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Date)>
         Public Shared Function AddMilliseconds([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
-
-            Dim d = [date].AsDate()
-            If d Is Nothing Then Return [date]
-
-            Try
-                Dim d2 = d.Value.AddMilliseconds(value)
-                Return New Primitive(d2.Ticks, NumberType.Date)
-            Catch
-            End Try
-
-            Return [date]
+            Return [date] + New Primitive(TimeSpan.FromMilliseconds(value).Ticks, NumberType.TimeSpan)
         End Function
 
         ''' <summary>
@@ -696,21 +715,7 @@ Namespace WinForms
         ''' <returns>a new date with the added duration. The input date will not Add</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function Add([date] As Primitive, duration As Primitive) As Primitive
-            If Not duration.IsNumber Then Return [date]
-
-            Dim d = [date].AsDate()
-            If d Is Nothing Then Return [date]
-
-            Dim d2 = duration.AsTimeSpan()
-            If d2 Is Nothing Then Return [date]
-
-            Try
-                Dim d3 = d.Value.Add(d2)
-                Return New Primitive(d3.Ticks, NumberType.TimeSpan)
-            Catch
-            End Try
-
-            Return [date]
+            Return [date] + duration
         End Function
 
         ''' <summary>
@@ -721,32 +726,47 @@ Namespace WinForms
         ''' <returns>a duration representing the difference between the two dates. The input date will not Add</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function Subtract(date1 As Primitive, date2 As Primitive) As Primitive
-            Dim d1 = date1.AsDate()
-            If d1 Is Nothing Then Return date1
-
-            Dim d2 = date2.AsDate()
-            If d2 Is Nothing Then Return date1
-
-            Try
-                Dim d3 = d1.Value.Subtract(d2)
-                Return New Primitive(d3.Ticks, NumberType.TimeSpan)
-            Catch
-            End Try
-
-            Return date1
+            Return date1 - date2
         End Function
 
         Private Shared Function GetTimeSpan(duration As Primitive) As TimeSpan?
-            If duration.IsTimeSpan OrElse duration.IsDate Then
+            If duration.IsNumber Then
                 Return New TimeSpan(duration.AsDecimal())
 
-            Else
-                Dim d = duration.AsDate()
-                If d Is Nothing Then Return Nothing
-                Return New TimeSpan(d.Value.Ticks)
+            Else ' Parse the string value
+                Dim ts = duration.AsTimeSpan()
+                If ts Is Nothing Then
+                    Dim d = duration.AsDate()
+                    If d Is Nothing Then Return Nothing
+                    Return New TimeSpan(d.Value.Ticks)
+                End If
             End If
         End Function
 
+        ''' <summary>
+        ''' Gets the approximate total years in the given duration, assuming that each year contains 365.25 days.
+        ''' </summary>
+        ''' <param name="duration">the input duration</param>
+        ''' <returns>the approximate total years</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetTotalYears(duration As Primitive) As Primitive
+            Dim ts = GetTimeSpan(duration)
+            If ts Is Nothing Then Return 0
+            Return New Primitive(ts.Value.TotalDays / 365.25)
+        End Function
+
+
+        ''' <summary>
+        ''' Gets the approximate total months in the given duration, assuming that theere is 12 months in the year, and each year contains 365.25 days.
+        ''' </summary>
+        ''' <param name="duration">the input duration</param>
+        ''' <returns>the approximate total months</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetTotalMonths(duration As Primitive) As Primitive
+            Dim ts = GetTimeSpan(duration)
+            If ts Is Nothing Then Return 0
+            Return New Primitive(ts.Value.TotalDays * 12 / 365.25)
+        End Function
 
         ''' <summary>
         ''' Gets the total days in the given duration.
@@ -811,7 +831,64 @@ Namespace WinForms
             Return New Primitive(ts.Value.TotalMilliseconds)
         End Function
 
+        ''' <summary>
+        ''' Get the integral days part of the given TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the days part of the given duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationDays(duration As Primitive)
+            Dim ts = GetTimeSpan(duration)
+            If ts Is Nothing Then Return 0
+            Return New Primitive(ts.Value.Days)
+        End Function
 
+        ''' <summary>
+        ''' Get the integral hours part of the gdiven TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the hours part of the given duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationHours(duration As Primitive)
+            Dim ts = GetTimeSpan(duration)
+            If ts Is Nothing Then Return 0
+            Return New Primitive(ts.Value.Hours)
+        End Function
 
+        ''' <summary>
+        ''' Get the integral minutes part of the given TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the minutes part of the given duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationMinutes(duration As Primitive)
+            Dim ts = GetTimeSpan(duration)
+            If ts Is Nothing Then Return 0
+            Return New Primitive(ts.Value.Minutes)
+        End Function
+
+        ''' <summary>
+        ''' Get the integral seconds part of the given TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the seconds part of the given duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationSeconds(duration As Primitive)
+            Dim ts = GetTimeSpan(duration)
+            If ts Is Nothing Then Return 0
+            Return New Primitive(ts.Value.Seconds)
+        End Function
+
+        ''' <summary>
+        ''' Get the integral milliseconds part of the given TimeSpan.
+        ''' </summary>
+        ''' <param name="duration">the input timespan</param>
+        ''' <returns>an integer number representing the milliseconds part of the given duration</returns>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDurationMilliseconds(duration As Primitive)
+            Dim ts = GetTimeSpan(duration)
+            If ts Is Nothing Then Return 0
+            Return New Primitive(ts.Value.Milliseconds)
+        End Function
     End Class
 End Namespace
