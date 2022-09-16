@@ -248,6 +248,19 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Rounds a given number to the given decimal places.
+        ''' </summary>
+        ''' <param name="number">The number whose approximation is required.''' </param>
+        ''' <paramref name="decimalPlaces">the number of decimal places to keep in the number</paramref>
+        ''' <returns>
+        ''' The rounded value of the given number.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function Round2(number As Primitive, decimalPlaces As Primitive) As Primitive
+            Return System.Math.Round(number.AsDecimal, CInt(decimalPlaces.AsDecimal()))
+        End Function
+
+        ''' <summary>
         ''' Compares two numbers and returns the greater of the two.
         ''' </summary>
         ''' <param name="number1">

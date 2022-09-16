@@ -204,6 +204,19 @@ Namespace WinForms
         End Function
 
         ''' <summary>
+        ''' Rounds a current number to the given decimal places.
+        ''' </summary>
+        ''' <param name="decimalPlaces">the number of decimal places to keep in the number</param>
+        ''' <returns>
+        ''' The rounded value of the current number.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        <ExMethod>
+        Public Shared Function Round(number As Primitive, decimalPlaces As Primitive) As Primitive
+            Return System.Math.Round(number.AsDecimal, CInt(decimalPlaces.AsDecimal()))
+        End Function
+
+        ''' <summary>
         ''' Divides the first number by the second and returns the remainder.
         ''' </summary>
         ''' <param name="divisor">
@@ -229,6 +242,7 @@ Namespace WinForms
         Public Shared Function GetRandom(maxNumber As Primitive) As Primitive
             Return Math.GetRandomNumber(maxNumber)
         End Function
+
 
     End Class
 End Namespace

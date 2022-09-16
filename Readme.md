@@ -477,28 +477,12 @@ the above negative time span contains approximately `-2.74` years. There is no b
 * The Date class contains `Add` and `Subtract` methods, but you can do these operations directly using `+` and `-`. The trick here is that sVB stores dates and time spans as `ticks`. A tick is 1 over 10 million of a second (1 second = 10 million ticks). You can get the total ticks of a date or a time span by calling the `Date.GetTicks()` method, or the `Ticks` extension property. So, when using math operator with date and time span, sVB treats thesm as normal numbers. You can even multiply 2 dates but of course the result is meaningless :D.
 The following code show you 2 different ways to subtract 1000 days from the today's date:
 ```VB
-date1 = Date.Now - #+1000.0:0#
-TextWindow.WriteLine(date1.DateAndTime)
+d1 = Date.Now - #+1000.0:0#
+TextWindow.WriteLine(d1)
 
-d = Date.Now
-TextWindow.WriteLine(d.AddDays(-1000))
+d2 = Date.Now
+TextWindow.WriteLine(d2.AddDays(-1000))
 ```
-
-Note that we had to use naming convention with variable `date1`, because sVB can't infer the type of an operator. You can use another way, be breaking the operation into two:
-```
-d = Date.Now
-d = d - #+1000.0:0#
-TextWindow.WriteLine(d)
-```
-
-Note that the above code will show the total ticks not the date! This is the result of the subtraction operation, which returns a new object that sVB thinks it is a normal number! This is why we have to call `DateAndTime`, `LongDate`, `shortDate`, `LongTime`, or `ShortTime` properties to show the date!:
-```
-d = Date.Now
-d = d - #+1000.0:0#
-TextWindow.WriteLine(d.DateAndTime)
-```
-
-We didn't need this when we used the `AddDays()` method, as sVB knows that the result is a date, so, it converts it to a string correctly.
 
 * You can also use comparison operators like `>`, `<` and `=` to compare tow dates or time spans. Ex:
 ```vb

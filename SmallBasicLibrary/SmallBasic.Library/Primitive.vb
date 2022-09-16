@@ -221,7 +221,10 @@ Namespace Library
             Dim n1 = TryGetAsDecimal()
             Dim n2 = addend.TryGetAsDecimal()
             If n1.HasValue AndAlso n2.HasValue Then
-                Return New Primitive(n1.Value + n2.Value)
+                Return New Primitive(
+                        n1.Value + n2.Value,
+                        GetNumberType(Me.numberType, addend.numberType)
+                )
             End If
             Return New Primitive(AsString() & addend.AsString())
         End Function
@@ -265,7 +268,31 @@ Namespace Library
         End Function
 
         Public Function Subtract(addend As Primitive) As Primitive
-            Return New Primitive(AsDecimal() - addend.AsDecimal())
+            Return New Primitive(
+                        AsDecimal() - addend.AsDecimal(),
+                        GetNumberType(Me.numberType, addend.numberType)
+               )
+        End Function
+
+        Private Function GetNumberType(numberType1 As NumberType, numberType2 As NumberType) As NumberType
+            If numberType2 = NumberType.Decimal Then Return NumberType.Decimal
+
+            Select Case numberType1
+                Case NumberType.Decimal
+                    Return NumberType.Decimal
+                Case NumberType.Date
+                    If numberType2 = NumberType.Date Then
+                        Return NumberType.TimeSpan
+                    Else
+                        Return NumberType.Date
+                    End If
+                Case Else
+                    If numberType2 = NumberType.Date Then
+                        Return NumberType.Decimal
+                    Else
+                        Return NumberType.TimeSpan
+                    End If
+            End Select
         End Function
 
         Public Function Multiply(multiplicand As Primitive) As Primitive

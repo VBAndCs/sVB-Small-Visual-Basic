@@ -198,7 +198,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                             .Summary = If(item.DisplayName = "Me",
                                  $"Me is a global variable that referes to the current form, which is {item.Key} in this context",
                                  $"A global variable that referes to a {item.ObjectName} control that you created by the form designer"
-                             )
+                            )
                     }
 
                 Case Else

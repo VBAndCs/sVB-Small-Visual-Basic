@@ -17,107 +17,27 @@ Namespace Microsoft.SmallBasic.Engine
 
         <Serializable>
         Private Class ProgramRunner
-            Private _Breakpoints As List(Of Integer)
-            Private _CurrentInstruction As Instruction
-            Private _DebuggerCommand As DebuggerCommand
-            Private _DebuggerExecution As ManualResetEvent
-            Private _DebuggerState As DebuggerState
-            Private _Instructions As List(Of Instruction)
-            Private _Fields As Dictionary(Of String, Primitive)
-            Private _LabelMap As Dictionary(Of String, Integer)
-            Private _SubroutineInstructions As Dictionary(Of String, List(Of Instruction))
-            Private _TypeInfoBag As TypeInfoBag
             Private previousLineNumber As Integer = -1
 
             Public Property Breakpoints As List(Of Integer)
-                Get
-                    Return _Breakpoints
-                End Get
-                Private Set(value As List(Of Integer))
-                    _Breakpoints = value
-                End Set
-            End Property
 
             Public Property CurrentInstruction As Instruction
-                Get
-                    Return _CurrentInstruction
-                End Get
-                Private Set(value As Instruction)
-                    _CurrentInstruction = value
-                End Set
-            End Property
 
             Public Property DebuggerCommand As DebuggerCommand
-                Get
-                    Return _DebuggerCommand
-                End Get
-                Private Set(value As DebuggerCommand)
-                    _DebuggerCommand = value
-                End Set
-            End Property
 
             Public Property DebuggerExecution As ManualResetEvent
-                Get
-                    Return _DebuggerExecution
-                End Get
-                Private Set(value As ManualResetEvent)
-                    _DebuggerExecution = value
-                End Set
-            End Property
 
             Public Property DebuggerState As DebuggerState
-                Get
-                    Return _DebuggerState
-                End Get
-                Private Set(value As DebuggerState)
-                    _DebuggerState = value
-                End Set
-            End Property
 
             Public Property Instructions As List(Of Instruction)
-                Get
-                    Return _Instructions
-                End Get
-                Private Set(value As List(Of Instruction))
-                    _Instructions = value
-                End Set
-            End Property
 
             Public Property Fields As Dictionary(Of String, Primitive)
-                Get
-                    Return _Fields
-                End Get
-                Private Set(value As Dictionary(Of String, Primitive))
-                    _Fields = value
-                End Set
-            End Property
 
             Public Property LabelMap As Dictionary(Of String, Integer)
-                Get
-                    Return _LabelMap
-                End Get
-                Private Set(value As Dictionary(Of String, Integer))
-                    _LabelMap = value
-                End Set
-            End Property
 
             Public Property SubroutineInstructions As Dictionary(Of String, List(Of Instruction))
-                Get
-                    Return _SubroutineInstructions
-                End Get
-                Private Set(value As Dictionary(Of String, List(Of Instruction)))
-                    _SubroutineInstructions = value
-                End Set
-            End Property
 
             Public Property TypeInfoBag As TypeInfoBag
-                Get
-                    Return _TypeInfoBag
-                End Get
-                Private Set(value As TypeInfoBag)
-                    _TypeInfoBag = value
-                End Set
-            End Property
 
             Public Event LineNumberChanged As EventHandler
             Public Event DebuggerStateChanged As EventHandler
@@ -194,7 +114,7 @@ Namespace Microsoft.SmallBasic.Engine
 
             Private Sub ExecuteInstructions(instructions As List(Of Instruction))
                 For i = 0 To instructions.Count - 1
-                    Dim labelInstruction As LabelInstruction = TryCast(instructions(i), LabelInstruction)
+                    Dim labelInstruction = TryCast(instructions(i), LabelInstruction)
 
                     If labelInstruction IsNot Nothing Then
                         LabelMap(labelInstruction.LabelName) = i
@@ -253,7 +173,7 @@ Namespace Microsoft.SmallBasic.Engine
             End Function
 
             Private Sub SetArrayValue(lvalue As ArrayExpression, value As Primitive)
-                Dim identifierExpression As IdentifierExpression = TryCast(lvalue.LeftHand, IdentifierExpression)
+                Dim identifierExpression = TryCast(lvalue.LeftHand, IdentifierExpression)
                 Dim value2 As Primitive = Nothing
 
                 If identifierExpression IsNot Nothing Then
@@ -377,34 +297,34 @@ Namespace Microsoft.SmallBasic.Engine
             End Function
 
             Private Function EvaluateBinaryExpression(expression As BinaryExpression) As Primitive
-                Dim primitive = EvaluateExpression(expression.LeftHandSide)
-                Dim primitive2 = EvaluateExpression(expression.RightHandSide)
+                Dim leftExpr = EvaluateExpression(expression.LeftHandSide)
+                Dim rightExpr = EvaluateExpression(expression.RightHandSide)
 
                 Select Case expression.Operator.Type
                     Case TokenType.Addition
-                        Return primitive.Add(primitive2)
+                        Return leftExpr.Add(rightExpr)
                     Case TokenType.And
-                        Return Primitive.op_And(primitive, primitive2)
+                        Return Primitive.op_And(leftExpr, rightExpr)
                     Case TokenType.Division
-                        Return primitive.Divide(primitive2)
+                        Return leftExpr.Divide(rightExpr)
                     Case TokenType.Equals
-                        Return primitive.EqualTo(primitive2)
+                        Return leftExpr.EqualTo(rightExpr)
                     Case TokenType.GreaterThan
-                        Return primitive.GreaterThan(primitive2)
+                        Return leftExpr.GreaterThan(rightExpr)
                     Case TokenType.GreaterThanEqualTo
-                        Return primitive.GreaterThanOrEqualTo(primitive2)
+                        Return leftExpr.GreaterThanOrEqualTo(rightExpr)
                     Case TokenType.LessThan
-                        Return primitive.LessThan(primitive2)
+                        Return leftExpr.LessThan(rightExpr)
                     Case TokenType.LessThanEqualTo
-                        Return primitive.LessThanOrEqualTo(primitive2)
+                        Return leftExpr.LessThanOrEqualTo(rightExpr)
                     Case TokenType.Multiplication
-                        Return primitive.Multiply(primitive2)
+                        Return leftExpr.Multiply(rightExpr)
                     Case TokenType.NotEqualTo
-                        Return primitive.NotEqualTo(primitive2)
+                        Return leftExpr.NotEqualTo(rightExpr)
                     Case TokenType.Or
-                        Return Primitive.op_Or(primitive, primitive2)
+                        Return Primitive.op_Or(leftExpr, rightExpr)
                     Case TokenType.Subtraction
-                        Return primitive.Subtract(primitive2)
+                        Return leftExpr.Subtract(rightExpr)
                     Case Else
                         Return Nothing
                 End Select

@@ -9,6 +9,7 @@ Namespace Microsoft.SmallBasic.Completion
         Public SelectEspecialItem As String
         Friend NextToOperator As Boolean
         Public ForHelp As Boolean
+        Public IsMethod As Boolean
         Public ReadOnly Property ParseTree As List(Of Statements.Statement)
         Public ReadOnly Property SymbolTable As SymbolTable
         Public ReadOnly Property TypeInfoBag As TypeInfoBag

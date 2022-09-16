@@ -178,8 +178,11 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Function
 
         Public Function MoveTo(characterIndex As Integer, caretPlacement As CaretPlacement) As ICaretPosition Implements ITextCaret.MoveTo
-            Dim position1 As ICaretPosition = Position
-            Dim textElementSpan As Span = _avalonTextView.GetTextElementSpan(characterIndex)
+            Dim position1 = Position
+            If characterIndex > _avalonTextView.TextSnapshot.Length Then
+                characterIndex = _avalonTextView.TextSnapshot.Length
+            End If
+            Dim textElementSpan = _avalonTextView.GetTextElementSpan(characterIndex)
             _Placement = caretPlacement
 
             If _Placement = CaretPlacement.TrailingEdgeOfCharacter AndAlso characterIndex < _avalonTextView.TextSnapshot.Length Then

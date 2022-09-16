@@ -1327,6 +1327,9 @@ Namespace Microsoft.Nautilus.Text.Operations
         End Function
 
         Public Sub [Select](start As Integer, length As Integer) Implements IEditorOperations.Select
+            Dim L = _TextView.TextSnapshot.Length
+            length = Math.Min(L - start, length)
+
             _TextView.Caret.MoveTo(start + length)
             _TextView.Caret.EnsureVisible()
             _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_TextView.TextSnapshot, New Span(start, length))

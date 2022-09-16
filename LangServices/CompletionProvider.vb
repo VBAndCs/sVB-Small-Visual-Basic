@@ -434,6 +434,10 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Return
 
                 ElseIf item.DisplayName.ToLower() = tokenText Then
+                    If bag.IsMethod Then
+                        If item.ItemType <> CompletionItemType.MethodName Then Continue For
+                    End If
+
                     Dim spans = HeighLightIdentifiers(currentToken, bag.SubroutineName, item.ItemType, bag.SymbolTable, textView.TextSnapshot)?.ToArray()
                     highlightCashe(span) = spans
                     editor.HighlightWords(WordHighlightColor, spans)
@@ -685,7 +689,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
             Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
             Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
-            Dim n = tokens.Count - 1
+            Dim lastIndex = tokens.Count - 1
             Dim prevToken As Token = Nothing
             Dim b4PrevToken As Token = Nothing
             Dim index = ParseTokens(tokens, column, currentToken, prevToken, b4PrevToken)
@@ -743,7 +747,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Return newBag
 
                 ElseIf controlsInfo IsNot Nothing Then
-                        Dim txt = currentToken.NormalizedText
+                    Dim txt = currentToken.NormalizedText
                     If txt <> "" AndAlso controlNames IsNot Nothing Then
                         Dim controls = From name In controlNames
                                        Where name(0) <> "("c AndAlso (
@@ -789,11 +793,14 @@ Namespace Microsoft.SmallBasic.LanguageService
                         moduleName = WinForms.PreCompiler.GetModuleFromVarName(name)
                     End If
                     If moduleName <> "" Then
-                            FillMemberNames(newBag, moduleName, identifierToken.Text)
-                            If forHelp Then byConventionName = moduleName
+                        FillMemberNames(newBag, moduleName, identifierToken.Text)
+                        If forHelp Then
+                            byConventionName = moduleName
+                            newBag.IsMethod = index < lastIndex AndAlso tokens(index + 1).Type = TokenType.LeftParens
                         End If
                     End If
                 End If
+            End If
 
             If addGlobals OrElse newBag Is Nothing OrElse newBag.CompletionItems.Count = 0 Then
                 If Not (currentToken.Type = TokenType.StringLiteral OrElse currentToken.Type = TokenType.Comment) Then
@@ -818,7 +825,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             End If
 
             If forHelp Then
-                If currentToken.IsIllegal AndAlso index < n Then
+                If currentToken.IsIllegal AndAlso index < lastIndex Then
                     currentToken = tokens(index + 1)
                 End If
             Else
