@@ -32,7 +32,8 @@ Namespace WinForms
         ''' <returns>The neame of the textBox</returns>
         <ReturnValueType(VariableType.TextBox)>
         <ExMethod>
-        Public Shared Function AddTexBox(formName As Primitive,
+        Public Shared Function AddTexBox(
+                         formName As Primitive,
                          textBoxName As Primitive,
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive) As Primitive
@@ -115,10 +116,12 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
+        ''' <param name="fileName">the path of the image file</param>
         ''' <returns>The neame of the ImageBox</returns>
         <ReturnValueType(VariableType.ImageBox)>
         <ExMethod>
-        Public Shared Function AddImageBox(formName As Primitive,
+        Public Shared Function AddImageBox(
+                         formName As Primitive,
                          imageBoxName As Primitive,
                          left As Primitive,
                          top As Primitive,

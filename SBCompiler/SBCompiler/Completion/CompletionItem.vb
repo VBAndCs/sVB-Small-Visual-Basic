@@ -42,7 +42,7 @@ Namespace Microsoft.SmallBasic.Completion
                         End If
 
                     Case Else
-                        Return DisplayName.ToLower()(0)
+                        Return "_" & DisplayName.ToLower()(0)
                 End Select
             End Get
         End Property
