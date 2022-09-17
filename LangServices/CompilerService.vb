@@ -165,7 +165,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                                 End If
 
                             Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightCurlyBracket
-                                If Not lineEnd Then
+                                If Not lineEnd OrElse (i < n AndAlso IsClosingSymbol(tokens(i + 1))) Then
                                     If indentStack.Count = 0 Then
                                         subLineOffset = Math.Max(0, subLineOffset - 1)
                                     Else
@@ -173,11 +173,12 @@ Namespace Microsoft.SmallBasic.LanguageService
                                         subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), indentStack.Peek())
                                     End If
 
+                                    If lineStart Then AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
+
                                 ElseIf lineStart Then
                                     subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), Math.Max(0, indentStack.Peek() - 1))
+                                    AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
                                 End If
-
-                                If lineStart Then AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
 
                             Case TokenType.Addition, TokenType.Subtraction, TokenType.Multiplication, TokenType.Division, TokenType.Or, TokenType.And
                                 If lineStart Then
@@ -229,6 +230,15 @@ CheckLineEnd:
             FixKeywords(textBuffer, start, [end])
             FixIdentifiers(textBuffer, start, [end])
         End Sub
+
+        Private Function IsClosingSymbol(token As Token) As Boolean
+            Select Case token.Type
+                Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightCurlyBracket
+                    Return True
+                Case Else
+                    Return False
+            End Select
+        End Function
 
         Private Sub FixKeywords(textBuffer As ITextBuffer, start As Integer, [end] As Integer)
             Dim snapshot = textBuffer.CurrentSnapshot
