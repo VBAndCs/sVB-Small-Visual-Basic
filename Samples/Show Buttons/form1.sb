@@ -1,0 +1,49 @@
+Btns = {}
+
+For X = 1 To 8
+   For Y = 1 To 7
+      Btn = Me.AddButton(
+         "Button" + X + "_" + Y,
+         10 + 80 * X,
+         10 + 30 * Y,
+         80,
+         30
+      )
+      Btn.Text = X + "," + Y
+      Btn.OnClick = Btn_Click
+      Btns[X][Y] = Btn
+      Btn.Visible = False
+   EndFor
+   
+   Button1 = Btns[4][3]
+   Button1.Visible = True
+EndFor
+
+
+'------------------------------------------------
+Sub Btn_Click()
+   ForEach row In Btns
+      ForEach button1 In row
+         button1.Visible = False
+      Next
+   Next
+   
+   button1 = Event.SenderControl
+   xy = Text.GetSubTextToEnd(button1, 7)
+   i = xy.IndexOf("_")
+   ax = xy.SubText(1, i - 1)
+   ay = xy.SubTextToEnd(i + 1)
+   
+   ShowButton(ax, ay)
+   ShowButton(ax + 1, ay)
+   ShowButton(ax - 1, ay)
+   ShowButton(ax, ay + 1)
+   ShowButton(ax, ay - 1)
+EndSub
+
+
+'------------------------------------------------
+Sub ShowButton(ax, ay)
+   Button1 = Btns[ax][ay]
+   Button1.Visible = True
+EndSub
