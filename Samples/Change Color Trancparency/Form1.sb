@@ -2,16 +2,15 @@ Trans = 0
 
 '----------------------------
 Sub Button1_OnClick
-    Trans = Math.Min(100, Trans + 10)
-    TextBox1.BackColor = Color.SetTransparency(Colors.Red, Trans)
-    TextBox1.Text = Color.GetNameAndTransparency(TextBox1.BackColor)
+   Trans = Math.Min(100, Trans + 10)
+   TextBox1.BackColor = Color.ChangeTransparency(Colors.Red, Trans)
+   TextBox1.Text = Color.GetNameAndTransparency(TextBox1.BackColor)
 EndSub
 
 
 '----------------------------
 Sub Button2_OnClick
-    Trans = Math.Max(0, Trans - 10)
-    TextBox1.BackColor = Color.SetTransparency(Colors.Red, Trans)
-    TextBox1.Text = Color.GetNameAndTransparency(TextBox1.BackColor)   
+   Trans = Math.Max(0, Trans - 10)
+   TextBox1.BackColor = Color.ChangeTransparency(Colors.Red, Trans)
+   TextBox1.Text = Color.GetNameAndTransparency(TextBox1.BackColor)
 EndSub
-  
