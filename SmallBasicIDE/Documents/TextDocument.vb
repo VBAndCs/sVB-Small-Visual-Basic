@@ -489,7 +489,7 @@ Namespace Microsoft.SmallBasic.Documents
         End Function
 
 
-        Sub UpdateCombos(eventInfo As (ControlName As String, EventName As String))
+        Sub UpdateCombos(eventInfo As EventInformation)
             If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
                 _MdiView.CmbControlNames.SelectedItem = eventInfo.ControlName
             End If
@@ -834,7 +834,7 @@ Namespace Microsoft.SmallBasic.Documents
         Public ReadOnly Property GlobalSubs As New List(Of String)
         Public ReadOnly Property ControlEvents As New ObservableCollection(Of String)
         Public ReadOnly Property ControlNames As New ObservableCollection(Of String)
-        Public Property EventHandlers As New Dictionary(Of String, (ControlName As String, EventName As String))
+        Public Property EventHandlers As New Dictionary(Of String, EventInformation)
 
         Dim _form As String
         Friend ReadOnly ErrorTokens As New List(Of Token)
@@ -1054,7 +1054,7 @@ EndFunction
             Else ' Restore Broken Handler
                 pos = FindEventHandler(handlerName)
                 If pos > -1 Then
-                    _EventHandlers(handlerName) = (controlName, eventName)
+                    _EventHandlers(handlerName) = New EventInformation(controlName, eventName)
                 End If
             End If
 
@@ -1088,7 +1088,7 @@ EndFunction
                     _ControlEvents.Add(handlerName)
 
                 Else
-                    _EventHandlers(handlerName) = (controlName, eventName)
+                    _EventHandlers(handlerName) = New EventInformation(controlName, eventName)
                     Dim handler = eventHandlerSub.Replace("#", handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
                     EnsureAtTop(Text.Length - 10)
@@ -1295,8 +1295,8 @@ EndFunction
             End If
         End Sub
 
-        Public Function GetHandlerInfo(subName As String) As (ControlName As String, EventName As String)
-            If _ControlsInfo Is Nothing Then Return ("", "")
+        Public Function GetHandlerInfo(subName As String) As EventInformation
+            If _ControlsInfo Is Nothing Then Return New EventInformation("", "")
             subName = subName.ToLower()
             For Each controlInfo In _ControlsInfo
                 Dim controlName = controlInfo.Key
@@ -1306,15 +1306,15 @@ EndFunction
                     For Each ev In events
                         If ev.ToLower() = eventName Then
                             For Each name In _ControlNames
-                                If name.ToLower = controlName Then Return (name, ev)
+                                If name.ToLower = controlName Then Return New EventInformation(name, ev)
                             Next
-                            Return ("", "")
+                            Return New EventInformation("", "")
                         End If
                     Next
                 End If
             Next
 
-            Return ("", "")
+            Return New EventInformation("", "")
         End Function
 
         Public Sub RemoveBrokenHandlers()

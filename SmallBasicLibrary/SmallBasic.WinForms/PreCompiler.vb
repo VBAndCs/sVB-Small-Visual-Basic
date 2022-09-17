@@ -111,22 +111,22 @@ Namespace WinForms
         End Function
 
 
-        Private Shared typeShortcuts() As (Shortcut As String, Type As VariableType) = {
-            ("Str", VariableType.String),
-            ("Arr", VariableType.Array),
-            ("Dbl", VariableType.Double),
-            ("Color", VariableType.Color),
-            ("Key", VariableType.Key),
-            ("Date", VariableType.Date),
-            ("Control", VariableType.Control),
-            ("Form", VariableType.Form),
-            ("TextBox", VariableType.TextBox),
-            ("Label", VariableType.Label),
-            ("Button", VariableType.Button),
-            ("ListBox", VariableType.ListBox),
-            ("DatePicker", VariableType.DatePicker),
-            ("ListBox", VariableType.ImageBox)
-        }
+        Private Shared typeShortcuts() As ShortcutInfo = {
+                New ShortcutInfo("Str", VariableType.String),
+                New ShortcutInfo("Arr", VariableType.Array),
+                New ShortcutInfo("Dbl", VariableType.Double),
+                New ShortcutInfo("Color", VariableType.Color),
+                New ShortcutInfo("Key", VariableType.Key),
+                New ShortcutInfo("Date", VariableType.Date),
+                New ShortcutInfo("Control", VariableType.Control),
+                New ShortcutInfo("Form", VariableType.Form),
+                New ShortcutInfo("TextBox", VariableType.TextBox),
+                New ShortcutInfo("Label", VariableType.Label),
+                New ShortcutInfo("Button", VariableType.Button),
+                New ShortcutInfo("ListBox", VariableType.ListBox),
+                New ShortcutInfo("DatePicker", VariableType.DatePicker),
+                New ShortcutInfo("ListBox", VariableType.ImageBox)
+    }
 
         Public Shared Function GetVarType(variableName As String) As VariableType
             Dim varName = variableName.ToLower()
@@ -206,11 +206,11 @@ Namespace WinForms
                          controlName As String,
                          varType As VariableType,
                          methodName As String
-                   ) As ([Module] As String, ParamsCount As Integer)
+                   ) As MethodInformation
 
             If controlName = "" Then
                 controlName = GetTypeName(varType)
-                If controlName = "" Then Return ("", 0)
+                If controlName = "" Then Return New MethodInformation("", 0)
             End If
 
             Dim method = methodName.ToLower()
@@ -220,10 +220,10 @@ Namespace WinForms
                 moduleName = controlName
 
             ElseIf varType < VariableType.Control AndAlso varType <> VariableType.None Then
-                Return ("", 0)
+                Return New MethodInformation("", 0)
 
             ElseIf controlName = NameOf(ImageBox) Then
-                Return ("", 0)
+                Return New MethodInformation("", 0)
 
             ElseIf moduleInfo(NameOf(Control)).Contains(method) Then
                 moduleName = NameOf(Control)
@@ -232,7 +232,7 @@ Namespace WinForms
                 moduleName = NameOf(Forms)
 
             Else
-                Return ("", 0)
+                Return New MethodInformation("", 0)
             End If
 
             Dim t = Type.GetType(WinFormsNS & moduleName)
@@ -240,7 +240,7 @@ Namespace WinForms
                    Function(m) m.IsPublic AndAlso m.Name.ToLower() = method
             ).FirstOrDefault?.GetParameters()
 
-            Return (moduleName, If(params Is Nothing, 0, params.Length))
+            Return New MethodInformation(moduleName, If(params Is Nothing, 0, params.Length))
         End Function
 
         Public Shared Function ParseFormHints(txt As String) As FormInfo
@@ -289,7 +289,7 @@ Namespace WinForms
             Return Nothing
         End Function
 
-        Public Shared Function ParseEventHandlers(txt As String) As Dictionary(Of String, (ControlName As String, EventName As String))
+        Public Shared Function ParseEventHandlers(txt As String) As Dictionary(Of String, EventInformation)
             '#Events{
             '    Button1: OnMouseLeftDown
             '    Form1: OnMouseLeftUp OnMouseMove
@@ -297,7 +297,7 @@ Namespace WinForms
             '    TextBox1: OnMouseLeftUp OnKeyDown
             '}
 
-            Dim events As New Dictionary(Of String, (ControlName As String, EventName As String))
+            Dim events As New Dictionary(Of String, EventInformation)
 
             Dim pos1 = txt.IndexOf("'#Events{")
             If pos1 = -1 Then Return Nothing
@@ -310,7 +310,7 @@ Namespace WinForms
                 Dim controlName = info(0)
                 Dim eventNames = info(1).Split({" "c}, StringSplitOptions.RemoveEmptyEntries)
                 For Each ev In eventNames
-                    events(controlName & "_" & ev) = (controlName, ev)
+                    events(controlName & "_" & ev) = New EventInformation(controlName, ev)
                 Next
             Next
 
@@ -353,8 +353,37 @@ Namespace WinForms
         Public Form As String
         Public ControlsInfo As New Dictionary(Of String, String)
         Public ControlNames As New List(Of String)
-        Public EventHandlers As Dictionary(Of String, (ControlName As String, EventName As String))
+        Public EventHandlers As Dictionary(Of String, EventInformation)
     End Class
 
+    Friend Structure ShortcutInfo
+        Public Shortcut As String
+        Public Type As VariableType
 
+        Public Sub New(shortcut As String, type As VariableType)
+            Me.Shortcut = shortcut
+            Me.Type = type
+        End Sub
+
+    End Structure
+
+    Public Structure MethodInformation
+        Public [Module] As String
+        Public ParamsCount As Integer
+
+        Public Sub New([module] As String, paramsCount As Integer)
+            Me.Module = [module]
+            Me.ParamsCount = paramsCount
+        End Sub
+    End Structure
+
+    Public Structure EventInformation
+        Public ControlName As String
+        Public EventName As String
+
+        Public Sub New(controlName As String, eventName As String)
+            Me.ControlName = controlName
+            Me.EventName = eventName
+        End Sub
+    End Structure
 End Namespace

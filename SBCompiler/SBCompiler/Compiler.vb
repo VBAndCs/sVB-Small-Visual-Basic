@@ -111,12 +111,11 @@ Namespace Microsoft.SmallBasic
                 Dim files = Directory.GetFiles(path, "*.dll")
 
                 For Each fileName In files
-
                     Try
                         Dim _assembly = Assembly.LoadFile(fileName)
                         AddAssemblyTypesToList(_assembly)
                         _libraryFiles.Add(fileName)
-                    Catch
+                    Catch ex As Exception
                     End Try
                 Next
             End If
