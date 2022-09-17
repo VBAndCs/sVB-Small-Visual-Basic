@@ -92,11 +92,13 @@ Namespace Microsoft.SmallBasic.Statements
 
             ElseIf TypeOf LeftValue Is ArrayExpression Then
                 Dim arrayExpression = CType(LeftValue, ArrayExpression)
-                Dim key = symbolTable.AddVariable(arrayExpression.LeftHand, Me.GetSummery(), IsLocalVariable)
-                If TypeOf arrayExpression.LeftHand Is IdentifierExpression Then
-                    If key <> "" Then
-                        symbolTable.InferedTypes(key) = VariableType.Array
-                    End If
+                Dim identifier = arrayExpression.LeftHand
+                Do While TypeOf identifier Is ArrayExpression
+                    identifier = CType(identifier, ArrayExpression).LeftHand
+                Loop
+                Dim key = symbolTable.AddVariable(identifier, Me.GetSummery(), IsLocalVariable)
+                If key <> "" Then
+                    symbolTable.InferedTypes(key) = VariableType.Array
                 End If
                 arrayExpression.AddSymbolInitialization(symbolTable)
             End If

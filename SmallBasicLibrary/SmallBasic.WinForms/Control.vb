@@ -82,6 +82,35 @@ Namespace WinForms
         End Function
 
         ''' <summary>
+        ''' An extra property to store any value you want that is related to the control. you can store multiple values as by putting them in an array or a dynamic object
+        ''' </summary>
+        <ExProperty>
+        <ReturnValueType(VariableType.String)>
+        Public Shared Function GetTag(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTag = GetControl(controlName).Tag.ToString()
+                    Catch ex As Exception
+                        ShowErrorMesssage(controlName, "Tage", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetTag(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetControl(controlName).Tag = value.AsString()
+                    Catch ex As Exception
+                        ShowPropertyMesssage(controlName, "Tag", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+
+        ''' <summary>
         ''' The x-pos of the control on its parent control.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>

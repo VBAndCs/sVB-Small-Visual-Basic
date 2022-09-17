@@ -1,5 +1,3 @@
-Btns = {}
-
 For X = 1 To 8
    For Y = 1 To 7
       Btn = Me.AddButton(
@@ -10,40 +8,52 @@ For X = 1 To 8
          30
       )
       Btn.Text = X + "," + Y
+      Btn.Tag = {X, Y}
       Btn.OnClick = Btn_Click
-      Btns[X][Y] = Btn
       Btn.Visible = False
    EndFor
    
-   Button1 = Btns[4][3]
+   Button1 = GetButton(4, 3)
    Button1.Visible = True
 EndFor
 
 
 '------------------------------------------------
 Sub Btn_Click()
-   ForEach row In Btns
-      ForEach button1 In row
-         button1.Visible = False
+   For x = 1 To 8
+      For y = 1 To 7
+         Button1 = GetButton(x, y)
+         Button1.Visible = False
       Next
    Next
    
-   button1 = Event.SenderControl
-   xy = Text.GetSubTextToEnd(button1, 7)
-   i = xy.IndexOf("_")
-   ax = xy.SubText(1, i - 1)
-   ay = xy.SubTextToEnd(i + 1)
+   Button1 = Event.SenderControl
+   xy = Button1.Tag
+   ax = xy[1]
+   ay = xy[2]
    
-   ShowButton(ax, ay)
-   ShowButton(ax + 1, ay)
-   ShowButton(ax - 1, ay)
-   ShowButton(ax, ay + 1)
-   ShowButton(ax, ay - 1)
+   ShowButtons(
+      {
+         {ax, ay},
+         {ax + 1, ay},
+         {ax - 1, ay},
+         {ax, ay + 1},
+         {ax, ay - 1}
+      }
+   )
 EndSub
 
 
 '------------------------------------------------
-Sub ShowButton(ax, ay)
-   Button1 = Btns[ax][ay]
-   Button1.Visible = True
+Sub ShowButtons(xyArr)
+   ForEach xy In xyArr
+      Button1 = GetButton(xy[1], xy[2])
+      Button1.Visible = True
+   Next
 EndSub
+
+
+'------------------------------------------------
+Function GetButton(x, y)
+   Return "form1.button" + x + "_" + y
+EndFunction

@@ -83,7 +83,8 @@ Namespace WinForms
                     If CType(Sender, Wpf.Label).Content IsNot Nothing Then Return
                 End If
 
-                _SenderControl = Sender.Name
+                _SenderControl = GetControlName(Sender)
+
                 Call userEventHandler()
 
                 ' the handler may set the Handled property. We will use it and reset it.
@@ -94,6 +95,22 @@ Namespace WinForms
             End Try
         End Sub
 
+        Private Shared Function GetControlName(sender As FrameworkElement) As Primitive
+            If TypeOf sender Is Window Then
+                Return sender.Name.ToLower
+            ElseIf TypeOf sender Is wpf.Canvas Then
+                Return CType(sender.Parent, Window).Name.ToLower
+            Else
+                Dim parent As FrameworkElement = sender.Parent
+                Do While parent IsNot Nothing
+                    If TypeOf parent Is Window Then
+                        Return CType(parent, Window).Name.ToLower + "." + sender.Name.ToLower
+                    End If
+                    parent = parent.Parent
+                Loop
+            End If
+
+        End Function
 
         ''' <summary>
         ''' Gets or sets the mouse cursor's x co-ordinate.
