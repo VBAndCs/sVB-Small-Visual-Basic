@@ -1,0 +1,37 @@
+X = {
+   {
+      {10, 20},
+      {30, 40}
+   },
+   {
+      {50, 60},
+      {70, 80}
+   },
+   {
+      {90, 100},
+      {110, 120}
+   }
+}
+
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   
+   For i = 1 To X.Count
+      arrY = X[i]
+      For j = 1 To arrY.Count
+         arrZ = arrY[j]
+         For k = 1 To arrZ.Count
+            TextBox1.AppendLine(
+               Text.Format(
+                  "([1], [2], [3]) = [4]",
+                  {i, j, k, arrZ[k]}
+               )
+            )
+         Next
+         TextBox1.AppendLine("")
+      Next
+      TextBox1.AppendLine("----------")
+   Next
+EndSub

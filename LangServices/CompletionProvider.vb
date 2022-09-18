@@ -241,7 +241,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Return
             End If
 
-            If symbol <> "" AndAlso line.Start + column = pos Then Return
+            If symbol <> "" AndAlso symbol <> "(" AndAlso line.Start + column = pos Then Return
 
             ShowHelpInfo(line, column, paramIndex, span)
 

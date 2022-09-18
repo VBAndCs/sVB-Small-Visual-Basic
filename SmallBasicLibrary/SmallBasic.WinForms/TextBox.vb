@@ -38,7 +38,10 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetTextBox(textBoxName).Text = value
+                        Dim t = GetTextBox(textBoxName)
+                        t.Text = value
+                        t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
+                        t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                     Catch ex As Exception
                         Control.ShowPropertyMesssage(textBoxName, "Text", value, ex)
                     End Try
@@ -116,6 +119,21 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Function
+
+        <ExProperty>
+        Public Shared Sub SetSelectedText(textBoxName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim t = GetTextBox(textBoxName)
+                        t.SelectedText = value
+                        t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
+                        t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
+                    Catch ex As Exception
+                        Control.ShowPropertyMesssage(textBoxName, "SelectedText", value, ex)
+                    End Try
+                End Sub)
+        End Sub
 
         ''' <summary>
         ''' Gets or sets the current caret pos in the TextBox.
@@ -228,7 +246,11 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetTextBox(textBoxName).AppendText(CStr(text))
+                        Dim t = GetTextBox(textBoxName)
+                        t.AppendText(text.AsString())
+                        t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
+                        t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
+
                     Catch ex As Exception
                         Control.ShowSubError(textBoxName, "Append", ex)
                     End Try
@@ -244,7 +266,11 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetTextBox(textBoxName).AppendText(CStr(lineText) & vbCrLf)
+                        Dim t = GetTextBox(textBoxName)
+                        t.AppendText(lineText.AsString() & vbCrLf)
+                        t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
+                        t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
+
                     Catch ex As Exception
                         Control.ShowSubError(textBoxName, "AppendLine", ex)
                     End Try

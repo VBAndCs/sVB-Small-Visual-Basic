@@ -91,7 +91,17 @@ Namespace Microsoft.SmallBasic
         Public Property InferedTypes As New Dictionary(Of String, VariableType)
 
         Public Function GetInferedType(var As Token) As VariableType
-            Return GetInferedType(GetKey(var))
+            Dim variableName = var.NormalizedText
+            Dim Subroutine = var.SubroutineName?.ToLower()
+            If Subroutine = "" Then Return GetInferedType(variableName)
+
+            Dim localKey = $"{Subroutine}.{variableName}"
+            If _LocalVariables.ContainsKey(localKey) Then
+                Return GetInferedType(localKey)
+            Else
+                Return GetInferedType(variableName)
+            End If
+
         End Function
 
         Public Function GetInferedType(key As String) As VariableType
