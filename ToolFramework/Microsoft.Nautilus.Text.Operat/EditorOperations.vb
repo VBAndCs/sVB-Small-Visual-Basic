@@ -1328,7 +1328,12 @@ Namespace Microsoft.Nautilus.Text.Operations
 
         Public Sub [Select](start As Integer, length As Integer) Implements IEditorOperations.Select
             Dim L = _TextView.TextSnapshot.Length
-            length = Math.Min(L - start, length)
+            If start > L Then
+                start = Math.Max(0, L - 1)
+                length = 1
+            Else
+                length = Math.Min(L - start, length)
+            End If
 
             _TextView.Caret.MoveTo(start + length)
             _TextView.Caret.EnsureVisible()

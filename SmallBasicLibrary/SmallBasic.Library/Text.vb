@@ -234,7 +234,7 @@ Namespace Library
         Public Shared Function GetIndexOf(text As Primitive, subText As Primitive) As Primitive
             If text.IsEmpty OrElse subText.IsEmpty Then Return 0
             If text.IsArray Then
-                Dim index = Array.GetIndexOf(text, subText, 1, False)
+                Dim index = Array.Find(text, subText, 1, False)
                 If index.IsEmpty OrElse Not index.IsNumber Then Return 0
                 Return index.AsDecimal()
             End If

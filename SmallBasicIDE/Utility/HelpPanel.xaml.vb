@@ -84,7 +84,7 @@ Namespace Microsoft.SmallBasic.Utility
                 popHelp.HorizontalOffset = 10
                 popHelp.MaxWidth = textView.ActualWidth - 20
                 popHelp.MaxHeight = Math.Min(250, textView.ActualHeight - caret.Top)
-                popHelp.VerticalOffset = caret.Top + caret.Height + If(IsCompletionListOpen(), 140, 0) + 5
+                popHelp.VerticalOffset = caret.Top + caret.Height + 5
                 popHelp.IsOpen = True
                 popHelp.Tag = textView
                 AddHandler textView.ScrollChaged, AddressOf OnScrollChaged

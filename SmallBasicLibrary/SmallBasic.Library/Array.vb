@@ -245,7 +245,7 @@ Namespace Library
         ''' <param name="ignoreCase">set it to true if you want to do an case-insensetive search</param>
         ''' <returns>the key of the item if found, otherwise empty string</returns>
         <WinForms.ReturnValueType(VariableType.String)>
-        Friend Shared Function GetIndexOf(array As Primitive, value As Primitive, start As Primitive, ignoreCase As Primitive) As Primitive
+        Public Shared Function Find(array As Primitive, value As Primitive, start As Primitive, ignoreCase As Primitive) As Primitive
             If array.IsEmpty OrElse value.IsEmpty Then Return ""
             Dim count = array._arrayMap.Count
 
@@ -268,5 +268,30 @@ Namespace Library
 
             Return ""
         End Function
+
+        ''' <summary>
+        ''' Joins the given array items into one text.
+        ''' </summary>
+        ''' <param name="array">the input array</param>
+        ''' <param name="separator">a string to use as a separator between array items</param>
+        ''' <returns>a string containing the array items, seperated by the given separator</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function Join(array As Primitive, separator As Primitive) As Primitive
+            If array.IsEmpty Then Return ""
+            If array.IsArray Then
+                Dim sb As New System.Text.StringBuilder
+                Dim arr = array._arrayMap.Values
+                Dim n = arr.Count - 1
+                Dim sep = separator.AsString()
+                For i = 0 To n
+                    sb.Append(arr(i).AsString())
+                    If i < n Then sb.Append(sep)
+                Next
+                Return sb.ToString()
+            Else
+                Return array
+            End If
+        End Function
+
     End Class
 End Namespace

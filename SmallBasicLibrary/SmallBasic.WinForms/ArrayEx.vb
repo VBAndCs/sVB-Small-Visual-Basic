@@ -117,43 +117,33 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Searches the array for the given value.
+        ''' Searches the current array for the given value.
         ''' </summary>
-        ''' <param name="array">the input array</param>
         ''' <param name="value">the item to sarch for</param>
         ''' <param name="start">an integer representing the array index to sratr swarching at</param>
         ''' <param name="ignoreCase">set it to true if you want to do an case-insensetive search</param>
         ''' <returns>the index or string key of the item if found, otherwise empty string</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         <ExMethod>
-        Friend Shared Function IndexOf(
+        Public Shared Function Find(
                         array As Primitive,
                         value As Primitive,
                         start As Primitive,
                         ignoreCase As Primitive
                   ) As Primitive
 
-            If array.IsEmpty OrElse value.IsEmpty Then Return ""
-            Dim count = array._arrayMap.Count
+            Return Library.Array.Find(array, value, start, ignoreCase)
+        End Function
 
-            Dim intStart = System.Math.Max(CInt(start), 1)
-            intStart = System.Math.Min(intStart, count)
-
-            Dim values = array._arrayMap.Values()
-            Dim ignCase = CBool(ignoreCase)
-            Dim lowercaseValue = value.AsString().ToLower()
-
-            For i = intStart To count
-                If ignCase Then
-                    If values(i).AsString().ToLower() = lowercaseValue Then
-                        Return array._arrayMap.Keys(i)
-                    End If
-                ElseIf values(i) = value Then
-                    Return array._arrayMap.Keys(i)
-                End If
-            Next
-
-            Return ""
+        ''' <summary>
+        ''' Joins the given array items into one text.
+        ''' </summary>
+        ''' <param name="separator">a string to use as a separator between array items</param>
+        ''' <returns>a string containing the array items, seperated by the given separator</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function Join(array As Primitive, separator As Primitive) As Primitive
+            Return Library.Array.Join(array, separator)
         End Function
 
     End Class
