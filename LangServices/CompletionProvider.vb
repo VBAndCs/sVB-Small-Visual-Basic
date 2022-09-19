@@ -526,6 +526,10 @@ Namespace Microsoft.SmallBasic.LanguageService
                     tokens.AddRange(lineTokens)
                 Else
                     startLine = currentLine 'ignore prev line
+                    If startLine = endLine Then
+                        addNextLine = True
+                        Exit For
+                    End If
                 End If
             Next
 
