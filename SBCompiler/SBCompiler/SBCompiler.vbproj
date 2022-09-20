@@ -51,7 +51,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="StringResources">
-      <HintPath>..\..\1\SmallBasicIDE\SB.Lib\StringResources.dll</HintPath>
+      <HintPath>SB.Lib\StringResources.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
