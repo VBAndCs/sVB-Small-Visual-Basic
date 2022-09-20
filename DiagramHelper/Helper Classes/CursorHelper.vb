@@ -1,12 +1,6 @@
-﻿Imports System
-Imports System.Windows.Interop
-Imports Microsoft.Win32.SafeHandles
+﻿Imports System.Windows.Interop
 Imports System.Runtime.InteropServices
-Imports System.Windows.Input
-Imports System.Windows.Media
-Imports System.Windows.Media.Imaging
 Imports System.IO
-Imports System.Windows
 
 Friend Class CursorHelper
     Private Structure IconInfo
@@ -18,57 +12,80 @@ Friend Class CursorHelper
     End Structure
 
 
-    <DllImport("user32.dll")> _
+    <DllImport("user32.dll")>
     Private Shared Function CreateIconIndirect(ByRef icon As IconInfo) As IntPtr
     End Function
 
-    <DllImport("user32.dll")> _
+    <DllImport("user32.dll")>
     Private Shared Function GetIconInfo(hIcon As IntPtr, ByRef pIconInfo As IconInfo) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
+    Private Shared Function InternalCreateCursor(
+                 bmp As System.Drawing.Bitmap,
+                 xHotSpot As Integer,
+                 yHotSpot As Integer
+            ) As Cursor
 
-    Private Shared Function InternalCreateCursor(bmp As System.Drawing.Bitmap, xHotSpot As Integer, yHotSpot As Integer) As Cursor
-        Dim tmp As New IconInfo()
-        GetIconInfo(bmp.GetHicon(), tmp)
-        tmp.xHotspot = xHotSpot
-        tmp.yHotspot = yHotSpot
-        tmp.fIcon = False
+        Dim iconInfo As New IconInfo()
+        GetIconInfo(bmp.GetHicon(), iconInfo)
+        iconInfo.xHotspot = xHotSpot
+        iconInfo.yHotspot = yHotSpot
+        iconInfo.fIcon = False
 
-        Dim ptr As IntPtr = CreateIconIndirect(tmp)
-        Dim handle As New SafeFileHandle(ptr, True)
-        Return CursorInteropHelper.Create(handle)
+        Try
+            Dim ptr = CreateIconIndirect(iconInfo)
+            Dim handle As New SafeIconHandle(ptr)
+            Return CursorInteropHelper.Create(handle)
+        Catch ex As Exception
+
+        End Try
+
+        Return Nothing
     End Function
 
-    Public Shared Function CreateCursor(element As UIElement, xHotSpot As Integer, yHotSpot As Integer) As Cursor
-        Dim Brdr As New Border
-        Brdr.Child = element
-        Brdr.Measure(New Size(Double.PositiveInfinity, Double.PositiveInfinity))
-        Brdr.Arrange(New Rect(0, 0, element.DesiredSize.Width, element.DesiredSize.Height))
+    Public Shared Function CreateCursor(
+                       element As UIElement,
+                       xHotSpot As Integer,
+                       yHotSpot As Integer
+                ) As Cursor
 
-        Dim Width = Brdr.ActualWidth
-        Dim Height = Brdr.ActualHeight
+        Try
+            Dim Brdr As New Border
+            Brdr.Child = element
+            Brdr.Measure(New Size(Double.PositiveInfinity, Double.PositiveInfinity))
+            Brdr.Arrange(New Rect(0, 0, element.DesiredSize.Width, element.DesiredSize.Height))
 
-        Dim rtb = New RenderTargetBitmap(CInt(Width), CInt(Height), 96, 96, PixelFormats.Pbgra32)
-        rtb.Render(Brdr)
+            Dim Width As Integer = Brdr.ActualWidth
+            Dim Height As Integer = Brdr.ActualHeight
 
-        Dim encoder As New PngBitmapEncoder()
-        encoder.Frames.Add(BitmapFrame.Create(rtb))
+            Dim rtb = New RenderTargetBitmap(Width, Height, 96, 96, PixelFormats.Pbgra32)
+            rtb.Render(Brdr)
 
-        Dim ms As New MemoryStream()
-        encoder.Save(ms)
+            Dim encoder As New PngBitmapEncoder()
+            encoder.Frames.Add(BitmapFrame.Create(rtb))
 
-        Dim bmp As New System.Drawing.Bitmap(ms)
+            Dim ms As New MemoryStream()
+            encoder.Save(ms)
 
-        ms.Close()
-        ms.Dispose()
+            Dim bmp As New System.Drawing.Bitmap(ms)
 
-        If xHotSpot = -1 Then xHotSpot = Width / 2
-        If yHotSpot = -1 Then yHotSpot = Height / 2
+            ms.Close()
+            ms.Dispose()
+            rtb = Nothing
 
-        Dim cur As Cursor = InternalCreateCursor(bmp, xHotSpot, yHotSpot)
+            If xHotSpot = -1 Then xHotSpot = Width / 2
+            If yHotSpot = -1 Then yHotSpot = Height / 2
 
-        bmp.Dispose()
-        Brdr.Child = Nothing
-        Return cur
+            Dim cur As Cursor = InternalCreateCursor(bmp, xHotSpot, yHotSpot)
+
+            bmp.Dispose()
+            Brdr.Child = Nothing
+            Return cur
+
+        Catch
+        End Try
+        Return Nothing
+
     End Function
 End Class
+

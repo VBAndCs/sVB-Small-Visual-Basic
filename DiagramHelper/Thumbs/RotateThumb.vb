@@ -72,15 +72,15 @@ Friend Class RotateThumb
     Public Sub New()
         AddHandler DragDelta, AddressOf RotateThumb_DragDelta
         AddHandler DragStarted, AddressOf RotateThumb_DragStarted
-        Me.RotateAngle = 0
-        Me.IsTabStop = False
+        RotateAngle = 0
+        IsTabStop = False
     End Sub
 
     Private Sub RotateThumb_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         Pnl = Helper.GetDiagramPanel(Me)
         Item = Helper.GetListBoxItem(Pnl)
         Dsn = Helper.GetDesigner(Item)
-        Me.designerCanvas = Helper.GetCanvas(Item)
+        designerCanvas = Helper.GetCanvas(Item)
         Diagram = Helper.GetDiagram(Pnl)
 
     End Sub
@@ -94,17 +94,17 @@ Friend Class RotateThumb
         Me.centerPoint = Item.TranslatePoint(New Point(Item.ActualWidth * Item.RenderTransformOrigin.X, Item.ActualHeight * Item.RenderTransformOrigin.Y), Me.designerCanvas)
 
         Dim startPoint As Point = Mouse.GetPosition(Me.designerCanvas)
-        Me.startVector = Point.Subtract(startPoint, Me.centerPoint)
+        startVector = Point.Subtract(startPoint, Me.centerPoint)
 
         InitialAngle = Designer.GetRotationAngle(Diagram)
         RotateAngle = InitialAngle
     End Sub
 
     Private Sub RotateThumb_DragDelta(sender As Object, e As DragDeltaEventArgs)
-        Dim currentPoint As Point = Mouse.GetPosition(Me.designerCanvas)
-        Dim deltaVector As Vector = Point.Subtract(currentPoint, Me.centerPoint)
+        Dim currentPoint = Mouse.GetPosition(Me.designerCanvas)
+        Dim deltaVector = Point.Subtract(currentPoint, Me.centerPoint)
 
-        Dim angle As Double = Vector.AngleBetween(Me.startVector, deltaVector)
+        Dim angle = Vector.AngleBetween(startVector, deltaVector)
         RotateAngle = Math.Round(InitialAngle + angle, 0)
         Designer.SetRotationAngle(Diagram, RotateAngle)
 
@@ -114,7 +114,7 @@ Friend Class RotateThumb
     End Sub
 
     Private Sub RotateThumb_DragCompleted(sender As Object, e As DragCompletedEventArgs) Handles Me.DragCompleted
-        AngleVisibilty = Windows.Visibility.Collapsed
+        AngleVisibilty = Visibility.Collapsed
         ReportChanges()
     End Sub
 
@@ -124,6 +124,7 @@ Friend Class RotateThumb
         Item.InvalidateMeasure()
         Pnl.DiagramGroup?.UpdateSelection()
         Pnl.UpdateLocationBorder()
+        e.Handled = True
     End Sub
 
     Private Sub ReportChanges()

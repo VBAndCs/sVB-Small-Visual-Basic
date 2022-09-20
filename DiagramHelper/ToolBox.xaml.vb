@@ -73,10 +73,7 @@
             _selectedItem = value
             Designer.SelectedToolBoxItem = value
             If value Is Nothing Then
-                If Designer.Cursor IsNot Nothing Then
-                    Designer.Cursor.Dispose()
-                    Designer.Cursor = Nothing
-                End If
+                Designer.Cursor = Nothing
             Else
                 Designer.Cursor = Cursors.Pen
             End If

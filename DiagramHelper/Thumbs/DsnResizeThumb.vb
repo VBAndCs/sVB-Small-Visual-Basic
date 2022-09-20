@@ -38,7 +38,7 @@ Friend Class DsnResizeThumb
 
     Private Sub ResizeThumb_DragStarted(sender As Object, e As DragStartedEventArgs)
 
-        DsnResizeThumb.MeasurementsVisibilty = Windows.Visibility.Visible
+        MeasurementsVisibilty = Visibility.Visible
 
         OldState = New PropertyState(Dsn,
                           Designer.PageWidthProperty,
@@ -47,7 +47,7 @@ Friend Class DsnResizeThumb
     End Sub
 
     Private Sub ResizeThumb_DragDelta(sender As Object, e As DragDeltaEventArgs)
-        DsnResizeThumb.MeasurementsVisibilty = Visibility.Visible
+        MeasurementsVisibilty = Visibility.Visible
         Dim deltaVertical, deltaHorizontal As Double
 
         If HorizontalAlignment = HorizontalAlignment.Right Then
@@ -73,7 +73,7 @@ Friend Class DsnResizeThumb
     End Sub
 
     Private Sub ResizeThumb_DragCompleted(sender As Object, e As DragCompletedEventArgs)
-        DsnResizeThumb.MeasurementsVisibilty = Visibility.Collapsed
+        MeasurementsVisibilty = Visibility.Collapsed
         ReportChanges()
     End Sub
 

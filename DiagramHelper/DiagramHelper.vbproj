@@ -47,9 +47,6 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ControlThumbs">
-      <HintPath>..\ControlThumbs\bin\Debug\ControlThumbs.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
@@ -150,6 +147,7 @@
     <Compile Include="Helper Classes\Intersections.vb" />
     <Compile Include="Helper Classes\PropertyDictionary.vb" />
     <Compile Include="Thumbs\DsnResizeThumb.vb" />
+    <Compile Include="Helper Classes\SafeIconHandle.vb" />
     <Compile Include="ToolBoxItem.vb" />
     <Compile Include="Undo\CollectionState.vb" />
     <Compile Include="Helper Classes\CursorHelper.vb" />

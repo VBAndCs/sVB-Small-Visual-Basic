@@ -868,10 +868,7 @@ Public Class Designer
         Catch ex As Exception
             MsgBox(ex.Message)
         Finally
-            If PagesGrid.Cursor IsNot Nothing Then
-                PagesGrid.Cursor.Dispose()
-                PagesGrid.Cursor = Nothing
-            End If
+            PagesGrid.Cursor = Nothing
         End Try
     End Sub
 

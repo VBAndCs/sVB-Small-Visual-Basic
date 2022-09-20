@@ -37,6 +37,7 @@ Friend Class ResizeThumb
         Me.RenderTransformOrigin = New Point(0.5, 0.5)
         Me.Cursor = Cursors.None
         Me.ResizeCursor = New Arrow
+
     End Sub
 
     Public Property DesignerItem As ListBoxItem
@@ -182,11 +183,13 @@ Friend Class ResizeThumb
     Private Sub ResizeThumb_MouseEnter(sender As Object, e As MouseEventArgs) Handles Me.MouseEnter
         Me.rotateTransform = TryCast(DesignerItem.RenderTransform, RotateTransform)
         Dim TotalAngle = Me.ResizeAngle + If(Me.rotateTransform Is Nothing, 0, Me.rotateTransform.Angle)
+        If TotalAngle > 360 OrElse TotalAngle < -360 Then
+            TotalAngle = TotalAngle Mod 360
+        End If
 
         If Me.Cursor Is Cursors.None OrElse Me.ResizeCursor.Angle <> TotalAngle Then
-            Me.ResizeCursor.Angle = TotalAngle
-            Me.Cursor?.Dispose()
-            Me.Cursor = CursorHelper.CreateCursor(Me.ResizeCursor, -1, -1)
+            ResizeCursor.Angle = TotalAngle
+            Me.Cursor = CursorHelper.CreateCursor(ResizeCursor, -1, -1)
         End If
     End Sub
 
@@ -197,6 +200,7 @@ Friend Class ResizeThumb
         ElseIf HorizontalAlignment = Windows.HorizontalAlignment.Left OrElse HorizontalAlignment = Windows.HorizontalAlignment.Right Then
             Pnl.Height = Pnl.Width
         End If
+
         Helper.UpdateControl(Pnl)
         Pnl.DiagramGroup?.UpdateSelection()
         Pnl.UpdateLocationBorder()
