@@ -135,14 +135,14 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                     For i = 1 To n
                         Dim t = tokens(i)
-                        If t.subLine = 0 Then Continue For
+                        'If t.subLine = 0 Then Continue For
 
-                        If firstSubLine Then
-                            firstSubLine = False
-                            ' check the last token in the first line
-                            i = i - 1
-                            GoTo CheckLineEnd
-                        End If
+                        'If t.subLine > 0 AndAlso firstSubLine Then
+                        '    firstSubLine = False
+                        '    ' check the last token in the first line
+                        '    i = i - 1
+                        '    GoTo CheckLineEnd
+                        'End If
 
                         If t.subLine > subLine Then
                             lineStart = True
@@ -165,12 +165,12 @@ Namespace Microsoft.SmallBasic.LanguageService
                                 End If
 
                             Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightCurlyBracket
-                                If Not lineEnd OrElse (i < n AndAlso IsClosingSymbol(tokens(i + 1))) Then
+                                If Not lineEnd Then
                                     If indentStack.Count = 0 Then
                                         subLineOffset = Math.Max(0, subLineOffset - 1)
                                     Else
-                                        indentStack.Pop()
-                                        subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), indentStack.Peek())
+                                        dim l = indentStack.Pop()
+                                        subLineOffset = If(indentStack.Count = 0, Math.Max(0, l - 1), indentStack.Peek())
                                     End If
 
                                     If lineStart Then AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
@@ -192,7 +192,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                         If Not lineEnd Then Continue For
 
-CheckLineEnd:
+                        'CheckLineEnd:
                         Dim last = If(tokens(i).ParseType = ParseType.Comment, i - 1, i)
 
                         If last = -1 Then
@@ -210,8 +210,10 @@ CheckLineEnd:
 
                             Case "_", "+", "-", "*", "/", "and", "or"
                                 subLineOffset = Math.Max(1, subLineOffset)
+
                             Case "="
                                 subLineOffset += 1
+
                             Case "(", "{", "["
                                 subLineOffset += 1
                                 indentStack.Push(subLineOffset)

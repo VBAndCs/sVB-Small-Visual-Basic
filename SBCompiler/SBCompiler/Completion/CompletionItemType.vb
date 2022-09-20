@@ -14,5 +14,6 @@
         Identifier
         Control
         Lireral
+        ModuleName
     End Enum
 End Namespace

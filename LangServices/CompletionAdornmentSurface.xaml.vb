@@ -309,7 +309,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Next
             Next
 
-            Return -1
+            Return 0
         End Function
 
         Private Function GetSubWords(text As String) As List(Of String)

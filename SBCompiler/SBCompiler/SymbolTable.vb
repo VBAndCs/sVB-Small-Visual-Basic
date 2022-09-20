@@ -232,7 +232,7 @@ Namespace Microsoft.SmallBasic
             Return CType(attrs(0), WinForms.ReturnValueTypeAttribute).ReturnTypeValue
         End Function
 
-        Public ReadOnly Property Labels As New Dictionary(Of String, Token)
+        Public ReadOnly Labels As New Dictionary(Of String, Token)
 
         Public Sub New(errors As List(Of [Error]), typeInfoBag As TypeInfoBag)
             _Errors = errors
@@ -262,7 +262,7 @@ Namespace Microsoft.SmallBasic
 
         Public Sub Reset()
             _Errors.Clear()
-            _Labels.Clear()
+            Labels.Clear()
             _Subroutines.Clear()
             _GlobalVariables.Clear()
             _LocalVariables.Clear()
@@ -418,12 +418,16 @@ Namespace Microsoft.SmallBasic
                 Return
             End If
 
-            If Not Labels.ContainsKey(labelName) Then
-                Labels.Add(labelName, label)
-            Else
+            If Labels.ContainsKey(labelName) Then
                 Errors.Add(New [Error](label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("AnotherLabelExists"), New Object(0) {label.Text})))
+            Else
+                Labels.Add(labelName, label)
             End If
 
         End Sub
+
+
     End Class
+
+
 End Namespace

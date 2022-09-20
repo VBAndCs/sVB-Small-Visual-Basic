@@ -269,74 +269,82 @@ Namespace Microsoft.SmallBasic.Documents
             Dim sel = textView.Selection
             If sel.ActiveSnapshotSpan.Length > 1 Then
                 Dim span = sel.ActiveSnapshotSpan
-                Dim token = LineScanner.GetTokenType(span.GetText().ToLower())
-                Dim tokenType = LineScanner.GetParseType(token)
+                Dim tokenType = LineScanner.GetTokenType(span.GetText().ToLower())
+                Dim parseType = LineScanner.GetParseType(tokenType)
 
-                If tokenType = ParseType.Keyword Then
-                    Dim pos = span.Start
-                    Dim line = snapshot.GetLineFromPosition(pos)
-                    HighlightBlockKeywords(line.LineNumber, snapshot, token)
+                If parseType = ParseType.Keyword Then
+                    HighlightBlockKeywords(snapshot.GetLineFromPosition(span.Start).LineNumber, snapshot, tokenType)
                 End If
 
                 Return
             End If
 
-            Dim index = If(sel.IsEmpty,
+            Dim pos = If(sel.IsEmpty,
                     textView.Caret.Position.TextInsertionIndex,
                     sel.ActiveSnapshotSpan.Start
             )
 
+            Dim line = snapshot.GetLineFromPosition(pos)
+            Dim tokens = LineScanner.GetTokens(line.GetText(), 0)
+            Dim index = GetTokenAt(pos - line.Start, tokens)
+            If index = -1 Then Return
+
+            Dim token = tokens(index)
             Dim matchingPair1 As Char
-            Dim matchingPair2 As Char = ChrW(0)
+            Dim matchingPair2 As Char
             Dim direction As Integer = 1
 
-            For pos = If(index = length, 1, 0) To If(index = 0 OrElse Not sel.IsEmpty, 0, 1)
-                index -= pos
-                Select Case snapshot(index)
-                    Case "("c
-                        matchingPair1 = "("c
-                        matchingPair2 = ")"c
-                    Case "["c
-                        matchingPair1 = "["c
-                        matchingPair2 = "]"c
-                    Case "{"c
-                        matchingPair1 = "{"c
-                        matchingPair2 = "}"c
-                    Case ")"c
-                        matchingPair1 = ")"c
-                        matchingPair2 = "("c
-                        direction = -1
-                    Case "]"c
-                        matchingPair1 = "]"c
-                        matchingPair2 = "["c
-                        direction = -1
-                    Case "}"c
-                        matchingPair1 = "}"c
-                        matchingPair2 = "{"c
-                        direction = -1
-                End Select
-                If AscW(matchingPair2) <> 0 Then Exit For
-            Next
+            Select Case token.Type
+                Case TokenType.LeftParens
+                    matchingPair1 = "("c
+                    matchingPair2 = ")"c
 
-            If AscW(matchingPair2) = 0 Then
-                If sel.IsEmpty Then HighlightBlockKeywords()
-                Return
-            End If
+                Case TokenType.LeftBracket
+                    matchingPair1 = "["c
+                    matchingPair2 = "]"c
 
-            Dim i = index
+                Case TokenType.LeftCurlyBracket
+                    matchingPair1 = "{"c
+                    matchingPair2 = "}"c
+
+                Case TokenType.RightParens
+                    matchingPair1 = ")"c
+                    matchingPair2 = "("c
+                    direction = -1
+
+                Case TokenType.RightBracket
+                    matchingPair1 = "]"c
+                    matchingPair2 = "["c
+                    direction = -1
+
+                Case TokenType.RightCurlyBracket
+                    matchingPair1 = "}"c
+                    matchingPair2 = "{"c
+                    direction = -1
+
+                Case Else
+                    If sel.IsEmpty AndAlso token.ParseType = ParseType.Keyword Then HighlightBlockKeywords(line.LineNumber, snapshot, token.Type)
+                    Return
+            End Select
+
             Dim pair1Count = 0
+            Dim startPos = token.Column + line.Start
+
             Do
-                i += direction
-                If i = -1 OrElse i >= length Then Exit Do
-                Select Case snapshot(i)
+                token = GetNextToken(index, direction, line, tokens)
+                Select Case token.Text
+                    Case ""
+                        Return
+
                     Case matchingPair1
                         pair1Count += 1
+
                     Case matchingPair2
                         If pair1Count = 0 Then
-                            If index < i Then
-                                _editorControl.HighlightWords(_MatchingPairsHighlightColor, (index, 1), (i, 1))
+                            If direction > 0 Then
+                                _editorControl.HighlightWords(_MatchingPairsHighlightColor, (token.Column + line.Start, 1), (startPos, 1))
                             Else
-                                _editorControl.HighlightWords(_MatchingPairsHighlightColor, (i, 1), (index, 1))
+                                _editorControl.HighlightWords(_MatchingPairsHighlightColor, (startPos, 1), (token.Column + line.Start, 1))
                             End If
                             Return
                         End If
@@ -345,6 +353,45 @@ Namespace Microsoft.SmallBasic.Documents
             Loop
 
         End Sub
+
+        Private Function GetNextToken(ByRef i As Integer, direction As Integer, ByRef line As ITextSnapshotLine, ByRef tokens As List(Of Token)) As Token
+            i += direction
+            If i < 0 Then
+                Dim lineNumber = line.LineNumber - 1
+                If lineNumber < 0 Then Return Token.Illegal
+
+                Dim snapshot = EditorControl.TextView.TextSnapshot
+                line = snapshot.GetLineFromLineNumber(lineNumber)
+                tokens = LineScanner.GetTokens(line.GetText(), lineNumber)
+                i = tokens.Count - 1
+                If i < 0 Then Return Token.Illegal
+
+            ElseIf i >= tokens.Count Then
+                Dim lineNumber = line.LineNumber + 1
+                Dim snapshot = EditorControl.TextView.TextSnapshot
+                If lineNumber >= snapshot.LineCount Then Return Token.Illegal
+
+                line = snapshot.GetLineFromLineNumber(lineNumber)
+                tokens = LineScanner.GetTokens(line.GetText(), lineNumber)
+                If tokens.Count = 0 Then Return Token.Illegal
+                i = 0
+            End If
+
+            Return tokens(i)
+
+        End Function
+
+        Private Function GetTokenAt(index As Integer, tokens As List(Of Token)) As Integer
+            For i = 0 To tokens.Count - 1
+                Dim token = tokens(i)
+                If index <= Token.EndColumn Then
+                    If index < token.Column Then Return -1
+                    Return i
+                End If
+            Next
+            Return -1
+        End Function
+
         Public Sub HighlightEnclosingBlockKeywords()
             Dim textView = _editorControl.TextView
             Dim pos = textView.Caret.Position.TextInsertionIndex
@@ -353,22 +400,6 @@ Namespace Microsoft.SmallBasic.Documents
             _editorControl.HighlightWords(_WordHighlightColor, GetSpans(statement?.GetKeywords()))
         End Sub
 
-        Private Sub HighlightBlockKeywords()
-            Dim textView = _editorControl.TextView
-            Dim snapshot = textView.TextSnapshot
-            Dim index = textView.Caret.Position.TextInsertionIndex
-            Dim line = snapshot.GetLineFromPosition(index)
-            Dim pos = index - line.Start
-
-            For Each token In LineScanner.GetTokens(line.GetText(), line.LineNumber)
-                If pos >= token.Column AndAlso pos <= token.EndColumn Then
-                    If token.ParseType = ParseType.Keyword Then
-                        HighlightBlockKeywords(line.LineNumber, snapshot, token.Type)
-                    End If
-                    Return
-                End If
-            Next
-        End Sub
 
         Dim highlightCompiler As New Compiler()
 
