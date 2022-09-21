@@ -116,9 +116,9 @@ Namespace Microsoft.SmallBasic
             ' comment lines are not allowed as sublines
             If currentToken.Line > lastToken.Line Then Return False
 
-            Dim nextLineFirstToken = GetFirstToken(nextLine, 0).NormalizedText
+            Dim nextLineFirstToken = GetFirstToken(nextLine, 0).LCaseText
 
-            Select Case lastToken.NormalizedText
+            Select Case lastToken.LCaseText
                 Case "_"
                     If last = 0 OrElse tokens(last - 1).Text = "." OrElse nextLineFirstToken = "." Then
                         Return False

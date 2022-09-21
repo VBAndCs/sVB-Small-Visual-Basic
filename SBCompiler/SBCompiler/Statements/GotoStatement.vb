@@ -25,7 +25,7 @@ Namespace Microsoft.SmallBasic.Statements
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-            Dim label = scope.Labels(Me.Label.NormalizedText)
+            Dim label = scope.Labels(Me.Label.LCaseText)
             scope.ILGenerator.Emit(OpCodes.Br, label)
         End Sub
 

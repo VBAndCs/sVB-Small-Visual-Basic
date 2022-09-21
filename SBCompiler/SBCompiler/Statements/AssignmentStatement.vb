@@ -80,7 +80,7 @@ Namespace Microsoft.SmallBasic.Statements
                             Dim propExpr = CType(RightValue, PropertyExpression)
                             symbolTable.InferedTypes(key) = symbolTable.GetReturnValueType(propExpr.TypeName, propExpr.PropertyName, False)
                         Else
-                            Dim name = identifierExpression.Identifier.NormalizedText
+                            Dim name = identifierExpression.Identifier.LCaseText
                             If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
                                 symbolTable.InferedTypes(key) = VariableType.Color
                             End If
@@ -116,7 +116,7 @@ Namespace Microsoft.SmallBasic.Statements
                     If var IsNot Nothing Then
                         scope.ILGenerator.Emit(OpCodes.Stloc, var)
                     Else
-                        Dim field = scope.Fields(identifierExpression.Identifier.NormalizedText)
+                        Dim field = scope.Fields(identifierExpression.Identifier.LCaseText)
                         scope.ILGenerator.Emit(OpCodes.Stsfld, field)
                     End If
                 End If
@@ -133,19 +133,19 @@ Namespace Microsoft.SmallBasic.Statements
                     If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
                     ArrayExpression.ParseAndEmit(code, subroutine, scope, StartToken.Line)
                 Else
-                    Dim typeInfo = scope.TypeInfoBag.Types(propertyExpression.TypeName.NormalizedText)
+                    Dim typeInfo = scope.TypeInfoBag.Types(propertyExpression.TypeName.LCaseText)
 
-                    If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.NormalizedText, value) Then
+                    If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.LCaseText, value) Then
                         Dim identifierExpression2 = TryCast(RightValue, IdentifierExpression)
-                        Dim token = scope.SymbolTable.Subroutines(identifierExpression2.Identifier.NormalizedText)
-                        Dim meth = scope.MethodBuilders(token.NormalizedText)
+                        Dim token = scope.SymbolTable.Subroutines(identifierExpression2.Identifier.LCaseText)
+                        Dim meth = scope.MethodBuilders(token.LCaseText)
                         scope.ILGenerator.Emit(OpCodes.Ldnull)
                         scope.ILGenerator.Emit(OpCodes.Ldftn, meth)
                         scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallBasicCallback).GetConstructors()(0))
                         scope.ILGenerator.EmitCall(OpCodes.Call, value.GetAddMethod(), Nothing)
 
                     Else
-                        Dim propertyInfo = typeInfo.Properties(propertyExpression.PropertyName.NormalizedText)
+                        Dim propertyInfo = typeInfo.Properties(propertyExpression.PropertyName.LCaseText)
                         Dim setMethod = propertyInfo.GetSetMethod()
                         RightValue.EmitIL(scope)
                         scope.ILGenerator.EmitCall(OpCodes.Call, setMethod, Nothing)

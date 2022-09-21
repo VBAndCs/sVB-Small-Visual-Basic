@@ -212,7 +212,7 @@ Namespace Microsoft.SmallBasic.Statements
             _InitialValue.EmitIL(scope)
 
             If IsField Then
-                iteratorField = scope.Fields(Iterator.NormalizedText)
+                iteratorField = scope.Fields(Iterator.LCaseText)
                 scope.ILGenerator.Emit(OpCodes.Stsfld, iteratorField)
                 scope.ILGenerator.MarkLabel(ConditionLabel)
                 scope.ILGenerator.Emit(OpCodes.Ldsfld, iteratorField)
@@ -280,14 +280,14 @@ Namespace Microsoft.SmallBasic.Statements
                 CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
 
             ElseIf AfterIterator(line, column) Then
-                CompletionHelper.FillLocals(completionBag, Subroutine?.Name.NormalizedText)
+                CompletionHelper.FillLocals(completionBag, Subroutine?.Name.LCaseText)
                 If Subroutine Is Nothing Then
                     If completionBag.ForHelp AndAlso Not Iterator.IsIllegal Then
                         completionBag.CompletionItems.Add(New CompletionItem() With {
-                            .Key = Iterator.NormalizedText,
+                            .Key = Iterator.LCaseText,
                             .DisplayName = Iterator.Text,
                             .ItemType = CompletionItemType.GlobalVariable,
-                            .DefinitionIdintifier = completionBag.SymbolTable.GlobalVariables(Iterator.NormalizedText)
+                            .DefinitionIdintifier = completionBag.SymbolTable.GlobalVariables(Iterator.LCaseText)
                          })
                     Else
                         CompletionHelper.FillVariables(completionBag)

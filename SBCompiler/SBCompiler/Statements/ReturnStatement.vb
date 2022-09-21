@@ -38,7 +38,7 @@ Namespace Microsoft.SmallBasic.Statements
                 code = $"Stack.PushValue(""_sVB_ReturnValues"", {If(ReturnExpression, ChrW(34) & ChrW(34))})" & vbCrLf
             End If
 
-            code &= $"GoTo _EXIT_SUB_{Subroutine.Name.NormalizedText}"
+            code &= $"GoTo _EXIT_SUB_{Subroutine.Name.LCaseText}"
 
             CodeGenerator.LowerAndEmit(code, scope, Subroutine, StartToken.Line)
         End Sub

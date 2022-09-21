@@ -393,11 +393,11 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Function ConvertLiteralExpressionToVB(literalExpression As LiteralExpression) As String
-            If Equals(literalExpression.Literal.NormalizedText, """true""") Then
+            If Equals(literalExpression.Literal.LCaseText, """true""") Then
                 Return "true"
             End If
 
-            If Equals(literalExpression.Literal.NormalizedText, """false""") Then
+            If Equals(literalExpression.Literal.LCaseText, """false""") Then
                 Return "false"
             End If
 
@@ -437,9 +437,9 @@ Namespace Microsoft.SmallBasic
             Dim __ As EventInfo = Nothing
 
             If propertyExpression IsNot Nothing Then
-                Dim typeInfo = compiler.TypeInfoBag.Types(propertyExpression.TypeName.NormalizedText)
+                Dim typeInfo = compiler.TypeInfoBag.Types(propertyExpression.TypeName.LCaseText)
 
-                If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.NormalizedText, __) Then
+                If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.LCaseText, __) Then
                     writer.WriteLine("AddHandler {0}, AddressOf {1}", ConvertExpressionToVB(propertyExpression), ConvertExpressionToVB(assignmentStatement.RightValue))
                     Return
                 End If

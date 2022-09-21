@@ -1271,7 +1271,7 @@ EndFunction
                 Dim Tokens = LineScanner.GetTokenEnumerator(line.GetText(), line.LineNumber)
                 If Tokens.Current.Type = TokenType.Sub OrElse Tokens.Current.Type = TokenType.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Type = TokenType.Identifier Then
-                        If Tokens.Current.NormalizedText = name Then Return line.Start + Tokens.Current.Column
+                        If Tokens.Current.LCaseText = name Then Return line.Start + Tokens.Current.Column
                     End If
                 End If
 

@@ -45,10 +45,10 @@ Namespace Microsoft.SmallBasic
             AddIdentifier(typeNameInfo)
 
             Dim value As TypeInfo = Nothing
-            Dim typeName = typeNameInfo.NormalizedText
+            Dim typeName = typeNameInfo.LCaseText
             If Not prop.IsDynamic AndAlso _typeInfoBag.Types.TryGetValue(typeName, value) Then Return
 
-            Dim propertyName = propertyNameInfo.NormalizedText
+            Dim propertyName = propertyNameInfo.LCaseText
             propertyNameInfo.Comment = prop.Parent.GetSummery()
             prop.PropertyName = propertyNameInfo
 
@@ -91,7 +91,7 @@ Namespace Microsoft.SmallBasic
         Public Property InferedTypes As New Dictionary(Of String, VariableType)
 
         Public Function GetInferedType(var As Token) As VariableType
-            Dim variableName = var.NormalizedText
+            Dim variableName = var.LCaseText
             Dim Subroutine = var.SubroutineName?.ToLower()
             If Subroutine = "" Then Return GetInferedType(variableName)
 
@@ -134,7 +134,7 @@ Namespace Microsoft.SmallBasic
             If typeName.IsIllegal Then Return Nothing
 
             Dim type As TypeInfo
-            Dim typeKey = typeName.NormalizedText
+            Dim typeKey = typeName.LCaseText
 
             If typeKey = "me" Then
                 typeName.Comment = "Me"
@@ -178,7 +178,7 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Friend Function GetMemberInfo(ByRef memberName As Token, type As TypeInfo, isMethod As Boolean) As System.Reflection.MemberInfo
-            Dim memberKey = memberName.NormalizedText
+            Dim memberKey = memberName.LCaseText
             Dim memberInfo As System.Reflection.MemberInfo
 
             If isMethod Then
@@ -283,7 +283,7 @@ Namespace Microsoft.SmallBasic
                          Optional isLocal As Boolean = False
                    ) As String
 
-            Dim variableName = variable.Identifier.NormalizedText
+            Dim variableName = variable.Identifier.LCaseText
 
             If variableName = "_" Then
                 Errors.Add(New [Error](variable.Identifier, "_ is not a valid name"))
@@ -320,12 +320,12 @@ Namespace Microsoft.SmallBasic
 
         Public Function IsGlobalVar(variable As IdentifierExpression) As Boolean
             If IsLocalVar(variable) Then Return False
-            Return _GlobalVariables.ContainsKey(variable.Identifier.NormalizedText)
+            Return _GlobalVariables.ContainsKey(variable.Identifier.LCaseText)
         End Function
 
         Public Function IsGlobalVar(variable As Token) As Boolean
             If IsLocalVar(variable) Then Return False
-            Return _GlobalVariables.ContainsKey(variable.NormalizedText)
+            Return _GlobalVariables.ContainsKey(variable.LCaseText)
         End Function
 
         Public Function IsLocalVar(variable As IdentifierExpression) As Boolean
@@ -337,15 +337,15 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Function GetKey(variable As IdentifierExpression) As String
-            Dim variableName = variable.Identifier.NormalizedText
+            Dim variableName = variable.Identifier.LCaseText
             Dim Subroutine = variable.Subroutine
 
             If Subroutine Is Nothing Then Return variableName
-            Return $"{Subroutine.Name.NormalizedText}.{variableName}"
+            Return $"{Subroutine.Name.LCaseText}.{variableName}"
         End Function
 
         Private Function GetKey(identifier As Token) As String
-            Dim variableName = identifier.NormalizedText
+            Dim variableName = identifier.LCaseText
             Dim Subroutine = identifier.SubroutineName?.ToLower()
             If Subroutine = "" Then Return variableName
             Return $"{Subroutine}.{variableName}"
@@ -357,7 +357,7 @@ Namespace Microsoft.SmallBasic
 
 
         Public Function IsDefined(identifier As Token, Optional usedAfterDefind As Boolean = False) As Boolean
-            Dim var = identifier.NormalizedText
+            Dim var = identifier.LCaseText
             Dim varDeclaration As Token
             Dim key = GetKey(identifier)
 
@@ -390,13 +390,13 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Public Sub AddVariableInitialization(variable As Token)
-            If Not InitializedVariables.ContainsKey(variable.NormalizedText) Then
-                InitializedVariables.Add(variable.NormalizedText, variable)
+            If Not InitializedVariables.ContainsKey(variable.LCaseText) Then
+                InitializedVariables.Add(variable.LCaseText, variable)
             End If
         End Sub
 
         Public Sub AddSubroutine(subroutine As Token, type As TokenType)
-            Dim name = subroutine.NormalizedText
+            Dim name = subroutine.LCaseText
             subroutine.Type = type
 
             If _GlobalVariables.ContainsKey(name) Then
@@ -412,7 +412,7 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Public Sub AddLabelDefinition(label As Token)
-            Dim labelName = label.NormalizedText
+            Dim labelName = label.LCaseText
             If labelName = "_" Then
                 Errors.Add(New [Error](label, "_ is not a valid name"))
                 Return

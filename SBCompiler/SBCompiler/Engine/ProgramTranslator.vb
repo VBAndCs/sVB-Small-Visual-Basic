@@ -83,7 +83,7 @@ Namespace Microsoft.SmallBasic.Engine
 
             If identifierExpression IsNot Nothing Then
                 instructions.Add(New FieldAssignmentInstruction With {
-                    .FieldName = identifierExpression.Identifier.NormalizedText,
+                    .FieldName = identifierExpression.Identifier.LCaseText,
                     .LineNumber = statement.StartToken.Line,
                     .RightSide = statement.RightValue
                 })
@@ -94,20 +94,20 @@ Namespace Microsoft.SmallBasic.Engine
             Dim value As EventInfo = Nothing
 
             If propertyExpression IsNot Nothing Then
-                Dim typeInfo = Compiler.TypeInfoBag.Types(propertyExpression.TypeName.NormalizedText)
+                Dim typeInfo = Compiler.TypeInfoBag.Types(propertyExpression.TypeName.LCaseText)
                 Dim value2 As PropertyInfo
 
-                If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.NormalizedText, value) Then
+                If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.LCaseText, value) Then
                     Dim identifierExpression2 As IdentifierExpression = TryCast(statement.RightValue, IdentifierExpression)
 
                     If identifierExpression2 IsNot Nothing Then
                         instructions.Add(New EventAssignmentInstruction With {
                             .EventInfo = value,
                             .LineNumber = statement.StartToken.Line,
-                            .SubroutineName = identifierExpression2.Identifier.NormalizedText
+                            .SubroutineName = identifierExpression2.Identifier.LCaseText
                         })
                     End If
-                ElseIf typeInfo.Properties.TryGetValue(propertyExpression.PropertyName.NormalizedText, value2) Then
+                ElseIf typeInfo.Properties.TryGetValue(propertyExpression.PropertyName.LCaseText, value2) Then
                     instructions.Add(New PropertyAssignmentInstruction With {
                         .PropertyInfo = value2,
                         .RightSide = statement.RightValue,
@@ -133,7 +133,7 @@ Namespace Microsoft.SmallBasic.Engine
             Dim labelName3 As String = CreateNewLabel()
             Dim labelName4 As String = CreateNewLabel()
             instructions.Add(New FieldAssignmentInstruction With {
-                .FieldName = statement.Iterator.NormalizedText,
+                .FieldName = statement.Iterator.LCaseText,
                 .RightSide = statement.InitialValue,
                 .LineNumber = statement.StartToken.Line
             })
@@ -203,7 +203,7 @@ Namespace Microsoft.SmallBasic.Engine
             })
             TranslateStatements(instructions, statement.Body)
             instructions.Add(New FieldAssignmentInstruction With {
-                .FieldName = statement.Iterator.NormalizedText,
+                .FieldName = statement.Iterator.LCaseText,
                 .RightSide = New BinaryExpression With {
                     .LeftHandSide = New IdentifierExpression With {
                         .Identifier = statement.Iterator,
@@ -233,7 +233,7 @@ Namespace Microsoft.SmallBasic.Engine
 
         Private Sub TranslateGotoStatement(instructions As List(Of Instruction), statement As GotoStatement)
             instructions.Add(New GotoInstruction With {
-                .LabelName = statement.Label.NormalizedText,
+                .LabelName = statement.Label.LCaseText,
                 .LineNumber = statement.StartToken.Line
             })
         End Sub
@@ -286,7 +286,7 @@ Namespace Microsoft.SmallBasic.Engine
         Private Sub TranslateLabelStatement(instructions As List(Of Instruction), statement As LabelStatement)
             instructions.Add(New LabelInstruction With {
                 .LineNumber = statement.StartToken.Line,
-                .LabelName = statement.LabelToken.NormalizedText
+                .LabelName = statement.LabelToken.LCaseText
             })
         End Sub
 
@@ -299,14 +299,14 @@ Namespace Microsoft.SmallBasic.Engine
 
         Private Sub TranslateSubroutineStatement(statement As SubroutineStatement)
             Dim list As List(Of Instruction) = New List(Of Instruction)()
-            SubroutineInstructions(statement.Name.NormalizedText) = list
+            SubroutineInstructions(statement.Name.LCaseText) = list
             TranslateStatements(list, statement.Body)
         End Sub
 
         Private Sub TranslateSubroutineCallStatement(instructions As List(Of Instruction), statement As SubroutineCallStatement)
             instructions.Add(New SubroutineCallInstruction With {
                 .LineNumber = statement.StartToken.Line,
-                .SubroutineName = statement.Name.NormalizedText
+                .SubroutineName = statement.Name.LCaseText
             })
         End Sub
 

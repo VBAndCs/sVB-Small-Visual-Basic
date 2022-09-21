@@ -859,7 +859,7 @@ Namespace Microsoft.Nautilus.Text.Editor
                 line = _TextSnapshot.GetLineFromPosition(line.EndIncludingLineBreak)
                 Dim startIndex As Integer
                 Dim endIndex As Integer
-                Dim num2 As Double = LayoutOneLine(line, bottomY, positionExistingTextLines:=True, startIndex, endIndex)
+                Dim num2 = LayoutOneLine(line, bottomY, positionExistingTextLines:=True, startIndex, endIndex)
                 num += endIndex - startIndex + 1
                 bottomY += num2
                 If bottomY > ViewportHeight AndAlso Not ignoreViewHeight Then

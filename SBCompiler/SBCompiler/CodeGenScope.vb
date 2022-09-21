@@ -26,7 +26,7 @@ Namespace Microsoft.SmallBasic
             Dim varBuilder = GetLocalBuilder(Subroutine, varIdentifier)
             If varBuilder Is Nothing Then
                 varBuilder = _ILGenerator.DeclareLocal(GetType(Library.Primitive))
-                varBuilder.SetLocalSymInfo(varIdentifier.NormalizedText)
+                varBuilder.SetLocalSymInfo(varIdentifier.LCaseText)
                 AddLocalBuilder(Subroutine, varIdentifier, varBuilder)
             End If
             Return varBuilder
@@ -36,9 +36,9 @@ Namespace Microsoft.SmallBasic
         Friend Function GetLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As Token) As LocalBuilder
             Dim key = ""
             If Subroutine Is Nothing Then
-                key = varIdentifier.NormalizedText
+                key = varIdentifier.LCaseText
             Else
-                key = $"{Subroutine.Name.NormalizedText}.{varIdentifier.NormalizedText}"
+                key = $"{Subroutine.Name.LCaseText}.{varIdentifier.LCaseText}"
             End If
 
             If Not _SymbolTable.LocalVariables.ContainsKey(key) Then Return Nothing
@@ -47,7 +47,7 @@ Namespace Microsoft.SmallBasic
 
             Dim varBuilder = _ILGenerator.DeclareLocal(GetType(Library.Primitive))
             Dim var = _SymbolTable.LocalVariables(key)
-            varBuilder.SetLocalSymInfo(var.Identifier.NormalizedText)
+            varBuilder.SetLocalSymInfo(var.Identifier.LCaseText)
             _locals(key) = varBuilder
             Return varBuilder
 
@@ -61,9 +61,9 @@ Namespace Microsoft.SmallBasic
 
             Dim key = ""
             If Subroutine Is Nothing Then
-                key = varIdentifier.NormalizedText
+                key = varIdentifier.LCaseText
             Else
-                key = $"{Subroutine.Name.NormalizedText}.{varIdentifier.NormalizedText}"
+                key = $"{Subroutine.Name.LCaseText}.{varIdentifier.LCaseText}"
             End If
 
             _locals(key) = localVarBuilder

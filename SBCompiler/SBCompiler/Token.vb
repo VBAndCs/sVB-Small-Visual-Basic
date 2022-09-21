@@ -21,7 +21,7 @@ Namespace Microsoft.SmallBasic
             End Get
         End Property
 
-        Public ReadOnly Property NormalizedText As String
+        Public ReadOnly Property LCaseText As String
             Get
                 If Text = "" Then Return ""
                 Return Text.ToLower(CultureInfo.CurrentUICulture)

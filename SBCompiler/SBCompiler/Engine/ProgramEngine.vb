@@ -177,7 +177,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Dim value2 As Primitive = Nothing
 
                 If identifierExpression IsNot Nothing Then
-                    Dim normalizedText = identifierExpression.Identifier.NormalizedText
+                    Dim normalizedText = identifierExpression.Identifier.LCaseText
 
                     If Not Fields.TryGetValue(normalizedText, value2) Then
                         value2 = Nothing
@@ -280,7 +280,7 @@ Namespace Microsoft.SmallBasic.Engine
                 Dim value As Primitive = Nothing
 
                 If identifierExpression IsNot Nothing Then
-                    If Not Fields.TryGetValue(identifierExpression.Identifier.NormalizedText, value) Then
+                    If Not Fields.TryGetValue(identifierExpression.Identifier.LCaseText, value) Then
                         value = ""
                     End If
 
@@ -333,7 +333,7 @@ Namespace Microsoft.SmallBasic.Engine
             Private Function EvaluateIdentifierExpression(expression As IdentifierExpression) As Primitive
                 Dim value As Primitive = Nothing
 
-                If Fields.TryGetValue(expression.Identifier.NormalizedText, value) Then
+                If Fields.TryGetValue(expression.Identifier.LCaseText, value) Then
                     Return value
                 End If
 
@@ -349,8 +349,8 @@ Namespace Microsoft.SmallBasic.Engine
             End Function
 
             Private Function EvaluateMethodCallExpression(expression As MethodCallExpression) As Primitive
-                Dim typeInfo = TypeInfoBag.Types(expression.TypeName.NormalizedText)
-                Dim methodInfo = typeInfo.Methods(expression.MethodName.NormalizedText)
+                Dim typeInfo = TypeInfoBag.Types(expression.TypeName.LCaseText)
+                Dim methodInfo = typeInfo.Methods(expression.MethodName.LCaseText)
                 Dim list As List(Of Object) = New List(Of Object)()
 
                 For Each argument In expression.Arguments
@@ -371,8 +371,8 @@ Namespace Microsoft.SmallBasic.Engine
             End Function
 
             Private Function EvaluatePropertyExpression(expression As PropertyExpression) As Primitive
-                Dim typeInfo = TypeInfoBag.Types(expression.TypeName.NormalizedText)
-                Dim propertyInfo = typeInfo.Properties(expression.PropertyName.NormalizedText)
+                Dim typeInfo = TypeInfoBag.Types(expression.TypeName.LCaseText)
+                Dim propertyInfo = typeInfo.Properties(expression.PropertyName.LCaseText)
                 Dim value = propertyInfo.GetValue(Nothing, Nothing)
 
                 If TypeOf value Is Primitive Then

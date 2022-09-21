@@ -41,7 +41,7 @@ Namespace Microsoft.SmallBasic.Statements
                 CodeGenerator.LowerAndEmit(code.ToString(), scope, OuterSubroutine, StartToken.Line)
             End If
 
-            Dim methodInfo = scope.MethodBuilders(Name.NormalizedText)
+            Dim methodInfo = scope.MethodBuilders(Name.LCaseText)
             scope.ILGenerator.EmitCall(OpCodes.Call, methodInfo, Nothing)
 
             If IsFunctionCall Then

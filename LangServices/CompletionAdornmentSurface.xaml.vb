@@ -243,7 +243,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim token = tokens.Last
 
             If token.Type = TokenType.StringLiteral Then
-                Return token.NormalizedText.Trim("""")
+                Return token.LCaseText.Trim("""")
 
             ElseIf token.ParseType = ParseType.Operator Then
                 Select Case token.Type
@@ -254,7 +254,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                         Return ""
                 End Select
             End If
-            Return token.NormalizedText
+            Return token.LCaseText
         End Function
 
         Private Function GetSelectedItemIndex(text As String) As Integer

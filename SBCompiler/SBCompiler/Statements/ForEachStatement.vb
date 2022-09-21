@@ -156,14 +156,14 @@ Namespace Microsoft.SmallBasic.Statements
                 CompletionHelper.FillAllGlobalItems(bag, globalScope)
 
             ElseIf AfterIterator(line, column) Then
-                CompletionHelper.FillLocals(bag, Subroutine?.Name.NormalizedText)
+                CompletionHelper.FillLocals(bag, Subroutine?.Name.LCaseText)
                 If Subroutine Is Nothing Then
                     If bag.ForHelp AndAlso Not Iterator.IsIllegal Then
                         bag.CompletionItems.Add(New CompletionItem() With {
-                            .Key = Iterator.NormalizedText,
+                            .Key = Iterator.LCaseText,
                             .DisplayName = Iterator.Text,
                             .ItemType = CompletionItemType.GlobalVariable,
-                            .DefinitionIdintifier = bag.SymbolTable.GlobalVariables(Iterator.NormalizedText)
+                            .DefinitionIdintifier = bag.SymbolTable.GlobalVariables(Iterator.LCaseText)
                          })
                     Else
                         CompletionHelper.FillVariables(bag)

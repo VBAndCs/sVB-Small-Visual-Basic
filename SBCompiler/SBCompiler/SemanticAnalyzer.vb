@@ -147,7 +147,7 @@ Namespace Microsoft.SmallBasic
             NoteMethodCallReference(methodCall, leaveValueInStack, mustBeAssignable)
 
             If methodCall.TypeName.Type = TokenType.Illegal Then ' Function Call
-                Dim subName = methodCall.MethodName.NormalizedText
+                Dim subName = methodCall.MethodName.LCaseText
                 If Not _symbolTable.Subroutines.ContainsKey(subName) Then
                     _parser.AddError(methodCall.MethodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {methodCall.MethodName.Text}))
                 Else
@@ -176,7 +176,7 @@ Namespace Microsoft.SmallBasic
         Private Sub AnalyzeAssignmentStatement(assignmentStatement As AssignmentStatement)
             Dim idExpr = TryCast(assignmentStatement.RightValue, IdentifierExpression)
 
-            If idExpr IsNot Nothing AndAlso _symbolTable.Subroutines.ContainsKey(idExpr.Identifier.NormalizedText) Then
+            If idExpr IsNot Nothing AndAlso _symbolTable.Subroutines.ContainsKey(idExpr.Identifier.LCaseText) Then
                 NoteEventReference(assignmentStatement.LeftValue, idExpr.Identifier)
                 Return
             End If
@@ -241,11 +241,11 @@ Namespace Microsoft.SmallBasic
         Private Sub AnalyzeGotoStatement(gotoStatement As GotoStatement)
             Dim label = gotoStatement.Label
             If label.Type <> 0 Then
-                If label.Type <> 0 AndAlso Not _symbolTable.Labels.ContainsKey(label.NormalizedText) Then
+                If label.Type <> 0 AndAlso Not _symbolTable.Labels.ContainsKey(label.LCaseText) Then
                     _parser.AddError(label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("LabelNotFound"), New Object(0) {label.Text}))
                 Else
-                    Dim labelStatement = CType(_symbolTable.Labels(label.NormalizedText).Parent, LabelStatement)
-                    If labelStatement.subroutine?.Name.NormalizedText <> gotoStatement.subroutine?.Name.NormalizedText Then
+                    Dim labelStatement = CType(_symbolTable.Labels(label.LCaseText).Parent, LabelStatement)
+                    If labelStatement.subroutine?.Name.LCaseText <> gotoStatement.subroutine?.Name.LCaseText Then
                         _parser.SymbolTable.Errors.Add(New [Error](label, "GoTo can't jump accross subroutines."))
                     End If
                 End If
@@ -279,7 +279,7 @@ Namespace Microsoft.SmallBasic
         Function GetParamNo(subName As String)
             For Each statement In _parser.ParseTree
                 Dim subroutine = TryCast(statement, SubroutineStatement)
-                If subroutine IsNot Nothing AndAlso subroutine.Name.NormalizedText = subName Then
+                If subroutine IsNot Nothing AndAlso subroutine.Name.LCaseText = subName Then
                     Return subroutine.Params?.Count
                 End If
             Next
@@ -289,7 +289,7 @@ Namespace Microsoft.SmallBasic
         Private Sub AnalyzeSubroutineCallStatement(subroutineCall As SubroutineCallStatement)
             Dim subroutineName = subroutineCall.Name
             If subroutineName.Type <> 0 Then
-                Dim subName = subroutineName.NormalizedText
+                Dim subName = subroutineName.LCaseText
                 If Not _symbolTable.Subroutines.ContainsKey(subName) Then
                     _parser.AddError(subroutineName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineNotDefined"), New Object(0) {subroutineName.Text}))
                 Else
@@ -355,8 +355,8 @@ Namespace Microsoft.SmallBasic
 
                 Dim value As TypeInfo = Nothing
 
-                If _typeInfoBag.Types.TryGetValue(typeName.NormalizedText, value) Then
-                    If Not value.Events.ContainsKey(propertyName.NormalizedText) Then
+                If _typeInfoBag.Types.TryGetValue(typeName.LCaseText, value) Then
+                    If Not value.Events.ContainsKey(propertyName.LCaseText) Then
                         _parser.AddError(propertyName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("EventNotFound"), New Object(1) {propertyName.Text, typeName.Text}))
                     End If
                 Else
@@ -376,12 +376,12 @@ Namespace Microsoft.SmallBasic
             End If
 
             Dim value As TypeInfo = Nothing
-            Dim typeName = typeNameInfo.NormalizedText
+            Dim typeName = typeNameInfo.LCaseText
 
             If _typeInfoBag.Types.TryGetValue(typeName, value) Then
                 Dim value2 As MethodInfo = Nothing
 
-                If value.Methods.TryGetValue(methodName.NormalizedText, value2) Then
+                If value.Methods.TryGetValue(methodName.LCaseText, value2) Then
                     Dim num As Integer = value2.GetParameters().Length
 
                     If num <> methodExpression.Arguments.Count Then
@@ -409,8 +409,8 @@ Namespace Microsoft.SmallBasic
             End If
 
             Dim value As TypeInfo = Nothing
-            Dim typeName = typeNameInfo.NormalizedText
-            Dim propertyName = propertyNameInfo.NormalizedText
+            Dim typeName = typeNameInfo.LCaseText
+            Dim propertyName = propertyNameInfo.LCaseText
 
             If propExpr.IsDynamic Then
                 Dim subroutine = SubroutineStatement.Current
@@ -445,7 +445,7 @@ Namespace Microsoft.SmallBasic
                         _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsWriteOnly"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
                     End If
 
-                ElseIf value.Events.TryGetValue(propertyNameInfo.NormalizedText, ev) Then
+                ElseIf value.Events.TryGetValue(propertyNameInfo.LCaseText, ev) Then
                     _parser.AddError(propertyNameInfo, $"Event {ev.Name} can only be set to a Sub.")
                 Else
                     _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyNotFound"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
@@ -457,8 +457,8 @@ Namespace Microsoft.SmallBasic
 
 
         Private Sub NoteVariableReference(variable As Token)
-            If variable.Type <> 0 AndAlso Not _symbolTable.GlobalVariables.ContainsKey(variable.NormalizedText) AndAlso
-                       _symbolTable.Subroutines.ContainsKey(variable.NormalizedText) Then
+            If variable.Type <> 0 AndAlso Not _symbolTable.GlobalVariables.ContainsKey(variable.LCaseText) AndAlso
+                       _symbolTable.Subroutines.ContainsKey(variable.LCaseText) Then
                 _parser.AddError(variable, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineUsedAsVariable"), New Object(0) {variable.Text}))
             End If
         End Sub

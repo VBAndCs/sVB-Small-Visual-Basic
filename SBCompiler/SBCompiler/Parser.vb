@@ -425,7 +425,7 @@ Namespace Microsoft.SmallBasic
             End If
 
             Dim returnLabelToken As New Token() With {
-                    .Text = $"_EXIT_SUB_{subroutine.Name.NormalizedText}",
+                    .Text = $"_EXIT_SUB_{subroutine.Name.LCaseText}",
                     .Type = TokenType.Identifier,
                     .ParseType = ParseType.Identifier
                 }
@@ -1082,7 +1082,7 @@ Namespace Microsoft.SmallBasic
             Next
 
             For Each e In _SymbolTable.PossibleEventHandlers
-                If _SymbolTable.Subroutines.ContainsKey(e.Id.NormalizedText) Then
+                If _SymbolTable.Subroutines.ContainsKey(e.Id.LCaseText) Then
                     Dim id = _SymbolTable.AllIdentifiers(e.index)
                     id.SymbolType = Completion.CompletionItemType.SubroutineName
                     _SymbolTable.AllIdentifiers(e.index) = id
@@ -1090,7 +1090,7 @@ Namespace Microsoft.SmallBasic
             Next
 
             For Each funcCall In _FunctionsCall
-                Dim funcName = funcCall.MethodName.NormalizedText
+                Dim funcName = funcCall.MethodName.LCaseText
                 If _SymbolTable.Subroutines.ContainsKey(funcName) Then
                     Dim subInfo = _SymbolTable.Subroutines(funcName)
                     If subInfo.Type = TokenType.Sub Then

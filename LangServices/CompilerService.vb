@@ -200,7 +200,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                             Continue For
                         End If
 
-                        Select Case tokens(last).NormalizedText
+                        Select Case tokens(last).LCaseText
                             Case ","
                                 If indentStack.Count = 0 Then
                                     If subLineOffset = 0 Then subLineOffset = 1
@@ -319,8 +319,8 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                     ' fix local vars usage
                     If id.SymbolType = CompletionItemType.LocalVariable Then
-                        Dim subName = Statements.SubroutineStatement.GetSubroutine(id)?.Name.NormalizedText
-                        Dim key = $"{subName}.{id.NormalizedText}"
+                        Dim subName = Statements.SubroutineStatement.GetSubroutine(id)?.Name.LCaseText
+                        Dim key = $"{subName}.{id.LCaseText}"
                         Dim name = symbolTable.LocalVariables(Key).Identifier.Text
                         If id.Text <> name Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, name)
                         Continue For
@@ -376,7 +376,7 @@ Namespace Microsoft.SmallBasic.LanguageService
         End Sub
 
         Private Function FixToken(token As Token, lineStart As Integer, dictionary As Dictionary(Of String, Token), textEdit As ITextEdit)
-            Dim key = token.NormalizedText
+            Dim key = token.LCaseText
             If key.StartsWith("__foreach__") Then Return True
 
             If dictionary.ContainsKey(key) Then
@@ -539,7 +539,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Case Else
                         If token.ParseType = ParseType.Keyword Then
                             If notLastToken Then
-                                If token.Type = TokenType.For AndAlso nextToken.NormalizedText = "each" Then
+                                If token.Type = TokenType.For AndAlso nextToken.LCaseText = "each" Then
                                     FixSpaces(textEdit, line, token, nextToken, 0)
                                 Else
                                     FixSpaces(textEdit, line, token, nextToken, 1)

@@ -165,8 +165,8 @@ Namespace Microsoft.SmallBasic.Statements
         End Sub
 
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
-            Dim methodBuilder = scope.TypeBuilder.DefineMethod(Name.NormalizedText, MethodAttributes.Static)
-            scope.MethodBuilders.Add(Name.NormalizedText, methodBuilder)
+            Dim methodBuilder = scope.TypeBuilder.DefineMethod(Name.LCaseText, MethodAttributes.Static)
+            scope.MethodBuilders.Add(Name.LCaseText, methodBuilder)
             Dim codeGenScope As New CodeGenScope() With {
                 .ILGenerator = methodBuilder.GetILGenerator(),
                 .TypeBuilder = scope.TypeBuilder,
@@ -180,7 +180,7 @@ Namespace Microsoft.SmallBasic.Statements
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-            Dim methodBuilder = scope.MethodBuilders(Name.NormalizedText)
+            Dim methodBuilder = scope.MethodBuilders(Name.LCaseText)
             Dim codeGenScope As New CodeGenScope() With {
                 .ILGenerator = methodBuilder.GetILGenerator(),
                 .TypeBuilder = scope.TypeBuilder,
@@ -223,7 +223,7 @@ Namespace Microsoft.SmallBasic.Statements
                         bag.CompletionItems.Add(
                             New Completion.CompletionItem() With {
                                 .DisplayName = param.Text,
-                                .Key = Name.NormalizedText & "." & param.NormalizedText,
+                                .Key = Name.LCaseText & "." & param.LCaseText,
                                 .ItemType = Completion.CompletionItemType.LocalVariable,
                                 .DefinitionIdintifier = param
                             })
@@ -232,7 +232,7 @@ Namespace Microsoft.SmallBasic.Statements
                     bag.ShowCompletion = False
                 End If
             Else
-                CompletionHelper.FillLocals(bag, Name.NormalizedText)
+                CompletionHelper.FillLocals(bag, Name.LCaseText)
                 Dim statement = GetStatementContaining(Body, line)
                 If statement IsNot Nothing Then
                     If StartToken.Type = TokenType.Sub Then

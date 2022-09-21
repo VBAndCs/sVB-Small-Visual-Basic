@@ -66,8 +66,8 @@ Namespace Microsoft.SmallBasic.Expressions
         End Sub
 
         Public Function GetMethodInfo(scope As CodeGenScope) As MethodInfo
-            Dim typeInfo = scope.TypeInfoBag.Types(TypeName.NormalizedText)
-            Return typeInfo.Methods(MethodName.NormalizedText)
+            Dim typeInfo = scope.TypeInfoBag.Types(TypeName.LCaseText)
+            Return typeInfo.Methods(MethodName.LCaseText)
         End Function
 
         Public Overrides Function ToString() As String

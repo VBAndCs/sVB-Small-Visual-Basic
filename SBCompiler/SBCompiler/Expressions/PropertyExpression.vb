@@ -20,7 +20,7 @@ Namespace Microsoft.SmallBasic.Expressions
             _TypeName.Parent = Me.Parent
             _PropertyName.Parent = Me.Parent
 
-            Dim name = TypeName.NormalizedText
+            Dim name = TypeName.LCaseText
             _TypeName.SymbolType = Completion.CompletionItemType.GlobalVariable
             symbolTable.AddIdentifier(_TypeName)
 
@@ -46,8 +46,8 @@ Namespace Microsoft.SmallBasic.Expressions
                 If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
                 ArrayExpression.ParseAndEmit(code, subroutine, scope, StartToken.Line).EmitIL(scope)
             Else
-                Dim typeInfo = scope.TypeInfoBag.Types(TypeName.NormalizedText)
-                Dim propertyInfo = typeInfo.Properties(PropertyName.NormalizedText)
+                Dim typeInfo = scope.TypeInfoBag.Types(TypeName.LCaseText)
+                Dim propertyInfo = typeInfo.Properties(PropertyName.LCaseText)
                 Dim getMethod = propertyInfo.GetGetMethod()
                 scope.ILGenerator.EmitCall(OpCodes.Call, getMethod, Nothing)
             End If

@@ -230,18 +230,20 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             ElseIf helpCashe.ContainsKey(span) Then
                 Dim editor = CType(textView, AvalonTextView).Editor
-                editor.HighlightWords(WordHighlightColor, highlightCashe(span))
+                If Not editor.ContainsWordHighlights Then
+                    editor.HighlightWords(WordHighlightColor, highlightCashe(span))
+                End If
 
                 Dim wrapper = helpCashe(span)
-                If wrapper IsNot Nothing Then
-                    wrapper.CompletionItem.ParamIndex = paramIndex
-                    ShowPopupHelp(wrapper)
+                    If wrapper IsNot Nothing Then
+                        wrapper.CompletionItem.ParamIndex = paramIndex
+                        ShowPopupHelp(wrapper)
+                    End If
+                    lastSpan = span
+                    Return
                 End If
-                lastSpan = span
-                Return
-            End If
 
-            If symbol <> "" AndAlso symbol <> "(" AndAlso line.Start + column = pos Then Return
+                If symbol <> "" AndAlso symbol <> "(" AndAlso line.Start + column = pos Then Return
 
             ShowHelpInfo(line, column, paramIndex, span)
 
@@ -322,7 +324,9 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                 If Not sourceCodeChanged AndAlso span = lastSpan AndAlso Not force Then
                     Dim editor = CType(textView, AvalonTextView).Editor
-                    editor.HighlightWords(WordHighlightColor, highlightCashe(lastSpan))
+                    If Not editor.ContainsWordHighlights Then
+                        editor.HighlightWords(WordHighlightColor, highlightCashe(lastSpan))
+                    End If
                     Return False
                 End If
 
@@ -424,7 +428,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             lastSpan = span
 
-            Dim tokenText = currentToken.NormalizedText
+            Dim tokenText = currentToken.LCaseText
             For Each item In bag.CompletionItems
                 If item.Key = "##" Then
                     Dim wrapper = New CompletionItemWrapper(item, bag)
@@ -440,25 +444,28 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                     Dim spans = HeighLightIdentifiers(currentToken, bag.SubroutineName, item.ItemType, bag.SymbolTable, textView.TextSnapshot)?.ToArray()
                     highlightCashe(span) = spans
-                    editor.HighlightWords(WordHighlightColor, spans)
+                    If Not editor.ContainsWordHighlights Then
+                        editor.HighlightWords(WordHighlightColor, spans)
+                    End If
+
                     item.ParamIndex = paramIndex
 
-                    If item.ItemType = CompletionItemType.Control AndAlso item.DisplayName = "Me" Then
-                        Dim formName As String
-                        If textBuffer.Properties.TryGetProperty("FormName", formName) Then
-                            item.Key = formName
+                        If item.ItemType = CompletionItemType.Control AndAlso item.DisplayName = "Me" Then
+                            Dim formName As String
+                            If textBuffer.Properties.TryGetProperty("FormName", formName) Then
+                                item.Key = formName
+                            End If
                         End If
-                    End If
 
-                    If byConventionName <> "" Then
-                        item.ObjectName = byConventionName
-                    End If
+                        If byConventionName <> "" Then
+                            item.ObjectName = byConventionName
+                        End If
 
-                    Dim wrapper = New CompletionItemWrapper(item, bag)
-                    ShowPopupHelp(wrapper)
-                    helpCashe(span) = wrapper
-                    Return
-                End If
+                        Dim wrapper = New CompletionItemWrapper(item, bag)
+                        ShowPopupHelp(wrapper)
+                        helpCashe(span) = wrapper
+                        Return
+                    End If
             Next
 
             highlightCashe(span) = Nothing
@@ -475,7 +482,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             If Not currentToken.Type = TokenType.Identifier Then Return Nothing
 
-            Dim idName = currentToken.NormalizedText
+            Dim idName = currentToken.LCaseText
             Dim type As CompletionItemType
             Dim subName = ""
 
@@ -494,7 +501,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim spans = (
                     From id In symbolTable.AllIdentifiers
                     Where id.SymbolType = type AndAlso
-                                id.NormalizedText = idName AndAlso
+                                id.LCaseText = idName AndAlso
                                 (subName = "" OrElse id.SubroutineName.ToLower() = subName)
                     Let start = snapshot.GetLineFromLineNumber(id.Line).Start
                     Select New Span(start + id.Column, id.EndColumn - id.Column)
@@ -745,13 +752,13 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Return newBag
 
                 ElseIf currentToken.Type = TokenType.StringLiteral Then
-                    If Not forHelp AndAlso prevToken.Type = TokenType.Equals AndAlso b4PrevToken.NormalizedText.Contains("fontname") Then
+                    If Not forHelp AndAlso prevToken.Type = TokenType.Equals AndAlso b4PrevToken.LCaseText.Contains("fontname") Then
                         newBag.CompletionItems.AddRange(FontNames)
                     End If
                     Return newBag
 
                 ElseIf controlsInfo IsNot Nothing Then
-                    Dim txt = currentToken.NormalizedText
+                    Dim txt = currentToken.LCaseText
                     If txt <> "" AndAlso controlNames IsNot Nothing Then
                         Dim controls = From name In controlNames
                                        Where name(0) <> "("c AndAlso (
@@ -784,7 +791,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             Else
                 Dim value As TypeInfo = Nothing
-                Dim name = identifierToken.NormalizedText
+                Dim name = identifierToken.LCaseText
                 If newBag.TypeInfoBag.Types.TryGetValue(name, value) Then
                     CompletionHelper.FillMemberNames(newBag, value, identifierToken.Text)
                 ElseIf isLookup OrElse name.StartsWith("data") OrElse name.EndsWith("data") Then
@@ -937,7 +944,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                 Dim n = GetLastTokenIndex(line, caretPosition, tokens)
                 Select Case tokens(n).Type
                     Case TokenType.Equals, TokenType.NotEqualTo, TokenType.GreaterThan, TokenType.LessThan, TokenType.GreaterThanEqualTo, TokenType.LessThanEqualTo
-                        Dim name = If(n = 0, "", tokens(n - 1).NormalizedText)
+                        Dim name = If(n = 0, "", tokens(n - 1).LCaseText)
                         If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
                             especialItem = "colors"
                         ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then

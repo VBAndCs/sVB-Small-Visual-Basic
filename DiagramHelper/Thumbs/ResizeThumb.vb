@@ -205,6 +205,7 @@ Friend Class ResizeThumb
         Pnl.DiagramGroup?.UpdateSelection()
         Pnl.UpdateLocationBorder()
         ReportChanges()
+        e.Handled = True
     End Sub
 
     Sub ReportChanges()

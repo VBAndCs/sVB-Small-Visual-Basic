@@ -31,8 +31,8 @@ Namespace Microsoft.SmallBasic.Expressions
             If var IsNot Nothing Then
                 scope.ILGenerator.Emit(OpCodes.Ldloc, var)
 
-            ElseIf scope.Fields.ContainsKey(Identifier.NormalizedText) Then
-                Dim field = scope.Fields(Identifier.NormalizedText)
+            ElseIf scope.Fields.ContainsKey(Identifier.LCaseText) Then
+                Dim field = scope.Fields(Identifier.LCaseText)
                 scope.ILGenerator.Emit(OpCodes.Ldsfld, field)
 
             ElseIf Not CodeGenerator.IgnoreVarErrors Then

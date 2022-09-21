@@ -53,7 +53,7 @@ Namespace Microsoft.SmallBasic.Completion
             For i = parseTree.Count - 1 To 0 Step -1
                 Dim statement = TryCast(parseTree(i), SubroutineStatement)
                 If statement IsNot Nothing AndAlso
-                        statement.Name.NormalizedText = displayName Then
+                        statement.Name.LCaseText = displayName Then
                     Return statement
                 End If
             Next

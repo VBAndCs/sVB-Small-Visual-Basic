@@ -92,8 +92,8 @@ Namespace Microsoft.SmallBasic.Expressions
                 If var IsNot Nothing Then
                     scope.ILGenerator.Emit(OpCodes.Stloc, var)
 
-                ElseIf scope.Fields.ContainsKey(identifier.NormalizedText) Then
-                    Dim field = scope.Fields(identifierExpression.Identifier.NormalizedText)
+                ElseIf scope.Fields.ContainsKey(identifier.LCaseText) Then
+                    Dim field = scope.Fields(identifierExpression.Identifier.LCaseText)
                     scope.ILGenerator.Emit(OpCodes.Stsfld, field)
 
                 Else

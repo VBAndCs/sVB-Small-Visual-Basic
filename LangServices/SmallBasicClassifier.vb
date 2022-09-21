@@ -58,7 +58,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                               Dim snapshot = textBuffer.CurrentSnapshot
                               Dim changeSpan = snapshot.CreateTextSpan(
                                       0, snapshot.Length,
-                                      SpanTrackingMode.EdgeInclusive)
+                                      SpanTrackingMode.EdgeInclusive
+                              )
                               RaiseEvent ClassificationChanged(Me,
                                        New ClassificationChangedEventArgs(changeSpan))
                           End If
@@ -69,21 +70,32 @@ Namespace Microsoft.SmallBasic.LanguageService
 
         Private Function GetClassificationForType(
                         token As Token,
-                        previousToken As Token,
-                        previousPreviousToken As Token
-                     ) As IClassificationType
+                        prevToken As Token,
+                        b4PrevToken As Token
+                    ) As IClassificationType
 
-            Dim value As TypeInfo = Nothing
+
+            Select Case token.Type
+                Case TokenType.Dot, TokenType.Lookup
+                    Return keywordType
+            End Select
 
             If token.ParseType = ParseType.Identifier Then
-                Dim normalizedText = token.NormalizedText
+                Dim text = token.LCaseText
 
-                If compiler.TypeInfoBag.Types.ContainsKey(normalizedText) Then
+                If (prevToken.Type = TokenType.Dot OrElse prevToken.Type = TokenType.Lookup) Then
+                    If b4PrevToken.ParseType = ParseType.Identifier Then
+                        Return memberType
+                    End If
+                End If
+
+                If compiler.TypeInfoBag.Types.ContainsKey(text) Then
                     Return typeType
                 End If
 
-                If (previousToken.Type = TokenType.Dot OrElse previousToken.Type = TokenType.Lookup) AndAlso previousPreviousToken.ParseType = ParseType.Identifier AndAlso compiler.TypeInfoBag.Types.TryGetValue(previousPreviousToken.NormalizedText, value) AndAlso (value.Events.ContainsKey(normalizedText) OrElse value.Methods.ContainsKey(normalizedText) OrElse value.Properties.ContainsKey(normalizedText)) Then
-                    Return memberType
+
+                If text = "me" OrElse text = "global" Then
+                    Return keywordType
                 End If
 
                 Return identifierType
