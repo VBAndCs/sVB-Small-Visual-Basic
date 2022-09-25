@@ -30,8 +30,10 @@ Friend Class DsnResizeThumb
         Me.IsTabStop = False
     End Sub
 
-    Sub Thimb_loaded() Handles Me.Loaded
-        Me.Cursor = CursorHelper.CreateCursor(New Arrow(Me.ResizeAngle), -1, -1)
+    Sub Thumb_loaded() Handles Me.Loaded
+        If Cursor Is Nothing Then
+            Cursor = CursorHelper.CreateCursor(New Arrow(ResizeAngle), -1, -1)
+        End If
     End Sub
 
     Dim OldState As PropertyState

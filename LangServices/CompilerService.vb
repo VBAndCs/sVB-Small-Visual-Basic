@@ -26,24 +26,6 @@ Namespace Microsoft.SmallBasic.LanguageService
             End Get
         End Property
 
-        Public Function Compile(programText As String, outputFilePath As String, errors As ICollection(Of String)) As Boolean
-            Try
-                Dim compiler As New Compiler()
-                Dim fileNameWithoutExtension = Path.GetFileNameWithoutExtension(outputFilePath)
-                Dim directoryName = Path.GetDirectoryName(outputFilePath)
-                Dim list As List(Of [Error]) = compiler.Build(New StringReader(programText), fileNameWithoutExtension, directoryName)
-
-                For Each item In list
-                    errors.Add($"{item.Line + 1},{item.Column + 1}: {item.Description}")
-                Next
-
-                Return errors.Count = 0
-            Catch ex As Exception
-                errors.Add(ex.Message)
-                Return False
-            End Try
-        End Function
-
         Public Function Compile(programText As String, errors As ICollection(Of String)) As Compiler
             Try
                 Dim compiler As New Compiler()
@@ -135,15 +117,6 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                     For i = 1 To n
                         Dim t = tokens(i)
-                        'If t.subLine = 0 Then Continue For
-
-                        'If t.subLine > 0 AndAlso firstSubLine Then
-                        '    firstSubLine = False
-                        '    ' check the last token in the first line
-                        '    i = i - 1
-                        '    GoTo CheckLineEnd
-                        'End If
-
                         If t.subLine > subLine Then
                             lineStart = True
                             lineNum += 1
@@ -481,7 +454,10 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                     Case TokenType.Subtraction
                         If notLastToken Then
-                            If i = 0 OrElse tokens(i - 1).ParseType = ParseType.Operator OrElse tokens(i - 1).ParseType = ParseType.Keyword Then
+                            Dim prevType = tokens(i - 1).ParseType
+                            If i = 0 OrElse
+                                        prevType = ParseType.Operator OrElse
+                                        prevType = ParseType.Keyword Then
                                 FixSpaces(textEdit, line, token, nextToken, 0)
                             Else
                                 FixSpaces(textEdit, line, token, nextToken, If(nextToken.Type = TokenType.Subtraction, 0, 1))
@@ -504,7 +480,9 @@ Namespace Microsoft.SmallBasic.LanguageService
                     Case TokenType.Comma
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 1)
 
-                    Case TokenType.Identifier, TokenType.StringLiteral, TokenType.NumericLiteral, TokenType.DateLiteral
+                    Case TokenType.Identifier, TokenType.StringLiteral,
+                             TokenType.NumericLiteral, TokenType.DateLiteral,
+                             TokenType.True, TokenType.False
                         If notLastToken Then
                             Select Case nextToken.Type
                                 Case TokenType.Dot, TokenType.Lookup, TokenType.Comma, TokenType.Colon,
@@ -520,10 +498,12 @@ Namespace Microsoft.SmallBasic.LanguageService
                             Dim d = token.Text
                             Dim length = d.Length
                             Dim index = 1
+
                             Do
                                 If d(index) <> " " Then Exit Do
                                 index += 1
                             Loop While index < length
+
                             If index > 1 Then textEdit.Replace(line.Start + token.Column + 1, index - 1, "")
 
                             index = length - 2
@@ -531,8 +511,10 @@ Namespace Microsoft.SmallBasic.LanguageService
                                 If d(index) <> " " Then Exit Do
                                 index -= 1
                             Loop While index > 0
+
                             If index < length - 2 Then textEdit.Replace(line.Start + token.Column + index + 1, length - 2 - index, "")
                         End If
+
                     Case TokenType.Dot, TokenType.Lookup
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 0)
 

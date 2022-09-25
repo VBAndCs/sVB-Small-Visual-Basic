@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v1.8.6" Loaded="Window_Loaded"
+        Title="Small Visual Basic v1.9" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
     
@@ -164,6 +164,7 @@
                         <RowDefinition Height ="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
+                    
                     <Grid x:Name="DesignerGrid" Grid.Column="1" Grid.RowSpan="3">
                         <DH:Designer x:Name="formDesigner"  
 			                      PageWidth="700" PageHeight="500" ShowGrid="True" />
@@ -293,39 +294,15 @@
                         </shell:Ribbon>
 
                         <Grid Row="1">
-                            <!--<Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="200" />
-                            </Grid.ColumnDefinitions>-->
-                           
                             <shell:MdiViewsControl x:Name="viewsControl" 
                                 RequestItemClose="OnCloseItem" 
-                                ActiveDocumentChanged="viewsControl_ActiveDocumentChanged"/>
+                                ActiveDocumentChanged="ViewsControl_ActiveDocumentChanged"/>
 
                             <Popup x:Name="PopHelp" MaxHeight="250" 
                                    StaysOpen="True" Placement="Relative"
-                                   Opened="popHelp_Opened"  >
+                                   Opened="PopHelp_Opened"  >
                                 <lu:HelpPanel x:Name="HelpPanel" Width="Auto"/>
                             </Popup>
-
-                            <!--<GridSplitter Name="gridSplitter" Grid.Column="1" Width="4" Background="#cc333363" Opacity="0.05" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Left" ResizeBehavior="PreviousAndCurrent">
-                                <FrameworkElement.Triggers>
-                                    <EventTrigger RoutedEvent="Mouse.MouseEnter">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetName="gridSplitter" Storyboard.TargetProperty="Opacity" From="0.05" To="0.3" Duration="0:0:0.2" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                    <EventTrigger RoutedEvent="Mouse.MouseLeave">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetName="gridSplitter" Storyboard.TargetProperty="Opacity" From="0.3" To="0.05" Duration="0:0:0.2" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </FrameworkElement.Triggers>
-                            </GridSplitter>-->
                         </Grid>
                     </Grid>
 
@@ -336,10 +313,12 @@
                                 <GradientStop Color="#cc333363" Offset="1" />
                             </LinearGradientBrush>
                         </Panel.Background>
+                        
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Bottom">
                                 <Button Name="endProgramButton" Padding="4" Margin="8" FontWeight="Bold" HorizontalAlignment="Right" Command="{x:Static l:MainWindow.EndProgramCommand}" IsDefault="True" Content="{lu:Localized EndProgramCommand}" />
                             </StackPanel>
+                            
                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock Name="processRunningMessage" TextAlignment="Center" Margin="8" FontWeight="Bold" FontSize="32" Foreground="#649Db4" TextWrapping="WrapWithOverflow" />
                                 <TextBlock TextAlignment="Center" Margin="8" FontSize="24" Foreground="#999999" TextWrapping="WrapWithOverflow" Text="{lu:Localized WaitForProgramExit}" />
@@ -373,17 +352,17 @@
                     Margin="0,1,5,0" Foreground="Brown" Background="LightYellow" >Name:</TextBlock>
                 <TextBox x:Name="txtControlName"  Grid.Column="1" VerticalAlignment="Center"
                        Width="100" Background="AliceBlue"  Margin="0,1,10,1" Padding="0"
-                       PreviewKeyDown="txtControlName_PreviewKeyDown"
-                       PreviewTextInput="txtControlName_PreviewTextInput"
-                       GotFocus="txtControl_GotFocus"
-                       LostFocus="txtControlName_LostFocus"/>
+                       PreviewKeyDown="TxtControlName_PreviewKeyDown"
+                       PreviewTextInput="TxtControlName_PreviewTextInput"
+                       GotFocus="TxtControl_GotFocus"
+                       LostFocus="TxtControlName_LostFocus"/>
 
                 <TextBlock VerticalAlignment="Center" Margin="0,1,5,0"  Grid.Column="2" Foreground="Brown" Background="LightYellow" >Text:</TextBlock>
                 <TextBox x:Name="txtControlText"  Grid.Column="3" VerticalAlignment="Center"
                         Width="100" Background="AliceBlue" Margin="0,1,15,1" Padding="0"
-                        PreviewKeyDown="txtControlText_PreviewKeyDown"
-                        GotFocus="txtControl_GotFocus"
-                        LostFocus="txtControlText_LostFocus"/>
+                        PreviewKeyDown="TxtControlText_PreviewKeyDown"
+                        GotFocus="TxtControl_GotFocus"
+                        LostFocus="TxtControlText_LostFocus"/>
 
             </Grid>
 

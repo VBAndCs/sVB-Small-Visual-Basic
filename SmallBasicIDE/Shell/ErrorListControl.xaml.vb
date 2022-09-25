@@ -50,7 +50,8 @@ Namespace Microsoft.SmallBasic.Shell
 
             Dim token = _document.ErrorTokens(SelectedIndex)
             If token.Line < 0 Then Return
-            Dim lineStart = _document.EditorControl.TextView.TextSnapshot.GetLineFromLineNumber(token.Line).Start
+            Dim textView = _document.EditorControl.TextView
+            Dim lineStart = TextView.TextSnapshot.GetLineFromLineNumber(token.Line).Start
             _document.EditorControl.EditorOperations.Select(lineStart + token.Column, token.EndColumn - token.Column)
             _document.Focus()
         End Sub

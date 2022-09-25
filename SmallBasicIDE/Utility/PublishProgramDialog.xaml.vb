@@ -34,7 +34,7 @@ Namespace Microsoft.SmallBasic.Utility
                     Cursor = Cursors.Wait
 
                     Try
-                        Dim service As Service = New Service()
+                        Dim service As New Service()
                         service.PublishProgramDetails(ProgramId, If(text, ""), If(text2, ""), If(text3, "Miscellaneous"))
                     Catch ex As Exception
                         MessageBox.Show(ResourceHelper.GetString("FailedToUpdateProgramInfo"), ResourceHelper.GetString("Title"), ex.Message, NotificationButtons.Close, NotificationIcon.Error)

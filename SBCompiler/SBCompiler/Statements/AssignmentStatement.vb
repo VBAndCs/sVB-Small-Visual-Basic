@@ -23,12 +23,18 @@ Namespace Microsoft.SmallBasic.Statements
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             EqualsToken.Parent = Me
-
+            Dim isPropertySet = False
             If LeftValue IsNot Nothing Then
                 LeftValue.Parent = Me
                 Dim prop = TryCast(LeftValue, PropertyExpression)
                 If prop IsNot Nothing Then
                     prop.isSet = True
+                    If Not prop.IsDynamic Then
+                        Dim typeInfo = symbolTable.GetTypeInfo(prop.TypeName)
+                        If typeInfo IsNot Nothing AndAlso typeInfo.Events.TryGetValue(prop.PropertyName.LCaseText, Nothing) Then
+                            isPropertySet = True
+                        End If
+                    End If
                 End If
                 LeftValue.AddSymbols(symbolTable)
             End If
@@ -36,7 +42,7 @@ Namespace Microsoft.SmallBasic.Statements
             If RightValue IsNot Nothing Then
                 RightValue.Parent = Me
                 RightValue.AddSymbols(symbolTable)
-                If TypeOf RightValue Is IdentifierExpression Then
+                If isPropertySet AndAlso TypeOf RightValue Is IdentifierExpression Then
                     Dim id = CType(RightValue, IdentifierExpression).Identifier
                     symbolTable.PossibleEventHandlers.Add((id, symbolTable.AllIdentifiers.Count - 1))
                 End If

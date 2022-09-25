@@ -187,7 +187,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = If(varExpr.IsParam, "Parameter: " & varExpr.Subroutine.Name.Text & ".", "Local Variable: "),
-                            .Suffix = If(item.ObjectName = "", InferType(item.Key, bag), $" As {item.ObjectName}"),
+                            .Suffix = If(item.ObjectName = "" OrElse item.ObjectName = "Forms", InferType(item.Key, bag), $" As {item.ObjectName}"),
                             .Summary = varExpr.Identifier.Comment
                     }
 

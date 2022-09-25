@@ -169,8 +169,59 @@ Namespace Microsoft.SmallBasic
             End If
         End Sub
 
-        Private Sub AnalyzePropertyExpression(propertyExpression As PropertyExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
-            NotePropertyReference(propertyExpression, leaveValueInStack, mustBeAssignable)
+        Private Sub AnalyzePropertyExpression(propExpr As PropertyExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
+            Dim typeNameInfo = propExpr.TypeName
+            Dim propertyNameInfo = propExpr.PropertyName
+
+            If typeNameInfo.IsIllegal OrElse propertyNameInfo.IsIllegal Then
+                Return
+            End If
+
+            Dim typeInfo As TypeInfo = Nothing
+            Dim typeName = typeNameInfo.LCaseText
+            Dim propertyName = propertyNameInfo.LCaseText
+
+            If propExpr.IsDynamic Then
+                Dim subroutine = SubroutineStatement.Current
+                If subroutine Is Nothing Then
+                    subroutine = SubroutineStatement.GetSubroutine(propExpr)
+                End If
+
+                Dim id = New IdentifierExpression() With {
+                        .Identifier = typeNameInfo,
+                        .Subroutine = subroutine
+                }
+
+                If Not _symbolTable.IsDefined(id) Then
+                    _symbolTable.Errors.Add(New [Error](typeNameInfo, $"The variable `{typeNameInfo.Text}` is used before being initialized."))
+
+                ElseIf _symbolTable.Dynamics.ContainsKey(typeName) Then
+                    If Not _symbolTable.Dynamics(typeName).ContainsKey(propertyName) Then
+                        _symbolTable.Errors.Add(New [Error](propertyNameInfo, "Trying to read property before setting its value. "))
+                    End If
+                End If
+
+            ElseIf _typeInfoBag.Types.TryGetValue(typeName, typeInfo) Then
+                Dim prop As PropertyInfo = Nothing
+                Dim ev As EventInfo = Nothing
+
+                If typeInfo.Properties.TryGetValue(propertyName, prop) Then
+                    If mustBeAssignable AndAlso Not prop.CanWrite Then
+                        _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsReadOnly"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
+                    End If
+
+                    If leaveValueInStack AndAlso Not prop.CanRead Then
+                        _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsWriteOnly"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
+                    End If
+
+                ElseIf typeInfo.Events.TryGetValue(propertyNameInfo.LCaseText, ev) Then
+                    _parser.AddError(propertyNameInfo, $"Event {ev.Name} can only be set to a Sub. If you wrote a sub nmae, nake sure there is a sub with this name, or check the spelling. ")
+                Else
+                    _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyNotFound"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
+                End If
+            Else
+                _parser.AddError(typeNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("TypeNotFound"), New Object(0) {typeNameInfo.Text}))
+            End If
         End Sub
 
         Private Sub AnalyzeAssignmentStatement(assignmentStatement As AssignmentStatement)
@@ -399,62 +450,6 @@ Namespace Microsoft.SmallBasic
                 _parser.AddError(typeNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("TypeNotFound"), New Object(0) {typeNameInfo.Text}))
             End If
         End Sub
-
-        Private Sub NotePropertyReference(propExpr As PropertyExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
-            Dim typeNameInfo = propExpr.TypeName
-            Dim propertyNameInfo = propExpr.PropertyName
-
-            If typeNameInfo.Type = TokenType.Illegal OrElse propertyNameInfo.Type = TokenType.Illegal Then
-                Return
-            End If
-
-            Dim value As TypeInfo = Nothing
-            Dim typeName = typeNameInfo.LCaseText
-            Dim propertyName = propertyNameInfo.LCaseText
-
-            If propExpr.IsDynamic Then
-                Dim subroutine = SubroutineStatement.Current
-                If subroutine Is Nothing Then
-                    subroutine = SubroutineStatement.GetSubroutine(propExpr)
-                End If
-
-                Dim id = New IdentifierExpression() With {
-                        .Identifier = typeNameInfo,
-                        .Subroutine = subroutine
-                }
-
-                If Not _symbolTable.IsDefined(id) Then
-                    _symbolTable.Errors.Add(New [Error](typeNameInfo, $"The variable `{typeNameInfo.Text}` is used before being initialized."))
-
-                ElseIf _symbolTable.Dynamics.ContainsKey(typeName) Then
-                    If Not _symbolTable.Dynamics(typeName).ContainsKey(propertyName) Then
-                        _symbolTable.Errors.Add(New [Error](propertyNameInfo, "Trying to read property before setting its value. "))
-                    End If
-                End If
-
-            ElseIf _typeInfoBag.Types.TryGetValue(typeName, value) Then
-                Dim prop As PropertyInfo = Nothing
-                Dim ev As EventInfo = Nothing
-
-                If value.Properties.TryGetValue(propertyName, prop) Then
-                    If mustBeAssignable AndAlso Not prop.CanWrite Then
-                        _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsReadOnly"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
-                    End If
-
-                    If leaveValueInStack AndAlso Not prop.CanRead Then
-                        _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyIsWriteOnly"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
-                    End If
-
-                ElseIf value.Events.TryGetValue(propertyNameInfo.LCaseText, ev) Then
-                    _parser.AddError(propertyNameInfo, $"Event {ev.Name} can only be set to a Sub.")
-                Else
-                    _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyNotFound"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
-                End If
-            Else
-                _parser.AddError(typeNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("TypeNotFound"), New Object(0) {typeNameInfo.Text}))
-            End If
-        End Sub
-
 
         Private Sub NoteVariableReference(variable As Token)
             If variable.Type <> 0 AndAlso Not _symbolTable.GlobalVariables.ContainsKey(variable.LCaseText) AndAlso

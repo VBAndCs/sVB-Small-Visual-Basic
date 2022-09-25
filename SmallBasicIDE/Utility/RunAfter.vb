@@ -3,7 +3,7 @@
 Imports System
 Imports System.Windows.Threading
 
-Public Class RunAfter
+Public Class RunAction
     Dim WithEvents Timer As New DispatcherTimer()
 
     Dim runAction As Action
@@ -13,12 +13,12 @@ Public Class RunAfter
     End Sub
 
     Public Sub New(action As Action)
-        RunAction = action
+        runAction = action
     End Sub
 
     Private Sub Timer_Tick(sender As Object, e As EventArgs) Handles Timer.Tick
         Timer.Stop()
-        RunAction.Invoke()
+        runAction.Invoke()
     End Sub
 
     Public Sub After(afterMilliseconds As Integer, Optional action As Action = Nothing)
@@ -29,7 +29,7 @@ Public Class RunAfter
     End Sub
 End Class
 
-Public Class RunAfter(Of T)
+Public Class RunAction(Of T)
     Dim WithEvents Timer As New DispatcherTimer()
 
     Dim runAction As Action(Of T)

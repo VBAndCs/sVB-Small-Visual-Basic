@@ -8,7 +8,7 @@ Namespace Microsoft.SmallBasic.Documents
         Implements INotifyPropertyChanged
 
         Private _filePath As String
-        Private isDirtyField As Boolean
+        Private _isDirty As Boolean
         Private _propertyStore As New Dictionary(Of Object, Object)()
 
         Public Property FilePath As String
@@ -25,12 +25,12 @@ Namespace Microsoft.SmallBasic.Documents
 
         Public Property IsDirty As Boolean
             Get
-                Return isDirtyField
+                Return _isDirty
             End Get
-            Protected Set(value As Boolean)
 
-                If isDirtyField <> value Then
-                    isDirtyField = value
+            Friend Set(value As Boolean)
+                If _isDirty <> value Then
+                    _isDirty = value
                     NotifyProperty("IsDirty")
                     NotifyProperty("Title")
                 End If

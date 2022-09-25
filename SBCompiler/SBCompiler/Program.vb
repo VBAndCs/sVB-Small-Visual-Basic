@@ -24,8 +24,11 @@ Namespace Microsoft.SmallBasic
             Using source As StreamReader = New StreamReader(file)
                 Dim compiler As Compiler = New Compiler()
                 Path.GetDirectoryName(file)
-                Dim fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file)
-                compiler.Build(source, fileNameWithoutExtension, Directory.GetCurrentDirectory())
+                Dim fileName = Path.GetFileNameWithoutExtension(file)
+                compiler.Compile(source)
+                Dim parsers As New List(Of Parser)
+                parsers.Add(compiler.Parser)
+                compiler.Build(parsers, fileName, Directory.GetCurrentDirectory())
                 Console.Write(file)
                 Console.WriteLine(": {0} errors.", compiler.Parser.Errors.Count)
                 Console.WriteLine()
@@ -41,8 +44,11 @@ Namespace Microsoft.SmallBasic
                 Console.Write(item)
             Next
 
-            Dim compiler As Compiler = New Compiler()
-            compiler.Build(New StringReader(_text3), "foo", "c:\users\vijayeg\documents\smallbasic\")
+            Dim compiler As New Compiler()
+            compiler.Compile(New StringReader(_text3))
+            Dim parsers As New List(Of Parser)
+            parsers.Add(compiler.Parser)
+            compiler.Build(parsers, "foo", "c:\users\vijayeg\documents\smallbasic\")
         End Sub
 
         Private Sub TestBuild()
@@ -50,11 +56,14 @@ Namespace Microsoft.SmallBasic
 
             For Each _text In files
 
-                Using source As StreamReader = New StreamReader(_text)
+                Using source As New StreamReader(_text)
                     Dim compiler As Compiler = New Compiler()
                     Dim directoryName = Path.GetDirectoryName(_text)
                     Dim fileNameWithoutExtension = Path.GetFileNameWithoutExtension(_text)
-                    compiler.Build(source, fileNameWithoutExtension, directoryName)
+                    compiler.Compile(source)
+                    Dim parsers As New List(Of Parser)
+                    parsers.Add(compiler.Parser)
+                    compiler.Build(parsers, fileNameWithoutExtension, directoryName)
                     Console.Write(_text)
                     Console.WriteLine(": {0} errors.", compiler.Parser.Errors.Count)
                     Console.WriteLine()

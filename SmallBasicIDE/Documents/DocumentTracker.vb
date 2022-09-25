@@ -4,7 +4,7 @@ Imports System.ComponentModel
 
 Namespace Microsoft.SmallBasic.Documents
     Public Class DocumentTracker
-        Private _openDocuments As ObservableCollection(Of FileDocument) = New ObservableCollection(Of FileDocument)()
+        Private _openDocuments As New ObservableCollection(Of FileDocument)()
 
         Public ReadOnly Property OpenDocuments As ReadOnlyObservableCollection(Of FileDocument)
             Get

@@ -264,6 +264,7 @@ Namespace WinForms
             info.Form = lines(1).Substring(2, lines(1).Length - 3).Trim()
             If info.Form = "" Then Return Nothing
             info.ControlsInfo(info.Form.ToLower()) = "Form"
+            info.ControlsInfo("me") = "Form"
             info.ControlNames.Add(info.Form)
 
             For i = 2 To lines.Count - 1
@@ -332,11 +333,13 @@ Namespace WinForms
 
         Public Shared Function GetModuleFromVarName(varName As String) As String
             varName = varName.ToLower
+            Dim controls = moduleInfo.Keys
 
-            For Each key In moduleInfo.Keys
-                Dim controlName = key.ToLower
+            ' start from 1 to skip Forms module
+            For i = 1 To controls.Count - 1
+                Dim controlName = controls(i).ToLower
                 If varName.StartsWith(controlName) OrElse varName.EndsWith(controlName) Then
-                    Return key
+                    Return controls(i)
                 End If
             Next
             Return ""

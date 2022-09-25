@@ -539,7 +539,7 @@ Namespace Microsoft.SmallBasic.Documents
             Using stream As Stream = Open()
                 stream.SetLength(0L)
 
-                Using writer As StreamWriter = New StreamWriter(stream)
+                Using writer As New StreamWriter(stream)
                     TextBuffer.CurrentSnapshot.Write(writer)
                 End Using
             End Using
@@ -885,14 +885,18 @@ Namespace Microsoft.SmallBasic.Documents
         Public Property ControlsInfo As Dictionary(Of String, String)
 
 
-        Function GenerateCodeBehind(formDesigner As DiagramHelper.Designer, updateControlInfo As Boolean) As String
+        Function GenerateCodeBehind(
+                             formDesigner As DiagramHelper.Designer,
+                             updateControlInfo As Boolean
+                        ) As String
+
             If _form = "" Then Return ""
 
-            Dim hint As New Text.StringBuilder
+            Dim genCode As New Text.StringBuilder
             Dim declaration As New Text.StringBuilder
             Dim formName = _form
-            hint.AppendLine("'@Form Hints:")
-            hint.AppendLine($"'#{formName}{{")
+            genCode.AppendLine("'@Form Hints:")
+            genCode.AppendLine($"'#{formName}{{")
             Dim controlsInfoList As New Dictionary(Of String, String)
             Dim controlNamesList As New List(Of String)
             controlNamesList.Add("(Global)")
@@ -909,24 +913,28 @@ Namespace Microsoft.SmallBasic.Documents
                     Dim typeName = PreCompiler.GetModuleName(c.GetType().Name)
                     controlsInfoList(name.ToLower()) = typeName
                     controlNamesList.Add(name)
-                    hint.AppendLine($"'    {name}: {typeName}")
+                    genCode.AppendLine($"'    {name}: {typeName}")
                     declaration.AppendLine($"{name} = ""{formName.ToLower()}.{name.ToLower()}""")
                 End If
             Next
 
-            hint.AppendLine("'}")
-            hint.AppendLine()
-            hint.Append(declaration)
+            genCode.AppendLine("'}")
+            genCode.AppendLine()
+            genCode.Append(declaration)
             ' Take the xaml path if exists, to consider the file name change in save as case.
             Dim xamlFile = If(formDesigner.FileName = "",
                     Path.GetFileNameWithoutExtension(Me.FilePath) & ".xaml",
                     IO.Path.GetFileName(formDesigner.FileName)
             )
-            hint.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{xamlFile}"")")
+
+            genCode.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{xamlFile}"")")
+
             If formDesigner.AllowTransparency Then
-                hint.AppendLine($"Form.AllowTransparency({formName})")
+                genCode.AppendLine($"Form.AllowTransparency({formName})")
             End If
-            hint.AppendLine($"Form.Show({formName})")
+
+            genCode.AppendLine($"Form.SetArgsArr({formName.ToLower}, Stack.PopValue(""_{formName.ToLower()}_argsArr""))")
+            genCode.AppendLine($"Form.Show({formName})")
 
             ' Remove Hamdlers of deleted or renamed controls
             For i = _EventHandlers.Count - 1 To 0 Step -1
@@ -934,39 +942,6 @@ Namespace Microsoft.SmallBasic.Documents
                     _EventHandlers.Remove(_EventHandlers.Keys(i))
                 End If
             Next
-
-            ' Remove handlers of renamed subs
-            RemoveBrokenHandlers()
-
-            If EventHandlers.Count > 0 Then
-                hint.AppendLine()
-                hint.AppendLine("'#Events{")
-                Dim sbHandlers As New Text.StringBuilder
-
-                Dim controlEvents = From eventHandler In EventHandlers
-                                    Group By eventHandler.Value.ControlName
-                           Into EventInfo = Group
-
-                For Each ev In controlEvents
-                    hint.Append($"'    {ev.ControlName}:")
-                    sbHandlers.AppendLine($"' {ev.ControlName} Events:")
-                    sbHandlers.AppendLine($"Control.HandleEvents({ev.ControlName})")
-                    For Each info In ev.EventInfo
-                        Dim controlName = ev.ControlName.ToLower
-                        If controlsInfoList.ContainsKey(controlName) Then
-                            hint.Append($" {info.Value.EventName}")
-                            Dim module1 = controlsInfoList(controlName)
-                            Dim moduleName = PreCompiler.GetEventModule(module1, info.Value.EventName)
-                            sbHandlers.AppendLine($"{moduleName}.{info.Value.EventName} = {info.Key}")
-                        End If
-                    Next
-                    hint.AppendLine()
-                    sbHandlers.AppendLine()
-                Next
-                hint.AppendLine("'}")
-                hint.AppendLine()
-                hint.AppendLine(sbHandlers.ToString())
-            End If
 
             If updateControlInfo Then
                 _form = formName
@@ -988,8 +963,47 @@ Namespace Microsoft.SmallBasic.Documents
                 End If
             End If
 
-            Return hint.ToString()
+            GenerateEventHints(genCode)
+
+            Return genCode.ToString()
         End Function
+
+        Friend Sub GenerateEventHints(genCode As Text.StringBuilder)
+
+            ' Remove handlers of renamed subs
+            RemoveBrokenHandlers()
+
+            If EventHandlers.Count > 0 Then
+                genCode.AppendLine("'#Events{")
+                Dim sbHandlers As New Text.StringBuilder
+
+                Dim controlEvents = From eventHandler In EventHandlers
+                                    Group By eventHandler.Value.ControlName
+                                    Into EventInfo = Group
+
+                For Each ev In controlEvents
+                    genCode.Append($"'    {ev.ControlName}:")
+                    sbHandlers.AppendLine($"' {ev.ControlName} Events:")
+                    sbHandlers.AppendLine($"Control.HandleEvents({ev.ControlName})")
+
+                    For Each info In ev.EventInfo
+                        Dim controlName = ev.ControlName.ToLower
+                        If _ControlsInfo.ContainsKey(controlName) Then
+                            genCode.Append($" {info.Value.EventName}")
+                            Dim module1 = _ControlsInfo(controlName)
+                            Dim moduleName = PreCompiler.GetEventModule(module1, info.Value.EventName)
+                            sbHandlers.AppendLine($"{moduleName}.{info.Value.EventName} = {info.Key}")
+                        End If
+                    Next
+                    genCode.AppendLine()
+                    sbHandlers.AppendLine()
+                Next
+
+                genCode.AppendLine("'}")
+                genCode.AppendLine()
+                genCode.AppendLine(sbHandlers.ToString())
+            End If
+        End Sub
 
         Sub AddProperty(name As String, value As Object)
             TextBuffer.Properties.AddOrModifyProperty(name, value)
@@ -1019,7 +1033,6 @@ Namespace Microsoft.SmallBasic.Documents
 
             Me.Form = info.Form
             Me.ControlsInfo = info.ControlsInfo
-            Me.ControlsInfo.Add("me", "Form")
 
             If info.EventHandlers IsNot Nothing Then
                 _EventHandlers = info.EventHandlers

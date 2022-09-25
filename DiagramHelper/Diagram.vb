@@ -292,7 +292,7 @@ Public Class DiagramObject
             EndEdit(True)
             e.Handled = True
             Dsn.Editor.Focus()
-            RunAfter.Start(100, Sub() exitLostFocus = False)
+            RunAction.After(100, Sub() exitLostFocus = False)
         End If
     End Sub
 
@@ -336,7 +336,7 @@ Public Class DiagramObject
         Return True
     End Function
 
-    Dim focusEditor As New RunAfter(10,
+    Dim focusEditor As New RunAction(10,
         Sub()
             Dsn.Editor.Focus()
         End Sub)

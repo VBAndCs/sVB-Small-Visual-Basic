@@ -8,6 +8,44 @@
 - SB Code Enhancements:
 - ToDo:
 
+# sVB 1.9 now compiles a project!
+You can design many forms in the form designer, save them to the same forlder, which will become the project folder. When you open any form of this project and run it, sVB will compile all the forms into one exe (that will have the name of the folder/project).
+You can show form2 (for example) from form1 using this code:
+```vb
+   form2 = Forms.ShowForm("form2", {1, 2, 3})
+   form2.BackColor = Colors.AliceBlue
+```
+
+The ShowForm method will do the following:
+1. Load the design of the form2 from its xaml file.
+2. pass the argsArr data sent to its second parameter to the ArgsArr property of the form, so you can use it as you want. The argsArr can be a single value, and array of values, or a dynamic object with dynamic properties, so, you can pass any data you want between the forms.
+3. Execute the code written in the global area of the code file of form2. You can use Form2.ArgsArr in this global area to initialize the form. Ex:
+```VB
+  TextBox1.Text = Me.ArgsArr
+```
+
+Note that global code is executed only when the form is opened for the first time, or after it is closed then re-opened. It will not be executed if you hided or minimized the form then showed it again.
+4. Show Form2.
+5. Fire the OnShown Event of the form. You can use it also to initialize the form:
+```vb
+Sub Form2_OnShown()
+   data = Me.ArgsArr
+   TextBox1.Text = data[3]
+EndSub
+```
+
+This event has two advantages over using the global code area to initialize the form:
+a. It will be executed every time you call Forms.ShowForm, so, you can use the passed argsArr data every time you show the form even it is still open.
+b. It is the only way to interact with the form if it is shown as a dialog (modal window). You can do this by calling Forms.ShowDialog instead of Forms.ShowForm. The dialog window stops executing the code until the user closes it, so any code in the global area will never be executed. Also, trying to set the BackColor of the form as in the next example will have no effect, since it will be executed only after the form is closed:
+```vb
+   form2 = Forms.ShowDialog("form2", "Test")
+   form2.BackColor = Colors.AliceBlue
+```
+
+For a simple sample, see the `Random Buttons 2` sample in the samples folder. It is a modified version of the `Random Buttons` sample, which uses code to define and show another form. In the new version, the second form is designed by the form designer.
+
+Note that the form you run the program from will be main form of the project (the startup form). This allows change the startup form as you want by just open the form code and press F5, so you can easily test project forms.
+In the upcoming sVB 2.0, I will show a list of project forms, and I will allow to define a `global.sb` file in each project, so you can add variables and subroutines that are global to all the project and can be accessed from any form. This will allow to create a "Random Buttons 3" sample, where the `CreateRndButton(onForm)` function can be moved to the global.sb file, so it can be used from both form1 and form2. 
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 

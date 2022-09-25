@@ -15,6 +15,7 @@ Namespace WinForms
         Friend Shared _forms As New ControlsDictionay
         Friend Shared _controls As New ControlsDictionay
 
+
         Friend Shared Function GetForm(name As String) As Window
             name = name.ToLower()
             Dim wnd As Window
@@ -239,17 +240,28 @@ Namespace WinForms
                 End If
             End If
 
+            Return GetCanvas(xamlPath)
+        End Function
+
+        Private Shared Function GetCanvas(xamlPath As String) As Canvas
             Dim xaml = IO.File.ReadAllText(xamlPath, System.Text.Encoding.UTF8)
             If xaml.Contains("wpf/xaml/WpfDialogs") Then
                 xaml = "<Canvas " & "xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006"" mc:Ignorable=""c""" & xaml.Substring(7)
             End If
-            Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))
 
-            Dim canvas As Canvas = Nothing
+            Try
+                Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))
+                Dim canvas = CType(XamlReader.Load(stream), Canvas)
+                Return canvas
+            Catch
+            End Try
 
-            canvas = CType(XamlReader.Load(stream), Canvas)
+            Return Nothing
+        End Function
 
-            Return canvas
+        Public Shared Function GetFormNameFromXaml(xamlPath As String) As String
+            Dim canvas = GetCanvas(xamlPath)
+            Return canvas?.Name
         End Function
 
         ''' <summary>
@@ -264,5 +276,46 @@ Namespace WinForms
                 ReportError("ShowMessage caused this error: " & ex.Message, ex)
             End Try
         End Sub
+
+        ''' <summary>
+        ''' Shows the form that has the given name if it exists.
+        ''' </summary>
+        ''' <param name="formName">the name of the form.</param>
+        ''' <param name="argsArr">any additional data, array, or a dynamic object you want to pass to the form. It will be stored in the ArgsArr property of the form, so you can use it as you want</param>
+        ''' <returns>the form name</returns>
+        <ReturnValueType(VariableType.Form)>
+        Public Shared Function ShowForm(formName As Primitive, argsArr As Primitive) As Primitive
+            If Form.GetIsLoaded(formName) Then
+                Form.SetArgsArr(formName, argsArr)
+                Form.Show(formName)
+                Dim wind = GetForm(formName)
+                wind.RaiseEvent(New RoutedEventArgs(Form.OnFormShownEvent))
+
+            Else
+                Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
+                Form.Initialize(formName)
+            End If
+            Return formName
+        End Function
+
+        ''' <summary>
+        ''' Shows the form that has the given name if it exists.
+        ''' </summary>
+        ''' <param name="formName">the name of the form.</param>
+        ''' <param name="argsArr">any additional data, array, or a dynamic object you want to pass to the form. It will be stored in the Form.ArgsArr property, so you can use it as you want</param>
+        ''' <returns>the form name</returns>
+        <ReturnValueType(VariableType.Form)>
+        Public Shared Function ShowDialog(formName As Primitive, argsArr As Primitive) As Primitive
+            If Form.GetIsLoaded(formName) Then
+                Form.SetArgsArr(formName, argsArr)
+                Form.ShowDialog(formName)
+            Else
+                Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
+                Form.Initialize(formName)
+                Control.SetVisible(formName, False)
+                Form.ShowDialog(formName)
+            End If
+            Return formName
+        End Function
     End Class
 End Namespace

@@ -21,19 +21,34 @@ Namespace Microsoft.SmallBasic
             _Parser = New Parser(_errors, _TypeInfoBag)
         End Sub
 
+        Public Sub CreateNewParser()
+            _Parser = New Parser(_errors, _TypeInfoBag)
+        End Sub
+
         Private Sub Initialize()
             PopulateReferences()
             PopulateClrSymbols()
             PopulatePrimitiveMethods()
         End Sub
 
-        Public Function Compile(source As TextReader, Optional autoCompletion As Boolean = False)
+        Public Function Compile(source As TextReader, Optional autoCompletion As Boolean = False) As List(Of [Error])
             If source Is Nothing Then
                 Throw New ArgumentNullException("source")
             End If
 
+            Dim codeLines As New List(Of String)
+            Do
+                Dim line = source.ReadLine()
+                If line Is Nothing Then Exit Do
+                codeLines.Add(line)
+            Loop
+
+            Return Compile(codeLines, autoCompletion)
+        End Function
+
+        Public Function Compile(codeLines As List(Of String), Optional autoCompletion As Boolean = False) As List(Of [Error])
             _errors.Clear()
-            _Parser.Parse(source, autoCompletion)
+            _Parser.Parse(codeLines, autoCompletion)
 
             If Not autoCompletion AndAlso _errors.Count = 0 Then
                 Dim analyzer As New SemanticAnalyzer(_Parser, _TypeInfoBag)
@@ -41,11 +56,37 @@ Namespace Microsoft.SmallBasic
             End If
 
             Return _errors
+
         End Function
 
-        Public Function Build(source As TextReader, outputName As String, directory As String) As List(Of [Error])
-            If source Is Nothing Then
-                Throw New ArgumentNullException("source")
+        Public Sub Build(
+                             parsers As List(Of Parser),
+                             exeFile As String
+                   )
+
+            If parsers Is Nothing OrElse parsers.Count = 0 Then
+                Throw New ArgumentNullException("parsers")
+            End If
+
+            If exeFile = "" Then
+                Throw New ArgumentNullException("exeFile")
+            End If
+
+            Dim outputName = Path.GetFileNameWithoutExtension(exeFile)
+            Dim directory As String = Path.GetDirectoryName(exeFile)
+
+            Build(parsers, outputName, directory)
+        End Sub
+
+
+        Public Function Build(
+                             parsers As List(Of Parser),
+                             outputName As String,
+                             directory As String
+                   ) As List(Of [Error])
+
+            If parsers Is Nothing OrElse parsers.Count = 0 Then
+                Throw New ArgumentNullException("parsers")
             End If
 
             If Equals(outputName, Nothing) Then
@@ -56,11 +97,7 @@ Namespace Microsoft.SmallBasic
                 Throw New ArgumentNullException("directory")
             End If
 
-            Compile(source)
-
-            If _errors.Count > 0 Then Return _errors
-
-            Dim codeGenerator As New CodeGenerator(_Parser, _TypeInfoBag, outputName, directory)
+            Dim codeGenerator As New CodeGenerator(parsers, _TypeInfoBag, outputName, directory)
             codeGenerator.GenerateExecutable()
             CopyLibraryAssemblies(directory)
             Return _errors
@@ -163,9 +200,10 @@ Namespace Microsoft.SmallBasic
         End Function
 
         Private Sub AddTypeToList(type As Type)
-            Dim typeInfo As New TypeInfo()
-            typeInfo.Type = type
-            typeInfo.HideFromIntellisense = type.GetCustomAttributes(GetType(HideFromIntellisenseAttribute), inherit:=False).Length > 0
+            Dim typeInfo As New TypeInfo With {
+                .Type = type,
+                .HideFromIntellisense = type.GetCustomAttributes(GetType(HideFromIntellisenseAttribute), inherit:=False).Length > 0
+            }
             Dim methods = type.GetMethods(BindingFlags.Static Or BindingFlags.Public)
 
             For Each methodInfo In methods

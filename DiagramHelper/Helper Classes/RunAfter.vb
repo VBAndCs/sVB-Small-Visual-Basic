@@ -1,6 +1,6 @@
 ﻿Imports System.Windows.Threading
 
-Public Class RunAfter
+Public Class RunAction
     Dim WithEvents Timer As New DispatcherTimer()
 
     Dim RunAction As Action
@@ -29,8 +29,8 @@ Public Class RunAfter
         End Get
     End Property
 
-    Public Shared Sub Start(afterMilliseconds As Integer, action As Action)
-        Dim ra As New RunAfter(afterMilliseconds, action)
+    Public Shared Sub After(afterMilliseconds As Integer, action As Action)
+        Dim ra As New RunAction(afterMilliseconds, action)
         ra.Start()
     End Sub
 

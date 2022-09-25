@@ -50,18 +50,20 @@ Public Class Designer
     End Property
 
     Public Sub New()
-        Dim resourceLocater As Uri = New Uri("/DiagramHelper;component/Resources/designerdecorator.xaml", System.UriKind.Relative)
+        Dim resourceLocater As New Uri("/DiagramHelper;component/Resources/designerdecorator.xaml", System.UriKind.Relative)
         Dim ResDec As ResourceDictionary = Application.LoadComponent(resourceLocater)
-        Me.Resources.MergedDictionaries.Add(ResDec)
-        Me.Style = FindResource("CanvasListBoxStyle")
-        Me.ItemContainerStyle = FindResource("listBoxItemStyle")
-        Me.SelectionMode = Controls.SelectionMode.Multiple
-        Me.AllowDrop = True
+        Resources.MergedDictionaries.Add(ResDec)
+        Style = FindResource("CanvasListBoxStyle")
+        ItemContainerStyle = FindResource("listBoxItemStyle")
+        SelectionMode = SelectionMode.Multiple
+        AllowDrop = True
     End Sub
 
     Private Shared NewPageOpened As Boolean
 
     Private Sub Designer_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+        If ScrollViewer IsNot Nothing Then Return
+
         Dim Brdr As Border = VisualTreeHelper.GetChild(Me, 0)
         Dim G = CType(Brdr.Child, Grid)
         Me.ScrollViewer = G.Children(0)
@@ -314,7 +316,7 @@ Public Class Designer
     Public Shared Function ClosePage(Optional openNewPageIfLast As Boolean = True) As Boolean
         If CurrentPage.IsNew AndAlso Pages.Count = 1 Then Return True
 
-        If CurrentPage.HasChanges OrElse (CurrentPage._fileName = "" AndAlso CurrentPage.CodeFilePath <> "" AndAlso Not CurrentPage.CodeFilePath.StartsWith(TempProjectPath)) Then
+        If CurrentPage.IsDirty Then
             If Not CurrentPage.AskToSave() Then Return False
         End If
 
@@ -356,8 +358,8 @@ Public Class Designer
             Return key
         Else
             Dim xamlPath = key.ToLower()
-
             Dim codePath = xamlPath.Substring(0, xamlPath.Length - 5) & ".sb".ToLower()
+
             For Each item In Pages
                 Dim page = item.Value
                 If page._fileName = xamlPath OrElse
@@ -367,7 +369,7 @@ Public Class Designer
                 End If
             Next
 
-            ' File is not already opened. Open it.
+            ' File is not opened. Open it.
             Open(key)
         End If
 
@@ -390,12 +392,13 @@ Public Class Designer
             Commands.UpdateFontProperties(Diagram)
         Next
 
-        Dim canvas As New Canvas
-        canvas.Name = If(Me.Name = "", Me.PageKey.Replace("KEY", "Form"), Me.Name)
-        canvas.Width = Me.PageWidth
-        canvas.Height = Me.PageHeight
-        canvas.Background = DesignerCanvas.Background
-        canvas.Tag = AllowTransparencyMenuItem.IsChecked
+        Dim canvas As New Canvas With {
+            .Name = If(Name = "", PageKey.Replace("KEY", "Form"), Name),
+            .Width = PageWidth,
+            .Height = PageHeight,
+            .Background = DesignerCanvas.Background,
+            .Tag = AllowTransparencyMenuItem.IsChecked
+        }
 
         If _Text <> "" Then
             Automation.AutomationProperties.SetHelpText(canvas, _Text)
@@ -768,10 +771,11 @@ Public Class Designer
 
     Public Function SaveAs() As Boolean
         ' Configure open file dialog box 
-        Dim dlg As New Microsoft.Win32.SaveFileDialog()
-        dlg.DefaultExt = ".xaml" ' Default file extension
-        dlg.Filter = "Diagram Pages|*.xaml"
-        dlg.Title = "Save Diagram Design Page"
+        Dim dlg As New Microsoft.Win32.SaveFileDialog With {
+            .DefaultExt = ".xaml", ' Default file extension
+            .Filter = "Diagram Pages|*.xaml",
+            .Title = "Save Diagram Design Page"
+        }
 
         Dim saveName As String
         If _fileName = "" Then
@@ -792,6 +796,23 @@ Public Class Designer
 
             Return True
         End If
+        Return False
+    End Function
+
+    Public Shared Function SavePageIfDirty(xamlFile As String) As Boolean
+        Dim x = xamlFile.ToLower()
+
+        For Each page In Pages
+            Dim dsn = page.Value
+            If dsn._fileName = x Then
+                If dsn.HasChanges Then
+                    SwitchTo(page.Key)
+                    CurrentPage.Save()
+                End If
+                Return True
+            End If
+        Next
+
         Return False
     End Function
 
@@ -830,10 +851,11 @@ Public Class Designer
 
     Public Sub Open()
         ' Configure open file dialog box 
-        Dim dlg As New Microsoft.Win32.OpenFileDialog()
-        dlg.DefaultExt = ".xaml" ' Default file extension
-        dlg.Filter = "Diagram Pages|*.xaml"
-        dlg.Title = "Open Diagram Design Page"
+        Dim dlg As New Microsoft.Win32.OpenFileDialog With {
+            .DefaultExt = ".xaml", ' Default file extension
+            .Filter = "Diagram Pages|*.xaml",
+            .Title = "Open Diagram Design Page"
+        }
         If dlg.ShowDialog() = True Then
             SwitchTo(dlg.FileName)
             Me.HasChanges = False
@@ -1787,6 +1809,12 @@ Public Class Designer
     End Property
 
     Public Property Text As String
+
+    Private ReadOnly Property IsDirty As Boolean
+        Get
+            Return Me.HasChanges OrElse (Me._fileName = "" AndAlso Me.CodeFilePath <> "" AndAlso Not Me.CodeFilePath.StartsWith(TempProjectPath))
+        End Get
+    End Property
 
     Public Shared ReadOnly CanRedoProperty As DependencyProperty =
                            DependencyProperty.Register("CanRedo",

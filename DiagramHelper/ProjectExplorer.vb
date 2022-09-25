@@ -84,7 +84,7 @@ Public Class ProjectExplorer
                     item.IsSelected AndAlso item.IsFocused Then
 
             ClickCount = 1
-            RunAfter.Start(200,
+            RunAction.After(200,
                    Sub()
                        If ClickCount = 2 Then Return
                        BeginEdit()
@@ -173,7 +173,7 @@ Public Class ProjectExplorer
     End Sub
 
 
-    Dim focusTextBox As New RunAfter(10, Sub() editTextBox.Focus())
+    Dim focusTextBox As New RunAction(10, Sub() editTextBox.Focus())
 
     Public Sub editTextBox_LostFocus(sender As Object, e As KeyboardFocusChangedEventArgs)
         If Commit() Then

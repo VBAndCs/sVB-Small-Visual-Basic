@@ -256,7 +256,7 @@ Namespace Library
             Dim ignCase = CBool(ignoreCase)
             Dim lowercaseValue = value.AsString().ToLower()
 
-            For i = intStart To count
+            For i = intStart - 1 To count - 1
                 If ignCase Then
                     If values(i).AsString().ToLower() = lowercaseValue Then
                         Return array._arrayMap.Keys(i)

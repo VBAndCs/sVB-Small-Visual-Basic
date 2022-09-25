@@ -37,7 +37,6 @@ Namespace Microsoft.Nautilus.Text.Editor
 
             End Class
 
-            Private Const _cacheSize As Integer = 50
             Private _maxWidth As Double
             Private _cachedLinesCount As Integer
             Private _cachedLines As LineWidth() = New LineWidth(49) {}
@@ -656,10 +655,10 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Sub InitializeLayers()
-            MyBase.ClipToBounds = True
-            MyBase.Focusable = True
-            MyBase.FocusVisualStyle = Nothing
-            MyBase.Cursor = Cursors.IBeam
+            ClipToBounds = True
+            Focusable = True
+            FocusVisualStyle = Nothing
+            Cursor = Cursors.IBeam
             _baseLayer = New Canvas
             _baseLayer.ClipToBounds = False
             _selectionLayer = New SelectionLayer(Me)

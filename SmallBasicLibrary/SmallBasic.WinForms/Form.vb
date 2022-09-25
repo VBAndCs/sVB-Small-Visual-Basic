@@ -21,6 +21,22 @@ Namespace WinForms
             ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
+        Public Shared Sub Initialize(formName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim frmName = "_SmallVisualBasic_" & formName.AsString().ToLower()
+                        Dim asm = System.Reflection.Assembly.GetEntryAssembly()
+                        Dim frm = asm.GetType(frmName)
+                        Dim initializeMethod = frm?.GetMethod("Initialize", System.Reflection.BindingFlags.Public Or System.Reflection.BindingFlags.Static)
+                        initializeMethod?.Invoke(Nothing, Nothing)
+
+                    Catch ex As Exception
+                        ShowSubError(formName, "Initialize", ex)
+                    End Try
+                End Sub)
+        End Sub
+
         ''' <summary>
         ''' Adds a new TextBox control to the form
         ''' </summary>
@@ -334,6 +350,41 @@ Namespace WinForms
             Return key
         End Function
 
+        Private Shared ReadOnly ArgsArrProperty As _
+                System.Windows.DependencyProperty =
+                       System.Windows.DependencyProperty.RegisterAttached("ArgsArr",
+                       GetType(String), GetType(System.Windows.Window)
+                )
+
+        ''' <summary>
+        ''' Returns the additional data sent to the form via Forms.ShowForm and Forms.ShowDialog methods.
+        ''' </summary>
+        <ReturnValueType(VariableType.Array)>
+        <ExProperty>
+        Public Shared Function GetArgsArr(formName As Primitive) As Primitive
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim frm = Forms.GetForm(formName)
+                          GetArgsArr = CStr(frm.GetValue(ArgsArrProperty))
+                      Catch ex As Exception
+                          ShowErrorMesssage(formName, "ArgsArr", ex)
+                      End Try
+                  End Sub)
+        End Function
+
+        Public Shared Sub SetArgsArr(formName As Primitive, value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           Dim frm = Forms.GetForm(formName)
+                           frm.SetValue(ArgsArrProperty, value.ToString())
+                       Catch ex As Exception
+                           Control.ShowPropertyMesssage(formName, "ArgsArr", value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
 
         ''' <summary>
         ''' Returns True if the form dsiplays a control with the given name.
@@ -479,6 +530,23 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
+        ''' Returns True if the current form is loaded, regardless if it is hidden in this moment.
+        ''' </summary>
+        <ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetIsLoaded(formName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetIsLoaded = Forms.GetForm(formName) IsNot Nothing
+                    Catch ex As Exception
+                        ShowErrorMesssage(formName, "IsLoaded", ex)
+                    End Try
+                End Sub)
+        End Function
+
+
+        ''' <summary>
         ''' Gets or sets the title of the form
         ''' </summary>
         <ReturnValueType(VariableType.String)>
@@ -529,6 +597,35 @@ Namespace WinForms
         End Sub
 
 #Region "Events"
+        Public Shared ReadOnly OnFormShownEvent As System.Windows.RoutedEvent =
+                   System.Windows.EventManager.RegisterRoutedEvent(
+                   "OnFormShown",
+                   System.Windows.RoutingStrategy.Bubble,
+                   GetType(System.Windows.RoutedEventHandler),
+                   GetType(System.Windows.Window)
+              )
+
+        Public Shared Sub AddAttachedActionHandler(
+                     Element As System.Windows.UIElement,
+                     Handler As System.Windows.RoutedEventHandler
+                )
+
+            If Element IsNot Nothing Then
+                Element.AddHandler(OnFormShownEvent, Handler)
+            End If
+        End Sub
+
+        Public Shared Sub RemoveAttachedActionHandler(
+                     Element As System.Windows.UIElement,
+                     Handler As System.Windows.RoutedEventHandler
+                )
+
+            If Element IsNot Nothing Then
+                Element.RemoveHandler(OnFormShownEvent, Handler)
+            End If
+        End Sub
+
+
         ''' <summary>
         ''' Fired after the form is shown and all controls are rendered and are ready to use their properties.
         ''' </summary>
@@ -537,19 +634,23 @@ Namespace WinForms
                 App.Invoke(
                      Sub()
                          Dim form = CType(Forms.GetForm([Event].SenderControl), System.Windows.Window)
-                         Try
-                             AddHandler form.ContentRendered,
-                                 Sub(sender As Object, e As EventArgs)
-                                     Try
-                                         Dim win = CType(sender, System.Windows.Window)
-                                         [Event].SenderControl = win.Name & "." & win.Name
-                                         Call handler()
-                                         [Event].Handled = False
 
-                                     Catch ex As Exception
-                                         ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnShown)}`event,  caused this error: {ex.Message}", ex)
-                                     End Try
-                                 End Sub
+                         Try
+                             Dim h = Sub(sender As Object, e As EventArgs)
+                                         Try
+                                             Dim win = CType(sender, System.Windows.Window)
+                                             [Event].SenderControl = win.Name & "." & win.Name
+                                             Call handler()
+                                             [Event].Handled = False
+
+
+                                         Catch ex As Exception
+                                             ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnShown)}`event,  caused this error: {ex.Message}", ex)
+                                         End Try
+                                     End Sub
+
+                             AddHandler form.ContentRendered, h
+                             AddAttachedActionHandler(form, h)
 
                          Catch ex As Exception
                              [Event].ShowErrorMessage(NameOf(OnShown), ex)

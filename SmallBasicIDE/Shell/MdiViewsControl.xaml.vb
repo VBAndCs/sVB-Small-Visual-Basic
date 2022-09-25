@@ -314,7 +314,7 @@ Namespace Microsoft.SmallBasic.Shell
 
         End Sub
 
-        Dim SelectView As New RunAfter()
+        Dim SelectView As New RunAction()
 
         Private Sub OnMouseDownInView(sender As Object, e As MouseEventArgs)
             Dim uIElement = CType(sender, UIElement)
@@ -450,7 +450,7 @@ Namespace Microsoft.SmallBasic.Shell
         End Sub
 
         Private Sub CmbEventNames_DropDownOpened(sender As Object, e As EventArgs)
-            DiagramHelper.RunAfter.Start(1,
+            DiagramHelper.RunAction.After(1,
                 Sub()
                     Dim view As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
                     Dim cmbControls = view.CmbControlNames
@@ -490,5 +490,33 @@ Namespace Microsoft.SmallBasic.Shell
                 SetItemsBold(selectedView.CmbEventNames, handlers.ToArray())
             End If
         End Sub
+
+        Friend Function SaveDocIfDirty(sbCodeFile As String) As String
+            sbCodeFile = sbCodeFile.ToLower()
+            For Each mdiView As MdiView In Items
+                Dim doc = mdiView.Document
+                If doc.FilePath = sbCodeFile Then
+                    ' Save changes to sb file
+                    IO.File.WriteAllText(doc.FilePath, doc.Text)
+                    If Not doc.IsNew Then doc.IsDirty = False
+
+                    ' update the sb.gen code to update event handlers added or removed
+                    Dim genFile = doc.FilePath & ".gen"
+                    Dim genCode = ""
+                    If IO.File.Exists(genFile) Then
+                        genCode = IO.File.ReadAllText(genFile)
+                        Dim i = genCode.IndexOf("'#Events{")
+                        If i > -1 Then genCode = genCode.Substring(0, i)
+                        Dim sb As New Text.StringBuilder(genCode)
+                        doc.GenerateEventHints(sb)
+                        genCode = sb.ToString()
+                        IO.File.WriteAllText(genFile, genCode)
+                    End If
+
+                    Return genCode
+                End If
+            Next
+            Return ""
+        End Function
     End Class
 End Namespace

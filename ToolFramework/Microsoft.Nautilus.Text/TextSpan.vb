@@ -43,7 +43,7 @@ Namespace Microsoft.Nautilus.Text
         End Sub
 
         Public Sub New(snapshot As ITextSnapshot, start As Integer, length As Integer, trackingMode As SpanTrackingMode)
-            Me.New(snapshot, New Span(start, length), trackingMode)
+            Me.New(snapshot, New Span(start, Math.Min(length, snapshot.Length - start)), trackingMode)
         End Sub
 
         Public Function GetSpan(snapshot As ITextSnapshot) As SnapshotSpan Implements ITextSpan.GetSpan

@@ -587,7 +587,7 @@ Namespace Microsoft.SmallBasic.LanguageService
                                 endLine As Integer
                      ) As Span
 
-            Dim start As Integer = 0
+            Dim start As Integer
             If startToken.IsIllegal Then
                 start = snapshot.GetLineFromLineNumber(startLine).Start
             Else
@@ -955,8 +955,8 @@ Namespace Microsoft.SmallBasic.LanguageService
                 End Select
             End If
 
-            Dim currentToken As Token
-            Dim bag = GetCompletionBag(line, caretPosition - line.Start, currentToken)
+            Dim curToken As Token
+            Dim bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
 
             If bag Is Nothing OrElse bag.CompletionItems.Count <= 0 Then
                 Return
@@ -964,17 +964,26 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             bag.SelectEspecialItem = especialItem
 
-            Dim adornmentSpan = GetTextSpanFromToken(line, currentToken)
+            Dim adornmentSpan = GetTextSpanFromToken(line, curToken)
             Dim textSpan = adornmentSpan
 
             If textSpan.GetSpan(line.TextSnapshot).IsEmpty AndAlso line.TextSnapshot.Length > 0 Then
-                If currentToken.Column = 0 Then
-                    adornmentSpan = New TextSpan(line.TextSnapshot, line.Start, System.Math.Min(currentToken.EndColumn - currentToken.Column + 1, line.TextSnapshot.Length), SpanTrackingMode.EdgeInclusive)
+                If curToken.Column = 0 Then
+                    adornmentSpan = New TextSpan(
+                        line.TextSnapshot,
+                        line.Start,
+                        System.Math.Min(curToken.EndColumn + 1, snapshot.Length),
+                        SpanTrackingMode.EdgeInclusive
+                    )
                 Else
-                    adornmentSpan = New TextSpan(line.TextSnapshot, line.Start + currentToken.Column - 1, System.Math.Min(currentToken.EndColumn - currentToken.Column + 1, line.TextSnapshot.Length), SpanTrackingMode.EdgeInclusive)
+                    adornmentSpan = New TextSpan(
+                        line.TextSnapshot,
+                        line.Start + curToken.Column - 1,
+                        System.Math.Min(curToken.EndColumn - curToken.Column + 1, snapshot.Length),
+                        SpanTrackingMode.EdgeInclusive
+                    )
                 End If
             End If
-
             adornment = New CompletionAdornment(Me, bag, adornmentSpan, textSpan)
 
             If AdornmentsChangedEvent IsNot Nothing Then
@@ -1030,7 +1039,7 @@ Namespace Microsoft.SmallBasic.LanguageService
             Dim methods = type.GetMethods(System.Reflection.BindingFlags.Static Or System.Reflection.BindingFlags.Public)
 
             For Each methodInfo In methods
-                Dim name = ""
+                Dim name As String
                 Dim item As New CompletionItem()
                 If methodInfo.GetCustomAttributes(GetType(WinForms.ExMethodAttribute), inherit:=False).Count > 0 Then
                     name = methodInfo.Name

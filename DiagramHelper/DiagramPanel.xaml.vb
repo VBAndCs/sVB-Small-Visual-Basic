@@ -8,7 +8,6 @@ Public Class DiagramPanel
     Friend Dsn As Designer
     Friend DesignerItem As ListBoxItem
     Friend Diagram As FrameworkElement
-    Dim EditorShowing As Boolean
     Dim Scv As ScrollViewer
     Friend DiagramObj As DiagramObject
     Friend AfterRestoreSub As Action
@@ -133,7 +132,6 @@ Public Class DiagramPanel
         FocusRectangle = Nothing
         DesignerItem = Nothing
         Diagram = Nothing
-        EditorShowing = Nothing
         Scv = Nothing
         DiagramObj = Nothing
         AfterRestoreSub = Nothing

@@ -92,7 +92,7 @@ Namespace WinForms
                     Try
                         GetTag = GetControl(controlName).Tag.ToString()
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Tage", ex)
+                        ShowErrorMesssage(controlName, "Tag", ex)
                     End Try
                 End Sub)
         End Function

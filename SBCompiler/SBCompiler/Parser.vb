@@ -23,13 +23,13 @@ Namespace Microsoft.SmallBasic
         Public ReadOnly Property SymbolTable As SymbolTable
 
         Private Function ConstructWhileStatement(tokenEnum As TokenEnumerator) As WhileStatement
-            Dim whileStatement As New WhileStatement()
-            whileStatement.StartToken = tokenEnum.Current
-            whileStatement.WhileToken = tokenEnum.Current
-            Dim whileStatement2 = whileStatement
+            Dim whileStatement As New WhileStatement With {
+                .StartToken = tokenEnum.Current,
+                .WhileToken = tokenEnum.Current
+            }
             tokenEnum.MoveNext()
 
-            If EatLogicalExpression(tokenEnum, whileStatement2.Condition) Then
+            If EatLogicalExpression(tokenEnum, whileStatement.Condition) Then
                 ExpectEndOfLine(tokenEnum)
             End If
 
@@ -39,7 +39,7 @@ Namespace Microsoft.SmallBasic
             While tokenEnum IsNot Nothing
 
                 If tokenEnum.Current.Type = TokenType.EndWhile OrElse tokenEnum.Current.Type = TokenType.Wend Then
-                    whileStatement2.EndLoopToken = tokenEnum.Current
+                    whileStatement.EndLoopToken = tokenEnum.Current
                     flag = True
                     Exit While
                 End If
@@ -49,7 +49,7 @@ Namespace Microsoft.SmallBasic
                     Exit While
                 End If
 
-                whileStatement2.Body.Add(GetStatementFromTokens(tokenEnum))
+                whileStatement.Body.Add(GetStatementFromTokens(tokenEnum))
                 tokenEnum = ReadNextLine()
             End While
 
@@ -60,7 +60,7 @@ Namespace Microsoft.SmallBasic
                 AddError(ResourceHelper.GetString("EndWhileExpected"))
             End If
 
-            Return whileStatement2
+            Return whileStatement
         End Function
 
         Dim commaLine As Integer = -1
@@ -675,7 +675,7 @@ Namespace Microsoft.SmallBasic
 
             If binaryExpression IsNot Nothing Then
                 Dim rightHandSide = binaryExpression.RightHandSide
-                Dim expression As Expression = Nothing
+                Dim expression As Expression
 
                 If TypeOf rightHandSide Is BinaryExpression Then
                     expression = MergeExpression(rightHandSide, rightHandExpr, operatorToken)
@@ -703,10 +703,10 @@ Namespace Microsoft.SmallBasic
             tokenEnum.MoveNext()
             Dim variable As Token = Nothing
 
-            Dim t = tokenEnum.Current.Type
+            Dim tokenType = tokenEnum.Current.Type
             Dim openP As Token
 
-            If t = TokenType.Dot OrElse t = TokenType.Lookup Then
+            If tokenType = TokenType.Dot OrElse tokenType = TokenType.Lookup Then
                 tokenEnum.MoveNext()
 
                 If Not EatSimpleIdentifier(tokenEnum, variable) Then
@@ -715,7 +715,7 @@ Namespace Microsoft.SmallBasic
 
                 openP = tokenEnum.Current
                 If EatOptionalToken(tokenEnum, TokenType.LeftParens) Then
-                    If t = TokenType.Lookup Then
+                    If tokenType = TokenType.Lookup Then
                         AddError(tokenEnum.Current, "The ! operator can't be used to call methods")
                     End If
 
@@ -736,7 +736,7 @@ Namespace Microsoft.SmallBasic
                    )
 
                     If commaLine = -2 Then Return Nothing
-                    methodCallExpression.OuterSubRoutine = SubroutineStatement.Current
+                    methodCallExpression.OuterSubroutine = SubroutineStatement.Current
                     methodCallExpression.EndToken = tokenEnum.Current
                     If closeTokenFound Then tokenEnum.MoveNext()
                     Return methodCallExpression
@@ -748,7 +748,7 @@ Namespace Microsoft.SmallBasic
                     .Precedence = 9,
                     .TypeName = current,
                     .PropertyName = variable,
-                    .IsDynamic = (t = TokenType.Lookup)
+                    .IsDynamic = (tokenType = TokenType.Lookup)
                 }
             End If
 
@@ -1042,6 +1042,9 @@ Namespace Microsoft.SmallBasic
         Dim keepSymbols As Boolean
         Dim lineOffset As Integer
 
+        Public ClassName As String = "_SmallVisualBasic_Module1"
+        Public IsMainForm As Boolean
+
         Public Sub Parse(
                         reader As TextReader,
                         Optional autoCompletion As Boolean = False
@@ -1051,6 +1054,26 @@ Namespace Microsoft.SmallBasic
                 Throw New ArgumentNullException("reader")
             End If
 
+            codeLines = New List(Of String)
+            Do
+                Dim line = reader.ReadLine
+                If line Is Nothing Then Exit Do
+                codeLines.Add(line)
+            Loop
+
+            Parse(autoCompletion)
+        End Sub
+
+        Public Sub Parse(
+                        codeLines As List(Of String),
+                        Optional autoCompletion As Boolean = False
+                   )
+
+            Me.codeLines = codeLines
+            Parse(autoCompletion)
+        End Sub
+
+        Private Sub Parse(autoCompletion As Boolean)
             _TypeInfoBag = TypeInfoBag
 
             If keepSymbols Then
@@ -1063,12 +1086,6 @@ Namespace Microsoft.SmallBasic
             _SymbolTable.AutoCompletion = autoCompletion
 
             _ParseTree = New List(Of Statement)()
-            codeLines = New List(Of String)
-            Do
-                Dim line = reader.ReadLine
-                If line Is Nothing Then Exit Do
-                codeLines.Add(line)
-            Loop
 
             Dim parentSub = SubroutineStatement.Current
 
@@ -1086,6 +1103,8 @@ Namespace Microsoft.SmallBasic
                     Dim id = _SymbolTable.AllIdentifiers(e.index)
                     id.SymbolType = Completion.CompletionItemType.SubroutineName
                     _SymbolTable.AllIdentifiers(e.index) = id
+                Else
+                    AddError(e.Id, $"Subroutine `{e.Id.Text}` is not defiend.")
                 End If
             Next
 
