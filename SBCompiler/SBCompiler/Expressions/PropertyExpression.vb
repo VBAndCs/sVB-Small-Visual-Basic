@@ -2,9 +2,9 @@
 Imports System.Globalization
 Imports System.Reflection
 Imports System.Reflection.Emit
-Imports Microsoft.SmallBasic.Statements
+Imports Microsoft.SmallVisualBasic.Statements
 
-Namespace Microsoft.SmallBasic.Expressions
+Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
     Public Class PropertyExpression
         Inherits Expression

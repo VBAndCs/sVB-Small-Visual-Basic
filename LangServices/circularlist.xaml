@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Selector x:Class="Microsoft.SmallBasic.LanguageService.CircularList" 
+<Selector x:Class="Microsoft.SmallVisualBasic.LanguageService.CircularList" 
           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
           Height="138" 
-          xmlns:languageservice="clr-namespace:Microsoft.SmallBasic.LanguageService;assembly=LanguageService">
+          xmlns:languageservice="clr-namespace:Microsoft.SmallVisualBasic.LanguageService;assembly=LanguageService">
   
     <Control.Template>
     <ControlTemplate>

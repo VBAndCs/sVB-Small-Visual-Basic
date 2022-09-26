@@ -1,5 +1,5 @@
 Imports System.Globalization
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Library
 
 Namespace WinForms
 

@@ -14,6 +14,6 @@ Imports System.Runtime.Versioning
 <Assembly: AssemblyDescription("")>
 <Assembly: AssemblyConfiguration("")>
 <Assembly: AssemblyCompany("Microsoft Corporation")>
-<Assembly: AssemblyProduct("Microsoft.SmallBasic")>
+<Assembly: AssemblyProduct("Microsoft.SmallVisualBasic")>
 <Assembly: AssemblyCopyright("Copyright (c) 2008")>
 <Assembly: AssemblyVersion("1.2.0.0")>

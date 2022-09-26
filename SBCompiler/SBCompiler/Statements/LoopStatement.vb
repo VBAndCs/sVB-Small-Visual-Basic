@@ -1,6 +1,6 @@
 ﻿Imports System.Reflection.Emit
 
-Namespace Microsoft.SmallBasic.Statements
+Namespace Microsoft.SmallVisualBasic.Statements
     Public MustInherit Class LoopStatement
         Inherits Statement
 

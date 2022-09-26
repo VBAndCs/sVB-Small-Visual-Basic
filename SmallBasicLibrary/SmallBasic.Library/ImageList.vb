@@ -1,6 +1,6 @@
 
 Imports System.Windows.Media.Imaging
-Imports Microsoft.SmallBasic.Library.Internal
+Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
     ''' <summary>

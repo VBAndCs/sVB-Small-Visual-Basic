@@ -1,8 +1,9 @@
 ﻿Imports System.Collections.Generic
 Imports System.Globalization
-Imports Microsoft.SmallBasic.Expressions
+Imports Microsoft.SmallBasic
+Imports Microsoft.SmallVisualBasic.Expressions
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class SymbolTable
         Friend AutoCompletion As Boolean
         Friend AllCommentLines As New List(Of Token)
@@ -81,7 +82,7 @@ Namespace Microsoft.SmallBasic
                 propertyNameInfo.SymbolType = Completion.CompletionItemType.DynamicPropertyName
                 AddIdentifier(propertyNameInfo)
 
-                AddVariable(idExpr, $"Dynamic {If(prop.IsDynamic, "", "(Data)")} object. Use {If(prop.IsDynamic, "`!`", ".")} to add properties to this object or to read them", subroutine IsNot Nothing)
+                AddVariable(idExpr, $"`{idExpr.Identifier.Text}` is an array that works as a {If(prop.IsDynamic, "dynamic", "data")} object. Use {If(prop.IsDynamic, "`!`", ".")} to add properties to this object or to read them.", subroutine IsNot Nothing)
                 AddVariableInitialization(typeNameInfo)
             End If
 
@@ -344,7 +345,7 @@ Namespace Microsoft.SmallBasic
             Return $"{Subroutine.Name.LCaseText}.{variableName}"
         End Function
 
-        Private Function GetKey(identifier As Token) As String
+        Friend Function GetKey(identifier As Token) As String
             Dim variableName = identifier.LCaseText
             Dim Subroutine = identifier.SubroutineName?.ToLower()
             If Subroutine = "" Then Return variableName

@@ -1,6 +1,6 @@
 ﻿
 
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Library
 
 Namespace WinForms
     Public NotInheritable Class PreCompiler
@@ -158,8 +158,8 @@ Namespace WinForms
         End Function
 
         Dim PrimativeType As Type = GetType(Primitive)
-        Private Const WinFormsNS As String = "Microsoft.SmallBasic.WinForms."
-        Private Const LibraryNS As String = "Microsoft.SmallBasic.Library."
+        Private Const WinFormsNS As String = "Microsoft.SmallVisualBasic.WinForms."
+        Private Const LibraryNS As String = "Microsoft.SmallVisualBasic.Library."
 
         Private Shared Sub FillModuleMembers(t As Type)
             types.Add(t)

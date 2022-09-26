@@ -1,4 +1,4 @@
-﻿Namespace Microsoft.SmallBasic.Statements
+﻿Namespace Microsoft.SmallVisualBasic.Statements
     Public Class EmptyStatement
         Inherits Statement
 

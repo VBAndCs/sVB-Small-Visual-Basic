@@ -1,4 +1,4 @@
-﻿Imports Microsoft.SmallBasic
+﻿Imports Microsoft.SmallVisualBasic
 Imports Microsoft.VisualBasic
 Imports System
 Imports System.Collections.Generic

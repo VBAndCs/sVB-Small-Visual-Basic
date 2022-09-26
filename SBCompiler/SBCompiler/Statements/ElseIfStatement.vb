@@ -1,9 +1,9 @@
 ﻿Imports System.Collections.Generic
 Imports System.Globalization
 Imports System.Text
-Imports Microsoft.SmallBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Expressions
 
-Namespace Microsoft.SmallBasic.Statements
+Namespace Microsoft.SmallVisualBasic.Statements
     Public Class ElseIfStatement
         Inherits Statement
 

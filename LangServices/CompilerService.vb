@@ -3,9 +3,9 @@ Imports System.Collections.Generic
 Imports System.IO
 Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.Editor
-Imports Microsoft.SmallBasic.Completion
+Imports Microsoft.SmallVisualBasic.Completion
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Module CompilerService
         Private _compiler As Compiler
 

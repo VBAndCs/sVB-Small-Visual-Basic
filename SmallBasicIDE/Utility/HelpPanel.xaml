@@ -1,9 +1,9 @@
 ﻿<Grid 
-    x:Class="Microsoft.SmallBasic.Utility.HelpPanel" 
+    x:Class="Microsoft.SmallVisualBasic.Utility.HelpPanel" 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:sb="clr-namespace:Microsoft.SmallBasic" 
-    xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" 
+    xmlns:sb="clr-namespace:Microsoft.SmallVisualBasic" 
+    xmlns:lu="clr-namespace:Microsoft.SmallVisualBasic.Utility" 
     x:Name="helpPanel">
     
     <FrameworkElement.Resources>

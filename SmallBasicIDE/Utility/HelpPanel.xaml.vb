@@ -1,5 +1,6 @@
-﻿Imports Microsoft.SmallBasic.Completion
-Imports Microsoft.SmallBasic.LanguageService
+﻿Imports Microsoft.SmallBasic
+Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.LanguageService
 Imports Microsoft.VisualBasic
 Imports System
 Imports System.ComponentModel
@@ -13,7 +14,7 @@ Imports System.Windows.Markup
 Imports System.Windows.Media.Imaging
 Imports System.Windows.Navigation
 
-Namespace Microsoft.SmallBasic.Utility
+Namespace Microsoft.SmallVisualBasic.Utility
     Partial Public Class HelpPanel
         Inherits Grid
         Implements INotifyPropertyChanged, IComponentConnector
@@ -43,7 +44,7 @@ Namespace Microsoft.SmallBasic.Utility
 
                 Dim doc = MainWindow.ActiveDocument
                 Dim textView = CType(doc.EditorControl.TextView, Nautilus.Text.Editor.AvalonTextView)
-                Dim popHelp = MainWindow.popHelp
+                Dim popHelp = MainWindow.PopHelp
 
                 If App.CntxMenuIsOpened OrElse CompletionItemWrapper.Documentation Is Nothing Then
                     popHelp.IsOpen = False
@@ -384,7 +385,7 @@ Namespace Microsoft.SmallBasic.Utility
         End Sub
 
         Private Sub gotoDefinintion_RequestNavigate(sender As Object, e As RequestNavigateEventArgs) Handles gotoDefinintion.RequestNavigate
-            MainWindow.popHelp.IsOpen = False
+            MainWindow.PopHelp.IsOpen = False
             Dim item = _itemWrapper.CompletionItem
             Dim identifier = item.DefinitionIdintifier
             If identifier.Line = -1 Then ' Select the control on the form

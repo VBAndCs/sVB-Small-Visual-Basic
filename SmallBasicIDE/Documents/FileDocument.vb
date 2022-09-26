@@ -2,8 +2,9 @@
 Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports System.IO
+Imports Microsoft.SmallBasic
 
-Namespace Microsoft.SmallBasic.Documents
+Namespace Microsoft.SmallVisualBasic.Documents
     Public Class FileDocument
         Implements INotifyPropertyChanged
 
@@ -16,7 +17,7 @@ Namespace Microsoft.SmallBasic.Documents
                 Return _filePath?.ToLower()
             End Get
 
-            Protected Set(value As String)
+            Friend Set(value As String)
                 _filePath = value?.ToLower()
                 NotifyProperty("FilePath")
                 NotifyProperty("Title")

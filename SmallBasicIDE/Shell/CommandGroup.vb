@@ -1,6 +1,6 @@
 ﻿Imports System.Windows.Markup
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     <ContentProperty("Commands")>
     Public MustInherit Class CommandGroup
         Private nameField As String

@@ -1,4 +1,4 @@
-﻿Namespace Microsoft.SmallBasic.LanguageService
+﻿Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Enum MoveDirection
         Up
         Down

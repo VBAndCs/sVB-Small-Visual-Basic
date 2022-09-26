@@ -1,7 +1,7 @@
 ﻿Imports System
-Imports Microsoft.SmallBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Expressions
 
-Namespace Microsoft.SmallBasic.Engine
+Namespace Microsoft.SmallVisualBasic.Engine
     <Serializable>
     Public Class ArrayAssignmentInstruction
         Inherits Instruction

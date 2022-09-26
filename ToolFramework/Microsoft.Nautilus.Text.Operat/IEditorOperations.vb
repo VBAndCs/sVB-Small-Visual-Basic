@@ -47,43 +47,43 @@ Namespace Microsoft.Nautilus.Text.Operations
 
         Sub ScrollDownAndMoveCaretIfNecessary()
 
-        Sub DeleteCharacterToLeft(undoHistory1 As UndoHistory)
+        Sub DeleteCharacterToLeft(undoHistory As UndoHistory)
 
-        Sub DeleteCharacterToRight(undoHistory1 As UndoHistory)
+        Sub DeleteCharacterToRight(undoHistory As UndoHistory)
 
-        Sub DeleteWordToRight(undoHistory1 As UndoHistory)
+        Sub DeleteWordToRight(undoHistory As UndoHistory)
 
-        Sub DeleteWordToLeft(undoHistory1 As UndoHistory)
+        Sub DeleteWordToLeft(undoHistory As UndoHistory)
 
-        Sub YankCurrentLine(undoHistory1 As UndoHistory)
+        Sub YankCurrentLine(undoHistory As UndoHistory)
 
-        Sub InsertNewline(undoHistory1 As UndoHistory)
+        Sub InsertNewline(undoHistory As UndoHistory)
 
-        Sub InsertTab(undoHistory1 As UndoHistory)
+        Sub InsertTab(undoHistory As UndoHistory)
 
-        Sub RemovePreviousTab(undoHistory1 As UndoHistory)
+        Sub RemovePreviousTab(undoHistory As UndoHistory)
 
-        Sub IndentSelection(undoHistory1 As UndoHistory)
+        Sub IndentSelection(undoHistory As UndoHistory)
 
-        Sub UnindentSelection(undoHistory1 As UndoHistory)
+        Sub UnindentSelection(undoHistory As UndoHistory)
 
-        Sub InsertText(text1 As String, undoHistory1 As UndoHistory)
+        Sub InsertText(text As String, undoHistory As UndoHistory)
 
-        Function DeleteSelection(undoHistory1 As UndoHistory) As Boolean
+        Function DeleteSelection(undoHistory As UndoHistory) As Boolean
 
-        Sub ReplaceSelection(text1 As String, undoHistory1 As UndoHistory)
+        Sub ReplaceSelection(text As String, undoHistory As UndoHistory)
 
-        Sub TransposeCharacter(undoHistory1 As UndoHistory)
+        Sub TransposeCharacter(undoHistory As UndoHistory)
 
-        Sub TransposeLine(undoHistory1 As UndoHistory)
+        Sub TransposeLine(undoHistory As UndoHistory)
 
-        Sub MakeLowercase(undoHistory1 As UndoHistory)
+        Sub MakeLowercase(undoHistory As UndoHistory)
 
-        Sub MakeUppercase(undoHistory1 As UndoHistory)
+        Sub MakeUppercase(undoHistory As UndoHistory)
 
-        Sub ReplaceText(replaceSpan As Span, text1 As String, undoHistory1 As UndoHistory)
+        Sub ReplaceText(replaceSpan As Span, text As String, undoHistory As UndoHistory)
 
-        Function ReplaceAllMatches(searchText As String, replaceText1 As String, matchCase As Boolean, matchWholeWord As Boolean, useRegularExpressions As Boolean, undoHistory1 As UndoHistory) As Integer
+        Function ReplaceAllMatches(searchText As String, replacetext As String, matchCase As Boolean, matchWholeWord As Boolean, useRegularExpressions As Boolean, undoHistory As UndoHistory) As Integer
 
         Sub SelectCurrentWord()
 
@@ -99,9 +99,9 @@ Namespace Microsoft.Nautilus.Text.Operations
 
         Sub CopySelection()
 
-        Sub CutSelection(undoHistory1 As UndoHistory)
+        Sub CutSelection(undoHistory As UndoHistory)
 
-        Sub Paste(undoHistory1 As UndoHistory)
+        Sub Paste(undoHistory As UndoHistory)
 
         Function GetCurrentWordSpan() As Span
 

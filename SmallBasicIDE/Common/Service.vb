@@ -1,4 +1,4 @@
-﻿Imports Microsoft.SmallBasic.Properties
+﻿Imports Microsoft.SmallVisualBasic.Properties
 Imports System
 Imports System.CodeDom.Compiler
 Imports System.ComponentModel
@@ -8,7 +8,7 @@ Imports System.Web.Services
 Imports System.Web.Services.Description
 Imports System.Web.Services.Protocols
 
-Namespace Microsoft.SmallBasic.com.smallbasic
+Namespace Microsoft.SmallVisualBasic.com.smallbasic
     <GeneratedCode("System.Web.Services", "4.0.30319.1")>
     <WebServiceBinding(Name:="ServiceSoap", [Namespace]:="http://tempuri.org/")>
     <DebuggerStepThrough>

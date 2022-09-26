@@ -1,5 +1,5 @@
 ﻿Imports System.Windows.Media
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Library
 
 Namespace WinForms
 

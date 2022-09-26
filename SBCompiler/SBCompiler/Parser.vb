@@ -1,13 +1,14 @@
 ﻿Imports System
 Imports System.Collections.Generic
 Imports System.IO
-Imports Microsoft.SmallBasic.Expressions
-Imports Microsoft.SmallBasic.Library
-Imports Microsoft.SmallBasic.Statements
+Imports Microsoft.SmallVisualBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Library
+Imports Microsoft.SmallVisualBasic.Statements
 Imports System.Runtime.InteropServices
 Imports System.Globalization
+Imports Microsoft.SmallBasic
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class Parser
         Private codeLines As List(Of String)
         Private _currentLine As Integer
@@ -818,7 +819,7 @@ Namespace Microsoft.SmallBasic
 
                 If commaLine = -2 Then Return Nothing
 
-                methodCallExpression.OuterSubRoutine = SubroutineStatement.Current
+                methodCallExpression.OuterSubroutine = SubroutineStatement.Current
                 methodCallExpression.EndToken = tokenEnum.Current
                 If closeTokenFound Then tokenEnum.MoveNext()
                 _FunctionsCall.Add(methodCallExpression)
@@ -1264,7 +1265,7 @@ Namespace Microsoft.SmallBasic
                     }
 
                     If subroutine Is Nothing Then
-                        AddError(returnToken, "Return can only appear insid Sub and Function blocks")
+                        AddError(returnToken, "Return can only appear inside Sub and Function blocks")
                     ElseIf subroutine.SubToken.Type = TokenType.Sub AndAlso returnExpr IsNot Nothing Then
                         AddError(returnToken, "Sub routines can't return values")
                     End If

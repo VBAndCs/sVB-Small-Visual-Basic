@@ -1,7 +1,7 @@
 ﻿Imports System.ComponentModel
 Imports System.Windows.Markup
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     <ContentProperty("CommandChunks")>
     Public Class RibbonTab
         Implements INotifyPropertyChanged

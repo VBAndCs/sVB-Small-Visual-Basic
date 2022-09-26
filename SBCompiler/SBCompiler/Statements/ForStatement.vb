@@ -2,11 +2,11 @@
 Imports System.Globalization
 Imports System.Reflection.Emit
 Imports System.Text
-Imports Microsoft.SmallBasic.Completion
-Imports Microsoft.SmallBasic.Expressions
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Library
 
-Namespace Microsoft.SmallBasic.Statements
+Namespace Microsoft.SmallVisualBasic.Statements
     Public Class ForStatement
         Inherits LoopStatement
 

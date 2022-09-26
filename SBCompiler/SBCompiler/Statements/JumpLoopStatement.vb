@@ -1,7 +1,7 @@
 ﻿Imports System.Reflection.Emit
-Imports Microsoft.SmallBasic.Completion
+Imports Microsoft.SmallVisualBasic.Completion
 
-Namespace Microsoft.SmallBasic.Statements
+Namespace Microsoft.SmallVisualBasic.Statements
 
     Public Class JumpLoopStatement
         Inherits Statement

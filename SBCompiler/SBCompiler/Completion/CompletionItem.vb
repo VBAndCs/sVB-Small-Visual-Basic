@@ -1,6 +1,6 @@
 ﻿Imports System.Reflection
 
-Namespace Microsoft.SmallBasic.Completion
+Namespace Microsoft.SmallVisualBasic.Completion
     Public Class CompletionItem
 
         Private _replacementText As String

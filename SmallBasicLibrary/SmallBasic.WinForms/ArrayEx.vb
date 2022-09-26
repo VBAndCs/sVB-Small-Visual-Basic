@@ -4,7 +4,7 @@ Option Explicit On
 Option Infer On
 Option Strict On
 Imports System.Collections.Generic
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Library
 
 Namespace WinForms
 

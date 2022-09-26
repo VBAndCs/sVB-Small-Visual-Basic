@@ -1,7 +1,7 @@
 ﻿Imports System
 Imports System.Reflection
 
-Namespace Microsoft.SmallBasic.Engine
+Namespace Microsoft.SmallVisualBasic.Engine
     <Serializable>
     Public Class EventAssignmentInstruction
         Inherits Instruction

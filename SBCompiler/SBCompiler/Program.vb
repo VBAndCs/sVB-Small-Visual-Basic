@@ -1,7 +1,7 @@
 ﻿Imports System
 Imports System.IO
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Friend NotInheritable Class Program
         Private _text3 As String = VisualBasic.Constants.vbCrLf & "i = 15" & VisualBasic.Constants.vbCrLf & "j = 23" & VisualBasic.Constants.vbCrLf & "if (j >= i AND j <= i * 20) then" & VisualBasic.Constants.vbCrLf & "TextWindow.WriteLine(""Foo"")" & VisualBasic.Constants.vbCrLf & "endif" & VisualBasic.Constants.vbCrLf & "TextWindow.Pause()" & VisualBasic.Constants.vbCrLf & VisualBasic.Constants.vbCrLf & "Sub MySub" & VisualBasic.Constants.vbCrLf & "  TextWindow.WriteLine(i)" & VisualBasic.Constants.vbCrLf & "EndSub" & VisualBasic.Constants.vbCrLf
 

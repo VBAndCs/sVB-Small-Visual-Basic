@@ -7,7 +7,7 @@ Imports System.Windows.Input
 Imports System.Windows.Media
 Imports System.Windows.Threading
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     Public Class MdiViewsControl
         'Inherits ItemsControl
 

@@ -50,7 +50,7 @@
     <Import Include="System.Diagnostics" />
     <Import Include="System.Linq" />
     <Import Include="System.Xml.Linq" />
-    <Import Include="Microsoft.SmallBasic.Library" />
+    <Import Include="Microsoft.SmallVisualBasic.Library" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$$(MODULE_FILE)" />

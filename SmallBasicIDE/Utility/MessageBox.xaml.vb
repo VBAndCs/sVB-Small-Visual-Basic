@@ -10,7 +10,7 @@ Imports System.Windows.Markup
 Imports System.Windows.Media
 Imports System.Windows.Media.Imaging
 
-Namespace Microsoft.SmallBasic.Utility
+Namespace Microsoft.SmallVisualBasic.Utility
     Partial Public Class MessageBox
         Inherits Window
         Implements INotifyPropertyChanged, IComponentConnector

@@ -4,10 +4,10 @@ Imports System.Globalization
 Imports System.Reflection
 Imports System.Reflection.Emit
 Imports System.Text
-Imports Microsoft.SmallBasic.Library
-Imports Microsoft.SmallBasic.Statements
+Imports Microsoft.SmallVisualBasic.Library
+Imports Microsoft.SmallVisualBasic.Statements
 
-Namespace Microsoft.SmallBasic.Expressions
+Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
     Public Class InitializerExpression
         Inherits Expression

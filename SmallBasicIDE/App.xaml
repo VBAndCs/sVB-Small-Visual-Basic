@@ -1,11 +1,11 @@
-﻿<Application x:Class="Microsoft.SmallBasic.App" 
+﻿<Application x:Class="Microsoft.SmallVisualBasic.App" 
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
              xmlns:sys="clr-namespace:System;assembly=mscorlib" 
-             xmlns:doc="clr-namespace:Microsoft.SmallBasic.Documents" 
-             xmlns:sb="clr-namespace:Microsoft.SmallBasic" 
+             xmlns:doc="clr-namespace:Microsoft.SmallVisualBasic.Documents" 
+             xmlns:sb="clr-namespace:Microsoft.SmallVisualBasic" 
              xmlns:editor="clr-namespace:Microsoft.Windows.Controls;assembly=ToolFramework" 
-             xmlns:sbshell="clr-namespace:Microsoft.SmallBasic.Shell">
+             xmlns:sbshell="clr-namespace:Microsoft.SmallVisualBasic.Shell">
     
   <Application.Resources>
     <ResourceDictionary>

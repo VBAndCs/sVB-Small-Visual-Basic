@@ -6,7 +6,7 @@ Option Strict On
 Imports System.IO
 Imports System.Text
 Imports System.Xml
-Imports Microsoft.SmallBasic.Library.Internal
+Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
     ''' <summary>

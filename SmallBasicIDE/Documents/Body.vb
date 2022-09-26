@@ -1,6 +1,6 @@
 ﻿Imports System.Windows.Documents
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class Body
         Inherits Span
 

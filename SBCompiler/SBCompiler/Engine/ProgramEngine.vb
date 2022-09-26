@@ -2,10 +2,10 @@
 Imports System.Collections.Generic
 Imports System.Reflection
 Imports System.Threading
-Imports Microsoft.SmallBasic.Expressions
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Library
 
-Namespace Microsoft.SmallBasic.Engine
+Namespace Microsoft.SmallVisualBasic.Engine
     Public Class ProgramEngine
         Inherits MarshalByRefObject
 

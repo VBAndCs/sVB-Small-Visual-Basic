@@ -3,7 +3,7 @@ Imports System.CodeDom.Compiler
 Imports System.ComponentModel
 Imports System.Diagnostics
 
-Namespace Microsoft.SmallBasic.com.smallbasic
+Namespace Microsoft.SmallVisualBasic.com.smallbasic
     <GeneratedCode("System.Web.Services", "4.0.30319.1")>
     <DebuggerStepThrough>
     <DesignerCategory("code")>

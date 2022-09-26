@@ -9,7 +9,7 @@
 - ToDo:
 
 # sVB 1.9 now compiles a project!
-You can design many forms in the form designer, save them to the same forlder, which will become the project folder. When you open any form of this project and run it, sVB will compile all the forms into one exe (that will have the name of the folder/project).
+You can design many forms in the form designer, save them to the same folder, which will become the project folder. When you open any form of this project and run it, sVB will compile all the forms into one exe (that will have the name of the folder/project).
 You can show form2 (for example) from form1 using this code:
 ```vb
    form2 = Forms.ShowForm("form2", {1, 2, 3})
@@ -45,7 +45,11 @@ b. It is the only way to interact with the form if it is shown as a dialog (moda
 For a simple sample, see the `Random Buttons 2` sample in the samples folder. It is a modified version of the `Random Buttons` sample, which uses code to define and show another form. In the new version, the second form is designed by the form designer.
 
 Note that the form you run the program from will be main form of the project (the startup form). This allows change the startup form as you want by just open the form code and press F5, so you can easily test project forms.
-In the upcoming sVB 2.0, I will show a list of project forms, and I will allow to define a `global.sb` file in each project, so you can add variables and subroutines that are global to all the project and can be accessed from any form. This will allow to create a "Random Buttons 3" sample, where the `CreateRndButton(onForm)` function can be moved to the global.sb file, so it can be used from both form1 and form2. 
+
+The form designer now shows a list of project files (the files exists in the same directory of the current opened form). You can use this list to rename the file or delete it directly. 
+This list is different than the `open forms list`, which show the form names of all opened forms even they don't belong to the same project (folder). You can use this list to close the opened form (this will not delete if from its project) or to change the name of the form (this will not change its file name). This list is more like the VS.NET tabs that shows the form design or code files.
+
+In the upcoming sVB 2.0, I will allow to define a `global.sb` file in each project, so you can add variables and subroutines that are global to all the project and can be accessed from any form. This will allow to create a "Random Buttons 3" sample, where the `CreateRndButton(onForm)` function can be moved to the global.sb file, so it can be used from both form1 and form2. 
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
@@ -539,6 +543,8 @@ EndIf
 
 35. You can change controls font properties from code. Previously, this was only available via the form designer, but now every control has `FontName`, `FontSize`, `FontBold` and `FontItalic` properties. The auto-completion list will show font names available on your system when you setting the value of the FontName.
 
-# ToDo:
-- Add more controls to the winForms library.
-- Support multi-from programs. Right now you can define other forms by code, but this will bring you back to the verbose code similar to SB's controls code. The designer can already open multiple forms, but I need to add the concept of the Project, and change SB compiler to add multiple modules in the Exe, so it can compile multiple form files into one exe.
+36. The TextBox control now has SelectionStart, SelectionLength, SelectedText, and CaretIndex properties.
+
+37. All controls now have the Tag property to allow you to store additional data related to the control.
+
+38. The Array class now has Find and Join methods.

@@ -2,7 +2,7 @@
 Imports System.Collections.Generic
 Imports System.Reflection
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     <Serializable>
     Public Class TypeInfo
         Public Methods As New Dictionary(Of String, MethodInfo)

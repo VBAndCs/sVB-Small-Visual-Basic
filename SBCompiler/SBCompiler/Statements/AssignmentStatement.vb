@@ -1,11 +1,11 @@
 ﻿Imports System.Globalization
 Imports System.Reflection
 Imports System.Reflection.Emit
-Imports Microsoft.SmallBasic.Completion
-Imports Microsoft.SmallBasic.Expressions
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Library
 
-Namespace Microsoft.SmallBasic.Statements
+Namespace Microsoft.SmallVisualBasic.Statements
     Public Class AssignmentStatement
         Inherits Statement
 
@@ -29,7 +29,9 @@ Namespace Microsoft.SmallBasic.Statements
                 Dim prop = TryCast(LeftValue, PropertyExpression)
                 If prop IsNot Nothing Then
                     prop.isSet = True
-                    If Not prop.IsDynamic Then
+                    If prop.IsDynamic Then
+                        symbolTable.InferedTypes(symbolTable.GetKey(prop.TypeName)) = VariableType.Array
+                    Else
                         Dim typeInfo = symbolTable.GetTypeInfo(prop.TypeName)
                         If typeInfo IsNot Nothing AndAlso typeInfo.Events.TryGetValue(prop.PropertyName.LCaseText, Nothing) Then
                             isPropertySet = True

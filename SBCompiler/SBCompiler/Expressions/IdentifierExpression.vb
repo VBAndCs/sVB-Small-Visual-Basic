@@ -1,8 +1,8 @@
 ﻿Imports System
 Imports System.Reflection.Emit
-Imports Microsoft.SmallBasic.Statements
+Imports Microsoft.SmallVisualBasic.Statements
 
-Namespace Microsoft.SmallBasic.Expressions
+Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
     Public Class IdentifierExpression
         Inherits Expression

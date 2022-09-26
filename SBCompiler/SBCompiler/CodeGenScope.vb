@@ -2,7 +2,7 @@
 Imports System.Reflection
 Imports System.Reflection.Emit
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class CodeGenScope
         Private _locals As New Dictionary(Of String, LocalBuilder)
 

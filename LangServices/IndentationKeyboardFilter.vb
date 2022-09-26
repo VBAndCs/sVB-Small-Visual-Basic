@@ -5,9 +5,9 @@ Imports Microsoft.Nautilus.Core.Undo
 Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
-Imports Microsoft.SmallBasic.Completion
+Imports Microsoft.SmallVisualBasic.Completion
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Class IndentationKeyboardFilter
         Inherits KeyboardFilter
 

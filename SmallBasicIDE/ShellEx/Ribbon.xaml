@@ -1,7 +1,7 @@
-﻿<ContentControl x:Class="Microsoft.SmallBasic.Shell.Ribbon" 
+﻿<ContentControl x:Class="Microsoft.SmallVisualBasic.Shell.Ribbon" 
                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-                xmlns:m="clr-namespace:Microsoft.SmallBasic.Shell" 
+                xmlns:m="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
                 xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <FrameworkElement.Resources>

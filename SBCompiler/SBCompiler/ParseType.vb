@@ -1,4 +1,4 @@
-﻿Namespace Microsoft.SmallBasic
+﻿Namespace Microsoft.SmallVisualBasic
     Public Enum ParseType
         Illegal
         Identifier

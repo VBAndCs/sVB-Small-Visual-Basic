@@ -1,5 +1,5 @@
 ﻿Imports System.Windows
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Library
 Imports Wpf = System.Windows.Controls
 
 Namespace WinForms

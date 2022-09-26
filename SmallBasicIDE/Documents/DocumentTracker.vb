@@ -2,7 +2,7 @@
 Imports System.Collections.ObjectModel
 Imports System.ComponentModel
 
-Namespace Microsoft.SmallBasic.Documents
+Namespace Microsoft.SmallVisualBasic.Documents
     Public Class DocumentTracker
         Private _openDocuments As New ObservableCollection(Of FileDocument)()
 

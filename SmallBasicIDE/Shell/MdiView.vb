@@ -1,10 +1,10 @@
 ﻿Imports Microsoft.Nautilus.Text.Editor
-Imports Microsoft.SmallBasic.Documents
+Imports Microsoft.SmallVisualBasic.Documents
 Imports System.Windows
 Imports System.Windows.Controls
 Imports System.Windows.Media.Animation
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     Public Class MdiView
         Inherits ContentControl
 

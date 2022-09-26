@@ -1,11 +1,11 @@
 ﻿Imports System.Collections.Generic
 Imports System.Reflection
-Imports Microsoft.SmallBasic.Expressions
-Imports Microsoft.SmallBasic.Statements
+Imports Microsoft.SmallVisualBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Statements
 
-Namespace Microsoft.SmallBasic.Engine
+Namespace Microsoft.SmallVisualBasic.Engine
     Public Class ProgramTranslator
-        Private _Compiler As Microsoft.SmallBasic.Compiler, _ProgramInstructions As System.Collections.Generic.List(Of Microsoft.SmallBasic.Engine.Instruction), _SubroutineInstructions As System.Collections.Generic.Dictionary(Of String, System.Collections.Generic.List(Of Microsoft.SmallBasic.Engine.Instruction))
+        Private _Compiler As Microsoft.SmallVisualBasic.Compiler, _ProgramInstructions As System.Collections.Generic.List(Of Microsoft.SmallVisualBasic.Engine.Instruction), _SubroutineInstructions As System.Collections.Generic.Dictionary(Of String, System.Collections.Generic.List(Of Microsoft.SmallVisualBasic.Engine.Instruction))
         Private labelId As Integer = 10
 
         Public Property Compiler As Compiler

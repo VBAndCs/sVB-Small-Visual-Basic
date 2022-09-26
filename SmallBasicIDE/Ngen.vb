@@ -7,7 +7,7 @@ Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Windows
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     <RunInstaller(True)>
     Public Class Ngen
         Inherits Installer

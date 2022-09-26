@@ -1,13 +1,13 @@
-﻿<Window x:Class="Microsoft.SmallBasic.Shell.ExportToVBDialog" 
+﻿<Window x:Class="Microsoft.SmallVisualBasic.Shell.ExportToVBDialog" 
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" 
+        xmlns:lu="clr-namespace:Microsoft.SmallVisualBasic.Utility" 
         x:Name="exportToVBDialog" 
         WindowStartupLocation="CenterScreen" 
         WindowStyle="SingleBorderWindow" 
         ResizeMode="NoResize" SizeToContent="WidthAndHeight" 
         ShowInTaskbar="False" 
-        xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell" 
+        xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         Title="{lu:Localized Graduate}">
     
     <StackPanel Orientation="Vertical" Background="#FFFFFFFF" Width="400">

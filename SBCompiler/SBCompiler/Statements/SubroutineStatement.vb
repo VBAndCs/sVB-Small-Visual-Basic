@@ -3,9 +3,9 @@ Imports System.Globalization
 Imports System.Reflection
 Imports System.Reflection.Emit
 Imports System.Text
-Imports Microsoft.SmallBasic.Completion
+Imports Microsoft.SmallVisualBasic.Completion
 
-Namespace Microsoft.SmallBasic.Statements
+Namespace Microsoft.SmallVisualBasic.Statements
     Public Class SubroutineStatement
         Inherits Statement
 
@@ -213,7 +213,7 @@ Namespace Microsoft.SmallBasic.Statements
                                      .DefinitionIdintifier = Name
                     })
 
-            ElseIf Params IsNot Nothing AndAlso Params.count > 0 AndAlso (
+            ElseIf Params IsNot Nothing AndAlso Params.Count > 0 AndAlso (
                            line >= Params(0).Line AndAlso
                            line <= Params.Last.Line
                       ) Then
@@ -255,7 +255,7 @@ Namespace Microsoft.SmallBasic.Statements
                 sb.Append("(")
 
                 For i = 0 To n
-                    sb.Append(Params(0).ToString())
+                    sb.Append(Params(i).Text)
                     If i < n Then sb.Append(", ")
                 Next
 

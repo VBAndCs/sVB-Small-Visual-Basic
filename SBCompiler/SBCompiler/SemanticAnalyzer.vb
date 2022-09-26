@@ -1,10 +1,11 @@
 ﻿Imports System
 Imports System.Globalization
 Imports System.Reflection
-Imports Microsoft.SmallBasic.Expressions
-Imports Microsoft.SmallBasic.Statements
+Imports Microsoft.SmallBasic
+Imports Microsoft.SmallVisualBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Statements
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class SemanticAnalyzer
         Private _parser As Parser
         Friend _symbolTable As SymbolTable
@@ -72,7 +73,7 @@ Namespace Microsoft.SmallBasic
             ElseIf type Is GetType(ForStatement) Then
                 AnalyzeForStatement(CType(statement, ForStatement))
 
-            ElseIf type Is GetType(ForeachStatement) Then
+            ElseIf type Is GetType(ForEachStatement) Then
                 AnalyzeForEachStatement(CType(statement, ForEachStatement))
 
             ElseIf type Is GetType(GotoStatement) Then
@@ -197,7 +198,7 @@ Namespace Microsoft.SmallBasic
 
                 ElseIf _symbolTable.Dynamics.ContainsKey(typeName) Then
                     If Not _symbolTable.Dynamics(typeName).ContainsKey(propertyName) Then
-                        _symbolTable.Errors.Add(New [Error](propertyNameInfo, "Trying to read property before setting its value. "))
+                        ' _symbolTable.Errors.Add(New [Error](propertyNameInfo, "Trying to read property before setting its value. "))
                     End If
                 End If
 
@@ -440,7 +441,7 @@ Namespace Microsoft.SmallBasic
                     End If
 
                     If leaveValueInStack AndAlso value2.ReturnType Is GetType(Void) Then
-                        Me._parser.AddError(methodName, String.Format(System.Globalization.CultureInfo.CurrentUICulture, Microsoft.SmallBasic.ResourceHelper.GetString("ReturnValueExpectedFromVoidMethod"),
+                        Me._parser.AddError(methodName, String.Format(System.Globalization.CultureInfo.CurrentUICulture, ResourceHelper.GetString("ReturnValueExpectedFromVoidMethod"),
                                 New Object() {typeNameInfo.Text, methodName.Text}))
                     End If
                 Else

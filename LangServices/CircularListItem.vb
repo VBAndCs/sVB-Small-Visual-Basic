@@ -1,5 +1,5 @@
 ﻿
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Class CircularListItem
         Inherits ContentControl
 

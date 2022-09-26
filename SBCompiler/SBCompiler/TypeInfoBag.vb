@@ -2,7 +2,7 @@
 Imports System.Collections.Generic
 Imports System.Reflection
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     <Serializable>
     Public Class TypeInfoBag
         Inherits MarshalByRefObject

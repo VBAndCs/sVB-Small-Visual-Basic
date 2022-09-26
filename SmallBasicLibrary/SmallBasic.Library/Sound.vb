@@ -3,7 +3,7 @@ Imports System.Media
 Imports System.Reflection
 Imports System.Threading
 Imports System.Windows.Media
-Imports Microsoft.SmallBasic.Library.Internal
+Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
     ''' <summary>

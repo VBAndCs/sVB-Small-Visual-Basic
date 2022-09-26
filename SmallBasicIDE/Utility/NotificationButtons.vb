@@ -1,6 +1,6 @@
 ﻿Imports System
 
-Namespace Microsoft.SmallBasic.Utility
+Namespace Microsoft.SmallVisualBasic.Utility
     <Flags>
     Public Enum NotificationButtons
         Close = &H1

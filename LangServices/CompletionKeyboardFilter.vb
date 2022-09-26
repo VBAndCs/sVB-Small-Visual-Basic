@@ -5,7 +5,7 @@ Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Class CompletionKeyboardFilter
         Inherits KeyboardFilter
 

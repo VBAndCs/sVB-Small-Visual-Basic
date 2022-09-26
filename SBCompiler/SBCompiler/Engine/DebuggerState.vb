@@ -1,6 +1,6 @@
 ﻿Imports System
 
-Namespace Microsoft.SmallBasic.Engine
+Namespace Microsoft.SmallVisualBasic.Engine
     <Serializable>
     Public Enum DebuggerState
         Running

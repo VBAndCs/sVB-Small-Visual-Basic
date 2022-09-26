@@ -2,7 +2,7 @@
 Imports System.Globalization
 Imports System.Reflection.Emit
 
-Namespace Microsoft.SmallBasic.Expressions
+Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
     Public Class LiteralExpression
         Inherits Expression

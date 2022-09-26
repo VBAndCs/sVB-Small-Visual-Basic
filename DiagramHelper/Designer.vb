@@ -137,6 +137,11 @@ Public Class Designer
                 Return False
             End If
 
+            If newName = Me.Name.ToLower() Then
+                MessageBox.Show($"'{newName}' is the form name! Choose another name", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                Return False
+            End If
+
             For Each cnt In Me.Items
                 If Me.GetControlName(cnt).ToLower() = newName Then
                     MessageBox.Show($"There is another control named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
@@ -180,9 +185,9 @@ Public Class Designer
                 Return False
             End If
 
-            For Each page In Pages.Values
-                If page.Name.ToLower() = newName Then
-                    MessageBox.Show($"There is another form named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+            For Each cnt In Me.Items
+                If Me.GetControlName(cnt).ToLower() = newName Then
+                    MessageBox.Show($"There is a control named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
                     Return False
                 End If
             Next
@@ -196,6 +201,7 @@ Public Class Designer
             UpdateFormInfo()
             RaiseEvent PageShown(-2)
             Return True
+
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
         End Try
@@ -267,7 +273,7 @@ Public Class Designer
     End Sub
 
     Private Shared Sub UpdateFormInfo()
-        Dim displayName = " ● " & CurrentPage.Name & If(CurrentPage._fileName = "", " *", ".xaml")
+        Dim displayName = " ● " & CurrentPage.Name & If(CurrentPage._fileName = "", " *", "")
         Dim i = FormKeys.IndexOf(CurrentPage.PageKey)
         If i = -1 Then
             FormNames.Add(displayName)
@@ -763,7 +769,7 @@ Public Class Designer
         If _fileName = "" Then
             Return SaveAs()
         ElseIf Me.HasChanges Then
-            Return SavePage("", False)
+            Return SavePage(_fileName, False)
         Else
             Return True
         End If
@@ -786,12 +792,10 @@ Public Class Designer
         End If
         dlg.FileName = saveName
 
-        Dim result? As Boolean = dlg.ShowDialog()
-
-        If result = True Then
-            ' Don't use _fileName here, to update Tempkey!
+        If dlg.ShowDialog() = True Then
+            Dim oldPath = _fileName
             _fileName = dlg.FileName.ToLower() ' don't use FileName property to keep the old code file path
-            If Not SavePage("", True) Then Return False
+            If Not SavePage(oldPath, True) Then Return False
             FileName = _fileName ' Update the old code file path
 
             Return True
@@ -816,7 +820,7 @@ Public Class Designer
         Return False
     End Function
 
-    Public Delegate Function SavePageDelegate(tmpPath As String, saveAs As Boolean) As Boolean
+    Public Delegate Function SavePageDelegate(oldPath As String, saveAs As Boolean) As Boolean
     Public SavePage As SavePageDelegate = AddressOf DoSave
 
     Public Function DoSave(Optional tmpPath As String = Nothing, Optional saveAs As Boolean = False) As Boolean

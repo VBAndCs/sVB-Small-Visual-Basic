@@ -1,4 +1,4 @@
-﻿Namespace Microsoft.SmallBasic
+﻿Namespace Microsoft.SmallVisualBasic
     Public Class [Error]
 
         Public ReadOnly Property Line As Integer

@@ -1,7 +1,7 @@
 ﻿Imports System.Windows
 Imports System.Windows.Input
-Imports Microsoft.SmallBasic.Library
-Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
+Imports Microsoft.SmallVisualBasic.Library
+Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     ''' <summary>

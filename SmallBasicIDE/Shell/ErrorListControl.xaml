@@ -1,11 +1,11 @@
-﻿<ListView x:Class="Microsoft.SmallBasic.Shell.ErrorListControl" 
+﻿<ListView x:Class="Microsoft.SmallVisualBasic.Shell.ErrorListControl" 
           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-          xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" 
-          xmlns:sb="clr-namespace:Microsoft.SmallBasic" 
+          xmlns:lu="clr-namespace:Microsoft.SmallVisualBasic.Utility" 
+          xmlns:sb="clr-namespace:Microsoft.SmallVisualBasic" 
           Height="0" BorderThickness="0" Background="#00FFFFFF" 
           FlowDirection="{x:Static sb:App.FlowDirection}" 
-          xmlns:shell="clr-namespace:Microsoft.SmallBasic.Shell">
+          xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell">
     
   <Control.Template>
     <ControlTemplate>

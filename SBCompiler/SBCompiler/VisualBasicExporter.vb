@@ -3,11 +3,11 @@ Imports System.Collections.Generic
 Imports System.IO
 Imports System.Reflection
 Imports System.Text
-Imports Microsoft.SmallBasic.Expressions
-Imports Microsoft.SmallBasic.Library
-Imports Microsoft.SmallBasic.Statements
+Imports Microsoft.SmallVisualBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Library
+Imports Microsoft.SmallVisualBasic.Statements
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class VisualBasicExporter
         Private indentationLevel As Integer
         Private writer As TextWriter
@@ -305,7 +305,7 @@ Namespace Microsoft.SmallBasic
 
         Private Function GetProjectTemplateContents() As String
             Dim executingAssembly As Assembly = Assembly.GetExecutingAssembly()
-            Dim manifestResourceStream = executingAssembly.GetManifestResourceStream("Microsoft.SmallBasic.VisualBasicProjectTemplate.vbproj")
+            Dim manifestResourceStream = executingAssembly.GetManifestResourceStream("Microsoft.SmallVisualBasic.VisualBasicProjectTemplate.vbproj")
             Return New StreamReader(manifestResourceStream).ReadToEnd()
         End Function
 
@@ -342,7 +342,7 @@ Namespace Microsoft.SmallBasic
 
         Private Function NormalizeTypeName(typeName As String) As String
             If conflictingTypes.Contains(typeName.ToLowerInvariant()) Then
-                Return "Microsoft.SmallBasic.Library." & typeName
+                Return "Microsoft.SmallVisualBasic.Library." & typeName
             End If
 
             Return typeName

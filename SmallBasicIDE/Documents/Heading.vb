@@ -2,7 +2,7 @@
 Imports System.Windows.Documents
 Imports System.Windows.Media
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class Heading
         Inherits Span
 

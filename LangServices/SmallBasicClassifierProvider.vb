@@ -2,7 +2,7 @@
 Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.Classification
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public NotInheritable Class SmallBasicClassifierProvider
         <Import>
         Public Property ClassificationTypeRegistry As IClassificationTypeRegistry

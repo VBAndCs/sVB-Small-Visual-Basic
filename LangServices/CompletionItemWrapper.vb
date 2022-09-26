@@ -2,10 +2,10 @@
 Imports System.Collections.Generic
 Imports System.Reflection
 Imports System.Text
-Imports Microsoft.SmallBasic.Completion
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Library
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Class CompletionItemWrapper
         Private _item As CompletionItem
         Private Shared _moduleDocMap As New Dictionary(Of String, ModuleDocumentation)()
@@ -230,7 +230,7 @@ Namespace Microsoft.SmallBasic.LanguageService
 
             Select Case SymbolType
                 Case SymbolType.Keyword
-                    result = $"{Prefix}Microsoft.SmallBasic.Library.Keywords.{_item.DisplayName}"
+                    result = $"{Prefix}Microsoft.SmallVisualBasic.Library.Keywords.{_item.DisplayName}"
 
                 Case SymbolType.Method
                     result = GetMethodName()

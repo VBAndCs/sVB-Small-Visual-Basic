@@ -5,7 +5,7 @@ Imports Microsoft.Nautilus.Text.AdornmentSystem
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public NotInheritable Class CompletionAdornmentComponent
         <Import>
         Public Property EditorOperationsProvider As IEditorOperationsProvider

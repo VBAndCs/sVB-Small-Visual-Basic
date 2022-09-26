@@ -6,7 +6,7 @@ Imports System.Windows.Media.Animation
 Imports System.Windows.Media.Imaging
 Imports System.Windows.Shapes
 Imports System.Windows.Threading
-Imports Microsoft.SmallBasic.Library.Internal
+Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
     ''' <summary>

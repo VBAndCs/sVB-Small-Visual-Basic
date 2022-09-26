@@ -4,13 +4,13 @@ Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.AdornmentSystem
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
-Imports Microsoft.SmallBasic.Completion
+Imports Microsoft.SmallVisualBasic.Completion
 Imports System.Runtime.InteropServices
 Imports System.Collections.ObjectModel
 Imports Microsoft.Windows.Controls
-Imports Microsoft.SmallBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Expressions
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public NotInheritable Class CompletionProvider
         Implements IAdornmentProvider
 

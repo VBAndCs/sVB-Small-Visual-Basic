@@ -2,10 +2,10 @@
 Imports System.Globalization
 Imports System.Reflection.Emit
 Imports System.Text
-Imports Microsoft.SmallBasic.Completion
-Imports Microsoft.SmallBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Expressions
 
-Namespace Microsoft.SmallBasic.Statements
+Namespace Microsoft.SmallVisualBasic.Statements
     Public Class IfStatement
         Inherits Statement
 

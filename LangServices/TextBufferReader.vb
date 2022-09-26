@@ -1,7 +1,7 @@
 ﻿Imports System.IO
 Imports Microsoft.Nautilus.Text
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Class TextBufferReader
         Inherits TextReader
 

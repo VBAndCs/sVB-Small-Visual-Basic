@@ -1,4 +1,4 @@
-﻿Namespace Microsoft.SmallBasic.Completion
+﻿Namespace Microsoft.SmallVisualBasic.Completion
     Public Enum CompletionItemType
         None
         Keyword

@@ -1,6 +1,6 @@
-﻿Imports Microsoft.SmallBasic.Library
+﻿Imports Microsoft.SmallVisualBasic.Library
 Imports Wpf = System.Windows.Controls
-Imports App = Microsoft.SmallBasic.Library.Internal.SmallBasicApplication
+Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
 
 Namespace WinForms

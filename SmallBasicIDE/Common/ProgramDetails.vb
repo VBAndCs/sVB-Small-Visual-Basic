@@ -4,7 +4,7 @@ Imports System.ComponentModel
 Imports System.Diagnostics
 Imports System.Xml.Serialization
 
-Namespace Microsoft.SmallBasic.com.smallbasic
+Namespace Microsoft.SmallVisualBasic.com.smallbasic
     <Serializable>
     <GeneratedCode("System.Xml", "4.0.30319.1")>
     <DebuggerStepThrough>

@@ -144,13 +144,13 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SBCompiler\SBCompiler\SBCompiler.vbproj">
+    <ProjectReference Include="..\SBCompiler\SBCompiler\svB.Compiler.vbproj">
       <Project>{c35b1c89-a93e-43ff-8608-7c8274562a87}</Project>
-      <Name>SBCompiler</Name>
+      <Name>svB.Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SmallBasicLibrary\SmallBasicLibrary.vbproj">
+    <ProjectReference Include="..\SmallBasicLibrary\sVB.Library.vbproj">
       <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>
-      <Name>SmallBasicLibrary</Name>
+      <Name>sVB.Library</Name>
     </ProjectReference>
     <ProjectReference Include="..\ToolFramework\ToolFramework.vbproj">
       <Project>{b4ac009e-626f-47e8-af2f-9529687df991}</Project>

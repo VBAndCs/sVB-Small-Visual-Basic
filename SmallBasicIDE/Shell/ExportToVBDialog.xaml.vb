@@ -1,5 +1,6 @@
-﻿Imports Microsoft.SmallBasic.Documents
-Imports Microsoft.SmallBasic.LanguageService
+﻿Imports Microsoft.SmallBasic
+Imports Microsoft.SmallVisualBasic.Documents
+Imports Microsoft.SmallVisualBasic.LanguageService
 Imports System
 Imports System.Diagnostics
 Imports System.IO
@@ -10,7 +11,7 @@ Imports System.Windows.Forms
 Imports System.Windows.Markup
 Imports System.Windows.Threading
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     Public Partial Class ExportToVBDialog
         Inherits Window
         Implements IComponentConnector

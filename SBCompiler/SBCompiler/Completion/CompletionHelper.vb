@@ -1,9 +1,9 @@
 ﻿Imports System.IO
 Imports System.Reflection
-Imports Microsoft.SmallBasic.Library
-Imports Microsoft.SmallBasic.Statements
+Imports Microsoft.SmallVisualBasic.Library
+Imports Microsoft.SmallVisualBasic.Statements
 
-Namespace Microsoft.SmallBasic.Completion
+Namespace Microsoft.SmallVisualBasic.Completion
     Public Class CompletionHelper
         Private _compiler As Compiler
         Public Shared DoNotAddGlobals As Boolean

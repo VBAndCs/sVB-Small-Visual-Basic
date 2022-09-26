@@ -1,7 +1,7 @@
 ﻿Imports System
 Imports System.Runtime.InteropServices
 
-Namespace Microsoft.SmallBasic.Utility
+Namespace Microsoft.SmallVisualBasic.Utility
     Public Module NativeMethods
         Public Const SC_CLOSE As Integer = 61536
         Public Const MF_ENABLED As Integer = 0

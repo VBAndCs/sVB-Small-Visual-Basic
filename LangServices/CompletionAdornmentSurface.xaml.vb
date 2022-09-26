@@ -11,10 +11,10 @@ Imports System.Windows.Threading
 Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.AdornmentSystem
 Imports Microsoft.Nautilus.Text.Editor
-Imports Microsoft.SmallBasic.Completion
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Library
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Partial Public Class CompletionAdornmentSurface
         Inherits Canvas
         Implements IAdornmentSurface

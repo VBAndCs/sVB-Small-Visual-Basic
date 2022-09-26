@@ -4,7 +4,7 @@ Imports System.Globalization
 Imports System.Text
 Imports System.Runtime.InteropServices
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class LineScanner
 
         Private Shared _currentIndex As Integer
@@ -13,9 +13,14 @@ Namespace Microsoft.SmallBasic
         Private Shared _decimalSeparator As Char = "."c
 
         Public Shared Function GetFirstToken(lineText As String, lineNumber As Integer) As Token
-            Dim tokens = GetTokens(lineText, lineNumber, Nothing, True)
+            Dim tokens = GetTokens(lineText, lineNumber, Nothing, 1)
             If tokens.Count = 0 Then Return Token.Illegal
             Return tokens(0)
+        End Function
+
+        Public Shared Function GetFirstTokens(lineText As String, lineNumber As Integer, maxTokenCount As Integer) As List(Of Token)
+            Dim tokens = GetTokens(lineText, lineNumber, Nothing, maxTokenCount)
+            Return tokens
         End Function
 
         Public Shared Function GetTokenEnumerator(
@@ -34,7 +39,7 @@ Namespace Microsoft.SmallBasic
                        lineText As String,
                        ByRef lineNumber As Integer,
                        Optional lines As List(Of String) = Nothing,
-                       Optional firstTokenOnly As Boolean = False,
+                       Optional maxTokenCount As Integer = 0,
                        Optional lineOffset As Integer = 0
                   ) As List(Of Token)
 
@@ -52,7 +57,7 @@ Namespace Microsoft.SmallBasic
                     token.Line = lineNumber + lineOffset
                     token.subLine = subLine
                     tokens.Add(token)
-                    If firstTokenOnly Then Exit Do
+                    If maxTokenCount > 0 AndAlso tokens.Count = maxTokenCount Then Exit Do
 
                 ElseIf lines IsNot Nothing AndAlso tokens.Count > 0 AndAlso
                             lineNumber < lines.Count - 1 Then
@@ -524,6 +529,7 @@ Namespace Microsoft.SmallBasic
                     Return ParseType.Illegal
             End Select
         End Function
+
 
     End Class
 End Namespace

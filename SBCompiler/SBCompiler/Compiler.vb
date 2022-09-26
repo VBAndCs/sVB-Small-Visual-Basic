@@ -3,9 +3,10 @@ Imports System.Collections.Generic
 Imports System.Globalization
 Imports System.IO
 Imports System.Reflection
-Imports Microsoft.SmallBasic.Library
+Imports Microsoft.SmallBasic
+Imports Microsoft.SmallVisualBasic.Library
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class Compiler
         Private _referenceAssemblies As List(Of Assembly)
         Private _libraryFiles As New List(Of String)()

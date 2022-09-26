@@ -7,7 +7,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
-    <RootNamespace>Microsoft.SmallBasic</RootNamespace>
+    <RootNamespace>Microsoft.SmallVisualBasic</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>SmallBasicLibrary.xml</DocumentationFile>

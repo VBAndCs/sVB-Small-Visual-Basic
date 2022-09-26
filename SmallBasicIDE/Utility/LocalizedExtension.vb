@@ -1,7 +1,8 @@
 ﻿Imports System
 Imports System.Windows.Markup
+Imports Microsoft.SmallBasic
 
-Namespace Microsoft.SmallBasic.Utility
+Namespace Microsoft.SmallVisualBasic.Utility
     <MarkupExtensionReturnType(GetType(String))>
     Public Class LocalizedExtension
         Inherits MarkupExtension

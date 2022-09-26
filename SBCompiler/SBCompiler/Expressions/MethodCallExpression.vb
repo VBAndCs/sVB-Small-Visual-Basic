@@ -5,7 +5,7 @@ Imports System.Reflection
 Imports System.Reflection.Emit
 Imports System.Text
 
-Namespace Microsoft.SmallBasic.Expressions
+Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
     Public Class MethodCallExpression
         Inherits Expression

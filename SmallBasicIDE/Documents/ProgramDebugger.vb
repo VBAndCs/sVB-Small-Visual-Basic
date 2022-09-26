@@ -1,14 +1,14 @@
 ﻿Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.Editor
-Imports Microsoft.SmallBasic.Engine
-Imports Microsoft.SmallBasic.LanguageService
+Imports Microsoft.SmallVisualBasic.Engine
+Imports Microsoft.SmallVisualBasic.LanguageService
 Imports Microsoft.Windows.Controls
 Imports System
 Imports System.Collections.Generic
 Imports System.Windows.Media
 Imports System.Windows.Threading
 
-Namespace Microsoft.SmallBasic.Documents
+Namespace Microsoft.SmallVisualBasic.Documents
     Public Class ProgramDebugger
         Private _Document As TextDocument
         Private _IsDebuggerActive As Boolean

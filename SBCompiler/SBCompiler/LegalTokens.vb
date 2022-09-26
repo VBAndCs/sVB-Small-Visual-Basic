@@ -1,4 +1,4 @@
-﻿Imports Microsoft.SmallBasic
+﻿Imports Microsoft.SmallVisualBasic
 
 Public Class LegalTokens
     Inherits List(Of Token)

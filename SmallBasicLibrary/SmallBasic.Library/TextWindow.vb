@@ -1,5 +1,5 @@
 Imports System.Text
-Imports Microsoft.SmallBasic.Library.Internal
+Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
     ''' <summary>

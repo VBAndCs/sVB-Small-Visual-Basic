@@ -1,8 +1,8 @@
 ﻿Imports System
 Imports System.Reflection
-Imports Microsoft.SmallBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Expressions
 
-Namespace Microsoft.SmallBasic.Engine
+Namespace Microsoft.SmallVisualBasic.Engine
     <Serializable>
     Public Class PropertyAssignmentInstruction
         Inherits Instruction

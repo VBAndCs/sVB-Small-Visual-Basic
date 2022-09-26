@@ -1,7 +1,7 @@
 ﻿Imports System.Windows.Markup
 Imports System.Windows.Threading
-Imports Microsoft.SmallBasic.Library
-Imports Microsoft.SmallBasic.Library.Internal
+Imports Microsoft.SmallVisualBasic.Library
+Imports Microsoft.SmallVisualBasic.Library.Internal
 Imports Wpf = System.Windows.Controls
 Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, System.Windows.FrameworkElement)
 Imports System.Windows.Controls
@@ -259,10 +259,6 @@ Namespace WinForms
             Return Nothing
         End Function
 
-        Public Shared Function GetFormNameFromXaml(xamlPath As String) As String
-            Dim canvas = GetCanvas(xamlPath)
-            Return canvas?.Name
-        End Function
 
         ''' <summary>
         ''' Shows a message box dialog.

@@ -1,7 +1,7 @@
 ﻿Imports System
-Imports Microsoft.SmallBasic.Statements
+Imports Microsoft.SmallVisualBasic.Statements
 
-Namespace Microsoft.SmallBasic.Expressions
+Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
     Public MustInherit Class Expression
         Public Property StartToken As Token

@@ -7,7 +7,7 @@ Imports System.IO
 Imports System.Threading
 Imports System.Windows
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Partial Public Class App
         Inherits Application
 
@@ -19,7 +19,7 @@ Namespace Microsoft.SmallBasic
             For Each arg In e.Args
                 arg = arg.ToLowerInvariant().Trim()
                 If File.Exists(arg) Then
-                    Microsoft.SmallBasic.MainWindow.FilesToOpen.Add(arg)
+                    Microsoft.SmallVisualBasic.MainWindow.FilesToOpen.Add(arg)
                     Continue For
                 End If
 

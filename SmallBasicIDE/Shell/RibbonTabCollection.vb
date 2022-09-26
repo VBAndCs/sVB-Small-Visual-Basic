@@ -1,6 +1,6 @@
 ﻿Imports System.Collections.ObjectModel
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     Public Class RibbonTabCollection
         Inherits ObservableCollection(Of RibbonTab)
     End Class

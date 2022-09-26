@@ -3,7 +3,7 @@ Imports System.Configuration
 Imports System.Diagnostics
 Imports System.Runtime.CompilerServices
 
-Namespace Microsoft.SmallBasic.Properties
+Namespace Microsoft.SmallVisualBasic.Properties
     <GeneratedCode("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "10.0.0.0")>
     <CompilerGenerated>
     Friend NotInheritable Class Settings

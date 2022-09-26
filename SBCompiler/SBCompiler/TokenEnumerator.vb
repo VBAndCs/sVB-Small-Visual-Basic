@@ -1,6 +1,6 @@
 ﻿Imports System.Collections.Generic
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class TokenEnumerator
         Private _tokenList As List(Of Token)
         Private _currentIndex As Integer

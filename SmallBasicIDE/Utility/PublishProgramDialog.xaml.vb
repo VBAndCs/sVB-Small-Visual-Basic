@@ -1,4 +1,5 @@
-﻿Imports Microsoft.SmallBasic.com.smallbasic
+﻿Imports Microsoft.SmallBasic
+Imports Microsoft.SmallVisualBasic.com.smallbasic
 Imports System
 Imports System.Diagnostics
 Imports System.Globalization
@@ -7,7 +8,7 @@ Imports System.Windows.Controls
 Imports System.Windows.Input
 Imports System.Windows.Markup
 
-Namespace Microsoft.SmallBasic.Utility
+Namespace Microsoft.SmallVisualBasic.Utility
     Public Partial Class PublishProgramDialog
         Inherits Window
         Implements IComponentConnector

@@ -1,4 +1,4 @@
-﻿Imports Microsoft.SmallBasic.Library
+﻿Imports Microsoft.SmallVisualBasic.Library
 
 Module Helper
 

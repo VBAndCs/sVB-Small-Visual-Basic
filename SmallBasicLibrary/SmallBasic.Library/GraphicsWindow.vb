@@ -8,7 +8,7 @@ Imports System.Windows.Interop
 Imports System.Windows.Media
 Imports System.Windows.Media.Animation
 Imports System.Windows.Media.Imaging
-Imports Microsoft.SmallBasic.Library.Internal
+Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
     ''' <summary>

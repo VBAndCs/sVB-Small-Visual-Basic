@@ -1,6 +1,6 @@
 ﻿Imports System.Collections.Generic
 
-Namespace Microsoft.SmallBasic.Completion
+Namespace Microsoft.SmallVisualBasic.Completion
     Public Class CompletionBag
         Public IsFirstToken As Boolean
         Public ShowCompletion As Boolean = True

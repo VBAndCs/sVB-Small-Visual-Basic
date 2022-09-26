@@ -1,7 +1,7 @@
 ﻿Imports System.Globalization
 Imports System.Reflection.Emit
 
-Namespace Microsoft.SmallBasic.Statements
+Namespace Microsoft.SmallVisualBasic.Statements
     Public Class LabelStatement
         Inherits Statement
 

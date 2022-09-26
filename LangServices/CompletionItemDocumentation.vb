@@ -1,6 +1,6 @@
 ﻿Imports System.Collections.Generic
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Class CompletionItemDocumentation
         Private _paramsDoc As Dictionary(Of String, String)
         Public Prefix As String

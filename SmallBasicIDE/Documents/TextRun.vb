@@ -2,7 +2,7 @@
 Imports System.Windows.Documents
 Imports System.Windows.Threading
 
-Namespace Microsoft.SmallBasic.Utility
+Namespace Microsoft.SmallVisualBasic.Utility
     Public Class TextRun
         Inherits Run
 

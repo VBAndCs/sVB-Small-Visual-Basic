@@ -1,4 +1,4 @@
-﻿<Window x:Class="Microsoft.SmallBasic.Utility.MessageBox" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:lu="clr-namespace:Microsoft.SmallBasic.Utility" xmlns:sb="clr-namespace:Microsoft.SmallBasic" x:Name="messageBoxDialog" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False">
+﻿<Window x:Class="Microsoft.SmallVisualBasic.Utility.MessageBox" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:lu="clr-namespace:Microsoft.SmallVisualBasic.Utility" xmlns:sb="clr-namespace:Microsoft.SmallVisualBasic" x:Name="messageBoxDialog" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False">
   <DockPanel>
     <Border BorderBrush="sc#0.7, 0.2, 0.2, 0.2" BorderThickness="0">
       <StackPanel Orientation="Vertical" Background="#FFFFFFFF">

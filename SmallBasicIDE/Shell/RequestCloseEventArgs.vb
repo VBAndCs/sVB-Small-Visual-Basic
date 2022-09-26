@@ -1,6 +1,6 @@
 ﻿Imports System
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     Public Class RequestCloseEventArgs
         Inherits EventArgs
 

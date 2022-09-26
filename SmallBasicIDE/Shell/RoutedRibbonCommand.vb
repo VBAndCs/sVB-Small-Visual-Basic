@@ -2,7 +2,7 @@
 Imports System.Windows
 Imports System.Windows.Input
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     Public Class RoutedRibbonCommand
         Inherits DependencyObject
         Implements ICommand

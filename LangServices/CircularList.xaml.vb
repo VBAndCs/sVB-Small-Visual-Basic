@@ -1,8 +1,8 @@
 ﻿Imports System.Windows.Controls.Primitives
 Imports System.Windows.Media.Animation
-Imports sb = Microsoft.SmallBasic
+Imports sb = Microsoft.SmallVisualBasic
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Partial Public Class CircularList
         Inherits Selector
 

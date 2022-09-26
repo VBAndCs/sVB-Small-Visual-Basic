@@ -1,4 +1,4 @@
-﻿Namespace Microsoft.SmallBasic.Utility
+﻿Namespace Microsoft.SmallVisualBasic.Utility
     Public Enum NotificationIcon
         None = 0
         [Error] = 1

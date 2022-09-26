@@ -10,6 +10,35 @@ Public Class Helper
     Friend Const CmToPx = 96 / 2.54
     Friend Const PxToCm = 2.54 / 96
 
+    Public Shared Function GetFormNameFromXaml(xamlPath As String) As String
+        Using reader = Xml.XmlReader.Create(xamlPath)
+            If reader.ReadToFollowing("Canvas") Then
+                reader.MoveToContent()
+                Return reader.GetAttribute("Name")
+            End If
+        End Using
+        Return ""
+    End Function
+
+    Public Shared Function FormNameExists(designer As Designer, Optional newFormName As String = "") As Boolean
+        If designer.FileName = "" Then Return False
+
+        Dim formName = If(newFormName = "", designer.Name.ToLower(), newFormName.ToLower())
+        Dim fileName = designer.FileName
+        Dim projectDir = IO.Path.GetDirectoryName(fileName)
+
+        For Each xamlFile In Directory.GetFiles(projectDir, "*.xaml")
+            If xamlFile.ToLower() = fileName Then Continue For
+
+            If formName = GetFormNameFromXaml(xamlFile).ToLower() Then
+                MsgBox($"There is already a form named `{formName}` in the project. Change the form name and try again.")
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
+
     Shared Function GetDiagramPanel(element As DependencyObject) As DiagramPanel
         If element Is Nothing Then Return Nothing
         Dim Parent = VisualTreeHelper.GetParent(element)

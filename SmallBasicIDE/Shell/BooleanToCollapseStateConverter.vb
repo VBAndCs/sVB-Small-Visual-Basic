@@ -3,7 +3,7 @@ Imports System.Globalization
 Imports System.Windows
 Imports System.Windows.Data
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     Public Class BooleanToCollapseStateConverter
         Implements IValueConverter
 

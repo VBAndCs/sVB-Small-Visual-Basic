@@ -1,9 +1,9 @@
 ﻿Imports Microsoft.Nautilus.Text
-Imports Microsoft.SmallBasic.com.smallbasic
-Imports Microsoft.SmallBasic.Documents
-Imports Microsoft.SmallBasic.LanguageService
-Imports Microsoft.SmallBasic.Shell
-Imports Microsoft.SmallBasic.Utility
+Imports Microsoft.SmallVisualBasic.com.smallbasic
+Imports Microsoft.SmallVisualBasic.Documents
+Imports Microsoft.SmallVisualBasic.LanguageService
+Imports Microsoft.SmallVisualBasic.Shell
+Imports Microsoft.SmallVisualBasic.Utility
 Imports Microsoft.Win32
 Imports Microsoft.Windows.Controls
 Imports System
@@ -13,7 +13,7 @@ Imports System.ComponentModel
 Imports System.Diagnostics
 Imports System.Globalization
 Imports System.IO
-Imports Nf = Microsoft.SmallBasic.Utility.NotificationButtons
+Imports Nf = Microsoft.SmallVisualBasic.Utility.NotificationButtons
 Imports System.Reflection
 Imports System.Threading
 Imports System.Windows
@@ -24,10 +24,11 @@ Imports System.Windows.Media.Imaging
 Imports System.Windows.Threading
 Imports System.Linq
 Imports System.ComponentModel.Composition
-Imports sb = Microsoft.SmallBasic.WinForms
+Imports sb = Microsoft.SmallVisualBasic.WinForms
 Imports Microsoft.VisualBasic
+Imports Microsoft.SmallBasic
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     <Export("MainWindow")>
     Public Class MainWindow
         Private currentProgramProcess As Process
@@ -642,7 +643,6 @@ Namespace Microsoft.SmallBasic
             Dim gen As String
             Dim errors As List(Of [Error])
             Dim parsers As New List(Of Parser)
-            Dim forms As New List(Of String)
 
             doc.ErrorTokens.Clear()
             doc.Errors.Clear()
@@ -672,7 +672,7 @@ Namespace Microsoft.SmallBasic
                     Dim binDir = Path.GetDirectoryName(outputFileName)
 
                     For Each xamlFile In Directory.GetFiles(inputDir, "*.xaml")
-                        Dim fName = WinForms.Forms.GetFormNameFromXaml(xamlFile)
+                        Dim fName = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile)
                         If fName = "" Then Continue For
 
                         If DiagramHelper.Designer.SavePageIfDirty(xamlFile) Then
@@ -734,7 +734,7 @@ Namespace Microsoft.SmallBasic
 
             Catch ex As Exception
                 If errors Is Nothing Then errors = New List(Of [Error])
-            errors.Add(New [Error](-1, 0, 0, ex.Message))
+                errors.Add(New [Error](-1, 0, 0, ex.Message))
             End Try
 
             If errors.Count > 0 Then
@@ -946,6 +946,16 @@ Namespace Microsoft.SmallBasic
             Return Nothing
         End Function
 
+        Function GetDocIfOpened(filePath As String) As TextDocument
+            filePath = filePath.ToLower()
+            For Each view As MdiView In Me.viewsControl.Items
+                If view.Document.FilePath = filePath Then
+                    Return view.Document
+                End If
+            Next
+            Return Nothing
+        End Function
+
         Dim saveInfo As New RunAction(
                 Sub()
                     SaveDesignInfo()
@@ -982,11 +992,11 @@ Namespace Microsoft.SmallBasic
             Return tempProjectPath
         End Function
 
-        Private Sub SaveDesignInfo(
+        Private Function SaveDesignInfo(
                            Optional doc As TextDocument = Nothing,
                            Optional openDoc As Boolean = True,
                            Optional saveAs As Boolean = False
-                    )
+                    ) As TextDocument
 
             Dim formName As String
             Dim xamlPath As String
@@ -1008,7 +1018,7 @@ Namespace Microsoft.SmallBasic
 
                 If doc.PageKey = "" Then doc.PageKey = formDesigner.PageKey
                 OpeningDoc = False
-                Return
+                Return doc
             End If
 
             If formDesigner.FileName = "" Then
@@ -1058,7 +1068,8 @@ Namespace Microsoft.SmallBasic
 
             IO.File.WriteAllText(formPath & ".sb.gen", doc.GenerateCodeBehind(formDesigner, True))
             OpeningDoc = False
-        End Sub
+            Return doc
+        End Function
 
         Function GetDoc(codeFilePath As String, openDoc As Boolean) As TextDocument
             If openDoc Then
@@ -1157,7 +1168,14 @@ Namespace Microsoft.SmallBasic
 
         End Sub
 
-        Function SavePage(Optional tmpPath As String = Nothing, Optional saveAs As Boolean = False) As Boolean
+        Dim formNameChanged As Boolean
+
+        Function SavePage(oldPath As String, saveAs As Boolean) As Boolean
+            If DiagramHelper.Helper.FormNameExists(formDesigner) Then
+                If saveAs Then formDesigner.FileName = oldPath
+                Return False
+            End If
+
             Dim newFormName = Path.GetFileNameWithoutExtension(formDesigner.FileName)
             Dim newDir = Path.GetDirectoryName(formDesigner.FileName)
             Dim newFilePath = Path.Combine(newDir, newFormName)
@@ -1180,19 +1198,26 @@ Namespace Microsoft.SmallBasic
 
                 formDesigner.CodeFilePath = fileName
 
-                'fileName = newFilePath & ".sb.gen"
-                'If File.Exists(fileName) Then File.Delete(fileName)
-                'File.Move(oldCodeFile & ".gen", fileName)
             End If
 
+            ProjExplorer.ProjectDirectory = formDesigner.FileName
             Return True
         End Function
 
+
         Private Sub FormDesigner_CurrentPageChanged(index As Integer)
+            If index < 0 Then
+                UpdateTitle()
+                UpdateTextBoxes()
+                Return
+            End If
+
+
             formDesigner = DiagramHelper.Designer.CurrentPage
             ZoomBox.Designer = formDesigner
-            ProjExplorer.Designer = formDesigner
+            OFExplorer.Designer = formDesigner
             ToolBox.Designer = formDesigner
+            ProjExplorer.ProjectDirectory = formDesigner.FileName
 
             ' Remove the handler if exists not to be called twice
             RemoveHandler formDesigner.DiagramDoubleClick, AddressOf FormDesigner_DiagramDoubleClick
@@ -1208,10 +1233,8 @@ Namespace Microsoft.SmallBasic
 
             UpdateTitle()
 
-            If index > -1 AndAlso ProjExplorer.FilesList IsNot Nothing Then
-                ProjExplorer.FreezListFiles = True
-                ProjExplorer.FilesList.SelectedIndex = index
-                ProjExplorer.FreezListFiles = False
+            If index > -1 Then
+                OFExplorer.SelectedIndex = index
             End If
 
             UpdateTextBoxes()
@@ -1231,6 +1254,7 @@ Namespace Microsoft.SmallBasic
 
         Private Sub FormDesigner_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             If ExitSelectionChanged Then Return
+
             Dim i = formDesigner.SelectedIndex
             Dim controlIndex As Integer
 
@@ -1281,11 +1305,11 @@ Namespace Microsoft.SmallBasic
             If tabDesigner.IsSelected Then
                 grdNameText.Visibility = Visibility.Visible
                 txtTitle.Text = "Form Designer - "
-                txtForm.Text = $"{formDesigner.Name}{If(formDesigner.FileName = "", " *", ".xaml")}"
+                txtForm.Text = If(formDesigner.FileName = "", formDesigner.FileName & " *", Path.GetFileName(formDesigner.FileName))
             Else
                 grdNameText.Visibility = Visibility.Collapsed
                 txtTitle.Text = "Code Editor - "
-                txtForm.Text = $"{formDesigner.Name}.sb"
+                txtForm.Text = If(formDesigner.CodeFilePath = "", $"{formDesigner.Name}.sb", Path.GetFileName(formDesigner.CodeFilePath))
             End If
         End Sub
 
@@ -1320,7 +1344,7 @@ Namespace Microsoft.SmallBasic
 
         End Sub
 
-        Private Sub ProjExplorer_ItemDoubleClick(sender As Object, e As MouseButtonEventArgs)
+        Private Sub OFExplorer_ItemDoubleClick(sender As Object, e As MouseButtonEventArgs)
             tabCode.IsSelected = True
         End Sub
 
@@ -1337,17 +1361,27 @@ Namespace Microsoft.SmallBasic
             If CStr(txtControlName.Tag) = "" Then Return True
 
             Dim controlIndex = CInt(txtControlName.Tag)
-            Dim name = txtControlName.Text.Trim()
-            If name = "" Then Return False
+            Dim newName = txtControlName.Text.Trim()
+            If newName = "" Then Return False
 
-            name = name(0).ToString().ToUpper & If(name.Length > 1, name.Substring(1), "")
-            txtControlName.Text = name
+            Dim oldName = formDesigner.GetControlName(controlIndex)
+            If oldName = newName Then Return True
 
-            If Not formDesigner.SetControlName(controlIndex, name) Then
-                VisualBasic.Beep()
+            newName = newName(0).ToString().ToUpper & If(newName.Length > 1, newName.Substring(1), "")
+            txtControlName.Text = newName
+
+            If controlIndex < 0 AndAlso DiagramHelper.Helper.FormNameExists(formDesigner, newName) Then
+                Beep()
                 Return False
             End If
 
+            If Not formDesigner.SetControlName(controlIndex, newName) Then
+                Beep()
+                Return False
+            End If
+
+            Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
+            doc?.FixEventHandlers(oldName, newName)
             Return True
         End Function
 
@@ -1362,7 +1396,7 @@ Namespace Microsoft.SmallBasic
                     e.Handled = True
 
                 Case Key.Space
-                    VisualBasic.Beep()
+                    Beep()
                     e.Handled = True
             End Select
         End Sub
@@ -1478,7 +1512,14 @@ Namespace Microsoft.SmallBasic
         End Sub
 
         Private Sub MainWindow_Deactivated(sender As Object, e As EventArgs) Handles Me.Deactivated
-            popHelp.IsOpen = False
+            PopHelp.IsOpen = False
+        End Sub
+
+        Private Sub ProjExplorer_FileNameChanged(oldFileName As String, newFileName As String)
+            formDesigner.CodeFilePath = newFileName
+            formDesigner.FileName = newFileName.Substring(0, newFileName.Length - 2) & "xaml"
+            Dim doc = GetDocIfOpened(oldFileName)
+            If doc IsNot Nothing Then doc.FilePath = newFileName
         End Sub
     End Class
 

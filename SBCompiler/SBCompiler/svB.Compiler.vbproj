@@ -177,9 +177,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SmallBasicLibrary\SmallBasicLibrary.vbproj">
+    <ProjectReference Include="..\..\SmallBasicLibrary\sVB.Library.vbproj">
       <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>
-      <Name>SmallBasicLibrary</Name>
+      <Name>sVB.Library</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

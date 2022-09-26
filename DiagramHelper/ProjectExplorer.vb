@@ -1,207 +1,176 @@
-﻿Imports System.Windows.Controls.Primitives
-Imports System.ComponentModel
-Imports System.Windows.Threading
+﻿Imports System.Collections.ObjectModel
+Imports System.IO
 
 Public Class ProjectExplorer
-    Inherits Control
+    Inherits Explorer
 
-    Public Sub New()
-        Dim resourceLocater As Uri = New Uri("/DiagramHelper;component/Resources/projectexplorerdecorator.xaml", System.UriKind.Relative)
-        Dim ResDec As ResourceDictionary = Application.LoadComponent(resourceLocater)
-        Me.Resources.MergedDictionaries.Add(ResDec)
-        Me.Style = FindResource("ProjectExplorerStyle")
-    End Sub
+    Dim _projDir As String
+    Dim projFiles As New ObservableCollection(Of ProjFileInfo)
 
-    Public WithEvents FilesList As ListBox
+    Public Event FileNameChanged(oldFileName As String, newFileName As String)
 
-    Dim FirstTime As Boolean = True
-    Public Event ItemDoubleClick(sender As Object, e As MouseButtonEventArgs)
-
-    Private Sub ProjectExplorer_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
-        If FirstTime Then
-            FirstTime = False
-
-            FilesList = TryCast(Template.FindName("PART_ListBox", Me), ListBox)
-            FilesList.ItemContainerStyle = FindResource("listBoxItemStyle")
-            FilesList.ItemsSource = Designer.FormNames
-            FilesList.SelectedIndex = 0
-        End If
-    End Sub
-
-    Public FreezListFiles As Boolean
-
-    Dim SelectedAt As Date
-
-    Sub FilesList_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles FilesList.SelectionChanged
-        If FreezListFiles Then Return
-        Dim i = FilesList.SelectedIndex
-        If i = -1 Then Return
-        SelectedAt = Now
-        Designer.SwitchTo(Designer.FormKeys(i))
-    End Sub
-
-    Private Sub FilesList_KeyDown(sender As Object, e As KeyEventArgs) Handles FilesList.KeyDown
-        Select Case e.Key
-            Case Key.F2
-                BeginEdit()
-                e.Handled = True
-
-            Case Key.Enter
-                RaiseEvent ItemDoubleClick(Me, Nothing)
-
-            Case Key.Delete
-                If Designer.IsNew AndAlso Designer.Pages.Count = 1 Then
-                    Beep()
-                    Return
-                End If
-
-                If FilesList.SelectedIndex = -1 Then Return
-                Designer.ClosePage()
-        End Select
-    End Sub
-
-
-#Region "Edit Item Name"
-    Dim item As ListBoxItem
-    Dim txtBlock As TextBlock
-    Dim editorGrid As Grid
-    Dim editTextBox As TextBox
-    Dim inEditMode As Boolean = False
-
-    Dim ClickCount As Integer
-    Private Sub FilesList_PreviewMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs) Handles FilesList.PreviewMouseLeftButtonDown
-        item = CType(Helper.GetListBoxItem(e.OriginalSource), ListBoxItem)
-        If item Is Nothing Then
-            If inEditMode Then Commit()
-
-        ElseIf e.ClickCount = 2 Then
-            ClickCount = 2
-            If Helper.GetParent(Of TextBox)(e.OriginalSource) IsNot Nothing Then Return
-            RaiseEvent ItemDoubleClick(sender, e)
-
-        ElseIf (Now - SelectedAt).TotalMilliseconds > 200 AndAlso
-                    TypeOf e.OriginalSource Is TextBlock AndAlso
-                    item.IsSelected AndAlso item.IsFocused Then
-
-            ClickCount = 1
-            RunAction.After(200,
-                   Sub()
-                       If ClickCount = 2 Then Return
-                       BeginEdit()
-                       e.Handled = True
-                       SelectedAt = Now
-                   End Sub)
-        End If
-    End Sub
-
-    Public Sub BeginEdit()
-        inEditMode = True
-        Dim brdr As Border = VisualTreeHelper.GetChild(item, 0)
-        Dim grid As Grid = brdr.Child
-        txtBlock = grid.Children(0)
-        editorGrid = grid.Children(1)
-        editTextBox = editorGrid.Children(1)
-
-        txtBlock.Visibility = Visibility.Collapsed
-        ' don't use textBlock because it is bound to data context
-        Dim s = CStr(item.Content).Substring(3).Trim(" ", "*")
-        If s.EndsWith(".xaml") Then s = s.Substring(0, s.Length - 5)
-        editTextBox.Text = s
-        editorGrid.Visibility = Visibility.Visible
-        editTextBox.Focus()
-        editTextBox.SelectAll()
-
-        AddHandler editTextBox.PreviewKeyDown, AddressOf editTextBox_PreviewKeyDown
-        AddHandler editTextBox.PreviewTextInput, AddressOf editTextBox_PreviewTextInput
-        AddHandler editTextBox.PreviewLostKeyboardFocus, AddressOf editTextBox_LostFocus
-    End Sub
-
-    Public Sub CancelEdit()
-        RemoveHandler editTextBox.PreviewKeyDown, AddressOf editTextBox_PreviewKeyDown
-        RemoveHandler editTextBox.PreviewTextInput, AddressOf editTextBox_PreviewTextInput
-        RemoveHandler editTextBox.PreviewLostKeyboardFocus, AddressOf editTextBox_LostFocus
-
-        editorGrid.Visibility = Visibility.Collapsed
-        txtBlock.Visibility = Visibility.Visible
-        inEditMode = False
-    End Sub
-
-    Public Function Commit() As Boolean
-        Dim newName = editTextBox.Text
-        If Designer.ChangeFormName(newName) Then
-            editorGrid.Visibility = Visibility.Collapsed
-            txtBlock.Visibility = Visibility.Visible
-            SelectedAt = Now
-            inEditMode = False
-            Return True
-        End If
-
-        Return False
-    End Function
-
-    Private Sub editTextBox_PreviewKeyDown(sender As Object, e As KeyEventArgs)
-        Select Case e.Key
-            Case Key.Space
-                Beep()
-                e.Handled = True
-
-            Case Key.Escape
-                CancelEdit()
-                e.Handled = True
-                item.Focus()
-
-            Case Key.Enter
-                If Commit() Then
-                    RemoveHandler editTextBox.PreviewKeyDown, AddressOf editTextBox_PreviewKeyDown
-                    RemoveHandler editTextBox.PreviewTextInput, AddressOf editTextBox_PreviewTextInput
-                    RemoveHandler editTextBox.PreviewLostKeyboardFocus, AddressOf editTextBox_LostFocus
-                    item.Focus()
-                End If
-                e.Handled = True
-
-        End Select
-    End Sub
-
-    Public Sub editTextBox_PreviewTextInput(sender As Object, e As TextCompositionEventArgs)
-        Select Case e.Text.ToLower
-            Case "a" To "z", "_", "0" To "9"
-                ' allowed
-            Case Else
-                Beep()
-                e.Handled = True
-        End Select
-    End Sub
-
-
-    Dim focusTextBox As New RunAction(10, Sub() editTextBox.Focus())
-
-    Public Sub editTextBox_LostFocus(sender As Object, e As KeyboardFocusChangedEventArgs)
-        If Commit() Then
-            RemoveHandler editTextBox.PreviewKeyDown, AddressOf editTextBox_PreviewKeyDown
-            RemoveHandler editTextBox.PreviewTextInput, AddressOf editTextBox_PreviewTextInput
-            RemoveHandler editTextBox.PreviewLostKeyboardFocus, AddressOf editTextBox_LostFocus
-        Else
-            e.Handled = True
-            focusTextBox.Start()
-        End If
-    End Sub
-
-
-
-#End Region
-
-    Public Property Designer As Designer
+    Public Property ProjectDirectory As String
         Get
-            Return GetValue(DesignerProperty)
+            Return _projDir
         End Get
 
-        Set(value As Designer)
-            SetValue(DesignerProperty, value)
+        Set()
+            Dim fileName = ""
+            If Value = "" OrElse Not (Directory.Exists(Value) OrElse File.Exists(Value)) Then
+                _projDir = Value
+                Title = "New Project Files"
+                projFiles.Clear()
+                Return
+            End If
+
+            If File.GetAttributes(Value) = FileAttributes.Directory Then
+                Value = Value.ToLower()
+            Else
+                fileName = Value
+                Value = Path.GetDirectoryName(Value).ToLower()
+            End If
+
+            If Value = _projDir Then
+                If fileName <> "" Then SelectItem(fileName)
+                Return
+            End If
+
+            _projDir = Value
+            Title = $"{GetProjectName(_projDir)} Project Files"
+            Dim files = Directory.GetFiles(_projDir, "*.xaml")
+            FreezListFiles = True
+            projFiles.Clear()
+
+            If files.Count > 0 Then
+                For Each f In files
+                    projFiles.Add(New ProjFileInfo(f.ToLower()))
+                Next
+            End If
+
+            Dim globFile = Path.Combine(_projDir, "global.sb")
+            If File.Exists(globFile) Then projFiles.Add(New ProjFileInfo(globFile))
+            FreezListFiles = False
+
+            If fileName = "" Then
+                SelectedIndex = 0
+            Else
+                SelectItem(fileName)
+            End If
         End Set
     End Property
 
-    Public Shared ReadOnly DesignerProperty As DependencyProperty =
-                           DependencyProperty.Register("Designer",
-                           GetType(Designer), GetType(ProjectExplorer))
+    Private Sub SelectItem(fileName As String)
+        For i = 0 To projFiles.Count - 1
+            If projFiles(i).FilePath = fileName Then
+                FilesList.SelectedIndex = i
+                Return
+            End If
+        Next
+    End Sub
 
+    Private Function GetProjectName(projDir As String) As Object
+        ' The job of this function is to restore the normal case project name from the lower case one.
+        If projDir = "" Then Return "New"
+        Dim dir = Path.GetDirectoryName(projDir)
+        Dim dirs = Directory.GetDirectories(dir, Path.GetFileName(projDir))
+        Return "`" & Path.GetFileName(dirs(0)) & "`"
+    End Function
+
+    Protected Overrides ReadOnly Property ItemsSource As Specialized.INotifyCollectionChanged
+        Get
+            Return projFiles
+        End Get
+    End Property
+
+    Protected Overrides Sub OnSelectionChanged()
+        Designer.SwitchTo(CType(FilesList.SelectedItem, ProjFileInfo).FilePath)
+    End Sub
+
+    Protected Overrides Sub OnDeleteItem()
+        If FilesList.SelectedIndex = -1 Then
+            Beep()
+            Return
+        End If
+
+        If MsgBox("This action will delete this form and its code files from the project folder and move them to the recycle bin. Are you sure you want to do that?", vbYesNo Or MsgBoxStyle.Exclamation, "Warning") = MsgBoxResult.No Then
+            Return
+        End If
+
+        Try
+            Dim i = FilesList.SelectedIndex
+            Dim projFileInfo = CType(FilesList.SelectedItem, ProjFileInfo)
+            Dim fileName = projFileInfo.FilePath
+            FileIO.FileSystem.DeleteFile(fileName, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+
+            fileName = fileName.Substring(0, fileName.Length - 4) & "sb"
+            FileIO.FileSystem.DeleteFile(fileName, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+
+            fileName &= ".gen"
+            FileIO.FileSystem.DeleteFile(fileName, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+
+            projFiles.Remove(projFileInfo)
+
+            Dim n = FilesList.Items.Count
+            If n = 0 Then Return
+            FilesList.SelectedIndex = If(i >= n, n - 1, i)
+
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+
+    End Sub
+
+    Protected Overrides Function OnCommit(newName As String) As Boolean
+        Dim newFile = Path.Combine(_projDir, newName & ".xaml")
+        Dim oldFile = CType(FilesList.SelectedItem, ProjFileInfo).FilePath
+
+        If newName.ToLower() = Path.GetFileNameWithoutExtension(oldFile).ToLower() Then Return True
+
+        If File.Exists(newFile) Then
+            MsgBox($"The project folder already contains a file named `{newName}`", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical)
+            Return False
+        End If
+
+        If File.Exists(oldFile) Then
+            File.Move(oldFile, newFile)
+
+            Dim progFileInfo = CType(FilesList.SelectedItem, ProjFileInfo)
+            Dim i = projFiles.IndexOf(progFileInfo)
+            projFiles.RemoveAt(i)
+            progFileInfo.FilePath = newFile
+            projFiles.Insert(i, progFileInfo)
+
+            oldFile = oldFile.Substring(0, oldFile.Length - 4) & "sb"
+            newFile = newFile.Substring(0, newFile.Length - 4) & "sb"
+            If File.Exists(oldFile) And Not File.Exists(newFile) Then
+                File.Move(oldFile, newFile)
+            End If
+
+            RaiseEvent FileNameChanged(oldFile, newFile)
+
+            oldFile &= ".gen"
+            newFile &= ".gen"
+            If File.Exists(oldFile) AndAlso Not File.Exists(newFile) Then
+                File.Move(oldFile, newFile)
+            End If
+
+            Return True
+        Else
+                MsgBox($"The file `{oldFile}` doesn't exist in project folder", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical)
+            Return False
+        End If
+    End Function
+
+End Class
+
+Public Class ProjFileInfo
+    Public Sub New(filePath As String)
+        Me.FilePath = filePath
+    End Sub
+
+    Public Property FilePath As String
+
+    Public Overrides Function ToString() As String
+        Return " ● " & Path.GetFileName(_FilePath)
+    End Function
 End Class

@@ -1,10 +1,10 @@
 ﻿Imports System
 Imports System.Reflection
 Imports System.Reflection.Emit
-Imports Microsoft.SmallBasic.Library
-Imports Microsoft.SmallBasic.Library.Internal
+Imports Microsoft.SmallVisualBasic.Library
+Imports Microsoft.SmallVisualBasic.Library.Internal
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     Public Class CodeGenerator
         Private _outputName As String
         Private _directory As String

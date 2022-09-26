@@ -1,7 +1,7 @@
 ﻿Imports System
 Imports System.Globalization
 
-Namespace Microsoft.SmallBasic
+Namespace Microsoft.SmallVisualBasic
     <Serializable>
     Public Structure Token
         Public Line As Integer
@@ -28,12 +28,13 @@ Namespace Microsoft.SmallBasic
             End Get
         End Property
 
-        Public Shared ReadOnly Property Illegal As New Token With {
+        Public Shared ReadOnly Illegal As New Token With {
             .Line = 0,
             .Column = 0,
             .Type = TokenType.Illegal,
-            .ParseType = SmallBasic.ParseType.Illegal
+            .ParseType = ParseType.Illegal
         }
+
         Public ReadOnly Property IsIllegal As Boolean
             Get
                 Return Type = TokenType.Illegal
@@ -47,12 +48,6 @@ Namespace Microsoft.SmallBasic
                 Return subroutine.Name.Text
             End Get
         End Property
-
-
-
-        Public Overrides Function ToString() As String
-            Return $"{Line},{Column}: {Text}, {Type}"
-        End Function
 
         Public Function Contains(
                         line As Integer,
@@ -89,6 +84,10 @@ Namespace Microsoft.SmallBasic
             If Me.Line < line Then Return True
             If Me.Line > line Then Return False
             Return Me.Column > column
+        End Function
+
+        Public Overrides Function ToString() As String
+            Return $"{Line},{Column}: '{Text}', {Type}"
         End Function
     End Structure
 End Namespace

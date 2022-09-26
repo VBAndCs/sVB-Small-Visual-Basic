@@ -3,7 +3,7 @@ Imports System.Globalization
 Imports System.Reflection
 Imports System.Reflection.Emit
 
-Namespace Microsoft.SmallBasic.Expressions
+Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
     Public Class BinaryExpression
         Inherits Expression

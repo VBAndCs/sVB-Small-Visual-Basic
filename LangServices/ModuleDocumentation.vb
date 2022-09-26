@@ -4,7 +4,7 @@ Imports System.IO
 Imports System.Text
 Imports System.Xml
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Class ModuleDocumentation
         Private _itemDocMap As Dictionary(Of String, CompletionItemDocumentation)
 

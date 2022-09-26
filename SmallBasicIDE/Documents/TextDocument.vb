@@ -3,9 +3,9 @@ Imports Microsoft.Nautilus.Core.Undo.DataExports
 Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
-Imports Microsoft.SmallBasic.Shell
+Imports Microsoft.SmallVisualBasic.Shell
 Imports Microsoft.Windows.Controls
-Imports Microsoft.SmallBasic.WinForms
+Imports Microsoft.SmallVisualBasic.WinForms
 Imports System
 Imports System.Collections.ObjectModel
 Imports System.ComponentModel.Composition
@@ -16,11 +16,11 @@ Imports System.Windows.Threading
 Imports Microsoft.VisualBasic
 Imports System.Collections.Generic
 Imports System.Linq
-Imports Microsoft.SmallBasic.LanguageService
+Imports Microsoft.SmallVisualBasic.LanguageService
 Imports System.Windows
-Imports System.Windows.Controls.Primitives
+Imports Microsoft.SmallBasic
 
-Namespace Microsoft.SmallBasic.Documents
+Namespace Microsoft.SmallVisualBasic.Documents
     Public Class TextDocument
         Inherits FileDocument
         Implements INotifyImport
@@ -384,7 +384,7 @@ Namespace Microsoft.SmallBasic.Documents
         Private Function GetTokenAt(index As Integer, tokens As List(Of Token)) As Integer
             For i = 0 To tokens.Count - 1
                 Dim token = tokens(i)
-                If index <= Token.EndColumn Then
+                If index <= token.EndColumn Then
                     If index < token.Column Then Return -1
                     Return i
                 End If
@@ -1275,16 +1275,18 @@ EndFunction
         End Function
 
         Public Function FindEventHandler(name As String) As Integer
-            Dim text = EditorControl.TextView.TextSnapshot
+            Dim snapshot = EditorControl.TextView.TextSnapshot
             name = name.ToLower()
-            For Each line In text.Lines
+            For Each line In snapshot.Lines
                 Dim code = line.GetText().Trim(" "c, vbTab)
                 If code = "" Then Continue For
 
-                Dim Tokens = LineScanner.GetTokenEnumerator(line.GetText(), line.LineNumber)
-                If Tokens.Current.Type = TokenType.Sub OrElse Tokens.Current.Type = TokenType.Function Then
-                    If Tokens.MoveNext() AndAlso Tokens.Current.Type = TokenType.Identifier Then
-                        If Tokens.Current.LCaseText = name Then Return line.Start + Tokens.Current.Column
+                Dim Tokens = LineScanner.GetFirstTokens(line.GetText(), line.LineNumber, 2)
+                If Tokens.Count < 2 Then Continue For
+
+                If Tokens(0).Type = TokenType.Sub OrElse Tokens(0).Type = TokenType.Function Then
+                    If Tokens(1).Type = TokenType.Identifier Then
+                        If Tokens(1).LCaseText = name Then Return line.Start + Tokens(1).Column
                     End If
                 End If
 
@@ -1393,6 +1395,21 @@ EndFunction
             End If
         End Sub
 
+        Friend Sub FixEventHandlers(oldName As String, newName As String)
+            Dim keys = EventHandlers.Keys
 
+            For i = keys.Count - 1 To 0 Step -1
+                Dim oldHandler = keys(i)
+                Dim eventInfo = EventHandlers(oldHandler)
+                If eventInfo.ControlName.ToLower() = oldName.ToLower() Then
+                    Dim newHandler = $"{newName}_{eventInfo.EventName}"
+                    Dim pos = FindEventHandler(oldHandler)
+                    _editorControl.EditorOperations.ReplaceText(New Span(pos, oldHandler.Length), newHandler, _undoHistory)
+                    EventHandlers.Remove(oldHandler)
+                    EventHandlers(newHandler) = New EventInformation(newName, eventInfo.EventName)
+                End If
+            Next
+
+        End Sub
     End Class
 End Namespace

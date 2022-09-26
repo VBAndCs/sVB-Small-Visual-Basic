@@ -1,4 +1,4 @@
-﻿Imports Microsoft.SmallBasic.Documents
+﻿Imports Microsoft.SmallVisualBasic.Documents
 Imports System
 Imports System.Text.RegularExpressions
 Imports System.Windows
@@ -8,7 +8,7 @@ Imports System.Windows.Input
 Imports System.Windows.Markup
 Imports System.Windows.Media.Animation
 
-Namespace Microsoft.SmallBasic.Shell
+Namespace Microsoft.SmallVisualBasic.Shell
     Partial Public Class ErrorListControl
         Inherits ListView
         Implements IComponentConnector

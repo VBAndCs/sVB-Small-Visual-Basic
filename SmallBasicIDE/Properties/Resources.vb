@@ -5,7 +5,7 @@ Imports System.Globalization
 Imports System.Resources
 Imports System.Runtime.CompilerServices
 
-Namespace Microsoft.SmallBasic.Properties
+Namespace Microsoft.SmallVisualBasic.Properties
     <CompilerGenerated>
     <DebuggerNonUserCode>
     <GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")>
@@ -18,7 +18,7 @@ Namespace Microsoft.SmallBasic.Properties
             Get
 
                 If resourceMan Is Nothing Then
-                    resourceMan = New ResourceManager("Microsoft.SmallBasic.Properties.Resources", GetType(Resources).Assembly)
+                    resourceMan = New ResourceManager("Microsoft.SmallVisualBasic.Properties.Resources", GetType(Resources).Assembly)
                 End If
 
                 Return resourceMan

@@ -1,9 +1,9 @@
 ﻿Imports System.Windows.Threading
 Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.Classification
-Imports sb = Microsoft.SmallBasic
+Imports sb = Microsoft.SmallVisualBasic
 
-Namespace Microsoft.SmallBasic.LanguageService
+Namespace Microsoft.SmallVisualBasic.LanguageService
     Public NotInheritable Class SmallBasicClassifier
         Implements IClassifier
 

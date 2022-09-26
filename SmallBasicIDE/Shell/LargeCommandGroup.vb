@@ -1,4 +1,4 @@
-﻿Namespace Microsoft.SmallBasic.Shell
+﻿Namespace Microsoft.SmallVisualBasic.Shell
     Public Class LargeCommandGroup
         Inherits CommandGroup
     End Class

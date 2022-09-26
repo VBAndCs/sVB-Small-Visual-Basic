@@ -1,4 +1,4 @@
-﻿Imports Microsoft.SmallBasic.com.smallbasic
+﻿Imports Microsoft.SmallVisualBasic.com.smallbasic
 Imports System
 Imports System.Collections.ObjectModel
 Imports System.Windows
@@ -8,7 +8,7 @@ Imports System.Windows.Markup
 Imports System.Windows.Media
 Imports System.Windows.Shapes
 
-Namespace Microsoft.SmallBasic.Utility
+Namespace Microsoft.SmallVisualBasic.Utility
     Public Partial Class RatingControl
         Inherits Control
         Implements IComponentConnector

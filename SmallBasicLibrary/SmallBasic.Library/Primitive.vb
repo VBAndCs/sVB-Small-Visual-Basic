@@ -20,11 +20,11 @@ Namespace Library
             Private Sub New()
             End Sub
 
-            Public Function Equals(x As Primitive, y As Primitive) As Boolean Implements Collections.Generic.IEqualityComparer(Of Microsoft.SmallBasic.Library.Primitive).Equals
+            Public Function Equals(x As Primitive, y As Primitive) As Boolean Implements Collections.Generic.IEqualityComparer(Of Microsoft.SmallVisualBasic.Library.Primitive).Equals
                 Return String.Equals(x.AsString(), y.AsString(), StringComparison.InvariantCultureIgnoreCase)
             End Function
 
-            Public Function GetHashCode(obj As Primitive) As Integer Implements Collections.Generic.IEqualityComparer(Of Microsoft.SmallBasic.Library.Primitive).GetHashCode
+            Public Function GetHashCode(obj As Primitive) As Integer Implements Collections.Generic.IEqualityComparer(Of Microsoft.SmallVisualBasic.Library.Primitive).GetHashCode
                 Return obj.GetHashCode()
             End Function
         End Class
