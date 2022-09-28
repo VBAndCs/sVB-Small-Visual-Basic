@@ -1,5 +1,4 @@
 ﻿Imports System.Windows.Markup
-Imports System.Windows.Threading
 Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Library.Internal
 Imports Wpf = System.Windows.Controls
@@ -299,19 +298,18 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="formName">the name of the form.</param>
         ''' <param name="argsArr">any additional data, array, or a dynamic object you want to pass to the form. It will be stored in the Form.ArgsArr property, so you can use it as you want</param>
-        ''' <returns>the form name</returns>
-        <ReturnValueType(VariableType.Form)>
+        ''' <returns>the dialog result that represnts the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
+        <ReturnValueType(VariableType.DialogResult)>
         Public Shared Function ShowDialog(formName As Primitive, argsArr As Primitive) As Primitive
             If Form.GetIsLoaded(formName) Then
                 Form.SetArgsArr(formName, argsArr)
-                Form.ShowDialog(formName)
+                Return Form.ShowDialog(formName)
             Else
                 Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
                 Form.Initialize(formName)
                 Control.SetVisible(formName, False)
-                Form.ShowDialog(formName)
+                Return Form.ShowDialog(formName)
             End If
-            Return formName
         End Function
     End Class
 End Namespace

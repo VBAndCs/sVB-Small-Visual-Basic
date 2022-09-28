@@ -182,6 +182,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
 
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
+            stopFormatingLine = -1
             If IgnoreCaretPosChange OrElse StillWorking Then Return
             If _formatting Then
                 _formatting = False
@@ -341,7 +342,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
                     Case matchingPair2
                         If pair1Count = 0 Then
-                            If direction > 0 Then
+                            If direction < 0 Then
                                 _editorControl.HighlightWords(_MatchingPairsHighlightColor, (token.Column + line.Start, 1), (startPos, 1))
                             Else
                                 _editorControl.HighlightWords(_MatchingPairsHighlightColor, (startPos, 1), (token.Column + line.Start, 1))
@@ -354,32 +355,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         End Sub
 
-        Private Function GetNextToken(ByRef i As Integer, direction As Integer, ByRef line As ITextSnapshotLine, ByRef tokens As List(Of Token)) As Token
-            i += direction
-            If i < 0 Then
-                Dim lineNumber = line.LineNumber - 1
-                If lineNumber < 0 Then Return Token.Illegal
-
-                Dim snapshot = EditorControl.TextView.TextSnapshot
-                line = snapshot.GetLineFromLineNumber(lineNumber)
-                tokens = LineScanner.GetTokens(line.GetText(), lineNumber)
-                i = tokens.Count - 1
-                If i < 0 Then Return Token.Illegal
-
-            ElseIf i >= tokens.Count Then
-                Dim lineNumber = line.LineNumber + 1
-                Dim snapshot = EditorControl.TextView.TextSnapshot
-                If lineNumber >= snapshot.LineCount Then Return Token.Illegal
-
-                line = snapshot.GetLineFromLineNumber(lineNumber)
-                tokens = LineScanner.GetTokens(line.GetText(), lineNumber)
-                If tokens.Count = 0 Then Return Token.Illegal
-                i = 0
-            End If
-
-            Return tokens(i)
-
-        End Function
 
         Private Function GetTokenAt(index As Integer, tokens As List(Of Token)) As Integer
             For i = 0 To tokens.Count - 1
@@ -491,8 +466,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Private Function GetCurrentSubText(lineNumber As Integer) As String
             Dim snapshot = _editorControl.TextView.TextSnapshot
-            Dim start = snapshot.GetLineFromLineNumber(CompilerService.FindCurrentSubStart(snapshot, lineNumber)).Start
-            Dim [end] = snapshot.GetLineFromLineNumber(CompilerService.FindCurrentSubEnd(snapshot, lineNumber)).End
+            Dim start = snapshot.GetLineFromLineNumber(FindCurrentSubStart(snapshot, lineNumber)).Start
+            Dim [end] = snapshot.GetLineFromLineNumber(FindCurrentSubEnd(snapshot, lineNumber)).End
             Return Me.Text.Substring(start, [end] - start + 1)
         End Function
 

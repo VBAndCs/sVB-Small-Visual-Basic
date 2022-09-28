@@ -319,8 +319,8 @@ Public Class Designer
         CurrentPage.PageHeight = 500
     End Sub
 
-    Public Shared Function ClosePage(Optional openNewPageIfLast As Boolean = True) As Boolean
-        If CurrentPage.IsNew AndAlso Pages.Count = 1 Then Return True
+    Public Shared Function ClosePage(Optional openNewPageIfLast As Boolean = True, Optional force As Boolean = False) As Boolean
+        If Not force AndAlso CurrentPage.IsNew AndAlso Pages.Count = 1 Then Return True
 
         If CurrentPage.IsDirty Then
             If Not CurrentPage.AskToSave() Then Return False
@@ -348,6 +348,9 @@ Public Class Designer
 
         ElseIf openNewPageIfLast Then
             OpenNewPage(False)
+        Else
+            CurrentPage = Nothing
+            FormNames.Clear()
         End If
 
         Return True

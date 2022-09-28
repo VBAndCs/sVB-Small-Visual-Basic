@@ -11,6 +11,34 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Public Event HelpUpdated(itemWrapper As CompletionItemWrapper)
 
+        Public Function GetNextToken(ByRef i As Integer, direction As Integer, ByRef line As ITextSnapshotLine, ByRef tokens As List(Of Token)) As Token
+            i += direction
+            If i < 0 Then
+                Dim lineNumber = line.LineNumber - 1
+                If lineNumber < 0 Then Return Token.Illegal
+
+                Dim snapshot = line.TextSnapshot
+                line = snapshot.GetLineFromLineNumber(lineNumber)
+                tokens = LineScanner.GetTokens(line.GetText(), lineNumber)
+                i = tokens.Count - 1
+                If i < 0 Then Return Token.Illegal
+
+            ElseIf i >= tokens.Count Then
+                Dim lineNumber = line.LineNumber + 1
+                Dim snapshot = line.TextSnapshot
+                If lineNumber >= snapshot.LineCount Then Return Token.Illegal
+
+                line = snapshot.GetLineFromLineNumber(lineNumber)
+                tokens = LineScanner.GetTokens(line.GetText(), lineNumber)
+                If tokens.Count = 0 Then Return Token.Illegal
+                i = 0
+            End If
+
+            Return tokens(i)
+
+        End Function
+
+
         Public Sub ShowPopupHelp(itemWrapper As CompletionItemWrapper)
             RaiseEvent HelpUpdated(itemWrapper)
         End Sub

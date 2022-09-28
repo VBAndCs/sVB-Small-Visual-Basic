@@ -34,22 +34,69 @@ Sub Form2_OnShown()
 EndSub
 ```
 
-This event has two advantages over using the global code area to initialize the form:
-a. It will be executed every time you call Forms.ShowForm, so, you can use the passed argsArr data every time you show the form even it is still open.
-b. It is the only way to interact with the form if it is shown as a dialog (modal window). You can do this by calling Forms.ShowDialog instead of Forms.ShowForm. The dialog window stops executing the code until the user closes it, so any code in the global area will never be executed. Also, trying to set the BackColor of the form as in the next example will have no effect, since it will be executed only after the form is closed:
-```vb
-   form2 = Forms.ShowDialog("form2", "Test")
-   form2.BackColor = Colors.AliceBlue
-```
-
+This event has an advantages over using the global code area to initialize the form, that it will be executed every time you call Forms.ShowForm, so, you can use the passed argsArr data every time you show the form even it is still open.
 For a simple sample, see the `Random Buttons 2` sample in the samples folder. It is a modified version of the `Random Buttons` sample, which uses code to define and show another form. In the new version, the second form is designed by the form designer.
 
 Note that the form you run the program from will be main form of the project (the startup form). This allows change the startup form as you want by just open the form code and press F5, so you can easily test project forms.
 
+# Show a Dialog
+You can show the form as a dialog (modal window), by calling `Forms.ShowDialog` instead of Forms.ShowForm. The dialog window stops executing the code until the user closes it, so, you can't access the dialog form while it is displayed. So, you need to pass all the date throw the argsArr argument, and process it in the in the dialog form.
+When you show a dialog, you want to know what action the user took to close the dialog. He may accept what you offer him by clocking the `OK` or `Yes` buttons, refuse by clicking `No` button, or cancels the operation by clicking the `Cancel` button of closing the form. So, you need to indicate such actions when you write these buttons code, by setting the suitable value for the Form.DialogResult property of the form:
+```vb
+
+LblMsg.Text = Me.ArgsArr
+
+
+'------------------------------------------------
+Sub BtnYes_OnClick()
+   Me.DialogResult = DialogResults.Yes
+   Me.Close()
+EndSub
+
+'------------------------------------------------
+Sub BtnNo_OnClick()
+   Me.DialogResult = DialogResults.No
+   Me.Close()
+EndSub
+
+
+'------------------------------------------------
+Sub BtnCancel_OnClick()
+   Me.Close()
+EndSub
+```
+
+Note that the `DialogResults` type contains the names of famous dialog buttons, and it has a nice auto completion suuport in the code editor, but you can not use it and use any other names you want.
+`Cancel` is the default value of the `DialogResult`, so we disn't need to set it in the `BtnCancel_OnClick()`.
+Now, how can we use the `DialogResult` value in the form that showed the dialog?
+It is simple: the `DialogResult` value will be the return value from the `Forms.ShowDialog`, so, it is easy to use it like this:
+```vb
+Sub Button1_OnClick()
+   result = Forms.ShowDialog(
+      "form2", "Do you want to save the changes?")
+   
+   If result = DialogResults.Yes Then
+      TextBox1.Text = "User accepted to save changes."
+   ElseIf result = DialogResults.No Then
+      TextBox1.Text = "User refused to save changes."
+   Else
+      TextBox1.Text = "User canceled the operation."
+   EndIf
+   
+EndSub
+```
+
+You can try this code in the `Show Dialog` sample in the samples folder.
+
+# Form communications:
+But, what if you want to pass some data back from Form2 to form1?
+If Form2 is shown as a normal form, you can pass the data via the its Tag or ArgsArr properties. But this is not possible if Form2 is shown as a dialog, because it will be closed before returning to form1, so all its properties are lost.
+One possible way to solve this right now, is using the DialogResult as an array, so its first item will be the button result, and the other items are the data you want to pass.
+But this can be confusing, so, a better solution will be available soon in vSB 2.0, by defining a global variables in the `Global.sb` file, and use these variables to communicate between forms.
+
+# Project Explorer:
 The form designer now shows a list of project files (the files exists in the same directory of the current opened form). You can use this list to rename the file or delete it directly. 
 This list is different than the `open forms list`, which show the form names of all opened forms even they don't belong to the same project (folder). You can use this list to close the opened form (this will not delete if from its project) or to change the name of the form (this will not change its file name). This list is more like the VS.NET tabs that shows the form design or code files.
-
-In the upcoming sVB 2.0, I will allow to define a `global.sb` file in each project, so you can add variables and subroutines that are global to all the project and can be accessed from any form. This will allow to create a "Random Buttons 3" sample, where the `CreateRndButton(onForm)` function can be moved to the global.sb file, so it can be used from both form1 and form2. 
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 

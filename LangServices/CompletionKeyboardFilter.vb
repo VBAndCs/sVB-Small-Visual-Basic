@@ -1,7 +1,5 @@
 ﻿Imports System.ComponentModel.Composition
-Imports System.Windows.Input
 Imports Microsoft.Nautilus.Core.Undo
-Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
 
@@ -47,7 +45,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         args.Handled = CommitConditionally(textView, completionSurface, " ")
 
                     Case Key.OemPeriod
-                        CommitConditionally(textView, completionSurface)
+                        If Keyboard.Modifiers = 0 Then CommitConditionally(textView, completionSurface)
 
                 End Select
 
@@ -92,8 +90,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 Case ">", "<"
 
                                 Case Else
-                                    args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ", True)
+                                    args.Handled = CommitConditionally(textView, completionSurface, " = ", True)
                             End Select
+
+                        Case "<", ">"
+                            args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ", True)
 
                         Case "!", ")", "[", "]", "{", "}"
                             CommitConditionally(textView, completionSurface)
@@ -119,7 +120,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim compList = completionSurface.CompletionListBox
                 Dim itemWrapper = CType(compList.SelectedItem, CompletionItemWrapper)
                 Dim item = itemWrapper.CompletionItem
-                Dim repWith = item.ReplacementText
+                Dim repWith = itemWrapper.ReplacementText
                 Dim provider = textView.Properties.GetProperty(Of CompletionProvider)()
                 Dim replaceSpan = provider.GetReplacementSpane()
 
@@ -130,10 +131,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     extraText = ""
                 End If
 
+                Dim leadingSpace = ""
+                If replaceSpan.Length = 0 And replaceSpan.Start > 0 Then
+                    Select Case textView.TextSnapshot(replaceSpan.Start - 1)
+                        Case "=", "<", ">", "+", "-", "*", "/"
+                            leadingSpace = " "
+                    End Select
+                End If
+
                 editorOperations.ReplaceText(
                     replaceSpan,
-                    repWith & extraText,
-                    UndoHistoryRegistry.GetHistory(textView.TextBuffer))
+                    leadingSpace & repWith & extraText,
+                    UndoHistoryRegistry.GetHistory(textView.TextBuffer)
+                )
 
                 If completionSurface.Adornment IsNot Nothing Then
                     completionSurface.Adornment.Dismiss(force:=False)
@@ -165,7 +175,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             If itemWrapper IsNot Nothing Then
                 If textView.Properties.TryGetProperty(GetType(CompletionProvider), provider) Then
-                    provider.CommitItem(itemWrapper.CompletionItem)
+                    provider.CommitItem(itemWrapper)
                 End If
                 Return True
 

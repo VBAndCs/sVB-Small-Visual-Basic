@@ -1,14 +1,6 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.Collections.ObjectModel
-Imports System.Globalization
-Imports System.Windows
-Imports System.Windows.Controls
-Imports System.Windows.Input
-Imports System.Windows.Media
+﻿Imports System.Globalization
 Imports System.Windows.Media.Animation
 Imports System.Windows.Threading
-Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.AdornmentSystem
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.SmallVisualBasic.Completion
@@ -61,7 +53,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                               Return Nothing
                           End Function, DispatcherOperationCallback),
                     Nothing
-                )
+            )
         End Sub
 
         Public Sub RemoveAdornment(adornment As IAdornment) Implements IAdornmentSurface.RemoveAdornment
@@ -128,6 +120,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private Sub FilterItems()
             Dim inputText = GetInputText()
             BuildFilteredCompletionList(inputText)
+
             If filteredCompletionItems.Count > 0 Then
                 CompletionListBox.ItemsSource = filteredCompletionItems
                 CompletionPopup.IsOpen = True
@@ -136,9 +129,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             ElseIf CompletionPopup.IsOpen Then
                 FadeCompletionList()
-
             Else
-                _adornment.Dismiss(True)
+                _Adornment.Dismiss(True)
             End If
         End Sub
 
@@ -149,12 +141,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private Sub BuildFilteredCompletionList(inputText As String)
             filteredCompletionItems = New List(Of CompletionItemWrapper)
             Dim bag = _Adornment.CompletionBag
-            Dim completionItems = bag.CompletionItems
 
             Dim items As New List(Of CompletionItemWrapper)
-            For Each item In completionItems
+            For Each item In bag.CompletionItems
                 If CanAddItem(item, bag.IsFirstToken, inputText) Then
-                    Dim itemWrapper = New CompletionItemWrapper(item, bag)
+                    Dim itemWrapper = New CompletionItemWrapper(item, bag, _Adornment.CompletionBag.SelectEspecialItem)
                     items.Add(itemWrapper)
                     filteredCompletionItems.Add(itemWrapper)
                 End If
@@ -258,17 +249,17 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Function
 
         Private Function GetSelectedItemIndex(text As String) As Integer
-            If _Adornment.CompletionBag.SelectEspecialItem <> "" Then
-                text = _Adornment.CompletionBag.SelectEspecialItem
-            End If
+            'If _Adornment.CompletionBag.SelectEspecialItem <> "" Then
+            '    text = _Adornment.CompletionBag.SelectEspecialItem
+            'End If
 
             Dim textLength = text.Length
 
             If textLength < 2 Then
                 Dim firstItem = filteredCompletionItems(0).CompletionItem
                 Dim key = firstItem.HistoryKey
-                If key <> "" AndAlso CompletionProvider.compHistory.ContainsKey(key) Then
-                    Dim word = CompletionProvider.compHistory(key).ToLower()
+                If key <> "" AndAlso CompletionProvider.CompHistory.ContainsKey(key) Then
+                    Dim word = CompletionProvider.CompHistory(key).ToLower()
                     If text = "" OrElse word.StartsWith(text) Then
                         text = word
                         textLength = text.Length
@@ -283,7 +274,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim wordsList As New List(Of List(Of String))
 
             For i = 0 To filteredCompletionItems.Count - 1
-                Dim displayName = filteredCompletionItems(i).Display
+                Dim displayName = filteredCompletionItems(i).Name
                 Dim matchLength = GetMatchLength(displayName.ToLowerInvariant(), text)
 
                 If matchLength = textLength Then Return i
@@ -343,7 +334,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim completionItemWrapper As CompletionItemWrapper = TryCast(Me.CompletionListBox.SelectedItem, CompletionItemWrapper)
 
                 If completionItemWrapper IsNot Nothing Then
-                    _adornment.AdornmentProvider.CommitItem(completionItemWrapper.CompletionItem)
+                    _Adornment.AdornmentProvider.CommitItem(completionItemWrapper)
                 End If
             End If
         End Sub

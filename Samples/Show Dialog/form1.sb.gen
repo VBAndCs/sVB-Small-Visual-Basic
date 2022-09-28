@@ -1,0 +1,21 @@
+'@Form Hints:
+'#FrmMain{
+'    TextBox1: TextBox
+'    Button1: Button
+'}
+
+Me = "FrmMain"
+TextBox1 = "frmmain.textbox1"
+Button1 = "frmmain.button1"
+FrmMain = Forms.LoadForm("FrmMain", "form1.xaml")
+Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
+Form.Show(FrmMain)
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+

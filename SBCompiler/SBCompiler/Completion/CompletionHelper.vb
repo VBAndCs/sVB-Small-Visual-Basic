@@ -98,6 +98,10 @@ Namespace Microsoft.SmallVisualBasic.Completion
             Return GetStatement(compiler.Parser, line)
         End Function
 
+        Public Function GetStatement(line As Integer) As Statement
+            Return GetStatement(_compiler.Parser, line)
+        End Function
+
         Public Shared Function GetStatement(
                         parser As Parser,
                         line As Integer
@@ -483,12 +487,13 @@ Namespace Microsoft.SmallVisualBasic.Completion
 
         End Sub
 
-        Public Sub Compile(source As TextReader, controlNames As List(Of String), moduleNames As Dictionary(Of String, String))
+        Public Function Compile(source As TextReader, controlNames As List(Of String), moduleNames As Dictionary(Of String, String)) As Compiler
             _compiler.Parser.SymbolTable.ControlNames = controlNames
             _compiler.Parser.SymbolTable.ModuleNames = moduleNames
 
             _compiler.Compile(source, True)
             completionBagCashe.Clear()
-        End Sub
+            Return _compiler
+        End Function
     End Class
 End Namespace

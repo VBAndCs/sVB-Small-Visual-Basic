@@ -7,6 +7,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Implements IAdornment
 
         Public Property AdornmentProvider As CompletionProvider
+        Public Property AdornmentSurface As CompletionAdornmentSurface
 
         Public ReadOnly Property CompletionBag As CompletionBag
 
@@ -14,6 +15,17 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
 
         Public Property ReplaceSpan As ITextSpan
+
+        Public ReadOnly Property IsVisible
+            Get
+                Return _AdornmentSurface.IsAdornmentVisible
+            End Get
+        End Property
+
+        Public Sub ModifySpans(adornmentSpan As ITextSpan, replaceSpan As ITextSpan)
+            _Span = adornmentSpan
+            _ReplaceSpan = replaceSpan
+        End Sub
 
         Public Sub New(
                       provider As CompletionProvider,
@@ -23,6 +35,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                    )
 
             _AdornmentProvider = provider
+            _AdornmentSurface = provider.textView.Properties.GetProperty(Of CompletionAdornmentSurface)()
+
             _CompletionBag = completionBag
             _Span = adornmentSpan
             _ReplaceSpan = replaceSpan

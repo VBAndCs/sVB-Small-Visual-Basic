@@ -465,22 +465,67 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        Private Shared dialogResult2 As String
+
         ''' <summary>
         ''' Displayes the form on the screen as a modal dialog, so the user must close it first to ba able to accees other forms of your app.
         ''' </summary>
-        <ReturnValueType(VariableType.Boolean)>
+        ''' <returns>the dialog result that represnts the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
+        <ReturnValueType(VariableType.DialogResult)>
         <ExMethod>
         Public Shared Function ShowDialog(formName As Primitive) As Primitive
             App.Invoke(
                Sub()
                    Try
+                       dialogResult2 = ""
                        Dim wnd = Forms.GetForm(formName)
-                       ShowDialog = wnd.ShowDialog().GetValueOrDefault
+                       Dim dialogResult1 = wnd.ShowDialog()
+
+                       If dialogResult1 Is Nothing Then
+                           If dialogResult2 = "" Then
+                               ShowDialog = DialogResults.No
+                           Else
+                               ShowDialog = dialogResult2
+                           End If
+                       ElseIf dialogResult2 = "" Then
+                           ShowDialog = If(dialogResult1, DialogResults.Yes, DialogResults.Cancel)
+                       Else
+                           ShowDialog = dialogResult2
+                       End If
+
                    Catch ex As Exception
                        ShowSubError(formName, "ShowDialog", ex)
                    End Try
                End Sub)
         End Function
+
+        ''' <summary>
+        ''' Gets or sets the name of the button that the user clicked when he closes the dialog form.
+        ''' </summary>
+        <ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetDialogResult(formName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetDialogResult = dialogResult2
+                    Catch ex As Exception
+                        ShowErrorMesssage(formName, "DialogResult", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetDialogResult(formName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        dialogResult2 = value
+                    Catch ex As Exception
+                        ShowErrorMesssage(formName, "DialogResult", value, ex)
+                    End Try
+                End Sub)
+        End Sub
 
         ''' <summary>
         ''' Shows a message box dialog on the owner form.

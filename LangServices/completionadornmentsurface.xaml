@@ -4,30 +4,30 @@
     <ResourceDictionary>
       <DataTemplate x:Key="{DataTemplateKey {x:Type l:CompletionItemWrapper}}" DataType="{x:Type l:CompletionItemWrapper}">
         <StackPanel Orientation="Horizontal">
-          <Image Name="itemImage" Source="pack://application:,,/SB;component/Resources/IntellisenseItem.png" Width="14" Height="14" Margin="1,2,1,1" />
-          <TextBlock FontFamily="Segoe UI" FontSize="11" Margin="2,1,0,0" TextTrimming="CharacterEllipsis" MaxWidth="100" Text="{Binding Path=Name}" />
+          <Image Name="itemImage" Source="pack://application:,,/sVB;component/Resources/IntellisenseItem.png" Width="14" Height="14" Margin="1,2,1,1" />
+          <TextBlock FontFamily="Segoe UI" FontSize="11" Margin="2,1,0,0" TextTrimming="CharacterEllipsis" MaxWidth="300" Text="{Binding Path=Name}" />
         </StackPanel>
         <DataTemplate.Triggers>
           <DataTrigger Value="Event" Binding="{Binding Path=SymbolType}">
-            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/SB;component/Resources/IntellisenseEvent.png" />
+            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/sVB;component/Resources/IntellisenseEvent.png" />
           </DataTrigger>
           <DataTrigger Value="Keyword" Binding="{Binding Path=SymbolType}">
-            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/SB;component/Resources/IntellisenseKeyword.png" />
+            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/sVB;component/Resources/IntellisenseKeyword.png" />
           </DataTrigger>
           <DataTrigger Value="Method" Binding="{Binding Path=SymbolType}">
-            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/SB;component/Resources/IntellisenseMethod.png" />
+            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/sVB;component/Resources/IntellisenseMethod.png" />
           </DataTrigger>
           <DataTrigger Value="Property" Binding="{Binding Path=SymbolType}">
-            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/SB;component/Resources/IntellisenseProperty.png" />
+            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/sVB;component/Resources/IntellisenseProperty.png" />
           </DataTrigger>
           <DataTrigger Value="Subroutine" Binding="{Binding Path=SymbolType}">
-            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/SB;component/Resources/IntellisenseSubroutine.png" />
+            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/sVB;component/Resources/IntellisenseSubroutine.png" />
           </DataTrigger>
           <DataTrigger Value="Variable" Binding="{Binding Path=SymbolType}">
-            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/SB;component/Resources/IntellisenseVariable.png" />
+            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/sVB;component/Resources/IntellisenseVariable.png" />
           </DataTrigger>
           <DataTrigger Value="Label" Binding="{Binding Path=SymbolType}">
-            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/SB;component/Resources/IntellisenseLabel.png" />
+            <Setter TargetName="itemImage" Property="Image.Source" Value="pack://application:,,/sVB;component/Resources/IntellisenseLabel.png" />
           </DataTrigger>
         </DataTemplate.Triggers>
       </DataTemplate>

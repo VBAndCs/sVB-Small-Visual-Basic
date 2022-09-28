@@ -9,7 +9,7 @@ Imports System.Windows.Input
 Imports System.Windows.Markup
 
 Namespace Microsoft.SmallVisualBasic.Utility
-    Public Partial Class PublishProgramDialog
+    Partial Public Class PublishProgramDialog
         Inherits Window
         Implements IComponentConnector
 

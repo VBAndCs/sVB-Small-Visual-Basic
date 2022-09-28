@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.Reflection
+﻿Imports System.Reflection
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Library
@@ -8,6 +6,7 @@ Imports Microsoft.SmallVisualBasic.Library
 Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Class CompletionItemWrapper
         Private _item As CompletionItem
+        Private _enumName As String
         Private Shared _moduleDocMap As New Dictionary(Of String, ModuleDocumentation)()
         Private _documentation As CompletionItemDocumentation
 
@@ -111,7 +110,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Public ReadOnly Property Display As String
             Get
-                Return _item.DisplayName
+                If _enumName = "" Then
+                    Return _item.DisplayName
+                Else
+                    Return _enumName & "." & _item.DisplayName
+                End If
             End Get
         End Property
 
@@ -121,8 +124,23 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Get
         End Property
 
-        Public Sub New(item As CompletionItem, bag As CompletionBag)
+        Public ReadOnly Property ReplacementText As String
+            Get
+                If _item.ReplacementText = "" Then
+                    Return Display
+                ElseIf _enumName = "" Then
+                    Return _item.ReplacementText
+                Else
+                    Return _enumName & "." & _item.ReplacementText
+                End If
+            End Get
+        End Property
+
+
+        Public Sub New(item As CompletionItem, bag As CompletionBag, Optional enumName As String = "")
             _item = item
+            _enumName = enumName
+
             Dim normalizedModuleName = GetNormalizedModuleName()
             Dim value As ModuleDocumentation = Nothing
 

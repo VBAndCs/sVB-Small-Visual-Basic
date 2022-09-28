@@ -117,6 +117,7 @@ Namespace WinForms
                 New ShortcutInfo("Dbl", VariableType.Double),
                 New ShortcutInfo("Color", VariableType.Color),
                 New ShortcutInfo("Key", VariableType.Key),
+                New ShortcutInfo("Dialog", VariableType.DialogResult),
                 New ShortcutInfo("Date", VariableType.Date),
                 New ShortcutInfo("Control", VariableType.Control),
                 New ShortcutInfo("Form", VariableType.Form),

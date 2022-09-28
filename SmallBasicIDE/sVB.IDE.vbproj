@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>WinExe</OutputType>
     <LangVersion>16</LangVersion>
-    <AssemblyName>SB</AssemblyName>
+    <AssemblyName>sVB</AssemblyName>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <WarningLevel>4</WarningLevel>
@@ -103,7 +103,6 @@
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Properties\Resources.vb" />
     <Compile Include="Properties\Settings.vb" />
-    <Compile Include="Utility\RunAfter.vb" />
     <Compile Include="Shell\BooleanToCollapseStateConverter.vb" />
     <Compile Include="Shell\CommandChunk.vb" />
     <Compile Include="Shell\CommandChunkCollection.vb" />

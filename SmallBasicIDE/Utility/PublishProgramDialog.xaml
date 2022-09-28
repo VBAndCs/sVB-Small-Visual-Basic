@@ -7,7 +7,7 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
-          <Image Name="iconImageControl" Grid.Column="0" Width="64" Height="64" VerticalAlignment="Top" Margin="8" Source="/SB;component/Resources/Information.png" />
+          <Image Name="iconImageControl" Grid.Column="0" Width="64" Height="64" VerticalAlignment="Top" Margin="8" Source="/sVB;component/Resources/Information.png" />
           <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" FlowDirection="{x:Static sb:App.FlowDirection}">
             <TextBlock Margin="4" TextWrapping="WrapWithOverflow" FontFamily="Segoe UI" FontSize="16" Foreground="#002ab5" Text="{lu:Localized PublishedToWeb}" />
             <StackPanel Name="optionalContentControl" Margin="4">

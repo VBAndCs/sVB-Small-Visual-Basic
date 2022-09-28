@@ -1,0 +1,14 @@
+Sub Button1_OnClick()
+   result = Forms.ShowDialog(
+      "form2", "Do you want to save the changes?")
+   
+   If result = DialogResults.Yes Then
+      TextBox1.Text = "User accepted to save changes."
+   ElseIf result = DialogResults.No Then
+      TextBox1.Text = "User refused to save changes."
+   Else
+      TextBox1.Text = "User canceled the operation."
+   EndIf
+   
+EndSub
+

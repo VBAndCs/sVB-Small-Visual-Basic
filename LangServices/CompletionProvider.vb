@@ -6,9 +6,6 @@ Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
 Imports Microsoft.SmallVisualBasic.Completion
 Imports System.Runtime.InteropServices
-Imports System.Collections.ObjectModel
-Imports Microsoft.Windows.Controls
-Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.LanguageService
     Public NotInheritable Class CompletionProvider
@@ -16,7 +13,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Const NULL = ChrW(0)
         Private textBuffer As ITextBuffer
-        Private textView As ITextView
+        Friend textView As ITextView
         Private completionHelper As CompletionHelper
         Private adornment As CompletionAdornment
         Private dismissedSpan As ITextSpan
@@ -28,7 +25,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Public Sub New(textView As ITextView,
                        editorOperationsProvider As IEditorOperationsProvider,
                        undoHistoryRegistry As IUndoHistoryRegistry
-                    )
+                   )
 
             Me.textView = textView
             textBuffer = textView.TextBuffer
@@ -51,7 +48,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
         End Sub
 
-        Public Shared compHistory As New Dictionary(Of String, String)
+        Public Shared CompHistory As New Dictionary(Of String, String)
 
         Private Shared _fontNames As New List(Of CompletionItem)
         ReadOnly Property FontNames As List(Of CompletionItem)
@@ -68,12 +65,21 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Get
         End Property
 
-        Public Sub CommitItem(item As CompletionItem)
+        Public Sub CommitItem(itemWrapper As CompletionItemWrapper)
+            Dim item = itemWrapper.CompletionItem
             If adornment IsNot Nothing Then
                 Dim key = item.HistoryKey
-                If key <> "" Then compHistory(key) = item.DisplayName
-                Dim repText = item.ReplacementText
+                If key <> "" Then CompHistory(key) = item.DisplayName
+                Dim repText = itemWrapper.ReplacementText
                 Dim replaceSpan = GetReplacementSpane()
+
+                If replaceSpan.Length = 0 And replaceSpan.Start > 0 Then
+                    Select Case textView.TextSnapshot(replaceSpan.Start - 1)
+                        Case "=", "<", ">", "+", "-", "*", "/"
+                            repText = " " + repText
+                    End Select
+                End If
+
                 editorOperations.ReplaceText(replaceSpan, repText, undoHistory)
                 DismissAdornment(force:=True)
                 TryCast(textView, Control)?.Focus()
@@ -85,9 +91,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim replaceSpan = adornment.ReplaceSpan
             Dim snapshot = textView.TextSnapshot
             Dim span = replaceSpan.GetSpan(snapshot)
+            Dim start As Integer = span.Start
+            Dim pos = textView.Caret.Position.TextInsertionIndex
+            If pos > span.End Then Return New SnapshotSpan(snapshot, pos, 0)
+
             Dim text = replaceSpan.GetText(replaceSpan.TextBuffer.CurrentSnapshot)
 
-            Dim start As Integer = span.Start
             Dim newStart = start
             Dim tokens = LineScanner.GetTokens(text, 0)
             Dim n = tokens.Count - 1
@@ -643,8 +652,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim newText = textChange.NewText.Trim(" "c, vbTab)
 
             Dim pos = textView.Caret.Position.TextInsertionIndex
-            If pos - textChange.Position > 1 OrElse pos < textChange.Position Then
+            If Math.Abs(pos - textChange.Position) > 1 Then
                 popHelp.IsOpen = False
+                DismissAdornment(force:=False)
                 Return
             End If
 
@@ -653,10 +663,39 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             If adornment IsNot Nothing Then
                 Dim span = adornment.Span.GetSpan(e.After)
 
-                If span.IsEmpty OrElse newEnd < span.Start OrElse newEnd > span.End Then
+                If span.IsEmpty OrElse newEnd < span.Start OrElse
+                            textChange.NewText.IndexOfAny({vbCr, vbLf}) > -1 Then
                     DismissAdornment(force:=False)
-                End If
 
+                Else
+                    Dim snapshot = e.After
+                    Dim line = snapshot.GetLineFromPosition(newEnd)
+                    Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
+                    Dim curToken As Token
+                    Dim index = ParseTokens(tokens, newEnd - line.Start, curToken, Nothing, Nothing)
+                    Dim adornmentSpan = GetTextSpanFromToken(line, curToken)
+                    Dim replaceSpan = adornmentSpan
+
+                    If replaceSpan.GetSpan(snapshot).IsEmpty AndAlso line.TextSnapshot.Length > 0 Then
+                        If curToken.Column = 0 Then
+                            adornmentSpan = New TextSpan(
+                                    snapshot,
+                                    line.Start,
+                                    System.Math.Min(curToken.EndColumn + 1, snapshot.Length),
+                                    SpanTrackingMode.EdgeInclusive
+                             )
+                        Else
+                            adornmentSpan = New TextSpan(
+                                snapshot,
+                                line.Start + curToken.Column - 1,
+                                System.Math.Min(curToken.EndColumn - curToken.Column + 1, snapshot.Length),
+                                SpanTrackingMode.EdgeInclusive
+                            )
+                        End If
+                    End If
+
+                    adornment.ModifySpans(adornmentSpan, replaceSpan)
+                End If
 
             ElseIf newText <> "" Then
                 Dim c = newText.Last
@@ -696,7 +735,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             CompletionHelper.CurrentColumn = column
             byConventionName = ""
 
-            Dim properties = line.TextSnapshot.TextBuffer.Properties
+            Dim properties = textBuffer.Properties
             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
             Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
             Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
@@ -790,19 +829,24 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
 
             Else
-                Dim value As TypeInfo = Nothing
+                Dim typeInfo As TypeInfo = Nothing
                 Dim name = identifierToken.LCaseText
-                If newBag.TypeInfoBag.Types.TryGetValue(name, value) Then
-                    CompletionHelper.FillMemberNames(newBag, value, identifierToken.Text)
+
+                If newBag.TypeInfoBag.Types.TryGetValue(name, typeInfo) Then
+                    CompletionHelper.FillMemberNames(newBag, typeInfo, identifierToken.Text)
+
                 ElseIf isLookup OrElse name.StartsWith("data") OrElse name.EndsWith("data") Then
                     completionHelper.FillDynamicMembers(newBag, identifierToken.Text)
+
                 ElseIf controlsInfo?.ContainsKey(name) Then
                     FillMemberNames(newBag, controlsInfo(name), identifierToken.Text)
+
                 Else
                     Dim moduleName = completionHelper.GetInferedType(identifierToken)
                     If moduleName = "" Then
                         moduleName = WinForms.PreCompiler.GetModuleFromVarName(name)
                     End If
+
                     If moduleName <> "" Then
                         FillMemberNames(newBag, moduleName, identifierToken.Text)
                         If forHelp Then
@@ -929,34 +973,131 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Return token.ParseType = ParseType.Operator
         End Function
 
+        Dim ShowCompletion As New RunAction()
+
         Public Sub ShowCompletionAdornment(
-                              snapshot As ITextSnapshot,
-                              caretPosition As Integer,
-                              Optional checkEspecialItem As Boolean = False
+                           snapshot As ITextSnapshot,
+                           caretPosition As Integer,
+                           Optional checkEspecialItem As Boolean = False
                     )
 
+            ' Waith until code editor respond to changes
+            ShowCompletion.After(
+                  20,
+                  Sub() DoShowCompletionAdornment(snapshot, caretPosition, checkEspecialItem)
+            )
+        End Sub
+
+        Public Sub DoShowCompletionAdornment(
+                           snapshot As ITextSnapshot,
+                           caretPosition As Integer,
+                           Optional checkEspecialItem As Boolean = False
+                    )
+
+            Dim bag As CompletionBag
             Dim especialItem = ""
+            Dim leadingSpace = ""
+            Dim curToken As Token
+
             Dim line = snapshot.GetLineFromPosition(caretPosition)
             If checkEspecialItem Then
                 Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
                 If tokens.Count < 2 Then Return
 
                 Dim n = GetLastTokenIndex(line, caretPosition, tokens)
+                If n = 0 Then Return
+
                 Select Case tokens(n).Type
-                    Case TokenType.Equals, TokenType.NotEqualTo, TokenType.GreaterThan, TokenType.LessThan, TokenType.GreaterThanEqualTo, TokenType.LessThanEqualTo
-                        Dim name = If(n = 0, "", tokens(n - 1).LCaseText)
+                    Case TokenType.Equals, TokenType.NotEqualTo,
+                             TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
+                             TokenType.LessThan, TokenType.LessThanEqualTo
+
+                        Dim index = n - 1
+                        Dim matchingPair1 As Char
+                        Dim matchingPair2 As Char
+                        Dim token = tokens(index)
+
+                        curToken = tokens(n)
+                        If caretPosition - line.Start - tokens(n).EndColumn = 0 Then leadingSpace = " "
+
+                        Select Case token.Type
+                            Case TokenType.RightParens
+                                matchingPair1 = ")"c
+                                matchingPair2 = "("c
+
+                            Case TokenType.RightBracket
+                                matchingPair1 = "]"c
+                                matchingPair2 = "["c
+
+                            Case TokenType.RightCurlyBracket
+                                matchingPair1 = "}"c
+                                matchingPair2 = "{"c
+
+                            Case Else
+                                GoTo LineElse
+                        End Select
+
+                        Dim pair1Count = 0
+                        Dim startPos = token.Column + line.Start
+
+                        Do
+                            token = GetNextToken(index, -1, line, tokens)
+                            Select Case token.Text
+                                Case ""
+                                    Return
+                                Case matchingPair1
+                                    pair1Count += 1
+                                Case matchingPair2
+                                    If pair1Count = 0 Then
+                                        token = GetNextToken(index, -1, line, tokens)
+                                        Exit Do
+                                    End If
+                                    pair1Count -= 1
+                            End Select
+                        Loop
+
+LineElse:
+                        Dim name = tokens(index).LCaseText
+
                         If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
-                            especialItem = "colors"
+                            especialItem = "Colors"
                         ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then
-                            especialItem = "keys"
+                            especialItem = "Keys"
+                        ElseIf name = "showdialog" OrElse name.StartsWith("dialogresult") OrElse name.EndsWith("dialogresult") Then
+                            especialItem = "DialogResults"
                         Else
-                            Return
+                            Dim properties = textBuffer.Properties
+                            Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
+                            Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
+                            Dim source = New TextBufferReader(line.TextSnapshot)
+                            Dim symbolTable = completionHelper.Compile(source, controlNames, controlsInfo).Parser.SymbolTable
+                            token.Parent = completionHelper.GetStatement(line.LineNumber)
+
+                            Select Case symbolTable.GetInferedType(token)
+                                Case VariableType.Color
+                                    especialItem = "Colors"
+                                Case VariableType.Key
+                                    especialItem = "Keys"
+                                Case VariableType.DialogResult
+                                    especialItem = "DialogResults"
+                                Case Else
+                                    Return
+                            End Select
                         End If
                 End Select
             End If
 
-            Dim curToken As Token
-            Dim bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
+            If especialItem = "" Then
+                bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
+            Else
+                Dim typeInfo As TypeInfo = Nothing
+                bag = completionHelper.GetEmptyCompletionBag()
+                If bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
+                    CompletionHelper.FillMemberNames(bag, typeInfo, "")
+                    bag.CompletionItems.Sort(
+                        Function(ci1, ci2) ci1.DisplayName.CompareTo(ci2.DisplayName))
+                End If
+            End If
 
             If bag Is Nothing OrElse bag.CompletionItems.Count <= 0 Then
                 Return
@@ -984,16 +1125,15 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     )
                 End If
             End If
+
             adornment = New CompletionAdornment(Me, bag, adornmentSpan, textSpan)
 
-            If AdornmentsChangedEvent IsNot Nothing Then
-                Application.Current.Dispatcher.Invoke(
-                    DispatcherPriority.Normal, CType(
-                    Function()
-                        RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(adornmentSpan))
-                        Return Nothing
-                    End Function, DispatcherOperationCallback), Nothing)
-            End If
+            Application.Current.Dispatcher.Invoke(
+                DispatcherPriority.Normal, CType(
+                Function()
+                    RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(adornmentSpan))
+                    Return Nothing
+                End Function, DispatcherOperationCallback), Nothing)
         End Sub
 
 

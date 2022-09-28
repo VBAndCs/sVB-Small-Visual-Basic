@@ -339,7 +339,7 @@ Namespace Microsoft.SmallVisualBasic
             messageBox.NotificationButtons = Nf.Close Or Nf.OK
             messageBox.okButton.Content = ResourceHelper.GetString("FindCommand")
             messageBox.NotificationIcon = NotificationIcon.Custom
-            messageBox.iconImageControl.Source = New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/Search.png"))
+            messageBox.iconImageControl.Source = New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/Search.png"))
             textBox.SelectAll()
             textBox.Focus()
             Dim notificationButtons As NotificationButtons = messageBox.Display()
@@ -1381,7 +1381,11 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
-            doc?.FixEventHandlers(oldName, newName)
+            If doc IsNot Nothing Then
+                doc.FixEventHandlers(oldName, newName)
+                SaveDesignInfo(doc)
+            End If
+
             Return True
         End Function
 
@@ -1456,6 +1460,10 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub Window_ContentRendered(sender As Object, e As EventArgs)
 
             Dim doc As TextDocument
+            If FilesToOpen.Count > 0 Then
+                DiagramHelper.Designer.ClosePage(False, True)
+            End If
+
             For Each fileName In FilesToOpen
                 fileName = fileName.ToLower()
                 If fileName.EndsWith(".sb") Then
@@ -1519,7 +1527,9 @@ Namespace Microsoft.SmallVisualBasic
             formDesigner.CodeFilePath = newFileName
             formDesigner.FileName = newFileName.Substring(0, newFileName.Length - 2) & "xaml"
             Dim doc = GetDocIfOpened(oldFileName)
-            If doc IsNot Nothing Then doc.FilePath = newFileName
+            If doc IsNot Nothing Then
+                doc.FilePath = newFileName
+            End If
         End Sub
     End Class
 

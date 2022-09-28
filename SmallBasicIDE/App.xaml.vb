@@ -75,27 +75,26 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub CreateComponentDomain()
             LoaderXamlServices.EnsureActivatorsInitialized()
-            Dim text = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) & "\SmallBasic"
+            Dim sbDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) & "\SmallVisualBasic"
 
-            If Not Directory.Exists(text) Then
-                Directory.CreateDirectory(text)
+            If Not Directory.Exists(sbDir) Then
+                Directory.CreateDirectory(sbDir)
             End If
 
-            Dim catalogSourcesAggregator As CatalogSourcesAggregator = New CatalogSourcesAggregator()
-            Dim directoryCatalogSource As DirectoryCatalogSource = New DirectoryCatalogSource()
-            directoryCatalogSource.DirectoryPath = "."
-            directoryCatalogSource.CacheFilePath = Path.Combine(text, "SB.exe.application.catalog")
-            directoryCatalogSource.IsDynamic = False
-            Dim item = directoryCatalogSource
-            Dim directoryCatalogSource2 As DirectoryCatalogSource = New DirectoryCatalogSource()
-            directoryCatalogSource2.DirectoryPath = "Settings"
-            directoryCatalogSource2.CacheFilePath = Path.Combine(text, "SB.exe.settings.catalog")
-            directoryCatalogSource2.IsDynamic = True
-            Dim item2 = directoryCatalogSource2
-            catalogSourcesAggregator.CatalogSources = New List(Of CatalogSource)()
-            catalogSourcesAggregator.CatalogSources.Add(item)
-            catalogSourcesAggregator.CatalogSources.Add(item2)
-            Dim catalog As Catalog = catalogSourcesAggregator.CreateCatalog()
+            Dim catalogSourcesAggregator As New CatalogSourcesAggregator()
+            catalogSourcesAggregator.CatalogSources = New List(Of CatalogSource) From {
+                    New DirectoryCatalogSource With {
+                    .DirectoryPath = ".",
+                    .CacheFilePath = Path.Combine(sbDir, "sVB.exe.application.catalog"),
+                    .IsDynamic = False
+                },
+                New DirectoryCatalogSource With {
+                    .DirectoryPath = "Settings",
+                    .CacheFilePath = Path.Combine(sbDir, "sVB.exe.settings.catalog"),
+                    .IsDynamic = True
+                }
+            }
+            Dim catalog = catalogSourcesAggregator.CreateCatalog()
             GlobalDomain = New ComponentDomain(New CatalogResolver(catalog))
         End Sub
 

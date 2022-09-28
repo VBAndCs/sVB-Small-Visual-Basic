@@ -7,6 +7,7 @@
     [Boolean]
     Color
     Key
+    DialogResult
     Control
     Form
     TextBox

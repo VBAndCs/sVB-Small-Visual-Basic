@@ -1,0 +1,21 @@
+
+LblMsg.Text = Me.ArgsArr
+
+
+'------------------------------------------------
+Sub BtnYes_OnClick()
+   Me.DialogResult = DialogResults.Yes
+   Me.Close()
+EndSub
+
+'------------------------------------------------
+Sub BtnNo_OnClick()
+   Me.DialogResult = DialogResults.No
+   Me.Close()
+EndSub
+
+
+'------------------------------------------------
+Sub BtnCancel_OnClick()
+   Me.Close()
+EndSub

@@ -41,8 +41,13 @@ Namespace Microsoft.SmallVisualBasic.Completion
                             Return MemberInfo?.DeclaringType?.Name.ToLower()
                         End If
 
-                    Case Else
+                    Case CompletionItemType.GlobalVariable,
+                              CompletionItemType.LocalVariable,
+                              CompletionItemType.SubroutineName
                         Return "_" & DisplayName.ToLower()(0)
+
+                    Case Else
+                        Return ""
                 End Select
             End Get
         End Property

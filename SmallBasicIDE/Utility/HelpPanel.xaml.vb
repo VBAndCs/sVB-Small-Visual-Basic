@@ -171,23 +171,23 @@ Namespace Microsoft.SmallVisualBasic.Utility
         Private Function GetIconForSymbolType(symbolType As SymbolType) As BitmapImage
             Select Case symbolType
                 Case SymbolType.Event
-                    Return New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/IntellisenseEvent.png"))
+                    Return New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/IntellisenseEvent.png"))
                 Case SymbolType.Keyword
-                    Return New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/IntellisenseKeyword.png"))
+                    Return New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/IntellisenseKeyword.png"))
                 Case SymbolType.Method
-                    Return New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/IntellisenseMethod.png"))
+                    Return New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/IntellisenseMethod.png"))
                 Case SymbolType.Property
-                    Return New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/IntellisenseProperty.png"))
+                    Return New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/IntellisenseProperty.png"))
                 Case SymbolType.Type
-                    Return New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/IntellisenseItem.png"))
+                    Return New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/IntellisenseItem.png"))
                 Case SymbolType.GlobalVariable
-                    Return New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/IntellisenseVariable.png"))
+                    Return New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/IntellisenseVariable.png"))
                 Case SymbolType.Subroutine
-                    Return New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/IntellisenseSubroutine.png"))
+                    Return New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/IntellisenseSubroutine.png"))
                 Case SymbolType.Label
-                    Return New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/IntellisenseLabel.png"))
+                    Return New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/IntellisenseLabel.png"))
                 Case Else
-                    Return New BitmapImage(New Uri("pack://application:,,/SB;component/Resources/IntellisenseItem.png"))
+                    Return New BitmapImage(New Uri("pack://application:,,/sVB;component/Resources/IntellisenseItem.png"))
             End Select
         End Function
 
