@@ -71,13 +71,13 @@ Namespace Microsoft.SmallVisualBasic
                           New Dictionary(Of String, Token) From {
                                   {propertyName, propertyNameInfo}
                           }
-                    )
+                )
 
                 Dim subroutine = If(_GlobalVariables.ContainsKey(typeName), Nothing, Statements.SubroutineStatement.GetSubroutine(prop))
                 Dim idExpr = New IdentifierExpression() With {
                         .Identifier = typeNameInfo,
                         .Subroutine = subroutine
-                 }
+                }
 
                 propertyNameInfo.SymbolType = Completion.CompletionItemType.DynamicPropertyName
                 AddIdentifier(propertyNameInfo)

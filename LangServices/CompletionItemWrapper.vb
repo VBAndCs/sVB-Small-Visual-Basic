@@ -166,8 +166,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 Case SymbolType.DynamicProperty
                     _documentation = New CompletionItemDocumentation() With {
-                            .Prefix = item.ObjectName & "!",
-                            .Suffix = " Dynamic Property",
+                            .Prefix = "Dynamic Property: " & item.ObjectName & "!",
+                            .Suffix = InferType(item.Key, bag),
                             .Summary = item.DefinitionIdintifier.Comment
                     }
 
@@ -223,11 +223,22 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Dim name = GetSymbolName()
                     If name <> "" Then
                         _documentation = value.GetItemDocumentation(name)
+                        If _documentation IsNot Nothing Then
+                            _documentation.Suffix = InferType(item.MemberInfo)
+                        End If
                     End If
             End Select
 
 
         End Sub
+
+        Private Function InferType(memberInfo As MemberInfo) As String
+            If memberInfo Is Nothing Then Return ""
+            Dim attrs = memberInfo.GetCustomAttributes(GetType(WinForms.ReturnValueTypeAttribute), False)
+            If attrs Is Nothing OrElse attrs.Count = 0 Then Return ""
+            Dim type = CType(attrs(0), WinForms.ReturnValueTypeAttribute).ReturnTypeValue.ToString()
+            Return " As " & type
+        End Function
 
         Private Function InferType(key As String, bag As CompletionBag) As String
             Dim varType = bag.SymbolTable.GetInferedType(key)

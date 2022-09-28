@@ -42,7 +42,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
             )
         End Function
 
-        Dim completionBagCashe As New Dictionary(Of Integer, CompletionBag)
+        Dim completionBagCashe As New Dictionary(Of String, CompletionBag)
 
         Public Shared Function GetSubroutine(displayName As String, parseTree As List(Of Statements.Statement)) As SubroutineStatement
 
@@ -69,8 +69,9 @@ Namespace Microsoft.SmallVisualBasic.Completion
                          forHelp As Boolean
                    ) As CompletionBag
 
-            If completionBagCashe.ContainsKey(line) Then
-                Return completionBagCashe(line)
+            Dim key = $"{line}_{column}"
+            If completionBagCashe.ContainsKey(key) Then
+                Return completionBagCashe(key)
             End If
 
             Dim bag = GetEmptyCompletionBag()
@@ -86,7 +87,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 FillAllGlobalItems(bag, inGlobalScope:=True)
             End If
 
-            completionBagCashe.Add(line, bag)
+            completionBagCashe.Add(key, bag)
             Return bag
         End Function
 
@@ -425,17 +426,18 @@ Namespace Microsoft.SmallVisualBasic.Completion
         End Function
 
         Public Sub FillDynamicMembers(bag As CompletionBag, typeName As String)
-            Dim x = TrimData(typeName)
+            Dim x = TrimData(typeName, False)
 
             ' Add exact obj first to get correct help info
             For Each type In bag.SymbolTable.Dynamics
-                Dim y = TrimData(type.Key)
+                Dim y = TrimData(type.Key, False)
                 If x = y Then
                     FillDynamicMembers(bag, typeName, type.Value)
                     Exit For
                 End If
             Next
 
+            x = TrimData(typeName)
             ' Then add similar objects to add more completion properties
             For Each type In bag.SymbolTable.Dynamics
                 Dim y = TrimData(type.Key)
@@ -450,25 +452,36 @@ Namespace Microsoft.SmallVisualBasic.Completion
 
         Private Shared numChars() As Char = {"_"c, "0"c, "1"c, "2"c, "3"c, "4"c, "5"c, "6"c, "7"c, "8"c, "9"c}
 
-        Public Shared Function TrimData(name As String) As String
+        Public Shared Function TrimData(name As String, Optional removeNums As Boolean = True) As String
             name = name.ToLower()
             If name.StartsWith("data") Then
                 name = name.Substring(4)
             ElseIf name.EndsWith("data") Then
                 name = name.Substring(0, name.Length - 4)
             End If
-            Return name.TrimEnd(numChars).TrimStart("_"c)
+
+            If removeNums Then
+                name = name.TrimEnd(numChars).TrimStart("_"c)
+            End If
+
+            Return name
         End Function
 
-        Public Sub FillDynamicMembers(bag As CompletionBag, typeName As String, members As Dictionary(Of String, Token))
+        Public Sub FillDynamicMembers(
+                          bag As CompletionBag,
+                          typeName As String,
+                          members As Dictionary(Of String, Token)
+                    )
 
             For Each prop In members.Values
                 ' Avoid showing new property names in completion while being typed
                 If Not bag.ForHelp AndAlso prop.Line = CurrentLine AndAlso prop.EndColumn = CurrentColumn Then Continue For
 
                 Dim Found = False
+                Dim propKey = $"dynprop.{TrimData(typeName)}.{prop.LCaseText}"
+
                 For Each item In bag.CompletionItems
-                    If item.Key = prop.Text Then
+                    If item.Key = propKey Then
                         Found = True
                         Exit For
                     End If
@@ -477,7 +490,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 If Found Then Continue For
 
                 bag.CompletionItems.Add(New CompletionItem() With {
-                        .Key = prop.Text,
+                        .Key = propKey,
                         .DisplayName = prop.Text,
                         .ObjectName = typeName,
                         .ItemType = CompletionItemType.DynamicPropertyName,

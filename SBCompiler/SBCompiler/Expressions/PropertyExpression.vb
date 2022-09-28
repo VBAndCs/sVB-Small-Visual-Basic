@@ -2,6 +2,7 @@
 Imports System.Globalization
 Imports System.Reflection
 Imports System.Reflection.Emit
+Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Expressions
@@ -14,6 +15,14 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public IsDynamic As Boolean
         Public isSet As Boolean
+
+        Public ReadOnly Property Key As String
+            Get
+                Dim dynTypeName = CompletionHelper.TrimData(TypeName.Text)
+                Return $"dynprop.{dynTypeName}.{PropertyName.LCaseText}"
+            End Get
+        End Property
+
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)

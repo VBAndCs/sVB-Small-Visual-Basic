@@ -59,7 +59,7 @@ Namespace Microsoft.SmallVisualBasic.Utility
                         FillInfo(True)
 
                     Case SymbolType.DynamicProperty
-                        methodType = " Dynamic Property"
+                        methodType = _itemWrapper.Documentation?.Suffix
                         FillInfo(False)
 
                     Case SymbolType.Control, SymbolType.Label, SymbolType.Literal,

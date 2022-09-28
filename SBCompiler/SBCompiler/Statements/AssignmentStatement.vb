@@ -31,6 +31,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                     prop.isSet = True
                     If prop.IsDynamic Then
                         symbolTable.InferedTypes(symbolTable.GetKey(prop.TypeName)) = VariableType.Array
+                        InferType(symbolTable, prop.PropertyName, prop.Key)
                     Else
                         Dim typeInfo = symbolTable.GetTypeInfo(prop.TypeName)
                         If typeInfo IsNot Nothing AndAlso typeInfo.Events.TryGetValue(prop.PropertyName.LCaseText, Nothing) Then
@@ -51,52 +52,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
 
             If TypeOf LeftValue Is IdentifierExpression Then
-                Dim identifierExpression = TryCast(LeftValue, IdentifierExpression)
-                Dim key = symbolTable.AddVariable(identifierExpression, Me.GetSummery(), IsLocalVariable)
-                If key <> "" Then
-                    Dim varType = WinForms.PreCompiler.GetVarType(identifierExpression.Identifier.Text)
-                    If varType <> VariableType.None Then
-                        symbolTable.InferedTypes(key) = varType
-                    Else
-                        Dim literalExpr = TryCast(RightValue, LiteralExpression)
-                        If literalExpr IsNot Nothing Then
-                            Select Case literalExpr.Literal.Type
-                                Case TokenType.NumericLiteral
-                                    symbolTable.InferedTypes(key) = VariableType.Double
-                                Case TokenType.True, TokenType.False
-                                    symbolTable.InferedTypes(key) = VariableType.Boolean
-                                Case TokenType.StringLiteral
-                                    symbolTable.InferedTypes(key) = VariableType.String
-                                Case TokenType.DateLiteral
-                                    symbolTable.InferedTypes(key) = VariableType.Date
-                            End Select
-
-                        ElseIf TypeOf RightValue Is NegativeExpression Then
-                            symbolTable.InferedTypes(key) = VariableType.Double
-
-                        ElseIf TypeOf RightValue Is InitializerExpression Then
-                            symbolTable.InferedTypes(key) = VariableType.Array
-
-                        ElseIf TypeOf RightValue Is IdentifierExpression Then
-                            symbolTable.InferedTypes(key) = symbolTable.GetInferedType(CType(RightValue, IdentifierExpression).Identifier)
-
-                        ElseIf TypeOf RightValue Is MethodCallExpression Then
-                            Dim methodExpr = CType(RightValue, MethodCallExpression)
-                            symbolTable.InferedTypes(key) = symbolTable.GetReturnValueType(methodExpr.TypeName, methodExpr.MethodName, True)
-
-                        ElseIf TypeOf RightValue Is PropertyExpression Then
-                            Dim propExpr = CType(RightValue, PropertyExpression)
-                            symbolTable.InferedTypes(key) = symbolTable.GetReturnValueType(propExpr.TypeName, propExpr.PropertyName, False)
-                        Else
-                            Dim name = identifierExpression.Identifier.LCaseText
-                            If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
-                                symbolTable.InferedTypes(key) = VariableType.Color
-                            End If
-                        End If
-                    End If
-                End If
-
-                identifierExpression.AddSymbolInitialization(symbolTable)
+                Dim identifierExp = TryCast(LeftValue, IdentifierExpression)
+                Dim key = symbolTable.AddVariable(identifierExp, Me.GetSummery(), IsLocalVariable)
+                InferType(symbolTable, identifierExp.Identifier, key)
+                identifierExp.AddSymbolInitialization(symbolTable)
 
             ElseIf TypeOf LeftValue Is ArrayExpression Then
                 Dim arrayExpression = CType(LeftValue, ArrayExpression)
@@ -109,6 +68,67 @@ Namespace Microsoft.SmallVisualBasic.Statements
                     symbolTable.InferedTypes(key) = VariableType.Array
                 End If
                 arrayExpression.AddSymbolInitialization(symbolTable)
+            End If
+        End Sub
+
+        Private Sub InferType(
+                        symbolTable As SymbolTable,
+                        identifier As Token,
+                        key As String
+                    )
+
+            If key = "" Then Return
+
+            Dim InferedTypes = symbolTable.InferedTypes
+            If InferedTypes.ContainsKey(key) Then Return
+
+            Dim varType = WinForms.PreCompiler.GetVarType(identifier.Text)
+
+            If varType <> VariableType.None Then
+                InferedTypes(key) = varType
+                Return
+            End If
+
+            Dim literalExpr = TryCast(RightValue, LiteralExpression)
+            If literalExpr IsNot Nothing Then
+                Select Case literalExpr.Literal.Type
+                    Case TokenType.NumericLiteral
+                        InferedTypes(key) = VariableType.Double
+                    Case TokenType.True, TokenType.False
+                        InferedTypes(key) = VariableType.Boolean
+                    Case TokenType.StringLiteral
+                        InferedTypes(key) = VariableType.String
+                    Case TokenType.DateLiteral
+                        InferedTypes(key) = VariableType.Date
+                End Select
+                Return
+            End If
+
+            If TypeOf RightValue Is NegativeExpression Then
+                InferedTypes(key) = VariableType.Double
+
+            ElseIf TypeOf RightValue Is InitializerExpression Then
+                InferedTypes(key) = VariableType.Array
+
+            ElseIf TypeOf RightValue Is IdentifierExpression Then
+                InferedTypes(key) = symbolTable.GetInferedType(CType(RightValue, IdentifierExpression).Identifier)
+
+            ElseIf TypeOf RightValue Is MethodCallExpression Then
+                Dim methodExpr = CType(RightValue, MethodCallExpression)
+                InferedTypes(key) = symbolTable.GetReturnValueType(methodExpr.TypeName, methodExpr.MethodName, True)
+
+            ElseIf TypeOf RightValue Is PropertyExpression Then
+                Dim prop = CType(RightValue, PropertyExpression)
+                If prop.IsDynamic Then
+                    InferedTypes(key) = symbolTable.GetInferedType(prop.Key)
+                Else
+                    InferedTypes(key) = symbolTable.GetReturnValueType(prop.TypeName, prop.PropertyName, False)
+                End If
+            Else
+                Dim name = identifier.LCaseText
+                If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
+                    InferedTypes(key) = VariableType.Color
+                End If
             End If
         End Sub
 

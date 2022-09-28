@@ -636,7 +636,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     tokens,
                     index + If(moveBack, -1, 1),
                     moveBack
-                )
+           )
         End Function
 
         Dim sourceCodeChanged As Boolean = True
@@ -875,7 +875,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         bag.CompletionItems.AddRange(newBag.CompletionItems)
                     End If
                     newBag = bag
-                    needsToReCompile = False
                 End If
             End If
 
