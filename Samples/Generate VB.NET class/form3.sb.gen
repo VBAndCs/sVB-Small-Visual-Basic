@@ -1,0 +1,21 @@
+'@Form Hints:
+'#Form3{
+'    TextBox1: TextBox
+'    Button1: Button
+'}
+
+Me = "Form3"
+TextBox1 = "form3.textbox1"
+Button1 = "form3.button1"
+Form3 = Forms.LoadForm("Form3", "form3.xaml")
+Form.SetArgsArr(form3, Stack.PopValue("_form3_argsArr"))
+Form.Show(Form3)
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+

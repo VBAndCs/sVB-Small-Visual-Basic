@@ -42,8 +42,6 @@ Namespace Microsoft.SmallVisualBasic.Completion
             )
         End Function
 
-        Dim completionBagCashe As New Dictionary(Of String, CompletionBag)
-
         Public Shared Function GetSubroutine(displayName As String, parseTree As List(Of Statements.Statement)) As SubroutineStatement
 
             If parseTree Is Nothing Then Return Nothing
@@ -69,11 +67,6 @@ Namespace Microsoft.SmallVisualBasic.Completion
                          forHelp As Boolean
                    ) As CompletionBag
 
-            Dim key = $"{line}_{column}"
-            If completionBagCashe.ContainsKey(key) Then
-                Return completionBagCashe(key)
-            End If
-
             Dim bag = GetEmptyCompletionBag()
             bag.ForHelp = forHelp
             bag.NextToEquals = nextToEquals
@@ -87,7 +80,6 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 FillAllGlobalItems(bag, inGlobalScope:=True)
             End If
 
-            completionBagCashe.Add(key, bag)
             Return bag
         End Function
 
@@ -505,7 +497,6 @@ Namespace Microsoft.SmallVisualBasic.Completion
             _compiler.Parser.SymbolTable.ModuleNames = moduleNames
 
             _compiler.Compile(source, True)
-            completionBagCashe.Clear()
             Return _compiler
         End Function
     End Class

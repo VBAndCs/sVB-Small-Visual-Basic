@@ -197,7 +197,7 @@ Namespace WinForms
             Return FromARGB(_color.A, _color.R, _color.G, value)
         End Function
 
-        Private Shared _colorNames As New Dictionary(Of String, String) From {
+        Friend Shared _colorNames As New Dictionary(Of String, String) From {
                 {"#F0F8FF", "AliceBlue"},
                 {"#FAEBD7", "AntiqueWhite"},
                 {"#7FFFD4", "Aquamarine"},

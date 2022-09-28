@@ -1,8 +1,8 @@
 ﻿Imports Microsoft.SmallBasic
-Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.LanguageService
 Imports Microsoft.VisualBasic
 Imports System
+Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports System.Linq
 Imports System.Text
@@ -59,14 +59,19 @@ Namespace Microsoft.SmallVisualBasic.Utility
                         FillInfo(True)
 
                     Case SymbolType.DynamicProperty
-                        methodType = _itemWrapper.Documentation?.Suffix
                         FillInfo(False)
 
                     Case SymbolType.Control, SymbolType.Label, SymbolType.Literal,
                         SymbolType.GlobalVariable, SymbolType.LocalVariable
                         FillInfo(False)
 
-                    Case SymbolType.Property, SymbolType.Event, SymbolType.Type
+                    Case SymbolType.Property, SymbolType.Event
+                        Dim type = value.SymbolType.ToString() & ": " & GetTypeDisplayName()
+                        Dim definition As New Span()
+                        FillTitle(definition)
+                        FillDescription(definition, If(type = "", "", type & "."))
+
+                    Case SymbolType.Type
                         methodType = " " & value.SymbolType.ToString()
                         Dim type = GetTypeDisplayName()
                         Dim definition As New Span()
@@ -201,34 +206,7 @@ Namespace Microsoft.SmallVisualBasic.Utility
             Dim addReturnOnly = paramIndex >= params.Count
             Dim addAllParams = paramIndex = -1 OrElse (addReturnOnly AndAlso documentation.Returns = "")
 
-            FillTitle(definition)
-
-            If hasParams Then
-                definition.Inlines.Add(New TextRun() With {
-                        .Text = "(",
-                        .Style = _typeStyle
-                 })
-
-                Dim n = params.Count - 1
-                For i = 0 To n
-                    definition.Inlines.Add(New TextRun() With {
-                        .Text = params(i),
-                        .Style = If(i = paramIndex, _selectedStyle, _typeStyle)
-                     })
-
-                    If i < n Then
-                        definition.Inlines.Add(New TextRun() With {
-                             .Text = ", ",
-                            .Style = _typeStyle
-                        })
-                    End If
-                Next
-
-                definition.Inlines.Add(New TextRun() With {
-                        .Text = ")",
-                        .Style = _typeStyle
-                 })
-            End If
+            FillTitle(definition, hasParams)
 
             FillDescription(definition, If(name = "", documentation.Prefix, name & "."), addAllParams)
 
@@ -290,23 +268,55 @@ Namespace Microsoft.SmallVisualBasic.Utility
             End If
         End Sub
 
-        Private Sub FillTitle(definition As Span)
+        Private Sub FillParams(definition As Span)
+            Dim params = _itemWrapper.Documentation.ParamsDoc.Keys
+            Dim paramIndex = _itemWrapper.CompletionItem.ParamIndex
+
+            definition.Inlines.Add(New TextRun() With {
+                    .Text = "(",
+                    .Style = _typeStyle
+             })
+
+            Dim n = params.Count - 1
+            For i = 0 To n
+                definition.Inlines.Add(New TextRun() With {
+                    .Text = params(i),
+                    .Style = If(i = paramIndex, _selectedStyle, _typeStyle)
+                 })
+
+                If i < n Then
+                    definition.Inlines.Add(New TextRun() With {
+                         .Text = ", ",
+                        .Style = _typeStyle
+                    })
+                End If
+            Next
+
+            definition.Inlines.Add(New TextRun() With {
+                        .Text = ")",
+                        .Style = _typeStyle
+                 })
+        End Sub
+
+        Private Sub FillTitle(definition As Span, Optional hasParams As Boolean = False)
             Dim item = _itemWrapper.CompletionItem
 
-            If Not item.DefinitionIdintifier.IsIllegal Then
-                gotoRun.Text = _itemWrapper.Display
-                gotoRun.Style = _linkStyle
-                definition.Inlines.Add(gotoDefinintion)
+            If item.DefinitionIdintifier.IsIllegal Then
                 definition.Inlines.Add(New TextRun() With {
-                    .Text = methodType,
+                    .Text = _itemWrapper.Display,
                     .Style = _typeStyle
                 })
             Else
-                definition.Inlines.Add(New TextRun() With {
-                    .Text = _itemWrapper.Display & methodType,
-                    .Style = _typeStyle
-                })
+                gotoRun.Text = _itemWrapper.Display
+                gotoRun.Style = _linkStyle
+                definition.Inlines.Add(gotoDefinintion)
             End If
+
+            If hasParams Then FillParams(definition)
+            definition.Inlines.Add(New TextRun() With {
+                .Text = methodType,
+                .Style = _typeStyle
+            })
         End Sub
 
         Private Sub FillTypeMembers()

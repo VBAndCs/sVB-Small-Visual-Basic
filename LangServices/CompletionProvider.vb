@@ -859,18 +859,18 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             If addGlobals OrElse newBag Is Nothing OrElse newBag.CompletionItems.Count = 0 Then
                 If Not (currentToken.Type = TokenType.StringLiteral OrElse currentToken.Type = TokenType.Comment) Then
-
-                    ' Fix prevToken if current token not found,
+                    ' Fix prevToken if current token not found
                     If currentToken = Token.Illegal AndAlso index > 0 Then
                         prevToken = tokens(index - 1)
                     End If
 
                     Dim bag = completionHelper.GetCompletionItems(
-                            line.LineNumber, column,
-                            prevToken.Type = TokenType.Equals OrElse currentToken.Type = TokenType.Equals,
-                            IsCompletionOperator(prevToken) OrElse IsCompletionOperator(currentToken),
-                            forHelp
+                        line.LineNumber, column,
+                        prevToken.Type = TokenType.Equals OrElse currentToken.Type = TokenType.Equals,
+                        IsCompletionOperator(prevToken) OrElse IsCompletionOperator(currentToken),
+                        forHelp
                     )
+
                     If bag.ShowCompletion Then
                         bag.CompletionItems.AddRange(newBag.CompletionItems)
                     End If
