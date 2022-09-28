@@ -1457,11 +1457,22 @@ Namespace Microsoft.SmallVisualBasic
             txt.Tag = formDesigner.SelectedIndex
         End Sub
 
+
         Private Sub Window_ContentRendered(sender As Object, e As EventArgs)
 
             Dim doc As TextDocument
             If FilesToOpen.Count > 0 Then
-                DiagramHelper.Designer.ClosePage(False, True)
+                Dim closePage = False
+                For Each fileName In FilesToOpen
+                    fileName = fileName.ToLower()
+                    If Path.GetExtension(fileName) = ".xaml" OrElse
+                        (Path.GetExtension(fileName) = ".sb" AndAlso File.Exists(fileName.Substring(0, fileName.Length - 2) & "xaml")) Then
+                        closePage = True
+                        Exit For
+                    End If
+                Next
+
+                If closePage Then DiagramHelper.Designer.ClosePage(False, True)
             End If
 
             For Each fileName In FilesToOpen

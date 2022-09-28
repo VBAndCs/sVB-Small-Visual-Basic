@@ -1,5 +1,7 @@
 
-LblMsg.Text = Me.ArgsArr
+Info = Me.ArgsArr
+Me.Text = Info!Title
+LblMsg.Text = Info!Message
 
 
 '------------------------------------------------

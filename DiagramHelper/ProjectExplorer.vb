@@ -66,6 +66,13 @@ Public Class ProjectExplorer
                 Return
             End If
         Next
+
+        If File.Exists(fileName) Then
+            projFiles.Add(New ProjFileInfo(fileName))
+            FilesList.SelectedIndex = projFiles.Count - 1
+        Else
+            FilesList.SelectedIndex = -1
+        End If
     End Sub
 
     Private Function GetProjectName(projDir As String) As Object
