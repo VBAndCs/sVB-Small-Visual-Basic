@@ -130,42 +130,49 @@ Public Class ProjectExplorer
     Protected Overrides Function OnCommit(newName As String) As Boolean
         Dim newFile = Path.Combine(_projDir, newName & ".xaml")
         Dim oldFile = CType(FilesList.SelectedItem, ProjFileInfo).FilePath
+        Try
+            If newName.ToLower() = Path.GetFileNameWithoutExtension(oldFile).ToLower() Then Return True
 
-        If newName.ToLower() = Path.GetFileNameWithoutExtension(oldFile).ToLower() Then Return True
-
-        If File.Exists(newFile) Then
-            MsgBox($"The project folder already contains a file named `{newName}`", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical)
-            Return False
-        End If
-
-        If File.Exists(oldFile) Then
-            File.Move(oldFile, newFile)
-
-            Dim progFileInfo = CType(FilesList.SelectedItem, ProjFileInfo)
-            Dim i = projFiles.IndexOf(progFileInfo)
-            projFiles.RemoveAt(i)
-            progFileInfo.FilePath = newFile
-            projFiles.Insert(i, progFileInfo)
-
-            oldFile = oldFile.Substring(0, oldFile.Length - 4) & "sb"
-            newFile = newFile.Substring(0, newFile.Length - 4) & "sb"
-            If File.Exists(oldFile) And Not File.Exists(newFile) Then
-                File.Move(oldFile, newFile)
+            If File.Exists(newFile) Then
+                MsgBox($"The project folder already contains a file named `{newName}`", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical)
+                Return False
             End If
 
-            RaiseEvent FileNameChanged(oldFile, newFile)
-
-            oldFile &= ".gen"
-            newFile &= ".gen"
-            If File.Exists(oldFile) AndAlso Not File.Exists(newFile) Then
+            If File.Exists(oldFile) Then
                 File.Move(oldFile, newFile)
-            End If
 
-            Return True
-        Else
+                Dim progFileInfo = CType(FilesList.SelectedItem, ProjFileInfo)
+                Dim i = projFiles.IndexOf(progFileInfo)
+                projFiles.RemoveAt(i)
+                progFileInfo.FilePath = newFile
+                projFiles.Insert(i, progFileInfo)
+
+                oldFile = oldFile.Substring(0, oldFile.Length - 4) & "sb"
+                newFile = newFile.Substring(0, newFile.Length - 4) & "sb"
+                If File.Exists(oldFile) And Not File.Exists(newFile) Then
+                    File.Move(oldFile, newFile)
+                End If
+
+
+                Dim oldGenFile = oldFile & ".gen"
+                Dim newGenFile = newFile & ".gen"
+                If File.Exists(oldGenFile) AndAlso Not File.Exists(newGenFile) Then
+                    File.Move(oldGenFile, newGenFile)
+                End If
+
+                RaiseEvent FileNameChanged(oldFile, newFile)
+
+                Return True
+            Else
                 MsgBox($"The file `{oldFile}` doesn't exist in project folder", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical)
-            Return False
-        End If
+                Return False
+            End If
+
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+
+        Return False
     End Function
 
 End Class

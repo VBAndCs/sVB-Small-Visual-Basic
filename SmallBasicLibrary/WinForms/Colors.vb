@@ -1142,14 +1142,11 @@ Namespace WinForms
         Public Shared ReadOnly Property AllColors As Primitive
             Get
                 If _colors.IsEmpty Then
-                    Dim type = GetType(Colors)
-                    Dim props = type.GetProperties()
                     Dim map = New Dictionary(Of Primitive, Primitive)
                     Dim num = 1
 
-                    For Each prop In props
-                        If prop.Name = "AllColors" Then Continue For
-                        map(num) = prop.GetValue(Nothing)
+                    For Each key In Color._colorNames.Keys
+                        map(num) = key
                         num += 1
                     Next
                     _colors._arrayMap = map

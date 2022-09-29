@@ -1536,10 +1536,18 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub ProjExplorer_FileNameChanged(oldFileName As String, newFileName As String)
             formDesigner.CodeFilePath = newFileName
-            formDesigner.FileName = newFileName.Substring(0, newFileName.Length - 2) & "xaml"
+            formDesigner.FileName = newFileName.Substring(0, newFileName.Length - 2).ToLower() & "xaml"
             Dim doc = GetDocIfOpened(oldFileName)
             If doc IsNot Nothing Then
                 doc.FilePath = newFileName
+            End If
+            Dim genFile = newFileName & ".gen"
+            If File.Exists(genFile) Then
+                Dim oldXamlFile = oldFileName.Substring(0, oldFileName.Length - 2).ToLower() & "xaml"
+                oldXamlFile = Path.GetFileName(oldXamlFile)
+                Dim newXamlFile = Path.GetFileName(formDesigner.FileName)
+                Dim code = File.ReadAllText(genFile)
+                File.WriteAllText(genFile, code.Replace(oldXamlFile, newXamlFile))
             End If
         End Sub
     End Class
