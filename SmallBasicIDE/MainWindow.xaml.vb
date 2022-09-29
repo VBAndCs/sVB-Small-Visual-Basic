@@ -537,7 +537,7 @@ Namespace Microsoft.SmallVisualBasic
 
             Try
                 Dim designIsDirty = doc.PageKey = formDesigner.PageKey AndAlso doc.Form <> "" AndAlso formDesigner.HasChanges
-                Dim genSaved = False
+                Dim genSaved = (doc.Form = "")
 
                 If designIsDirty Then
                     SaveDesignInfo(doc)
@@ -638,7 +638,7 @@ Namespace Microsoft.SmallVisualBasic
 
             Dim doc = ActiveDocument
             Dim filePath = doc.FilePath
-            Dim outputFileName = GetOutputFileName(filePath)
+            Dim outputFileName = GetOutputFileName(filePath, doc.Form = "")
             Dim code As String
             Dim gen As String
             Dim errors As List(Of [Error])
@@ -876,7 +876,7 @@ Namespace Microsoft.SmallVisualBasic
             End Try
         End Sub
 
-        Private Function GetOutputFileName(filePath As String) As String
+        Private Function GetOutputFileName(filePath As String, isSingleCodeFile As Boolean) As String
             If filePath = "" Then
                 Dim tempFileName = Path.GetTempFileName()
                 File.Move(tempFileName, tempFileName & ".exe")
@@ -884,8 +884,10 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             Dim docDirectory = Path.GetDirectoryName(filePath)
-            Dim fileName = Path.GetFileNameWithoutExtension(docDirectory)
-            Dim binDirectory = docDirectory & "\bin"
+            Dim fileName = Path.GetFileNameWithoutExtension(If(isSingleCodeFile, filePath, docDirectory))
+            If fileName = "" Then fileName = Path.GetFileNameWithoutExtension(filePath)
+
+            Dim binDirectory = Path.Combine(docDirectory, "bin")
             If Not Directory.Exists(binDirectory) Then Directory.CreateDirectory(binDirectory)
             Dim newFile = Path.Combine(binDirectory, fileName)
 
