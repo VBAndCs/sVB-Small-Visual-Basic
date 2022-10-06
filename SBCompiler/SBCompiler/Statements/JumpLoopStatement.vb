@@ -55,6 +55,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Function
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             Dim loops = GetParentLoops()
 
             If loops.Count > 0 Then

@@ -6,11 +6,11 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v1.9.7" Loaded="Window_Loaded"
+        Title="Small Visual Basic v2.0" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
-    
-  <FrameworkElement.Resources>
+
+    <FrameworkElement.Resources>
         <Style x:Key="CloseButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -70,9 +70,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
- </FrameworkElement.Resources>
-    
-  <UIElement.CommandBindings>
+    </FrameworkElement.Resources>
+
+    <UIElement.CommandBindings>
         <CommandBinding Command="{x:Static l:MainWindow.NewCommand}" 
                     Executed="OnFileNew" />
         <CommandBinding Command="{x:Static l:MainWindow.OpenCommand}" 
@@ -111,9 +111,9 @@
                     Executed="OnProgramEnd" />
         <CommandBinding Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" 
                     CanExecute="CanExportToVisualBasic" Executed="OnExportToVisualBasic" />
-  </UIElement.CommandBindings>
-    
-  <UIElement.InputBindings>
+    </UIElement.CommandBindings>
+
+    <UIElement.InputBindings>
         <KeyBinding Command="{x:Static l:MainWindow.NewCommand}" 
                 Gesture="Ctrl+N" />
         <KeyBinding Command="{x:Static l:MainWindow.OpenCommand}" 
@@ -148,12 +148,13 @@
                 Gesture="Ctrl+Y" />
         <KeyBinding Command="{x:Static l:MainWindow.RunCommand}" 
                 Gesture="F5" />
-  </UIElement.InputBindings>
-    
+    </UIElement.InputBindings>
+
     <Grid>
         <TabControl x:Name="sVBTabs">
             <TabItem x:Name="tabDesigner" Header="Form Design"
-                     Selector.Selected="tabDesigner_Selected">
+                     Selector.Selected="tabDesigner_Selected"
+                     PreviewMouseDoubleClick="tabDesigner_PreviewMouseDoubleClick">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"/>
@@ -165,25 +166,26 @@
                         <RowDefinition Height ="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
+                    
                     <Grid x:Name="DesignerGrid" Grid.Column="1" Grid.RowSpan="4">
                         <DH:Designer x:Name="formDesigner"  
 			                      PageWidth="700" PageHeight="500" ShowGrid="True" />
                     </Grid>
-                    
-                            <DH:ZoomBox x:Name="ZoomBox" Background="AliceBlue"
+
+                    <DH:ZoomBox x:Name="ZoomBox" Background="AliceBlue"
                                     Designer="{Binding ElementName=formDesigner}"  />
 
-                            <DH:OpenedPagesExplorer x:Name="OFExplorer" 
+                    <DH:OpenedPagesExplorer x:Name="OFExplorer" 
                                     Title="Opened Forms" Grid.Row="1" MaxHeight="180"
                                     Designer="{Binding ElementName=formDesigner}"  
                                     ItemDoubleClick="OFExplorer_ItemDoubleClick" />
-                    
-                            <DH:ProjectExplorer x:Name="ProjExplorer" 
+
+                    <DH:ProjectExplorer x:Name="ProjExplorer" 
                                     Title="Project Files" Grid.Row="2" MaxHeight="180"
                                      FileNameChanged="ProjExplorer_FileNameChanged"
                                      ItemDoubleClick="OFExplorer_ItemDoubleClick" />
-                            
-                            <DH:ToolBox x:Name="ToolBox"  Grid.Row="3"
+
+                    <DH:ToolBox x:Name="ToolBox"  Grid.Row="3"
                                      Designer="{Binding ElementName=formDesigner}"  />
                 </Grid>
             </TabItem>
@@ -319,12 +321,12 @@
                                 <GradientStop Color="#cc333363" Offset="1" />
                             </LinearGradientBrush>
                         </Panel.Background>
-                        
+
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Bottom">
                                 <Button Name="endProgramButton" Padding="4" Margin="8" FontWeight="Bold" HorizontalAlignment="Right" Command="{x:Static l:MainWindow.EndProgramCommand}" IsDefault="True" Content="{lu:Localized EndProgramCommand}" />
                             </StackPanel>
-                            
+
                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <TextBlock Name="processRunningMessage" TextAlignment="Center" Margin="8" FontWeight="Bold" FontSize="32" Foreground="#649Db4" TextWrapping="WrapWithOverflow" />
                                 <TextBlock TextAlignment="Center" Margin="8" FontSize="24" Foreground="#999999" TextWrapping="WrapWithOverflow" Text="{lu:Localized WaitForProgramExit}" />
@@ -346,7 +348,7 @@
         <StackPanel x:Name="stkInfo"
                     Orientation="Horizontal" HorizontalAlignment="Right" 
                     VerticalAlignment="Center"   Margin="0,0,5,0">
-            
+
             <Grid x:Name="grdNameText">
                 <Grid.ColumnDefinitions >
                     <ColumnDefinition/>

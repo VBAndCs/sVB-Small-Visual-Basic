@@ -83,6 +83,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             If token.ParseType = ParseType.Identifier Then
                 Dim text = token.LCaseText
 
+                If text = "me" OrElse text = "global" Then
+                    Return keywordType
+                End If
+
                 If (prevToken.Type = TokenType.Dot OrElse prevToken.Type = TokenType.Lookup) Then
                     If b4PrevToken.ParseType = ParseType.Identifier Then
                         Return memberType
@@ -91,11 +95,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 If compiler.TypeInfoBag.Types.ContainsKey(text) Then
                     Return typeType
-                End If
-
-
-                If text = "me" OrElse text = "global" Then
-                    Return keywordType
                 End If
 
                 Return identifierType

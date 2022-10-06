@@ -17,5 +17,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Overridable Sub EmitIL(scope As CodeGenScope)
         End Sub
+
+
     End Class
 End Namespace

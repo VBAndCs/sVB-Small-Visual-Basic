@@ -5,6 +5,8 @@ Imports System.Windows.Markup
 Imports System.Windows.Threading
 
 Public Class Helper
+    Public Const GlobalFileName = "global.xaml"
+    Public Const ExactGlobalFileName = "Global.xaml"
 
     Friend Const MmToPx = 96 / 25.4
     Friend Const CmToPx = 96 / 2.54
@@ -21,10 +23,13 @@ Public Class Helper
     End Function
 
     Public Shared Function FormNameExists(designer As Designer, Optional newFormName As String = "") As Boolean
-        If designer.FileName = "" Then Return False
+        If designer.FormFile = "" Then Return False
 
-        Dim formName = If(newFormName = "", designer.Name.ToLower(), newFormName.ToLower())
-        Dim fileName = designer.FileName
+        Dim formName = If(newFormName = "",
+                designer.Name.ToLower(),
+                newFormName.ToLower()
+        )
+        Dim fileName = designer.FormFile.ToLower()
         Dim projectDir = IO.Path.GetDirectoryName(fileName)
 
         For Each xamlFile In Directory.GetFiles(projectDir, "*.xaml")
@@ -179,8 +184,7 @@ Public Class Helper
         If DisObj Is Nothing Then Return
         Try
             DisObj.Dispatcher.Invoke(DispatcherPriority.Render, Sub() Exit Sub)
-        Catch ex As Exception
-
+        Catch
         End Try
     End Sub
 

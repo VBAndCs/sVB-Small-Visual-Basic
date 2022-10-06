@@ -15,6 +15,8 @@ Public MustInherit Class Explorer
     Public WithEvents FilesList As ListBox
     Protected MustOverride ReadOnly Property ItemsSource As Specialized.INotifyCollectionChanged
     Protected MustOverride Sub OnDeleteItem()
+    Protected MustOverride Function OnBeginEdit() As Boolean
+
     Protected MustOverride Function OnCommit(newName As String) As Boolean
     Protected MustOverride Sub OnSelectionChanged()
 
@@ -87,31 +89,38 @@ Public MustInherit Class Explorer
     Dim ClickCount As Integer
     Private Sub FilesList_PreviewMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs) Handles FilesList.PreviewMouseLeftButtonDown
         item = Helper.GetListBoxItem(e.OriginalSource)
+
         If item Is Nothing Then
             If inEditMode Then Commit()
 
         ElseIf e.ClickCount = 2 Then
             ClickCount = 2
+            item.IsSelected = True
+            e.Handled = True
+
             If Helper.GetParent(Of TextBox)(e.OriginalSource) IsNot Nothing Then Return
             RaiseEvent ItemDoubleClick(sender, e)
-            e.Handled = True
 
         ElseIf (Now - selectedAt).TotalMilliseconds > 200 AndAlso
                     TypeOf e.OriginalSource Is TextBlock AndAlso
                     item.IsSelected AndAlso item.IsFocused Then
 
             ClickCount = 1
+            item.IsSelected = True
+            e.Handled = True
+
             RunAction.After(200,
                    Sub()
                        If ClickCount = 2 Then Return
                        BeginEdit()
-                       e.Handled = True
                        selectedAt = Now
                    End Sub)
         End If
     End Sub
 
     Public Sub BeginEdit()
+        If Not OnBeginEdit() Then Return
+
         inEditMode = True
         Dim brdr As Border = VisualTreeHelper.GetChild(item, 0)
         Dim grid As Grid = brdr.Child

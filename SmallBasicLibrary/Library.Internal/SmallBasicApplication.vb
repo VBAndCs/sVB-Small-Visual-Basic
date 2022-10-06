@@ -94,7 +94,7 @@ Namespace Library.Internal
         End Function
 
         Friend Shared Function GetResourceUri(resourceName As String) As Uri
-            Return New Uri($"pack://application:,,/SmallBasicLibrary;component/Resources/{resourceName}")
+            Return New Uri($"pack://application:,,/SmallVisualBasicLibrary;component/Resources/{resourceName}")
         End Function
 
         Private Shared Sub HandleException(sender As Object, e As UnhandledExceptionEventArgs)
@@ -117,7 +117,7 @@ Namespace Library.Internal
                                            Function() As DockPanel
                                                Dim dockPanel1 As New DockPanel
                                                dockPanel1.Children.Add(New Image With {
-                                                          .Source = New BitmapImage(New Uri("pack://application:,,/SmallBasicLibrary;component/Resources/Error.png")),
+                                                          .Source = New BitmapImage(New Uri("pack://application:,,/SmallVisualBasicLibrary;component/Resources/Error.png")),
                                                           .Width = 48.0,
                                                           .Height = 48.0,
                                                           .Margin = New Thickness(8.0),

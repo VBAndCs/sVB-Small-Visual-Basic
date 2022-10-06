@@ -16,13 +16,15 @@ Namespace Microsoft.SmallVisualBasic
         Public Shared Property FlowDirection As FlowDirection
 
         Protected Overrides Sub OnStartup(e As StartupEventArgs)
+            Dim x = Environment.CommandLine
             For Each arg In e.Args
-                arg = arg.ToLowerInvariant().Trim()
+                arg = arg.Trim()
                 If File.Exists(arg) Then
-                    Microsoft.SmallVisualBasic.MainWindow.FilesToOpen.Add(arg)
+                    SmallVisualBasic.MainWindow.FilesToOpen.Add(arg)
                     Continue For
                 End If
 
+                arg = arg.ToLower()
                 Dim num = arg.IndexOf(":")
                 If num = -1 Then Continue For
 
@@ -75,22 +77,22 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub CreateComponentDomain()
             LoaderXamlServices.EnsureActivatorsInitialized()
-            Dim sbDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) & "\SmallVisualBasic"
+            Dim svbDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) & "\SmallVisualBasic"
 
-            If Not Directory.Exists(sbDir) Then
-                Directory.CreateDirectory(sbDir)
+            If Not Directory.Exists(svbDir) Then
+                Directory.CreateDirectory(svbDir)
             End If
 
             Dim catalogSourcesAggregator As New CatalogSourcesAggregator()
             catalogSourcesAggregator.CatalogSources = New List(Of CatalogSource) From {
                     New DirectoryCatalogSource With {
                     .DirectoryPath = ".",
-                    .CacheFilePath = Path.Combine(sbDir, "sVB.exe.application.catalog"),
+                    .CacheFilePath = Path.Combine(svbDir, "sVB.exe.application.catalog"),
                     .IsDynamic = False
                 },
                 New DirectoryCatalogSource With {
                     .DirectoryPath = "Settings",
-                    .CacheFilePath = Path.Combine(sbDir, "sVB.exe.settings.catalog"),
+                    .CacheFilePath = Path.Combine(svbDir, "sVB.exe.settings.catalog"),
                     .IsDynamic = True
                 }
             }

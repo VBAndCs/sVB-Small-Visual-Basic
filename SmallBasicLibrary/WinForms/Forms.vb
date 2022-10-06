@@ -6,6 +6,7 @@ Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, Sys
 Imports System.Windows.Controls
 Imports System.Windows
 Imports System.ComponentModel
+Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     <SmallBasicType>
@@ -135,6 +136,7 @@ Namespace WinForms
 
                                 SetControlText(ui, GetControlText(ui))
                             Next
+
                         Catch ex As Exception
                             ReportError("LoadForm caused an error: " & ex.Message, ex)
                         End Try
@@ -280,16 +282,25 @@ Namespace WinForms
         ''' <returns>the form name</returns>
         <ReturnValueType(VariableType.Form)>
         Public Shared Function ShowForm(formName As Primitive, argsArr As Primitive) As Primitive
-            If Form.GetIsLoaded(formName) Then
-                Form.SetArgsArr(formName, argsArr)
-                Form.Show(formName)
-                Dim wind = GetForm(formName)
-                wind.RaiseEvent(New RoutedEventArgs(Form.OnFormShownEvent))
+            App.Invoke(
+                  Sub()
+                      Try
+                          If Form.GetIsLoaded(formName) Then
+                              Form.SetArgsArr(formName, argsArr)
+                              Form.Show(formName)
+                              Dim wind = GetForm(formName)
+                              wind.RaiseEvent(New RoutedEventArgs(Form.OnFormShownEvent))
 
-            Else
-                Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
-                Form.Initialize(formName)
-            End If
+                          Else
+                              Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
+                              Form.Initialize(formName)
+                          End If
+
+                      Catch ex As Exception
+                          Form.ShowSubError(formName, "ShowForm", ex)
+                      End Try
+                  End Sub)
+
             Return formName
         End Function
 
@@ -301,15 +312,22 @@ Namespace WinForms
         ''' <returns>the dialog result that represnts the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
         <ReturnValueType(VariableType.DialogResult)>
         Public Shared Function ShowDialog(formName As Primitive, argsArr As Primitive) As Primitive
-            If Form.GetIsLoaded(formName) Then
-                Form.SetArgsArr(formName, argsArr)
-                Return Form.ShowDialog(formName)
-            Else
-                Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
-                Form.Initialize(formName)
-                Control.SetVisible(formName, False)
-                Return Form.ShowDialog(formName)
-            End If
+            App.Invoke(
+                Sub()
+                    Try
+                        If Form.GetIsLoaded(formName) Then
+                            Form.SetArgsArr(formName, argsArr)
+                            ShowDialog = Form.ShowDialog(formName)
+                        Else
+                            Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
+                            Form.Initialize(formName)
+                            Control.SetVisible(formName, False)
+                            ShowDialog = Form.ShowDialog(formName)
+                        End If
+                    Catch ex As Exception
+                        Form.ShowSubError(formName, "ShowForm", ex)
+                    End Try
+                End Sub)
         End Function
     End Class
 End Namespace

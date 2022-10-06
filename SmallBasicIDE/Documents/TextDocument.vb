@@ -34,6 +34,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Private _caretPositionText As String
         Private _programDetails As com.smallbasic.ProgramDetails
 
+        Public LastModified As Date = Date.Now
+
         Public Property BaseId As String
 
         Public Property WordHighlightColor As Media.Color = Media.Colors.LightGray
@@ -147,7 +149,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     Return String.Format(CultureInfo.CurrentCulture, ResourceHelper.GetString("ImportedProgram"), New Object(0) {BaseId}) & text
                 End If
 
-                Return $"{Path.GetFileName(FilePath)}{text}"
+                Return $"{Path.GetFileName(_file)}{text}"
             End Get
         End Property
 
@@ -178,6 +180,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             _ControlEvents.Add(AddNewSub)
             ParseFormHints()
             UpdateGlobalSubsList()
+            AddProperty("Document", Me)
         End Sub
 
 
@@ -422,11 +425,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Public Function GetBlock(lineNumber As Integer, statementType As Type) As Statements.Statement
-
-            If needsToreCompile Then
-                needsToreCompile = False
-                highlightCompiler.Compile(New StringReader(Me.Text))
-            End If
+            CompileForHighlight()
 
             Dim statement = Completion.CompletionHelper.GetStatement(highlightCompiler, lineNumber)
 
@@ -445,13 +444,16 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Return Nothing
         End Function
 
-        Public Function GetLoopBlock(lineNumber As Integer) As Statements.Statement
-
+        Private Sub CompileForHighlight()
+            CompileGlobalModule()
             If needsToreCompile Then
                 needsToreCompile = False
                 highlightCompiler.Compile(New StringReader(Me.Text))
             End If
+        End Sub
 
+        Public Function GetLoopBlock(lineNumber As Integer) As Statements.Statement
+            CompileForHighlight()
             Dim statement = Completion.CompletionHelper.GetStatement(highlightCompiler, lineNumber)
             If statement Is Nothing Then Return Nothing
 
@@ -525,23 +527,23 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Public Sub SaveAs(filePath As String)
-            Dim filePath2 = MyBase.FilePath
-            MyBase.FilePath = filePath
+            Dim filePath2 = _file
+            _file = filePath
 
             Try
                 Save()
             Catch
-                MyBase.FilePath = filePath2
+                _file = filePath2
                 Throw
             End Try
         End Sub
 
         Private Sub CreateBuffer()
-            If IsNew OrElse FilePath = "" Then
+            If IsNew OrElse _file = "" Then
                 _textBuffer = New BufferFactory().CreateTextBuffer()
 
             Else
-                Using reader As StreamReader = New StreamReader(FilePath)
+                Using reader As StreamReader = New StreamReader(_file)
                     _textBuffer = New BufferFactory().CreateTextBuffer(reader, GetContentTypeFromFileExtension())
                 End Using
             End If
@@ -553,7 +555,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Private Function GetContentTypeFromFileExtension() As String
             Dim result = "text"
 
-            Select Case Path.GetExtension(FilePath).ToLowerInvariant()
+            Select Case Path.GetExtension(_file)
                 Case ".sb", ".smallbasic"
                     result = "text.smallbasic"
 
@@ -593,7 +595,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Private Sub OnTextBufferChanged(sender As Object, e As TextChangedEventArgs)
             sourceCodeChanged = True
             needsToFormat = True
+            LastModified = Now
             IsDirty = True
+
             _editorControl.ClearHighlighting()
             ErrorListControl.Close()
             If _formatting OrElse _IgnoreCaretPosChange OrElse StillWorking Then Return
@@ -843,7 +847,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Public Property EventHandlers As New Dictionary(Of String, EventInformation)
 
         Dim _form As String
-        Friend ReadOnly ErrorTokens As New List(Of Token)
 
         Public Property Form As String
             Get
@@ -897,9 +900,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
             genCode.AppendLine()
             genCode.Append(declaration)
             ' Take the xaml path if exists, to consider the file name change in save as case.
-            Dim xamlFile = If(formDesigner.FileName = "",
-                    Path.GetFileNameWithoutExtension(Me.FilePath) & ".xaml",
-                    IO.Path.GetFileName(formDesigner.FileName)
+            Dim xamlFile = If(formDesigner.FormFile = "",
+                    Path.GetFileNameWithoutExtension(_file) & ".xaml",
+                    IO.Path.GetFileName(formDesigner.FormFile)
             )
 
             genCode.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{xamlFile}"")")
@@ -987,14 +990,14 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Public Function GetCodeBehind(Optional ToCompile As Boolean = False) As String
             Dim codeFileHasHints = Me.Text.Contains("'@Form Hints:")
 
-            Dim genCodefile = FilePath?.Substring(0, FilePath.Length - 2) + "sb.gen"
-            If genCodefile = "" OrElse Not File.Exists(genCodefile) Then
+            Dim genCodefile = _file?.Substring(0, _file.Length - 2) + "sb.gen"
+            If genCodefile = "" OrElse Not IO.File.Exists(genCodefile) Then
                 Return If(ToCompile, "", Me.Text)
             Else
                 If ToCompile Then
-                    Return File.ReadAllText(genCodefile)
+                    Return IO.File.ReadAllText(genCodefile)
                 Else
-                    Return If(codeFileHasHints, Me.Text, File.ReadAllText(genCodefile))
+                    Return If(codeFileHasHints, Me.Text, IO.File.ReadAllText(genCodefile))
                 End If
             End If
 
@@ -1386,5 +1389,53 @@ EndFunction
             Next
 
         End Sub
+
+        Public Sub ShowErrors(errors As List(Of [Error]))
+            ' don't use _errorListControl because it can be Nothing
+            ErrorListControl.ErrorTokens.Clear()
+            Me.Errors.Clear()
+
+            For Each err As [Error] In errors
+                Dim token = err.Token
+                token.Line = err.Line - sVB.LineOffset
+                ErrorListControl.ErrorTokens.Add(token)
+
+                If err.Line = -1 Then
+                    Me.Errors.Add(err.Description)
+                Else
+                    Me.Errors.Add($"{token.Line + 1},{err.Column + 1}: {err.Description}")
+                End If
+            Next
+
+            _errorListControl.SelectError(0)
+
+        End Sub
+
+        Public Function CompileGlobalModule() As List(Of Parser)
+            If _file = "" Then Return Nothing
+            If Path.GetFileName(_file).ToLower() = "global.sb" Then
+                Return Nothing
+            End If
+
+            Dim inputDir = IO.Path.GetDirectoryName(_file)
+            Dim outputFileName = sVB.GetOutputFileName(_file, False)
+            Return sVB.CompileGlobalModule(inputDir, outputFileName)
+        End Function
+
+        Public Function GetFormNames() As List(Of String)
+            Dim forms As New List(Of String)
+            Dim inputDir = Me.File
+            If inputDir = "" Then Return forms
+
+            inputDir = Path.GetDirectoryName(inputDir)
+
+            For Each xamlFile In Directory.GetFiles(inputDir, "*.xaml")
+                Dim name = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile)
+                If name = "" Then Continue For
+                forms.Add(name)
+            Next
+
+            Return forms
+        End Function
     End Class
 End Namespace

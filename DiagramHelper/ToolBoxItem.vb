@@ -51,7 +51,9 @@
             Else
                 _isSelected = False
                 ToolBox.SelectedItem = Nothing
-                Me.BorderThickness = New Thickness(If(Me.BorderBrush Is Brushes.Brown, 1, 0))
+                Me.BorderThickness = New Thickness(
+                    If(Me.BorderBrush Is Brushes.Brown, 1, 0)
+                )
             End If
         End Set
     End Property

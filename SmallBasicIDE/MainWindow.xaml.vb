@@ -282,6 +282,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Sub DoCloseDoc(mdiView As MdiView)
             If mdiView IsNot Nothing AndAlso CloseDocument(mdiView.Document) Then
+                mdiView.Document.Close()
                 mdiViews.Remove(mdiView)
                 If mdiViews.Count > 0 Then
                     If viewsControl.SelectedItem Is Nothing Then
@@ -291,7 +292,6 @@ Namespace Microsoft.SmallVisualBasic
                     End If
                 End If
             End If
-
         End Sub
 
         Private Sub CanExportToVisualBasic(sender As Object, e As CanExecuteRoutedEventArgs)
@@ -412,7 +412,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim doc = ActiveDocument
             If doc IsNot Nothing Then
                 Using undoTransaction = doc.UndoHistory.CreateTransaction("Format Document")
-                    CompilerService.FormatDocument(doc.TextBuffer)
+                    FormatDocument(doc.TextBuffer)
                     undoTransaction.Complete()
                 End Using
             End If
@@ -505,7 +505,7 @@ Namespace Microsoft.SmallVisualBasic
 
             tabDesigner.IsSelected = True
             For i = 0 To DiagramHelper.Designer.Pages.Count - 1
-                If Not DiagramHelper.Designer.ClosePage(False) Then
+                If Not DiagramHelper.Designer.ClosePage(False, True, True) Then
                     e.Cancel = True
                     Exit For
                 End If
@@ -515,22 +515,42 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Function OpenCodeFile(filePath As String) As TextDocument
+            Dim doc = ActiveDocument
+            If doc IsNot Nothing Then
+                If doc.IsNew AndAlso Not doc.IsDirty Then
+                    DoCloseDoc(doc.MdiView)
+                End If
+
+                If Path.GetFileNameWithoutExtension(filePath).ToLower() = "global" OrElse
+                        File.Exists(filePath.Substring(0, filePath.Length - 2) & "xaml") Then
+                    If formDesigner.IsNew AndAlso Not formDesigner.HasChanges Then
+                        DiagramHelper.Designer.ClosePage(False, True)
+                    End If
+                End If
+            End If
+
             tabCode.IsSelected = True
-            Dim doc As New TextDocument(filePath)
+            doc = New TextDocument(filePath)
             _DocumentTracker.TrackDocument(doc)
+
             Dim mdiView As New MdiView() With {
                 .Document = doc,
                   .Width = viewsControl.ActualWidth - 100,
                   .Height = viewsControl.ActualHeight - 50
             }
+
             Canvas.SetTop(mdiView, 10)
             Canvas.SetLeft(mdiView, 10)
             mdiViews.Add(mdiView)
+            mdiView.IsSelected = True
             doc.Focus(True)
+
             Return doc
         End Function
 
         Private Function SaveDocument(doc As TextDocument) As Boolean
+            FormatCommand.Execute(Nothing, Me)
+
             If doc.IsNew Then
                 Return SaveDocumentAs(doc)
             End If
@@ -547,7 +567,7 @@ Namespace Microsoft.SmallVisualBasic
                 If doc.IsDirty Then
                     doc.Save()
                     ' update the generated sb code to update event handlers added or removed
-                    If Not genSaved Then IO.File.WriteAllText(doc.FilePath & ".gen", doc.GenerateCodeBehind(formDesigner, False))
+                    If Not genSaved Then IO.File.WriteAllText(doc.File & ".gen", doc.GenerateCodeBehind(formDesigner, False))
                 End If
 
                 Return True
@@ -571,35 +591,34 @@ Namespace Microsoft.SmallVisualBasic
 
             If saveFileDialog.ShowDialog() Then
                 Try
-                    Dim FileName = saveFileDialog.FileName
-                    If File.Exists(FileName) Then File.Delete(FileName)
-                    document.SaveAs(FileName)
+                    Dim fileName = saveFileDialog.FileName
+                    If File.Exists(fileName) Then File.Delete(fileName)
+                    document.SaveAs(fileName)
 
                     If document.PageKey <> "" Then
                         Dim newFormName = Path.GetFileNameWithoutExtension(saveFileDialog.FileName)
                         Dim newDir = Path.GetDirectoryName(saveFileDialog.FileName)
                         Dim newFilePath = Path.Combine(newDir, newFormName)
 
-                        FileName = newFilePath & ".sb.gen"
-                        If File.Exists(FileName) Then File.Delete(FileName)
+                        fileName = newFilePath & ".sb.gen"
+                        If File.Exists(fileName) Then File.Delete(fileName)
 
-                        FileName = newFilePath & ".xaml"
-                        If File.Exists(FileName) Then File.Delete(FileName)
+                        fileName = newFilePath & ".xaml"
+                        If File.Exists(fileName) Then File.Delete(fileName)
 
-                        formDesigner.FileName = FileName
-                        formDesigner.CodeFilePath = saveFileDialog.FileName
+                        formDesigner.FormFile = fileName
+                        formDesigner.CodeFile = saveFileDialog.FileName
                         formDesigner.HasChanges = True ' Force saving
                         SaveDesignInfo(document)
                     End If
 
                     Return True
+
                 Catch ex As Exception
                     Dim notificationButtons = Utility.MessageBox.Show(ResourceHelper.GetString("SaveFailed"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SaveFailedReason"), New Object(0) {ex.Message}), Nf.No Or Nf.Yes, NotificationIcon.Information)
-
                     If notificationButtons = Nf.Yes Then
                         Return SaveDocumentAs(document)
                     End If
-
                     Return False
                 End Try
             End If
@@ -626,7 +645,6 @@ Namespace Microsoft.SmallVisualBasic
             Return True
         End Function
 
-
         Private Sub RunProgram()
             Mouse.OverrideCursor = Cursors.Wait
 
@@ -636,113 +654,129 @@ Namespace Microsoft.SmallVisualBasic
                 SaveDesignInfo()
             End If
 
+            FormatCommand.Execute(Nothing, Me)
+
             Dim doc = ActiveDocument
-            Dim filePath = doc.FilePath
-            Dim outputFileName = GetOutputFileName(filePath, doc.Form = "")
+            Dim filePath = doc.File
+            Dim inputDir = Path.GetDirectoryName(filePath)
+            Dim outputFileName = sVB.GetOutputFileName(
+                filePath,
+                doc.Form = "" AndAlso Path.GetFileNameWithoutExtension(filePath) <> "global"
+            )
             Dim code As String
             Dim gen As String
             Dim errors As List(Of [Error])
-            Dim parsers As New List(Of Parser)
 
-            doc.ErrorTokens.Clear()
             doc.Errors.Clear()
-            Mouse.OverrideCursor = Nothing
 
-            Try
-                If filePath = "" Then ' Classic SB file without a form
-                    If doc.PageKey = "" Then
-                        gen = doc.GetCodeBehind(True)
-                    Else
-                        gen = doc.GenerateCodeBehind(formDesigner, False)
-                    End If
+            'Try
 
-                    code = doc.Text
-                    errors = sVB.Compile(gen, code)
-
-                    If errors.Count = 0 Then
-                        parsers.Add(sVB.Compiler.Parser)
-                    Else
-                        ShowErrors(doc, errors)
-                        Return
-                    End If
-
-                Else
-                    Dim inputDir = Path.GetDirectoryName(filePath)
-                    Dim currentFormKey = formDesigner.PageKey
-                    Dim binDir = Path.GetDirectoryName(outputFileName)
-
-                    For Each xamlFile In Directory.GetFiles(inputDir, "*.xaml")
-                        Dim fName = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile)
-                        If fName = "" Then Continue For
-
-                        If DiagramHelper.Designer.SavePageIfDirty(xamlFile) Then
-                            Dim f2 = Path.Combine(binDir, Path.GetFileName(xamlFile))
-                            Try
-                                File.Copy(xamlFile, f2, True)
-                            Catch
-                            End Try
-                        End If
-
-                        Dim sbCodeFile = xamlFile.Substring(0, xamlFile.Length - 4) + "sb"
-                        Dim x = viewsControl.SaveDocIfDirty(sbCodeFile)
-                        If x <> "" Then
-                            gen = x
-                        Else
-                            Dim genCodefile = xamlFile.Substring(0, xamlFile.Length - 4) + "sb.gen"
-                            If File.Exists(genCodefile) Then
-                                gen = File.ReadAllText(genCodefile)
-                            Else
-                                gen = ""
-                            End If
-                        End If
-
-                        If File.Exists(sbCodeFile) Then
-                            code = File.ReadAllText(sbCodeFile)
-                        Else
-                            code = ""
-                        End If
-
-                        errors = sVB.Compile(gen, code)
-
-                        If errors.Count = 0 Then
-                            sVB.Compiler.Parser.IsMainForm = (fName = doc.Form)
-                            sVB.Compiler.Parser.ClassName = "_SmallVisualBasic_" & fName.ToLower()
-                            parsers.Add(sVB.Compiler.Parser)
-                        Else
-                            doc = OpenDocIfNot(sbCodeFile)
-                            Call New RunAction(Sub() ShowErrors(doc, errors)).After(20)
-                            Call New RunAction(Sub() doc.EditorControl.TextView.Caret.EnsureVisible()).After(500)
-                            Return
-                        End If
-                    Next
-
-                    DiagramHelper.Designer.SwitchTo(currentFormKey)
-                End If
-
-                If parsers.Count = 0 Then
-                    errors = sVB.Compile("", doc.Text)
-                    If errors.Count = 0 Then
-                        parsers.Add(sVB.Compiler.Parser)
-                    Else
-                        ShowErrors(doc, errors)
-                        Return
-                    End If
-
-                End If
-
-                sVB.Compiler.Build(parsers, outputFileName)
-
-            Catch ex As Exception
-                If errors Is Nothing Then errors = New List(Of [Error])
-                errors.Add(New [Error](-1, 0, 0, ex.Message))
-            End Try
-
-            If errors.Count > 0 Then
-                ShowErrors(doc, errors)
+            Dim parsers = sVB.CompileGlobalModule(inputDir, outputFileName, False)
+            If parsers Is Nothing Then
+                ' global file has errors
+                Mouse.OverrideCursor = Nothing
                 Return
             End If
 
-            Thread.Sleep(500)
+            If filePath = "" Then ' Classic SB file without a form
+                If doc.PageKey = "" Then
+                    gen = doc.GetCodeBehind(True)
+                Else
+                    gen = doc.GenerateCodeBehind(formDesigner, False)
+                End If
+
+                code = doc.Text
+                If Not sVB.Compile(gen, code, doc, parsers) Then
+                    Mouse.OverrideCursor = Nothing
+                    Return
+                End If
+
+            Else
+                Dim currentFormKey = formDesigner.PageKey
+                Dim binDir = Path.GetDirectoryName(outputFileName)
+
+                For Each xamlFile In Directory.GetFiles(inputDir, "*.xaml")
+                    Dim fName = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile)
+                    If fName = "" Then Continue For
+
+                    If DiagramHelper.Designer.SavePageIfDirty(xamlFile) Then
+                        Dim f2 = Path.Combine(binDir, Path.GetFileName(xamlFile))
+                        Try
+                            File.Copy(xamlFile, f2, True)
+                        Catch
+                        End Try
+                    End If
+
+                    Dim sbCodeFile = xamlFile.Substring(0, xamlFile.Length - 4) + "sb"
+                    Dim x = viewsControl.SaveDocIfDirty(sbCodeFile)
+                    If x <> "" Then
+                        gen = x
+                    Else
+                        Dim genCodefile = xamlFile.Substring(0, xamlFile.Length - 4) + "sb.gen"
+                        If File.Exists(genCodefile) Then
+                            gen = File.ReadAllText(genCodefile)
+                        Else
+                            gen = ""
+                        End If
+                    End If
+
+                    If File.Exists(sbCodeFile) Then
+                        code = File.ReadAllText(sbCodeFile)
+                    Else
+                        code = ""
+                    End If
+
+                    errors = sVB.Compile(gen, code)
+
+                    If errors.Count = 0 Then
+                        sVB.Compiler.Parser.IsMainForm = (fName = doc.Form)
+                        sVB.Compiler.Parser.ClassName = "_SmallVisualBasic_" & fName.ToLower()
+                        parsers.Add(sVB.Compiler.Parser)
+
+                    Else
+                        doc = OpenDocIfNot(sbCodeFile)
+                        Call New RunAction(
+                            Sub()
+                                doc.ShowErrors(errors)
+                                tabCode.IsSelected = True
+                            End Sub
+                        ).After(20)
+
+                        Call New RunAction(
+                            Sub() doc.EditorControl.TextView.Caret.EnsureVisible()
+                        ).After(500)
+
+                        Mouse.OverrideCursor = Nothing
+                        Return
+                    End If
+                Next
+
+                DiagramHelper.Designer.SwitchTo(currentFormKey)
+
+            End If
+
+            If parsers.Count = 0 Then
+                If Not sVB.Compile("", doc.Text, doc, parsers) Then
+                    Mouse.OverrideCursor = Nothing
+                    Return
+                End If
+            End If
+
+            sVB.Compiler.Build(parsers, outputFileName)
+
+            'Catch ex As Exception
+            '    If errors Is Nothing Then errors = New List(Of [Error])
+            '    errors.Add(New [Error](-1, 0, 0, ex.Message))
+            'End Try
+
+            If errors?.Count > 0 Then
+                doc.ShowErrors(errors)
+                tabCode.IsSelected = True
+                Mouse.OverrideCursor = Nothing
+                Return
+            End If
+
+            Mouse.OverrideCursor = Nothing
             currentProgramProcess = Process.Start(outputFileName)
             currentProgramProcess.EnableRaisingEvents = True
 
@@ -753,7 +787,7 @@ Namespace Microsoft.SmallVisualBasic
                                  Me.programRunningOverlay.Visibility = Visibility.Hidden
                                  currentProgramProcess = Nothing
 
-                                 If doc.FilePath = "" Then
+                                 If doc.File = "" Then
                                      Try
                                          File.Delete(outputFileName)
                                      Catch
@@ -772,22 +806,6 @@ Namespace Microsoft.SmallVisualBasic
 
         End Sub
 
-        Private Sub ShowErrors(doc As TextDocument, errors As List(Of [Error]))
-            For Each err As [Error] In errors
-                Dim token = err.Token
-                token.Line = err.Line - sVB.LineOffset
-                doc.ErrorTokens.Add(token)
-
-                If err.Line = -1 Then
-                    doc.Errors.Add(err.Description)
-                Else
-                    doc.Errors.Add($"{token.Line + 1},{err.Column + 1}: {err.Description}")
-                End If
-            Next
-
-            doc.ErrorListControl.SelectError(0)
-            tabCode.IsSelected = True
-        End Sub
 
 
         Private Sub PublishDocument(document As TextDocument)
@@ -876,33 +894,6 @@ Namespace Microsoft.SmallVisualBasic
             End Try
         End Sub
 
-        Private Function GetOutputFileName(filePath As String, isSingleCodeFile As Boolean) As String
-            If filePath = "" Then
-                Dim tempFileName = Path.GetTempFileName()
-                File.Move(tempFileName, tempFileName & ".exe")
-                Return tempFileName & ".exe"
-            End If
-
-            Dim docDirectory = Path.GetDirectoryName(filePath)
-            Dim fileName = Path.GetFileNameWithoutExtension(If(isSingleCodeFile, filePath, docDirectory))
-            If fileName = "" Then fileName = Path.GetFileNameWithoutExtension(filePath)
-
-            Dim binDirectory = Path.Combine(docDirectory, "bin")
-            If Not Directory.Exists(binDirectory) Then Directory.CreateDirectory(binDirectory)
-            Dim newFile = Path.Combine(binDirectory, fileName)
-
-            For Each f In Directory.EnumerateFiles(docDirectory)
-                Select Case Path.GetExtension(f).ToLower().TrimStart("."c)
-                    Case "bmp", "jpg", "jpeg", "png", "gif", "txt", "xaml"
-                        Dim f2 = Path.Combine(binDirectory, Path.GetFileName(f))
-                        Try
-                            File.Copy(f, f2, True)
-                        Catch
-                        End Try
-                End Select
-            Next
-            Return newFile & ".exe"
-        End Function
 
         Private Sub OnCheckVersion(state As Object)
             Thread.Sleep(20000)
@@ -926,16 +917,18 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Function OpenDocIfNot(filePath As String) As TextDocument
-            Dim docPath = Path.GetFullPath(filePath).ToLower()
+            If filePath = "" Then Return Nothing
+
+            Dim docPath = Path.GetFullPath(filePath)
             For Each view As MdiView In Me.viewsControl.Items
-                If view.Document.FilePath = docPath Then
+                If view.Document.File.ToLower() = docPath.ToLower() Then
                     viewsControl.ChangeSelection(view)
                     Return view.Document
                 End If
             Next
 
             Dim doc = OpenCodeFile(docPath)
-            doc.IsNew = tempProjectPath <> "" AndAlso docPath.StartsWith(tempProjectPath)
+            doc.IsNew = tempProjectPath <> "" AndAlso docPath.ToLower().StartsWith(tempProjectPath)
             Return doc
         End Function
 
@@ -948,10 +941,10 @@ Namespace Microsoft.SmallVisualBasic
             Return Nothing
         End Function
 
-        Function GetDocIfOpened(filePath As String) As TextDocument
+        Public Function GetDocIfOpened(filePath As String) As TextDocument
             filePath = filePath.ToLower()
             For Each view As MdiView In Me.viewsControl.Items
-                If view.Document.FilePath = filePath Then
+                If view.Document.File.ToLower() = filePath Then
                     Return view.Document
                 End If
             Next
@@ -965,8 +958,16 @@ Namespace Microsoft.SmallVisualBasic
                 End Sub)
 
         Private Sub TabCode_Selected(sender As Object, e As RoutedEventArgs)
+            If formDesigner.Name = "global" Then
+                Dim globFile = formDesigner.CodeFile
+                If Not File.Exists(globFile) Then
+                    File.Create(globFile).Close()
+                End If
+                Dim doc = OpenDocIfNot(globFile)
+                doc.PageKey = formDesigner.PageKey
+                doc?.Focus()
 
-            If DiagramHelper.Designer.CurrentPage IsNot Nothing Then
+            ElseIf DiagramHelper.Designer.CurrentPage IsNot Nothing Then
                 saveInfo.After(10)
             End If
 
@@ -1000,6 +1001,11 @@ Namespace Microsoft.SmallVisualBasic
                            Optional saveAs As Boolean = False
                     ) As TextDocument
 
+            If exitSaveDesignInfo Then
+                exitSaveDesignInfo = False
+                Return Nothing
+            End If
+
             Dim formName As String
             Dim xamlPath As String
             Dim formPath As String
@@ -1012,8 +1018,9 @@ Namespace Microsoft.SmallVisualBasic
 
             OpeningDoc = True
 
-            If openDoc AndAlso formDesigner.CodeFilePath <> "" AndAlso Not formDesigner.HasChanges Then
-                doc = OpenDocIfNot(formDesigner.CodeFilePath)
+            If openDoc AndAlso formDesigner.CodeFile <> "" AndAlso
+                        Not formDesigner.HasChanges Then
+                doc = OpenDocIfNot(formDesigner.CodeFile)
 
                 ' User may change the form name
                 doc.Form = formDesigner.Name
@@ -1023,8 +1030,8 @@ Namespace Microsoft.SmallVisualBasic
                 Return doc
             End If
 
-            If formDesigner.FileName = "" Then
-                If formDesigner.CodeFilePath = "" Then
+            If formDesigner.FormFile = "" Then
+                If formDesigner.CodeFile = "" Then
                     Dim projectPath = GetProjectPath()
                     xamlPath = ""
                     formName = formDesigner.Name
@@ -1039,12 +1046,12 @@ Namespace Microsoft.SmallVisualBasic
                     formPath = Path.Combine(xamlPath, formName)
 
                 Else
-                    If doc Is Nothing Then doc = GetDoc(formDesigner.CodeFilePath, openDoc)
+                    If doc Is Nothing Then doc = GetDoc(formDesigner.CodeFile, openDoc)
                     formName = formDesigner.Name
                     doc.Form = formName
 
                     'xamlPath = Path.GetDirectoryName(formDesigner.CodeFilePath)
-                    formPath = formDesigner.CodeFilePath.Substring(0, formDesigner.CodeFilePath.Length - 3)
+                    formPath = formDesigner.CodeFile.Substring(0, formDesigner.CodeFile.Length - 3)
                 End If
 
                 formDesigner.Name = formName
@@ -1052,8 +1059,7 @@ Namespace Microsoft.SmallVisualBasic
                 IO.File.Create(formPath & ".sb").Close()
 
             Else
-                'xamlPath = Path.GetDirectoryName(formDesigner.FileName)
-                formPath = formDesigner.FileName.Substring(0, formDesigner.FileName.Length - 5)
+                formPath = formDesigner.FormFile.Substring(0, formDesigner.FormFile.Length - 5)
 
                 If doc Is Nothing Then doc = GetDoc(formPath & ".sb", openDoc)
                 formName = formDesigner.Name
@@ -1066,7 +1072,7 @@ Namespace Microsoft.SmallVisualBasic
             If doc Is Nothing Then doc = GetDoc(formPath & ".sb", openDoc)
             doc.Form = formName
             doc.PageKey = formDesigner.PageKey
-            formDesigner.CodeFilePath = doc.FilePath
+            formDesigner.CodeFile = doc.File
 
             IO.File.WriteAllText(formPath & ".sb.gen", doc.GenerateCodeBehind(formDesigner, True))
             OpeningDoc = False
@@ -1111,8 +1117,8 @@ Namespace Microsoft.SmallVisualBasic
 
             Dim AddEventHandler As New RunAction(
                 Sub()
-                    If formDesigner.CodeFilePath <> "" Then
-                        Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
+                    If formDesigner.CodeFile <> "" Then
+                        Dim doc = OpenDocIfNot(formDesigner.CodeFile)
                         If doc.ControlsInfo Is Nothing Then SaveDesignInfo(doc, False)
 
                         Dim key = controlName.ToLower()
@@ -1174,16 +1180,16 @@ Namespace Microsoft.SmallVisualBasic
 
         Function SavePage(oldPath As String, saveAs As Boolean) As Boolean
             If DiagramHelper.Helper.FormNameExists(formDesigner) Then
-                If saveAs Then formDesigner.FileName = oldPath
+                If saveAs Then formDesigner.FormFile = oldPath
                 Return False
             End If
 
-            Dim newFormName = Path.GetFileNameWithoutExtension(formDesigner.FileName)
-            Dim newDir = Path.GetDirectoryName(formDesigner.FileName)
+            Dim newFormName = Path.GetFileNameWithoutExtension(formDesigner.FormFile)
+            Dim newDir = Path.GetDirectoryName(formDesigner.FormFile)
             Dim newFilePath = Path.Combine(newDir, newFormName)
             Dim fileName = newFilePath & ".sb"
 
-            Dim oldCodeFile = formDesigner.CodeFilePath
+            Dim oldCodeFile = formDesigner.CodeFile
             SaveDesignInfo(Nothing, False, saveAs)
             Dim doc = GetDocIfOpened()
 
@@ -1198,28 +1204,37 @@ Namespace Microsoft.SmallVisualBasic
                     File.Copy(oldCodeFile, fileName)
                 End If
 
-                formDesigner.CodeFilePath = fileName
-
+                formDesigner.CodeFile = fileName
             End If
 
-            ProjExplorer.ProjectDirectory = formDesigner.FileName
+            ProjExplorer.ProjectDirectory = formDesigner.FormFile
             Return True
         End Function
 
 
         Private Sub FormDesigner_CurrentPageChanged(index As Integer)
-            If index < 0 Then
+            If index < 0 AndAlso index > DiagramHelper.Designer.GlobalFileIndex Then
                 UpdateTitle()
                 UpdateTextBoxes()
+                txtControlName.IsEnabled = True
+                txtControlText.IsEnabled = True
                 Return
             End If
-
 
             formDesigner = DiagramHelper.Designer.CurrentPage
             ZoomBox.Designer = formDesigner
             OFExplorer.Designer = formDesigner
             ToolBox.Designer = formDesigner
-            ProjExplorer.ProjectDirectory = formDesigner.FileName
+
+            If index = DiagramHelper.Designer.GlobalFileIndex Then
+                txtControlName.IsEnabled = False
+                txtControlText.IsEnabled = False
+                ProjExplorer.SelectedGlobalFile()
+            Else
+                txtControlName.IsEnabled = True
+                txtControlText.IsEnabled = True
+                ProjExplorer.ProjectDirectory = formDesigner.FormFile
+            End If
 
             ' Remove the handler if exists not to be called twice
             RemoveHandler formDesigner.DiagramDoubleClick, AddressOf FormDesigner_DiagramDoubleClick
@@ -1307,11 +1322,18 @@ Namespace Microsoft.SmallVisualBasic
             If tabDesigner.IsSelected Then
                 grdNameText.Visibility = Visibility.Visible
                 txtTitle.Text = "Form Designer - "
-                txtForm.Text = If(formDesigner.FileName = "", formDesigner.FileName & " *", Path.GetFileName(formDesigner.FileName))
+                txtForm.Text = If(formDesigner.FormFile = "",
+                        formDesigner.Name & " *",
+                        Path.GetFileName(formDesigner.FormFile)
+                )
+
             Else
                 grdNameText.Visibility = Visibility.Collapsed
                 txtTitle.Text = "Code Editor - "
-                txtForm.Text = If(formDesigner.CodeFilePath = "", $"{formDesigner.Name}.sb", Path.GetFileName(formDesigner.CodeFilePath))
+                txtForm.Text = If(formDesigner.CodeFile = "",
+                        $"{formDesigner.Name}.sb",
+                        Path.GetFileName(formDesigner.CodeFile)
+                )
             End If
         End Sub
 
@@ -1325,13 +1347,21 @@ Namespace Microsoft.SmallVisualBasic
             If currentView Is Nothing Then Return
 
             Dim doc = currentView.Document
+            Dim codeFilePath = doc.File
 
             If doc.PageKey = "" Then
-                If doc.FilePath <> "" Then
-                    Dim pagePath = doc.FilePath.Substring(0, doc.FilePath.Length - 3) & ".xaml"
+                If codeFilePath <> "" Then
+                    If Path.GetFileNameWithoutExtension(codeFilePath).ToLower() = "global" Then
+                        doc.PageKey = DiagramHelper.Designer.SwitchTo(DiagramHelper.Helper.GlobalFileName)
+                        formDesigner.CodeFile = codeFilePath
+                        ProjExplorer.ProjectDirectory = codeFilePath
+                        Return
+                    End If
+
+                    Dim pagePath = codeFilePath.Substring(0, codeFilePath.Length - 3) & ".xaml"
                     If File.Exists(pagePath) Then
                         doc.PageKey = DiagramHelper.Designer.SwitchTo(pagePath)
-                        formDesigner.CodeFilePath = doc.FilePath
+                        formDesigner.CodeFile = codeFilePath
                     Else
                         ' Do nothing to allow opening old sb files without a form
                         ' If you want to attach a form, comment the next line,
@@ -1339,9 +1369,13 @@ Namespace Microsoft.SmallVisualBasic
                         doc.PageKey = ""
                     End If
                 End If
+
             Else
                 DiagramHelper.Designer.SwitchTo(doc.PageKey)
-                formDesigner.CodeFilePath = doc.FilePath
+                formDesigner.CodeFile = codeFilePath
+                If Path.GetFileNameWithoutExtension(codeFilePath) = "global" Then
+                    ProjExplorer.ProjectDirectory = codeFilePath
+                End If
             End If
 
         End Sub
@@ -1372,6 +1406,8 @@ Namespace Microsoft.SmallVisualBasic
             newName = newName(0).ToString().ToUpper & If(newName.Length > 1, newName.Substring(1), "")
             txtControlName.Text = newName
 
+            If IsKeyword(newName) Then Return False
+
             If controlIndex < 0 AndAlso DiagramHelper.Helper.FormNameExists(formDesigner, newName) Then
                 Beep()
                 Return False
@@ -1382,13 +1418,39 @@ Namespace Microsoft.SmallVisualBasic
                 Return False
             End If
 
-            Dim doc = OpenDocIfNot(formDesigner.CodeFilePath)
+            Dim doc = OpenDocIfNot(formDesigner.CodeFile)
             If doc IsNot Nothing Then
                 doc.FixEventHandlers(oldName, newName)
                 SaveDesignInfo(doc)
             End If
+            tabDesigner.IsSelected = True
 
             Return True
+        End Function
+
+        Private Function IsKeyword(newName As String) As Boolean
+            Dim name = newName.ToLower()
+            Dim msg = $"'{newName}' is an sVB keyword and can't be used as a name. you can add a control prefix to the name, such as `Frm{newName}` or `Txt{newName}`."
+
+            If name = "me" OrElse name = "global" Then
+                MsgBox(msg)
+                Return True
+            End If
+
+            Dim tokens = LineScanner.GetTokens(name, 0)
+            If tokens.Count > 1 Then
+                MsgBox("Form and control names can't start with a ni,ber nor contain spaces or any symbols. Use `_` instead.")
+                Return True
+            End If
+
+            Select Case tokens(0).ParseType
+                Case ParseType.Keyword, ParseType.Operator
+                    MsgBox(msg)
+                    Return True
+                Case Else
+                    Return False
+            End Select
+
         End Function
 
         Private Sub TxtControlName_PreviewKeyDown(sender As Object, e As KeyEventArgs)
@@ -1459,31 +1521,36 @@ Namespace Microsoft.SmallVisualBasic
             txt.Tag = formDesigner.SelectedIndex
         End Sub
 
+        Dim exitSaveDesignInfo As Boolean = True
 
         Private Sub Window_ContentRendered(sender As Object, e As EventArgs)
-
             Dim doc As TextDocument
+
             If FilesToOpen.Count > 0 Then
                 Dim closePage = False
                 For Each fileName In FilesToOpen
                     fileName = fileName.ToLower()
-                    If Path.GetExtension(fileName) = ".xaml" OrElse
-                        (Path.GetExtension(fileName) = ".sb" AndAlso File.Exists(fileName.Substring(0, fileName.Length - 2) & "xaml")) Then
+                    If Path.GetExtension(fileName) = ".xaml" OrElse (
+                                Path.GetExtension(fileName) = ".sb" AndAlso
+                                File.Exists(fileName.Substring(0, fileName.Length - 2) & "xaml")
+                            ) Then
                         closePage = True
                         Exit For
                     End If
                 Next
 
-                If closePage Then DiagramHelper.Designer.ClosePage(False, True)
+                If closePage Then
+                    DiagramHelper.Designer.ClosePage(False, True)
+                End If
             End If
 
             For Each fileName In FilesToOpen
-                fileName = fileName.ToLower()
-                If fileName.EndsWith(".sb") Then
+                Dim file = fileName.ToLower()
+                If file.EndsWith(".sb") Then
                     doc = OpenDocIfNot(fileName)
                     SelectCodeTab = True
 
-                ElseIf fileName.EndsWith(".xaml") Then
+                ElseIf file.EndsWith(".xaml") Then
                     DiagramHelper.Designer.SwitchTo(fileName)
                     SelectCodeTab = False
                 End If
@@ -1491,11 +1558,17 @@ Namespace Microsoft.SmallVisualBasic
 
             ' Load the code editor
             tabCode.IsSelected = True
+
             If SelectCodeTab Then
                 If doc IsNot Nothing Then
-                    Dim selectLastDoc As New RunAction(Sub() viewsControl.ChangeSelection(doc.MdiView))
-                    selectLastDoc.After(10)
+                    tabCode.IsSelected = True
+                    Call New RunAction(
+                        Sub()
+                            viewsControl.ChangeSelection(doc.MdiView)
+                        End Sub
+                    ).After(10)
                 End If
+
             Else
                 Dim selectDesigner As New RunAction(Sub() tabDesigner.IsSelected = True)
                 selectDesigner.After(10)
@@ -1537,19 +1610,33 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub ProjExplorer_FileNameChanged(oldFileName As String, newFileName As String)
-            formDesigner.CodeFilePath = newFileName
-            formDesigner.FileName = newFileName.Substring(0, newFileName.Length - 2).ToLower() & "xaml"
+            formDesigner.CodeFile = newFileName
+            formDesigner.FormFile = newFileName.Substring(0, newFileName.Length - 2) & "xaml"
             Dim doc = GetDocIfOpened(oldFileName)
-            If doc IsNot Nothing Then
-                doc.FilePath = newFileName
-            End If
             Dim genFile = newFileName & ".gen"
+
+            If doc IsNot Nothing Then doc.File = newFileName
+
             If File.Exists(genFile) Then
                 Dim oldXamlFile = oldFileName.Substring(0, oldFileName.Length - 2).ToLower() & "xaml"
                 oldXamlFile = Path.GetFileName(oldXamlFile)
-                Dim newXamlFile = Path.GetFileName(formDesigner.FileName)
+                Dim newXamlFile = Path.GetFileName(formDesigner.FormFile)
                 Dim code = File.ReadAllText(genFile)
                 File.WriteAllText(genFile, code.Replace(oldXamlFile, newXamlFile))
+            End If
+        End Sub
+
+        Dim ShowGlobalFile As New RunAction(
+                Sub()
+                    tabCode.IsSelected = True
+                    tabDesigner.IsSelected = False
+                End Sub
+        )
+
+        Private Sub tabDesigner_PreviewMouseDoubleClick(sender As Object, e As MouseButtonEventArgs)
+            If e.OriginalSource IsNot DesignerGrid Then Return
+            If Not formDesigner.IsEnabled Then
+                ShowGlobalFile.After(1)
             End If
         End Sub
     End Class

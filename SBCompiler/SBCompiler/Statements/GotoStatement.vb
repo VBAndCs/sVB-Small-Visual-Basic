@@ -25,6 +25,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             Dim label = scope.Labels(Me.Label.LCaseText)
             scope.ILGenerator.Emit(OpCodes.Br, label)
         End Sub

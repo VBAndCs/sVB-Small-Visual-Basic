@@ -13,7 +13,7 @@ Module Helper
                 ClearErrors = False
                 File.DeleteFile(errorFile)
             End If
-            File.AppendContents(errorFile, msg & vbCrLf)
+            File.AppendContents(errorFile, Now & vbCrLf & msg & vbCrLf)
 
         Catch
         End Try

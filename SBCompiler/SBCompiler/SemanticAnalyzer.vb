@@ -1,5 +1,4 @@
-﻿Imports System
-Imports System.Globalization
+﻿Imports System.Globalization
 Imports System.Reflection
 Imports Microsoft.SmallBasic
 Imports Microsoft.SmallVisualBasic.Expressions
@@ -427,20 +426,24 @@ Namespace Microsoft.SmallVisualBasic
                 Return
             End If
 
-            Dim value As TypeInfo = Nothing
+            Dim typeInfo As TypeInfo = Nothing
             Dim typeName = typeNameInfo.LCaseText
 
-            If _typeInfoBag.Types.TryGetValue(typeName, value) Then
-                Dim value2 As MethodInfo = Nothing
+            If _typeInfoBag.Types.TryGetValue(typeName, typeInfo) Then
+                Dim methodInfo As MethodInfo = Nothing
 
-                If value.Methods.TryGetValue(methodName.LCaseText, value2) Then
-                    Dim num As Integer = value2.GetParameters().Length
+                If typeInfo.Methods.TryGetValue(methodName.LCaseText, methodInfo) Then
+                    Dim paramCount = 0
+                    Try
+                        paramCount = methodInfo.GetParameters().Length
+                    Catch
+                    End Try
 
-                    If num <> methodExpression.Arguments.Count Then
-                        _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("ArgumentNumberMismatch"), typeNameInfo.Text, methodName.Text, methodExpression.Arguments.Count, num))
+                    If paramCount <> methodExpression.Arguments.Count Then
+                        _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("ArgumentNumberMismatch"), typeNameInfo.Text, methodName.Text, methodExpression.Arguments.Count, paramCount))
                     End If
 
-                    If leaveValueInStack AndAlso value2.ReturnType Is GetType(Void) Then
+                    If leaveValueInStack AndAlso methodInfo.ReturnType Is GetType(Void) Then
                         Me._parser.AddError(methodName, String.Format(System.Globalization.CultureInfo.CurrentUICulture, ResourceHelper.GetString("ReturnValueExpectedFromVoidMethod"),
                                 New Object() {typeNameInfo.Text, methodName.Text}))
                     End If

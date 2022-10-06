@@ -1,6 +1,5 @@
 ﻿Imports System.Collections.ObjectModel
 Imports System.ComponentModel
-Imports System.Windows.Controls.Primitives
 Imports System.Windows.Markup
 Imports System.Xml
 
@@ -24,7 +23,6 @@ Public Class Designer
     Friend SelectedBounds As Rect
     Friend GridPen As Pen
 
-
     Public ReadOnly Property AllowTransparency As Boolean
         Get
             If AllowTransparencyMenuItem Is Nothing Then
@@ -35,16 +33,28 @@ Public Class Designer
     End Property
 
 
-    Dim _fileName As String = ""
-    Public Property FileName As String
+    Dim _codeFile As String = ""
+
+    Public Property CodeFile As String
         Get
-            Return _fileName?.ToLower()
+            Return _codeFile
         End Get
 
         Set(value As String)
-            _fileName = If(value = "", "", IO.Path.GetFullPath(value)).ToLower()
-            If _fileName <> "" AndAlso _codeFilePath = "" Then
-                _codeFilePath = _fileName.Substring(0, _fileName.Length - 5) & ".sb".ToLower()
+            _codeFile = value
+        End Set
+    End Property
+
+    Dim _formFile As String = ""
+    Public Property FormFile As String
+        Get
+            Return _formFile
+        End Get
+
+        Set(value As String)
+            _formFile = If(value = "", "", IO.Path.GetFullPath(value))
+            If _formFile <> "" AndAlso CodeFile = "" Then
+                _codeFile = _formFile.Substring(0, _formFile.Length - 5) & ".sb"
             End If
         End Set
     End Property
@@ -66,28 +76,29 @@ Public Class Designer
 
         Dim Brdr As Border = VisualTreeHelper.GetChild(Me, 0)
         Dim G = CType(Brdr.Child, Grid)
-        Me.ScrollViewer = G.Children(0)
+
+        ScrollViewer = G.Children(0)
         GridLinesBorder = G.Children(1)
         G = ScrollViewer.Content
-        Me.DesignerCanvas = VisualTreeHelper.GetChild(G.Children(0), 0)
+        DesignerCanvas = VisualTreeHelper.GetChild(G.Children(0), 0)
         DesignerGrid = G
-        Me.ConnectionCanvas = G.Children(1)
-        Me.DesignerCanvas.Width = Me.PageWidth
-        Me.DesignerCanvas.Height = Me.PageHeight
-        Me.ConnectionCanvas.Width = Me.PageWidth
-        Me.ConnectionCanvas.Height = Me.PageHeight
-        Me.SelectionBorder = ConnectionCanvas.Children(0)
+        ConnectionCanvas = G.Children(1)
+        DesignerCanvas.Width = PageWidth
+        DesignerCanvas.Height = PageHeight
+        ConnectionCanvas.Width = PageWidth
+        ConnectionCanvas.Height = PageHeight
+        SelectionBorder = ConnectionCanvas.Children(0)
 
         ShowGridChanged(Me, New DependencyPropertyChangedEventArgs(ShowGridProperty, False, Me.ShowGrid))
         GridBrush = Me.FindResource("GridBrush")
         GridPen = FindResource("GridLinesPen")
 
-        AddHandler Me.ScrollViewer.ScrollChanged, AddressOf ScrollViewer_ScrollChanged
+        AddHandler ScrollViewer.ScrollChanged, AddressOf ScrollViewer_ScrollChanged
 
-        TbTopLocation = Me.Template.FindName("PART_TopLocation", Me)
-        TbLeftLocation = Me.Template.FindName("PART_LeftLocation", Me)
-        Editor = Me.Template.FindName("PART_Editor", Me)
-        AllowTransparencyMenuItem = Me.Template.FindName("AllowTransparencyMenuItem", Me)
+        TbTopLocation = Template.FindName("PART_TopLocation", Me)
+        TbLeftLocation = Template.FindName("PART_LeftLocation", Me)
+        Editor = Template.FindName("PART_Editor", Me)
+        AllowTransparencyMenuItem = Template.FindName("AllowTransparencyMenuItem", Me)
 
 
         If Not NewPageOpened Then
@@ -102,7 +113,7 @@ Public Class Designer
             OpenFileCanvas = Nothing
         End If
 
-        Me.Focus()
+        Focus()
 
     End Sub
 
@@ -155,7 +166,7 @@ Public Class Designer
                 Sub()
                     Me.SelectedItem = control
                     SetControlName(control, Automation.AutomationProperties.GetName(control))
-                    RaiseEvent PageShown(-3)
+                    RaiseEvent PageShown(UpdateControlNameAndText)
                 End Sub,
                 control,
                 Automation.AutomationProperties.NameProperty)
@@ -165,7 +176,7 @@ Public Class Designer
             Automation.AutomationProperties.SetName(control, name)
 
             Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
-            RaiseEvent PageShown(-3)
+            RaiseEvent PageShown(UpdateControlNameAndText)
             Return True
 
         Catch ex As Exception
@@ -199,7 +210,7 @@ Public Class Designer
             Me.Name = name
             Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
             UpdateFormInfo()
-            RaiseEvent PageShown(-2)
+            RaiseEvent PageShown(UpdateFormName)
             Return True
 
         Catch ex As Exception
@@ -225,19 +236,6 @@ Public Class Designer
     Public Shared Property PagesGrid As Grid
     Public Shared TempProjectPath As String
 
-    Dim _codeFilePath As String
-
-    Public Property CodeFilePath As String
-        Get
-            Return _codeFilePath?.ToLower()
-        End Get
-
-        Set(value As String)
-            _codeFilePath = value?.ToLower()
-        End Set
-    End Property
-
-
     Private Shared TempKeyNum As Integer = 0
     Public PageKey As String
 
@@ -245,7 +243,7 @@ Public Class Designer
 
     Public ReadOnly Property IsNew As Boolean
         Get
-            Return Not HasChanges AndAlso _fileName = ""
+            Return Not HasChanges AndAlso _formFile = ""
         End Get
     End Property
 
@@ -254,12 +252,25 @@ Public Class Designer
         Return "Form" & TempKeyNum
     End Function
 
+    Private Shared globalKey As String
+    Private Shared appDir = System.AppDomain.CurrentDomain.BaseDirectory
+
     Private Shared Function GetTempKey(Optional pagePath As String = "") As String
         If pagePath <> "" Then
             pagePath = pagePath.ToLower()
-            For Each p In Pages
-                If p.Value._fileName = pagePath Then Return p.Key
-            Next
+            If IO.Path.GetFileNameWithoutExtension(pagePath) = "global" Then
+                If globalKey <> "" Then Return globalKey
+                TempKeyNum += 1
+                globalKey = "KEY" & TempKeyNum
+                CurrentPage.IsEnabled = False
+                Return globalKey
+            Else
+                For Each p In Pages
+                    If p.Value._formFile.ToLower() = pagePath Then
+                        Return p.Key
+                    End If
+                Next
+            End If
         End If
 
         TempKeyNum += 1
@@ -273,11 +284,13 @@ Public Class Designer
     End Sub
 
     Private Shared Sub UpdateFormInfo()
-        Dim displayName = " ● " & CurrentPage.Name & If(CurrentPage._fileName = "", " *", "")
+        Dim displayName = " ● " & CurrentPage.Name & If(CurrentPage._formFile = "", " *", "")
         Dim i = FormKeys.IndexOf(CurrentPage.PageKey)
         If i = -1 Then
-            FormNames.Add(displayName)
-            FormKeys.Add(CurrentPage.PageKey)
+            If CurrentPage.Name <> "global" Then
+                FormNames.Add(displayName)
+                FormKeys.Add(CurrentPage.PageKey)
+            End If
         ElseIf FormNames(i) <> displayName Then
             FormNames(i) = displayName
         End If
@@ -319,60 +332,105 @@ Public Class Designer
         CurrentPage.PageHeight = 500
     End Sub
 
-    Public Shared Function ClosePage(Optional openNewPageIfLast As Boolean = True, Optional force As Boolean = False) As Boolean
-        If Not force AndAlso CurrentPage.IsNew AndAlso Pages.Count = 1 Then Return True
+    Public Shared Function ClosePage(
+                    Optional openNewPageIfLast As Boolean = True,
+                    Optional force As Boolean = False,
+                    Optional ClosingApp As Boolean = False
+               ) As Boolean
+
+        If CurrentPage Is Nothing Then Return True
+
+        If Not force AndAlso CurrentPage.IsNew AndAlso FormKeys.Count = 1 Then
+            Return True
+        End If
 
         If CurrentPage.IsDirty Then
             If Not CurrentPage.AskToSave() Then Return False
         End If
 
-        Pages.Remove(CurrentPage.PageKey)
-        PagesGrid.Children.Remove(CurrentPage)
-
-        Dim i = FormKeys.IndexOf(CurrentPage.PageKey)
-        If i <> -1 Then
-            FormKeys.RemoveAt(i)
-            FormNames.RemoveAt(i)
-        End If
-
-        Dim nextKey As String
-        If Pages.Count > 0 Then
-            Dim n = Pages.Count - 1
-            If i > n Then
-                nextKey = FormKeys(n)
-            Else
-                nextKey = FormKeys(i)
+        If globalKey <> "" AndAlso CurrentPage.PageKey = globalKey Then
+            If ClosingApp Then
+                Pages.Remove(globalKey)
+                globalKey = ""
             End If
 
-            SwitchTo(nextKey, False)
+            Dim i = FormKeys.Count - 1
+            If i < 0 Then
+                If openNewPageIfLast Then
+                    OpenNewPage(False)
+                Else
+                    CurrentPage = Nothing
+                    FormNames.Clear()
+                End If
+            Else
+                SwitchTo(FormKeys(i), False)
+            End If
 
-        ElseIf openNewPageIfLast Then
-            OpenNewPage(False)
         Else
-            CurrentPage = Nothing
-            FormNames.Clear()
-        End If
+            Pages.Remove(CurrentPage.PageKey)
+            PagesGrid.Children.Remove(CurrentPage)
 
+            Dim i = FormKeys.IndexOf(CurrentPage.PageKey)
+
+            If i <> -1 Then
+                FormKeys.RemoveAt(i)
+                FormNames.RemoveAt(i)
+            End If
+
+            Dim nextKey As String
+            Dim n = FormKeys.Count - 1
+            If n > -1 Then
+                If i > n Then
+                    nextKey = FormKeys(n)
+                Else
+                    nextKey = FormKeys(i)
+                End If
+
+                SwitchTo(nextKey, False)
+
+            ElseIf openNewPageIfLast Then
+                If ProjectExplorer.CurrentProject <> "" Then
+                    SwitchTo(Helper.GlobalFileName, False)
+                Else
+                    OpenNewPage(False)
+                End If
+            Else
+                CurrentPage = Nothing
+                FormNames.Clear()
+            End If
+        End If
         Return True
     End Function
 
-    Public Shared Function SwitchTo(key As String, Optional UpdateCurrentPage As Boolean = True) As String
+    Public Shared Function SwitchTo(
+                    key As String,
+                    Optional UpdateCurrentPage As Boolean = True
+                ) As String
+
         If key = "" Then Return OpenNewPage()
 
-        If CurrentPage IsNot Nothing AndAlso UpdateCurrentPage Then UpdatePageInfo()
+        If CurrentPage IsNot Nothing Then
+            If CurrentPage.PageKey = key Then Return key
+            If CurrentPage._formFile.ToLower() = key.ToLower() Then Return key
+            If UpdateCurrentPage Then UpdatePageInfo()
+        End If
 
-        If Pages.ContainsKey(key) Then
+        If globalKey <> "" AndAlso key.ToLower() = Helper.GlobalFileName Then
+            CurrentPage = Pages(globalKey)
+
+        ElseIf Pages.ContainsKey(key) Then
             CurrentPage = Pages(key)
-        ElseIf Not IO.File.Exists(key) Then ' closed
+
+        ElseIf Not IO.File.Exists(key) AndAlso key.ToLower() <> Helper.GlobalFileName Then ' closed
             Return key
         Else
-            Dim xamlPath = key.ToLower()
-            Dim codePath = xamlPath.Substring(0, xamlPath.Length - 5) & ".sb".ToLower()
+            Dim xamlPath = key
+            Dim codePath = xamlPath.Substring(0, xamlPath.Length - 5) & ".sb"
 
             For Each item In Pages
                 Dim page = item.Value
-                If page._fileName = xamlPath OrElse
-                         page._codeFilePath = codePath Then
+                If page._formFile.ToLower() = xamlPath OrElse
+                             page._codeFile.ToLower() = codePath Then
                     ' File is already opened. Stwich to it.
                     Return SwitchTo(item.Key, False)
                 End If
@@ -383,7 +441,12 @@ Public Class Designer
         End If
 
         BringPageToFront()
-        RaiseEvent PageShown(FormKeys.IndexOf(CurrentPage.PageKey))
+        RaiseEvent PageShown(
+            If(key = Helper.GlobalFileName OrElse key = globalKey,
+                GlobalFileIndex,
+                FormKeys.IndexOf(CurrentPage.PageKey)
+            )
+        )
         Return CurrentPage.PageKey
     End Function
 
@@ -473,7 +536,18 @@ Public Class Designer
 
     Dim OpenFileCanvas As Canvas
     Private Sub XamlToPage(xaml As String)
-        Dim canvas As Canvas = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
+        If xaml = "" Then Return
+        Dim obj = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
+        Dim canvas = TryCast(obj, Canvas)
+        If canvas Is Nothing Then
+            canvas = New Canvas
+            canvas.Name = "UnKnownForm"
+            Try
+                canvas.Children.Add(obj)
+            Catch ex As Exception
+                canvas.Children.Add(New Label() With {.Content = "An error hapeened while loading the file."})
+            End Try
+        End If
 
         Me.Name = canvas.Name
         _Text = Automation.AutomationProperties.GetHelpText(canvas)
@@ -516,8 +590,13 @@ Public Class Designer
             Designer.SetFrameHeight(Diagram, Diagram.Height)
             Diagram.ClearValue(FrameworkElement.HeightProperty)
 
-            Designer.SetLeft(Diagram, Canvas.GetLeft(Diagram))
-            Designer.SetTop(Diagram, Canvas.GetTop(Diagram))
+            Dim left = Canvas.GetLeft(Diagram)
+            If Double.IsNaN(left) Then left = 0
+            Designer.SetLeft(Diagram, left)
+
+            Dim top = Canvas.GetTop(Diagram)
+            If Double.IsNaN(top) Then top = 0
+            Designer.SetTop(Diagram, top)
 
             Dim RotateTransform = TryCast(Diagram.RenderTransform, RotateTransform)
             If RotateTransform Is Nothing Then
@@ -769,10 +848,10 @@ Public Class Designer
 
 
     Public Function Save() As Boolean
-        If _fileName = "" Then
+        If _formFile = "" Then
             Return SaveAs()
         ElseIf Me.HasChanges Then
-            Return SavePage(_fileName, False)
+            Return SavePage(_formFile, False)
         Else
             Return True
         End If
@@ -787,20 +866,19 @@ Public Class Designer
         }
 
         Dim saveName As String
-        If _fileName = "" Then
+        If _formFile = "" Then
             saveName = Me.Name
         Else
-            dlg.InitialDirectory = _fileName
-            saveName = IO.Path.GetFileNameWithoutExtension(_fileName)
+            dlg.InitialDirectory = _formFile
+            saveName = IO.Path.GetFileNameWithoutExtension(_formFile)
         End If
         dlg.FileName = saveName
 
         If dlg.ShowDialog() = True Then
-            Dim oldPath = _fileName
-            _fileName = dlg.FileName.ToLower() ' don't use FileName property to keep the old code file path
+            Dim oldPath = _formFile
+            _formFile = dlg.FileName ' don't use FileName property to keep the old code file path
             If Not SavePage(oldPath, True) Then Return False
-            FileName = _fileName ' Update the old code file path
-
+            FormFile = _formFile ' Update the old code file path
             Return True
         End If
         Return False
@@ -811,7 +889,7 @@ Public Class Designer
 
         For Each page In Pages
             Dim dsn = page.Value
-            If dsn._fileName = x Then
+            If dsn._formFile.ToLower() = x Then
                 If dsn.HasChanges Then
                     SwitchTo(page.Key)
                     CurrentPage.Save()
@@ -829,9 +907,9 @@ Public Class Designer
     Public Function DoSave(Optional tmpPath As String = Nothing, Optional saveAs As Boolean = False) As Boolean
         Try
             Dim xmal = PageToXaml()
-            Dim saveTo = If(tmpPath = "", _fileName, tmpPath)
+            Dim saveTo = If(tmpPath = "", _formFile, tmpPath)
             IO.File.WriteAllText(saveTo, xmal, System.Text.Encoding.UTF8)
-            _codeFilePath = saveTo.Substring(0, saveTo.Length - 5) & ".sb".ToLower()
+            _codeFile = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
             If tmpPath = "" Then
                 UpdateFormInfo()
                 Me.HasChanges = False
@@ -852,7 +930,7 @@ Public Class Designer
         Me.SelectedIndex = -1
         Me.Focus()
         Dim ImgSaver As New ImageSaver
-        ImgSaver.Save(Me.DesignerGrid, _fileName)
+        ImgSaver.Save(DesignerGrid, _formFile)
         Me.Scale = Sc
     End Sub
 
@@ -864,13 +942,21 @@ Public Class Designer
             .Title = "Open Diagram Design Page"
         }
         If dlg.ShowDialog() = True Then
+            If Not CurrentPage.HasChanges AndAlso
+                    CurrentPage.IsNew AndAlso Pages.Count = 1 Then
+                ClosePage(False, True)
+            End If
+
             SwitchTo(dlg.FileName)
-            Me.HasChanges = False
         End If
     End Sub
 
 
     Public Shared Sub Open(fileName As String)
+        If fileName.ToLower() = Helper.GlobalFileName Then
+            fileName = IO.Path.Combine(appDir, Helper.ExactGlobalFileName)
+        End If
+
         If Not IO.File.Exists(fileName) Then
             MsgBox($"File '{fileName}' doesn't exist!")
             Return
@@ -889,8 +975,8 @@ Public Class Designer
 
             CurrentPage.XamlToPage(xaml)
             CurrentPage.ShowGrid = True
-            CurrentPage.FileName = IO.Path.GetFullPath(fileName).ToLower()
-            CurrentPage.PageKey = GetTempKey(CurrentPage._fileName)
+            CurrentPage._formFile = IO.Path.GetFullPath(fileName)
+            CurrentPage.PageKey = GetTempKey(CurrentPage._formFile)
             Pages(CurrentPage.PageKey) = CurrentPage
             UpdateFormInfo()
 
@@ -924,7 +1010,9 @@ Public Class Designer
         Me.SelectedIndex = -1
         Me.Focus()
         Dim dialog As New PrintDialog()
-        If dialog.ShowDialog() = True Then dialog.PrintVisual(Me.DesignerGrid, _fileName)
+        If dialog.ShowDialog() = True Then
+            dialog.PrintVisual(Me.DesignerGrid, _formFile)
+        End If
         Me.Scale = Sc
     End Sub
 
@@ -970,11 +1058,11 @@ Public Class Designer
     End Sub
 
     Private Sub Designer_MouseDown(sender As Object, e As MouseButtonEventArgs) Handles Me.MouseDown
-        If Not Editing AndAlso e.Source Is Me AndAlso Keyboard.Modifiers <> ModifierKeys.Control Then
+        If Not Editing AndAlso e.Source Is Me AndAlso
+                    Keyboard.Modifiers <> ModifierKeys.Control Then
             Me.SelectedIndex = -1
             Me.Focus()
         End If
-
     End Sub
 
     Dim FirstTime As Boolean = True
@@ -985,9 +1073,10 @@ Public Class Designer
         End If
 
         GridBrush.Viewport = New Rect(
-                                            -(e.HorizontalOffset / Me.Scale) Mod Helper.CmToPx,
-                                            -(e.VerticalOffset / Me.Scale) Mod Helper.CmToPx,
-                                            Helper.CmToPx, Helper.CmToPx)
+               -(e.HorizontalOffset / Me.Scale) Mod Helper.CmToPx,
+               -(e.VerticalOffset / Me.Scale) Mod Helper.CmToPx,
+               Helper.CmToPx, Helper.CmToPx
+        )
 
     End Sub
 
@@ -1126,7 +1215,7 @@ Public Class Designer
         Canvas.SetTop(SelectionBorder, SelStartPoint.Y)
         SelectionBorder.Width = 0
         SelectionBorder.Height = 0
-        SelectionBorder.Visibility = Windows.Visibility.Visible
+        SelectionBorder.Visibility = Visibility.Visible
     End Sub
 
     Private Sub Designer_MouseMove(sender As Object, e As MouseEventArgs) Handles Me.MouseMove
@@ -1141,8 +1230,8 @@ Public Class Designer
     End Sub
 
     Private Sub Designer_MouseLeftButtonUp(sender As Object, e As MouseButtonEventArgs) Handles Me.MouseLeftButtonUp
-        If SelectionBorder.Visibility = Windows.Visibility.Visible Then
-            SelectionBorder.Visibility = Windows.Visibility.Collapsed
+        If SelectionBorder.Visibility = Visibility.Visible Then
+            SelectionBorder.Visibility = Visibility.Collapsed
             Dim R As New Rect(SelStartPoint, e.GetPosition(Me.ConnectionCanvas))
             If R.Width = 0 AndAlso R.Height = 0 Then Return
 
@@ -1246,7 +1335,7 @@ Public Class Designer
                     Sub()
                         Me.SelectedIndex = -1
                         _Text = Automation.AutomationProperties.GetHelpText(Me)
-                        RaiseEvent PageShown(-3)
+                        RaiseEvent PageShown(UpdateControlNameAndText)
                     End Sub,
                     Me, Automation.AutomationProperties.HelpTextProperty)
 
@@ -1271,7 +1360,7 @@ Public Class Designer
                     Sub()
                         Me.SelectedItem = control
                         SetControlText(control, Automation.AutomationProperties.GetHelpText(control))
-                        RaiseEvent PageShown(-3)
+                        RaiseEvent PageShown(UpdateControlNameAndText)
                     End Sub,
                     control, Automation.AutomationProperties.HelpTextProperty)
 
@@ -1282,7 +1371,7 @@ Public Class Designer
         If trySetText Then
             Try
                 CObj(control).Text = value
-                RaiseEvent PageShown(-3) ' To Update text
+                RaiseEvent PageShown(UpdateControlNameAndText) ' To Update text
                 Return
             Catch
             End Try
@@ -1295,7 +1384,7 @@ Public Class Designer
             End If
         Catch
         End Try
-        RaiseEvent PageShown(-3) ' To Update text
+        RaiseEvent PageShown(UpdateControlNameAndText) ' To Update text
     End Sub
 
 
@@ -1819,7 +1908,17 @@ Public Class Designer
 
     Private ReadOnly Property IsDirty As Boolean
         Get
-            Return Me.HasChanges OrElse (Me._fileName = "" AndAlso Me.CodeFilePath <> "" AndAlso Not Me.CodeFilePath.StartsWith(TempProjectPath))
+            If IO.Path.GetFileNameWithoutExtension(_formFile).ToLower() = "global" Then Return False
+            Return Me.HasChanges OrElse (
+                _formFile = "" AndAlso _codeFile <> "" AndAlso
+                Not _codeFile.ToLower().StartsWith(TempProjectPath)
+            )
+        End Get
+    End Property
+
+    Friend Shared ReadOnly Property PageCount As Integer
+        Get
+            Return FormKeys.Count
         End Get
     End Property
 
@@ -1853,6 +1952,10 @@ Public Class Designer
                            DependencyProperty = DependencyProperty.RegisterAttached("GroupID",
                            GetType(String), GetType(Designer),
                            New PropertyMetadata(AddressOf GroupIDChanged))
+
+    Public Const UpdateFormName As Integer = -2
+    Public Const UpdateControlNameAndText As Integer = -3
+    Public Const GlobalFileIndex As Integer = -4
 
     Shared Sub GroupIDChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
         Dim Pnl = Helper.GetDiagramPanel(Diagram)

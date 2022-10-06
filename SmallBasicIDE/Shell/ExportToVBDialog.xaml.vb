@@ -12,7 +12,7 @@ Imports System.Windows.Markup
 Imports System.Windows.Threading
 
 Namespace Microsoft.SmallVisualBasic.Shell
-    Public Partial Class ExportToVBDialog
+    Partial Public Class ExportToVBDialog
         Inherits Window
         Implements IComponentConnector
 
@@ -96,7 +96,10 @@ Namespace Microsoft.SmallVisualBasic.Shell
             If document.Errors.Count = 0 Then
                 Try
                     Dim visualBasicExporter As VisualBasicExporter = New VisualBasicExporter(compiler)
-                    Dim projectName = If(Not document.IsNew, Path.GetFileNameWithoutExtension(document.FilePath), "Untitled")
+                    Dim projectName = If(Not document.IsNew,
+                            Path.GetFileNameWithoutExtension(document.File),
+                            "Untitled"
+                    )
                     Dim projectPath = visualBasicExporter.ExportToVisualBasicProject(projectName, Me.locationTextBox.Text)
                     LaunchProject(projectPath)
                 Catch ex As Exception

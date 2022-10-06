@@ -1,11 +1,10 @@
 ﻿Imports Microsoft.SmallBasic
+Imports Microsoft.SmallVisualBasic.Documents
 Imports Microsoft.SmallVisualBasic.LanguageService
 Imports Microsoft.VisualBasic
 Imports System
-Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports System.Linq
-Imports System.Text
 Imports System.Windows
 Imports System.Windows.Controls
 Imports System.Windows.Controls.Primitives
@@ -58,11 +57,10 @@ Namespace Microsoft.SmallVisualBasic.Utility
                     Case SymbolType.Method, SymbolType.Subroutine
                         FillInfo(True)
 
-                    Case SymbolType.DynamicProperty
-                        FillInfo(False)
-
-                    Case SymbolType.Control, SymbolType.Label, SymbolType.Literal,
-                        SymbolType.GlobalVariable, SymbolType.LocalVariable
+                    Case SymbolType.Control, SymbolType.GlobalModule,
+                             SymbolType.DynamicProperty,
+                             SymbolType.Label, SymbolType.Literal,
+                             SymbolType.GlobalVariable, SymbolType.LocalVariable
                         FillInfo(False)
 
                     Case SymbolType.Property, SymbolType.Event
@@ -72,7 +70,7 @@ Namespace Microsoft.SmallVisualBasic.Utility
                         FillDescription(definition, If(type = "", "", type & "."))
 
                     Case SymbolType.Type
-                        methodType = " " & value.SymbolType.ToString()
+                        methodType = " Type"
                         Dim type = GetTypeDisplayName()
                         Dim definition As New Span()
                         FillTitle(definition)
@@ -398,17 +396,33 @@ Namespace Microsoft.SmallVisualBasic.Utility
             MainWindow.PopHelp.IsOpen = False
             Dim item = _itemWrapper.CompletionItem
             Dim identifier = item.DefinitionIdintifier
-            If identifier.Line = -1 Then ' Select the control on the form
-                MainWindow.SelectControl(item.DisplayName)
-            Else
-                Dim doc = MainWindow.ActiveDocument
-                Dim editor = doc.EditorControl
-                Dim snapshot = editor.TextView.TextSnapshot
-                Dim lineStart = snapshot.GetLineFromLineNumber(identifier.Line).Start
-                Dim pos = lineStart + identifier.Column
-                doc.EnsureAtTop(pos)
-                editor.EditorOperations.SelectCurrentWord()
-            End If
+
+            Select Case _itemWrapper.NavigateTo
+                Case NavigateTo.None
+                    SelectToken(identifier, MainWindow.ActiveDocument)
+
+                Case NavigateTo.Designer
+                    MainWindow.SelectControl(item.DisplayName)
+
+                Case NavigateTo.GlobalModule
+                    Dim progDir = MainWindow.ProjExplorer.ProjectDirectory
+                    If progDir <> "" Then
+                        Dim globalFile = IO.Path.Combine(progDir, "global.sb")
+                        If IO.File.Exists(globalFile) Then
+                            Dim doc = MainWindow.OpenDocIfNot(globalFile)
+                            If identifier.Column > -1 Then SelectToken(identifier, doc)
+                        End If
+                    End If
+            End Select
+        End Sub
+
+        Private Shared Sub SelectToken(identifier As Token, doc As TextDocument)
+            Dim editor = doc.EditorControl
+            Dim snapshot = editor.TextView.TextSnapshot
+            Dim lineStart = snapshot.GetLineFromLineNumber(identifier.Line).Start
+            Dim pos = lineStart + identifier.Column
+            doc.EnsureAtTop(pos)
+            editor.EditorOperations.SelectCurrentWord()
         End Sub
     End Class
 End Namespace

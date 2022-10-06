@@ -6,6 +6,7 @@ Public Class ProjectExplorer
 
     Dim _projDir As String
     Dim projFiles As New ObservableCollection(Of ProjFileInfo)
+    Public Shared CurrentProject As String
 
     Public Event FileNameChanged(oldFileName As String, newFileName As String)
 
@@ -17,7 +18,7 @@ Public Class ProjectExplorer
         Set()
             Dim fileName = ""
             If Value = "" OrElse Not (Directory.Exists(Value) OrElse File.Exists(Value)) Then
-                _projDir = Value
+                _projDir = Value.ToLower()
                 Title = "New Project Files"
                 projFiles.Clear()
                 Return
@@ -31,24 +32,34 @@ Public Class ProjectExplorer
             End If
 
             If Value = _projDir Then
-                If fileName <> "" Then SelectItem(fileName)
+                If fileName <> "" Then
+                    If Path.GetFileNameWithoutExtension(fileName).ToLower() = "global" Then
+                        SelectItem(Path.Combine(_projDir, "Global.sb"))
+                    Else
+                        SelectItem(fileName)
+                    End If
+                End If
                 Return
             End If
 
             _projDir = Value
+            CurrentProject = _projDir
             Title = $"{GetProjectName(_projDir)} Project Files"
-            Dim files = Directory.GetFiles(_projDir, "*.xaml")
             FreezListFiles = True
             projFiles.Clear()
 
+            Dim files = Directory.GetFiles(_projDir, "*.xaml")
             If files.Count > 0 Then
                 For Each f In files
-                    projFiles.Add(New ProjFileInfo(f.ToLower()))
+                    Dim fName = Helper.GetFormNameFromXaml(f)
+                    If fName = "" Then Continue For
+                    projFiles.Add(New ProjFileInfo(f))
                 Next
             End If
 
-            Dim globFile = Path.Combine(_projDir, "global.sb")
-            If File.Exists(globFile) Then projFiles.Add(New ProjFileInfo(globFile))
+            Dim globFile = Path.Combine(_projDir, "Global.sb")
+            projFiles.Add(New ProjFileInfo(globFile))
+
             FreezListFiles = False
 
             If fileName = "" Then
@@ -60,8 +71,11 @@ Public Class ProjectExplorer
     End Property
 
     Private Sub SelectItem(fileName As String)
+        fileName = fileName.ToLower()
+        If SelectedFile.ToLower() = fileName Then Return
+
         For i = 0 To projFiles.Count - 1
-            If projFiles(i).FilePath = fileName Then
+            If projFiles(i).FilePath.ToLower() = fileName Then
                 FilesList.SelectedIndex = i
                 Return
             End If
@@ -89,8 +103,21 @@ Public Class ProjectExplorer
         End Get
     End Property
 
+    Public ReadOnly Property SelectedFile As String
+        Get
+            If FilesList.SelectedIndex = -1 Then Return ""
+            Return CType(FilesList.SelectedItem, ProjFileInfo).FilePath
+        End Get
+    End Property
+
     Protected Overrides Sub OnSelectionChanged()
-        Designer.SwitchTo(CType(FilesList.SelectedItem, ProjFileInfo).FilePath)
+        Dim filePath = SelectedFile
+        If Path.GetFileNameWithoutExtension(filePath).ToLower() = "global" Then
+            Designer.SwitchTo(Helper.GlobalFileName)
+            Designer.CurrentPage.CodeFile = filePath
+        Else
+            Designer.SwitchTo(filePath)
+        End If
     End Sub
 
     Protected Overrides Sub OnDeleteItem()
@@ -99,7 +126,11 @@ Public Class ProjectExplorer
             Return
         End If
 
-        If MsgBox("This action will delete this form and its code files from the project folder and move them to the recycle bin. Are you sure you want to do that?", vbYesNo Or MsgBoxStyle.Exclamation, "Warning") = MsgBoxResult.No Then
+        If MsgBox(
+                    "This action will delete this form and its code files from the project folder and move them to the recycle bin. Are you sure you want to do that?",
+                     vbYesNo Or MsgBoxStyle.Exclamation Or MsgBoxStyle.DefaultButton2,
+                     "Warning"
+                 ) = MsgBoxResult.No Then
             Return
         End If
 
@@ -128,8 +159,14 @@ Public Class ProjectExplorer
     End Sub
 
     Protected Overrides Function OnCommit(newName As String) As Boolean
+        Dim item = CType(FilesList.SelectedItem, ProjFileInfo)
+        If item.IsTheGlobalFile Then Return False
+
+        Dim oldFile = item.FilePath
+        Dim x = newName(0).ToString().ToLower()
+        newName = x & If(newName.Length > 1, newName.Substring(1), "")
         Dim newFile = Path.Combine(_projDir, newName & ".xaml")
-        Dim oldFile = CType(FilesList.SelectedItem, ProjFileInfo).FilePath
+
         Try
             If newName.ToLower() = Path.GetFileNameWithoutExtension(oldFile).ToLower() Then Return True
 
@@ -175,16 +212,38 @@ Public Class ProjectExplorer
         Return False
     End Function
 
+    Protected Overrides Function OnBeginEdit() As Boolean
+        Return Not CType(FilesList.SelectedItem, ProjFileInfo).IsTheGlobalFile
+    End Function
+
+    Public Sub SelectedGlobalFile()
+        SelectItem(Path.Combine(_projDir, "Global.sb"))
+    End Sub
 End Class
 
 Public Class ProjFileInfo
+
+    Dim _filePath As String
+
     Public Sub New(filePath As String)
-        Me.FilePath = filePath
+        _filePath = filePath
+        IsTheGlobalFile = Path.GetFileNameWithoutExtension(filePath).ToLower() = "global"
     End Sub
 
     Public Property FilePath As String
+        Get
+            Return _filePath
+        End Get
+
+        Set(value As String)
+            _filePath = value
+        End Set
+    End Property
+
+    Public ReadOnly Property IsTheGlobalFile As Boolean
+
 
     Public Overrides Function ToString() As String
-        Return " ● " & Path.GetFileName(_FilePath)
+        Return " ● " & Path.GetFileName(_filePath)
     End Function
 End Class

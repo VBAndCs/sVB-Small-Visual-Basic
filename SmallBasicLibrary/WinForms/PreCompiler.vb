@@ -18,6 +18,7 @@ Namespace WinForms
             FillModuleMembers(GetType(Label))
             FillModuleMembers(GetType(Button))
             FillModuleMembers(GetType(ListBox))
+            FillModuleMembers(GetType(ComboBox))
             FillModuleMembers(GetType(DatePicker))
             FillModuleMembers(GetType(ImageBox))
             FillModuleMembers(GetType(TextEx))
@@ -29,39 +30,35 @@ Namespace WinForms
             deafaultControlEvents(NameOf(Form).ToLower()) = "OnShown"
             deafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
             deafaultControlEvents(NameOf(ListBox).ToLower()) = "OnSelection"
+            deafaultControlEvents(NameOf(ComboBox).ToLower()) = "OnSelection"
             deafaultControlEvents(NameOf(DatePicker).ToLower()) = "OnSelection"
         End Sub
 
         Public Shared Function GetTypeName(varType As VariableType) As String
             Select Case varType
-                Case VariableType.Control
-                    Return NameOf(WinForms.Control)
-                Case VariableType.Form
-                    Return NameOf(WinForms.Form)
-                Case VariableType.Label
-                    Return NameOf(WinForms.Label)
-                Case VariableType.TextBox
-                    Return NameOf(WinForms.TextBox)
-                Case VariableType.ListBox
-                    Return NameOf(WinForms.ListBox)
-                Case VariableType.Button
-                    Return NameOf(WinForms.Button)
-                Case VariableType.ImageBox
-                    Return NameOf(WinForms.ImageBox)
-                Case VariableType.DatePicker
-                    Return NameOf(WinForms.DatePicker)
+
                 Case VariableType.String
-                    Return NameOf(WinForms.TextEx)
+                    Return NameOf(TextEx)
+
                 Case VariableType.Double
-                    Return NameOf(WinForms.MathEx)
+                    Return NameOf(MathEx)
+
                 Case VariableType.Array
-                    Return NameOf(WinForms.ArrayEx)
+                    Return NameOf(ArrayEx)
+
                 Case VariableType.Color
-                    Return NameOf(WinForms.ColorEx)
+                    Return NameOf(ColorEx)
+
                 Case VariableType.Date
-                    Return NameOf(WinForms.DateEx)
-                Case Else
+                    Return NameOf(DateEx)
+
+                Case VariableType.None, VariableType.Boolean,
+                          VariableType.Key, VariableType.DialogResult
                     Return ""
+
+                Case Else
+                    Return varType.ToString()
+
             End Select
 
         End Function
@@ -72,14 +69,18 @@ Namespace WinForms
             Select Case type.Name
                 Case NameOf(ArrayEx)
                     Return NameOf(Array)
+
                 Case NameOf(MathEx)
                     Return NameOf(Math)
+
                 Case NameOf(TextEx)
                     Return NameOf(Text)
+
                 Case NameOf(ColorEx)
                     Return NameOf(Color)
+
                 Case NameOf(DateEx)
-                    Return NameOf(WinForms.Date)
+                    Return NameOf([Date])
                 Case Else
                     Return type.Name
             End Select
@@ -98,8 +99,10 @@ Namespace WinForms
             Select Case name
                 Case NameOf(Form)
                     Return {GetType(Form), GetType(Forms), GetType(Control)}
+
                 Case NameOf(Control)
                     Return {GetType(Control)}
+
                 Case Else
                     Dim t = Type.GetType(WinFormsNS & name)
                     If t Is Nothing Then
@@ -125,8 +128,9 @@ Namespace WinForms
                 New ShortcutInfo("Label", VariableType.Label),
                 New ShortcutInfo("Button", VariableType.Button),
                 New ShortcutInfo("ListBox", VariableType.ListBox),
+                New ShortcutInfo("ComboBox", VariableType.ComboBox),
                 New ShortcutInfo("DatePicker", VariableType.DatePicker),
-                New ShortcutInfo("ListBox", VariableType.ImageBox)
+                New ShortcutInfo("ImageBox", VariableType.ImageBox)
     }
 
         Public Shared Function GetVarType(variableName As String) As VariableType
@@ -152,7 +156,6 @@ Namespace WinForms
                     Dim x = variableName(variableName.Length - 1 - n)
                     If x = "_" OrElse IsNumeric(x) Then Return sh.Type
                 End If
-
             Next
 
             Return VariableType.None

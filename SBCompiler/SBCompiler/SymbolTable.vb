@@ -66,11 +66,11 @@ Namespace Microsoft.SmallVisualBasic
                 End If
 
             ElseIf prop.isSet Then
-                _Dynamics.Add(
-                          typeName,
-                          New Dictionary(Of String, Token) From {
-                                  {propertyName, propertyNameInfo}
-                          }
+                Dynamics.Add(
+                    typeName,
+                    New Dictionary(Of String, Token) From {
+                            {propertyName, propertyNameInfo}
+                    }
                 )
 
                 Dim subroutine = If(_GlobalVariables.ContainsKey(typeName), Nothing, Statements.SubroutineStatement.GetSubroutine(prop))
@@ -235,9 +235,9 @@ Namespace Microsoft.SmallVisualBasic
 
         Public ReadOnly Labels As New Dictionary(Of String, Token)
 
-        Public Sub New(errors As List(Of [Error]), typeInfoBag As TypeInfoBag)
+        Public Sub New(errors As List(Of [Error]))
             _Errors = errors
-            _typeInfoBag = typeInfoBag
+            _typeInfoBag = Compiler.TypeInfoBag
             If _Errors Is Nothing Then
                 _Errors = New List(Of [Error])()
             End If
@@ -284,13 +284,9 @@ Namespace Microsoft.SmallVisualBasic
                          Optional isLocal As Boolean = False
                    ) As String
 
+            If IsInvalid(variable.Identifier) Then Return ""
+
             Dim variableName = variable.Identifier.LCaseText
-
-            If variableName = "_" Then
-                Errors.Add(New [Error](variable.Identifier, "_ is not a valid name"))
-                Return ""
-            End If
-
             Dim Subroutine = variable.Subroutine
             If comment <> "" Then variable.Identifier.Comment = comment
 
@@ -310,6 +306,16 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             Return ""
+        End Function
+
+        Private Function IsInvalid(name As Token) As Boolean
+            Dim variableName = name.LCaseText
+            If variableName = "_" OrElse variableName = "global" Then
+                Errors.Add(New [Error](name, $"{name.Text} is not a valid identifier name"))
+                Return True
+            End If
+
+            Return False
         End Function
 
         Private Function AddLocalVar(variable As IdentifierExpression) As String
@@ -397,6 +403,8 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Public Sub AddSubroutine(subroutine As Token, type As TokenType)
+            If IsInvalid(subroutine) Then Return
+
             Dim name = subroutine.LCaseText
             subroutine.Type = type
 
@@ -413,12 +421,9 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Public Sub AddLabelDefinition(label As Token)
-            Dim labelName = label.LCaseText
-            If labelName = "_" Then
-                Errors.Add(New [Error](label, "_ is not a valid name"))
-                Return
-            End If
+            If IsInvalid(label) Then Return
 
+            Dim labelName = label.LCaseText
             If Labels.ContainsKey(labelName) Then
                 Errors.Add(New [Error](label, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("AnotherLabelExists"), New Object(0) {label.Text})))
             Else

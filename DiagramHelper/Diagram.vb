@@ -1,5 +1,4 @@
 ﻿Imports System.Windows.Controls.Primitives
-Imports System.Globalization
 
 Public Class DiagramObject
     Dim WithEvents Diagram As FrameworkElement
@@ -11,15 +10,25 @@ Public Class DiagramObject
 
     Friend Shared Diagrams As New Dictionary(Of FrameworkElement, DiagramObject)
 
-    Dim TmpIsSelected As Boolean
     Dim DraggingDiagram As Boolean = False
     Dim DraggingStartPoint As Point
     Dim OldPropertyState As PropertyState
     Dim Unit As UndoRedoUnit
 
-
     Private Sub New(Diagram As FrameworkElement)
         Me.Diagram = Diagram
+        Diagram.AddHandler(
+              UIElement.PreviewMouseDownEvent,
+              New RoutedEventHandler(AddressOf Diagram_PreviewMouseDown),
+              True
+         )
+
+        Diagram.AddHandler(
+              UIElement.PreviewMouseLeftButtonDownEvent,
+              New RoutedEventHandler(AddressOf Diagram_PreviewMouseLeftButtonDown),
+              True
+         )
+
         Canv = Helper.GetCanvas(Diagram)
         Scv = Helper.GetScrollViewer(Canv)
         Dsn = Helper.GetDesigner(Scv)
@@ -82,6 +91,7 @@ Public Class DiagramObject
 
     Private Sub Diagram_MouseLeave(sender As Object, e As MouseEventArgs) Handles Diagram.MouseLeave
         If DraggingDiagram Then Diagram_PreviewMouseLeftButtonUp(Nothing, Nothing)
+        Mouse.OverrideCursor = Nothing
     End Sub
 
     Private Sub Diagram_GotFocus(sender As Object, e As EventArgs) Handles Diagram.GotFocus
@@ -203,8 +213,7 @@ Public Class DiagramObject
         End If
     End Sub
 
-    Private Sub Diagram_PreviewMouseDown(sender As Object, e As MouseButtonEventArgs) Handles Diagram.PreviewMouseDown
-
+    Private Sub Diagram_PreviewMouseDown(sender As Object, e As MouseButtonEventArgs)
         Diagram.CaptureMouse()
         DraggingDiagram = True
 
@@ -235,7 +244,7 @@ Public Class DiagramObject
         DraggingDiagram = False
         Pnl.ExitIsSelectedChanged = False
         DesignerItem.Focus()
-        Dsn.LocationVisibility = Windows.Visibility.Collapsed
+        Dsn.LocationVisibility = Visibility.Collapsed
         ReportMoveUndo()
     End Sub
 
@@ -388,7 +397,7 @@ Public Class DiagramObject
 #End Region
 
 
-    Private Sub Diagram_PreviewMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs) Handles Diagram.PreviewMouseLeftButtonDown
+    Private Sub Diagram_PreviewMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs)
         If e.ClickCount > 1 Then
             Dsn.OnDiagramDoubleClick(Diagram)
         End If
@@ -397,5 +406,9 @@ Public Class DiagramObject
     Private Sub Diagram_PreviewMouseRightButtonUp(sender As Object, e As MouseButtonEventArgs) Handles Diagram.PreviewMouseRightButtonUp
         Pnl.ContextMenu.IsOpen = True
         e.Handled = True
+    End Sub
+
+    Private Sub Diagram_MouseEnter(sender As Object, e As MouseEventArgs) Handles Diagram.MouseEnter
+        Mouse.OverrideCursor = Cursors.SizeAll
     End Sub
 End Class

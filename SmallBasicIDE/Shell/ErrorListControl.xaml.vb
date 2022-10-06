@@ -43,12 +43,14 @@ Namespace Microsoft.SmallVisualBasic.Shell
             End If
         End Sub
 
+        Friend ReadOnly ErrorTokens As New Collections.Generic.List(Of Token)
+
         Private Sub MoveToCurrentError()
             If SelectedItem Is Nothing OrElse _document.EditorControl Is Nothing Then
                 Return
             End If
 
-            Dim token = _document.ErrorTokens(SelectedIndex)
+            Dim token = ErrorTokens(SelectedIndex)
             If token.Line < 0 Then Return
             Dim textView = _document.EditorControl.TextView
             Dim lineStart = TextView.TextSnapshot.GetLineFromLineNumber(token.Line).Start

@@ -12,10 +12,12 @@
             Dim Mi = TryCast(m, MenuItem)
             If Mi IsNot Nothing Then
                 Select Case Mi.Header
+                    Case "New"
+                        Mi.IsEnabled = Dsn.HasChanges OrElse Not (Dsn.IsNew AndAlso Designer.PageCount = 1)
                     Case "Save"
                         Mi.IsEnabled = Dsn.HasChanges
                     Case "Save As..."
-                        Mi.IsEnabled = Dsn.FileName <> ""
+                        Mi.IsEnabled = Dsn.FormFile <> ""
                     Case "Save To Image", "Print"
                         Mi.IsEnabled = Dsn.Items.Count > 0
                     Case "Paste"
@@ -25,7 +27,7 @@
                     Case "Redo"
                         Mi.IsEnabled = Dsn.CanRedo
                     Case "Close"
-                        Mi.IsEnabled = Not Dsn.IsNew OrElse Designer.Pages.Count > 1
+                        Mi.IsEnabled = Not Dsn.IsNew OrElse Designer.PageCount > 1
                 End Select
             End If
         Next

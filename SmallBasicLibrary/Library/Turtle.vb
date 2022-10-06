@@ -259,7 +259,9 @@ Namespace Library
             GraphicsWindow.Invoke(
                 Sub()
                     If _turtle Is Nothing Then
-                        Dim source As ImageSource = New BitmapImage(SmallBasicApplication.GetResourceUri("Turtle.png"))
+                        Dim source As ImageSource = New BitmapImage(
+                            SmallBasicApplication.GetResourceUri("Turtle.png")
+                        )
                         _turtle = New Image With {
                               .Source = source,
                               .Margin = New Thickness(-8.0, -8.0, 0.0, 0.0),

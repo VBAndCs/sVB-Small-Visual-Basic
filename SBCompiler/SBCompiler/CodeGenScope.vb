@@ -83,8 +83,12 @@ Namespace Microsoft.SmallVisualBasic
                 _MethodBuilders = value.MethodBuilders
                 SymbolTable = value.SymbolTable
                 TypeInfoBag = value.TypeInfoBag
+                _GlobalScope = value.GlobalScope
+                _ForGlobalHelp = value.ForGlobalHelp
             End Set
         End Property
 
+        Public Property GlobalScope As CodeGenScope
+        Public Property ForGlobalHelp As Boolean
     End Class
 End Namespace

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <AssemblyName>SmallBasicLibrary</AssemblyName>
+    <AssemblyName>SmallVisualBasicLibrary</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <UseWPF>True</UseWPF>
     <TargetFramework>net48</TargetFramework>
@@ -10,10 +10,10 @@
     <RootNamespace>Microsoft.SmallVisualBasic</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>SmallBasicLibrary.xml</DocumentationFile>
+    <DocumentationFile>SmallVisualBasicLibrary.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>SmallBasicLibrary.xml</DocumentationFile>
+    <DocumentationFile>SmallVisualBasicLibrary.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="resources\error.png" />

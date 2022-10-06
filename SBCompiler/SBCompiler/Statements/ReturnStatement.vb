@@ -1,4 +1,5 @@
 ﻿Imports System.Globalization
+Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Expressions
 
@@ -32,15 +33,9 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-            Dim code = ""
-
-            If Subroutine.SubToken.Type = TokenType.Function Then
-                code = $"Stack.PushValue(""_sVB_ReturnValues"", {If(ReturnExpression, ChrW(34) & ChrW(34))})" & vbCrLf
-            End If
-
-            code &= $"GoTo _EXIT_SUB_{Subroutine.Name.LCaseText}"
-
-            CodeGenerator.LowerAndEmit(code, scope, Subroutine, StartToken.Line)
+            If scope.ForGlobalHelp Then Return
+            ReturnExpression?.EmitIL(scope)
+            scope.ILGenerator.Emit(OpCodes.Ret)
         End Sub
 
         Public Overrides Function ToString() As String

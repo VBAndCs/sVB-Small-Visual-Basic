@@ -8,17 +8,17 @@ Namespace Microsoft.SmallVisualBasic.Documents
     Public Class FileDocument
         Implements INotifyPropertyChanged
 
-        Private _filePath As String
+        Protected _file As String
         Private _isDirty As Boolean
         Private _propertyStore As New Dictionary(Of Object, Object)()
 
-        Public Property FilePath As String
+        Public Property File As String
             Get
-                Return _filePath?.ToLower()
+                Return _file
             End Get
 
             Friend Set(value As String)
-                _filePath = value?.ToLower()
+                _file = value
                 NotifyProperty("FilePath")
                 NotifyProperty("Title")
             End Set
@@ -54,7 +54,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     Return ResourceHelper.GetString("Untitled") & text
                 End If
 
-                Return $"{Path.GetFileName(FilePath)}{text} - {Path.GetFullPath(FilePath)}"
+                Return $"{Path.GetFileName(_file)}{text} - {Path.GetFullPath(_file)}"
             End Get
         End Property
 
@@ -62,19 +62,20 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
 
         Public Sub New(filePath As String)
-            If filePath <> "" AndAlso Not File.Exists(filePath) Then
-                File.WriteAllText(filePath, "")
+            If filePath <> "" AndAlso Not IO.File.Exists(filePath) Then
+                IO.File.WriteAllText(filePath, "")
             End If
 
-            _filePath = filePath
 
-            If _filePath <> "" AndAlso Not Path.IsPathRooted(_filePath) Then
-                _filePath = Path.GetFullPath(filePath)
+            If filePath <> "" AndAlso Not Path.IsPathRooted(filePath) Then
+                _file = Path.GetFullPath(filePath)
+            Else
+                _file = filePath
             End If
         End Sub
 
         Public Function Open() As Stream
-            Return File.Open(FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite)
+            Return IO.File.Open(_file, FileMode.OpenOrCreate, FileAccess.ReadWrite)
         End Function
 
         Public Overridable Sub Close()

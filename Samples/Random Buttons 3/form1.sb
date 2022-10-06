@@ -1,0 +1,13 @@
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   newButton = Global.CreateRndButton(form1)
+   newButton.OnClick = Button1_OnClick
+EndSub
+
+
+'------------------------------------------------
+Sub Button2_OnClick()
+   Forms.ShowForm("form2", "")
+EndSub

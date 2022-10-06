@@ -49,6 +49,11 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then
+                LiteralExpression.Zero.EmitIL(scope)
+                Return
+            End If
+
             If IsDynamic Then
                 Dim code = $"_sVB_dynamic_Data_ = {TypeName.Text}[""{PropertyName.Text}""]"
                 Dim subroutine = SubroutineStatement.GetSubroutine(Me)

@@ -20,7 +20,6 @@ Namespace WinForms
             ShowSubError(names(0), names(1), ex)
         End Sub
 
-
         Shared Sub ShowSubError(formName As String, controlName As String, memberName As String, ex As Exception)
             Dim msg = ex.Message
             If controlName.ToLower() = formName.ToLower Then
@@ -257,8 +256,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' When its value = 1 (or True), user can interact with the control.
-        ''' When its value = 0 (or False),  the control is disabled, and user can't interact with it.
+        ''' When it is True, user can interact with the control.
+        ''' When it is False,  the control is disabled, and user can't interact with it.
         ''' </summary>
         <ReturnValueType(VariableType.Boolean)>
         <ExProperty>
@@ -286,8 +285,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' When its value = 1 (or True), the control is shown at the form.
-        ''' When its value = 0 (or False),  the control is hidden.
+        ''' When it is True, the control is shown at the form.
+        ''' When it is False,  the control is hidden.
         ''' </summary>
         <ReturnValueType(VariableType.Boolean)>
         <ExProperty>
@@ -314,6 +313,177 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+
+        ''' <summary>
+        ''' Gets or sets whether the control content is displayed from right to left.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetRightToLeft(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetRightToLeft = (GetControl(controlName).FlowDirection = FlowDirection.RightToLeft)
+                    Catch ex As Exception
+                        ShowErrorMesssage(controlName, "RightToLeft", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetRightToLeft(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           GetControl(controlName).FlowDirection = If(CBool(Value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
+                       Catch ex As Exception
+                           ShowPropertyMesssage(controlName, "RightToLeft", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' The mouse x-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's width.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetMouseX(controlName As Primitive) As Primitive
+            App.Invoke(
+                   Sub()
+                       Try
+                           Dim c = GetControl(controlName)
+                           GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X)
+                       Catch ex As Exception
+                           ShowErrorMesssage(controlName, "MouseX", ex)
+                       End Try
+                   End Sub)
+        End Function
+
+        ''' <summary>
+        ''' The mouse y-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's.height.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetMouseY(controlName As Primitive) As Primitive
+            App.Invoke(
+                    Sub()
+                        Try
+                            Dim c = GetControl(controlName)
+                            GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y)
+                        Catch ex As Exception
+                            ShowErrorMesssage(controlName, "MouseY", ex)
+                        End Try
+                    End Sub)
+        End Function
+
+        ''' <summary>
+        ''' Moves focus to the control, so it beccomes the active control that recives the keybored keys.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub Focus(controlName As Primitive)
+            App.Invoke(
+                 Sub()
+                     Try
+                         Dim c = GetControl(controlName)
+                         c.Focus()
+                     Catch ex As Exception
+                         ShowSubError(controlName, "Focus", ex)
+                     End Try
+                 End Sub)
+        End Sub
+
+
+        Public Shared ReadOnly ErrorProperty As _
+                               DependencyProperty = DependencyProperty.RegisterAttached("Error",
+                               GetType(String), GetType(UIElement),
+                               New PropertyMetadata(""))
+
+        Public Shared ReadOnly TipProperty As _
+                               DependencyProperty = DependencyProperty.RegisterAttached("Tip",
+                               GetType(String), GetType(UIElement),
+                               New PropertyMetadata(""))
+
+
+        ''' <summary>
+        ''' Gets or sets the error message to display with this control. 
+        ''' When you set the error message, it will display a red border, and the error message will shown as a tooltip when you hover over the control.
+        ''' to reset the error, jsut set it to an empty string.
+        ''' </summary>
+        <ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetError(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        GetError = New Primitive(c.GetValue(ErrorProperty))
+                    Catch ex As Exception
+                        ShowErrorMesssage(controlName, "Error", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetError(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim errMsg = value.AsString()
+                        Dim c = GetControl(controlName)
+                        c.SetValue(ErrorProperty, errMsg)
+
+                        If errMsg = "" Then
+                            c.ClearValue(Wpf.Border.BorderThicknessProperty)
+                            c.ClearValue(Wpf.Control.BorderBrushProperty)
+                            c.ToolTip = c.GetValue(TipProperty)
+                        Else
+                            c.BorderThickness = New Thickness(2)
+                            c.BorderBrush = Brushes.Red
+                            c.SetValue(TipProperty, c.ToolTip?.ToString())
+                            c.ToolTip = errMsg
+                        End If
+
+                    Catch ex As Exception
+                        ShowPropertyMesssage(controlName, "Error", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Gets or sets the message to display as a tooltip when you hover over the control. 
+        ''' </summary>
+        <ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetToolTip(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        GetToolTip = c.GetValue(TipProperty)
+                    Catch ex As Exception
+                        ShowErrorMesssage(controlName, "ToolTip", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetToolTip(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim tip = value.AsString()
+                        Dim c = GetControl(controlName)
+                        c.SetValue(TipProperty, tip)
+                        c.ToolTip = tip
+
+                    Catch ex As Exception
+                        ShowPropertyMesssage(controlName, "ToolTip", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+
+#Region "Color and font"
 
         Private Shared ReadOnly BackColorProperty As _
                            DependencyProperty = DependencyProperty.RegisterAttached("BackColor",
@@ -559,68 +729,9 @@ Namespace WinForms
                    End Sub)
         End Sub
 
-        ''' <summary>
-        ''' Gets or sets whether the control content is displayed from right to left.
-        ''' </summary>
-        <WinForms.ReturnValueType(VariableType.Boolean)>
-        <ExProperty>
-        Public Shared Function GetRightToLeft(controlName As Primitive) As Primitive
-            App.Invoke(
-                Sub()
-                    Try
-                        GetRightToLeft = (GetControl(controlName).FlowDirection = FlowDirection.RightToLeft)
-                    Catch ex As Exception
-                        ShowErrorMesssage(controlName, "RightToLeft", ex)
-                    End Try
-                End Sub)
-        End Function
+#End Region
 
-        Public Shared Sub SetRightToLeft(controlName As Primitive, Value As Primitive)
-            App.Invoke(
-                   Sub()
-                       Try
-                           GetControl(controlName).FlowDirection = If(CBool(Value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
-                       Catch ex As Exception
-                           ShowPropertyMesssage(controlName, "RightToLeft", Value, ex)
-                       End Try
-                   End Sub)
-        End Sub
-
-
-        ''' <summary>
-        ''' The mouse x-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's width.
-        ''' </summary>
-        <ReturnValueType(VariableType.Double)>
-        <ExProperty>
-        Public Shared Function GetMouseX(controlName As Primitive) As Primitive
-            App.Invoke(
-                   Sub()
-                       Try
-                           Dim c = GetControl(controlName)
-                           GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X)
-                       Catch ex As Exception
-                           ShowErrorMesssage(controlName, "MouseX", ex)
-                       End Try
-                   End Sub)
-        End Function
-
-        ''' <summary>
-        ''' The mouse y-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's.height.
-        ''' </summary>
-        <ReturnValueType(VariableType.Double)>
-        <ExProperty>
-        Public Shared Function GetMouseY(controlName As Primitive) As Primitive
-            App.Invoke(
-                    Sub()
-                        Try
-                            Dim c = GetControl(controlName)
-                            GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y)
-                        Catch ex As Exception
-                            ShowErrorMesssage(controlName, "MouseY", ex)
-                        End Try
-                    End Sub)
-        End Function
-
+#Region "Angle and rotaion"
 
         ''' <summary>
         ''' Gets or sets the rotation angle of the control.
@@ -696,21 +807,6 @@ Namespace WinForms
                      End Sub)
         End Sub
 
-        ''' <summary>
-        ''' Moves focus to the control, so it beccomes the active control that recives the keybored keys.
-        ''' </summary>
-        <ExMethod>
-        Public Shared Sub Focus(controlName As Primitive)
-            App.Invoke(
-                Sub()
-                    Try
-                        GetControl(controlName).Focus()
-                    Catch ex As Exception
-                        ShowSubError(controlName, "Focus", ex)
-                    End Try
-                End Sub)
-        End Sub
-
 
         ''' <summary>
         ''' Rotates the control by the specified angle.
@@ -728,6 +824,7 @@ Namespace WinForms
             End Try
         End Sub
 
+#End Region
 
 
 #Region "Animation"
@@ -1138,6 +1235,46 @@ Namespace WinForms
             RaiseEvent()
             End RaiseEvent
         End Event
+
+        ''' <summary>
+        ''' Fired when the control gets the focus.
+        ''' </summary>
+        Public Shared Custom Event OnGotFocus As SmallBasicCallback
+            AddHandler(handler As SmallBasicCallback)
+                Dim VisualElement = GetVisualElemet(NameOf(OnMouseEnter))
+                AddHandler VisualElement.GotFocus, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+            End AddHandler
+
+            RemoveHandler(handler As SmallBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
+        ''' <summary>
+        ''' Fired when the control gets the focus.
+        ''' </summary>
+        Public Shared Custom Event OnLostFocus As SmallBasicCallback
+            AddHandler(handler As SmallBasicCallback)
+                Dim VisualElement = GetVisualElemet(NameOf(OnMouseEnter))
+                AddHandler VisualElement.LostFocus,
+                    Sub(Sender As Object, e As RoutedEventArgs)
+                        [Event].EventsHandler(
+                             CType(Sender, FrameworkElement),
+                             e,
+                             handler
+                        )
+                    End Sub
+            End AddHandler
+
+            RemoveHandler(handler As SmallBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
 #End Region
 
         Friend Shared Function GetControl(key As String) As Wpf.Control

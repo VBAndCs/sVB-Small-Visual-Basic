@@ -1,7 +1,12 @@
-﻿<d:SBControl xmlns:d="clr-namespace:DiagramHelper;assembly=DiagramHelper" 
-     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-     DisplayImage="TextBox.png">    
-            <d:SBControl.Control>
+﻿<d:SBControl xmlns:d="clr-namespace:DiagramHelper;assembly=DiagramHelper"
+ 
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 
+     DisplayImage="TextBox.png">
+    
+         <d:SBControl.Control>
+
                 <TextBox d:Designer.FrameWidth="180" d:Designer.FrameHeight="40"/>
             </d:SBControl.Control>
+
 </d:SBControl>

@@ -1,0 +1,27 @@
+Sub BtnMsg_OnClick()
+   info!Title = "Confirm"
+   info!Message = "Do you want to save the changes?"
+   result = Forms.ShowDialog("FrmMsg", info)
+   
+   If result = DialogResults.Yes Then
+      TextBox1.Text = "User accepted to save changes."
+   ElseIf result = DialogResults.No Then
+      TextBox1.Text = "User refused to save changes."
+   Else
+      TextBox1.Text = "User canceled the operation."
+   EndIf
+   
+EndSub
+
+
+
+'------------------------------------------------
+Sub BtnInput_OnClick()
+   result = Forms.ShowDialog("FrmInput", "Enter your name: ")
+   If result = DialogResults.OK Then
+      TextBox1.Text = Global.InputText
+   Else
+      TextBox1.Text = "User canceled the input box."
+   EndIf
+   
+EndSub

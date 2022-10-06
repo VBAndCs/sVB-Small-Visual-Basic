@@ -1,16 +1,12 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.Globalization
-Imports System.Reflection
-Imports System.Reflection.Emit
+﻿Imports System.Globalization
 Imports System.Text
-Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
     Public Class InitializerExpression
         Inherits Expression
+        Public ReadOnly Property Arguments As New List(Of Expression)
 
         Public Sub New()
             MyBase.New()
@@ -21,7 +17,6 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             _Arguments = arguments
         End Sub
 
-        Public ReadOnly Property Arguments As New List(Of Expression)
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
@@ -67,8 +62,14 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-            ' Lefyhand value must be an empty string
-            LowerAndEmit("", scope, StartToken.Line).EmitIL(scope)
+            If scope.ForGlobalHelp Then
+                ' no need to emit the array. This is just for global file help,
+                ' and we know what we need about the array from the symbol table
+                LiteralExpression.Zero.EmitIL(scope)
+            Else
+                ' Lefthand value must be an empty string
+                LowerAndEmit("", scope, StartToken.Line).EmitIL(scope)
+            End If
         End Sub
 
         Public Overrides Function ToString() As String

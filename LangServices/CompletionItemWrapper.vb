@@ -54,6 +54,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Property
 
         Dim _symbolType? As SymbolType
+        Private isGlobal As Boolean
+
+        Public NavigateTo As NavigateTo
 
         Public ReadOnly Property SymbolType As SymbolType
             Get
@@ -73,16 +76,31 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             _symbolType = SymbolType.Label
 
                         Case CompletionItemType.MethodName
-                            _symbolType = SymbolType.Method
+                            If CompletionItem.ObjectName.ToLower() = "global" Then
+                                _symbolType = SymbolType.Subroutine
+                                isGlobal = True
+                            Else
+                                _symbolType = SymbolType.Method
+                            End If
+
 
                         Case CompletionItemType.PropertyName
-                            _symbolType = SymbolType.Property
+                            If CompletionItem.ObjectName.ToLower() = "global" Then
+                                _symbolType = SymbolType.GlobalVariable
+                                isGlobal = True
+                            Else
+                                _symbolType = SymbolType.Property
+                            End If
 
                         Case CompletionItemType.SubroutineName
                             _symbolType = SymbolType.Subroutine
 
                         Case CompletionItemType.TypeName
-                            _symbolType = SymbolType.Type
+                            If CompletionItem.Key = "global" Then
+                                _symbolType = SymbolType.GlobalModule
+                            Else
+                                _symbolType = SymbolType.Type
+                            End If
 
                         Case CompletionItemType.Control
                             _symbolType = SymbolType.Control
@@ -141,21 +159,27 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             _item = item
             _enumName = enumName
 
-            Dim normalizedModuleName = GetNormalizedModuleName()
-            Dim value As ModuleDocumentation = Nothing
+            Dim moduleName = GetNormalizedModuleName()
+            Dim moduleDoc As ModuleDocumentation = Nothing
 
-            If Not _moduleDocMap.TryGetValue(normalizedModuleName, value) Then
-                value = New ModuleDocumentation(normalizedModuleName)
-                _moduleDocMap(normalizedModuleName) = value
+            If moduleName <> "" AndAlso Not _moduleDocMap.TryGetValue(moduleName, moduleDoc) Then
+                moduleDoc = New ModuleDocumentation(moduleName)
+                _moduleDocMap(moduleName) = moduleDoc
             End If
 
             Select Case SymbolType
                 Case SymbolType.Subroutine
-                    Dim parseTree = bag.ParseTree
+                    Dim parseTree = If(isGlobal, bag.GlobalParseTree, bag.ParseTree)
                     If parseTree Is Nothing Then Return
+
 
                     Dim subrotine = CompletionHelper.GetSubroutine(_item.DisplayName, parseTree)
                     If subrotine Is Nothing Then Return
+
+                    If isGlobal Then
+                        item.DefinitionIdintifier = subrotine.Name
+                        NavigateTo = NavigateTo.GlobalModule
+                    End If
 
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = subrotine.StartToken.Text & " ",
@@ -167,7 +191,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Case SymbolType.DynamicProperty
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = "Dynamic Property: " & item.ObjectName & "!",
-                            .Suffix = InferType(item.Key, bag),
+                            .Suffix = InferType(item.Key, bag.SymbolTable),
                             .Summary = item.DefinitionIdintifier.Comment
                     }
 
@@ -191,9 +215,21 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     }
 
                 Case SymbolType.GlobalVariable
+                    Dim symbolTable As SymbolTable
+                    If isGlobal Then
+                        symbolTable = bag.GlobalSymbolTable
+                        NavigateTo = NavigateTo.GlobalModule
+                        If symbolTable IsNot Nothing Then
+                            item.DefinitionIdintifier = symbolTable.GlobalVariables(item.Key)
+                        End If
+
+                    Else
+                        symbolTable = bag.SymbolTable
+                    End If
+
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = "Global Variable: ",
-                            .Suffix = If(item.ObjectName = "", InferType(item.Key, bag), $" As {item.ObjectName}"),
+                            .Suffix = If(item.ObjectName = "", InferType(item.Key, symbolTable), $" As {item.ObjectName}"),
                             .Summary = item.DefinitionIdintifier.Comment
                     }
 
@@ -204,12 +240,32 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Dim varExpr = vars(var)
 
                     _documentation = New CompletionItemDocumentation() With {
-                            .Prefix = If(varExpr.IsParam, "Parameter: " & varExpr.Subroutine.Name.Text & ".", "Local Variable: "),
-                            .Suffix = If(item.ObjectName = "" OrElse item.ObjectName = "Forms", InferType(item.Key, bag), $" As {item.ObjectName}"),
+                            .Prefix = If(varExpr.IsParam,
+                                "Parameter: " & varExpr.Subroutine.Name.Text & ".",
+                                "Local Variable: "
+                            ),
+                            .Suffix = If(
+                                item.ObjectName = "" OrElse item.ObjectName = "Forms",
+                                InferType(item.Key, bag.SymbolTable),
+                                $" As {item.ObjectName}"
+                            ),
                             .Summary = varExpr.Identifier.Comment
                     }
 
+                Case SymbolType.GlobalModule
+                    item.DefinitionIdintifier = New Token() With {
+                        .Column = -1,
+                        .Type = TokenType.Identifier
+                    }
+                    NavigateTo = NavigateTo.GlobalModule
+
+                    _documentation = New CompletionItemDocumentation() With {
+                            .Suffix = " Type",
+                            .Summary = "The global module of the project. You can define global functions and variables in this module and use it from any form in the project."
+                    }
+
                 Case SymbolType.Control
+                    NavigateTo = NavigateTo.Designer
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = "Global Variable: ",
                             .Suffix = If(item.ObjectName = "", "", $" As {item.ObjectName}"),
@@ -221,8 +277,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 Case Else
                     Dim name = GetSymbolName()
-                    If name <> "" Then
-                        _documentation = value.GetItemDocumentation(name)
+                    If name <> "" AndAlso moduleDoc IsNot Nothing Then
+                        _documentation = moduleDoc.GetItemDocumentation(name)
                         If _documentation IsNot Nothing Then
                             _documentation.Suffix = InferType(item.MemberInfo)
                         End If
@@ -234,14 +290,20 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Private Function InferType(memberInfo As MemberInfo) As String
             If memberInfo Is Nothing Then Return ""
-            Dim attrs = memberInfo.GetCustomAttributes(GetType(WinForms.ReturnValueTypeAttribute), False)
+            Dim attrs = memberInfo.GetCustomAttributes(
+                GetType(WinForms.ReturnValueTypeAttribute),
+                False
+            )
             If attrs Is Nothing OrElse attrs.Count = 0 Then Return ""
-            Dim type = CType(attrs(0), WinForms.ReturnValueTypeAttribute).ReturnTypeValue.ToString()
+            Dim type = CType(
+                attrs(0),
+                WinForms.ReturnValueTypeAttribute
+            ).ReturnTypeValue.ToString()
             Return " As " & type
         End Function
 
-        Private Function InferType(key As String, bag As CompletionBag) As String
-            Dim varType = bag.SymbolTable.GetInferedType(key)
+        Private Function InferType(key As String, symbolTable As SymbolTable) As String
+            Dim varType = symbolTable.GetInferedType(key)
             If varType <> VariableType.None Then
                 Return " As " & varType.ToString
             Else
@@ -250,8 +312,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Function
 
         Private Function GetNormalizedModuleName() As String
-            Dim text = If(Not _item.MemberInfo IsNot Nothing, GetType(Primitive).Module.FullyQualifiedName, _item.MemberInfo.Module.FullyQualifiedName)
-            Return text.ToLowerInvariant()
+            Dim text = If(_item.MemberInfo Is Nothing,
+                GetType(Primitive).Module.FullyQualifiedName,
+                _item.MemberInfo.Module.FullyQualifiedName
+            ).ToLowerInvariant()
+
+            Return If(text.StartsWith("<"), "", text)
         End Function
 
         Private Function GetSymbolName() As String

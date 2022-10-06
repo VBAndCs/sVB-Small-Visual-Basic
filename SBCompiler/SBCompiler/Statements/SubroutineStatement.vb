@@ -1,6 +1,4 @@
-﻿Imports System.Collections.Generic
-Imports System.Globalization
-Imports System.Reflection
+﻿Imports System.Reflection
 Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
@@ -86,7 +84,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Next
         End Sub
 
-
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber = SubToken.Line Then Return Me
             If lineNumber = EndSubToken.Line Then Return Me
@@ -134,10 +131,16 @@ Namespace Microsoft.SmallVisualBasic.Statements
             EndSubToken.Parent = Me
 
             If Params IsNot Nothing Then
+                FillParamsComments()
                 For Each param In Params
                     param.Parent = Me
                     param.SymbolType = CompletionItemType.LocalVariable
                     symbolTable.AddIdentifier(param)
+                    Dim paramId As New Expressions.IdentifierExpression() With {
+                        .Identifier = param,
+                        .Subroutine = Me
+                    }
+                    symbolTable.AddVariable(paramId, param.Comment, True)
                 Next
             End If
 
@@ -157,7 +160,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             For i = 0 To ids.Count - 1
                 Dim id = ids(i)
                 If id.SymbolType = CompletionItemType.GlobalVariable AndAlso symbolTable.IsLocalVar(id) Then
-                    id.SymbolType = Completion.CompletionItemType.LocalVariable
+                    id.SymbolType = CompletionItemType.LocalVariable
                     ids(i) = id
                 End If
             Next
@@ -165,8 +168,42 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
-            Dim methodBuilder = scope.TypeBuilder.DefineMethod(Name.LCaseText, MethodAttributes.Static)
+            If scope.ForGlobalHelp AndAlso Name.IsIllegal Then Return
+
+            Dim methodBuilder = scope.TypeBuilder.DefineMethod(
+                Name.Text,
+                MethodAttributes.Static Or MethodAttributes.Public
+            )
+
+            Dim prmtvType = GetType(Library.Primitive)
+
+            Dim n = If(Params IsNot Nothing, Params.Count - 1, -1)
+            If n > -1 Then
+                Dim paramTypes(n) As Type
+                For i = 0 To n
+                    paramTypes(i) = prmtvType
+                Next
+                methodBuilder.SetParameters(paramTypes)
+            End If
+
+            If SubToken.Type = TokenType.Function Then
+                methodBuilder.SetReturnType(prmtvType)
+            Else
+                methodBuilder.SetReturnType(GetType(Void))
+            End If
+
+            methodBuilder.DefineParameter(0, ParameterAttributes.None, "")
+
+            For i = 0 To n
+                methodBuilder.DefineParameter(
+                     i + 1,
+                     ParameterAttributes.None,
+                     Params(i).Text
+                )
+            Next
+
             scope.MethodBuilders.Add(Name.LCaseText, methodBuilder)
+
             Dim codeGenScope As New CodeGenScope() With {
                 .ILGenerator = methodBuilder.GetILGenerator(),
                 .TypeBuilder = scope.TypeBuilder,
@@ -174,12 +211,16 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 .Parent = scope
             }
 
+            If scope.ForGlobalHelp Then Return
+
             For Each item In Body
                 item.PrepareForEmit(codeGenScope)
             Next
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp AndAlso Name.IsIllegal Then Return
+
             Dim methodBuilder = scope.MethodBuilders(Name.LCaseText)
             Dim codeGenScope As New CodeGenScope() With {
                 .ILGenerator = methodBuilder.GetILGenerator(),
@@ -188,10 +229,24 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 .Parent = scope
             }
 
-            For Each item In Body
-                item.EmitIL(codeGenScope)
-            Next
+            If Not scope.ForGlobalHelp Then
+                If Params IsNot Nothing Then
+                    For i = 0 To Params.Count - 1
+                        codeGenScope.ILGenerator.Emit(OpCodes.Ldarg, i)
+                        Dim var = codeGenScope.GetLocalBuilder(Me, Params(i))
+                        codeGenScope.ILGenerator.Emit(OpCodes.Stloc, var)
+                    Next
+                End If
 
+                For Each item In Body
+                    item.EmitIL(codeGenScope)
+                Next
+            End If
+
+            If SubToken.Type = TokenType.Function Then
+                ' return zero just in case not all pathes of code has a return value
+                Expressions.LiteralExpression.Zero.EmitIL(codeGenScope)
+            End If
             codeGenScope.ILGenerator.Emit(OpCodes.Ret)
         End Sub
 

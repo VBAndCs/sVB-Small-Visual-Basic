@@ -17,6 +17,13 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Property Literal As Token
 
+        Public Shared ReadOnly Zero As New LiteralExpression(
+            New Token() With {
+                    .Type = TokenType.NumericLiteral,
+                    .Text = 0
+            }
+        )
+
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             _Literal.Parent = Me.Parent
@@ -30,6 +37,14 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then
+                ' no need to emit the exact literal. This is just for global file help,
+                ' and we know what we need about the array from the symbol table
+                scope.ILGenerator.Emit(OpCodes.Ldc_R8, 0.0)
+                scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.NumberToPrimitive, Nothing)
+                Return
+            End If
+
             Select Case Literal.Type
                 Case TokenType.StringLiteral
                     scope.ILGenerator.Emit(OpCodes.Ldstr, GetString(Literal.Text, """"))

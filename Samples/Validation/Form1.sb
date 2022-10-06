@@ -1,0 +1,35 @@
+
+
+'------------------------------------------------
+Sub TextBox1_OnLostFocus()
+   If TextBox1.Text = "" Then
+      TextBox1.Error = "Don't keep me empty!"
+   Else
+      TextBox1.Error = ""
+   EndIf
+EndSub
+
+
+'------------------------------------------------
+Sub TextBox2_OnLostFocus()
+   If Text.IsNumeric(TextBox2.Text) = False Then
+      TextBox2.Error = "I accept digits only!"
+   Else
+      TextBox2.Error = ""
+   EndIf
+EndSub
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   If TextBox1.Error <> "" Then
+      Sound.PlayBellRing()
+      TextBox1.Focus()
+   ElseIf TextBox2.Error <> "" Then
+      Sound.PlayBellRing()
+      TextBox2.Focus()
+   Else
+      Me.ShowMessage("OK", "")
+   EndIf
+   
+EndSub

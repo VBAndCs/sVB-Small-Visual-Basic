@@ -27,6 +27,10 @@ Public Class RunAction
         Timer.Interval = TimeSpan.FromMilliseconds(afterMilliseconds)
         Timer.Start()
     End Sub
+
+    Public Sub [Stop]()
+        Timer.Stop()
+    End Sub
 End Class
 
 Public Class RunAction(Of T)

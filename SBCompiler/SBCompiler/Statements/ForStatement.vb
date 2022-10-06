@@ -1,10 +1,8 @@
-﻿Imports System.Collections.Generic
-Imports System.Globalization
+﻿Imports System.Globalization
 Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Expressions
-Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Microsoft.SmallVisualBasic.Statements
     Public Class ForStatement
@@ -167,6 +165,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             For Each item In Body
                 item.PrepareForEmit(scope)
             Next
@@ -175,6 +175,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Private Shared loopNo As Integer
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
 
             Dim IsField = Subroutine Is Nothing
             Dim iteratorVar As LocalBuilder

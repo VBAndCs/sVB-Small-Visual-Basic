@@ -7,7 +7,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Inherits Statement
 
         Public MethodCallExpression As MethodCallExpression
-        Friend Shared DoNotPopReturnValue As Boolean
 
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
@@ -24,9 +23,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             MethodCallExpression.EmitIL(scope)
             Dim methodInfo = MethodCallExpression.GetMethodInfo(scope)
-            If Not DoNotPopReturnValue AndAlso methodInfo.ReturnType IsNot GetType(Void) Then
+            If methodInfo.ReturnType IsNot GetType(Void) Then
                 scope.ILGenerator.Emit(System.Reflection.Emit.OpCodes.Pop)
             End If
         End Sub

@@ -10,7 +10,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
         Public Key As String
         Public DisplayName As String
         Public ItemType As CompletionItemType
-        Public MemberInfo As MemberInfo
+        Public Property MemberInfo As MemberInfo
         Public DefinitionIdintifier As Token
 
         Public Property ReplacementText As String

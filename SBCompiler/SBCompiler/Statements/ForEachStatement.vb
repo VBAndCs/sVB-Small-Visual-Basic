@@ -105,7 +105,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                             __foreach__counter__{loopNo} = __foreach__counter__{loopNo} + 1    
                   Wend"
 
-            Dim _parser = Parser.Parse(code, symbolTable, symbolTable._typeInfoBag, lineOffset)
+            Dim _parser = Parser.Parse(code, symbolTable, lineOffset)
 
             CodeGenerator.IgnoreVarErrors = False
             Statements.SubroutineStatement.Current = tempRoutine
@@ -116,6 +116,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
 
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             For Each item In CType(whileStatement.Last, WhileStatement).Body
                 item.PrepareForEmit(scope)
             Next
@@ -141,16 +143,19 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             For Each statement In whileStatement
                 statement.EmitIL(scope)
             Next
         End Sub
 
         Public Overrides Sub PopulateCompletionItems(
-                                 bag As CompletionBag,
-                                 line As Integer,
-                                 column As Integer,
-                                 globalScope As Boolean)
+                       bag As CompletionBag,
+                       line As Integer,
+                       column As Integer,
+                       globalScope As Boolean
+                   )
 
             If ForEachToken.Line = line AndAlso column <= ForEachToken.EndColumn Then
                 CompletionHelper.FillAllGlobalItems(bag, globalScope)

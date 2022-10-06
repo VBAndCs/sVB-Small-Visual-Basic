@@ -13,7 +13,6 @@
                 AddTab(FolderName)
             Next
         Catch
-
         End Try
     End Sub
 
@@ -54,9 +53,7 @@
                     Item.ToolBox = Me
                     Items.Add(Item)
                 Catch ex As Exception
-
                 End Try
-
             End If
         Next
         ToolBoxTabs.Children.Add(Expan)

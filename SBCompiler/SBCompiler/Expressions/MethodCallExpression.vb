@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.Globalization
+﻿Imports System.Globalization
 Imports System.Reflection
 Imports System.Reflection.Emit
 Imports System.Text
@@ -44,25 +42,28 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then
+                LiteralExpression.Zero.EmitIL(scope)
+                Return
+            End If
+
             If TypeName.Type = TokenType.Illegal Then ' Function Call
                 Dim subroutine As New Statements.SubroutineCallStatement() With {
                     .Name = MethodName,
                     .Args = Arguments,
                     .IsFunctionCall = True,
-                    .OuterSubroutine = OuterSubroutine
+                    .OuterSubroutine = OuterSubroutine,
+                    .KeepReturnValue = True
                 }
                 subroutine.EmitIL(scope)
 
             Else
                 Dim methodInfo = GetMethodInfo(scope)
-
                 For Each argument In Arguments
                     argument.EmitIL(scope)
                 Next
-
                 scope.ILGenerator.EmitCall(OpCodes.Call, methodInfo, Nothing)
             End If
-
         End Sub
 
         Public Function GetMethodInfo(scope As CodeGenScope) As MethodInfo

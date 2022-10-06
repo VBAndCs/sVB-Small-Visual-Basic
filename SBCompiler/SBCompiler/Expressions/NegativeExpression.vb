@@ -21,7 +21,12 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-            Expression.EmitIL(scope)
+            If Expression Is Nothing Then
+                LiteralExpression.Zero.EmitIL(scope)
+            Else
+                Expression.EmitIL(scope)
+            End If
+
             scope.ILGenerator.EmitCall(OpCodes.Call, scope.TypeInfoBag.Negation, Nothing)
         End Sub
 

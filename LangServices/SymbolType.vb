@@ -4,6 +4,7 @@
         Keyword
         Type
         Control
+        GlobalModule
         Method
         [Property]
         DynamicProperty

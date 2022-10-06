@@ -5,7 +5,6 @@ Imports System.Windows
 Imports System.Windows.Controls
 Imports System.Windows.Input
 Imports System.Windows.Media
-Imports System.Windows.Threading
 
 Namespace Microsoft.SmallVisualBasic.Shell
     Public Class MdiViewsControl
@@ -235,13 +234,12 @@ Namespace Microsoft.SmallVisualBasic.Shell
         End Function
 
         Dim LastselectedView As MdiView
+        Dim FocusView As New RunAction()
 
         Friend Sub ChangeSelection(selectedView As MdiView)
-            If selectedView Is LastselectedView Then
-                Return
-            Else
-                LastselectedView = selectedView
-            End If
+            If selectedView Is LastselectedView Then Return
+
+            LastselectedView = selectedView
 
             If selectedView Is Nothing Then
                 Dim num = 0
@@ -256,6 +254,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
                         selectedView = mdiView
                     End If
                 Next
+                RaiseEvent ActiveDocumentChanged()
 
             ElseIf selectedView IsNot _SelectedItem Then
                 For Each item In Items
@@ -268,15 +267,17 @@ Namespace Microsoft.SmallVisualBasic.Shell
                 _SelectedItem = selectedView
                 selectedView.IsSelected = True
 
-                SelectView.After(20,
+                SelectView.Stop()
+                FocusView.After(20,
                    Sub()
                        KeepFocus = True
                        selectedView.Document.Focus()
+                       RaiseEvent ActiveDocumentChanged()
                        KeepFocus = False
                    End Sub)
             End If
 
-            RaiseEvent ActiveDocumentChanged()
+
         End Sub
 
         Protected Overrides Sub OnItemsChanged(e As NotifyCollectionChangedEventArgs)
@@ -325,6 +326,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
                        ChangeSelection(selectedView)
                    End Sub)
         End Sub
+
         Private Sub ControlNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             Dim cmb = CType(sender, ComboBox)
             Dim controlName = CStr(cmb.SelectedItem)
@@ -495,13 +497,13 @@ Namespace Microsoft.SmallVisualBasic.Shell
             sbCodeFile = sbCodeFile.ToLower()
             For Each mdiView As MdiView In Items
                 Dim doc = mdiView.Document
-                If doc.FilePath = sbCodeFile Then
+                If doc.File.ToLower() = sbCodeFile Then
                     ' Save changes to sb file
-                    IO.File.WriteAllText(doc.FilePath, doc.Text)
+                    IO.File.WriteAllText(doc.File, doc.Text)
                     If Not doc.IsNew Then doc.IsDirty = False
 
                     ' update the sb.gen code to update event handlers added or removed
-                    Dim genFile = doc.FilePath & ".gen"
+                    Dim genFile = doc.File & ".gen"
                     Dim genCode = ""
                     If IO.File.Exists(genFile) Then
                         genCode = IO.File.ReadAllText(genFile)

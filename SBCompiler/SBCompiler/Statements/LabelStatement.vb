@@ -28,11 +28,15 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             Dim value As Label = scope.ILGenerator.DefineLabel()
             scope.Labels.Add(LabelToken.LCaseText, value)
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             Dim loc = scope.Labels(LabelToken.LCaseText)
             scope.ILGenerator.MarkLabel(loc)
         End Sub

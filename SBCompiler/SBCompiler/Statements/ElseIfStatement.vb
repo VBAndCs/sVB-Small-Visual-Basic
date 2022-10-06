@@ -41,6 +41,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             For Each thenStatement In ThenStatements
                 thenStatement.PrepareForEmit(scope)
             Next

@@ -13,6 +13,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Const NULL = ChrW(0)
         Private textBuffer As ITextBuffer
+        Private _document As Object
         Friend textView As ITextView
         Private completionHelper As CompletionHelper
         Private adornment As CompletionAdornment
@@ -64,6 +65,40 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Return _fontNames
             End Get
         End Property
+
+
+        ReadOnly Property FormNames As List(Of CompletionItem)
+            Get
+                Dim formItems As New List(Of CompletionItem)
+                If _document Is Nothing Then
+                    _document = textBuffer.Properties.GetProperty("Document")
+                End If
+
+                Dim forms As List(Of String) = _document.GetFormNames()
+
+                For Each form In forms
+                    formItems.Add(New CompletionItem() With {
+                        .DisplayName = form,
+                        .ReplacementText = $"""{form}"""
+                    })
+                Next
+                Return formItems
+            End Get
+        End Property
+
+        Private Function GetGlobalParser() As Parser
+            If _document Is Nothing Then
+                _document = textBuffer.Properties.GetProperty("Document")
+            End If
+
+            Dim parsers As List(Of Parser) = _document.CompileGlobalModule()
+            If parsers Is Nothing OrElse parsers.Count = 0 Then
+                Return Nothing
+            Else
+                Return parsers(0)
+            End If
+        End Function
+
 
         Public Sub CommitItem(itemWrapper As CompletionItemWrapper)
             Dim item = itemWrapper.CompletionItem
@@ -244,15 +279,15 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
 
                 Dim wrapper = helpCashe(span)
-                    If wrapper IsNot Nothing Then
-                        wrapper.CompletionItem.ParamIndex = paramIndex
-                        ShowPopupHelp(wrapper)
-                    End If
-                    lastSpan = span
-                    Return
+                If wrapper IsNot Nothing Then
+                    wrapper.CompletionItem.ParamIndex = paramIndex
+                    ShowPopupHelp(wrapper)
                 End If
+                lastSpan = span
+                Return
+            End If
 
-                If symbol <> "" AndAlso symbol <> "(" AndAlso line.Start + column = pos Then Return
+            If symbol <> "" AndAlso symbol <> "(" AndAlso line.Start + column = pos Then Return
 
             ShowHelpInfo(line, column, paramIndex, span)
 
@@ -459,22 +494,22 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     item.ParamIndex = paramIndex
 
-                        If item.ItemType = CompletionItemType.Control AndAlso item.DisplayName = "Me" Then
-                            Dim formName As String
-                            If textBuffer.Properties.TryGetProperty("FormName", formName) Then
-                                item.Key = formName
-                            End If
+                    If item.ItemType = CompletionItemType.Control AndAlso item.DisplayName = "Me" Then
+                        Dim formName As String
+                        If textBuffer.Properties.TryGetProperty("FormName", formName) Then
+                            item.Key = formName
                         End If
-
-                        If byConventionName <> "" Then
-                            item.ObjectName = byConventionName
-                        End If
-
-                        Dim wrapper = New CompletionItemWrapper(item, bag)
-                        ShowPopupHelp(wrapper)
-                        helpCashe(span) = wrapper
-                        Return
                     End If
+
+                    If byConventionName <> "" Then
+                        item.ObjectName = byConventionName
+                    End If
+
+                    Dim wrapper = New CompletionItemWrapper(item, bag)
+                    ShowPopupHelp(wrapper)
+                    helpCashe(span) = wrapper
+                    Return
+                End If
             Next
 
             highlightCashe(span) = Nothing
@@ -766,12 +801,13 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
 
             Dim source = New TextBufferReader(line.TextSnapshot)
+            Dim globalParser = GetGlobalParser()
             If needsToReCompile Then
                 completionHelper.Compile(source, controlNames, controlsInfo)
                 needsToReCompile = False
             End If
 
-            Dim newBag = completionHelper.GetEmptyCompletionBag()
+            Dim newBag = completionHelper.GetEmptyCompletionBag(globalParser)
             newBag.ForHelp = forHelp
             Dim addGlobals = False
 
@@ -791,8 +827,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Return newBag
 
                 ElseIf currentToken.Type = TokenType.StringLiteral Then
-                    If Not forHelp AndAlso prevToken.Type = TokenType.Equals AndAlso b4PrevToken.LCaseText.Contains("fontname") Then
-                        newBag.CompletionItems.AddRange(FontNames)
+                    If Not forHelp AndAlso (
+                                prevToken.Type = TokenType.Equals OrElse
+                                prevToken.Type = TokenType.LeftParens
+                            ) Then
+                        Dim method = b4PrevToken.LCaseText
+                        If method.Contains("fontname") Then
+                            newBag.CompletionItems.AddRange(FontNames)
+                        ElseIf method.Contains("showform") OrElse method.Contains("showdialog") Then
+                            newBag.CompletionItems.AddRange(FormNames)
+                        End If
                     End If
                     Return newBag
 
@@ -868,7 +912,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         line.LineNumber, column,
                         prevToken.Type = TokenType.Equals OrElse currentToken.Type = TokenType.Equals,
                         IsCompletionOperator(prevToken) OrElse IsCompletionOperator(currentToken),
-                        forHelp
+                        forHelp,
+                        globalParser
                     )
 
                     If bag.ShowCompletion Then
@@ -980,7 +1025,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                            Optional checkEspecialItem As Boolean = False
                     )
 
-            ' Waith until code editor respond to changes
+            ' Wait until code editor respond to changes, to avoid any conflicts
             ShowCompletion.After(
                   20,
                   Sub() DoShowCompletionAdornment(snapshot, caretPosition, checkEspecialItem)
@@ -1069,7 +1114,14 @@ LineElse:
                             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
                             Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
                             Dim source = New TextBufferReader(line.TextSnapshot)
-                            Dim symbolTable = completionHelper.Compile(source, controlNames, controlsInfo).Parser.SymbolTable
+                            GetGlobalParser()
+                            Dim symbolTable = completionHelper.Compile(
+                                source,
+                                controlNames,
+                                controlsInfo
+                            ).Parser.SymbolTable
+
+                            needsToReCompile = False
                             token.Parent = completionHelper.GetStatement(line.LineNumber)
 
                             Select Case symbolTable.GetInferedType(token)
@@ -1090,7 +1142,7 @@ LineElse:
                 bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
             Else
                 Dim typeInfo As TypeInfo = Nothing
-                bag = completionHelper.GetEmptyCompletionBag()
+                bag = completionHelper.GetEmptyCompletionBag(GetGlobalParser())
                 If bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
                     CompletionHelper.FillMemberNames(bag, typeInfo, "")
                     bag.CompletionItems.Sort(
@@ -1248,8 +1300,8 @@ LineElse:
 
             End Select
 
-            If moduleName <> controlModule Then
-                For Each item In CompletionItems(moduleName)
+            If moduleName <> controlModule AndAlso completionItems.ContainsKey(moduleName) Then
+                For Each item In completionItems(moduleName)
                     item.ObjectName = objName
                     completionBag.CompletionItems.Add(item)
                 Next

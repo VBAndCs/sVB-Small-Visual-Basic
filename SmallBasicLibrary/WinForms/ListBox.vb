@@ -9,13 +9,13 @@ Namespace WinForms
     <HideFromIntellisense>
     Public NotInheritable Class ListBox
 
-        Private Shared Function GetListBox(ListBoxName As String) As Wpf.ListBox
-            Dim c = Control.GetControl(ListBoxName)
-            Dim t = TryCast(c, Wpf.ListBox)
-            If t Is Nothing Then
-                Throw New Exception($"{ListBoxName} is not a name of a ListBox.")
+        Private Shared Function GetListBox(listBoxName As String) As Wpf.ListBox
+            Dim c = Control.GetControl(listBoxName)
+            Dim lst = TryCast(c, Wpf.ListBox)
+            If lst Is Nothing Then
+                Throw New Exception($"{listBoxName} is not a name of a ListBox.")
             End If
-            Return t
+            Return lst
         End Function
 
 
@@ -24,13 +24,13 @@ Namespace WinForms
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
-        Public Shared Function GetItemsCount(ListBoxName As Primitive) As Primitive
+        Public Shared Function GetItemsCount(listBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetItemsCount = GetListBox(ListBoxName).Items.Count
+                        GetItemsCount = GetListBox(listBoxName).Items.Count
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ListBoxName, "ItemsCount", ex)
+                        Control.ShowErrorMesssage(listBoxName, "ItemsCount", ex)
                     End Try
                 End Sub)
         End Function
@@ -40,20 +40,20 @@ Namespace WinForms
         ''' </summary>
         <ReturnValueType(VariableType.Array)>
         <ExProperty>
-        Public Shared Function GetItems(ListBoxName As Primitive) As Primitive
+        Public Shared Function GetItems(listBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
                         Dim map = New Dictionary(Of Primitive, Primitive)
                         Dim num = 1
-                        For Each item In GetListBox(ListBoxName).Items
+                        For Each item In GetListBox(listBoxName).Items
                             map(num) = CStr(item)
                             num += 1
                         Next
                         GetItems = Primitive.ConvertFromMap(map)
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ListBoxName, "ItemsCount", ex)
+                        Control.ShowErrorMesssage(listBoxName, "ItemsCount", ex)
                     End Try
                 End Sub)
         End Function
@@ -69,26 +69,26 @@ Namespace WinForms
         ''' </remarks>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
-        Public Shared Function GetSelectedItem(ListBoxName As Primitive) As Primitive
+        Public Shared Function GetSelectedItem(listBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        Dim item As String = GetListBox(ListBoxName).SelectedItem
+                        Dim item As String = GetListBox(listBoxName).SelectedItem
                         GetSelectedItem = item
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ListBoxName, "SelectedItem", ex)
+                        Control.ShowErrorMesssage(listBoxName, "SelectedItem", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetSelectedItem(ListBoxName As Primitive, item As Primitive)
+        Public Shared Sub SetSelectedItem(listBoxName As Primitive, item As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        GetListBox(ListBoxName).SelectedItem = CStr(item)
+                        GetListBox(listBoxName).SelectedItem = CStr(item)
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ListBoxName, "SelectedItem", item, ex)
+                        Control.ShowErrorMesssage(listBoxName, "SelectedItem", item, ex)
                     End Try
                 End Sub)
         End Sub
@@ -99,23 +99,23 @@ Namespace WinForms
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
-        Public Shared Function GetSelectedIndex(ListBoxName As Primitive) As Primitive
+        Public Shared Function GetSelectedIndex(listBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetSelectedIndex = GetListBox(ListBoxName).SelectedIndex + 1
+                        GetSelectedIndex = GetListBox(listBoxName).SelectedIndex + 1
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ListBoxName, "SelectedIndex", ex)
+                        Control.ShowErrorMesssage(listBoxName, "SelectedIndex", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetSelectedIndex(ListBoxName As Primitive, index As Primitive)
+        Public Shared Sub SetSelectedIndex(listBoxName As Primitive, index As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Dim lst = GetListBox(ListBoxName)
+                        Dim lst = GetListBox(listBoxName)
                         Dim i As Integer
                         If Not index.IsNumber Then
                             i = -1
@@ -132,7 +132,7 @@ Namespace WinForms
                         lst.SelectedIndex = i
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ListBoxName, "SelectedIndex", index, ex)
+                        Control.ShowErrorMesssage(listBoxName, "SelectedIndex", index, ex)
                     End Try
                 End Sub)
         End Sub
@@ -147,12 +147,12 @@ Namespace WinForms
         ''' <returns>the value of the item</returns>
         <ReturnValueType(VariableType.String)>
         <ExMethod>
-        Public Shared Function GetItemAt(ListBoxName As Primitive, index As Primitive) As Primitive
+        Public Shared Function GetItemAt(listBoxName As Primitive, index As Primitive) As Primitive
             App.Invoke(
                 Sub()
 
                     Try
-                        Dim lst = GetListBox(ListBoxName)
+                        Dim lst = GetListBox(listBoxName)
                         If Not index.IsNumber Then
                             GetItemAt = ""
                         Else
@@ -164,7 +164,7 @@ Namespace WinForms
                             End If
                         End If
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "GetItemAt", ex)
+                        Control.ShowSubError(listBoxName, "GetItemAt", ex)
                     End Try
                 End Sub)
         End Function
@@ -178,19 +178,19 @@ Namespace WinForms
         ''' </param>
         ''' <param name="value">the value to set to the item</param>
         <ExMethod>
-        Public Shared Sub SetItemAt(ListBoxName As Primitive, index As Primitive, value As Primitive)
+        Public Shared Sub SetItemAt(listBoxName As Primitive, index As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
                         If Not index.IsNumber Then Return
 
-                        Dim lst = GetListBox(ListBoxName)
+                        Dim lst = GetListBox(listBoxName)
                         Dim i As Integer = index
                         If i > 0 AndAlso i <= lst.Items.Count Then
                             lst.Items(i - 1) = value
                         End If
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "SetItemAt", ex)
+                        Control.ShowSubError(listBoxName, "SetItemAt", ex)
                     End Try
                 End Sub)
         End Sub
@@ -202,11 +202,11 @@ Namespace WinForms
         ''' <returns>the index of the newly added item</returns>
         <ReturnValueType(VariableType.Double)>
         <ExMethod>
-        Public Shared Function AddItem(ListBoxName As Primitive, value As Primitive) As Primitive
+        Public Shared Function AddItem(listBoxName As Primitive, value As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        Dim lst = GetListBox(ListBoxName)
+                        Dim lst = GetListBox(listBoxName)
                         If value.IsArray Then
                             For Each value In value._arrayMap.Values
                                 AddItem = lst.Items.Add(CStr(value))
@@ -216,7 +216,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "AddItem", ex)
+                        Control.ShowSubError(listBoxName, "AddItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -227,13 +227,13 @@ Namespace WinForms
         ''' <param name="value">the item you want to add to the list. You can send an array to add all its items</param>
         ''' <param name="index">the index to want to add the item at</param>
         <ExMethod>
-        Public Shared Sub AddItemAt(ListBoxName As Primitive, value As Primitive, index As Primitive)
+        Public Shared Sub AddItemAt(listBoxName As Primitive, value As Primitive, index As Primitive)
             App.Invoke(
                 Sub()
                     Try
                         If Not index.IsNumber Then Return
                         Dim i As Integer = CInt(index) - 1
-                        Dim lst = GetListBox(ListBoxName)
+                        Dim lst = GetListBox(listBoxName)
                         If i < 0 OrElse i > lst.Items.Count Then Return
 
                         If value.IsArray Then
@@ -246,7 +246,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "AddItemAt", ex)
+                        Control.ShowSubError(listBoxName, "AddItemAt", ex)
                     End Try
                 End Sub)
         End Sub
@@ -256,11 +256,11 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="value">the item you want to remove. You can send an array to remove all its items</param>
         <ExMethod>
-        Public Shared Sub RemoveItem(ListBoxName As Primitive, value As Primitive)
+        Public Shared Sub RemoveItem(listBoxName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Dim lst = GetListBox(ListBoxName)
+                        Dim lst = GetListBox(listBoxName)
                         If value.IsArray Then
                             For Each value In value._arrayMap.Values
                                 RemoveItem(value, lst)
@@ -270,7 +270,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "RenoveItem", ex)
+                        Control.ShowSubError(listBoxName, "RenoveItem", ex)
                     End Try
                 End Sub)
         End Sub
@@ -279,13 +279,13 @@ Namespace WinForms
         ''' Reomves all the items from the listbox
         ''' </summary>
         <ExMethod>
-        Public Shared Sub RemoveAllItems(ListBoxName As Primitive)
+        Public Shared Sub RemoveAllItems(listBoxName As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        GetListBox(ListBoxName).Items.Clear()
+                        GetListBox(listBoxName).Items.Clear()
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "RenoveItem", ex)
+                        Control.ShowSubError(listBoxName, "RenoveItem", ex)
                     End Try
                 End Sub)
         End Sub
@@ -300,20 +300,20 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="index">The index of the item you want to remove</param>
         <ExMethod>
-        Public Shared Sub RemoveItemAt(ListBoxName As Primitive, index As Primitive)
+        Public Shared Sub RemoveItemAt(listBoxName As Primitive, index As Primitive)
             App.Invoke(
                 Sub()
                     Try
                         If Not index.IsNumber Then Return
 
-                        Dim lst = GetListBox(ListBoxName)
+                        Dim lst = GetListBox(listBoxName)
                         Dim i As Integer = index
                         If i > 0 AndAlso i <= lst.Items.Count Then
                             lst.Items.RemoveAt(i - 1)
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "RenoveItemAt", ex)
+                        Control.ShowSubError(listBoxName, "RenoveItemAt", ex)
                     End Try
                 End Sub)
         End Sub
@@ -326,13 +326,13 @@ Namespace WinForms
         ''' <returns>True if the item found or False otherwise</returns>
         <ReturnValueType(VariableType.Boolean)>
         <ExMethod>
-        Public Shared Function ContainsItem(ListBoxName As Primitive, value As Primitive) As Primitive
+        Public Shared Function ContainsItem(listBoxName As Primitive, value As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        ContainsItem = GetListBox(ListBoxName).Items.Contains(CStr(value))
+                        ContainsItem = GetListBox(listBoxName).Items.Contains(CStr(value))
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "ContainsItem", ex)
+                        Control.ShowSubError(listBoxName, "ContainsItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -344,13 +344,13 @@ Namespace WinForms
         ''' <returns>the index of the item if found, or 0 otherwise</returns>
         <ReturnValueType(VariableType.Double)>
         <ExMethod>
-        Public Shared Function FindItem(ListBoxName As Primitive, value As Primitive) As Primitive
+        Public Shared Function FindItem(listBoxName As Primitive, value As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        FindItem = 1 + GetListBox(ListBoxName).Items.IndexOf(CStr(value))
+                        FindItem = 1 + GetListBox(listBoxName).Items.IndexOf(CStr(value))
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "FindItem", ex)
+                        Control.ShowSubError(listBoxName, "FindItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -364,11 +364,11 @@ Namespace WinForms
         ''' <returns>the index of the item if found, or 0 otherwise</returns>
         <ExMethod>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function FindItemAt(ListBoxName As Primitive, value As Primitive, startIndex As Primitive, endIndex As Primitive) As Primitive
+        Public Shared Function FindItemAt(listBoxName As Primitive, value As Primitive, startIndex As Primitive, endIndex As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        Dim lst = GetListBox(ListBoxName)
+                        Dim lst = GetListBox(listBoxName)
                         FindItemAt = 0
 
                         If Not startIndex.IsNumber OrElse Not endIndex.IsNumber Then
@@ -388,7 +388,7 @@ Namespace WinForms
                         Next
 
                     Catch ex As Exception
-                        Control.ShowSubError(ListBoxName, "FindItemAt", ex)
+                        Control.ShowSubError(listBoxName, "FindItemAt", ex)
                     End Try
                 End Sub)
         End Function

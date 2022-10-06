@@ -34,11 +34,13 @@ Namespace Microsoft.SmallVisualBasic.Completion
             End Select
         End Function
 
-        Public Function GetEmptyCompletionBag() As CompletionBag
+        Public Function GetEmptyCompletionBag(globalParser As Parser) As CompletionBag
             Return New CompletionBag(
-                _compiler.TypeInfoBag,
+                Compiler.TypeInfoBag,
                 _compiler.Parser.SymbolTable,
-                _compiler.Parser.ParseTree
+                globalParser?.SymbolTable,
+                _compiler.Parser.ParseTree,
+                globalParser?.ParseTree
             )
         End Function
 
@@ -64,10 +66,11 @@ Namespace Microsoft.SmallVisualBasic.Completion
                          column As Integer,
                          nextToEquals As Boolean,
                          nextToOperator As Boolean,
-                         forHelp As Boolean
+                         forHelp As Boolean,
+                         globalParser As Parser
                    ) As CompletionBag
 
-            Dim bag = GetEmptyCompletionBag()
+            Dim bag = GetEmptyCompletionBag(globalParser)
             bag.ForHelp = forHelp
             bag.NextToEquals = nextToEquals
             bag.NextToOperator = nextToOperator
@@ -317,6 +320,20 @@ Namespace Microsoft.SmallVisualBasic.Completion
                  })
             End If
 
+            If bag.TypeInfoBag.Types.ContainsKey("global") Then
+                If typeCompletionItems.Last.Key <> "global" Then
+                    typeCompletionItems.Add(New CompletionItem() With {
+                            .Key = "global",
+                            .DisplayName = "Global",
+                            .ItemType = CompletionItemType.TypeName,
+                            .MemberInfo = bag.TypeInfoBag.Types("global").Type
+                        })
+                End If
+
+            ElseIf typeCompletionItems.Last.Key = "global" Then
+                typeCompletionItems.RemoveAt(typeCompletionItems.Count - 1)
+            End If
+
             bag.CompletionItems.AddRange(typeCompletionItems)
 
         End Sub
@@ -328,7 +345,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
                    )
 
             Dim typeName = typeInfo.Type.Name.ToLower()
-            If Not membersCompletionItems.ContainsKey(typeName) Then
+            If typeName = "global" OrElse Not membersCompletionItems.ContainsKey(typeName) Then
                 Dim members As New List(Of CompletionItem)
 
                 For Each method In typeInfo.Methods

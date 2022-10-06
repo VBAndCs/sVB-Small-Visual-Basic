@@ -133,47 +133,54 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-            Dim identifierExpression = TryCast(LeftValue, IdentifierExpression)
-            Dim propertyExpression = TryCast(LeftValue, PropertyExpression)
-            Dim arrayExpression = TryCast(LeftValue, ArrayExpression)
-            Dim value As EventInfo = Nothing
+            If LeftValue Is Nothing Then Return
 
-            If identifierExpression IsNot Nothing Then
+            If scope.ForGlobalHelp Then
+                ' no need to emit the actaul code. This is just for help info
+                RightValue = LiteralExpression.Zero
+            End If
+
+            Dim identifierExpr = TryCast(LeftValue, IdentifierExpression)
+            Dim propertyExpr = TryCast(LeftValue, PropertyExpression)
+            Dim arrayExpr = TryCast(LeftValue, ArrayExpression)
+            Dim eventInfo As EventInfo = Nothing
+
+            If identifierExpr IsNot Nothing Then
                 If Not LowerAndEmitIL(scope) Then
-                    Dim var = scope.GetLocalBuilder(identifierExpression.Subroutine, identifierExpression.Identifier)
+                    Dim var = scope.GetLocalBuilder(identifierExpr.Subroutine, identifierExpr.Identifier)
                     If var IsNot Nothing Then
                         scope.ILGenerator.Emit(OpCodes.Stloc, var)
                     Else
-                        Dim field = scope.Fields(identifierExpression.Identifier.LCaseText)
+                        Dim field = scope.Fields(identifierExpr.Identifier.LCaseText)
                         scope.ILGenerator.Emit(OpCodes.Stsfld, field)
                     End If
                 End If
 
-            ElseIf arrayExpression IsNot Nothing Then
+            ElseIf arrayExpr IsNot Nothing Then
                 If Not LowerAndEmitIL(scope) Then
-                    arrayExpression.EmitILForSetter(scope)
+                    arrayExpr.EmitILForSetter(scope)
                 End If
 
-            ElseIf propertyExpression IsNot Nothing Then
-                If propertyExpression.IsDynamic Then
-                    Dim code = $"{propertyExpression.TypeName.Text}[""{propertyExpression.PropertyName.Text}""] = {RightValue}"
+            ElseIf Not scope.ForGlobalHelp AndAlso propertyExpr IsNot Nothing Then
+                If propertyExpr.IsDynamic Then
+                    Dim code = $"{propertyExpr.TypeName.Text}[""{propertyExpr.PropertyName.Text}""] = {RightValue}"
                     Dim subroutine = SubroutineStatement.GetSubroutine(LeftValue)
                     If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
                     ArrayExpression.ParseAndEmit(code, subroutine, scope, StartToken.Line)
                 Else
-                    Dim typeInfo = scope.TypeInfoBag.Types(propertyExpression.TypeName.LCaseText)
+                    Dim typeInfo = scope.TypeInfoBag.Types(propertyExpr.TypeName.LCaseText)
 
-                    If typeInfo.Events.TryGetValue(propertyExpression.PropertyName.LCaseText, value) Then
+                    If typeInfo.Events.TryGetValue(propertyExpr.PropertyName.LCaseText, eventInfo) Then
                         Dim identifierExpression2 = TryCast(RightValue, IdentifierExpression)
                         Dim token = scope.SymbolTable.Subroutines(identifierExpression2.Identifier.LCaseText)
                         Dim meth = scope.MethodBuilders(token.LCaseText)
                         scope.ILGenerator.Emit(OpCodes.Ldnull)
                         scope.ILGenerator.Emit(OpCodes.Ldftn, meth)
                         scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallBasicCallback).GetConstructors()(0))
-                        scope.ILGenerator.EmitCall(OpCodes.Call, value.GetAddMethod(), Nothing)
+                        scope.ILGenerator.EmitCall(OpCodes.Call, eventInfo.GetAddMethod(), Nothing)
 
                     Else
-                        Dim propertyInfo = typeInfo.Properties(propertyExpression.PropertyName.LCaseText)
+                        Dim propertyInfo = typeInfo.Properties(propertyExpr.PropertyName.LCaseText)
                         Dim setMethod = propertyInfo.GetSetMethod()
                         RightValue.EmitIL(scope)
                         scope.ILGenerator.EmitCall(OpCodes.Call, setMethod, Nothing)
@@ -189,7 +196,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 initExpr.LowerAndEmit(LeftValue.ToString(), scope, StartToken.Line)
                 Return True
             Else
-                RightValue.EmitIL(scope)
+                RightValue?.EmitIL(scope)
                 Return False
             End If
         End Function

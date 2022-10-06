@@ -205,7 +205,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim stringBuilder As StringBuilder = New StringBuilder(GetProjectTemplateContents())
             stringBuilder.Replace("$$(STARTUP_OBJECT)", assemblyName & "." & moduleName)
             stringBuilder.Replace("$$(ASSEMBLY_NAME)", assemblyName)
-            stringBuilder.Replace("$$(SMALLBASIC_LIBRARY_PATH)", GetSmallBasicLibraryPath())
+            stringBuilder.Replace("$$(SMALLBASIC_LIBRARY_PATH)", GetSmallVisualBasicLibraryPath())
             stringBuilder.Replace("$$(MODULE_FILE)", moduleName & ".vb")
             IO.File.WriteAllText(projectPath, stringBuilder.ToString(), Encoding.UTF8)
         End Sub
@@ -309,7 +309,7 @@ Namespace Microsoft.SmallVisualBasic
             Return New StreamReader(manifestResourceStream).ReadToEnd()
         End Function
 
-        Private Function GetSmallBasicLibraryPath() As String
+        Private Function GetSmallVisualBasicLibraryPath() As String
             Dim assembly = GetType(Primitive).Assembly
             Dim folderPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
             Dim text = assembly.Location

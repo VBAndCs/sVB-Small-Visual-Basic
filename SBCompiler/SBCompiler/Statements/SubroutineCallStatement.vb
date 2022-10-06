@@ -11,6 +11,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Args As List(Of Expression)
         Public IsFunctionCall As Boolean
         Public OuterSubroutine As SubroutineStatement
+        Friend KeepReturnValue As Boolean
 
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
@@ -32,24 +33,18 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-            If Args.Count > 0 Then
-                Dim code As New Text.StringBuilder()
-                For i = Args.Count - 1 To 0 Step -1
-                    code.AppendLine($"Stack.PushValue(""_sVB_Arguments"", {Args(i)})")
-                Next
+            If scope.ForGlobalHelp Then Return
 
-                CodeGenerator.LowerAndEmit(code.ToString(), scope, OuterSubroutine, StartToken.Line)
+            If Args.Count > 0 Then
+                For Each arg In Args
+                    arg.EmitIL(scope)
+                Next
             End If
 
             Dim methodInfo = scope.MethodBuilders(Name.LCaseText)
             scope.ILGenerator.EmitCall(OpCodes.Call, methodInfo, Nothing)
-
-            If IsFunctionCall Then
-                MethodCallStatement.DoNotPopReturnValue = True
-                CodeGenerator.LowerAndEmit(
-                        $"Stack.PopValue(""_sVB_ReturnValues"")",
-                        scope, OuterSubroutine, StartToken.Line)
-                MethodCallStatement.DoNotPopReturnValue = False
+            If Not KeepReturnValue AndAlso methodInfo.ReturnType IsNot GetType(Void) Then
+                scope.ILGenerator.Emit(OpCodes.Pop)
             End If
         End Sub
 

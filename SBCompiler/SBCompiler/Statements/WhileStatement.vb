@@ -55,12 +55,16 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             For Each item In Body
                 item.PrepareForEmit(scope)
             Next
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
+            If scope.ForGlobalHelp Then Return
+
             ExitLabel = scope.ILGenerator.DefineLabel()
             ContinueLabel = scope.ILGenerator.DefineLabel()
 

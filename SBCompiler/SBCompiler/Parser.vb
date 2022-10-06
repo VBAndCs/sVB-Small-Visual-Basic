@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.IO
+﻿Imports System.IO
 Imports Microsoft.SmallVisualBasic.Expressions
 Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Statements
@@ -15,8 +13,6 @@ Namespace Microsoft.SmallVisualBasic
         Private _currentLineEnumerator As TokenEnumerator
         Private _rewindRequested As Boolean
         Private _FunctionsCall As New List(Of MethodCallExpression)
-
-        Public ReadOnly Property TypeInfoBag As TypeInfoBag
         Public Property Errors As List(Of [Error])
 
         Public ReadOnly Property ParseTree As List(Of Statement)
@@ -342,36 +338,6 @@ Namespace Microsoft.SmallVisualBasic
                 tokenEnum.MoveNext()
                 subroutine.Params = ParseParamList(tokenEnum, TokenType.RightParens)
                 tokenEnum.MoveNext()
-
-                Dim params = (From param In subroutine.Params
-                              Select param.Text).ToList
-
-                If params.Count > 0 Then
-                    Dim paramDef As New System.Text.StringBuilder()
-                    For Each param In params
-                        paramDef.AppendLine($"{param} = Stack.PopValue(""_sVB_Arguments"")")
-                    Next
-
-                    Dim _parser = Parser.Parse(
-                            paramDef.ToString(),
-                            New SymbolTable(New List(Of [Error]), _TypeInfoBag),
-                            _TypeInfoBag,
-                            tokenEnum.Current.Line
-                   )
-
-                    Dim paramsStatements = _parser._ParseTree
-                    For i = 0 To _parser._ParseTree.Count - 1
-                        Dim statment As AssignmentStatement = paramsStatements(i)
-                        statment.IsLocalVariable = True
-                        Dim idExpr = CType(statment.LeftValue, IdentifierExpression)
-                        idExpr.IsParam = True
-                        subroutine.FillParamsComments()
-                        idExpr.Identifier = subroutine.Params(i)
-                        idExpr.Parent = subroutine
-                        statment.LeftValue = idExpr
-                        subroutine.Body.Add(statment)
-                    Next
-                End If
             End If
 
             ExpectEndOfLine(tokenEnum)
@@ -395,54 +361,6 @@ Namespace Microsoft.SmallVisualBasic
                 tokenEnum = ReadNextLine()
             End While
 
-            If subroutine.StartToken.Type = TokenType.Function Then
-                ' add `Return ""` at the end of body,
-                ' as fall safe if not all pathes of code returns a value
-
-                Dim emptyString As New Token() With {
-                        .Type = TokenType.StringLiteral,
-                        .ParseType = ParseType.StringLiteral,
-                        .Text = ControlChars.Quote & ControlChars.Quote,
-                        .Parent = subroutine
-                    }
-
-                Dim defaultReturnStatement As New ReturnStatement() With {
-                    .ReturnExpression = New LiteralExpression() With {
-                        .StartToken = emptyString,
-                        .EndToken = emptyString,
-                        .Literal = emptyString,
-                        .Parent = subroutine
-                    },
-                    .StartToken = New Token() With {
-                        .Type = TokenType.Return,
-                        .ParseType = ParseType.Keyword,
-                        .Text = "Return",
-                        .Parent = subroutine
-                     },
-                    .Subroutine = subroutine
-                }
-
-                subroutine.Body.Add(defaultReturnStatement)
-            End If
-
-            Dim returnLabelToken As New Token() With {
-                    .Text = $"_EXIT_SUB_{subroutine.Name.LCaseText}",
-                    .Type = TokenType.Identifier,
-                    .ParseType = ParseType.Identifier
-                }
-
-            Dim returnLabelStatement As New LabelStatement() With {
-                .ColonToken = New Token With {
-                        .Text = ":",
-                        .Type = TokenType.Colon,
-                        .ParseType = ParseType.Delimiter
-                },
-                .StartToken = returnLabelToken,
-                .LabelToken = returnLabelToken,
-                .subroutine = subroutine
-            }
-
-            subroutine.Body.Add(returnLabelStatement)
             SubroutineStatement.Current = tempRoutine
 
             If flag Then
@@ -1029,14 +947,13 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Public Sub New()
-            Me.New(Nothing, Nothing)
+            Me.New(Nothing)
         End Sub
 
-        Public Sub New(errors As List(Of [Error]), typeInfoBag As TypeInfoBag)
+        Public Sub New(errors As List(Of [Error]))
             _Errors = errors
-            _TypeInfoBag = typeInfoBag
             If _Errors Is Nothing Then _Errors = New List(Of [Error])()
-            _SymbolTable = New SymbolTable(_Errors, typeInfoBag)
+            _SymbolTable = New SymbolTable(_Errors)
         End Sub
 
 
@@ -1045,6 +962,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Public ClassName As String = "_SmallVisualBasic_Module1"
         Public IsMainForm As Boolean
+        Public IsGlobal As Boolean
 
         Public Sub Parse(
                         reader As TextReader,
@@ -1075,8 +993,6 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub Parse(autoCompletion As Boolean)
-            _TypeInfoBag = TypeInfoBag
-
             If keepSymbols Then
                 keepSymbols = False
             Else
@@ -1158,13 +1074,11 @@ Namespace Microsoft.SmallVisualBasic
         Public Shared Function Parse(
                          code As String,
                          symbolTable As SymbolTable,
-                         typeInfoBag As TypeInfoBag,
                          lineOffset As Integer
                    ) As Parser
 
             Dim _parser As New Parser() With {
                    ._SymbolTable = symbolTable,
-                   ._TypeInfoBag = typeInfoBag,
                    .keepSymbols = True,
                    .lineOffset = lineOffset
             }

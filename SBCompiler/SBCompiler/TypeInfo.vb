@@ -13,7 +13,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Public ReadOnly Property Key As String
             Get
-                Return Me.Type.Name.ToLower()
+                Return Type.Name.ToLower()
             End Get
         End Property
     End Class

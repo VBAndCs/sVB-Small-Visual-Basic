@@ -13,7 +13,7 @@ Public Class OpenedPagesExplorer
     End Sub
 
     Protected Overrides Sub OnDeleteItem()
-        If Designer.IsNew AndAlso Designer.Pages.Count = 1 OrElse FilesList.SelectedIndex = -1 Then
+        If Designer.IsNew AndAlso Designer.PageCount = 1 OrElse FilesList.SelectedIndex = -1 Then
             Beep()
             Return
         End If
@@ -38,6 +38,10 @@ Public Class OpenedPagesExplorer
             If FilesList.Items.Count > 0 Then FilesList.SelectedIndex = 0
         End If
     End Sub
+
+    Protected Overrides Function OnBeginEdit() As Boolean
+        Return True
+    End Function
 
     Public Property Designer As Designer
         Get

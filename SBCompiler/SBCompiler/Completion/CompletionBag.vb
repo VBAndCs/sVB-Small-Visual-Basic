@@ -1,4 +1,5 @@
 ﻿Imports System.Collections.Generic
+Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Completion
     Public Class CompletionBag
@@ -10,21 +11,27 @@ Namespace Microsoft.SmallVisualBasic.Completion
         Friend NextToOperator As Boolean
         Public ForHelp As Boolean
         Public IsMethod As Boolean
-        Public ReadOnly Property ParseTree As List(Of Statements.Statement)
+        Public ReadOnly Property ParseTree As List(Of Statement)
+        Public ReadOnly Property GlobalParseTree As List(Of Statement)
         Public ReadOnly Property SymbolTable As SymbolTable
+        Public ReadOnly Property GlobalSymbolTable As SymbolTable
         Public ReadOnly Property TypeInfoBag As TypeInfoBag
         Public ReadOnly Property CompletionItems As List(Of CompletionItem)
 
         Public Sub New(
                       typeInfoBag As TypeInfoBag,
                       symbolTable As SymbolTable,
-                      parseTree As List(Of Statements.Statement)
+                      globalSymbolTable As SymbolTable,
+                      parseTree As List(Of Statement),
+                     globalParseTree As List(Of Statement)
                  )
 
             _TypeInfoBag = typeInfoBag
             _SymbolTable = symbolTable
+            _GlobalSymbolTable = globalSymbolTable
             _CompletionItems = New List(Of CompletionItem)()
             _ParseTree = parseTree
+            _GlobalParseTree = globalParseTree
         End Sub
     End Class
 End Namespace

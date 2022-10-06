@@ -14,11 +14,11 @@ Class sVB
     Private Sub New(genCode As String, code As String)
         ' A new parser for each code file
         Compiler.CreateNewParser()
+
         hints = WinForms.PreCompiler.ParseFormHints(genCode)
         AddCodeLines(genCode)
         LineOffset = If(lines.Count = 0, 0, lines.Count)
         AddCodeLines(code)
-
     End Sub
 
     Sub AddCodeLines(code As String)
@@ -55,12 +55,137 @@ Class sVB
         End Get
     End Property
 
+    Private Shared _mainWindow As MainWindow
 
-    Public Shared Function Compile(genCode As String, code As String) As List(Of [Error])
+    Private Shared ReadOnly Property MainWindow As MainWindow
+        Get
+            If _mainWindow Is Nothing Then
+                _mainWindow = Windows.Application.Current.MainWindow
+            End If
+            Return _mainWindow
+        End Get
+    End Property
+
+    Public Shared Function GetOutputFileName(filePath As String, isSingleCodeFile As Boolean) As String
+        If filePath = "" Then
+            Dim tempFileName = IO.Path.GetTempFileName()
+            IO.File.Move(tempFileName, tempFileName & ".exe")
+            Return tempFileName & ".exe"
+        End If
+
+        Dim docDirectory = IO.Path.GetDirectoryName(filePath)
+        Dim fileName = IO.Path.GetFileNameWithoutExtension(If(isSingleCodeFile, filePath, docDirectory))
+        If fileName = "" Then fileName = IO.Path.GetFileNameWithoutExtension(filePath)
+
+        Dim binDirectory = IO.Path.Combine(docDirectory, "bin")
+        If Not IO.Directory.Exists(binDirectory) Then IO.Directory.CreateDirectory(binDirectory)
+        Dim newFile = IO.Path.Combine(binDirectory, fileName)
+
+        For Each f In IO.Directory.EnumerateFiles(docDirectory)
+            Select Case IO.Path.GetExtension(f).ToLower().TrimStart("."c)
+                Case "bmp", "jpg", "jpeg", "png", "gif", "txt", "xaml"
+                    Dim f2 = IO.Path.Combine(binDirectory, IO.Path.GetFileName(f))
+                    Try
+                        IO.File.Copy(f, f2, True)
+                    Catch
+                    End Try
+            End Select
+        Next
+        Return newFile & ".exe"
+    End Function
+
+
+
+    Public Shared Function CompileGlobalModule(
+                   inputDir As String,
+                   outputFileName As String,
+                   Optional ignoreErrors As Boolean = True
+               ) As List(Of Parser)
+
+        Dim globalFile = IO.Path.Combine(inputDir, "global.sb")
+        Dim code = ""
+        Dim parsers As New List(Of Parser)
+
+        If IO.File.Exists(globalFile) Then
+            Compiler.ExeFile = outputFileName
+            Dim globalDoc = MainWindow.GetDocIfOpened(globalFile)
+            Dim compileGlobal = True
+
+            If globalDoc Is Nothing Then
+                If ignoreErrors AndAlso Compiler.GlobalParser IsNot Nothing Then
+                    parsers.Add(Compiler.GlobalParser)
+                    compileGlobal = False
+                Else
+                    code = IO.File.ReadAllText(globalFile)
+                End If
+
+            ElseIf globalDoc.IsDirty Then
+                If Not ignoreErrors Then globalDoc.Save()
+                If globalDoc.LastModified > Compiler.GlobalLastCompiled Then
+                    code = globalDoc.Text
+                Else
+                    parsers.Add(Compiler.GlobalParser)
+                    compileGlobal = False
+                End If
+
+            ElseIf ignoreErrors AndAlso Compiler.GlobalParser IsNot Nothing Then
+                    parsers.Add(Compiler.GlobalParser)
+                    compileGlobal = False
+                Else
+                    code = globalDoc.Text
+            End If
+
+            If compileGlobal Then
+                Dim errors = Compile("", code, True, ignoreErrors)
+
+                If errors?.Count = 0 Then
+                    parsers.Add(Compiler.Parser)
+                Else
+                    If ignoreErrors Then Return Nothing
+
+                    If globalDoc Is Nothing Then globalDoc = MainWindow.OpenDocIfNot(globalFile)
+                    globalDoc.ShowErrors(errors)
+                    MainWindow.tabCode.IsSelected = True
+                    Return Nothing
+                End If
+            End If
+        End If
+
+        Return parsers
+    End Function
+
+    Public Shared Function Compile(
+                     genCode As String,
+                     code As String,
+                     doc As Documents.TextDocument,
+                     parsers As List(Of Parser)
+                ) As Boolean
+
+        Dim errors = Compile(genCode, code)
+
+        If errors.Count = 0 Then
+            parsers.Add(Compiler.Parser)
+            Return True
+        Else
+            doc.ShowErrors(errors)
+            MainWindow.tabCode.IsSelected = True
+            Return False
+        End If
+    End Function
+
+    Public Shared Function Compile(
+                    genCode As String,
+                    code As String,
+                    Optional isGlobal As Boolean = False,
+                    Optional ignoreErrors As Boolean = False
+               ) As List(Of [Error])
+
         Dim sVBCompiler As New sVB(genCode, code)
+        _compiler.Parser.IsGlobal = isGlobal
+
         With sVBCompiler
-            .errors = .Compile()
-            If .errors.Count > 0 Then
+            .errors = .Compile(ignoreErrors)
+            If .errors?.Count > 0 Then
                 Dim controlNamesList As New Dictionary(Of String, String)
                 Dim variableTypes As New Dictionary(Of String, VariableType)
                 Dim normalErrors As New List(Of [Error])
@@ -139,12 +264,12 @@ Class sVB
 
     End Sub
 
-    Private Function Compile() As List(Of [Error])
+    Private Function Compile(Optional ignoreErrors As Boolean = False) As List(Of [Error])
         If hints IsNot Nothing Then
             _compiler.Parser.SymbolTable.ModuleNames = hints.ControlsInfo
             _compiler.Parser.SymbolTable.ControlNames = hints.ControlNames
         End If
-        Return _compiler.Compile(lines)
+        Return _compiler.Compile(lines, ignoreErrors)
     End Function
 
     Private Sub PreCompile(
@@ -307,10 +432,7 @@ Class sVB
 
         Next
 
-        If ReRun Then Compile(
-            controlNames,
-            variableTypes
-        )
+        If ReRun Then Compile(controlNames, variableTypes)
     End Sub
 
 End Class
