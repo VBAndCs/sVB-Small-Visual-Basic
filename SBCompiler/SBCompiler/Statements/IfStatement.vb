@@ -1,5 +1,4 @@
-﻿Imports System.Collections.Generic
-Imports System.Globalization
+﻿Imports System.Globalization
 Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
@@ -188,27 +187,29 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
 
         Public Overrides Function ToString() As String
-            Dim stringBuilder As New StringBuilder()
-            stringBuilder.AppendLine($"{IfToken.Text} {Condition} {ThenToken.Text}")
+            Dim sb As New StringBuilder()
+            sb.AppendLine($"{IfToken.Text} {Condition} {ThenToken.Text}")
 
-            For Each thenStatement In ThenStatements
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {thenStatement})
+            For Each st In ThenStatements
+                sb.Append("  ")
+                sb.Append(st.ToString())
             Next
 
-            For Each elseIfStatement In ElseIfStatements
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {elseIfStatement})
+            For Each st In ElseIfStatements
+                sb.Append("  ")
+                sb.Append(st.ToString())
             Next
 
-            If ElseToken.ParseType <> 0 Then
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {ElseToken.Text})
-
-                For Each elseStatement In ElseStatements
-                    stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {elseStatement})
+            If Not ElseToken.IsIllegal Then
+                sb.AppendLine(ElseToken.Text)
+                For Each st In ElseStatements
+                    sb.Append("  ")
+                    sb.Append(st.ToString())
                 Next
             End If
 
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {EndIfToken.Text})
-            Return stringBuilder.ToString()
+            sb.AppendLine(EndIfToken.Text)
+            Return sb.ToString()
         End Function
     End Class
 End Namespace

@@ -1,5 +1,4 @@
-﻿Imports System.Collections.Generic
-Imports System.Globalization
+﻿Imports System.Globalization
 Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
@@ -111,16 +110,16 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function ToString() As String
-            Dim stringBuilder As StringBuilder = New StringBuilder()
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1}", New Object(1) {WhileToken.Text, Condition})
-            stringBuilder.AppendLine()
+            Dim sb As New StringBuilder()
+            sb.AppendLine($"{WhileToken.Text} {Condition}")
 
-            For Each item In Body
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {item})
+            For Each st In Body
+                sb.Append("  ")
+                sb.Append(st.ToString())
             Next
 
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {EndLoopToken.Text})
-            Return stringBuilder.ToString()
+            sb.AppendLine(EndLoopToken.Text)
+            Return sb.ToString()
         End Function
     End Class
 End Namespace

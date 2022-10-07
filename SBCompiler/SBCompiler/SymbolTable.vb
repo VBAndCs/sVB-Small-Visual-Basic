@@ -16,10 +16,12 @@ Namespace Microsoft.SmallVisualBasic
 
         Friend _typeInfoBag As TypeInfoBag
         Friend ReadOnly PossibleEventHandlers As New List(Of (Id As Token, index As Integer))
-        Friend IsLoweredCode As Boolean
+        Friend Property IsLoweredCode As Boolean
 
         Friend Sub AddIdentifier(identifier As Token)
-            If Not IsLoweredCode Then AllIdentifiers.Add(identifier)
+            If Not IsLoweredCode AndAlso Not identifier.Hidden Then
+                AllIdentifiers.Add(identifier)
+            End If
         End Sub
 
         Public ReadOnly Property Errors As List(Of [Error])
@@ -284,7 +286,8 @@ Namespace Microsoft.SmallVisualBasic
                          Optional isLocal As Boolean = False
                    ) As String
 
-            If IsInvalid(variable.Identifier) Then Return ""
+            ' if var is invalid, we will still add it to the dictionary not to break intellisense
+            ValidateVariableName(variable.Identifier)
 
             Dim variableName = variable.Identifier.LCaseText
             Dim Subroutine = variable.Subroutine
@@ -308,15 +311,23 @@ Namespace Microsoft.SmallVisualBasic
             Return ""
         End Function
 
-        Private Function IsInvalid(name As Token) As Boolean
+        Private Sub ValidateVariableName(name As Token)
+            Dim msg = $"{name.Text} is not a valid identifier name"
             Dim variableName = name.LCaseText
-            If variableName = "_" OrElse variableName = "global" Then
-                Errors.Add(New [Error](name, $"{name.Text} is not a valid identifier name"))
-                Return True
-            End If
-
-            Return False
-        End Function
+            Select Case variableName
+                Case "_"
+                    Errors.Add(New [Error](name, msg))
+                Case "global"
+                    Errors.Add(New [Error](name, msg & " because it is a keyword."))
+                Case Else
+                    If _typeInfoBag.Types.ContainsKey(variableName) Then
+                        Dim type = _typeInfoBag.Types(variableName)
+                        If type.Type.Assembly.FullName.StartsWith("SmallVisualBasicLibrary,") Then
+                            Errors.Add(New [Error](name, msg & " because it is a sVB type."))
+                        End If
+                    End If
+            End Select
+        End Sub
 
         Private Function AddLocalVar(variable As IdentifierExpression) As String
             Dim key = GetKey(variable)
@@ -403,7 +414,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Public Sub AddSubroutine(subroutine As Token, type As TokenType)
-            If IsInvalid(subroutine) Then Return
+            ValidateVariableName(subroutine)
 
             Dim name = subroutine.LCaseText
             subroutine.Type = type
@@ -421,7 +432,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Public Sub AddLabelDefinition(label As Token)
-            If IsInvalid(label) Then Return
+            ValidateVariableName(label)
 
             Dim labelName = label.LCaseText
             If Labels.ContainsKey(labelName) Then

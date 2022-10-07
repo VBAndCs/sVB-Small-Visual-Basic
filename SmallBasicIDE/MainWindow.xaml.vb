@@ -664,110 +664,111 @@ Namespace Microsoft.SmallVisualBasic
                 doc.Form = "" AndAlso Path.GetFileNameWithoutExtension(filePath) <> "global"
             )
             Dim code As String
-            Dim gen As String
+            Dim genCode As String
             Dim errors As List(Of [Error])
+            Dim formNames = doc.GetFormNames(True)
 
             doc.Errors.Clear()
 
-            'Try
+            Try
 
-            Dim parsers = sVB.CompileGlobalModule(inputDir, outputFileName, False)
-            If parsers Is Nothing Then
-                ' global file has errors
-                Mouse.OverrideCursor = Nothing
-                Return
-            End If
-
-            If filePath = "" Then ' Classic SB file without a form
-                If doc.PageKey = "" Then
-                    gen = doc.GetCodeBehind(True)
-                Else
-                    gen = doc.GenerateCodeBehind(formDesigner, False)
-                End If
-
-                code = doc.Text
-                If Not sVB.Compile(gen, code, doc, parsers) Then
+                Dim parsers = sVB.CompileGlobalModule(inputDir, outputFileName, False)
+                If parsers Is Nothing Then
+                    ' global file has errors
                     Mouse.OverrideCursor = Nothing
                     Return
                 End If
 
-            Else
-                Dim currentFormKey = formDesigner.PageKey
-                Dim binDir = Path.GetDirectoryName(outputFileName)
-
-                For Each xamlFile In Directory.GetFiles(inputDir, "*.xaml")
-                    Dim fName = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile)
-                    If fName = "" Then Continue For
-
-                    If DiagramHelper.Designer.SavePageIfDirty(xamlFile) Then
-                        Dim f2 = Path.Combine(binDir, Path.GetFileName(xamlFile))
-                        Try
-                            File.Copy(xamlFile, f2, True)
-                        Catch
-                        End Try
+                If filePath = "" Then ' Classic SB file without a form
+                    If doc.PageKey = "" Then
+                        genCode = doc.GetCodeBehind(True)
+                    Else
+                        genCode = doc.GenerateCodeBehind(formDesigner, False)
                     End If
 
-                    Dim sbCodeFile = xamlFile.Substring(0, xamlFile.Length - 4) + "sb"
-                    Dim x = viewsControl.SaveDocIfDirty(sbCodeFile)
-                    If x <> "" Then
-                        gen = x
-                    Else
-                        Dim genCodefile = xamlFile.Substring(0, xamlFile.Length - 4) + "sb.gen"
-                        If File.Exists(genCodefile) Then
-                            gen = File.ReadAllText(genCodefile)
-                        Else
-                            gen = ""
+                    code = doc.Text
+                    If Not sVB.Compile(genCode, code, doc, parsers) Then
+                        Mouse.OverrideCursor = Nothing
+                        Return
+                    End If
+
+                Else
+                    Dim currentFormKey = formDesigner.PageKey
+                    Dim binDir = Path.GetDirectoryName(outputFileName)
+
+                    For Each xamlFile In Directory.GetFiles(inputDir, "*.xaml")
+                        Dim fName = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile)
+                        If fName = "" Then Continue For
+
+                        If DiagramHelper.Designer.SavePageIfDirty(xamlFile) Then
+                            Dim f2 = Path.Combine(binDir, Path.GetFileName(xamlFile))
+                            Try
+                                File.Copy(xamlFile, f2, True)
+                            Catch
+                            End Try
                         End If
-                    End If
 
-                    If File.Exists(sbCodeFile) Then
-                        code = File.ReadAllText(sbCodeFile)
-                    Else
-                        code = ""
-                    End If
+                        Dim sbCodeFile = xamlFile.Substring(0, xamlFile.Length - 4) + "sb"
+                        Dim gen = viewsControl.SaveDocIfDirty(sbCodeFile)
+                        If gen <> "" Then
+                            genCode = gen
+                        Else
+                            Dim genCodefile = xamlFile.Substring(0, xamlFile.Length - 4) + "sb.gen"
+                            If File.Exists(genCodefile) Then
+                                genCode = File.ReadAllText(genCodefile)
+                            Else
+                                genCode = ""
+                            End If
+                        End If
 
-                    errors = sVB.Compile(gen, code)
+                        If File.Exists(sbCodeFile) Then
+                            code = File.ReadAllText(sbCodeFile)
+                        Else
+                            code = ""
+                        End If
 
-                    If errors.Count = 0 Then
-                        sVB.Compiler.Parser.IsMainForm = (fName = doc.Form)
-                        sVB.Compiler.Parser.ClassName = "_SmallVisualBasic_" & fName.ToLower()
-                        parsers.Add(sVB.Compiler.Parser)
+                        errors = sVB.Compile(genCode, code, False, False, formNames)
 
-                    Else
-                        doc = OpenDocIfNot(sbCodeFile)
-                        Call New RunAction(
+                        If errors.Count = 0 Then
+                            Dim parser = sVB.Compiler.Parser
+                            parser.IsMainForm = (fName = doc.Form)
+                            parser.ClassName = "_SmallVisualBasic_" & fName.ToLower()
+                            parsers.Add(parser)
+
+                        Else
+                            doc = OpenDocIfNot(sbCodeFile)
+                            Call New RunAction(
                             Sub()
                                 doc.ShowErrors(errors)
                                 tabCode.IsSelected = True
                             End Sub
                         ).After(20)
 
-                        Call New RunAction(
+                            Call New RunAction(
                             Sub() doc.EditorControl.TextView.Caret.EnsureVisible()
                         ).After(500)
 
+                            Mouse.OverrideCursor = Nothing
+                            Return
+                        End If
+                    Next
+
+                    DiagramHelper.Designer.SwitchTo(currentFormKey)
+                End If
+
+                If parsers.Count = 0 Then
+                    If Not sVB.Compile("", doc.Text, doc, parsers) Then
                         Mouse.OverrideCursor = Nothing
                         Return
                     End If
-                Next
-
-                DiagramHelper.Designer.SwitchTo(currentFormKey)
-
-            End If
-
-            If parsers.Count = 0 Then
-                If Not sVB.Compile("", doc.Text, doc, parsers) Then
-                    Mouse.OverrideCursor = Nothing
-                    Return
                 End If
-            End If
 
-            sVB.Compiler.Build(parsers, outputFileName)
+                sVB.Compiler.Build(parsers, outputFileName)
 
-            'Catch ex As Exception
-            '    If errors Is Nothing Then errors = New List(Of [Error])
-            '    errors.Add(New [Error](-1, 0, 0, ex.Message))
-            'End Try
+            Catch ex As Exception
+                If errors Is Nothing Then errors = New List(Of [Error])
+                errors.Add(New [Error](-1, 0, 0, ex.Message))
+            End Try
 
             If errors?.Count > 0 Then
                 doc.ShowErrors(errors)
@@ -1113,7 +1114,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub AddEventDefaultHandler(controlName As String)
             tabCode.IsSelected = True
-            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait
+            Mouse.OverrideCursor = Cursors.Wait
 
             Dim AddEventHandler As New RunAction(
                 Sub()
@@ -1570,7 +1571,15 @@ Namespace Microsoft.SmallVisualBasic
                 End If
 
             Else
-                Dim selectDesigner As New RunAction(Sub() tabDesigner.IsSelected = True)
+                Dim selectDesigner As New RunAction(
+                    Sub()
+                        tabDesigner.IsSelected = True
+                        ' Crate a new doc and close it, to consume the first time load delay.
+                        doc = New TextDocument(Nothing)
+                        Dim mdiView As New MdiView() With {.Document = doc}
+                        mdiViews.Add(mdiView)
+                        DoCloseDoc(mdiView)
+                    End Sub)
                 selectDesigner.After(10)
             End If
         End Sub

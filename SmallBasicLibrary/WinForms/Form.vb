@@ -378,7 +378,7 @@ Namespace WinForms
                    Sub()
                        Try
                            Dim frm = Forms.GetForm(formName)
-                           frm.SetValue(ArgsArrProperty, value.ToString())
+                           frm.SetValue(ArgsArrProperty, value.AsString())
                        Catch ex As Exception
                            Control.ShowPropertyMesssage(formName, "ArgsArr", value, ex)
                        End Try

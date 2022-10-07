@@ -78,15 +78,15 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Public Overrides Function ToString() As String
             Dim sb As New Text.StringBuilder(Name.Text)
-            Dim n = Args.Count - 1
+            Dim n = If(Args Is Nothing, -1, Args.Count - 1)
 
             sb.Append("(")
             For i = 0 To n
                 sb.Append(Args(0).ToString())
                 If i < n Then sb.Append(", ")
             Next
+            sb.AppendLine(")")
 
-            sb.Append(")")
             Return sb.ToString()
         End Function
     End Class

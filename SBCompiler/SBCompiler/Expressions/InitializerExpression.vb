@@ -1,12 +1,11 @@
-﻿Imports System.Globalization
-Imports System.Text
+﻿Imports System.Text
 Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
     Public Class InitializerExpression
         Inherits Expression
-        Public ReadOnly Property Arguments As New List(Of Expression)
+        Public ReadOnly Arguments As New List(Of Expression)
 
         Public Sub New()
             MyBase.New()
@@ -14,7 +13,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Sub New(precedence As Integer, arguments As List(Of Expression))
             Me.Precedence = precedence
-            _Arguments = arguments
+            Me.Arguments = arguments
         End Sub
 
 
@@ -73,18 +72,19 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Overrides Function ToString() As String
-            Dim stringBuilder As New StringBuilder("{")
+            Dim sb As New StringBuilder("{")
 
             If Arguments.Count > 0 Then
-                For Each argument In Arguments
-                    stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}, ", New Object(0) {argument})
+                For Each arg In Arguments
+                    sb.Append(arg.ToString())
+                    sb.Append(", ")
                 Next
 
-                stringBuilder.Remove(stringBuilder.Length - 2, 2)
+                sb.Remove(sb.Length - 2, 2)
             End If
 
-            stringBuilder.Append("}")
-            Return stringBuilder.ToString()
+            sb.Append("}")
+            Return sb.ToString()
         End Function
     End Class
 End Namespace

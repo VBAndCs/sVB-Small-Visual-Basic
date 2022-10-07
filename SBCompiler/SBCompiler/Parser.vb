@@ -13,6 +13,14 @@ Namespace Microsoft.SmallVisualBasic
         Private _currentLineEnumerator As TokenEnumerator
         Private _rewindRequested As Boolean
         Private _FunctionsCall As New List(Of MethodCallExpression)
+        Private keepSymbols As Boolean
+        Private lineOffset As Integer
+
+        Public ClassName As String = "_SmallVisualBasic_Module1"
+        Public IsMainForm As Boolean
+        Public IsGlobal As Boolean
+        Public FormNames As List(Of String)
+
         Public Property Errors As List(Of [Error])
 
         Public ReadOnly Property ParseTree As List(Of Statement)
@@ -425,9 +433,10 @@ Namespace Microsoft.SmallVisualBasic
 
             If TypeOf expression Is MethodCallExpression Then
                 ExpectEndOfLine(tokenEnum)
+                Dim m = CType(expression, MethodCallExpression)
                 Return New MethodCallStatement() With {
                     .StartToken = current,
-                    .MethodCallExpression = TryCast(expression, MethodCallExpression)
+                    .MethodCallExpression = m
                 }
             End If
 
@@ -654,7 +663,10 @@ Namespace Microsoft.SmallVisualBasic
                         arguments:=ParseCommaSepaeatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
                    )
 
+                    ValidateFormName(methodCallExpression)
+
                     If commaLine = -2 Then Return Nothing
+
                     methodCallExpression.OuterSubroutine = SubroutineStatement.Current
                     methodCallExpression.EndToken = tokenEnum.Current
                     If closeTokenFound Then tokenEnum.MoveNext()
@@ -735,6 +747,8 @@ Namespace Microsoft.SmallVisualBasic
                         arguments:=ParseCommaSepaeatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
                 )
 
+                ValidateFormName(methodCallExpression)
+
                 If commaLine = -2 Then Return Nothing
 
                 methodCallExpression.OuterSubroutine = SubroutineStatement.Current
@@ -752,6 +766,25 @@ Namespace Microsoft.SmallVisualBasic
                 .Subroutine = SubroutineStatement.Current
             }
         End Function
+
+        Private Sub ValidateFormName(m As MethodCallExpression)
+            If FormNames Is Nothing Then Return
+
+            If m.TypeName.LCaseText = "forms" Then
+                Select Case m.MethodName.LCaseText
+                    Case "showform", "showdialog"
+                        If m.Arguments.Count > 0 Then
+                            Dim strLit = TryCast(m.Arguments(0), LiteralExpression)
+                            If strLit?.Literal.Type = TokenType.StringLiteral Then
+                                Dim formName = strLit.Literal
+                                If Not FormNames.Contains(formName.LCaseText.Trim("""")) Then
+                                    AddError(strLit.Literal, $"The project doesn't contain a form named {formName.Text}")
+                                End If
+                            End If
+                        End If
+                End Select
+            End If
+        End Sub
 
         Public Shared Function ParseArgumentList(
                           args As String,
@@ -957,13 +990,6 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
 
-        Dim keepSymbols As Boolean
-        Dim lineOffset As Integer
-
-        Public ClassName As String = "_SmallVisualBasic_Module1"
-        Public IsMainForm As Boolean
-        Public IsGlobal As Boolean
-
         Public Sub Parse(
                         reader As TextReader,
                         Optional autoCompletion As Boolean = False
@@ -1084,7 +1110,7 @@ Namespace Microsoft.SmallVisualBasic
             }
 
             symbolTable.IsLoweredCode = True
-            _parser.Parse(New IO.StringReader(code))
+            _parser.Parse(New StringReader(code))
             symbolTable.IsLoweredCode = False
 
             Return _parser

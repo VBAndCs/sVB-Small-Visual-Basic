@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Globalization
-Imports System.Reflection
+﻿Imports System.Reflection
 Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Statements
@@ -116,7 +114,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Overrides Function ToString() As String
-            Return String.Format(CultureInfo.CurrentUICulture, "{0}[{1}]", New Object(1) {LeftHand.ToString(), Indexer})
+            Return $"{LeftHand}[{Indexer}]"
         End Function
     End Class
 End Namespace

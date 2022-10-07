@@ -13,6 +13,7 @@ Namespace Microsoft.SmallVisualBasic
         Public ParseType As ParseType
         Public SymbolType As Completion.CompletionItemType
         Public Comment As String
+        Friend Hidden As Boolean
 
         Public ReadOnly Property EndColumn As Integer
             Get

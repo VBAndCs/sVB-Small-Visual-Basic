@@ -11,9 +11,10 @@ Class sVB
     Private Shared _compiler As Compiler
     Public Shared LineOffset As Integer
 
-    Private Sub New(genCode As String, code As String)
+    Private Sub New(genCode As String, code As String, formNames As List(Of String))
         ' A new parser for each code file
         Compiler.CreateNewParser()
+        _compiler.Parser.FormNames = formNames
 
         hints = WinForms.PreCompiler.ParseFormHints(genCode)
         AddCodeLines(genCode)
@@ -161,6 +162,7 @@ Class sVB
                      parsers As List(Of Parser)
                 ) As Boolean
 
+
         Dim errors = Compile(genCode, code)
 
         If errors.Count = 0 Then
@@ -177,10 +179,11 @@ Class sVB
                     genCode As String,
                     code As String,
                     Optional isGlobal As Boolean = False,
-                    Optional ignoreErrors As Boolean = False
+                    Optional ignoreErrors As Boolean = False,
+                    Optional formNames As List(Of String) = Nothing
                ) As List(Of [Error])
 
-        Dim sVBCompiler As New sVB(genCode, code)
+        Dim sVBCompiler As New sVB(genCode, code, formNames)
         _compiler.Parser.IsGlobal = isGlobal
 
         With sVBCompiler

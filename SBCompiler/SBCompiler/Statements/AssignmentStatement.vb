@@ -231,7 +231,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function ToString() As String
-            Return String.Format(CultureInfo.CurrentUICulture, "{0} {1} {2}" & VisualBasic.Constants.vbCrLf, New Object(2) {LeftValue, EqualsToken.Text, RightValue})
+            Return $"{LeftValue} = {RightValue}" & vbCrLf
         End Function
 
 

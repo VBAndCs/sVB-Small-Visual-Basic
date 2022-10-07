@@ -31,7 +31,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Overrides Function ToString() As String
-            Return String.Format(CultureInfo.CurrentUICulture, "-{0}", New Object(0) {Expression})
+            Return $"-{Expression}"
         End Function
     End Class
 End Namespace

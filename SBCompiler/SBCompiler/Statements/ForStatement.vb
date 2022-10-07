@@ -1,5 +1,4 @@
-﻿Imports System.Globalization
-Imports System.Reflection.Emit
+﻿Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Expressions
@@ -28,14 +27,16 @@ Namespace Microsoft.SmallVisualBasic.Statements
                     .Line = valueToken.Line,
                     .Column = valueToken.Column,
                     .Type = TokenType.Identifier,
-                    .Text = "Text"
+                    .Text = "Text",
+                    .Hidden = True
             }
 
             Dim methodName = New Token With {
                     .Line = valueToken.Line,
                     .Column = valueToken.Column + 5,
                     .Type = TokenType.Identifier,
-                    .Text = "ToNumber"
+                    .Text = "ToNumber",
+                    .Hidden = True
             }
 
             Dim args As New List(Of Expression)
@@ -351,21 +352,22 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Function
 
         Public Overrides Function ToString() As String
-            Dim stringBuilder As StringBuilder = New StringBuilder()
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1} = {2} To {3}", ForToken.Text, Iterator.Text, _InitialValue, _FinalValue)
+            Dim sb As StringBuilder = New StringBuilder()
+            sb.Append($"{ForToken.Text} {Iterator.Text} = {_InitialValue} To {_FinalValue}")
 
-            If StepToken.ParseType <> 0 Then
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1}", New Object(1) {StepToken.Text, _StepValue})
+            If Not StepToken.IsIllegal Then
+                sb.Append($"{StepToken.Text} { _StepValue}")
             End If
 
-            stringBuilder.AppendLine()
+            sb.AppendLine()
 
-            For Each item In Body
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {item})
+            For Each st In Body
+                sb.Append("  ")
+                sb.Append(st.ToString())
             Next
 
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}" & VisualBasic.Constants.vbCrLf, New Object(0) {EndLoopToken.Text})
-            Return stringBuilder.ToString()
+            sb.AppendLine(EndLoopToken.Text)
+            Return sb.ToString()
         End Function
     End Class
 End Namespace

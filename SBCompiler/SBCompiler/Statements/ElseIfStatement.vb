@@ -1,6 +1,4 @@
-﻿Imports System.Collections.Generic
-Imports System.Globalization
-Imports System.Text
+﻿Imports System.Text
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -49,14 +47,15 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function ToString() As String
-            Dim stringBuilder As StringBuilder = New StringBuilder()
-            stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0} {1}" & VisualBasic.Constants.vbCrLf, New Object(1) {ElseIfToken.Text, Condition})
+            Dim sb As New StringBuilder()
+            sb.AppendLine($"{ElseIfToken.Text} {Condition} {ThenToken.Text}")
 
-            For Each thenStatement In ThenStatements
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "  {0}", New Object(0) {thenStatement})
+            For Each st In ThenStatements
+                sb.Append("  ")
+                sb.Append(st.ToString())
             Next
 
-            Return stringBuilder.ToString()
+            Return sb.ToString()
         End Function
     End Class
 End Namespace

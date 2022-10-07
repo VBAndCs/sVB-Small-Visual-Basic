@@ -135,12 +135,12 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 For Each param In Params
                     param.Parent = Me
                     param.SymbolType = CompletionItemType.LocalVariable
-                    symbolTable.AddIdentifier(param)
                     Dim paramId As New Expressions.IdentifierExpression() With {
                         .Identifier = param,
                         .Subroutine = Me
                     }
                     symbolTable.AddVariable(paramId, param.Comment, True)
+                    symbolTable.AddIdentifier(param)
                 Next
             End If
 
@@ -305,20 +305,19 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim sb As New StringBuilder(SubToken.Text)
             sb.Append(" ")
             sb.Append(Name.Text)
+
             If Params IsNot Nothing Then
                 Dim n = Params.Count - 1
                 sb.Append("(")
-
                 For i = 0 To n
                     sb.Append(Params(i).Text)
                     If i < n Then sb.Append(", ")
                 Next
-
                 sb.AppendLine(")")
             End If
 
-            For Each item In Body
-                sb.AppendLine(item.ToString())
+            For Each st In Body
+                sb.Append(st.ToString())
             Next
 
             sb.AppendLine(EndSubToken.Text)

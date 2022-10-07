@@ -8,7 +8,7 @@
         End Function
 
         Public Overrides Function ToString() As String
-            Return VisualBasic.Constants.vbCrLf
+            Return vbCrLf
         End Function
     End Class
 End Namespace

@@ -42,7 +42,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function ToString() As String
-            Return String.Format(CultureInfo.CurrentUICulture, "{0}{1}" & VisualBasic.Constants.vbCrLf, New Object(1) {LabelToken.Text, ColonToken.Text})
+            Return $"{LabelToken.Text}:" & vbCrLf
         End Function
 
 

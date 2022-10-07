@@ -85,5 +85,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
         End Sub
 
+        Public Overrides Function ToString() As String
+            Return StartToken.Text & New String("-"c, UpLevel) & vbCrLf
+        End Function
     End Class
 End Namespace

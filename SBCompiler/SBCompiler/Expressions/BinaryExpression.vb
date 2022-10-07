@@ -77,7 +77,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Overrides Function ToString() As String
-            Return String.Format(CultureInfo.CurrentUICulture, "({0} {1} {2})", New Object(2) {LeftHandSide, [Operator].Text, RightHandSide})
+            Return $"({LeftHandSide} {[Operator].Text} {RightHandSide})"
         End Function
     End Class
 End Namespace

@@ -1,5 +1,4 @@
-﻿Imports System.Globalization
-Imports System.Reflection.Emit
+﻿Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Expressions
 
@@ -39,7 +38,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function ToString() As String
-            Return $"{StartToken} {ReturnExpression}"
+            Return $"{StartToken} {ReturnExpression}" & vbCrLf
         End Function
 
         Public Overrides Sub PopulateCompletionItems(

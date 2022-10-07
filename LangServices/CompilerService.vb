@@ -322,7 +322,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     If id.SymbolType = CompletionItemType.LocalVariable Then
                         Dim subName = Statements.SubroutineStatement.GetSubroutine(id)?.Name.LCaseText
                         Dim key = $"{subName}.{id.LCaseText}"
-                        Dim name = symbolTable.LocalVariables(Key).Identifier.Text
+                        Dim name = symbolTable.LocalVariables(key).Identifier.Text
                         If id.Text <> name Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, name)
                         Continue For
                     End If

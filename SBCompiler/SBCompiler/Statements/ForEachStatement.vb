@@ -1,10 +1,7 @@
-﻿Imports System.Collections.Generic
-Imports System.Globalization
-Imports System.Reflection.Emit
+﻿Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Expressions
-Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Microsoft.SmallVisualBasic.Statements
     Public Class ForEachStatement
@@ -91,8 +88,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Private Function LowerToWhile(symbolTable As SymbolTable, Subroutine As Statements.SubroutineStatement, lineOffset As Integer) As List(Of Statement)
             CodeGenerator.IgnoreVarErrors = True
-            Dim tempRoutine = Statements.SubroutineStatement.Current
-            Statements.SubroutineStatement.Current = Subroutine
+            Dim tempRoutine = SubroutineStatement.Current
+            SubroutineStatement.Current = Subroutine
 
             loopNo += 1
             Dim code =
@@ -108,7 +105,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim _parser = Parser.Parse(code, symbolTable, lineOffset)
 
             CodeGenerator.IgnoreVarErrors = False
-            Statements.SubroutineStatement.Current = tempRoutine
+            SubroutineStatement.Current = tempRoutine
 
             CType(_parser.ParseTree.Last, WhileStatement).Body.AddRange(Me.Body)
             Return _parser.ParseTree
@@ -218,16 +215,16 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Function
 
         Public Overrides Function ToString() As String
-            Dim stringBuilder As StringBuilder = New StringBuilder()
-            stringBuilder.AppendLine($"{ForEachToken.Text} {Iterator.Text} In {ArrayExpression}")
+            Dim sb As New StringBuilder()
+            sb.AppendLine($"{ForEachToken.Text} {Iterator.Text} In {ArrayExpression}")
 
-            For Each item In Body
-                stringBuilder.Append("   ")
-                stringBuilder.AppendLine(item.ToString())
+            For Each st In Body
+                sb.Append("   ")
+                sb.Append(st.ToString())
             Next
 
-            stringBuilder.Append(EndLoopToken.Text)
-            Return stringBuilder.ToString()
+            sb.Append(EndLoopToken.Text)
+            Return sb.ToString()
         End Function
     End Class
 End Namespace

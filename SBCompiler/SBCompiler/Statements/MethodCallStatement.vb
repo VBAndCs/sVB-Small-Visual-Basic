@@ -1,5 +1,4 @@
-﻿Imports System.Globalization
-Imports Microsoft.SmallVisualBasic.Completion
+﻿Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -49,7 +48,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function ToString() As String
-            Return String.Format(CultureInfo.CurrentUICulture, "{0}" & vbCrLf, New Object(0) {MethodCallExpression})
+            Return MethodCallExpression.ToString() & vbCrLf
         End Function
     End Class
 End Namespace

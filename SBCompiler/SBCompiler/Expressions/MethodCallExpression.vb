@@ -72,23 +72,25 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Function
 
         Public Overrides Function ToString() As String
-            Dim stringBuilder As New StringBuilder()
-            If TypeName.Type = TokenType.Illegal Then
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{1}(", New Object(1) {TypeName.Text, MethodName.Text})
-            Else
-                stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}.{1}(", New Object(1) {TypeName.Text, MethodName.Text})
+            Dim sb As New StringBuilder()
+
+            If Not TypeName.IsIllegal Then
+                sb.Append($"{TypeName.Text}.")
             End If
+
+            sb.Append(MethodName.Text & "(")
 
             If Arguments.Count > 0 Then
-                For Each argument In Arguments
-                    stringBuilder.AppendFormat(CultureInfo.CurrentUICulture, "{0}, ", New Object(0) {argument})
+                For Each arg In Arguments
+                    sb.Append(arg.ToString())
+                    sb.Append(", ")
                 Next
 
-                stringBuilder.Remove(stringBuilder.Length - 2, 2)
+                sb.Remove(sb.Length - 2, 2)
             End If
 
-            stringBuilder.Append(")")
-            Return stringBuilder.ToString()
+            sb.Append(")")
+            Return sb.ToString()
         End Function
     End Class
 End Namespace

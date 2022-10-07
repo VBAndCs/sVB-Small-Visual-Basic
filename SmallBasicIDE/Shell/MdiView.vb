@@ -91,6 +91,15 @@ Namespace Microsoft.SmallVisualBasic.Shell
             BeginAnimation([property], doubleAnimation2)
         End Sub
 
+        Friend Sub SelectEventName(controlName As String, eventName As String)
+            _FreezeCmbEvents = True
+            _CmbControlNames.SelectedItem = controlName
+            _CmbEventNames.SelectedItem = eventName
+            Dim mdiViews = GetParent(Of MdiViewsControl)(_CmbEventNames)
+            mdiViews.SelectHandlers(Me, controlName, eventName)
+            _FreezeCmbEvents = False
+        End Sub
+
         ''' <summary>
         ''' Select an Item in the EventNames ConboBox without executing the SelectionChanged Event
         ''' </summary>

@@ -1124,8 +1124,7 @@ EndFunction
 
             Me.Focus()
 
-            Me.MdiView.CmbControlNames.SelectedItem = controlName
-            Me.MdiView.SelectEventName(If(isGlobal, handlerName, eventName))
+            MdiView.SelectEventName(controlName, If(isGlobal, handlerName, eventName))
 
             If Not (selectSubName OrElse alreadyExists) Then
                 _editorControl.EditorOperations.MoveLineDown(False)
@@ -1422,7 +1421,7 @@ EndFunction
             Return sVB.CompileGlobalModule(inputDir, outputFileName)
         End Function
 
-        Public Function GetFormNames() As List(Of String)
+        Public Function GetFormNames(Optional normalize As Boolean = False) As List(Of String)
             Dim forms As New List(Of String)
             Dim inputDir = Me.File
             If inputDir = "" Then Return forms
@@ -1432,7 +1431,7 @@ EndFunction
             For Each xamlFile In Directory.GetFiles(inputDir, "*.xaml")
                 Dim name = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile)
                 If name = "" Then Continue For
-                forms.Add(name)
+                forms.Add(If(normalize, name.ToLower(), name))
             Next
 
             Return forms

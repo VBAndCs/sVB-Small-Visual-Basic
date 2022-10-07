@@ -47,7 +47,7 @@ Namespace Library
         ''' </summary>
         ''' <param name="array">the input array</param>
         ''' <param name="items">an array containing the items to add eact of them as a single item at the end of the array.</param>
-        ''' <returns>a new array with the new items added. The input array will bot be cahmged</returns>
+        ''' <returns>a new array with the given items. The input array will bot be cahmged</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function AddItems(array As Primitive, items As Primitive) As Primitive
             If items.IsEmpty Then Return array

@@ -37,7 +37,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function ToString() As String
-            Return String.Format(CultureInfo.CurrentUICulture, "{0} {1}" & VisualBasic.Constants.vbCrLf, New Object(1) {GotoToken.Text, Label.Text})
+            Return $"{GotoToken.Text} {Label.Text}" & vbCrLf
         End Function
     End Class
 End Namespace

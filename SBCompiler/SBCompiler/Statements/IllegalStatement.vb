@@ -13,7 +13,7 @@
 
 
         Public Overrides Function ToString() As String
-            Return "<<Illegal>>"
+            Return "<<Illegal>>" & vbCrLf
         End Function
     End Class
 End Namespace

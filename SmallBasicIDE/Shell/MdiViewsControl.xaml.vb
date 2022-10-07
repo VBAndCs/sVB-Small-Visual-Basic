@@ -330,6 +330,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
         Private Sub ControlNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             Dim cmb = CType(sender, ComboBox)
             Dim controlName = CStr(cmb.SelectedItem)
+
             Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
 
             If controlName = "" Then
@@ -379,7 +380,10 @@ Namespace Microsoft.SmallVisualBasic.Shell
             Dim eventName = CStr(cmb.SelectedItem)
             If eventName = "" Then Return
 
-            selectedView.Document.AddEventHandler(selectedView.CmbControlNames.SelectedItem, eventName)
+            selectedView.Document.AddEventHandler(
+                selectedView.CmbControlNames.SelectedItem,
+                eventName
+            )
         End Sub
 
         Private Sub CmbEventNames_PreviewTextInput(sender As Object, e As TextCompositionEventArgs)
@@ -467,29 +471,36 @@ Namespace Microsoft.SmallVisualBasic.Shell
                 End Sub)
         End Sub
 
-        Sub SelectHandlers(selectedView As MdiView, controlName As String)
+        Public Sub SelectHandlers(
+                   selectedView As MdiView,
+                   controlName As String,
+                   Optional eventName As String = ""
+               )
+
             If controlName = "" Then
                 SetItemsBold(selectedView.CmbEventNames, {""})
                 Return
             End If
 
-            Dim handlers = From h In selectedView.Document.EventHandlers
-                           Where h.Value.ControlName = controlName
-                           Order By h.Value.EventName
-                           Select h.Value.EventName
+            Dim eventNames = From h In selectedView.Document.EventHandlers
+                             Let ev = h.Value.EventName
+                             Where h.Value.ControlName = controlName
+                             Order By ev
+                             Select ev
 
-            If handlers.Any Then
+            If eventNames.Any Then
+                Dim e = If(eventName = "", eventNames.First, eventName)
                 If selectedView.CmbEventNames.SelectedIndex = -1 Then
-                    Dim h = controlName & "_" & handlers.First
+                    Dim h = controlName & "_" & e
                     If selectedView.Document.FindEventHandler(h) = -1 Then
                         selectedView.Document.EventHandlers.Remove(h)
-                        SelectHandlers(selectedView, controlName)
+                        SelectHandlers(selectedView, controlName, eventName)
                         Return
                     Else
-                        selectedView.CmbEventNames.SelectedItem = handlers.First
+                        selectedView.CmbEventNames.SelectedItem = e
                     End If
                 End If
-                SetItemsBold(selectedView.CmbEventNames, handlers.ToArray())
+                SetItemsBold(selectedView.CmbEventNames, eventNames.ToArray())
             End If
         End Sub
 
