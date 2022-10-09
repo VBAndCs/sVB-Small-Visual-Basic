@@ -86,5 +86,9 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             sb.Append("}")
             Return sb.ToString()
         End Function
+
+        Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
+            Return VariableType.Array
+        End Function
     End Class
 End Namespace

@@ -1,5 +1,4 @@
-﻿Imports System.Globalization
-Imports System.Reflection.Emit
+﻿Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Expressions
@@ -211,5 +210,23 @@ Namespace Microsoft.SmallVisualBasic.Statements
             sb.AppendLine(EndIfToken.Text)
             Return sb.ToString()
         End Function
+
+        Public Overrides Sub InferType(symbolTable As SymbolTable)
+
+            For Each st In ThenStatements
+                st.InferType(symbolTable)
+            Next
+
+            For Each st In ElseIfStatements
+                st.InferType(symbolTable)
+            Next
+
+            If Not ElseToken.IsIllegal Then
+                For Each st In ElseStatements
+                    st.InferType(symbolTable)
+                Next
+            End If
+
+        End Sub
     End Class
 End Namespace

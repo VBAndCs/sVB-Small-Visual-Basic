@@ -139,7 +139,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         .Identifier = param,
                         .Subroutine = Me
                     }
-                    symbolTable.AddVariable(paramId, param.Comment, True)
+                    Dim key = symbolTable.AddVariable(paramId, param.Comment, True)
+                    symbolTable.InferedTypes(key) = WinForms.PreCompiler.GetVarType(param.Text)
                     symbolTable.AddIdentifier(param)
                 Next
             End If
@@ -324,6 +325,39 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return sb.ToString()
         End Function
 
+        Public Overloads Function InferReturnType(symbolTable As SymbolTable) As VariableType
+            Dim containsString = False
+            Dim containsControl = False
+            Dim sameType = True
+            Dim returnType = VariableType.None
 
+            For Each retSt In ReturnStatements
+                Dim type = retSt.ReturnExpression.InferType(symbolTable)
+                If type <> VariableType.None Then
+                    Select Case type
+                        Case VariableType.String
+                            containsString = True
+                        Case >= VariableType.Control
+                            containsControl = True
+                    End Select
+
+                    If returnType <> VariableType.None Then
+                        If type <> returnType Then sameType = False
+                    End If
+                    returnType = type
+                End If
+            Next
+
+            If sameType Then Return returnType
+            If containsControl Then Return VariableType.Control
+            If containsString Then Return VariableType.String
+            Return VariableType.Double
+        End Function
+
+        Public Overrides Sub InferType(symbolTable As SymbolTable)
+            For Each st In Body
+                st.InferType(symbolTable)
+            Next
+        End Sub
     End Class
 End Namespace

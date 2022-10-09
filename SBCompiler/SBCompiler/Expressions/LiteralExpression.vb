@@ -82,6 +82,29 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public Overrides Function ToString() As String
             Return Literal.Text
         End Function
+
+        Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
+            Select Case Literal.Type
+                Case TokenType.StringLiteral
+                    Return VariableType.String
+
+                Case TokenType.DateLiteral
+                    Return VariableType.Date
+
+                Case TokenType.True
+                    Return VariableType.Boolean
+
+                Case TokenType.False
+                    Return VariableType.Boolean
+
+                Case TokenType.NumericLiteral
+                    Return VariableType.Double
+
+                Case Else
+                    Return VariableType.None
+            End Select
+
+        End Function
     End Class
 
 End Namespace

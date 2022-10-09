@@ -194,15 +194,15 @@ Namespace Microsoft.SmallVisualBasic
 
                 If Not _symbolTable.IsDefined(id) Then
                     _symbolTable.Errors.Add(New [Error](typeNameInfo, $"The variable `{typeNameInfo.Text}` is used before being initialized."))
-
-                ElseIf _symbolTable.Dynamics.ContainsKey(typeName) Then
-                    If Not _symbolTable.Dynamics(typeName).ContainsKey(propertyName) Then
-                        ' _symbolTable.Errors.Add(New [Error](propertyNameInfo, "Trying to read property before setting its value. "))
-                    End If
                 End If
+                'ElseIf _symbolTable.Dynamics.ContainsKey(typeName) Then
+                '    If Not _symbolTable.Dynamics(typeName).ContainsKey(propertyName) Then
+                '        ' _symbolTable.Errors.Add(New [Error](propertyNameInfo, "Trying to read property before setting its value. "))
+                '    End If
+                'End If
 
             ElseIf _typeInfoBag.Types.TryGetValue(typeName, typeInfo) Then
-                Dim prop As PropertyInfo = Nothing
+                    Dim prop As PropertyInfo = Nothing
                 Dim ev As EventInfo = Nothing
 
                 If typeInfo.Properties.TryGetValue(propertyName, prop) Then

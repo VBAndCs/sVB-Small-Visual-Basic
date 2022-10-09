@@ -70,5 +70,13 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public Overrides Function ToString() As String
             Return $"{TypeName.Text}{If(IsDynamic, "!", ".")}{PropertyName.Text}"
         End Function
+
+        Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
+            If IsDynamic Then
+                Return symbolTable.GetInferedType(Key)
+            Else
+                Return symbolTable.GetReturnValueType(_TypeName, _PropertyName, False)
+            End If
+        End Function
     End Class
 End Namespace

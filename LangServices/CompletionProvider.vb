@@ -803,7 +803,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim source = New TextBufferReader(line.TextSnapshot)
             Dim globalParser = GetGlobalParser()
             If needsToReCompile Then
-                completionHelper.Compile(source, controlNames, controlsInfo)
+                completionHelper.Compile(
+                    source, controlNames, controlsInfo, globalParser
+                )
                 needsToReCompile = False
             End If
 
@@ -1114,11 +1116,9 @@ LineElse:
                             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
                             Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
                             Dim source = New TextBufferReader(line.TextSnapshot)
-                            GetGlobalParser()
+                            Dim gp = GetGlobalParser()
                             Dim symbolTable = completionHelper.Compile(
-                                source,
-                                controlNames,
-                                controlsInfo
+                                source, controlNames, controlsInfo, gp
                             ).Parser.SymbolTable
 
                             needsToReCompile = False

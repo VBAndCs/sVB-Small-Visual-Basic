@@ -1,5 +1,4 @@
-﻿Imports System.Globalization
-Imports System.Reflection.Emit
+﻿Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Expressions
@@ -121,5 +120,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
             sb.AppendLine(EndLoopToken.Text)
             Return sb.ToString()
         End Function
+
     End Class
 End Namespace

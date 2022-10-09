@@ -9,7 +9,7 @@ Me = "FrmMain"
 TextBox1 = "frmmain.textbox1"
 BtnMsg = "frmmain.btnmsg"
 BtnInput = "frmmain.btninput"
-FrmMain = Forms.LoadForm("FrmMain", "frmmain.xaml")
+FrmMain = Forms.LoadForm("FrmMain", "FrmMain.xaml")
 Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
 Form.Show(FrmMain)
 '#Events{

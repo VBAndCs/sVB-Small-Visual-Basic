@@ -154,7 +154,8 @@
         <TabControl x:Name="sVBTabs">
             <TabItem x:Name="tabDesigner" Header="Form Design"
                      Selector.Selected="tabDesigner_Selected"
-                     PreviewMouseDoubleClick="tabDesigner_PreviewMouseDoubleClick">
+                     PreviewMouseDoubleClick="tabDesigner_PreviewMouseDoubleClick"
+                     PreviewKeyDown="tabDesigner_PreviewKeyDown">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"/>

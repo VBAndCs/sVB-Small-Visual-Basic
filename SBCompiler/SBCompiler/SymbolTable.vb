@@ -1,7 +1,7 @@
-﻿Imports System.Collections.Generic
-Imports System.Globalization
+﻿Imports System.Globalization
 Imports Microsoft.SmallBasic
 Imports Microsoft.SmallVisualBasic.Expressions
+Imports TokenDictionary = System.Collections.Generic.Dictionary(Of String, Microsoft.SmallVisualBasic.Token)
 
 Namespace Microsoft.SmallVisualBasic
     Public Class SymbolTable
@@ -26,52 +26,57 @@ Namespace Microsoft.SmallVisualBasic
 
         Public ReadOnly Property Errors As List(Of [Error])
 
-        Public ReadOnly Property InitializedVariables As New Dictionary(Of String, Token)
+        Public ReadOnly Property InitializedVariables As New TokenDictionary
 
-        Public ReadOnly Property GlobalVariables As New Dictionary(Of String, Token)
+        Public ReadOnly Property GlobalVariables As New TokenDictionary
 
-        Public ReadOnly Property LocalVariables As New Dictionary(Of String, Expressions.IdentifierExpression)
+        Public ReadOnly Property LocalVariables As New Dictionary(Of String, IdentifierExpression)
 
-        Public ReadOnly Property Dynamics As New Dictionary(Of String, Dictionary(Of String, Token))
+        Public ReadOnly Property Dynamics As New Dictionary(Of String, TokenDictionary)
 
-        Public ReadOnly Property Subroutines As New Dictionary(Of String, Token)
+        Public ReadOnly Property Subroutines As New TokenDictionary
 
 
         Friend Sub AddDynamic(prop As PropertyExpression)
             Dim typeNameInfo = prop.TypeName
-            Dim propertyNameInfo = prop.PropertyName
+            Dim propNameInfo = prop.PropertyName
 
             If typeNameInfo.Type = TokenType.Illegal OrElse
-                    propertyNameInfo.Type = TokenType.Illegal Then Return
+                    propNameInfo.Type = TokenType.Illegal Then Return
 
             typeNameInfo.SymbolType = Completion.CompletionItemType.TypeName
             AddIdentifier(typeNameInfo)
 
-            Dim value As TypeInfo = Nothing
             Dim typeName = typeNameInfo.LCaseText
-            If Not prop.IsDynamic AndAlso _typeInfoBag.Types.TryGetValue(typeName, value) Then Return
+            If Not prop.IsDynamic AndAlso _typeInfoBag.Types.ContainsKey(typeName) Then
+                Return
+            End If
 
-            Dim propertyName = propertyNameInfo.LCaseText
-            propertyNameInfo.Comment = prop.Parent.GetSummery()
-            prop.PropertyName = propertyNameInfo
+            Dim propName = propNameInfo.LCaseText
+            propNameInfo.Comment = prop.Parent.GetSummery()
+            prop.PropertyName = propNameInfo
 
             If AllDynamicProperties.ContainsKey(typeName) Then
-                AllDynamicProperties(typeName).Add(propertyNameInfo)
+                AllDynamicProperties(typeName).Add(propNameInfo)
             Else
-                AllDynamicProperties(typeName) = New List(Of Token) From {propertyNameInfo}
+                AllDynamicProperties(typeName) = New List(Of Token) From {propNameInfo}
+            End If
+
+            If propNameInfo.Comment = "" Then
+                propNameInfo.Comment = GetParentComment(typeName, propName)
             End If
 
             If _Dynamics.ContainsKey(typeName) Then
                 Dim fileds = _Dynamics(typeName)
-                If Not fileds.ContainsKey(propertyName) AndAlso prop.isSet Then
-                    fileds.Add(propertyName, propertyNameInfo)
+                If Not fileds.ContainsKey(propName) AndAlso prop.isSet Then
+                    fileds.Add(propName, propNameInfo)
                 End If
 
             ElseIf prop.isSet Then
-                Dynamics.Add(
+                _Dynamics.Add(
                     typeName,
-                    New Dictionary(Of String, Token) From {
-                            {propertyName, propertyNameInfo}
+                    New TokenDictionary From {
+                         {propName, propNameInfo}
                     }
                 )
 
@@ -81,15 +86,45 @@ Namespace Microsoft.SmallVisualBasic
                         .Subroutine = subroutine
                 }
 
-                propertyNameInfo.SymbolType = Completion.CompletionItemType.DynamicPropertyName
-                AddIdentifier(propertyNameInfo)
+                propNameInfo.SymbolType = Completion.CompletionItemType.DynamicPropertyName
+                AddIdentifier(propNameInfo)
 
-                AddVariable(idExpr, $"`{idExpr.Identifier.Text}` is an array that works as a {If(prop.IsDynamic, "dynamic", "data")} object. Use {If(prop.IsDynamic, "`!`", ".")} to add properties to this object or to read them.", subroutine IsNot Nothing)
+                AddVariable(
+                    idExpr,
+                    $"`{typeNameInfo.Text}` is an array that works as a {If(prop.IsDynamic, "dynamic", "data")} object. Use {If(prop.IsDynamic, "`!`", ".")} to add properties to this object or to read them.",
+                    subroutine IsNot Nothing
+                )
                 AddVariableInitialization(typeNameInfo)
             End If
 
             prop.IsDynamic = True
         End Sub
+
+        Function GetParentComment(
+                           typeName As String,
+                           propName As String
+                       )
+
+            Dim propComment = ""
+            For Each dynType In _Dynamics
+                Dim key = dynType.Key
+                If key <> typeName AndAlso (
+                                typeName.StartsWith(key) OrElse typeName.EndsWith(key)
+                            ) Then
+                    For Each dynProp In dynType.Value
+                        If dynProp.Key = propName Then
+                            Dim comment = dynProp.Value.Comment
+                            If comment <> "" Then
+                                propComment = comment
+                                Exit For
+                            End If
+                        End If
+                    Next
+                End If
+            Next
+
+            Return propComment
+        End Function
 
         Public Property InferedTypes As New Dictionary(Of String, VariableType)
 
@@ -235,7 +270,7 @@ Namespace Microsoft.SmallVisualBasic
             Return CType(attrs(0), WinForms.ReturnValueTypeAttribute).ReturnTypeValue
         End Function
 
-        Public ReadOnly Labels As New Dictionary(Of String, Token)
+        Public ReadOnly Labels As New TokenDictionary
 
         Public Sub New(errors As List(Of [Error]))
             _Errors = errors
@@ -257,7 +292,7 @@ Namespace Microsoft.SmallVisualBasic
             Copy(symbolTable.Subroutines, Me.Subroutines)
         End Sub
 
-        Private Sub Copy(fromDic As Dictionary(Of String, Token), toDic As Dictionary(Of String, Token))
+        Private Sub Copy(fromDic As TokenDictionary, toDic As TokenDictionary)
             For Each info In fromDic
                 toDic(info.Key) = info.Value
             Next

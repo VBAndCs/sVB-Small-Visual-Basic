@@ -57,5 +57,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
             Return sb.ToString()
         End Function
+
+        Public Overrides Sub InferType(symbolTable As SymbolTable)
+            For Each st In ThenStatements
+                st.InferType(symbolTable)
+            Next
+        End Sub
     End Class
 End Namespace

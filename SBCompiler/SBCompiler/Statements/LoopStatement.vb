@@ -11,5 +11,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public EndLoopToken As Token
         Friend JumpLoopStatements As New List(Of JumpLoopStatement)
 
+        Public Overrides Sub InferType(symbolTable As SymbolTable)
+            For Each st In Body
+                st.InferType(symbolTable)
+            Next
+        End Sub
     End Class
 End Namespace

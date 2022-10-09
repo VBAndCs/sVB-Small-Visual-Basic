@@ -1,2 +1,22 @@
+
 InputText = ""
 
+
+'------------------------------------------------
+Function MsgBox(title, message)
+   info!Title = title  ' The dialog form title
+   info!Message = message ' The message to show by the dialog form
+   
+   Return Forms.ShowDialog("FrmMsg", info)
+EndFunction
+
+
+'------------------------------------------------
+Function InputBox(message)
+   result = Forms.ShowDialog("FrmInput", message)
+   If result = DialogResults.OK Then
+      Return InputText
+   Else
+      Return ""
+   EndIf
+EndFunction

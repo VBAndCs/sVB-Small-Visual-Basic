@@ -56,10 +56,18 @@ Namespace Microsoft.SmallVisualBasic.Statements
                     .Identifier = Iterator,
                     .Subroutine = Subroutine
                 }
-                Iterator.SymbolType = If(Subroutine Is Nothing, CompletionItemType.GlobalVariable, CompletionItemType.LocalVariable)
+                Iterator.SymbolType = If(Subroutine Is Nothing,
+                    CompletionItemType.GlobalVariable,
+                    CompletionItemType.LocalVariable
+                )
                 symbolTable.AddIdentifier(Iterator)
 
-                Dim key = symbolTable.AddVariable(id, "The ForEach loop iterator", Subroutine IsNot Nothing)
+                Dim key = symbolTable.AddVariable(
+                    id,
+                    "The ForEach loop iterator",
+                    Subroutine IsNot Nothing
+                 )
+
                 If key <> "" Then
                     Dim varType = WinForms.PreCompiler.GetVarType(Iterator.Text)
                     If varType <> VariableType.None Then
@@ -87,9 +95,9 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Private Function LowerToWhile(symbolTable As SymbolTable, Subroutine As Statements.SubroutineStatement, lineOffset As Integer) As List(Of Statement)
-            CodeGenerator.IgnoreVarErrors = True
             Dim tempRoutine = SubroutineStatement.Current
             SubroutineStatement.Current = Subroutine
+            CodeGenerator.IgnoreVarErrors = True
 
             loopNo += 1
             Dim code =
@@ -226,5 +234,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
             sb.Append(EndLoopToken.Text)
             Return sb.ToString()
         End Function
+
     End Class
 End Namespace

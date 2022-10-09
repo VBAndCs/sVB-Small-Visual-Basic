@@ -43,5 +43,9 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public Overrides Function ToString() As String
             Return Identifier.Text
         End Function
+
+        Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
+            Return symbolTable.GetInferedType(Identifier)
+        End Function
     End Class
 End Namespace

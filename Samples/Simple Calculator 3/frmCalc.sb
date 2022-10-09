@@ -1,41 +1,41 @@
 
 '----------------------------
-Sub btnAdd_OnClick  
+Sub BtnAdd_OnClick
    lblResult.Text = "Result = " + (txtNum1.Text + txtNum2.Text)
 EndSub
 
 '__________________________________
-Sub btnSubtract_OnClick  
+Sub BtnSubtract_OnClick
    lblResult.Text = "Result = " + (txtNum1.Text - txtNum2.Text)
 EndSub
 
 '__________________________________
-Sub btnMultply_OnClick
+Sub BtnMultply_OnClick
    lblResult.Text = "Result = " + (txtNum1.Text * txtNum2.Text)
 EndSub
 
 '__________________________________
-Sub btnDivide_OnClick   
-   if txtNum2.Text = 0 Then        
-      Result = "Can't divide by zero."
+Sub BtnDivide_OnClick
+   If txtNum2.Text = 0 Then
+      result = "Can't divide by zero."
       txtNum2.SelectAll()
       txtNum2.Focus()
       
-   else
-      Result = "Result = " + (txtNum1.Text / txtNum2.Text)
-   endif
+   Else
+      result = "Result = " + (txtNum1.Text / txtNum2.Text)
+   EndIf
    
-   lblResult.Text = Result
+   lblResult.Text = result
 EndSub
 
 
 '----------------------------
-Sub txtNum1_OnTextInput
+Sub TxtNum1_OnTextInput
    Validate(txtNum1)
 EndSub
 
 '------------------------------------------------
-Sub txtNum2_OnTextInput
+Sub TxtNum2_OnTextInput
    Validate(txtNum2)
 EndSub
 
@@ -52,7 +52,7 @@ Sub Validate(numTextBox)
             numTextBox.Select(1, 0)
          EndIf
          
-      elseIf c = "." Then
+      ElseIf c = "." Then
          If Text.Contains(numTextBox.Text, ".") Then
             Sound.PlayBellRing()
             Event.Handled = True
@@ -60,23 +60,23 @@ Sub Validate(numTextBox)
          
       Else
          Sound.PlayBellRing()
-         Event.Handled = True         
-      EndIf      
-   EndIf   
+         Event.Handled = True
+      EndIf
+   EndIf
 EndSub
 
 '------------------------------------------------
-lastN1 = 0
+LastN1 = 0
 
-Sub txtNum1_OnTextChanged
-   lastN1 = Reject(txtNum1, lastN1)
+Sub TxtNum1_OnTextChanged
+   LastN1 = Reject(txtNum1, LastN1)
 EndSub
 
 '------------------------------------------------
-lastN2 = 0
+LastN2 = 0
 
-Sub txtNum2_OnTextChanged
-   lastN2 = Reject(txtNum2, lastN2)
+Sub TxtNum2_OnTextChanged
+   LastN2 = Reject(txtNum2, LastN2)
 EndSub
 
 '------------------------------------------------

@@ -91,7 +91,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
             Me.statusPanel.Visibility = Visibility.Visible
             Me.statusText.Text = ResourceHelper.GetString("Converting")
             document.Errors.Clear()
-            Dim compiler = CompilerService.Compile(document.Text, document.Errors)
+            Dim compiler = Compile(document.Text, document.Errors)
 
             If document.Errors.Count = 0 Then
                 Try

@@ -369,5 +369,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
             sb.AppendLine(EndLoopToken.Text)
             Return sb.ToString()
         End Function
+
     End Class
 End Namespace

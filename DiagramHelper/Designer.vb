@@ -885,16 +885,16 @@ Public Class Designer
     End Function
 
     Public Shared Function SavePageIfDirty(xamlFile As String) As Boolean
-        Dim x = xamlFile.ToLower()
+        Dim formFile = xamlFile.ToLower()
 
         For Each page In Pages
             Dim dsn = page.Value
-            If dsn._formFile.ToLower() = x Then
+            If dsn._formFile.ToLower() = formFile Then
                 If dsn.HasChanges Then
                     SwitchTo(page.Key)
                     CurrentPage.Save()
+                    Return True
                 End If
-                Return True
             End If
         Next
 

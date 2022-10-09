@@ -410,6 +410,10 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub OnFormatProgram(sender As Object, e As RoutedEventArgs)
             Dim doc = ActiveDocument
+            Format(doc)
+        End Sub
+
+        Sub Format(doc As TextDocument)
             If doc IsNot Nothing Then
                 Using undoTransaction = doc.UndoHistory.CreateTransaction("Format Document")
                     FormatDocument(doc.TextBuffer)
@@ -436,7 +440,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub OnStepOver(sender As Object, e As RoutedEventArgs)
             ActiveDocument.Errors.Clear()
-            CompilerService.Compile(ActiveDocument.Text, ActiveDocument.Errors)
+            Compile(ActiveDocument.Text, ActiveDocument.Errors)
 
             If ActiveDocument.Errors.Count = 0 Then
                 Dim debugger = ProgramDebugger.GetDebugger(ActiveDocument)
@@ -648,15 +652,19 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub RunProgram()
             Mouse.OverrideCursor = Cursors.Wait
 
+            Dim doc As TextDocument
+
             If tabDesigner.IsSelected Then
                 ' User can hit F5 on the designer.
                 ' We need to save changes and generate the code behind
-                SaveDesignInfo()
+                doc = SaveDesignInfo()
+                tabDesigner.IsSelected = True
+            Else
+                doc = ActiveDocument
             End If
 
-            FormatCommand.Execute(Nothing, Me)
+            Format(doc)
 
-            Dim doc = ActiveDocument
             Dim filePath = doc.File
             Dim inputDir = Path.GetDirectoryName(filePath)
             Dim outputFileName = sVB.GetOutputFileName(
@@ -671,7 +679,6 @@ Namespace Microsoft.SmallVisualBasic
             doc.Errors.Clear()
 
             Try
-
                 Dim parsers = sVB.CompileGlobalModule(inputDir, outputFileName, False)
                 If parsers Is Nothing Then
                     ' global file has errors
@@ -1646,6 +1653,13 @@ Namespace Microsoft.SmallVisualBasic
             If e.OriginalSource IsNot DesignerGrid Then Return
             If Not formDesigner.IsEnabled Then
                 ShowGlobalFile.After(1)
+            End If
+        End Sub
+
+        Private Sub tabDesigner_PreviewKeyDown(sender As Object, e As KeyEventArgs)
+            If e.Key = Key.F5 Then
+                RunProgram()
+                e.Handled = True
             End If
         End Sub
     End Class

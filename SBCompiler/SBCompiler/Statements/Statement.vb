@@ -92,5 +92,27 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return Me.GetType Is statementType
         End Function
 
+        Public Overridable Sub InferType(symbolTable As SymbolTable)
+            Select Case Me.GetType()
+                Case GetType(AssignmentStatement)
+                    CType(Me, AssignmentStatement).InferType(symbolTable)
+
+                Case GetType(IfStatement)
+                    CType(Me, IfStatement).InferType(symbolTable)
+
+                Case GetType(ForEachStatement)
+                    CType(Me, ForEachStatement).InferType(symbolTable)
+
+                Case GetType(ForStatement)
+                    CType(Me, ForStatement).InferType(symbolTable)
+
+                Case GetType(WhileStatement)
+                    CType(Me, WhileStatement).InferType(symbolTable)
+
+                Case GetType(SubroutineStatement)
+                    CType(Me, SubroutineStatement).InferType(symbolTable)
+
+            End Select
+        End Sub
     End Class
 End Namespace

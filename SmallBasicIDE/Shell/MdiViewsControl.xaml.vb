@@ -510,8 +510,10 @@ Namespace Microsoft.SmallVisualBasic.Shell
                 Dim doc = mdiView.Document
                 If doc.File.ToLower() = sbCodeFile Then
                     ' Save changes to sb file
-                    IO.File.WriteAllText(doc.File, doc.Text)
-                    If Not doc.IsNew Then doc.IsDirty = False
+                    If doc.IsDirty Then
+                        IO.File.WriteAllText(doc.File, doc.Text)
+                        If Not doc.IsNew Then doc.IsDirty = False
+                    End If
 
                     ' update the sb.gen code to update event handlers added or removed
                     Dim genFile = doc.File & ".gen"

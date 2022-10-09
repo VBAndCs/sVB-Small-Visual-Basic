@@ -487,10 +487,12 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 If Not bag.ForHelp AndAlso prop.Line = CurrentLine AndAlso prop.EndColumn = CurrentColumn Then Continue For
 
                 Dim Found = False
-                Dim propKey = $"dynprop.{TrimData(typeName)}.{prop.LCaseText}"
+                Dim propKey = prop.LCaseText
 
                 For Each item In bag.CompletionItems
-                    If item.Key = propKey Then
+                    Dim i = item.Key.LastIndexOf(".")
+                    Dim key = item.Key.Substring(i + 1)
+                    If key = propKey Then
                         Found = True
                         Exit For
                     End If
@@ -499,20 +501,27 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 If Found Then Continue For
 
                 bag.CompletionItems.Add(New CompletionItem() With {
-                        .Key = propKey,
-                        .DisplayName = prop.Text,
-                        .ObjectName = typeName,
-                        .ItemType = CompletionItemType.DynamicPropertyName,
-                        .DefinitionIdintifier = prop
+                    .Key = $"dynprop.{TrimData(typeName)}.{propKey}",
+                    .DisplayName = prop.Text,
+                    .ObjectName = typeName,
+                    .ItemType = CompletionItemType.DynamicPropertyName,
+                    .DefinitionIdintifier = prop
                  })
             Next
 
         End Sub
 
-        Public Function Compile(source As TextReader, controlNames As List(Of String), moduleNames As Dictionary(Of String, String)) As Compiler
-            _compiler.Parser.SymbolTable.ControlNames = controlNames
-            _compiler.Parser.SymbolTable.ModuleNames = moduleNames
+        Public Function Compile(
+                         source As TextReader,
+                         controlNames As List(Of String),
+                         moduleNames As Dictionary(Of String, String),
+                         globalParser As Parser
+                    ) As Compiler
 
+            Dim symbolTable = _compiler.Parser.SymbolTable
+            symbolTable.ControlNames = controlNames
+            symbolTable.ModuleNames = moduleNames
+            _compiler.GlobalParser = globalParser
             _compiler.Compile(source, True)
             Return _compiler
         End Function

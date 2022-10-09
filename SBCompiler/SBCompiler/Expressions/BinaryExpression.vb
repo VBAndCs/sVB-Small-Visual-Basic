@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Globalization
-Imports System.Reflection
+﻿Imports System.Reflection
 Imports System.Reflection.Emit
 
 Namespace Microsoft.SmallVisualBasic.Expressions
@@ -78,6 +76,49 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Overrides Function ToString() As String
             Return $"({LeftHandSide} {[Operator].Text} {RightHandSide})"
+        End Function
+
+        Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
+            Dim leftType = LeftHandSide.InferType(symbolTable)
+            If leftType = VariableType.None OrElse leftType >= VariableType.Control Then
+                Return VariableType.None
+            End If
+
+            If [Operator].IsIllegal OrElse RightHandSide Is Nothing Then Return leftType
+
+            Dim rightType = RightHandSide.InferType(symbolTable)
+            If rightType = VariableType.None OrElse rightType >= VariableType.Control Then
+                Return VariableType.None
+            End If
+
+            Select Case [Operator].Type
+                Case TokenType.Multiplication, TokenType.Division
+                    Return VariableType.Double
+
+                Case TokenType.Addition
+                    If leftType = VariableType.String OrElse
+                            rightType = VariableType.String OrElse
+                            leftType = VariableType.Array OrElse
+                            rightType = VariableType.Array Then
+                        Return VariableType.String
+
+                    ElseIf leftType = VariableType.Date OrElse rightType = VariableType.Date Then
+                        Return VariableType.Date
+                    Else
+                        Return VariableType.Double
+                    End If
+
+                Case TokenType.Sub
+                    If leftType = VariableType.Date Then
+                        Return VariableType.Date
+                    Else
+                        Return VariableType.Double
+                    End If
+
+                Case Else
+                    Return VariableType.Boolean
+            End Select
+
         End Function
     End Class
 End Namespace

@@ -19,7 +19,7 @@ Namespace Microsoft.SmallVisualBasic
         End Property
 
         Public ReadOnly Property Parser As Parser
-        Public ReadOnly Property GlobalParser As Parser
+        Public Property GlobalParser As Parser
         Public GlobalLastCompiled As Date = Date.MinValue
         Dim lastModified As Date = Date.MinValue
         Dim _exeFile As String
@@ -84,7 +84,11 @@ Namespace Microsoft.SmallVisualBasic
             PopulatePrimitiveMethods()
         End Sub
 
-        Public Function Compile(source As TextReader, Optional autoCompletion As Boolean = False) As List(Of [Error])
+        Public Function Compile(
+                        source As TextReader,
+                        Optional autoCompletion As Boolean = False
+                   ) As List(Of [Error])
+
             If source Is Nothing Then
                 Throw New ArgumentNullException("source")
             End If
@@ -105,7 +109,11 @@ Namespace Microsoft.SmallVisualBasic
                     ) As List(Of [Error])
 
             _errors.Clear()
-            _Parser.Parse(codeLines, ignoreErrors)
+            _Parser.Parse(
+                codeLines,
+                ignoreErrors,
+                If(ignoreErrors, _GlobalParser, Nothing)
+            )
 
             If Not ignoreErrors Then
                 If _errors.Count > 0 Then Return _errors
@@ -114,6 +122,9 @@ Namespace Microsoft.SmallVisualBasic
                 If _errors.Count > 0 Then Return _errors
             End If
 
+            ' Generate in memory Global type. We need this even at build time,
+            ' because other forms may use the global type,
+            ' so, we need it to compile them correctly
             If _Parser.IsGlobal Then
                 _Parser.ClassName = "Global"
                 Dim codeGenerator As New CodeGenerator(
@@ -122,7 +133,7 @@ Namespace Microsoft.SmallVisualBasic
                         If(_exeFile = "", "tempGlobal", Path.GetFileNameWithoutExtension(_exeFile)),
                         If(_exeFile = "", svbDir, Path.GetDirectoryName(_exeFile))
                 )
-                codeGenerator.GenerateExecutable(ignoreErrors)
+                codeGenerator.GenerateExecutable(True) ' Aleays use try not to emit to exe
                 _GlobalParser = _Parser
                 GlobalLastCompiled = Now
             End If

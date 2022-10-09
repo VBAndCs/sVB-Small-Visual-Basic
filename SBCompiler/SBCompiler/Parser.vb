@@ -1011,19 +1011,32 @@ Namespace Microsoft.SmallVisualBasic
 
         Public Sub Parse(
                         codeLines As List(Of String),
-                        Optional autoCompletion As Boolean = False
+                        Optional autoCompletion As Boolean = False,
+                        Optional globalParser As Parser = Nothing
                    )
 
             Me.codeLines = codeLines
-            Parse(autoCompletion)
+            Parse(autoCompletion, globalParser)
         End Sub
 
-        Private Sub Parse(autoCompletion As Boolean)
+        Private Sub Parse(
+                         autoCompletion As Boolean,
+                         Optional globalParser As Parser = Nothing
+                    )
+
             If keepSymbols Then
                 keepSymbols = False
             Else
                 _Errors.Clear()
                 _SymbolTable.Reset()
+
+                Dim dynamics1 = globalParser?.SymbolTable.Dynamics
+                If dynamics1 IsNot Nothing Then
+                    Dim dynamics2 = _SymbolTable.Dynamics
+                    For Each item In dynamics1
+                        dynamics2.Add(item.Key, item.Value)
+                    Next
+                End If
             End If
 
             _SymbolTable.AutoCompletion = autoCompletion
@@ -1040,6 +1053,12 @@ Namespace Microsoft.SmallVisualBasic
                 statement.Parent = parentSub
                 statement.AddSymbols(_SymbolTable)
             Next
+
+            If Not SymbolTable.IsLoweredCode Then
+                For Each statement In _ParseTree
+                    statement.InferType(_SymbolTable)
+                Next
+            End If
 
             For Each e In _SymbolTable.PossibleEventHandlers
                 If _SymbolTable.Subroutines.ContainsKey(e.Id.LCaseText) Then

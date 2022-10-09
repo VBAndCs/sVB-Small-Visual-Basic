@@ -116,5 +116,9 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public Overrides Function ToString() As String
             Return $"{LeftHand}[{Indexer}]"
         End Function
+
+        Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
+            Return VariableType.Array
+        End Function
     End Class
 End Namespace

@@ -18,6 +18,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public Overridable Sub EmitIL(scope As CodeGenScope)
         End Sub
 
+        Public MustOverride Function InferType(symbolTable As SymbolTable) As VariableType
 
     End Class
 End Namespace

@@ -70,7 +70,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Try
         End Function
 
-        Public Sub FormatDocument(textBuffer As ITextBuffer, Optional lineNumber As Integer = -1, Optional prettyListing As Boolean = True)
+        Public Sub FormatDocument(
+                           textBuffer As ITextBuffer,
+                           Optional lineNumber As Integer = -1,
+                           Optional prettyListing As Boolean = True
+                   )
+
             Dim snapshot = textBuffer.CurrentSnapshot
             Dim source As New TextBufferReader(snapshot)
 
@@ -170,7 +175,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     If indentStack.Count = 0 Then
                                         subLineOffset = Math.Max(0, subLineOffset - 1)
                                     Else
-                                        dim l = indentStack.Pop()
+                                        Dim l = indentStack.Pop()
                                         subLineOffset = If(indentStack.Count = 0, Math.Max(0, l - 1), indentStack.Peek())
                                     End If
 
