@@ -172,7 +172,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Dim parseTree = If(isGlobal, bag.GlobalParseTree, bag.ParseTree)
                     If parseTree Is Nothing Then Return
 
-
                     Dim subrotine = CompletionHelper.GetSubroutine(_item.DisplayName, parseTree)
                     If subrotine Is Nothing Then Return
 
@@ -182,8 +181,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     End If
 
                     _documentation = New CompletionItemDocumentation() With {
-                            .Prefix = subrotine.StartToken.Text & " ",
+                            .Prefix = subrotine.SubToken.Text & " ",
                             .Summary = subrotine.GetSummery,
+                            .Suffix = InferType(
+                                   subrotine.Name.LCaseText,
+                                   If(isGlobal, bag.GlobalSymbolTable, bag.SymbolTable)
+                             ),
                             .ParamsDoc = subrotine.GetParamsDoc(),
                             .Returns = subrotine.GetRetunDoc()
                     }
@@ -229,7 +232,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = "Global Variable: ",
-                            .Suffix = If(item.ObjectName = "", InferType(item.Key, symbolTable), $" As {item.ObjectName}"),
+                            .Suffix = If(isGlobal OrElse item.ObjectName = "", InferType(item.Key, symbolTable), $" As {item.ObjectName}"),
                             .Summary = item.DefinitionIdintifier.Comment
                     }
 

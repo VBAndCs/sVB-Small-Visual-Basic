@@ -1,18 +1,28 @@
 
 InputText = ""
+X = MsgBox("", "")
 
 
 '------------------------------------------------
-Function MsgBox(title, message)
-   info!Title = title  ' The dialog form title
-   info!Message = message ' The message to show by the dialog form
+' Shows a message box dialog with Yes, No and cancel buttons
+Function MsgBox(
+      strTitle, ' The title to show on the form title bar
+      strMessage ' The message tto show to the user.
+   ) ' The button that the user clicked
+   
+   info!Title = strTitle  ' The dialog form title
+   info!Message = strMessage ' The message to show by the dialog form
    
    Return Forms.ShowDialog("FrmMsg", info)
 EndFunction
 
 
 '------------------------------------------------
-Function InputBox(message)
+' Shows an input box dialog to allow the user to enter some text
+Function InputBox(
+      message ' The message to show to the user
+   ) ' The text the user entered. or an empty string if the user cancelled the dialog.
+   
    result = Forms.ShowDialog("FrmInput", message)
    If result = DialogResults.OK Then
       Return InputText

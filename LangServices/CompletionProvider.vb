@@ -15,7 +15,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private textBuffer As ITextBuffer
         Private _document As Object
         Friend textView As ITextView
-        Private completionHelper As CompletionHelper
+        Private compHelper As CompletionHelper
         Private adornment As CompletionAdornment
         Private dismissedSpan As ITextSpan
         Private helpUpdateTimer As DispatcherTimer
@@ -43,9 +43,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             helpUpdateTimer.Stop()
             AddHandler Me.textView.LayoutChanged, AddressOf OnLayoutChanged
 
-            If Not textBuffer.Properties.TryGetProperty(GetType(CompletionHelper), completionHelper) Then
-                completionHelper = New CompletionHelper()
-                textBuffer.Properties.AddProperty(GetType(CompletionHelper), completionHelper)
+            If Not textBuffer.Properties.TryGetProperty(GetType(CompletionHelper), compHelper) Then
+                compHelper = New CompletionHelper()
+                textBuffer.Properties.AddProperty(GetType(CompletionHelper), compHelper)
             End If
         End Sub
 
@@ -268,7 +268,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     symbol, force, line, column, span,
                     paramIndex) Then Return
 
-            If sourceCodeChanged Then
+            If sourceCodeChanged OrElse GlobalModuleHasChanged Then
                 helpCashe.Clear()
                 highlightCashe.Clear()
 
@@ -801,15 +801,22 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
 
             Dim source = New TextBufferReader(line.TextSnapshot)
-            Dim globalParser = GetGlobalParser()
+            If GlobalModuleHasChanged Then
+                needsToReCompile = True
+                GlobalModuleHasChanged = False
+            End If
+
+            Dim gp = GetGlobalParser()
             If needsToReCompile Then
-                completionHelper.Compile(
-                    source, controlNames, controlsInfo, globalParser
+                compHelper.Compile(
+                    source, controlNames,
+                    controlsInfo,
+                    gp
                 )
                 needsToReCompile = False
             End If
 
-            Dim newBag = completionHelper.GetEmptyCompletionBag(globalParser)
+            Dim newBag = compHelper.GetEmptyCompletionBag(gp)
             newBag.ForHelp = forHelp
             Dim addGlobals = False
 
@@ -882,13 +889,13 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     CompletionHelper.FillMemberNames(newBag, typeInfo, identifierToken.Text)
 
                 ElseIf isLookup OrElse name.StartsWith("data") OrElse name.EndsWith("data") Then
-                    completionHelper.FillDynamicMembers(newBag, identifierToken.Text)
+                    compHelper.FillDynamicMembers(newBag, identifierToken.Text)
 
                 ElseIf controlsInfo?.ContainsKey(name) Then
                     FillMemberNames(newBag, controlsInfo(name), identifierToken.Text)
 
                 Else
-                    Dim moduleName = completionHelper.GetInferedType(identifierToken)
+                    Dim moduleName = compHelper.GetInferedType(identifierToken)
                     If moduleName = "" Then
                         moduleName = WinForms.PreCompiler.GetModuleFromVarName(name)
                     End If
@@ -910,12 +917,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         prevToken = tokens(index - 1)
                     End If
 
-                    Dim bag = completionHelper.GetCompletionItems(
+                    Dim bag = compHelper.GetCompletionItems(
                         line.LineNumber, column,
                         prevToken.Type = TokenType.Equals OrElse currentToken.Type = TokenType.Equals,
                         IsCompletionOperator(prevToken) OrElse IsCompletionOperator(currentToken),
                         forHelp,
-                        globalParser
+                        gp
                     )
 
                     If bag.ShowCompletion Then
@@ -1117,12 +1124,12 @@ LineElse:
                             Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
                             Dim source = New TextBufferReader(line.TextSnapshot)
                             Dim gp = GetGlobalParser()
-                            Dim symbolTable = completionHelper.Compile(
+                            Dim symbolTable = compHelper.Compile(
                                 source, controlNames, controlsInfo, gp
                             ).Parser.SymbolTable
 
                             needsToReCompile = False
-                            token.Parent = completionHelper.GetStatement(line.LineNumber)
+                            token.Parent = compHelper.GetStatement(line.LineNumber)
 
                             Select Case symbolTable.GetInferedType(token)
                                 Case VariableType.Color
@@ -1142,7 +1149,7 @@ LineElse:
                 bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
             Else
                 Dim typeInfo As TypeInfo = Nothing
-                bag = completionHelper.GetEmptyCompletionBag(GetGlobalParser())
+                bag = compHelper.GetEmptyCompletionBag(GetGlobalParser())
                 If bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
                     CompletionHelper.FillMemberNames(bag, typeInfo, "")
                     bag.CompletionItems.Sort(

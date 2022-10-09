@@ -149,7 +149,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     Return String.Format(CultureInfo.CurrentCulture, ResourceHelper.GetString("ImportedProgram"), New Object(0) {BaseId}) & text
                 End If
 
-                Return $"{Path.GetFileName(_file)}{text}"
+                Return $"{Path.GetFileName(Me.File)}{text}"
             End Get
         End Property
 
@@ -445,10 +445,11 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Function
 
         Private Sub CompileForHighlight()
+            If GetProperty(Of Boolean)("GlobalChanged") Then needsToreCompile = True
             CompileGlobalModule()
             If needsToreCompile Then
                 needsToreCompile = False
-                highlightCompiler.Compile(New StringReader(Me.Text))
+                highlightCompiler.Compile(New StringReader(Me.Text), True)
             End If
         End Sub
 
@@ -527,23 +528,23 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Public Sub SaveAs(filePath As String)
-            Dim filePath2 = _file
-            _file = filePath
+            Dim filePath2 = Me.File
+            Me.File = filePath
 
             Try
                 Save()
             Catch
-                _file = filePath2
+                Me.File = filePath2
                 Throw
             End Try
         End Sub
 
         Private Sub CreateBuffer()
-            If IsNew OrElse _file = "" Then
+            If IsNew OrElse Me.File = "" Then
                 _textBuffer = New BufferFactory().CreateTextBuffer()
 
             Else
-                Using reader As StreamReader = New StreamReader(_file)
+                Using reader As StreamReader = New StreamReader(Me.File)
                     _textBuffer = New BufferFactory().CreateTextBuffer(reader, GetContentTypeFromFileExtension())
                 End Using
             End If
@@ -555,7 +556,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Private Function GetContentTypeFromFileExtension() As String
             Dim result = "text"
 
-            Select Case Path.GetExtension(_file)
+            Select Case Path.GetExtension(Me.File)
                 Case ".sb", ".smallbasic"
                     result = "text.smallbasic"
 
@@ -597,6 +598,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             needsToFormat = True
             LastModified = Now
             IsDirty = True
+            If IsTheGlobalFile Then GlobalModuleHasChanged = True
 
             _editorControl.ClearHighlighting()
             ErrorListControl.Close()
@@ -744,23 +746,24 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 For i = line.LineNumber + 1 To text.LineCount - 1
                     Dim nextLine = text.GetLineFromLineNumber(i)
                     Dim LineCode = nextLine.GetText()
-                    If LineCode.Trim(" "c, vbTab, "(").ToLower() <> "" Then
+                    If LineCode.Trim(" "c, vbTab, "("c).ToLower() <> "" Then
                         Dim indent_Keyword = leadingSpace & keyword
                         If (isSubroutine AndAlso (LineCode = "EndSub" OrElse LineCode = "EndFunction")) OrElse LineCode = leadingSpace & endBlock Then
                             L += nextLine.Length + 2
                             Try
                                 nextLine = text.GetLineFromLineNumber(i + 1)
                                 LineCode = nextLine.GetText().ToLower()
-                                If LineCode.Trim(" "c, vbTab, "(") = "" Then
+                                If LineCode.Trim(" "c, vbTab, "("c) = "" Then
                                     L += 2
                                 End If
                             Catch ex As Exception
-
                             End Try
+
                         ElseIf (isSubroutine AndAlso (LineCode.StartsWith("sub") OrElse LineCode.StartsWith("function"))
                                     ) OrElse LineCode.StartsWith(indent_Keyword) Then
                             addBlockEnd = isSubroutine
                             Exit For
+
                         Else
                             For j = i + 1 To text.LineCount - 1
                                 nextLine = text.GetLineFromLineNumber(j)
@@ -787,7 +790,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Next
             End If
 
-            Dim inden = leadingSpace.Length
+            Dim indent = leadingSpace.Length
             Dim nl = $"{vbCrLf}{leadingSpace}"
             addBlockEnd = addBlockEnd AndAlso endBlock <> ""
             _formatting = True
@@ -799,7 +802,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 _undoHistory
             )
 
-            textView.Caret.MoveTo(line.Start + inden + Len(keyword) + 1 + n)
+            textView.Caret.MoveTo(line.Start + indent + Len(keyword) + 1 + n)
             stopFormatingLine = line.LineNumber
             '_formatting = False
         End Sub
@@ -901,7 +904,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             genCode.Append(declaration)
             ' Take the xaml path if exists, to consider the file name change in save as case.
             Dim xamlFile = If(formDesigner.FormFile = "",
-                    Path.GetFileNameWithoutExtension(_file) & ".xaml",
+                    Path.GetFileNameWithoutExtension(Me.File) & ".xaml",
                     IO.Path.GetFileName(formDesigner.FormFile)
             )
 
@@ -987,10 +990,16 @@ Namespace Microsoft.SmallVisualBasic.Documents
             TextBuffer.Properties.AddOrModifyProperty(name, value)
         End Sub
 
+        Function GetProperty(Of T)(name As String) As T
+            Dim value As T = Nothing
+            TextBuffer.Properties.TryGetProperty(name, value)
+            Return value
+        End Function
+
         Public Function GetCodeBehind(Optional ToCompile As Boolean = False) As String
             Dim codeFileHasHints = Me.Text.Contains("'@Form Hints:")
 
-            Dim genCodefile = _file?.Substring(0, _file.Length - 2) + "sb.gen"
+            Dim genCodefile = Me.File?.Substring(0, Me.File.Length - 2) + "sb.gen"
             If genCodefile = "" OrElse Not IO.File.Exists(genCodefile) Then
                 Return If(ToCompile, "", Me.Text)
             Else
@@ -1411,13 +1420,9 @@ EndFunction
         End Sub
 
         Public Function CompileGlobalModule() As List(Of Parser)
-            If _file = "" Then Return Nothing
-            If Path.GetFileName(_file).ToLower() = "global.sb" Then
-                Return Nothing
-            End If
-
-            Dim inputDir = IO.Path.GetDirectoryName(_file)
-            Dim outputFileName = sVB.GetOutputFileName(_file, False)
+            If Me.File = "" OrElse IsTheGlobalFile Then Return Nothing
+            Dim inputDir = IO.Path.GetDirectoryName(Me.File)
+            Dim outputFileName = sVB.GetOutputFileName(Me.File, False)
             Return sVB.CompileGlobalModule(inputDir, outputFileName)
         End Function
 

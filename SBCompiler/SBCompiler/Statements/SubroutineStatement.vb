@@ -209,8 +209,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 Dim ctorInfo = GetType(WinForms.ReturnValueTypeAttribute).GetConstructor(ctorParams)
                 methodBuilder.SetCustomAttribute(
                     New CustomAttributeBuilder(
-                            ctorInfo,
-                            New Object() {returntype}
+                          ctorInfo,
+                          New Object() {returntype}
                     )
                 )
             End If
@@ -337,7 +337,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return sb.ToString()
         End Function
 
-        Public Overloads Function InferReturnType(symbolTable As SymbolTable) As VariableType
+        Private Function InferReturnType(symbolTable As SymbolTable) As VariableType
             Dim containsString = False
             Dim containsControl = False
             Dim sameType = True
@@ -371,6 +371,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
             For Each st In Body
                 st.InferType(symbolTable)
             Next
+
+            If SubToken.Type = TokenType.Function Then
+                symbolTable.InferedTypes(Name.LCaseText) = InferReturnType(symbolTable)
+            End If
+
         End Sub
     End Class
 End Namespace

@@ -1,6 +1,9 @@
 
 Sub BtnMsg_OnClick()
-   result = Global.MsgBox("Confirm", "Do you want to save the changes?")
+   result = Global.MsgBox(
+      "Confirm",
+      "Do you want to save the changes?"
+   )
    
    If result = DialogResults.Yes Then
       TextBox1.Text = "User accepted to save changes."

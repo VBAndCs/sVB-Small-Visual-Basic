@@ -130,10 +130,10 @@ Class sVB
                 End If
 
             ElseIf ignoreErrors AndAlso Compiler.GlobalParser IsNot Nothing Then
-                    parsers.Add(Compiler.GlobalParser)
-                    compileGlobal = False
-                Else
-                    code = globalDoc.Text
+                parsers.Add(Compiler.GlobalParser)
+                compileGlobal = False
+            Else
+                code = globalDoc.Text
             End If
 
             If compileGlobal Then
@@ -141,10 +141,15 @@ Class sVB
 
                 If errors?.Count = 0 Then
                     parsers.Add(Compiler.Parser)
-                Else
-                    If ignoreErrors Then Return Nothing
 
-                    If globalDoc Is Nothing Then globalDoc = MainWindow.OpenDocIfNot(globalFile)
+                ElseIf ignoreErrors Then
+                    Return Nothing
+
+                Else
+                    If globalDoc Is Nothing Then
+                        globalDoc = MainWindow.OpenDocIfNot(globalFile)
+                    End If
+
                     globalDoc.ShowErrors(errors)
                     MainWindow.tabCode.IsSelected = True
                     Return Nothing

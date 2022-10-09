@@ -669,7 +669,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim inputDir = Path.GetDirectoryName(filePath)
             Dim outputFileName = sVB.GetOutputFileName(
                 filePath,
-                doc.Form = "" AndAlso Path.GetFileNameWithoutExtension(filePath) <> "global"
+                doc.Form = "" AndAlso Not doc.IsTheGlobalFile
             )
             Dim code As String
             Dim genCode As String

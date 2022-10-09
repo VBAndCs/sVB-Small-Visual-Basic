@@ -8,9 +8,11 @@ Namespace Microsoft.SmallVisualBasic.Documents
     Public Class FileDocument
         Implements INotifyPropertyChanged
 
-        Protected _file As String
+        Private _file As String
         Private _isDirty As Boolean
         Private _propertyStore As New Dictionary(Of Object, Object)()
+
+        Public ReadOnly Property IsTheGlobalFile As Boolean
 
         Public Property File As String
             Get
@@ -19,6 +21,10 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
             Friend Set(value As String)
                 _file = value
+                If _file <> "" Then
+                    _IsTheGlobalFile = IO.Path.GetFileNameWithoutExtension(_file).ToLower = "global"
+                End If
+
                 NotifyProperty("FilePath")
                 NotifyProperty("Title")
             End Set
@@ -71,6 +77,10 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 _file = Path.GetFullPath(filePath)
             Else
                 _file = filePath
+            End If
+
+            If _file <> "" Then
+                _IsTheGlobalFile = IO.Path.GetFileNameWithoutExtension(_file).ToLower = "global"
             End If
         End Sub
 

@@ -96,13 +96,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
             If TypeName.IsIllegal Then
                 Dim funcName = MethodName.LCaseText
-                If symbolTable.Subroutines.ContainsKey(funcName) Then
-                    Dim funcStatement = CType(symbolTable.Subroutines(funcName).Parent, Statements.SubroutineStatement)
-                    Return funcStatement.InferReturnType(symbolTable)
-                Else
-                    Return VariableType.Any
-                End If
-
+                Return symbolTable.GetInferedType(funcName)
             Else
                 Return symbolTable.GetReturnValueType(_TypeName, _MethodName, True)
             End If
