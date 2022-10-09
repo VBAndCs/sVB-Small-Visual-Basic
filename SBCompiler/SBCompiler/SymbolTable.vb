@@ -146,7 +146,7 @@ Namespace Microsoft.SmallVisualBasic
             If InferedTypes.ContainsKey(key) Then
                 Return InferedTypes(key)
             Else
-                Return VariableType.None
+                Return VariableType.Any
             End If
         End Function
 
@@ -256,16 +256,16 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Public Function GetReturnValueType(typeName As Token, memberName As Token, isMethod As Boolean) As VariableType
-            If _typeInfoBag Is Nothing Then Return VariableType.None
+            If _typeInfoBag Is Nothing Then Return VariableType.Any
 
             Dim type = GetTypeInfo(typeName)
-            If type Is Nothing Then Return VariableType.None
+            If type Is Nothing Then Return VariableType.Any
 
             Dim memberInfo = GetMemberInfo(memberName, type, isMethod)
-            If memberInfo Is Nothing Then Return VariableType.None
+            If memberInfo Is Nothing Then Return VariableType.Any
 
             Dim attrs = memberInfo.GetCustomAttributes(GetType(WinForms.ReturnValueTypeAttribute), False)
-            If attrs Is Nothing OrElse attrs.Count = 0 Then Return VariableType.None
+            If attrs Is Nothing OrElse attrs.Count = 0 Then Return VariableType.Any
 
             Return CType(attrs(0), WinForms.ReturnValueTypeAttribute).ReturnTypeValue
         End Function

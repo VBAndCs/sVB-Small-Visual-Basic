@@ -99,7 +99,7 @@ Namespace Microsoft.SmallVisualBasic
                 End If
             Next
 
-            EmiMain(globalInit, If(mainFormInit, formInit), moduleBuilder)
+            EmitMain(globalInit, If(mainFormInit, formInit), moduleBuilder)
 
             assemblyBuilder.SetEntryPoint(_entryPoint, PEFileKinds.WindowApplication)
             If Not forGlobalHelp Then assemblyBuilder.Save(_outputName & ".exe")
@@ -139,7 +139,7 @@ Namespace Microsoft.SmallVisualBasic
             Return methodBuilder
         End Function
 
-        Private Function EmiMain(globalInit As MethodInfo, mainFormInit As MethodInfo, moduleBuilder As ModuleBuilder) As Boolean
+        Private Function EmitMain(globalInit As MethodInfo, mainFormInit As MethodInfo, moduleBuilder As ModuleBuilder) As Boolean
             Dim typeBuilder = moduleBuilder.DefineType("_SmallVisualBasic_Program", TypeAttributes.Sealed)
             _entryPoint = typeBuilder.DefineMethod("_Main", MethodAttributes.Static)
             Dim methodBuilder = CType(_entryPoint, MethodBuilder)
@@ -219,6 +219,19 @@ Namespace Microsoft.SmallVisualBasic
 
                     propBuilder.SetGetMethod(getProp)
                     propBuilder.SetSetMethod(setProp)
+
+                    Dim returntype = _currentScope.SymbolTable.GetInferedType(var.Value)
+                    If returntype <> VariableType.Any Then
+                        Dim ctorParams = New Type() {GetType(VariableType)}
+                        Dim ctorInfo = GetType(WinForms.ReturnValueTypeAttribute).GetConstructor(ctorParams)
+                        propBuilder.SetCustomAttribute(
+                            New CustomAttributeBuilder(
+                                    ctorInfo,
+                                    New Object() {returntype}
+                            )
+                        )
+                    End If
+
                 End If
             Next
         End Sub

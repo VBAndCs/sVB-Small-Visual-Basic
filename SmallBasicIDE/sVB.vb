@@ -209,7 +209,7 @@ Class sVB
                                 Dim controlName = WinForms.PreCompiler.GetModuleFromVarName(obj)
                                 If controlName = "" Then
                                     Dim varType = sVB._compiler.Parser.SymbolTable.GetInferedType([error].Token)
-                                    If varType = VariableType.None Then
+                                    If varType = VariableType.Any Then
                                         normalErrors.Add([error])
                                     Else
                                         variableTypes(obj) = varType
@@ -304,7 +304,7 @@ Class sVB
             Dim obj = objName.ToLower()
 
             Dim controlName = If(controlNames.ContainsKey(obj), controlNames(obj), "")
-            Dim varType = If(variableTypes.ContainsKey(obj), variableTypes(obj), VariableType.None)
+            Dim varType = If(variableTypes.ContainsKey(obj), variableTypes(obj), VariableType.Any)
 
             'use (lineNum) to be passed by value
             Dim tokens = LineScanner.GetTokens(line, (lineNum), lines)

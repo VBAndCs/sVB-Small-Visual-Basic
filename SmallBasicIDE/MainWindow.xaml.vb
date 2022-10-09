@@ -1009,11 +1009,6 @@ Namespace Microsoft.SmallVisualBasic
                            Optional saveAs As Boolean = False
                     ) As TextDocument
 
-            If exitSaveDesignInfo Then
-                exitSaveDesignInfo = False
-                Return Nothing
-            End If
-
             Dim formName As String
             Dim xamlPath As String
             Dim formPath As String
@@ -1528,8 +1523,6 @@ Namespace Microsoft.SmallVisualBasic
             Dim txt As TextBox = sender
             txt.Tag = formDesigner.SelectedIndex
         End Sub
-
-        Dim exitSaveDesignInfo As Boolean = True
 
         Private Sub Window_ContentRendered(sender As Object, e As EventArgs)
             Dim doc As TextDocument

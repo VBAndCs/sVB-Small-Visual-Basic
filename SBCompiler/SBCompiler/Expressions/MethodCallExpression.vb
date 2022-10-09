@@ -100,7 +100,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                     Dim funcStatement = CType(symbolTable.Subroutines(funcName).Parent, Statements.SubroutineStatement)
                     Return funcStatement.InferReturnType(symbolTable)
                 Else
-                    Return VariableType.None
+                    Return VariableType.Any
                 End If
 
             Else

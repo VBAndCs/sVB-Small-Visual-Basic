@@ -304,7 +304,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Private Function InferType(key As String, symbolTable As SymbolTable) As String
             Dim varType = symbolTable.GetInferedType(key)
-            If varType <> VariableType.None Then
+            If varType <> VariableType.Any Then
                 Return " As " & varType.ToString
             Else
                 Return ""

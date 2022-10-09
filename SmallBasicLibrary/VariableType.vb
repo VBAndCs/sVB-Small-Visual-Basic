@@ -1,5 +1,5 @@
 ﻿Public Enum VariableType
-    None
+    Any
     [String]
     [Double]
     Array

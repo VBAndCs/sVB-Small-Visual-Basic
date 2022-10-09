@@ -52,7 +52,7 @@ Namespace WinForms
                 Case VariableType.Date
                     Return NameOf(DateEx)
 
-                Case VariableType.None, VariableType.Boolean,
+                Case VariableType.Any, VariableType.Boolean,
                           VariableType.Key, VariableType.DialogResult
                     Return ""
 
@@ -158,7 +158,7 @@ Namespace WinForms
                 End If
             Next
 
-            Return VariableType.None
+            Return VariableType.Any
         End Function
 
         Dim PrimativeType As Type = GetType(Primitive)
@@ -223,7 +223,7 @@ Namespace WinForms
             If moduleInfo(controlName).Contains(method) Then
                 moduleName = controlName
 
-            ElseIf varType < VariableType.Control AndAlso varType <> VariableType.None Then
+            ElseIf varType < VariableType.Control AndAlso varType <> VariableType.Any Then
                 Return New MethodInformation("", 0)
 
             ElseIf controlName = NameOf(ImageBox) Then

@@ -177,8 +177,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
             )
 
             Dim prmtvType = GetType(Library.Primitive)
-
             Dim n = If(Params IsNot Nothing, Params.Count - 1, -1)
+
             If n > -1 Then
                 Dim paramTypes(n) As Type
                 For i = 0 To n
@@ -202,6 +202,18 @@ Namespace Microsoft.SmallVisualBasic.Statements
                      Params(i).Text
                 )
             Next
+
+            Dim returntype = InferReturnType(scope.SymbolTable)
+            If returntype <> VariableType.Any Then
+                Dim ctorParams = New Type() {GetType(VariableType)}
+                Dim ctorInfo = GetType(WinForms.ReturnValueTypeAttribute).GetConstructor(ctorParams)
+                methodBuilder.SetCustomAttribute(
+                    New CustomAttributeBuilder(
+                            ctorInfo,
+                            New Object() {returntype}
+                    )
+                )
+            End If
 
             scope.MethodBuilders.Add(Name.LCaseText, methodBuilder)
 
@@ -329,19 +341,20 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim containsString = False
             Dim containsControl = False
             Dim sameType = True
-            Dim returnType = VariableType.None
+            Dim returnType = VariableType.Any
 
             For Each retSt In ReturnStatements
                 Dim type = retSt.ReturnExpression.InferType(symbolTable)
-                If type <> VariableType.None Then
+                If type <> VariableType.Any Then
                     Select Case type
-                        Case VariableType.String
+                        Case VariableType.String, VariableType.Array,
+                             VariableType.Color, >= VariableType.Control
                             containsString = True
                         Case >= VariableType.Control
                             containsControl = True
                     End Select
 
-                    If returnType <> VariableType.None Then
+                    If returnType <> VariableType.Any Then
                         If type <> returnType Then sameType = False
                     End If
                     returnType = type
@@ -349,8 +362,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Next
 
             If sameType Then Return returnType
-            If containsControl Then Return VariableType.Control
             If containsString Then Return VariableType.String
+            If containsControl Then Return VariableType.Control
             Return VariableType.Double
         End Function
 

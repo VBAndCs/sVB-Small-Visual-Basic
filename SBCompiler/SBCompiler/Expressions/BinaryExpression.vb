@@ -80,30 +80,27 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
             Dim leftType = LeftHandSide.InferType(symbolTable)
-            If leftType = VariableType.None OrElse leftType >= VariableType.Control Then
-                Return VariableType.None
-            End If
 
-            If [Operator].IsIllegal OrElse RightHandSide Is Nothing Then Return leftType
+            If [Operator].IsIllegal OrElse RightHandSide Is Nothing Then
+                Return leftType
+            End If
 
             Dim rightType = RightHandSide.InferType(symbolTable)
-            If rightType = VariableType.None OrElse rightType >= VariableType.Control Then
-                Return VariableType.None
-            End If
 
             Select Case [Operator].Type
                 Case TokenType.Multiplication, TokenType.Division
                     Return VariableType.Double
 
                 Case TokenType.Addition
-                    If leftType = VariableType.String OrElse
-                            rightType = VariableType.String OrElse
-                            leftType = VariableType.Array OrElse
-                            rightType = VariableType.Array Then
+                    If leftType = VariableType.Any OrElse rightType = VariableType.Any OrElse
+                            leftType = VariableType.String OrElse rightType = VariableType.String OrElse
+                            leftType = VariableType.Array OrElse rightType = VariableType.Array OrElse
+                            leftType >= VariableType.Control OrElse rightType >= VariableType.Control Then
                         Return VariableType.String
 
                     ElseIf leftType = VariableType.Date OrElse rightType = VariableType.Date Then
                         Return VariableType.Date
+
                     Else
                         Return VariableType.Double
                     End If

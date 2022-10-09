@@ -83,14 +83,14 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim varType = WinForms.PreCompiler.GetVarType(identifier.Text)
 
             Dim type As VariableType
-            If varType = VariableType.None Then
-                type = If(RightValue?.InferType(symbolTable), VariableType.None)
+            If varType = VariableType.Any Then
+                type = If(RightValue?.InferType(symbolTable), VariableType.Any)
             Else
                 type = varType
             End If
 
             If InferedTypes.ContainsKey(key) Then
-                If type <> VariableType.None Then InferedTypes(key) = type
+                If type <> VariableType.Any Then InferedTypes(key) = type
             Else
                 InferedTypes(key) = type
             End If

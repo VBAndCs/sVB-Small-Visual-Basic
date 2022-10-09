@@ -101,7 +101,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                     Return VariableType.Double
 
                 Case Else
-                    Return VariableType.None
+                    Return VariableType.Any
             End Select
 
         End Function

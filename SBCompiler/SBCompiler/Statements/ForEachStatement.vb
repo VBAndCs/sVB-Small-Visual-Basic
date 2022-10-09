@@ -70,7 +70,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                 If key <> "" Then
                     Dim varType = WinForms.PreCompiler.GetVarType(Iterator.Text)
-                    If varType <> VariableType.None Then
+                    If varType <> VariableType.Any Then
                         symbolTable.InferedTypes(key) = varType
                     End If
                 End If
