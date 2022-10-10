@@ -8,9 +8,6 @@ Imports Microsoft.SmallVisualBasic.Completion
 Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Module CompilerService
         Private _compiler As Compiler
-
-        Public GlobalModuleHasChanged As Boolean
-
         Public Event HelpUpdated(itemWrapper As CompletionItemWrapper)
 
         Public Function GetNextToken(ByRef i As Integer, direction As Integer, ByRef line As ITextSnapshotLine, ByRef tokens As List(Of Token)) As Token

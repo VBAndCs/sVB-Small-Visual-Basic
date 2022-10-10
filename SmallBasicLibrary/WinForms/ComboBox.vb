@@ -30,7 +30,7 @@ Namespace WinForms
                     Try
                         GetItemsCount = GetComboBox(comboBoxName).Items.Count
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(comboBoxName, "ItemsCount", ex)
+                        Control.ReportError(comboBoxName, "ItemsCount", ex)
                     End Try
                 End Sub)
         End Function
@@ -53,7 +53,7 @@ Namespace WinForms
                         GetItems = Primitive.ConvertFromMap(map)
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(comboBoxName, "ItemsCount", ex)
+                        Control.ReportError(comboBoxName, "ItemsCount", ex)
                     End Try
                 End Sub)
         End Function
@@ -76,7 +76,7 @@ Namespace WinForms
                         Dim item As String = GetComboBox(comboBoxName).SelectedItem
                         GetSelectedItem = item
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(comboBoxName, "SelectedItem", ex)
+                        Control.ReportError(comboBoxName, "SelectedItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -88,7 +88,7 @@ Namespace WinForms
                     Try
                         GetComboBox(comboBoxName).SelectedItem = CStr(item)
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(comboBoxName, "SelectedItem", item, ex)
+                        Control.ReportError(comboBoxName, "SelectedItem", item, ex)
                     End Try
                 End Sub)
         End Sub
@@ -105,7 +105,7 @@ Namespace WinForms
                     Try
                         GetSelectedIndex = GetComboBox(comboBoxName).SelectedIndex + 1
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(comboBoxName, "SelectedIndex", ex)
+                        Control.ReportError(comboBoxName, "SelectedIndex", ex)
                     End Try
                 End Sub)
         End Function
@@ -132,7 +132,7 @@ Namespace WinForms
                         lst.SelectedIndex = i
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(comboBoxName, "SelectedIndex", index, ex)
+                        Control.ReportError(comboBoxName, "SelectedIndex", index, ex)
                     End Try
                 End Sub)
         End Sub
@@ -148,7 +148,7 @@ Namespace WinForms
                     Try
                         GetAllowEdit = GetComboBox(comboBoxName).IsEditable
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(comboBoxName, "AllowEdit", ex)
+                        Control.ReportError(comboBoxName, "AllowEdit", ex)
                     End Try
                 End Sub)
         End Function
@@ -160,7 +160,7 @@ Namespace WinForms
                     Try
                         GetComboBox(comboBoxName).IsEditable = CBool(item)
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(comboBoxName, "AllowEdit", item, ex)
+                        Control.ReportError(comboBoxName, "AllowEdit", item, ex)
                     End Try
                 End Sub)
         End Sub
@@ -176,7 +176,7 @@ Namespace WinForms
                     Try
                         GetText = GetComboBox(comboBoxName).Text
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(comboBoxName, "Text", ex)
+                        Control.ReportError(comboBoxName, "Text", ex)
                     End Try
                 End Sub)
         End Function
@@ -188,7 +188,7 @@ Namespace WinForms
                     Try
                         GetComboBox(textBoxName).Text = value
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(textBoxName, "Text", value, ex)
+                        Control.RepottyPropertyError(textBoxName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -222,7 +222,7 @@ Namespace WinForms
                             End If
                         End If
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "GetItemAt", ex)
+                        Control.ReportSubError(comboBoxName, "GetItemAt", ex)
                     End Try
                 End Sub)
         End Function
@@ -248,7 +248,7 @@ Namespace WinForms
                             lst.Items(i - 1) = value
                         End If
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "SetItemAt", ex)
+                        Control.ReportSubError(comboBoxName, "SetItemAt", ex)
                     End Try
                 End Sub)
         End Sub
@@ -274,7 +274,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "AddItem", ex)
+                        Control.ReportSubError(comboBoxName, "AddItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -304,7 +304,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "AddItemAt", ex)
+                        Control.ReportSubError(comboBoxName, "AddItemAt", ex)
                     End Try
                 End Sub)
         End Sub
@@ -328,7 +328,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "RenoveItem", ex)
+                        Control.ReportSubError(comboBoxName, "RenoveItem", ex)
                     End Try
                 End Sub)
         End Sub
@@ -343,7 +343,7 @@ Namespace WinForms
                     Try
                         GetComboBox(comboBoxName).Items.Clear()
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "RenoveItem", ex)
+                        Control.ReportSubError(comboBoxName, "RenoveItem", ex)
                     End Try
                 End Sub)
         End Sub
@@ -371,7 +371,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "RenoveItemAt", ex)
+                        Control.ReportSubError(comboBoxName, "RenoveItemAt", ex)
                     End Try
                 End Sub)
         End Sub
@@ -390,7 +390,7 @@ Namespace WinForms
                     Try
                         ContainsItem = GetComboBox(comboBoxName).Items.Contains(CStr(value))
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "ContainsItem", ex)
+                        Control.ReportSubError(comboBoxName, "ContainsItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -408,7 +408,7 @@ Namespace WinForms
                     Try
                         FindItem = 1 + GetComboBox(comboBoxName).Items.IndexOf(CStr(value))
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "FindItem", ex)
+                        Control.ReportSubError(comboBoxName, "FindItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -446,7 +446,7 @@ Namespace WinForms
                         Next
 
                     Catch ex As Exception
-                        Control.ShowSubError(comboBoxName, "FindItemAt", ex)
+                        Control.ReportSubError(comboBoxName, "FindItemAt", ex)
                     End Try
                 End Sub)
         End Function

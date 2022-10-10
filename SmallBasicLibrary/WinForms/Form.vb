@@ -9,16 +9,16 @@ Namespace WinForms
     <HideFromIntellisense>
     Public NotInheritable Class Form
 
-        Shared Sub ShowSubError(formName As String, memberName As String, ex As Exception)
-            ReportError($"Calling {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
+        Shared Sub ReportSubError(formName As String, memberName As String, ex As Exception)
+            Helper.ReportError($"Calling {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
-        Shared Sub ShowErrorMesssage(formName As String, memberName As String, ex As Exception)
-            ReportError($"Reading {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
+        Shared Sub ReportError(formName As String, memberName As String, ex As Exception)
+            Helper.ReportError($"Reading {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
-        Shared Sub ShowErrorMesssage(formName As String, memberName As String, value As String, ex As Exception)
-            ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
+        Shared Sub ReportError(formName As String, memberName As String, value As String, ex As Exception)
+            Helper.ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
         Public Shared Sub Initialize(formName As Primitive)
@@ -32,7 +32,7 @@ Namespace WinForms
                         initializeMethod?.Invoke(Nothing, Nothing)
 
                     Catch ex As Exception
-                        ShowSubError(formName, "Initialize", ex)
+                        ReportSubError(formName, "Initialize", ex)
                     End Try
                 End Sub)
         End Sub
@@ -74,7 +74,7 @@ Namespace WinForms
                          Forms._controls(key) = textBox1
 
                      Catch ex As Exception
-                         ShowSubError(formName, "AddTexBox", ex)
+                         ReportSubError(formName, "AddTexBox", ex)
                      End Try
                  End Sub)
 
@@ -117,7 +117,7 @@ Namespace WinForms
                             Forms._controls(key) = label1
 
                         Catch ex As Exception
-                            ShowSubError(formName, "AddLabel", ex)
+                            ReportSubError(formName, "AddLabel", ex)
                         End Try
                     End Sub)
 
@@ -172,7 +172,7 @@ Namespace WinForms
                             Forms._controls(key) = img
 
                         Catch ex As Exception
-                            ShowSubError(formName, "AddImageBox", ex)
+                            ReportSubError(formName, "AddImageBox", ex)
                         End Try
                     End Sub)
 
@@ -183,14 +183,14 @@ Namespace WinForms
             If formName = "" Then
                 Dim msg = "`formName` can't be empty string"
                 Dim ex As New ArgumentException(msg)
-                ReportError(msg, ex)
+                Helper.ReportError(msg, ex)
                 Throw ex
             End If
 
             If controlName = "" Then
                 Dim msg = "`buttonName` can't be empty string"
                 Dim ex As New ArgumentException(msg)
-                ReportError(msg, ex)
+                Helper.ReportError(msg, ex)
                 Throw ex
             End If
 
@@ -198,7 +198,7 @@ Namespace WinForms
             If Not Forms._forms.ContainsKey(frmName) Then
                 Dim msg = $"The Form `{formName}`doesn't exist"
                 Dim ex As New ArgumentException(msg)
-                ReportError(msg, ex)
+                Helper.ReportError(msg, ex)
                 Throw ex
             End If
 
@@ -206,7 +206,7 @@ Namespace WinForms
             If Forms._controls.ContainsKey(key) Then
                 Dim msg = $"There is another control with the name '{controlName}' on the ''{formName} form"
                 Dim ex As New ArgumentException(msg)
-                ReportError(msg, ex)
+                Helper.ReportError(msg, ex)
                 Throw ex
             End If
 
@@ -253,7 +253,7 @@ Namespace WinForms
                           Forms._controls(key) = button1
 
                       Catch ex As Exception
-                          ShowSubError(formName, "AddButton", ex)
+                          ReportSubError(formName, "AddButton", ex)
                       End Try
                   End Sub)
 
@@ -299,7 +299,7 @@ Namespace WinForms
                           Forms._controls(key) = listBox1
 
                       Catch ex As Exception
-                          ShowSubError(formName, "AddListBox", ex)
+                          ReportSubError(formName, "AddListBox", ex)
                       End Try
                   End Sub)
 
@@ -343,7 +343,7 @@ Namespace WinForms
                           Forms._controls(key) = dp
 
                       Catch ex As Exception
-                          ShowSubError(formName, "AddDatePiker", ex)
+                          ReportSubError(formName, "AddDatePiker", ex)
                       End Try
                   End Sub)
 
@@ -368,7 +368,7 @@ Namespace WinForms
                           Dim frm = Forms.GetForm(formName)
                           GetArgsArr = CStr(frm.GetValue(ArgsArrProperty))
                       Catch ex As Exception
-                          ShowErrorMesssage(formName, "ArgsArr", ex)
+                          ReportError(formName, "ArgsArr", ex)
                       End Try
                   End Sub)
         End Function
@@ -380,7 +380,7 @@ Namespace WinForms
                            Dim frm = Forms.GetForm(formName)
                            frm.SetValue(ArgsArrProperty, value.AsString())
                        Catch ex As Exception
-                           Control.ShowPropertyMesssage(formName, "ArgsArr", value, ex)
+                           Control.RepottyPropertyError(formName, "ArgsArr", value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -397,14 +397,14 @@ Namespace WinForms
             If frmName = "" Then
                 Dim msg = "Form name can't be an empty string."
                 Dim ex As New ArgumentException(msg)
-                ReportError(msg, ex)
+                Helper.ReportError(msg, ex)
                 Throw ex
             End If
 
             If CStr(controlName) = "" Then
                 Dim msg = "Control name can't be an empty string."
                 Dim ex As New ArgumentException(msg)
-                ReportError(msg, ex)
+                Helper.ReportError(msg, ex)
                 Throw ex
             End If
 
@@ -413,7 +413,7 @@ Namespace WinForms
             Try
                 Return Forms._controls.ContainsKey(key)
             Catch ex As Exception
-                ReportError(ex.Message, ex)
+                Helper.ReportError(ex.Message, ex)
                 Throw ex
             End Try
 
@@ -424,27 +424,29 @@ Namespace WinForms
         ''' Returns an array containg the names of all controls displayed on the form
         ''' </summary>
         <ReturnValueType(VariableType.Array)>
-        <ExMethod>
+        <ExProperty>
         Public Shared Function GetControls(formName As Primitive) As Primitive
-            If Not Forms._forms.ContainsKey(formName) Then
-                ShowSubError(formName, "GetControls", New Exception($"There is no form named `{formName}`"))
+            Dim frmName = formName.ToString().ToLower()
+            If Not Forms._forms.ContainsKey(frmName) Then
+                ReportSubError(formName, "GetControls", New Exception($"There is no form named `{formName}`"))
                 Return ""
             End If
 
             Dim map = New Dictionary(Of Primitive, Primitive)
-            Dim frmName = formName.ToString().ToLower()
             Dim prefix = frmName & "."
             Dim suffex = "." & frmName
-            Dim controls = Forms._controls
             Dim num = 0
 
             For Each key In Forms._controls.Keys
-                If key.StartsWith(prefix) AndAlso Not key.EndsWith(suffex) Then
+                If key.StartsWith(prefix) Then
                     map(num) = key
                 End If
                 num += 1
             Next
-            Return Primitive.ConvertFromMap(map)
+
+            Dim result As New Primitive
+            result._arrayMap = map
+            Return result
         End Function
 
         ''' <summary>
@@ -459,7 +461,7 @@ Namespace WinForms
                         wnd.Show()
                         wnd.Activate()
                     Catch ex As Exception
-                        ShowSubError(formName, "Show", ex)
+                        ReportSubError(formName, "Show", ex)
                     End Try
 
                 End Sub)
@@ -494,7 +496,7 @@ Namespace WinForms
                        End If
 
                    Catch ex As Exception
-                       ShowSubError(formName, "ShowDialog", ex)
+                       ReportSubError(formName, "ShowDialog", ex)
                    End Try
                End Sub)
         End Function
@@ -510,7 +512,7 @@ Namespace WinForms
                     Try
                         GetDialogResult = _dialogResult
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, "DialogResult", ex)
+                        ReportError(formName, "DialogResult", ex)
                     End Try
                 End Sub)
         End Function
@@ -522,7 +524,7 @@ Namespace WinForms
                     Try
                         _dialogResult = value
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, "DialogResult", value, ex)
+                        ReportError(formName, "DialogResult", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -539,7 +541,7 @@ Namespace WinForms
                     Try
                         System.Windows.MessageBox.Show(Forms.GetForm(ownerFormName), message.ToString(), title.ToString())
                     Catch ex As Exception
-                        ShowSubError(ownerFormName, "ShowMessage", ex)
+                        ReportSubError(ownerFormName, "ShowMessage", ex)
                     End Try
                 End Sub)
         End Sub
@@ -554,7 +556,7 @@ Namespace WinForms
                     Try
                         Forms.GetForm(formName).Hide()
                     Catch ex As Exception
-                        ShowSubError(formName, "Hide", ex)
+                        ReportSubError(formName, "Hide", ex)
                     End Try
                 End Sub)
         End Sub
@@ -569,7 +571,7 @@ Namespace WinForms
                     Try
                         Forms.GetForm(formName).Close()
                     Catch ex As Exception
-                        ShowSubError(formName, "Close", ex)
+                        ReportSubError(formName, "Close", ex)
                     End Try
                 End Sub)
         End Sub
@@ -585,7 +587,7 @@ Namespace WinForms
                     Try
                         GetIsLoaded = Forms.GetForm(formName) IsNot Nothing
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, "IsLoaded", ex)
+                        ReportError(formName, "IsLoaded", ex)
                     End Try
                 End Sub)
         End Function
@@ -602,7 +604,7 @@ Namespace WinForms
                     Try
                         GetText = Forms.GetForm(formName).Title
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, "Text", ex)
+                        ReportError(formName, "Text", ex)
                     End Try
                 End Sub)
         End Function
@@ -614,7 +616,7 @@ Namespace WinForms
                     Try
                         Forms.GetForm(formName).Title = value
                     Catch ex As Exception
-                        ShowErrorMesssage(formName, "Text", value, ex)
+                        ReportError(formName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -636,10 +638,35 @@ Namespace WinForms
                         canvas.Focusable = True
                         AddHandler canvas.PreviewMouseDown, Sub() canvas.Focus()
                     Catch ex As Exception
-                        ReportError(ex.Message, ex)
+                        Helper.ReportError(ex.Message, ex)
                     End Try
                 End Sub)
         End Sub
+
+        ''' <summary>
+        ''' Raises the OnLostFocus event for every control on the current form, to apply any validation logic supplied by you in each OnLostFocuse handler, then checks the Error property to see if the control has errors or not. The process stops at first control with errors and returns false.
+        ''' </summary>
+        ''' <returns>True if the all controls are valid, or False otherwise.</returns>
+        <ExMethod>
+        <ReturnValueType(VariableType.Boolean)>
+        Public Shared Function Validate(formName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        For Each cntrl In Forms._controls
+                            If Control.Validate(cntrl.Key) = False Then
+                                Sound.PlayBellRing()
+                                cntrl.Value.Focus()
+                                Return
+                            End If
+                        Next
+
+                    Catch ex As Exception
+                        ReportSubError(formName, "Validate", ex)
+                    End Try
+                End Sub)
+        End Function
+
 
 #Region "Events"
         Public Shared ReadOnly OnFormShownEvent As System.Windows.RoutedEvent =
@@ -690,7 +717,7 @@ Namespace WinForms
 
 
                                          Catch ex As Exception
-                                             ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnShown)}`event,  caused this error: {ex.Message}", ex)
+                                             Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnShown)}`event,  caused this error: {ex.Message}", ex)
                                          End Try
                                      End Sub
 
@@ -732,7 +759,7 @@ Namespace WinForms
                                          e.Cancel = [Event].Handled
                                          [Event].Handled = False
                                      Catch ex As Exception
-                                         ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)
+                                         Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)
                                      End Try
                                  End Sub
                          Catch ex As Exception
@@ -766,7 +793,7 @@ Namespace WinForms
                                          Call handler()
                                          [Event].Handled = False
                                      Catch ex As Exception
-                                         ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)
+                                         Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)
                                      End Try
                                  End Sub
                          Catch ex As Exception

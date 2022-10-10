@@ -8,11 +8,13 @@ Namespace Microsoft.SmallVisualBasic.Shell
     Public Class MdiView
         Inherits ContentControl
 
+        Public ReadOnly Property MdiViews As MdiViewsControl
+
         Public Overrides Sub OnApplyTemplate()
             MyBase.OnApplyTemplate()
             _CmbControlNames = Me.Template.FindName("CmbControlNames", Me)
             _CmbEventNames = Me.Template.FindName("CmbEventNames", Me)
-
+            _MdiViews = GetParent(Of MdiViewsControl)(_CmbEventNames)
         End Sub
 
         Public Shared ReadOnly IsSelectedProperty As DependencyProperty = DependencyProperty.Register("IsSelected", GetType(Boolean), GetType(MdiView))
@@ -95,7 +97,6 @@ Namespace Microsoft.SmallVisualBasic.Shell
             _FreezeCmbEvents = True
             _CmbControlNames.SelectedItem = controlName
             _CmbEventNames.SelectedItem = eventName
-            Dim mdiViews = GetParent(Of MdiViewsControl)(_CmbEventNames)
             mdiViews.SelectHandlers(Me, controlName, eventName)
             _FreezeCmbEvents = False
         End Sub
@@ -113,5 +114,6 @@ Namespace Microsoft.SmallVisualBasic.Shell
             End If
             _FreezeCmbEvents = False
         End Sub
+
     End Class
 End Namespace

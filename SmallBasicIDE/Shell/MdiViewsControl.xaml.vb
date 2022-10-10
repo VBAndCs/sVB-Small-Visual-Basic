@@ -330,7 +330,6 @@ Namespace Microsoft.SmallVisualBasic.Shell
         Private Sub ControlNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             Dim cmb = CType(sender, ComboBox)
             Dim controlName = CStr(cmb.SelectedItem)
-
             Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
 
             If controlName = "" Then

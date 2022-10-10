@@ -36,7 +36,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ImageBoxName, "Image", ex)
+                        Control.ReportError(ImageBoxName, "Image", ex)
                     End Try
                 End Sub)
         End Function
@@ -53,7 +53,7 @@ Namespace WinForms
                         End If
                         GetImageBox(ImageBoxName).Source = New BitmapImage(New Uri(imageFile))
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ImageBoxName, "Text", imageFile, ex)
+                        Control.ReportError(ImageBoxName, "Text", imageFile, ex)
                     End Try
                 End Sub)
         End Sub
@@ -70,7 +70,7 @@ Namespace WinForms
                     Try
                         GetLeft = Wpf.Canvas.GetLeft(GetImageBox(ImageBoxName))
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ImageBoxName, "Left", ex)
+                        Control.ReportError(ImageBoxName, "Left", ex)
                     End Try
                 End Sub)
         End Function
@@ -82,7 +82,7 @@ Namespace WinForms
                     Try
                         Wpf.Canvas.SetLeft(GetImageBox(ImageBoxName), value)
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(ImageBoxName, "Left", value, ex)
+                        Control.RepottyPropertyError(ImageBoxName, "Left", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -98,7 +98,7 @@ Namespace WinForms
                     Try
                         GetTop = Wpf.Canvas.GetTop(GetImageBox(ImageBoxName))
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ImageBoxName, "Top", ex)
+                        Control.ReportError(ImageBoxName, "Top", ex)
                     End Try
                 End Sub)
         End Function
@@ -110,7 +110,7 @@ Namespace WinForms
                     Try
                         Wpf.Canvas.SetTop(GetImageBox(ImageBoxName), value)
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(ImageBoxName, "Top", value, ex)
+                        Control.RepottyPropertyError(ImageBoxName, "Top", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -126,7 +126,7 @@ Namespace WinForms
                     Try
                         GetWidth = GetImageBox(ImageBoxName).ActualWidth
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ImageBoxName, "Width", ex)
+                        Control.ReportError(ImageBoxName, "Width", ex)
                     End Try
                 End Sub)
         End Function
@@ -138,7 +138,7 @@ Namespace WinForms
                     Try
                         GetImageBox(ImageBoxName).Width = value
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(ImageBoxName, "Width", value, ex)
+                        Control.RepottyPropertyError(ImageBoxName, "Width", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -154,7 +154,7 @@ Namespace WinForms
                     Try
                         GetHeight = GetImageBox(ImageBoxName).ActualHeight
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(ImageBoxName, "Height", ex)
+                        Control.ReportError(ImageBoxName, "Height", ex)
                     End Try
                 End Sub)
         End Function
@@ -166,7 +166,7 @@ Namespace WinForms
                     Try
                         GetImageBox(ImageBoxName).Height = value
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(ImageBoxName, "Height", value, ex)
+                        Control.RepottyPropertyError(ImageBoxName, "Height", value, ex)
                     End Try
                 End Sub)
         End Sub

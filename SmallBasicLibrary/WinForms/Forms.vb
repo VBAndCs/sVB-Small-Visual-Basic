@@ -95,12 +95,10 @@ Namespace WinForms
                             AddHandler wnd.Closed, AddressOf Form_Closed
 
                             _forms(form_Name) = wnd
-                            _controls(form_Name & "." & form_Name) = wnd
 
                             ' Add control names:
                             Dim controls = canvas.GetChildren().ToList()
-                            For n = controls.Count - 1 To 0 Step -1
-                                Dim ui = controls(n)
+                            For Each ui In controls
                                 Dim fw = TryCast(ui, FrameworkElement)
                                 Dim controlName = Automation.AutomationProperties.GetName(ui)
 
@@ -297,7 +295,7 @@ Namespace WinForms
                           End If
 
                       Catch ex As Exception
-                          Form.ShowSubError(formName, "ShowForm", ex)
+                          Form.ReportSubError(formName, "ShowForm", ex)
                       End Try
                   End Sub)
 
@@ -325,7 +323,7 @@ Namespace WinForms
                             ShowDialog = Form.ShowDialog(formName)
                         End If
                     Catch ex As Exception
-                        Form.ShowSubError(formName, "ShowForm", ex)
+                        Form.ReportSubError(formName, "ShowForm", ex)
                     End Try
                 End Sub)
         End Function

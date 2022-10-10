@@ -6,33 +6,35 @@ Namespace Microsoft.SmallVisualBasic.Shell
     Public Class CommandChunk
         Implements INotifyPropertyChanged
 
-        Private nameField As String
-        Private commandGroupsField As CommandGroupCollection = New CommandGroupCollection()
-        Private maxSizeField As Double = Double.MaxValue
+        Private _name As String
+        Private _commandGroups As CommandGroupCollection = New CommandGroupCollection()
+        Private _maxSize As Double = Double.MaxValue
 
         Public Property Name As String
             Get
-                Return nameField
+                Return _name
             End Get
+
             Set(value As String)
-                nameField = value
+                _name = value
                 Notify("Name")
             End Set
         End Property
 
         Public Property MaxSize As Double
             Get
-                Return maxSizeField
+                Return _maxSize
             End Get
+
             Set(value As Double)
-                maxSizeField = value
+                _maxSize = value
                 Notify("MaxSize")
             End Set
         End Property
 
         Public ReadOnly Property CommandGroups As CommandGroupCollection
             Get
-                Return commandGroupsField
+                Return _commandGroups
             End Get
         End Property
 

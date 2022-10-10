@@ -27,7 +27,7 @@ Namespace WinForms
                     Try
                         GetText = GetButton(buttonName).Content.ToString()
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(buttonName, "Text", ex)
+                        Control.ReportError(buttonName, "Text", ex)
                     End Try
                 End Sub)
         End Function
@@ -39,7 +39,7 @@ Namespace WinForms
                     Try
                         GetButton(buttonName).Content = CStr(value)
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(buttonName, "Text", value, ex)
+                        Control.RepottyPropertyError(buttonName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub

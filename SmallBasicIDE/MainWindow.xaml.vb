@@ -175,8 +175,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Public ReadOnly Property ActiveDocument As TextDocument
             Get
-                Dim selectedItem = Me.viewsControl.SelectedItem
-
+                Dim selectedItem = viewsControl.SelectedItem
                 If selectedItem IsNot Nothing Then
                     Return selectedItem.Document
                 Else
@@ -277,10 +276,10 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub OnCloseItem(sender As Object, e As RequestCloseEventArgs)
             Dim mdiView = TryCast(e.Item, MdiView)
-            DoCloseDoc(mdiView)
+            CloseView(mdiView)
         End Sub
 
-        Sub DoCloseDoc(mdiView As MdiView)
+        Public Sub CloseView(mdiView As MdiView)
             If mdiView IsNot Nothing AndAlso CloseDocument(mdiView.Document) Then
                 mdiView.Document.Close()
                 mdiViews.Remove(mdiView)
@@ -522,7 +521,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim doc = ActiveDocument
             If doc IsNot Nothing Then
                 If doc.IsNew AndAlso Not doc.IsDirty Then
-                    DoCloseDoc(doc.MdiView)
+                    CloseView(doc.MdiView)
                 End If
 
                 If Path.GetFileNameWithoutExtension(filePath).ToLower() = "global" OrElse
@@ -666,7 +665,7 @@ Namespace Microsoft.SmallVisualBasic
             Format(doc)
 
             Dim filePath = doc.File
-            Dim inputDir = Path.GetDirectoryName(filePath)
+            Dim inputDir = If(filePath = "", "", Path.GetDirectoryName(filePath))
             Dim outputFileName = sVB.GetOutputFileName(
                 filePath,
                 doc.Form = "" AndAlso Not doc.IsTheGlobalFile
@@ -1347,6 +1346,7 @@ Namespace Microsoft.SmallVisualBasic
             If OpeningDoc Then Return
 
             Dim currentView = viewsControl.SelectedItem
+            CmbOpenedDocs.SelectedItem = currentView
             If currentView Is Nothing Then Return
 
             Dim doc = currentView.Document
@@ -1389,7 +1389,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub CloseButton_Click(sender As Object, e As RoutedEventArgs)
             If tabCode.IsSelected Then
-                If ActiveDocument IsNot Nothing Then DoCloseDoc(ActiveDocument.MdiView)
+                If ActiveDocument IsNot Nothing Then CloseView(ActiveDocument.MdiView)
             Else
                 DiagramHelper.Designer.ClosePage()
             End If
@@ -1578,7 +1578,7 @@ Namespace Microsoft.SmallVisualBasic
                         doc = New TextDocument(Nothing)
                         Dim mdiView As New MdiView() With {.Document = doc}
                         mdiViews.Add(mdiView)
-                        DoCloseDoc(mdiView)
+                        CloseView(mdiView)
                     End Sub)
                 selectDesigner.After(10)
             End If
@@ -1654,6 +1654,26 @@ Namespace Microsoft.SmallVisualBasic
                 RunProgram()
                 e.Handled = True
             End If
+        End Sub
+
+        Private Sub CmbOpenedDocs_GotFocus(sender As Object, e As RoutedEventArgs)
+            CmbOpenedDocs.IsDropDownOpen = True
+        End Sub
+
+        Private Sub CmbOpenedDocs_GotFocus(sender As Object, e As MouseButtonEventArgs)
+
+        End Sub
+
+        Private Sub CmbOpenedDocs_PreviewMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs)
+            If e.OriginalSource.GetType().Name = "TextBoxView" Then
+                CmbOpenedDocs.IsDropDownOpen = True
+                e.Handled = True
+            End If
+        End Sub
+
+        Private Sub CmbOpenedDocs_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
+            Dim view = CType(CmbOpenedDocs.SelectedItem, MdiView)
+            view?.Document.Focus()
         End Sub
     End Class
 

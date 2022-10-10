@@ -6,21 +6,22 @@ Namespace Microsoft.SmallVisualBasic.Shell
     Public Class RibbonTab
         Implements INotifyPropertyChanged
 
-        Private nameField As String
-        Private commandChunksField As CommandChunkCollection = New CommandChunkCollection()
+        Private _name As String
+        Private _commandChunks As New CommandChunkCollection()
 
         Public ReadOnly Property CommandChunks As CommandChunkCollection
             Get
-                Return commandChunksField
+                Return _commandChunks
             End Get
         End Property
 
         Public Property Name As String
             Get
-                Return nameField
+                Return _name
             End Get
+
             Set(value As String)
-                nameField = value
+                _name = value
                 Notify("Name")
             End Set
         End Property

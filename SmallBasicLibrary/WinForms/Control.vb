@@ -12,53 +12,53 @@ Namespace WinForms
     <HideFromIntellisense>
     Public NotInheritable Class Control
 
-        Shared Sub ShowSubError(key As String, memberName As String, ex As Exception)
+        Shared Sub ReportSubError(key As String, memberName As String, ex As Exception)
             If Not key.Contains(".") Then
                 key &= "." & key
             End If
             Dim names = key.Split(".")
-            ShowSubError(names(0), names(1), ex)
+            ReportSubError(names(0), names(1), memberName, ex)
         End Sub
 
-        Shared Sub ShowSubError(formName As String, controlName As String, memberName As String, ex As Exception)
+        Shared Sub ReportSubError(formName As String, controlName As String, memberName As String, ex As Exception)
             Dim msg = ex.Message
             If controlName.ToLower() = formName.ToLower Then
-                ReportError($"Calling {formName}.{memberName} caused an error: {vbCrLf}{msg}", ex)
+                Helper.ReportError($"Calling {formName}.{memberName} caused an error: {vbCrLf}{msg}", ex)
             Else
-                ReportError($"Calling {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{msg}", ex)
+                Helper.ReportError($"Calling {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{msg}", ex)
             End If
         End Sub
 
-        Shared Sub ShowErrorMesssage(key As String, memberName As String, ex As Exception)
+        Shared Sub ReportError(key As String, memberName As String, ex As Exception)
             If Not key.Contains(".") Then
                 key &= "." & key
             End If
             Dim names = key.Split(".")
-            ShowErrorMesssage(names(0), names(1), memberName, ex)
+            ReportError(names(0), names(1), memberName, ex)
         End Sub
 
-        Shared Sub ShowErrorMesssage(formName As String, controlName As String, memberName As String, ex As Exception)
+        Shared Sub ReportError(formName As String, controlName As String, memberName As String, ex As Exception)
             If controlName.ToLower() = formName.ToLower Then
-                ReportError($"Reading {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
+                Helper.ReportError($"Reading {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             Else
-                ReportError($"Reading {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
+                Helper.ReportError($"Reading {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             End If
         End Sub
 
-        Shared Sub ShowPropertyMesssage(key As String, memberName As String, value As String, ex As Exception)
+        Shared Sub RepottyPropertyError(key As String, memberName As String, value As String, ex As Exception)
             If Not key.Contains(".") Then
                 key &= "." & key
             End If
             Dim names = key.Split(".")
-            ShowPropertyMesssage(names(0), names(1), memberName, value, ex)
+            RepottyPropertyError(names(0), names(1), memberName, value, ex)
         End Sub
 
 
-        Shared Sub ShowPropertyMesssage(formName As String, controlName As String, memberName As String, value As String, ex As Exception)
+        Shared Sub RepottyPropertyError(formName As String, controlName As String, memberName As String, value As String, ex As Exception)
             If controlName.ToLower() = formName.ToLower Then
-                ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
+                Helper.ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             Else
-                ReportError($"Sending `{value}` to {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
+                Helper.ReportError($"Sending `{value}` to {formName}.{controlName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             End If
         End Sub
 
@@ -75,7 +75,7 @@ Namespace WinForms
                     Try
                         GetName = GetControl(controlName).Name
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Name", ex)
+                        ReportError(controlName, "Name", ex)
                     End Try
                 End Sub)
         End Function
@@ -91,7 +91,7 @@ Namespace WinForms
                     Try
                         GetTag = GetControl(controlName).Tag.ToString()
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Tag", ex)
+                        ReportError(controlName, "Tag", ex)
                     End Try
                 End Sub)
         End Function
@@ -103,7 +103,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).Tag = value.AsString()
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "Tag", value, ex)
+                        RepottyPropertyError(controlName, "Tag", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -120,7 +120,7 @@ Namespace WinForms
                     Try
                         GetLeft = Wpf.Canvas.GetLeft(GetControl(controlName))
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Left", ex)
+                        ReportError(controlName, "Left", ex)
                     End Try
                 End Sub)
         End Function
@@ -135,7 +135,7 @@ Namespace WinForms
                         obj.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
                         Wpf.Canvas.SetLeft(obj, CDbl(value))
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "Left", value, ex)
+                        RepottyPropertyError(controlName, "Left", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -151,7 +151,7 @@ Namespace WinForms
                     Try
                         GetTop = Wpf.Canvas.GetTop(GetControl(controlName))
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Top", ex)
+                        ReportError(controlName, "Top", ex)
                     End Try
                 End Sub)
         End Function
@@ -166,7 +166,7 @@ Namespace WinForms
                         obj.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
                         Wpf.Canvas.SetTop(obj, value)
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "Top", value, ex)
+                        RepottyPropertyError(controlName, "Top", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -187,7 +187,7 @@ Namespace WinForms
                             GetWidth = obj.ActualWidth
                         End If
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Width", ex)
+                        ReportError(controlName, "Width", ex)
                     End Try
                 End Sub)
         End Function
@@ -208,7 +208,7 @@ Namespace WinForms
                             obj.Width = value
                         End If
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "Width", value, ex)
+                        RepottyPropertyError(controlName, "Width", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -229,7 +229,7 @@ Namespace WinForms
                             GetHeight = obj.ActualHeight
                         End If
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Height", ex)
+                        ReportError(controlName, "Height", ex)
                     End Try
                 End Sub)
         End Function
@@ -250,7 +250,7 @@ Namespace WinForms
                             obj.Height = value
                         End If
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "Height", value, ex)
+                        RepottyPropertyError(controlName, "Height", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -267,7 +267,7 @@ Namespace WinForms
                     Try
                         GetEnabled = GetControl(controlName).IsEnabled
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Ebabled", ex)
+                        ReportError(controlName, "Ebabled", ex)
                     End Try
                 End Sub)
         End Function
@@ -279,7 +279,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).IsEnabled = value
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "Enabled", value, ex)
+                        RepottyPropertyError(controlName, "Enabled", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -296,7 +296,7 @@ Namespace WinForms
                     Try
                         GetVisible = GetControl(controlName).IsVisible
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Visible", ex)
+                        ReportError(controlName, "Visible", ex)
                     End Try
                 End Sub)
         End Function
@@ -308,7 +308,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden)
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "Visible", value, ex)
+                        RepottyPropertyError(controlName, "Visible", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -325,7 +325,7 @@ Namespace WinForms
                     Try
                         GetRightToLeft = (GetControl(controlName).FlowDirection = FlowDirection.RightToLeft)
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "RightToLeft", ex)
+                        ReportError(controlName, "RightToLeft", ex)
                     End Try
                 End Sub)
         End Function
@@ -336,7 +336,7 @@ Namespace WinForms
                        Try
                            GetControl(controlName).FlowDirection = If(CBool(Value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
                        Catch ex As Exception
-                           ShowPropertyMesssage(controlName, "RightToLeft", Value, ex)
+                           RepottyPropertyError(controlName, "RightToLeft", Value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -354,7 +354,7 @@ Namespace WinForms
                            Dim c = GetControl(controlName)
                            GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X)
                        Catch ex As Exception
-                           ShowErrorMesssage(controlName, "MouseX", ex)
+                           ReportError(controlName, "MouseX", ex)
                        End Try
                    End Sub)
         End Function
@@ -371,7 +371,7 @@ Namespace WinForms
                             Dim c = GetControl(controlName)
                             GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y)
                         Catch ex As Exception
-                            ShowErrorMesssage(controlName, "MouseY", ex)
+                            ReportError(controlName, "MouseY", ex)
                         End Try
                     End Sub)
         End Function
@@ -387,7 +387,7 @@ Namespace WinForms
                          Dim c = GetControl(controlName)
                          c.Focus()
                      Catch ex As Exception
-                         ShowSubError(controlName, "Focus", ex)
+                         ReportSubError(controlName, "Focus", ex)
                      End Try
                  End Sub)
         End Sub
@@ -418,7 +418,7 @@ Namespace WinForms
                         Dim c = GetControl(controlName)
                         GetError = New Primitive(c.GetValue(ErrorProperty))
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Error", ex)
+                        ReportError(controlName, "Error", ex)
                     End Try
                 End Sub)
         End Function
@@ -444,7 +444,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "Error", value, ex)
+                        RepottyPropertyError(controlName, "Error", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -461,7 +461,7 @@ Namespace WinForms
                         Dim c = GetControl(controlName)
                         GetToolTip = c.GetValue(TipProperty)
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "ToolTip", ex)
+                        ReportError(controlName, "ToolTip", ex)
                     End Try
                 End Sub)
         End Function
@@ -477,11 +477,39 @@ Namespace WinForms
                         c.ToolTip = tip
 
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "ToolTip", value, ex)
+                        RepottyPropertyError(controlName, "ToolTip", value, ex)
                     End Try
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Raises the OnLostFocus event to apply any validation logic supplied by you in the OnLostFocuse handler, then checks the Error property to see if the control has errors or not.
+        ''' </summary>
+        ''' <returns>True if the current control has no errors, or False otherwise.</returns>
+        <ExMethod>
+        <ReturnValueType(VariableType.Boolean)>
+        Public Shared Function Validate(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+
+                        ' The controle may not be validated, so, force it to validate
+                        If CStr(c.GetValue(ErrorProperty)) = "" Then
+                            c.RaiseEvent(New RoutedEventArgs(UIElement.LostFocusEvent))
+                        End If
+
+                        ' Now check if the control has errors
+                        If CStr(c.GetValue(ErrorProperty)) = "" Then
+                            Validate = New Primitive(True)
+                        Else
+                            Validate = New Primitive(False)
+                        End If
+                    Catch ex As Exception
+                        ReportSubError(controlName, "Validate", ex)
+                    End Try
+                End Sub)
+        End Function
 
 #Region "Color and font"
 
@@ -525,7 +553,7 @@ Namespace WinForms
                          Dim c = GetControl(controlName)
                          GetBackColor = GetBackColor(c).ToString()
                      Catch ex As Exception
-                         ShowErrorMesssage(controlName, "BackColor", ex)
+                         ReportError(controlName, "BackColor", ex)
                      End Try
                  End Sub)
         End Function
@@ -568,7 +596,7 @@ Namespace WinForms
                         obj.BeginAnimation(BackColorProperty, Nothing)
                         obj.SetValue(BackColorProperty, _color)
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "BackColor", value, ex)
+                        RepottyPropertyError(controlName, "BackColor", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -596,7 +624,7 @@ Namespace WinForms
                               GetForeColor = CStr(c.GetValue(ForeColorProperty))
                           End If
                       Catch ex As Exception
-                          ShowErrorMesssage(controlName, "ForeColor", ex)
+                          ReportError(controlName, "ForeColor", ex)
                       End Try
                   End Sub)
         End Function
@@ -611,7 +639,7 @@ Namespace WinForms
                            c.Foreground = New SolidColorBrush(_color)
                            c.SetValue(ForeColorProperty, value.ToString())
                        Catch ex As Exception
-                           ShowPropertyMesssage(controlName, "ForeColor", value, ex)
+                           RepottyPropertyError(controlName, "ForeColor", value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -629,7 +657,7 @@ Namespace WinForms
                         Dim _fontFamily = GetControl(controlName).FontFamily
                         GetFontName = If((_fontFamily IsNot Nothing), _fontFamily.Source, "Tahoma")
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "FontName", ex)
+                        ReportError(controlName, "FontName", ex)
                     End Try
                 End Sub)
         End Function
@@ -640,7 +668,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).FontFamily = New Media.FontFamily(Value)
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "FontName", Value, ex)
+                        RepottyPropertyError(controlName, "FontName", Value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -657,7 +685,7 @@ Namespace WinForms
                     Try
                         GetFontSize = GetControl(controlName).FontSize
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "FontSize", ex)
+                        ReportError(controlName, "FontSize", ex)
                     End Try
                 End Sub)
         End Function
@@ -668,7 +696,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).FontSize = Value
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "FontSize", Value, ex)
+                        RepottyPropertyError(controlName, "FontSize", Value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -685,7 +713,7 @@ Namespace WinForms
                     Try
                         GetFontBold = (GetControl(controlName).FontWeight = FontWeights.Bold)
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "FontBold", ex)
+                        ReportError(controlName, "FontBold", ex)
                     End Try
                 End Sub)
         End Function
@@ -696,7 +724,7 @@ Namespace WinForms
                        Try
                            GetControl(controlName).FontWeight = If(CBool(Value), FontWeights.Bold, FontWeights.Normal)
                        Catch ex As Exception
-                           ShowPropertyMesssage(controlName, "FontBold", Value, ex)
+                           RepottyPropertyError(controlName, "FontBold", Value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -713,7 +741,7 @@ Namespace WinForms
                     Try
                         GetFontItalic = (GetControl(controlName).FontStyle = FontStyles.Italic)
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "FontItalic", ex)
+                        ReportError(controlName, "FontItalic", ex)
                     End Try
                 End Sub)
         End Function
@@ -724,7 +752,7 @@ Namespace WinForms
                        Try
                            GetControl(controlName).FontStyle = If(CBool(Value), FontStyles.Italic, FontStyles.Normal)
                        Catch ex As Exception
-                           ShowPropertyMesssage(controlName, "FontItalic", Value, ex)
+                           RepottyPropertyError(controlName, "FontItalic", Value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -744,7 +772,7 @@ Namespace WinForms
                     Try
                         GetAngle = GetAngle(GetControl(controlName))
                     Catch ex As Exception
-                        ShowErrorMesssage(controlName, "Angle", ex)
+                        ReportError(controlName, "Angle", ex)
                     End Try
                 End Sub)
         End Function
@@ -765,7 +793,7 @@ Namespace WinForms
                     Try
                         SetAngle(GetControl(controlName), value)
                     Catch ex As Exception
-                        ShowPropertyMesssage(controlName, "Angle", value, ex)
+                        RepottyPropertyError(controlName, "Angle", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -820,7 +848,7 @@ Namespace WinForms
                 Dim obj = GetControl(controlName)
                 App.BeginInvoke(Sub() SetAngle(obj, GetAngle(obj) + CDbl(angle)))
             Catch ex As Exception
-                ShowSubError(controlName, "Rotate", ex)
+                ReportSubError(controlName, "Rotate", ex)
             End Try
         End Sub
 
@@ -852,7 +880,7 @@ Namespace WinForms
                         obj.BeginAnimation(BackColorProperty, animation)
                     End Sub)
             Catch ex As Exception
-                ShowSubError(controlName, "AnimateColor", ex)
+                ReportSubError(controlName, "AnimateColor", ex)
             End Try
         End Sub
 
@@ -872,7 +900,7 @@ Namespace WinForms
                 c = Color.ChangeTransparency(c, transparency)
                 AnimateColor(controlName, c, duration)
             Catch ex As Exception
-                ShowSubError(controlName, "AnimateColor", ex)
+                ReportSubError(controlName, "AnimateColor", ex)
             End Try
         End Sub
 
@@ -899,7 +927,7 @@ Namespace WinForms
                         GraphicsWindow.DoubleAnimateProperty(obj, Wpf.Canvas.TopProperty, y, CDbl(duration))
                     End Sub)
             Catch ex As Exception
-                ShowSubError(controlName, "AnimatePos", ex)
+                ReportSubError(controlName, "AnimatePos", ex)
             End Try
         End Sub
 
@@ -926,7 +954,7 @@ Namespace WinForms
                         GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.HeightProperty, height, duration)
                     End Sub)
             Catch ex As Exception
-                ShowSubError(controlName, "AnimateSize", ex)
+                ReportSubError(controlName, "AnimateSize", ex)
             End Try
         End Sub
 
@@ -948,7 +976,7 @@ Namespace WinForms
                         GraphicsWindow.DoubleAnimateProperty(obj, AngleProperty, CDbl(angle), CDbl(duration))
                     End Sub)
             Catch ex As Exception
-                ShowSubError(controlName, "AnimateAngle", ex)
+                ReportSubError(controlName, "AnimateAngle", ex)
             End Try
         End Sub
 
@@ -961,21 +989,21 @@ Namespace WinForms
             [Event].SenderControl = ControlName
         End Sub
 
-        Shared Function GetVisualElemet(eventNmae As String, Optional getForm As Boolean = False) As FrameworkElement
+        Shared Function GetSender(eventNmae As String, Optional getForm As Boolean = False) As FrameworkElement
             Try
-                Dim VisualElement = CType(GetControl([Event].SenderControl), FrameworkElement)
-                If TypeOf VisualElement Is Window AndAlso Not getForm Then
+                Dim _sender = CType(GetControl([Event].SenderControl), FrameworkElement)
+                If TypeOf _sender Is Window AndAlso Not getForm Then
                     App.Invoke(
                            Sub()
-                               Dim win = CType(VisualElement, Window)
+                               Dim win = CType(_sender, Window)
                                Dim canvas = CType(win.Content, Wpf.Canvas)
                                If canvas.Background IsNot Nothing OrElse win.AllowsTransparency Then
                                    ' Use the camvas events instead of the form, because form events will not fire if the form is transperent or if the canvas has a non-transparent back color
-                                   VisualElement = canvas
+                                   _sender = canvas
                                End If
                            End Sub)
                 End If
-                Return VisualElement
+                Return _sender
 
             Catch ex As Exception
                 [Event].ShowErrorMessage(eventNmae, ex)
@@ -990,8 +1018,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseLeftDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseLeftDown))
-                AddHandler VisualElement.PreviewMouseLeftButtonDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnMouseLeftDown))
+                AddHandler _sender.PreviewMouseLeftButtonDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1006,8 +1034,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnClick As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnClick))
-                AddHandler VisualElement.PreviewMouseLeftButtonUp,
+                Dim _sender = GetSender(NameOf(OnClick))
+                AddHandler _sender.PreviewMouseLeftButtonUp,
                     Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
@@ -1023,8 +1051,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseLeftUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseLeftUp))
-                AddHandler VisualElement.PreviewMouseLeftButtonUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnMouseLeftUp))
+                AddHandler _sender.PreviewMouseLeftButtonUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1039,16 +1067,16 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnDoubleClick As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnDoubleClick))
+                Dim _sender = GetSender(NameOf(OnDoubleClick))
 
-                If TypeOf VisualElement Is Wpf.Canvas Then
-                    AddHandler VisualElement.MouseLeftButtonDown,
+                If TypeOf _sender Is Wpf.Canvas Then
+                    AddHandler _sender.MouseLeftButtonDown,
                         Sub(Sender As Object, e As Input.MouseButtonEventArgs)
                             If e.ClickCount > 1 Then [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                         End Sub
 
                 Else
-                    AddHandler VisualElement.PreviewMouseLeftButtonDown,
+                    AddHandler _sender.PreviewMouseLeftButtonDown,
                          Sub(Sender As Object, e As Input.MouseButtonEventArgs)
                              If e.ClickCount > 1 Then [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                          End Sub
@@ -1068,8 +1096,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseRightDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseRightDown))
-                AddHandler VisualElement.PreviewMouseRightButtonDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnMouseRightDown))
+                AddHandler _sender.PreviewMouseRightButtonDown, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1084,8 +1112,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseRightUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseRightUp))
-                AddHandler VisualElement.PreviewMouseRightButtonUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnMouseRightUp))
+                AddHandler _sender.PreviewMouseRightButtonUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1100,8 +1128,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseMove As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseMove))
-                AddHandler VisualElement.PreviewMouseMove, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnMouseMove))
+                AddHandler _sender.PreviewMouseMove, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1116,8 +1144,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseWheel As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseWheel))
-                AddHandler VisualElement.PreviewMouseWheel, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnMouseWheel))
+                AddHandler _sender.PreviewMouseWheel, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1132,8 +1160,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseEnter As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseEnter))
-                AddHandler VisualElement.MouseEnter, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnMouseEnter))
+                AddHandler _sender.MouseEnter, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1148,8 +1176,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnMouseLeave As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseLeave))
-                AddHandler VisualElement.MouseLeave, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnMouseLeave))
+                AddHandler _sender.MouseLeave, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1164,14 +1192,14 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnKeyDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnKeyDown), True)
-                If TypeOf VisualElement Is Window OrElse TypeOf VisualElement Is Wpf.Canvas Then
+                Dim _sender = GetSender(NameOf(OnKeyDown), True)
+                If TypeOf _sender Is Window OrElse TypeOf _sender Is Wpf.Canvas Then
                     ' The form should not preview keys, to let controls handle them
-                    AddHandler VisualElement.KeyDown,
+                    AddHandler _sender.KeyDown,
                         Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Else
                     ' Preview keydown can habdle space and other keys im TextBox
-                    AddHandler VisualElement.PreviewKeyDown,
+                    AddHandler _sender.PreviewKeyDown,
                         Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 End If
             End AddHandler
@@ -1188,8 +1216,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnPreviewKeyDown As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnPreviewKeyDown), True)
-                AddHandler VisualElement.PreviewKeyDown,
+                Dim _sender = GetSender(NameOf(OnPreviewKeyDown), True)
+                AddHandler _sender.PreviewKeyDown,
                     Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler, True)
             End AddHandler
 
@@ -1205,11 +1233,11 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnKeyUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnKeyUp), True)
-                If TypeOf VisualElement Is Window OrElse TypeOf VisualElement Is Wpf.Canvas Then
-                    AddHandler VisualElement.KeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnKeyUp), True)
+                If TypeOf _sender Is Window OrElse TypeOf _sender Is Wpf.Canvas Then
+                    AddHandler _sender.KeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Else
-                    AddHandler VisualElement.PreviewKeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    AddHandler _sender.PreviewKeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 End If
             End AddHandler
 
@@ -1225,8 +1253,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnPreviewKeyUp As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnPreviewKeyUp), True)
-                AddHandler VisualElement.PreviewKeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler, True)
+                Dim _sender = GetSender(NameOf(OnPreviewKeyUp), True)
+                AddHandler _sender.PreviewKeyUp, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler, True)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1241,8 +1269,8 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnGotFocus As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseEnter))
-                AddHandler VisualElement.GotFocus, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Dim _sender = GetSender(NameOf(OnGotFocus))
+                AddHandler _sender.GotFocus, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)
@@ -1257,15 +1285,17 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnLostFocus As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
-                Dim VisualElement = GetVisualElemet(NameOf(OnMouseEnter))
-                AddHandler VisualElement.LostFocus,
+                Dim _sender = GetSender(NameOf(OnLostFocus))
+                Dim name = [Event].SenderControl.AsString().ToLower()
+                AddHandler _sender.LostFocus,
                     Sub(Sender As Object, e As RoutedEventArgs)
                         [Event].EventsHandler(
-                             CType(Sender, FrameworkElement),
-                             e,
-                             handler
+                                CType(Sender, FrameworkElement),
+                                e,
+                                handler
                         )
                     End Sub
+
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)

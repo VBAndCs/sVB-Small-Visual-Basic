@@ -1,4 +1,4 @@
-
+ComboBox1.AddItem({1, 2, 3})
 
 '------------------------------------------------
 Sub TextBox1_OnLostFocus()
@@ -12,24 +12,37 @@ EndSub
 
 '------------------------------------------------
 Sub TextBox2_OnLostFocus()
-   If Text.IsNumeric(TextBox2.Text) = False Then
+   n = TextBox2.Text
+   If Text.IsNumeric(n) = False Then
       TextBox2.Error = "I accept digits only!"
+   ElseIf n < 0 Then
+      TextBox2.Error = "I don't accept negative numbers!"
    Else
       TextBox2.Error = ""
    EndIf
 EndSub
 
+'------------------------------------------------
+Sub ComboBox1_OnLostFocus()
+   If ComboBox1.SelectedIndex = 0 Then
+      ComboBox1.Error = "Please choose a number from the list"
+   Else
+      ComboBox1.Error = ""
+   EndIf
+EndSub
+
+
+'------------------------------------------------
+Sub ComboBox1_OnSelection()
+   ComboBox1_OnLostFocus() ' to validate
+EndSub
 
 '------------------------------------------------
 Sub Button1_OnClick()
-   If TextBox1.Error <> "" Then
-      Sound.PlayBellRing()
-      TextBox1.Focus()
-   ElseIf TextBox2.Error <> "" Then
-      Sound.PlayBellRing()
-      TextBox2.Focus()
-   Else
+   If Me.Validate() Then
       Me.ShowMessage("OK", "")
    EndIf
    
 EndSub
+
+

@@ -86,19 +86,36 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Get
         End Property
 
-        Private Function GetGlobalParser() As Parser
-            If _document Is Nothing Then
-                _document = textBuffer.Properties.GetProperty("Document")
-            End If
+        Public Property GlobalModuleHasChanged As Boolean
+            Get
+                If _document Is Nothing Then
+                    _document = textBuffer.Properties.GetProperty("Document")
+                End If
+                Return _document.GlobalModuleHasChanged
+            End Get
 
-            Dim parsers As List(Of Parser) = _document.CompileGlobalModule()
-            If parsers Is Nothing OrElse parsers.Count = 0 Then
-                Return Nothing
-            Else
-                Return parsers(0)
-            End If
-        End Function
+            Set(value As Boolean)
+                If _document Is Nothing Then
+                    _document = textBuffer.Properties.GetProperty("Document")
+                End If
+                _document.GlobalModuleHasChanged = value
+            End Set
+        End Property
 
+        Private ReadOnly Property GlobalParser As Parser
+            Get
+                If _document Is Nothing Then
+                    _document = textBuffer.Properties.GetProperty("Document")
+                End If
+
+                Dim parsers As List(Of Parser) = _document.CompileGlobalModule()
+                If parsers Is Nothing OrElse parsers.Count = 0 Then
+                    Return Nothing
+                Else
+                    Return parsers(0)
+                End If
+            End Get
+        End Property
 
         Public Sub CommitItem(itemWrapper As CompletionItemWrapper)
             Dim item = itemWrapper.CompletionItem
@@ -806,7 +823,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 GlobalModuleHasChanged = False
             End If
 
-            Dim gp = GetGlobalParser()
+            Dim gp = GlobalParser
             If needsToReCompile Then
                 compHelper.Compile(
                     source, controlNames,
@@ -1123,7 +1140,7 @@ LineElse:
                             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
                             Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
                             Dim source = New TextBufferReader(line.TextSnapshot)
-                            Dim gp = GetGlobalParser()
+                            Dim gp = GlobalParser
                             Dim symbolTable = compHelper.Compile(
                                 source, controlNames, controlsInfo, gp
                             ).Parser.SymbolTable
@@ -1149,7 +1166,7 @@ LineElse:
                 bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
             Else
                 Dim typeInfo As TypeInfo = Nothing
-                bag = compHelper.GetEmptyCompletionBag(GetGlobalParser())
+                bag = compHelper.GetEmptyCompletionBag(GlobalParser)
                 If bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
                     CompletionHelper.FillMemberNames(bag, typeInfo, "")
                     bag.CompletionItems.Sort(

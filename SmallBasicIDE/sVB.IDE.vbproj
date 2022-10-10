@@ -77,6 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Documents\OpenedDocsExplorer.vb" />
     <Compile Include="sVB.vb" />
     <Compile Include="Common\GetCurrentVersionCompletedEventArgs.vb" />
     <Compile Include="Common\GetCurrentVersionCompletedEventHandler.vb" />

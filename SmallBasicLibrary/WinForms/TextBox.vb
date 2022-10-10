@@ -28,7 +28,7 @@ Namespace WinForms
                     Try
                         GetText = GetTextBox(textBoxName).Text
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(textBoxName, "Text", ex)
+                        Control.ReportError(textBoxName, "Text", ex)
                     End Try
                 End Sub)
         End Function
@@ -43,7 +43,7 @@ Namespace WinForms
                         t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                         t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(textBoxName, "Text", value, ex)
+                        Control.RepottyPropertyError(textBoxName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -59,7 +59,7 @@ Namespace WinForms
                     Try
                         GetSelectionStart = GetTextBox(textBoxName).SelectionStart + 1
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(textBoxName, "SelectionStart", ex)
+                        Control.ReportError(textBoxName, "SelectionStart", ex)
                     End Try
                 End Sub)
         End Function
@@ -71,7 +71,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).SelectionStart = value - 1
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(textBoxName, "SelectionStart", value, ex)
+                        Control.RepottyPropertyError(textBoxName, "SelectionStart", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -87,7 +87,7 @@ Namespace WinForms
                     Try
                         GetSelectionLength = GetTextBox(textBoxName).SelectionLength
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(textBoxName, "SelectionLength", ex)
+                        Control.ReportError(textBoxName, "SelectionLength", ex)
                     End Try
                 End Sub)
         End Function
@@ -99,7 +99,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).SelectionLength = value
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(textBoxName, "SelectionLength", value, ex)
+                        Control.RepottyPropertyError(textBoxName, "SelectionLength", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -115,7 +115,7 @@ Namespace WinForms
                     Try
                         GetSelectedText = GetTextBox(textBoxName).SelectedText
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(textBoxName, "SelectedText", ex)
+                        Control.ReportError(textBoxName, "SelectedText", ex)
                     End Try
                 End Sub)
         End Function
@@ -130,7 +130,7 @@ Namespace WinForms
                         t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                         t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(textBoxName, "SelectedText", value, ex)
+                        Control.RepottyPropertyError(textBoxName, "SelectedText", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -146,7 +146,7 @@ Namespace WinForms
                     Try
                         GetCaretIndex = GetTextBox(textBoxName).CaretIndex + 1
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(textBoxName, "CaretIndex", ex)
+                        Control.ReportError(textBoxName, "CaretIndex", ex)
                     End Try
                 End Sub)
         End Function
@@ -158,7 +158,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).CaretIndex = value - 1
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(textBoxName, "CaretIndex", value, ex)
+                        Control.RepottyPropertyError(textBoxName, "CaretIndex", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -174,7 +174,7 @@ Namespace WinForms
                     Try
                         GetMuliLine = GetTextBox(textBoxName).AcceptsReturn
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(textBoxName, "MuliLine", ex)
+                        Control.ReportError(textBoxName, "MuliLine", ex)
                     End Try
                 End Sub)
         End Function
@@ -186,7 +186,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).AcceptsReturn = CBool(value)
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(textBoxName, "MuliLine", value, ex)
+                        Control.RepottyPropertyError(textBoxName, "MuliLine", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -217,7 +217,7 @@ Namespace WinForms
                         txt.Select(st, en)
 
                     Catch ex As Exception
-                        Control.ShowSubError(textBoxName, "Select", ex)
+                        Control.ReportSubError(textBoxName, "Select", ex)
                     End Try
                 End Sub)
         End Sub
@@ -232,7 +232,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).SelectAll()
                     Catch ex As Exception
-                        Control.ShowSubError(textBoxName, "SelectAll", ex)
+                        Control.ReportSubError(textBoxName, "SelectAll", ex)
                     End Try
                 End Sub)
         End Sub
@@ -252,7 +252,7 @@ Namespace WinForms
                         t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
 
                     Catch ex As Exception
-                        Control.ShowSubError(textBoxName, "Append", ex)
+                        Control.ReportSubError(textBoxName, "Append", ex)
                     End Try
                 End Sub)
         End Sub
@@ -272,7 +272,7 @@ Namespace WinForms
                         t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
 
                     Catch ex As Exception
-                        Control.ShowSubError(textBoxName, "AppendLine", ex)
+                        Control.ReportSubError(textBoxName, "AppendLine", ex)
                     End Try
                 End Sub)
         End Sub

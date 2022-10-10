@@ -30,7 +30,7 @@ Namespace WinForms
                     Try
                         GetItemsCount = GetListBox(listBoxName).Items.Count
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(listBoxName, "ItemsCount", ex)
+                        Control.ReportError(listBoxName, "ItemsCount", ex)
                     End Try
                 End Sub)
         End Function
@@ -53,7 +53,7 @@ Namespace WinForms
                         GetItems = Primitive.ConvertFromMap(map)
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(listBoxName, "ItemsCount", ex)
+                        Control.ReportError(listBoxName, "ItemsCount", ex)
                     End Try
                 End Sub)
         End Function
@@ -76,7 +76,7 @@ Namespace WinForms
                         Dim item As String = GetListBox(listBoxName).SelectedItem
                         GetSelectedItem = item
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(listBoxName, "SelectedItem", ex)
+                        Control.ReportError(listBoxName, "SelectedItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -88,7 +88,7 @@ Namespace WinForms
                     Try
                         GetListBox(listBoxName).SelectedItem = CStr(item)
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(listBoxName, "SelectedItem", item, ex)
+                        Control.ReportError(listBoxName, "SelectedItem", item, ex)
                     End Try
                 End Sub)
         End Sub
@@ -105,7 +105,7 @@ Namespace WinForms
                     Try
                         GetSelectedIndex = GetListBox(listBoxName).SelectedIndex + 1
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(listBoxName, "SelectedIndex", ex)
+                        Control.ReportError(listBoxName, "SelectedIndex", ex)
                     End Try
                 End Sub)
         End Function
@@ -132,7 +132,7 @@ Namespace WinForms
                         lst.SelectedIndex = i
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(listBoxName, "SelectedIndex", index, ex)
+                        Control.ReportError(listBoxName, "SelectedIndex", index, ex)
                     End Try
                 End Sub)
         End Sub
@@ -164,7 +164,7 @@ Namespace WinForms
                             End If
                         End If
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "GetItemAt", ex)
+                        Control.ReportSubError(listBoxName, "GetItemAt", ex)
                     End Try
                 End Sub)
         End Function
@@ -190,7 +190,7 @@ Namespace WinForms
                             lst.Items(i - 1) = value
                         End If
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "SetItemAt", ex)
+                        Control.ReportSubError(listBoxName, "SetItemAt", ex)
                     End Try
                 End Sub)
         End Sub
@@ -216,7 +216,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "AddItem", ex)
+                        Control.ReportSubError(listBoxName, "AddItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -246,7 +246,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "AddItemAt", ex)
+                        Control.ReportSubError(listBoxName, "AddItemAt", ex)
                     End Try
                 End Sub)
         End Sub
@@ -270,7 +270,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "RenoveItem", ex)
+                        Control.ReportSubError(listBoxName, "RenoveItem", ex)
                     End Try
                 End Sub)
         End Sub
@@ -285,7 +285,7 @@ Namespace WinForms
                     Try
                         GetListBox(listBoxName).Items.Clear()
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "RenoveItem", ex)
+                        Control.ReportSubError(listBoxName, "RenoveItem", ex)
                     End Try
                 End Sub)
         End Sub
@@ -313,7 +313,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "RenoveItemAt", ex)
+                        Control.ReportSubError(listBoxName, "RenoveItemAt", ex)
                     End Try
                 End Sub)
         End Sub
@@ -332,7 +332,7 @@ Namespace WinForms
                     Try
                         ContainsItem = GetListBox(listBoxName).Items.Contains(CStr(value))
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "ContainsItem", ex)
+                        Control.ReportSubError(listBoxName, "ContainsItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -350,7 +350,7 @@ Namespace WinForms
                     Try
                         FindItem = 1 + GetListBox(listBoxName).Items.IndexOf(CStr(value))
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "FindItem", ex)
+                        Control.ReportSubError(listBoxName, "FindItem", ex)
                     End Try
                 End Sub)
         End Function
@@ -388,7 +388,7 @@ Namespace WinForms
                         Next
 
                     Catch ex As Exception
-                        Control.ShowSubError(listBoxName, "FindItemAt", ex)
+                        Control.ReportSubError(listBoxName, "FindItemAt", ex)
                     End Try
                 End Sub)
         End Function

@@ -1,11 +1,9 @@
 ﻿Imports System.Windows
-Imports System.Windows.Controls
-Imports Microsoft.SmallVisualBasic.Documents
 
 Namespace Microsoft.SmallVisualBasic.Shell
     Public Class Ribbon
         Shared Sub New()
-            FrameworkElement.DefaultStyleKeyProperty.OverrideMetadata(GetType(Ribbon), New FrameworkPropertyMetadata(GetType(Ribbon)))
+            DefaultStyleKeyProperty.OverrideMetadata(GetType(Ribbon), New FrameworkPropertyMetadata(GetType(Ribbon)))
         End Sub
 
 

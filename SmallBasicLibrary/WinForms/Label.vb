@@ -28,7 +28,7 @@ Namespace WinForms
                     Try
                         GetText = GetLabel(labelName).Content.ToString()
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(labelName, "Text", ex)
+                        Control.ReportError(labelName, "Text", ex)
                     End Try
                 End Sub)
         End Function
@@ -41,7 +41,7 @@ Namespace WinForms
                         Dim strValue = CStr(value)
                         GetLabel(labelName).Content = strValue
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(labelName, "Text", value, ex)
+                        Control.RepottyPropertyError(labelName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -64,7 +64,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(labelName, "Image", ex)
+                        Control.ReportError(labelName, "Image", ex)
                     End Try
                 End Sub)
         End Function
@@ -81,7 +81,7 @@ Namespace WinForms
                         End If
                         GetLabel(labelName).Content = New Wpf.Image() With {.Source = New BitmapImage(New Uri(imageFile))}
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(labelName, "Text", imageFile, ex)
+                        Control.ReportError(labelName, "Text", imageFile, ex)
                     End Try
                 End Sub)
         End Sub

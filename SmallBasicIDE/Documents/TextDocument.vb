@@ -168,6 +168,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
         <Import>
         Public Property UndoHistoryRegistry As IUndoHistoryRegistry
 
+        Public GlobalModuleHasChanged As Boolean
+
         Public Sub New(filePath As String)
             MyBase.New(filePath)
             saveMarker = New UndoTransactionMarker()
@@ -598,7 +600,11 @@ Namespace Microsoft.SmallVisualBasic.Documents
             needsToFormat = True
             LastModified = Now
             IsDirty = True
-            If IsTheGlobalFile Then GlobalModuleHasChanged = True
+            If IsTheGlobalFile Then
+                For Each view As MdiView In _MdiView.MdiViews.Items
+                    view.Document.GlobalModuleHasChanged = True
+                Next
+            End If
 
             _editorControl.ClearHighlighting()
             ErrorListControl.Close()
@@ -999,7 +1005,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Public Function GetCodeBehind(Optional ToCompile As Boolean = False) As String
             Dim codeFileHasHints = Me.Text.Contains("'@Form Hints:")
 
-            Dim genCodefile = Me.File?.Substring(0, Me.File.Length - 2) + "sb.gen"
+            Dim genCodefile = If(File = "", "", Me.File.Substring(0, Me.File.Length - 2) + "sb.gen")
             If genCodefile = "" OrElse Not IO.File.Exists(genCodefile) Then
                 Return If(ToCompile, "", Me.Text)
             Else

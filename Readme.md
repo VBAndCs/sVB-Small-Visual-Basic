@@ -8,16 +8,46 @@
 - SB Code Enhancements:
 - ToDo:
 
-# sVB 2.0 project now contains a Global.sb module:
-1. Each project can contain a Global.sb file. You can crate it just by double-clicjing the Global.sb item in the project explorer.
-In this file, you can declare global varianles, subroutines and functions that tou can use in any form in the prokect via the `Global` type, such as `Global.DoSomething()`
+# What's new in sVB v2 ?
+1. Each project can contain a Global.sb file. You can create it just by double-clicking the Global.sb item in the project explorer.
+In this file, you can declare global variables, subroutines and functions that you can use in any form in the project via the `Global` type, such as `Global.DoSomething()`
 See the `Show Random Buttons 3` and `Show Dialogs` apps in the samples folders.
 
 2. The toolbox got a new `ComboBox` control.
 
-3. Contols got `RightToLeft`, `ToolTip` and `Errors` properties. 
-The Error property sets the error message to display in the tooltip of the control while its borders becomes red. You can restore the normal state of the control by setting the Error property to an empty string.
-Controls also got the `OnGotFocus` and `OnLostFocus` events, so, you can use the `OnLostFocus` event with the `Error` property to provide a validation logic for input controls. For an example, see the `Validation` app in the samples folder.
+3. Controls got `RightToLeft`, `ToolTip` and `Errors` properties. 
+The Error property sets the error message to display in the tooltip of the control while its borders becomes red. You can restore the normal state of the control by setting the Error  
+property to an empty string.
+
+4. Controls also got the `OnGotFocus` and `OnLostFocus` events, so, you can use the `OnLostFocus` event with the `Error` property to provide a validation logic for input controls. Each control also has the `Validate` method that fires the `OnLostFocus` event to execute your validation logic (if exists), then checks the Error property and returns `True` if it is empty. And to make things easier for you, the `Validate` method of the form calls the Validate method of each control on the form. If any controls has errors, the process stops and the focus goes to this contols with a beep sound. So, you should call `Me.Validate` before you execute you app logic. Ex:
+```VB
+Sub Button1_OnClick()
+   If Me.Validate() Then
+      Me.ShowMessage("OK", "")
+   EndIf
+EndSub
+```
+
+But if you want to do anything else when a control input is not valid, you can validate each control your self:
+```vb
+Sub Button1_OnClick()
+   ForEach control1 In Me.Controls
+      If control1.Validate() = False Then
+         Sound.PlayBellRing()
+         control1.Focus()
+         ' Do more things here if you want
+         Return
+      EndIf
+   Next
+   
+   Me.ShowMessage("OK", "")
+EndSub
+```
+
+For a full example, see the `Validation` app in the samples folder.
+
+5. sVB now tries to infer the type of an expression, and the type of the function return value.
+
 
 # sVB 1.9 now compiles a project!
 You can design many forms in the form designer, save them to the same folder, which will become the project folder. When you open any form of this project and run it, sVB will compile all the forms into one exe (that will have the name of the folder/project).

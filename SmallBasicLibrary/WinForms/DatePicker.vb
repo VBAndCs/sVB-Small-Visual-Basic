@@ -29,7 +29,7 @@ Namespace WinForms
                         Dim d = GetDatePicker(datePickerName).SelectedDate
                         GetSelectedDate = If(d.HasValue, New Primitive(d.Value.Ticks, NumberType.Date), "")
                     Catch ex As Exception
-                        Control.ShowErrorMesssage(datePickerName, "SelectedDate", ex)
+                        Control.ReportError(datePickerName, "SelectedDate", ex)
                     End Try
                 End Sub)
         End Function
@@ -41,7 +41,7 @@ Namespace WinForms
                     Try
                         GetDatePicker(datePickerName).SelectedDate = value.AsDate()
                     Catch ex As Exception
-                        Control.ShowPropertyMesssage(datePickerName, "SelectedDate", value, ex)
+                        Control.RepottyPropertyError(datePickerName, "SelectedDate", value, ex)
                     End Try
                 End Sub)
         End Sub

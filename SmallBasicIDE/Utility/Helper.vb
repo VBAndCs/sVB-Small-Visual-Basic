@@ -1,8 +1,21 @@
 ﻿Imports System.Windows
 Imports System.Windows.Media
+Imports Microsoft.SmallVisualBasic
 Imports Microsoft.VisualBasic
 
 Module Helper
+
+    Dim _mainWindow As MainWindow
+
+    Public ReadOnly Property MainWindow As MainWindow
+        Get
+            If _mainWindow Is Nothing Then
+                _mainWindow = Application.Current.MainWindow
+            End If
+            Return _mainWindow
+        End Get
+    End Property
+
     Public Function CountLines(str As String) As Integer
         If str = "" Then Return 0
 

@@ -446,13 +446,15 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 End If
             Next
 
-            x = TrimData(typeName)
+            Dim x2 = TrimData(typeName)
+            Dim theSame = (x2 = x)
+
             ' Then add similar objects to add more completion properties
             For Each type In bag.SymbolTable.Dynamics
                 Dim y = TrimData(type.Key)
-                If x = y Then Continue For ' Add before
+                If theSame AndAlso x2 = y Then Continue For ' Added before
 
-                If x.Contains(y) Then
+                If x2.Contains(y) Then
                     FillDynamicMembers(bag, type.Key, type.Value)
                 End If
             Next

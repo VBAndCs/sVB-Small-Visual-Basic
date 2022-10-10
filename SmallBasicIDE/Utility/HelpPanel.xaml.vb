@@ -136,21 +136,13 @@ Namespace Microsoft.SmallVisualBasic.Utility
 
         Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
 
-        Dim _mainWindow As MainWindow
         Private methodType As String
 
-        Private ReadOnly Property MainWindow As MainWindow
-            Get
-                If _mainWindow Is Nothing Then
-                    _mainWindow = Application.Current.MainWindow
-                End If
-                Return _mainWindow
-            End Get
-        End Property
+        Dim mainWindow As MainWindow = Helper.MainWindow
 
         Function IsCompletionListOpen() As Boolean
             Dim completionSurface As CompletionAdornmentSurface = Nothing
-            Dim properties = MainWindow.ActiveDocument.EditorControl.TextView.Properties
+            Dim properties = mainWindow.ActiveDocument.EditorControl.TextView.Properties
             Dim adornmentType = GetType(CompletionAdornmentSurface)
 
             Return properties.TryGetProperty(adornmentType, completionSurface) AndAlso

@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v2.0" Loaded="Window_Loaded"
+        Title="Small Visual Basic v2.1" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -205,103 +205,138 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <shell:Ribbon x:Name="rib" DockPanel.Dock="Top" Margin="0,-8,0,0">
-                            <shell:RibbonTabCollection>
-                                <shell:RibbonTab>
-                                    <shell:CommandChunk Name="{lu:Localized FileGroup}">
-                                        <shell:LargeCommandGroup>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.NewCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.LargeIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/FileNew.png" Width="48" Height="48" />
-                                                </shell:Ribbon.LargeIcon>
-                                            </shell:RoutedRibbonCommand>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
 
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.OpenCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.LargeIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/FileOpen.png" Width="48" Height="48" />
-                                                </shell:Ribbon.LargeIcon>
-                                            </shell:RoutedRibbonCommand>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition  />
+                            </Grid.RowDefinitions>
 
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.LargeIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="48" Height="48" />
-                                                </shell:Ribbon.LargeIcon>
-                                            </shell:RoutedRibbonCommand>
+                            <shell:Ribbon x:Name="rib" Grid.RowSpan="2"
+                                          DockPanel.Dock="Top" Margin="0,-8,0,0">
+                                <shell:RibbonTabCollection>
+                                    <shell:RibbonTab>
+                                        <shell:CommandChunk Name="{lu:Localized FileGroup}">
+                                            <shell:LargeCommandGroup>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.NewCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileNew.png" Width="48" Height="48" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
 
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveAsCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.LargeIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/FileSaveAs.png" Width="48" Height="48" />
-                                                </shell:Ribbon.LargeIcon>
-                                            </shell:RoutedRibbonCommand>
-                                        </shell:LargeCommandGroup>
-                                    </shell:CommandChunk>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.OpenCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileOpen.png" Width="48" Height="48" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
 
-                                    <shell:CommandChunk Name="{lu:Localized WebGroup}">
-                                        <shell:SmallCommandGroup>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebLoadCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.SmallIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/WebOpen.png" Width="28" Height="28" />
-                                                </shell:Ribbon.SmallIcon>
-                                            </shell:RoutedRibbonCommand>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebSaveCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.SmallIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/WebSave.png" Width="28" Height="28" />
-                                                </shell:Ribbon.SmallIcon>
-                                            </shell:RoutedRibbonCommand>
-                                        </shell:SmallCommandGroup>
-                                    </shell:CommandChunk>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="48" Height="48" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
 
-                                    <shell:CommandChunk Name="{lu:Localized ClipboardGroup}">
-                                        <shell:LargeCommandGroup>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CutCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.LargeIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/EditCut.png" Width="48" Height="48" />
-                                                </shell:Ribbon.LargeIcon>
-                                            </shell:RoutedRibbonCommand>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CopyCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.LargeIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/EditCopy.png" Width="48" Height="48" />
-                                                </shell:Ribbon.LargeIcon>
-                                            </shell:RoutedRibbonCommand>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.PasteCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.LargeIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/EditPaste.png" Width="48" Height="48" />
-                                                </shell:Ribbon.LargeIcon>
-                                            </shell:RoutedRibbonCommand>
-                                        </shell:LargeCommandGroup>
-                                        <shell:SmallCommandGroup>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.UndoCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.SmallIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/EditUndo.png" Width="24" Height="24" />
-                                                </shell:Ribbon.SmallIcon>
-                                            </shell:RoutedRibbonCommand>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RedoCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.SmallIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/EditRedo.png" Width="24" Height="24" />
-                                                </shell:Ribbon.SmallIcon>
-                                            </shell:RoutedRibbonCommand>
-                                        </shell:SmallCommandGroup>
-                                    </shell:CommandChunk>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveAsCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileSaveAs.png" Width="48" Height="48" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+                                            </shell:LargeCommandGroup>
+                                        </shell:CommandChunk>
 
-                                    <shell:CommandChunk Name="{lu:Localized ProgramGroup}">
-                                        <shell:LargeCommandGroup>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RunCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.LargeIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/ProgramRun.png" Width="48" Height="48" />
-                                                </shell:Ribbon.LargeIcon>
-                                            </shell:RoutedRibbonCommand>
-                                            <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" ShowCommandText="True">
-                                                <shell:Ribbon.LargeIcon>
-                                                    <Image Source="pack://application:,,/sVB;component/Resources/VBExport.png" Width="48" Height="48" />
-                                                </shell:Ribbon.LargeIcon>
-                                            </shell:RoutedRibbonCommand>
-                                        </shell:LargeCommandGroup>
-                                    </shell:CommandChunk>
+                                        <shell:CommandChunk Name="{lu:Localized WebGroup}">
+                                            <shell:SmallCommandGroup>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebLoadCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.SmallIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/WebOpen.png" Width="28" Height="28" />
+                                                    </shell:Ribbon.SmallIcon>
+                                                </shell:RoutedRibbonCommand>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebSaveCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.SmallIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/WebSave.png" Width="28" Height="28" />
+                                                    </shell:Ribbon.SmallIcon>
+                                                </shell:RoutedRibbonCommand>
+                                            </shell:SmallCommandGroup>
+                                        </shell:CommandChunk>
 
-                                </shell:RibbonTab>
-                            </shell:RibbonTabCollection>
-                        </shell:Ribbon>
+                                        <shell:CommandChunk Name="{lu:Localized ClipboardGroup}">
+                                            <shell:LargeCommandGroup>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CutCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditCut.png" Width="48" Height="48" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CopyCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditCopy.png" Width="48" Height="48" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.PasteCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditPaste.png" Width="48" Height="48" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+                                            </shell:LargeCommandGroup>
+                                            <shell:SmallCommandGroup>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.UndoCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.SmallIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditUndo.png" Width="24" Height="24" />
+                                                    </shell:Ribbon.SmallIcon>
+                                                </shell:RoutedRibbonCommand>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RedoCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.SmallIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditRedo.png" Width="24" Height="24" />
+                                                    </shell:Ribbon.SmallIcon>
+                                                </shell:RoutedRibbonCommand>
+                                            </shell:SmallCommandGroup>
+                                        </shell:CommandChunk>
 
+                                        <shell:CommandChunk Name="{lu:Localized ProgramGroup}">
+                                            <shell:LargeCommandGroup>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RunCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/ProgramRun.png" Width="48" Height="48" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/VBExport.png" Width="48" Height="48" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+                                            </shell:LargeCommandGroup>
+                                        </shell:CommandChunk>
+
+                                    </shell:RibbonTab>
+                                </shell:RibbonTabCollection>
+                            </shell:Ribbon>
+
+                            <TextBlock Grid.Column="1"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       FontSize="16" FontWeight="Bold" Foreground="White"
+                                       Text="Opened Code Documents" />
+                            
+                            <ComboBox x:Name="CmbOpenedDocs" Grid.Column="1" Grid.Row="1"
+                                      Background="Azure" Foreground="Blue" 
+                                      FontSize="16" FontWeight="Bold" IsEditable="True"
+                                      GotFocus="CmbOpenedDocs_GotFocus" 
+                                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                      PreviewMouseLeftButtonDown="CmbOpenedDocs_PreviewMouseLeftButtonDown"
+                                      SelectionChanged="CmbOpenedDocs_SelectionChanged"
+                                      ItemsSource="{Binding ElementName=viewsControl, Path=Items}" DisplayMemberPath="Document.Title">
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="{x:Type ComboBoxItem}">
+                                        <Setter Property="FontSize" Value="18"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="FontWeight" Value="Normal"/>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                            </ComboBox>
+                        </Grid>
                         <Grid Row="1">
                             <shell:MdiViewsControl x:Name="viewsControl" 
                                 RequestItemClose="OnCloseItem" 

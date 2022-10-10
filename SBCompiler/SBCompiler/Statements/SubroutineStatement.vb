@@ -203,7 +203,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 )
             Next
 
-            Dim returntype = InferReturnType(scope.SymbolTable)
+            Dim returntype = scope.SymbolTable.GetInferedType(Name.LCaseText)
             If returntype <> VariableType.Any Then
                 Dim ctorParams = New Type() {GetType(VariableType)}
                 Dim ctorInfo = GetType(WinForms.ReturnValueTypeAttribute).GetConstructor(ctorParams)
