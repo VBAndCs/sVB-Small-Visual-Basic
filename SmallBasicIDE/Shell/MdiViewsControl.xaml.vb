@@ -471,10 +471,10 @@ Namespace Microsoft.SmallVisualBasic.Shell
         End Sub
 
         Public Sub SelectHandlers(
-                   selectedView As MdiView,
-                   controlName As String,
-                   Optional eventName As String = ""
-               )
+                       selectedView As MdiView,
+                       controlName As String,
+                       Optional eventName As String = ""
+                   )
 
             If controlName = "" Then
                 SetItemsBold(selectedView.CmbEventNames, {""})

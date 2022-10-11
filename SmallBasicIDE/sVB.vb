@@ -100,6 +100,7 @@ Class sVB
     Public Shared Function CompileGlobalModule(
                    inputDir As String,
                    outputFileName As String,
+                  Optional formNames As List(Of String) = Nothing,
                    Optional ignoreErrors As Boolean = True
                ) As List(Of Parser)
 
@@ -137,7 +138,7 @@ Class sVB
             End If
 
             If compileGlobal Then
-                Dim errors = Compile("", code, True, ignoreErrors)
+                Dim errors = Compile("", code, True, ignoreErrors, formNames)
 
                 If errors?.Count = 0 Then
                     parsers.Add(Compiler.Parser)

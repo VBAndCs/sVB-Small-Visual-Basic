@@ -232,7 +232,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     _documentation = New CompletionItemDocumentation() With {
                             .Prefix = "Global Variable: ",
-                            .Suffix = If(isGlobal OrElse item.ObjectName = "", InferType(item.Key, symbolTable), $" As {item.ObjectName}"),
+                            .Suffix = If(
+                                    isGlobal OrElse item.ObjectName = "",
+                                    InferType(item.Key, symbolTable),
+                                    $" As {item.ObjectName}"
+                            ),
                             .Summary = item.DefinitionIdintifier.Comment
                     }
 
@@ -306,7 +310,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Function
 
         Private Function InferType(key As String, symbolTable As SymbolTable) As String
-            Dim varType = symbolTable.GetInferedType(key)
+            Dim varType = symbolTable.GetInferedType(key.ToLower())
             If varType <> VariableType.Any Then
                 Return " As " & varType.ToString
             Else

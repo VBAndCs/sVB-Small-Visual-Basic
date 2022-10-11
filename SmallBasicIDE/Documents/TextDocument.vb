@@ -1072,7 +1072,12 @@ EndFunction
 "
         Public Property IgnoreCaretPosChange As Boolean
 
-        Public Function AddEventHandler(controlName As String, eventName As String, Optional selectSubName As Boolean = True) As Boolean
+        Public Function AddEventHandler(
+                           controlName As String,
+                           eventName As String,
+                           Optional selectSubName As Boolean = True
+                    ) As Boolean
+
             Dim alreadyExists = False
             Dim isGlobal = (controlName = "(Global)")
             Dim handlerName = If(isGlobal, "", controlName & "_") &
@@ -1129,12 +1134,13 @@ EndFunction
                     Dim handler = eventHandlerSub.Replace("#", handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
                     EnsureAtTop(Text.Length - 10)
+                    alreadyExists = True
                 End If
 
             Else
                 alreadyExists = True
                 caret.MoveTo(pos)
-                If selectSubName Then SelectCurrentWord()
+                SelectCurrentWord()
             End If
 
             Me.Focus()
@@ -1143,13 +1149,19 @@ EndFunction
 
             If Not (selectSubName OrElse alreadyExists) Then
                 _editorControl.EditorOperations.MoveLineDown(False)
+                _editorControl.EditorOperations.MoveToEndOfLine(False)
             End If
 
             _IgnoreCaretPosChange = False
             Return Not alreadyExists
         End Function
 
-        Public Sub SelectWordAt(line As Integer, column As Integer, Optional viewAtTop As Boolean = True)
+        Public Sub SelectWordAt(
+                        line As Integer,
+                        column As Integer,
+                        Optional viewAtTop As Boolean = True
+                   )
+
             If line < 0 Then Return
 
             Dim currentSnapshot = _textBuffer.CurrentSnapshot

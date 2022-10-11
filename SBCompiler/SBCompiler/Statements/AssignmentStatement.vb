@@ -29,7 +29,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 If prop IsNot Nothing Then
                     prop.isSet = True
                     If prop.IsDynamic Then
-                        symbolTable.InferedTypes(symbolTable.GetKey(prop.TypeName)) = VariableType.Array
+                        Dim typeName = prop.TypeName
+                        typeName.Parent = Me ' Important to get the parent subroutine
+                        Dim key = symbolTable.GetKey(typeName)
+                        symbolTable.InferedTypes(key) = VariableType.Array
                         InferType(symbolTable, prop.PropertyName, prop.Key)
                     Else
                         Dim typeInfo = symbolTable.GetTypeInfo(prop.TypeName)
@@ -38,6 +41,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         End If
                     End If
                 End If
+
+                ' don't move this line up. We must process dynamic property first
                 LeftValue.AddSymbols(symbolTable)
             End If
 

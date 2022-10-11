@@ -657,9 +657,11 @@ Namespace WinForms
                             If Control.Validate(cntrl.Key) = False Then
                                 Sound.PlayBellRing()
                                 cntrl.Value.Focus()
+                                Validate = False
                                 Return
                             End If
                         Next
+                        Validate = True
 
                     Catch ex As Exception
                         ReportSubError(formName, "Validate", ex)

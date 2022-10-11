@@ -13,7 +13,7 @@ EndSub
 '------------------------------------------------
 Sub TextBox2_OnLostFocus()
    n = TextBox2.Text
-   If Text.IsNumeric(n) = False Then
+   If n.IsNumeric = False Then
       TextBox2.Error = "I accept digits only!"
    ElseIf n < 0 Then
       TextBox2.Error = "I don't accept negative numbers!"
@@ -39,10 +39,29 @@ EndSub
 
 '------------------------------------------------
 Sub Button1_OnClick()
-   If Me.Validate() Then
+   isValid = True
+   ForEach control1 In Me.Controls
+      If control1.Validate() = False Then
+         Sound.PlayBellRing()
+         If isValid Then
+            control1.Focus()
+            isValid = False
+         EndIf
+      EndIf
+   Next
+   
+   If isValid Then
       Me.ShowMessage("OK", "")
    EndIf
+   
    
 EndSub
 
 
+
+'------------------------------------------------
+Sub Button2_OnClick()
+   If Me.Validate() Then
+      Me.ShowMessage("OK", "")
+   EndIf
+EndSub

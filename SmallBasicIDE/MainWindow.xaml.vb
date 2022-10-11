@@ -678,7 +678,7 @@ Namespace Microsoft.SmallVisualBasic
             doc.Errors.Clear()
 
             Try
-                Dim parsers = sVB.CompileGlobalModule(inputDir, outputFileName, False)
+                Dim parsers = sVB.CompileGlobalModule(inputDir, outputFileName, formNames, False)
                 If parsers Is Nothing Then
                     ' global file has errors
                     Mouse.OverrideCursor = Nothing

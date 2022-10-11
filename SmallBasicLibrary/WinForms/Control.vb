@@ -439,7 +439,6 @@ Namespace WinForms
                         Else
                             c.BorderThickness = New Thickness(2)
                             c.BorderBrush = Brushes.Red
-                            c.SetValue(TipProperty, c.ToolTip?.ToString())
                             c.ToolTip = errMsg
                         End If
 
