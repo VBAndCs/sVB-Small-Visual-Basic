@@ -119,12 +119,20 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             Dim typeBuilder = moduleBuilder.DefineType(parser.ClassName, domain)
-            Dim methodBuilder = typeBuilder.DefineMethod("Initialize", MethodAttributes.Static Or MethodAttributes.Public)
-            Dim iLGenerator = methodBuilder.GetILGenerator()
+            Dim initializeMethod = typeBuilder.DefineMethod(
+                "Initialize",
+                MethodAttributes.Static Or MethodAttributes.Public
+            )
+            Dim attr = GetType(HideFromIntellisenseAttribute)
+            Dim ctorInfo = attr.GetConstructor(Type.EmptyTypes)
+            initializeMethod.SetCustomAttribute(
+                 New CustomAttributeBuilder(ctorInfo, New Object() {})
+            )
 
+            Dim iL = initializeMethod.GetILGenerator()
             _currentScope = New CodeGenScope With {
-                .ILGenerator = iLGenerator,
-                .MethodBuilder = methodBuilder,
+                .ILGenerator = iL,
+                .MethodBuilder = initializeMethod,
                 .TypeBuilder = typeBuilder,
                 .SymbolTable = parser.SymbolTable,
                 .TypeInfoBag = _typeInfoBag,
@@ -139,9 +147,18 @@ Namespace Microsoft.SmallVisualBasic
 
             BuildFields(typeBuilder, parser.SymbolTable, parser.IsGlobal)
             EmitIL(parser.ParseTree)
-            iLGenerator.Emit(OpCodes.Ret)
+            iL.Emit(OpCodes.Ret)
+
+            If Not forGlobalHelp AndAlso parser.IsGlobal Then
+                ' Create a shared constructor that calls the Inialize method
+                Dim constructor = typeBuilder.DefineTypeInitializer()
+                iL = constructor.GetILGenerator()
+                iL.EmitCall(OpCodes.Call, initializeMethod, Nothing)
+                iL.Emit(OpCodes.Ret)
+            End If
+
             typeBuilder.CreateType()
-            Return methodBuilder
+            Return initializeMethod
         End Function
 
         Private Function EmitMain(globalInit As MethodInfo, mainFormInit As MethodInfo, moduleBuilder As ModuleBuilder) As Boolean

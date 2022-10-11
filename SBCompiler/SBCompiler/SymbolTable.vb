@@ -180,7 +180,7 @@ Namespace Microsoft.SmallVisualBasic
 
             ElseIf _typeInfoBag.Types.ContainsKey(typeKey) Then
                 type = _typeInfoBag.Types(typeKey)
-                typeName.Comment = type.Type.Name
+                typeName.Comment = type.Name
 
             Else
                 Dim varType = GetInferedType(typeName)

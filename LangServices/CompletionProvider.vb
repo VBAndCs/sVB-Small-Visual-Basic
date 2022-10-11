@@ -498,7 +498,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     highlightCashe(span) = Nothing
                     Return
 
-                ElseIf item.DisplayName.ToLower() = tokenText Then
+                ElseIf item.DisplayName?.ToLower() = tokenText Then
                     If bag.IsMethod Then
                         If item.ItemType <> CompletionItemType.MethodName Then Continue For
                     End If

@@ -13,8 +13,10 @@ Namespace Microsoft.SmallVisualBasic
 
         Public ReadOnly Property Key As String
             Get
-                Return Type.Name.ToLower()
+                Return If(_Name, "").ToLower()
             End Get
         End Property
+
+        Public Property Name As String
     End Class
 End Namespace

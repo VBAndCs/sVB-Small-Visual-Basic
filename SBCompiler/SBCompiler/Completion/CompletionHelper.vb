@@ -304,7 +304,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
                     If Not type.Value.HideFromIntellisense Then
                         typeCompletionItems.Add(New CompletionItem() With {
                             .Key = type.Key,
-                            .DisplayName = type.Value.Type.Name,
+                            .DisplayName = type.Value.Name,
                             .ItemType = CompletionItemType.TypeName,
                             .MemberInfo = type.Value.Type
                         })
@@ -344,7 +344,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
                         objName As String
                    )
 
-            Dim typeName = typeInfo.Type.Name.ToLower()
+            Dim typeName = typeInfo.Key
             If typeName = "global" OrElse Not membersCompletionItems.ContainsKey(typeName) Then
                 Dim members As New List(Of CompletionItem)
 

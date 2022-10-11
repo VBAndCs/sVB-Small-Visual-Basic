@@ -104,11 +104,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Overrides Sub EmitIL(scope As CodeGenScope)
             If LeftValue Is Nothing Then Return
 
-            If scope.ForGlobalHelp Then
-                ' no need to emit the actaul code. This is just for help info
-                RightValue = LiteralExpression.Zero
-            End If
-
             Dim identifierExpr = TryCast(LeftValue, IdentifierExpression)
             Dim propertyExpr = TryCast(LeftValue, PropertyExpression)
             Dim arrayExpr = TryCast(LeftValue, ArrayExpression)
@@ -160,7 +155,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Private Function LowerAndEmitIL(scope As CodeGenScope) As Boolean
-            If TypeOf RightValue Is InitializerExpression Then
+            If scope.ForGlobalHelp Then
+                ' no need to emit the actaul code. This is just for help info
+                LiteralExpression.Zero.EmitIL(scope)
+            ElseIf TypeOf RightValue Is InitializerExpression Then
                 Dim initExpr = CType(RightValue, InitializerExpression)
                 initExpr.LowerAndEmit(LeftValue.ToString(), scope, StartToken.Line)
                 Return True

@@ -395,14 +395,14 @@ Namespace WinForms
 
 
         Public Shared ReadOnly ErrorProperty As _
-                               DependencyProperty = DependencyProperty.RegisterAttached("Error",
-                               GetType(String), GetType(UIElement),
-                               New PropertyMetadata(""))
+                   DependencyProperty = DependencyProperty.RegisterAttached("Error",
+                   GetType(String), GetType(UIElement),
+                   New PropertyMetadata(""))
 
         Public Shared ReadOnly TipProperty As _
-                               DependencyProperty = DependencyProperty.RegisterAttached("Tip",
-                               GetType(String), GetType(UIElement),
-                               New PropertyMetadata(""))
+                   DependencyProperty = DependencyProperty.RegisterAttached("Tip",
+                   GetType(String), GetType(UIElement),
+                   New PropertyMetadata(""))
 
 
         ''' <summary>

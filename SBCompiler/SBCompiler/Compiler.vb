@@ -5,7 +5,7 @@ Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Microsoft.SmallVisualBasic
     Public Class Compiler
-        Private Shared _referenceAssemblies As List(Of Assembly)
+        Private Shared _referenceAssemblies As New List(Of Assembly)
         Private Shared _libraryFiles As New List(Of String)()
         Private Shared _typeInfoBag As TypeInfoBag
         Private Shared _references As New List(Of String)
@@ -206,7 +206,6 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Shared Sub PopulateReferences()
-            _referenceAssemblies = New List(Of Assembly)()
             _referenceAssemblies.Add(GetType(Primitive).Assembly)
 
             For Each reference In _references
@@ -220,53 +219,61 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Shared Sub PopulateClrSymbols()
-            For Each referenceAssembly In _referenceAssemblies
-                AddAssemblyTypesToList(referenceAssembly)
+            For Each refAssembly In _referenceAssemblies
+                AddAssemblyTypesToList(refAssembly)
             Next
 
-            Dim directoryName As String = IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-            Dim path = IO.Path.Combine(directoryName, "lib")
+            Dim exePath = Assembly.GetExecutingAssembly().Location
+            Dim directoryName = IO.Path.GetDirectoryName(exePath)
+            Dim libPath = IO.Path.Combine(directoryName, "lib")
+            LoadDlls(libPath)
 
-            If Directory.Exists(path) Then
-                Dim files = Directory.GetFiles(path, "*.dll")
+            Dim folderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+            Dim appDataPath = IO.Path.Combine(folderPath, "Microsoft", "Small Basic", "Lib")
+            LoadDlls(appDataPath)
+
+        End Sub
+
+        Private Shared Sub LoadExes(path As String)
+            For Each dirName In Directory.GetDirectories(path)
+                Dim files = Directory.GetFiles(dirName, "*.exe")
 
                 For Each fileName In files
                     Try
                         Dim _assembly = Assembly.LoadFile(fileName)
-                        AddAssemblyTypesToList(_assembly)
-                        _libraryFiles.Add(fileName)
+                        Dim type = _assembly?.GetType("Global")
+                        If type IsNot Nothing AndAlso type.IsVisible Then
+                            Dim name = IO.Path.GetFileNameWithoutExtension(fileName)
+                            name = name.Replace(" ", "")
+                            AddTypeToList(type, name)
+                            _libraryFiles.Add(fileName)
+                        End If
                     Catch ex As Exception
                     End Try
                 Next
-            End If
 
-            LoadAssembliesFromAppData()
+            Next
         End Sub
 
-        Private Shared Sub LoadAssembliesFromAppData()
-            Dim folderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-            Dim path = IO.Path.Combine(folderPath, "Microsoft", "Small Basic", "Lib")
-
-            If Not Directory.Exists(path) Then
-                Return
-            End If
+        Private Shared Sub LoadDlls(path As String)
+            If Not Directory.Exists(path) Then Return
 
             Dim files = Directory.GetFiles(path, "*.dll")
-
-            For Each text In files
-
+            For Each fileName In files
                 Try
-                    Dim _assembly = Assembly.LoadFile(text)
-                    AddAssemblyTypesToList(_assembly)
-                    _libraryFiles.Add(text)
-                Catch
+                    Dim _assembly = Assembly.LoadFile(fileName)
+                    If AddAssemblyTypesToList(_assembly) Then
+                        _libraryFiles.Add(fileName)
+                    End If
+                Catch ex As Exception
                 End Try
             Next
+
+            'LoadExes(path)
         End Sub
 
         Private Shared Function AddAssemblyTypesToList(assembly As Assembly) As Boolean
             If assembly Is Nothing Then Return False
-
 
             Dim result = False
             Dim types = assembly.GetTypes()
@@ -281,9 +288,10 @@ Namespace Microsoft.SmallVisualBasic
             Return result
         End Function
 
-        Private Shared Sub AddTypeToList(type As Type)
+        Private Shared Sub AddTypeToList(type As Type, Optional typeName As String = Nothing)
             Dim typeInfo As New TypeInfo With {
                 .Type = type,
+                .Name = If(typeName, type.Name),
                 .HideFromIntellisense = type.GetCustomAttributes(GetType(HideFromIntellisenseAttribute), inherit:=False).Length > 0
             }
 
@@ -315,7 +323,7 @@ Namespace Microsoft.SmallVisualBasic
             Next
 
             If typeInfo.Events.Count > 0 OrElse typeInfo.Methods.Count > 0 OrElse typeInfo.Properties.Count > 0 Then
-                _typeInfoBag.Types(type.Name.ToLower()) = typeInfo
+                _typeInfoBag.Types(typeInfo.Key) = typeInfo
             End If
         End Sub
 
