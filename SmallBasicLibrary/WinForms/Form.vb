@@ -669,6 +669,31 @@ Namespace WinForms
                 End Sub)
         End Function
 
+        ''' <summary>
+        ''' Saves the current form design to the given xaml file. This is useful if you use code to create a form and add controls to it in runtime, so you can save it's design to a file if you want.
+        ''' </summary>
+        ''' <param name="xamlFile">the path an name of the file you want to save the design to.</param>
+        <ExMethod>
+        Public Sub SaveDesign(formName As Primitive, xamlFile As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim xamlPath = IO.Path.GetFullPath(xamlFile.AsString())
+                        If IO.Path.GetExtension(xamlPath) = "" Then
+                            xamlPath += ".xaml"
+                        End If
+
+                        Dim win = Forms.GetForm(formName)
+                        Dim canvas = win.Content
+                        IO.File.WriteAllText(
+                            xamlPath,
+                            System.Windows.Markup.XamlWriter.Save(canvas)
+                        )
+                    Catch ex As Exception
+                        ReportSubError(formName, "SaveDesign", ex)
+                    End Try
+                End Sub)
+        End Sub
 
 #Region "Events"
         Public Shared ReadOnly OnFormShownEvent As System.Windows.RoutedEvent =

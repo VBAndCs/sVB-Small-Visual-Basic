@@ -91,7 +91,6 @@ Namespace WinForms
                                    .ResizeMode = ResizeMode.CanMinimize
                             }
 
-                            AddHandler wnd.Closing, AddressOf Form_Closing
                             AddHandler wnd.Closed, AddressOf Form_Closed
 
                             _forms(form_Name) = wnd
@@ -205,26 +204,6 @@ Namespace WinForms
             Dim win = CType(sender, Window)
             Dim formName = win.Name
             _forms.Remove(formName)
-        End Sub
-
-        Private Shared Sub Form_Closing(sender As Object, e As CancelEventArgs)
-            Dim win = CType(sender, Window)
-            Dim formName = win.Name
-
-            Dim CodeFilePath = Environment.GetCommandLineArgs(0)
-            Dim docName = IO.Path.GetFileNameWithoutExtension(CodeFilePath) & ".xaml"
-            CodeFilePath = IO.Path.GetDirectoryName(CodeFilePath)
-            Dim newXamlPath = IO.Path.Combine(CodeFilePath, docName)
-
-            Try
-                ' If the form is created from code, save its design to .xml file
-                If Not IO.File.Exists(newXamlPath) Then
-                    Dim canvas = win.Content
-                    IO.File.WriteAllText(newXamlPath, XamlWriter.Save(canvas))
-                End If
-            Finally
-            End Try
-
         End Sub
 
         Private Shared Function LoadContent(xamlPath As String) As Canvas

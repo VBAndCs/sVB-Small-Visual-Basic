@@ -113,7 +113,12 @@ Namespace Microsoft.SmallVisualBasic
                           Optional forGlobalHelp As Boolean = False
                      ) As MethodInfo
 
-            Dim typeBuilder = moduleBuilder.DefineType(parser.ClassName, TypeAttributes.Sealed)
+            Dim domain = TypeAttributes.Sealed
+            If parser.IsGlobal Then
+                domain = domain Or TypeAttributes.Public
+            End If
+
+            Dim typeBuilder = moduleBuilder.DefineType(parser.ClassName, domain)
             Dim methodBuilder = typeBuilder.DefineMethod("Initialize", MethodAttributes.Static Or MethodAttributes.Public)
             Dim iLGenerator = methodBuilder.GetILGenerator()
 

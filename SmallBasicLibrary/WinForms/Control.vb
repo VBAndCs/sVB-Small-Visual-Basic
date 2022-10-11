@@ -13,10 +13,11 @@ Namespace WinForms
     Public NotInheritable Class Control
 
         Shared Sub ReportSubError(key As String, memberName As String, ex As Exception)
-            If Not key.Contains(".") Then
-                key &= "." & key
-            End If
-            Dim names = key.Split(".")
+            Dim names = If(key.Contains("."),
+                key.Split("."),
+                {key, key}
+            )
+
             ReportSubError(names(0), names(1), memberName, ex)
         End Sub
 
@@ -30,10 +31,10 @@ Namespace WinForms
         End Sub
 
         Shared Sub ReportError(key As String, memberName As String, ex As Exception)
-            If Not key.Contains(".") Then
-                key &= "." & key
-            End If
-            Dim names = key.Split(".")
+            Dim names = If(key.Contains("."),
+                key.Split("."),
+                {key, key}
+            )
             ReportError(names(0), names(1), memberName, ex)
         End Sub
 
@@ -46,10 +47,10 @@ Namespace WinForms
         End Sub
 
         Shared Sub RepottyPropertyError(key As String, memberName As String, value As String, ex As Exception)
-            If Not key.Contains(".") Then
-                key &= "." & key
-            End If
-            Dim names = key.Split(".")
+            Dim names = If(key.Contains("."),
+                key.Split("."),
+                {key, key}
+            )
             RepottyPropertyError(names(0), names(1), memberName, value, ex)
         End Sub
 
@@ -1313,7 +1314,7 @@ Namespace WinForms
         Friend Shared Function GetFrameworkElement(key As String) As FrameworkElement
             key = key.ToLower()
             If Not key.Contains(".") Then
-                key &= "." & key
+                Return CType(Forms._forms(key.ToLower), Wpf.Control)
             End If
 
             If Not Forms._controls.ContainsKey(key) Then

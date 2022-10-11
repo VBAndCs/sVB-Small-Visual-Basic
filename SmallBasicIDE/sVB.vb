@@ -76,10 +76,14 @@ Class sVB
 
         Dim docDirectory = IO.Path.GetDirectoryName(filePath)
         Dim fileName = IO.Path.GetFileNameWithoutExtension(If(isSingleCodeFile, filePath, docDirectory))
-        If fileName = "" Then fileName = IO.Path.GetFileNameWithoutExtension(filePath)
+        If fileName = "" Then
+            fileName = IO.Path.GetFileNameWithoutExtension(filePath)
+        End If
 
         Dim binDirectory = IO.Path.Combine(docDirectory, "bin")
-        If Not IO.Directory.Exists(binDirectory) Then IO.Directory.CreateDirectory(binDirectory)
+        If Not IO.Directory.Exists(binDirectory) Then
+            IO.Directory.CreateDirectory(binDirectory)
+        End If
         Dim newFile = IO.Path.Combine(binDirectory, fileName)
 
         For Each f In IO.Directory.EnumerateFiles(docDirectory)

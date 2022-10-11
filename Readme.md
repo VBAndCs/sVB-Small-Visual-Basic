@@ -176,7 +176,8 @@ before running the code, please copy the two folders `Lib` and `Toolbar` from th
 
 Go to the [Releases page](https://github.com/VBAndCs/sVB-Small-Visual-Basic/releases), navigate to the latest version of vSB, expand the Assets list at the bottom of the page, and download the ZIP file.
 Follow these instructions:
-1. sVB needs .NET framework 4.8. If you don't have it on your PC, download and install it. https://go.microsoft.com/fwlink/?LinkId=2085155
+1. sVB needs .NET framework 4.8. If you don't have it on your PC, download and install it:
+https://go.microsoft.com/fwlink/?LinkId=2085155
 
 2. Unzip the `sVB.zip` file. You will have a folder with the same name where you unzipped the file. Open the folder and double-click `sVB.exe`.
 And that it. You are ready to go :)
