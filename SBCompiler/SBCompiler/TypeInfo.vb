@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.Reflection
+﻿Imports System.Reflection
 
 Namespace Microsoft.SmallVisualBasic
     <Serializable>
@@ -17,6 +15,15 @@ Namespace Microsoft.SmallVisualBasic
             End Get
         End Property
 
+        Dim _name As String
         Public Property Name As String
+            Get
+                Return If(_name, Type.Name)
+            End Get
+
+            Set(value As String)
+                _name = value
+            End Set
+        End Property
     End Class
 End Namespace

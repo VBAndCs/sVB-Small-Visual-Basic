@@ -86,7 +86,6 @@ Namespace Microsoft.SmallVisualBasic
             Dim moduleBuilder = assemblyBuilder.DefineDynamicModule(_outputName & ".exe", emitSymbolInfo:=True)
 
             Dim mainFormInit As MethodInfo = Nothing
-            Dim globalInit As MethodInfo = Nothing
             Dim formInit As MethodInfo = Nothing
 
             For Each parser In _parsers
@@ -94,12 +93,11 @@ Namespace Microsoft.SmallVisualBasic
                 If parser.IsMainForm Then
                     mainFormInit = formInit
                 ElseIf parser.IsGlobal Then
-                    globalInit = formInit
                     AddGlobalTypeToList(formInit.DeclaringType)
                 End If
             Next
 
-            EmitMain(globalInit, If(mainFormInit, formInit), moduleBuilder)
+            EmitMain(If(mainFormInit, formInit), moduleBuilder)
 
             assemblyBuilder.SetEntryPoint(_entryPoint, PEFileKinds.WindowApplication)
             If Not forGlobalHelp Then assemblyBuilder.Save(_outputName & ".exe")
@@ -161,7 +159,7 @@ Namespace Microsoft.SmallVisualBasic
             Return initializeMethod
         End Function
 
-        Private Function EmitMain(globalInit As MethodInfo, mainFormInit As MethodInfo, moduleBuilder As ModuleBuilder) As Boolean
+        Private Function EmitMain(mainFormInit As MethodInfo, moduleBuilder As ModuleBuilder) As Boolean
             Dim typeBuilder = moduleBuilder.DefineType("_SmallVisualBasic_Program", TypeAttributes.Sealed)
             _entryPoint = typeBuilder.DefineMethod("_Main", MethodAttributes.Static)
             Dim methodBuilder = CType(_entryPoint, MethodBuilder)
@@ -171,10 +169,6 @@ Namespace Microsoft.SmallVisualBasic
                 BindingFlags.Static Or BindingFlags.Public
             )
             iLGenerator.EmitCall(OpCodes.Call, beginProgram, Nothing)
-
-            If globalInit IsNot Nothing Then
-                iLGenerator.EmitCall(OpCodes.Call, globalInit, Nothing)
-            End If
             iLGenerator.EmitCall(OpCodes.Call, mainFormInit, Nothing)
 
             Dim pauseIfVisible = GetType(TextWindow).GetMethod(

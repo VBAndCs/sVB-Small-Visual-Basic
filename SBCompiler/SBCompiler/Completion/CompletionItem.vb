@@ -8,7 +8,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
         Public ParamIndex As Integer = -1
         Public ObjectName As String
         Public Key As String
-        Public DisplayName As String
+        Public Property DisplayName As String
         Public ItemType As CompletionItemType
         Public Property MemberInfo As MemberInfo
         Public DefinitionIdintifier As Token
