@@ -913,8 +913,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     Path.GetFileNameWithoutExtension(Me.File) & ".xaml",
                     IO.Path.GetFileName(formDesigner.FormFile)
             )
-
-            genCode.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", ""{xamlFile}"")")
+            genCode.AppendLine($"_path = Program.Directory + ""\{xamlFile}""")
+            genCode.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", _path)")
 
             If formDesigner.AllowTransparency Then
                 genCode.AppendLine($"Form.AllowTransparency({formName})")

@@ -1192,21 +1192,25 @@ Namespace Microsoft.SmallVisualBasic
             Dim fileName = newFilePath & ".sb"
 
             Dim oldCodeFile = formDesigner.CodeFile
+            If oldCodeFile = "" Then oldCodeFile = oldPath.Substring(0, oldPath.Length - 4) & "sb"
             SaveDesignInfo(Nothing, False, saveAs)
-            Dim doc = GetDocIfOpened()
 
-            If oldCodeFile?.ToLower() = fileName.ToLower() Then
-                If doc IsNot Nothing Then doc.Save()
-            Else
-                If File.Exists(fileName) Then File.Delete(fileName)
+            If saveAs Then
+                Dim doc = GetDocIfOpened()
 
-                If doc IsNot Nothing Then
-                    doc.SaveAs(fileName)
-                ElseIf oldCodeFile <> "" Then
-                    File.Copy(oldCodeFile, fileName)
+                If oldCodeFile?.ToLower() = fileName.ToLower() Then
+                    If doc IsNot Nothing Then doc.Save()
+                Else
+                    If File.Exists(fileName) Then File.Delete(fileName)
+
+                    If doc IsNot Nothing Then
+                        doc.SaveAs(fileName)
+                    ElseIf File.Exists(oldCodeFile) Then
+                        File.Copy(oldCodeFile, fileName)
+                    End If
+
+                    formDesigner.CodeFile = fileName
                 End If
-
-                formDesigner.CodeFile = fileName
             End If
 
             ProjExplorer.ProjectDirectory = formDesigner.FormFile

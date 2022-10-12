@@ -259,6 +259,7 @@ Namespace WinForms
         ''' <returns>the form name</returns>
         <ReturnValueType(VariableType.Form)>
         Public Shared Function ShowForm(formName As Primitive, argsArr As Primitive) As Primitive
+            Dim asm = System.Reflection.Assembly.GetCallingAssembly()
             App.Invoke(
                   Sub()
                       Try
@@ -270,7 +271,7 @@ Namespace WinForms
 
                           Else
                               Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
-                              Form.Initialize(formName)
+                              Form.Initialize(formName, asm)
                           End If
 
                       Catch ex As Exception
@@ -289,6 +290,7 @@ Namespace WinForms
         ''' <returns>the dialog result that represnts the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
         <ReturnValueType(VariableType.DialogResult)>
         Public Shared Function ShowDialog(formName As Primitive, argsArr As Primitive) As Primitive
+            Dim asm = System.Reflection.Assembly.GetCallingAssembly()
             App.Invoke(
                 Sub()
                     Try
@@ -297,7 +299,7 @@ Namespace WinForms
                             ShowDialog = Form.ShowDialog(formName)
                         Else
                             Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
-                            Form.Initialize(formName)
+                            Form.Initialize(formName, asm)
                             Control.SetVisible(formName, False)
                             ShowDialog = Form.ShowDialog(formName)
                         End If

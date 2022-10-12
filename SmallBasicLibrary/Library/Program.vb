@@ -28,8 +28,8 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property Directory As Primitive
             Get
-                Dim entryAssembly As Assembly = Assembly.GetEntryAssembly()
-                Return Path.GetDirectoryName(entryAssembly.Location)
+                Dim asm = Assembly.GetCallingAssembly()
+                Return Path.GetDirectoryName(asm.Location)
             End Get
         End Property
 
@@ -68,5 +68,6 @@ Namespace Library
 
             Return New Primitive("")
         End Function
+
     End Class
 End Namespace

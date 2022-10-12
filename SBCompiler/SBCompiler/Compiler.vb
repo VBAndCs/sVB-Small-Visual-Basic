@@ -161,7 +161,6 @@ Namespace Microsoft.SmallVisualBasic
             Build(parsers, outputName, directory)
         End Sub
 
-
         Public Function Build(
                         parsers As List(Of Parser),
                         outputName As String,
@@ -269,7 +268,7 @@ Namespace Microsoft.SmallVisualBasic
                 End Try
             Next
 
-            'LoadExes(path)
+            LoadExes(path)
         End Sub
 
         Private Shared Function AddAssemblyTypesToList(assembly As Assembly) As Boolean

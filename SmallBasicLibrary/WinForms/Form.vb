@@ -21,12 +21,11 @@ Namespace WinForms
             Helper.ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
-        Public Shared Sub Initialize(formName As Primitive)
+        Public Shared Sub Initialize(formName As String, asm As System.Reflection.Assembly)
             App.Invoke(
                 Sub()
                     Try
-                        Dim frmName = "_SmallVisualBasic_" & formName.AsString().ToLower()
-                        Dim asm = System.Reflection.Assembly.GetEntryAssembly()
+                        Dim frmName = "_SmallVisualBasic_" & formName.ToLower()
                         Dim frm = asm.GetType(frmName)
                         Dim initializeMethod = frm?.GetMethod("Initialize", System.Reflection.BindingFlags.Public Or System.Reflection.BindingFlags.Static)
                         initializeMethod?.Invoke(Nothing, Nothing)
