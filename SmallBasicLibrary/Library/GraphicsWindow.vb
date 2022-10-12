@@ -24,8 +24,8 @@ Namespace Library
                 _drawing = drawing
             End Sub
 
-            Protected Overrides Sub OnRender(drawingContext1 As DrawingContext)
-                drawingContext1.DrawDrawing(_drawing)
+            Protected Overrides Sub OnRender(dc As DrawingContext)
+                dc.DrawDrawing(_drawing)
             End Sub
         End Class
 
@@ -108,13 +108,14 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                If CBool(Value) Then
-                                    _window.ResizeMode = ResizeMode.CanResize
-                                Else
-                                    _window.ResizeMode = ResizeMode.NoResize
-                                End If
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        If CBool(Value) Then
+                            _window.ResizeMode = ResizeMode.CanResize
+                        Else
+                            _window.ResizeMode = ResizeMode.NoResize
+                        End If
+                    End Sub)
             End Set
         End Property
 
@@ -523,9 +524,7 @@ Namespace Library
         Public Shared Sub Hide()
             _isHidden = True
             If _windowVisible Then
-                Invoke(Sub()
-                           _window.Hide()
-                       End Sub)
+                Invoke(Sub() _window.Hide())
                 _windowVisible = False
             End If
         End Sub
@@ -533,25 +532,17 @@ Namespace Library
         ''' <summary>
         ''' Draws a rectangle on the screen using the selected Pen.
         ''' </summary>
-        ''' <param name="x">
-        ''' The x co-ordinate of the rectangle.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the rectangle.
-        ''' </param>
-        ''' <param name="width">
-        ''' The width of the rectangle.
-        ''' </param>
-        ''' <param name="height">
-        ''' The height of the rectangle.
-        ''' </param>
-        Public Shared Sub DrawRectangle(x As Primitive, y As Primitive, width1 As Primitive, height1 As Primitive)
+        ''' <param name="x">The x co-ordinate of the rectangle.</param>
+        ''' <param name="y">The y co-ordinate of the rectangle.</param>
+        ''' <param name="width">The width of the rectangle.</param>
+        ''' <param name="height">The height of the rectangle.</param>
+        Public Shared Sub DrawRectangle(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
             BeginInvoke(
                 Sub()
-                    Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
-                    drawingContext1.DrawRectangle(Nothing, _pen, New System.Windows.Rect(CInt(x), CInt(y), width1, height1))
-                    drawingContext1.Close()
+                    Dim dc As DrawingContext = _mainDrawing.Append()
+                    dc.DrawRectangle(Nothing, _pen, New System.Windows.Rect(CInt(x), CInt(y), width, height))
+                    dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
         End Sub
@@ -559,75 +550,53 @@ Namespace Library
         ''' <summary>
         ''' Fills a rectangle on the screen using the selected Brush.
         ''' </summary>
-        ''' <param name="x">
-        ''' The x co-ordinate of the rectangle.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the rectangle.
-        ''' </param>
-        ''' <param name="width">
-        ''' The width of the rectangle.
-        ''' </param>
-        ''' <param name="height">
-        ''' The height of the rectangle.
-        ''' </param>
-        Public Shared Sub FillRectangle(x As Primitive, y As Primitive, width1 As Primitive, height1 As Primitive)
+        ''' <param name="x">The x co-ordinate of the rectangle.</param>
+        ''' <param name="y">The y co-ordinate of the rectangle.</param>
+        ''' <param name="width">The width of the rectangle.</param>
+        ''' <param name="height">The height of the rectangle.</param>
+        Public Shared Sub FillRectangle(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
-            BeginInvoke(Sub()
-                            Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
-                            drawingContext1.DrawRectangle(_fillBrush, Nothing, New System.Windows.Rect(x, y, width1, height1))
-                            drawingContext1.Close()
-                            AddRasterizeOperationToQueue()
-                        End Sub)
+            BeginInvoke(
+                Sub()
+                    Dim dc = _mainDrawing.Append()
+                    dc.DrawRectangle(_fillBrush, Nothing, New System.Windows.Rect(x, y, width, height))
+                    dc.Close()
+                    AddRasterizeOperationToQueue()
+                End Sub)
         End Sub
 
         ''' <summary>
         ''' Draws an ellipse on the screen using the selected Pen.
         ''' </summary>
-        ''' <param name="x">
-        ''' The x co-ordinate of the ellipse.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the ellipse.
-        ''' </param>
-        ''' <param name="width">
-        ''' The width of the ellipse.
-        ''' </param>
-        ''' <param name="height">
-        ''' The height of the ellipse.
-        ''' </param>
+        ''' <param name="x">The x co-ordinate of the ellipse.</param>
+        ''' <param name="y">The y co-ordinate of the ellipse.</param>
+        ''' <param name="width">The width of the ellipse.</param>
+        ''' <param name="height">The height of the ellipse.</param>
         Public Shared Sub DrawEllipse(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
-            BeginInvoke(Sub()
-                            Dim drawingContext = _mainDrawing.Append()
-                            Dim w = CDbl(width) / 2
-                            Dim h = CDbl(height) / 2
-                            drawingContext.DrawEllipse(
-                                    Nothing,
-                                    _pen, New System.Windows.Point(CDbl(x) + w, CDbl(y) + h),
-                                    w,
-                                    h
-                            )
-                            drawingContext.Close()
-                            AddRasterizeOperationToQueue()
-                        End Sub)
+            BeginInvoke(
+                Sub()
+                    Dim drawingContext = _mainDrawing.Append()
+                    Dim w = CDbl(width) / 2
+                    Dim h = CDbl(height) / 2
+                    drawingContext.DrawEllipse(
+                        Nothing,
+                        _pen, New System.Windows.Point(CDbl(x) + w, CDbl(y) + h),
+                        w,
+                        h
+                    )
+                    drawingContext.Close()
+                    AddRasterizeOperationToQueue()
+                End Sub)
         End Sub
 
         ''' <summary>
         ''' Fills an ellipse on the screen using the selected Brush.
         ''' </summary>
-        ''' <param name="x">
-        ''' The x co-ordinate of the ellipse.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the ellipse.
-        ''' </param>
-        ''' <param name="width">
-        ''' The width of the ellipse.
-        ''' </param>
-        ''' <param name="height">
-        ''' The height of the ellipse.
-        ''' </param>
+        ''' <param name="x">The x co-ordinate of the ellipse.</param>
+        ''' <param name="y">The y co-ordinate of the ellipse.</param>
+        ''' <param name="width">The width of the ellipse.</param>
+        ''' <param name="height">The height of the ellipse.</param>
         Public Shared Sub FillEllipse(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
             BeginInvoke(Sub()
@@ -649,28 +618,16 @@ Namespace Library
         ''' <summary>
         ''' Draws a triangle on the screen using the selected pen.
         ''' </summary>
-        ''' <param name="x1">
-        ''' The x co-ordinate of the first point.
-        ''' </param>
-        ''' <param name="y1">
-        ''' The y co-ordinate of the first point.
-        ''' </param>
-        ''' <param name="x2">
-        ''' The x co-ordinate of the second point.
-        ''' </param>
-        ''' <param name="y2">
-        ''' The y co-ordinate of the second point.
-        ''' </param>
-        ''' <param name="x3">
-        ''' The x co-ordinate of the third point.
-        ''' </param>
-        ''' <param name="y3">
-        ''' The y co-ordinate of the third point.
-        ''' </param>
+        ''' <param name="x1">The x co-ordinate of the first point.</param>
+        ''' <param name="y1">The y co-ordinate of the first point.</param>
+        ''' <param name="x2">The x co-ordinate of the second point.</param>
+        ''' <param name="y2">The y co-ordinate of the second point.</param>
+        ''' <param name="x3">The x co-ordinate of the third point.</param>
+        ''' <param name="y3">The y co-ordinate of the third point.</param>
         Public Shared Sub DrawTriangle(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive, x3 As Primitive, y3 As Primitive)
             VerifyAccess()
             BeginInvoke(Sub()
-                            Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
+                            Dim dc As DrawingContext = _mainDrawing.Append()
                             Dim value As New PathFigure With
                             {
                             .StartPoint = New System.Windows.Point(x1, y1),
@@ -686,8 +643,8 @@ Namespace Library
                             Dim pathGeometry1 As New PathGeometry
                             pathGeometry1.Figures = figures
                             pathGeometry1.Freeze()
-                            drawingContext1.DrawGeometry(Nothing, _pen, pathGeometry1)
-                            drawingContext1.Close()
+                            dc.DrawGeometry(Nothing, _pen, pathGeometry1)
+                            dc.Close()
                             AddRasterizeOperationToQueue()
                         End Sub)
         End Sub
@@ -695,28 +652,16 @@ Namespace Library
         ''' <summary>
         ''' Draws and fills a triangle on the screen using the selected brush.
         ''' </summary>
-        ''' <param name="x1">
-        ''' The x co-ordinate of the first point.
-        ''' </param>
-        ''' <param name="y1">
-        ''' The y co-ordinate of the first point.
-        ''' </param>
-        ''' <param name="x2">
-        ''' The x co-ordinate of the second point.
-        ''' </param>
-        ''' <param name="y2">
-        ''' The y co-ordinate of the second point.
-        ''' </param>
-        ''' <param name="x3">
-        ''' The x co-ordinate of the third point.
-        ''' </param>
-        ''' <param name="y3">
-        ''' The y co-ordinate of the third point.
-        ''' </param>
+        ''' <param name="x1">The x co-ordinate of the first point.</param>
+        ''' <param name="y1">The y co-ordinate of the first point.</param>
+        ''' <param name="x2">The x co-ordinate of the second point.</param>
+        ''' <param name="y2">The y co-ordinate of the second point.</param>
+        ''' <param name="x3">The x co-ordinate of the third point.</param>
+        ''' <param name="y3">The y co-ordinate of the third point.</param>
         Public Shared Sub FillTriangle(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive, x3 As Primitive, y3 As Primitive)
             VerifyAccess()
             BeginInvoke(Sub()
-                            Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
+                            Dim dc As DrawingContext = _mainDrawing.Append()
                             Dim value As New PathFigure With
                             {
                             .StartPoint = New System.Windows.Point(x1, y1),
@@ -732,8 +677,8 @@ Namespace Library
                             Dim pathGeometry1 As New PathGeometry
                             pathGeometry1.Figures = figures
                             pathGeometry1.Freeze()
-                            drawingContext1.DrawGeometry(_fillBrush, Nothing, pathGeometry1)
-                            drawingContext1.Close()
+                            dc.DrawGeometry(_fillBrush, Nothing, pathGeometry1)
+                            dc.Close()
                             AddRasterizeOperationToQueue()
                         End Sub)
         End Sub
@@ -741,49 +686,36 @@ Namespace Library
         ''' <summary>
         ''' Draws a line from one point to another.
         ''' </summary>
-        ''' <param name="x1">
-        ''' The x co-ordinate of the first point.
-        ''' </param>
-        ''' <param name="y1">
-        ''' The y co-ordinate of the first point.
-        ''' </param>
-        ''' <param name="x2">
-        ''' The x co-ordinate of the second point.
-        ''' </param>
-        ''' <param name="y2">
-        ''' The y co-ordinate of the second point.
-        ''' </param>
+        ''' <param name="x1">The x co-ordinate of the first point.</param>
+        ''' <param name="y1">The y co-ordinate of the first point.</param>
+        ''' <param name="x2">The x co-ordinate of the second point.</param>
+        ''' <param name="y2">The y co-ordinate of the second point.</param>
         Public Shared Sub DrawLine(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive)
             VerifyAccess()
-            BeginInvoke(Sub()
-                            Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
-                            drawingContext1.DrawLine(
-                                  _pen,
-                                 New System.Windows.Point(x1, y1),
-                                 New System.Windows.Point(x2, y2)
-                             )
-                            drawingContext1.Close()
-                            AddRasterizeOperationToQueue()
-                        End Sub)
+            BeginInvoke(
+                Sub()
+                    Dim dc As DrawingContext = _mainDrawing.Append()
+                    dc.DrawLine(
+                        _pen,
+                        New System.Windows.Point(x1, y1),
+                        New System.Windows.Point(x2, y2)
+                    )
+                    dc.Close()
+                    AddRasterizeOperationToQueue()
+                End Sub)
         End Sub
 
         ''' <summary>
         ''' Draws a line of text on the screen at the specified location.
         ''' </summary>
-        ''' <param name="x">
-        ''' The x co-ordinate of the text start point.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the text start point.
-        ''' </param>
-        ''' <param name="text">
-        ''' The text to draw
-        ''' </param>
+        ''' <param name="x">The x co-ordinate of the text start point.</param>
+        ''' <param name="y">The y co-ordinate of the text start point.</param>
+        ''' <param name="text">The text to draw</param>
         Public Shared Sub DrawText(x As Primitive, y As Primitive, text As Primitive)
             If Not text.IsEmpty Then
                 VerifyAccess()
                 BeginInvoke(Sub()
-                                Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
+                                Dim dc As DrawingContext = _mainDrawing.Append()
                                 Dim formattedText1 As New FormattedText(
                                         text,
                                         CultureInfo.CurrentUICulture,
@@ -792,8 +724,8 @@ Namespace Library
                                         _fontSize,
                                         _fillBrush
                                  )
-                                drawingContext1.DrawText(formattedText1, New System.Windows.Point(x, y))
-                                drawingContext1.Close()
+                                dc.DrawText(formattedText1, New System.Windows.Point(x, y))
+                                dc.Close()
                                 AddRasterizeOperationToQueue()
                             End Sub)
             End If
@@ -802,29 +734,40 @@ Namespace Library
         ''' <summary>
         ''' Draws a line of text on the screen at the specified location.
         ''' </summary>
-        ''' <param name="x">
-        ''' The x co-ordinate of the text start point.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the text start point.
-        ''' </param>
-        ''' <param name="width">
-        ''' The maximum available width.  This parameter helps define when the text should wrap.
-        ''' </param>
-        ''' <param name="text">
-        ''' The text to draw.
-        ''' </param>
-        Public Shared Sub DrawBoundText(x As Primitive, y As Primitive, width1 As Primitive, text As Primitive)
+        ''' <param name="x">The x co-ordinate of the text start point.</param>
+        ''' <param name="y">The y co-ordinate of the text start point.</param>
+        ''' <param name="width">The maximum available width.  This parameter helps define when the text should wrap.</param>
+        ''' <param name="text">The text to draw.</param>
+        Public Shared Sub DrawBoundText(x As Primitive, y As Primitive, width As Primitive, text As Primitive)
             If Not text.IsEmpty Then
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
-                                drawingContext1.DrawText(
-                                        New FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, New Typeface(_fontFamily, _fontStyle, _fontWeight, FontStretches.Normal), _fontSize, _fillBrush) With {.MaxTextWidth = width1},
-                                        New System.Windows.Point(x, y))
-                                drawingContext1.Close()
-                                AddRasterizeOperationToQueue()
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        Dim dc = _mainDrawing.Append()
+                        Dim fontTypeFace = New Typeface(
+                            _fontFamily,
+                            _fontStyle,
+                            _fontWeight,
+                            FontStretches.Normal
+                        )
+
+                        Dim formattedText = New FormattedText(
+                            text,
+                            CultureInfo.CurrentUICulture,
+                            FlowDirection.LeftToRight,
+                            fontTypeFace,
+                            _fontSize,
+                            _fillBrush
+                        ) With {.MaxTextWidth = width}
+
+                        dc.DrawText(
+                            formattedText,
+                            New System.Windows.Point(x, y)
+                        )
+
+                        dc.Close()
+                        AddRasterizeOperationToQueue()
+                    End Sub)
             End If
         End Sub
 
@@ -855,9 +798,9 @@ Namespace Library
             If image1 IsNot Nothing Then
                 BeginInvoke(
                     Sub()
-                        Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
-                        drawingContext1.DrawImage(image1, New System.Windows.Rect(x, y, width1, height1))
-                        drawingContext1.Close()
+                        Dim dc As DrawingContext = _mainDrawing.Append()
+                        dc.DrawImage(image1, New System.Windows.Rect(x, y, width1, height1))
+                        dc.Close()
                         AddRasterizeOperationToQueue()
                     End Sub)
             End If
@@ -884,9 +827,9 @@ Namespace Library
             If image1 IsNot Nothing Then
                 BeginInvoke(
                     Sub()
-                        Dim drawingContext1 As DrawingContext = _mainDrawing.Append()
-                        drawingContext1.DrawImage(image1, New System.Windows.Rect(x, y, image1.PixelWidth, image1.PixelHeight))
-                        drawingContext1.Close()
+                        Dim dc As DrawingContext = _mainDrawing.Append()
+                        dc.DrawImage(image1, New System.Windows.Rect(x, y, image1.PixelWidth, image1.PixelHeight))
+                        dc.Close()
                         AddRasterizeOperationToQueue()
                     End Sub)
             End If
@@ -908,9 +851,9 @@ Namespace Library
             VerifyAccess()
             BeginInvoke(
                 Sub()
-                    Dim drawingContext1 = _mainDrawing.Append()
-                    drawingContext1.DrawRectangle(New SolidColorBrush(GetColorFromString(color1)), Nothing, New System.Windows.Rect(x, y, 1.0, 1.0))
-                    drawingContext1.Close()
+                    Dim dc = _mainDrawing.Append()
+                    dc.DrawRectangle(New SolidColorBrush(GetColorFromString(color1)), Nothing, New System.Windows.Rect(x, y, 1.0, 1.0))
+                    dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
         End Sub
@@ -1115,9 +1058,9 @@ Namespace Library
                 Dim renderBitmap As RenderTargetBitmap = _renderBitmap
                 _renderBitmap = New RenderTargetBitmap(e.NewSize.Width + 120, e.NewSize.Height + 120, 96.0, 96.0, PixelFormats.Default)
                 Dim drawingVisual1 As New DrawingVisual
-                Dim drawingContext1 As DrawingContext = drawingVisual1.RenderOpen()
-                drawingContext1.DrawImage(renderBitmap, New System.Windows.Rect(0.0, 0.0, renderBitmap.Width, renderBitmap.Height))
-                drawingContext1.Close()
+                Dim dc As DrawingContext = drawingVisual1.RenderOpen()
+                dc.DrawImage(renderBitmap, New System.Windows.Rect(0.0, 0.0, renderBitmap.Width, renderBitmap.Height))
+                dc.Close()
                 _renderBitmap.Render(drawingVisual1)
                 _bitmapContainer.Width = _renderBitmap.Width
                 _bitmapContainer.Height = _renderBitmap.Height

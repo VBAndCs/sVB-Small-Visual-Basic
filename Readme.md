@@ -8,137 +8,6 @@
 - SB Code Enhancements:
 - ToDo:
 
-# What's new in sVB v2 ?
-1. Each project can contain a Global.sb file. You can create it just by double-clicking the Global.sb item in the project explorer.
-In this file, you can declare global variables, subroutines and functions that you can use in any form in the project via the `Global` type, such as `Global.DoSomething()`
-See the `Show Random Buttons 3` and `Show Dialogs` apps in the samples folders.
-
-2. The toolbox got a new `ComboBox` control.
-
-3. Controls got `RightToLeft`, `ToolTip` and `Errors` properties. 
-The Error property sets the error message to display in the tooltip of the control while its borders becomes red. You can restore the normal state of the control by setting the Error  
-property to an empty string.
-
-4. Controls also got the `OnGotFocus` and `OnLostFocus` events, so, you can use the `OnLostFocus` event with the `Error` property to provide a validation logic for input controls. Each control also has the `Validate` method that fires the `OnLostFocus` event to execute your validation logic (if exists), then checks the Error property and returns `True` if it is empty. And to make things easier for you, the `Validate` method of the form calls the Validate method of each control on the form. If any controls has errors, the process stops and the focus goes to this contols with a beep sound. So, you should call `Me.Validate` before you execute you app logic. Ex:
-```VB
-Sub Button1_OnClick()
-   If Me.Validate() Then
-      Me.ShowMessage("OK", "")
-   EndIf
-EndSub
-```
-
-But if you want to do anything else when a control input is not valid, you can validate each control your self:
-```vb
-Sub Button1_OnClick()
-   ForEach control1 In Me.Controls
-      If control1.Validate() = False Then
-         Sound.PlayBellRing()
-         control1.Focus()
-         ' Do more things here if you want
-         Return
-      EndIf
-   Next
-   
-   Me.ShowMessage("OK", "")
-EndSub
-```
-
-For a full example, see the `Validation` app in the samples folder.
-
-5. sVB now tries to infer the type of an expression, and the type of the function return value.
-
-
-# sVB 1.9 now compiles a project!
-You can design many forms in the form designer, save them to the same folder, which will become the project folder. When you open any form of this project and run it, sVB will compile all the forms into one exe (that will have the name of the folder/project).
-You can show form2 (for example) from form1 using this code:
-```vb
-   form2 = Forms.ShowForm("form2", {1, 2, 3})
-   form2.BackColor = Colors.AliceBlue
-```
-
-The ShowForm method will do the following:
-1. Load the design of the form2 from its xaml file.
-2. pass the argsArr data sent to its second parameter to the ArgsArr property of the form, so you can use it as you want. The argsArr can be a single value, and array of values, or a dynamic object with dynamic properties, so, you can pass any data you want between the forms.
-3. Execute the code written in the global area of the code file of form2. You can use Form2.ArgsArr in this global area to initialize the form. Ex:
-```VB
-  TextBox1.Text = Me.ArgsArr
-```
-
-Note that global code is executed only when the form is opened for the first time, or after it is closed then re-opened. It will not be executed if you hided or minimized the form then showed it again.
-4. Show Form2.
-5. Fire the OnShown Event of the form. You can use it also to initialize the form:
-```vb
-Sub Form2_OnShown()
-   data = Me.ArgsArr
-   TextBox1.Text = data[3]
-EndSub
-```
-
-This event has an advantages over using the global code area to initialize the form, that it will be executed every time you call Forms.ShowForm, so, you can use the passed argsArr data every time you show the form even it is still open.
-For a simple sample, see the `Random Buttons 2` sample in the samples folder. It is a modified version of the `Random Buttons` sample, which uses code to define and show another form. In the new version, the second form is designed by the form designer.
-
-Note that the form you run the program from will be main form of the project (the startup form). This allows change the startup form as you want by just open the form code and press F5, so you can easily test project forms.
-
-# Show a Dialog
-You can show the form as a dialog (modal window), by calling `Forms.ShowDialog` instead of Forms.ShowForm. The dialog window stops executing the code until the user closes it, so, you can't access the dialog form while it is displayed. So, you need to pass all the date throw the argsArr argument, and process it in the in the dialog form.
-When you show a dialog, you want to know what action the user took to close the dialog. He may accept what you offer him by clocking the `OK` or `Yes` buttons, refuse by clicking `No` button, or cancels the operation by clicking the `Cancel` button of closing the form. So, you need to indicate such actions when you write these buttons code, by setting the suitable value for the Form.DialogResult property of the form:
-```vb
-
-LblMsg.Text = Me.ArgsArr
-
-
-'------------------------------------------------
-Sub BtnYes_OnClick()
-   Me.DialogResult = DialogResults.Yes
-   Me.Close()
-EndSub
-
-'------------------------------------------------
-Sub BtnNo_OnClick()
-   Me.DialogResult = DialogResults.No
-   Me.Close()
-EndSub
-
-
-'------------------------------------------------
-Sub BtnCancel_OnClick()
-   Me.Close()
-EndSub
-```
-
-Note that the `DialogResults` type contains the names of famous dialog buttons, and it has a nice auto completion suuport in the code editor, but you can not use it and use any other names you want.
-`Cancel` is the default value of the `DialogResult`, so we disn't need to set it in the `BtnCancel_OnClick()`.
-Now, how can we use the `DialogResult` value in the form that showed the dialog?
-It is simple: the `DialogResult` value will be the return value from the `Forms.ShowDialog`, so, it is easy to use it like this:
-```vb
-Sub Button1_OnClick()
-   result = Forms.ShowDialog(
-      "form2", "Do you want to save the changes?")
-   
-   If result = DialogResults.Yes Then
-      TextBox1.Text = "User accepted to save changes."
-   ElseIf result = DialogResults.No Then
-      TextBox1.Text = "User refused to save changes."
-   Else
-      TextBox1.Text = "User canceled the operation."
-   EndIf
-   
-EndSub
-```
-
-You can try this code in the `Show Dialog` sample in the samples folder.
-
-# Form communications:
-But, what if you want to pass some data back from Form2 to form1?
-If Form2 is shown as a normal form, you can pass the data via the its Tag or ArgsArr properties. But this is not possible if Form2 is shown as a dialog, because it will be closed before returning to form1, so all its properties are lost.
-One possible way to solve this right now, is using the DialogResult as an array, so its first item will be the button result, and the other items are the data you want to pass.
-But this can be confusing, so, a better solution will be available soon in vSB 2.0, by defining a global variables in the `Global.sb` file, and use these variables to communicate between forms.
-
-# Project Explorer:
-The form designer now shows a list of project files (the files exists in the same directory of the current opened form). You can use this list to rename the file or delete it directly. 
-This list is different than the `open forms list`, which show the form names of all opened forms even they don't belong to the same project (folder). You can use this list to close the opened form (this will not delete if from its project) or to change the name of the form (this will not change its file name). This list is more like the VS.NET tabs that shows the form design or code files.
-
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
 
@@ -637,3 +506,126 @@ EndIf
 37. All controls now have the Tag property to allow you to store additional data related to the control.
 
 38. The Array class now has Find and Join methods.
+
+
+39. Starting from sVB 1.9, you can compile a project!
+You can design many forms in the form designer, save them to the same folder, which will become the project folder. When you open any form of this project and run it, sVB will compile all the forms into one exe (that will have the name of the folder/project).
+You can show form2 (for example) from form1 using this code:
+```vb
+   form2 = Forms.ShowForm("form2", {1, 2, 3})
+   form2.BackColor = Colors.AliceBlue
+```
+
+The ShowForm method will do the following:
+* Load the design of the form2 from its xaml file.
+
+* pass the argsArr data sent to its second parameter to the ArgsArr property of the form, so you can use it as you want. The argsArr can be a single value, and array of values, or a dynamic object with dynamic properties, so, you can pass any data you want between the forms.
+
+* Execute the code written in the global area of the code file of form2. You can use Form2.ArgsArr in this global area to initialize the form. Ex:
+```VB
+  TextBox1.Text = Me.ArgsArr
+```
+
+Note that global code is executed only when the form is opened for the first time, or after it is closed then re-opened. It will not be executed if you hided or minimized the form then showed it again.
+* Show Form2.
+
+* Fire the OnShown Event of the form. You can use it also to initialize the form:
+```vb
+Sub Form2_OnShown()
+   data = Me.ArgsArr
+   TextBox1.Text = data[3]
+EndSub
+```
+
+This event has an advantages over using the global code area to initialize the form, that it will be executed every time you call Forms.ShowForm, so, you can use the passed argsArr data every time you show the form even it is still open.
+For a simple sample, see the `Random Buttons 2` sample in the samples folder. It is a modified version of the `Random Buttons` sample, which uses code to define and show another form. In the new version, the second form is designed by the form designer.
+
+Note that the form you run the program from will be main form of the project (the startup form). This allows change the startup form as you want by just open the form code and press F5, so you can easily test project forms.
+
+40. Show a Dialog:
+You can show the form as a dialog (modal window), by calling `Forms.ShowDialog` instead of Forms.ShowForm. The dialog window stops executing the code until the user closes it, so, you can't access the dialog form while it is displayed. So, you need to pass all the date throw the argsArr argument, and process it in the in the dialog form.
+When you show a dialog, you want to know what action the user took to close the dialog. He may accept what you offer him by clocking the `OK` or `Yes` buttons, refuse by clicking `No` button, or cancels the operation by clicking the `Cancel` button of closing the form. So, you need to indicate such actions when you write these buttons code, by setting the suitable value for the Form.DialogResult property of the form:
+```vb
+LblMsg.Text = Me.ArgsArr
+
+Sub BtnYes_OnClick()
+   Me.DialogResult = DialogResults.Yes
+   Me.Close()
+EndSub
+
+Sub BtnNo_OnClick()
+   Me.DialogResult = DialogResults.No
+   Me.Close()
+EndSub
+
+Sub BtnCancel_OnClick()
+   Me.Close()
+EndSub
+```
+
+Note that the `DialogResults` type contains the names of famous dialog buttons, and it has a nice auto completion suuport in the code editor, but you can not use it and use any other names you want.
+`Cancel` is the default value of the `DialogResult`, so we disn't need to set it in the `BtnCancel_OnClick()`.
+Now, how can we use the `DialogResult` value in the form that showed the dialog?
+It is simple: the `DialogResult` value will be the return value from the `Forms.ShowDialog`, so, it is easy to use it like this:
+```vb
+Sub Button1_OnClick()
+   result = Forms.ShowDialog(
+      "form2", "Do you want to save the changes?")
+   
+   If result = DialogResults.Yes Then
+      TextBox1.Text = "User accepted to save changes."
+   ElseIf result = DialogResults.No Then
+      TextBox1.Text = "User refused to save changes."
+   Else
+      TextBox1.Text = "User canceled the operation."
+   EndIf
+EndSub
+```
+
+You can try this code in the `Show Dialog` sample in the samples folder.
+
+41. Project Explorer:
+starting from sVB 1.9, the form designer shows a list of project files (the files exists in the same directory of the current opened form). You can use this list to rename the file or delete it directly. 
+This list is different than the `open forms list`, which show the form names of all opened forms even they don't belong to the same project (folder). You can use this list to close the opened form (this will not delete if from its project) or to change the name of the form (this will not change its file name). This list is more like the VS.NET tabs that shows the form design or code files.
+
+42. Starting from sVB 2.0, each project can contain a Global.sb file. You can create it just by double-clicking the Global.sb item in the project explorer.
+In this file, you can declare global variables, subroutines and functions that you can use in any form in the project via the `Global` type, such as `Global.DoSomething()`
+See the `Show Random Buttons 3` and `Show Dialogs` apps in the samples folders.
+
+43. The toolbox got a new `ComboBox` control.
+
+44. Controls got `RightToLeft`, `ToolTip` and `Errors` properties. 
+The Error property sets the error message to display in the tooltip of the control while its borders becomes red. You can restore the normal state of the control by setting the Error  
+property to an empty string.
+
+45. Controls also got the `OnGotFocus` and `OnLostFocus` events, so, you can use the `OnLostFocus` event with the `Error` property to provide a validation logic for input controls. Each control also has the `Validate` method that fires the `OnLostFocus` event to execute your validation logic (if exists), then checks the Error property and returns `True` if it is empty. And to make things easier for you, the `Validate` method of the form calls the Validate method of each control on the form. If any controls has errors, the process stops and the focus goes to this contols with a beep sound. So, you should call `Me.Validate` before you execute you app logic. Ex:
+```VB
+Sub Button1_OnClick()
+   If Me.Validate() Then
+      Me.ShowMessage("OK", "")
+   EndIf
+EndSub
+```
+
+But if you want to do anything else when a control input is not valid, you can validate each control your self:
+```vb
+Sub Button1_OnClick()
+   ForEach control1 In Me.Controls
+      If control1.Validate() = False Then
+         Sound.PlayBellRing()
+         control1.Focus()
+         ' Do more things here if you want
+         Return
+      EndIf
+   Next
+   
+   Me.ShowMessage("OK", "")
+EndSub
+```
+
+For a full example, see the `Validation` app in the samples folder.
+
+46. Starting from V2.1, sVB tries to infer the type of an expression, and the type of the function return value.
+
+47. sVB 2.2 supports creating custom complex shapes using the GeometricPath type.
+For more info, see the `Geometric Path` app in the samples folder.

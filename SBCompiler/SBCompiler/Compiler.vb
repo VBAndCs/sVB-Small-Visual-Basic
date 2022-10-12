@@ -179,8 +179,9 @@ Namespace Microsoft.SmallVisualBasic
                 Throw New ArgumentNullException("directory")
             End If
 
-            Dim codeGenerator As New CodeGenerator(parsers, _TypeInfoBag, outputName, directory)
-            codeGenerator.GenerateExecutable()
+            Dim gen As New CodeGenerator(
+                    parsers, _typeInfoBag, outputName, directory)
+            gen.GenerateExecutable()
             CopyLibraryAssemblies(directory)
             Return _errors
         End Function
@@ -195,7 +196,6 @@ Namespace Microsoft.SmallVisualBasic
             End Try
 
             For Each libraryFile In _libraryFiles
-
                 Try
                     fileName = Path.GetFileName(libraryFile)
                     IO.File.Copy(libraryFile, Path.Combine(directory, fileName), overwrite:=True)

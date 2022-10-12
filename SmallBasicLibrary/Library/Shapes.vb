@@ -19,12 +19,8 @@ Namespace Library
         ''' <summary>
         ''' Adds a rectangle shape with the specified width and height.
         ''' </summary>
-        ''' <param name="width">
-        ''' The width of the rectangle shape.
-        ''' </param>
-        ''' <param name="height">
-        ''' The height of the rectangle shape.
-        ''' </param>
+        ''' <param name="width">The width of the rectangle shape.</param>
+        ''' <param name="height">The height of the rectangle shape.</param>
         ''' <returns>
         ''' The Rectangle shape that was just added to the Graphics Window.
         ''' </returns>
@@ -45,6 +41,26 @@ Namespace Library
                 End Sub)
             Return name
         End Function
+
+        ''' <summary>
+        ''' Add the geometic path that you create using the GeometricPath type to shapes.
+        ''' </summary>
+        ''' <returns></returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function AddGeometricPath() As Primitive
+            Dim name = GenerateNewName("GeoPath")
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim path = GeometricPath._path
+                    path.Stroke = GraphicsWindow._pen.Brush
+                    path.StrokeThickness = GraphicsWindow._pen.Thickness
+                    path.Fill = GraphicsWindow._fillBrush
+                    GraphicsWindow.AddShape(name, path)
+                End Sub)
+            Return name
+        End Function
+
 
         ''' <summary>
         ''' Adds an ellipse shape with the specified width and height.

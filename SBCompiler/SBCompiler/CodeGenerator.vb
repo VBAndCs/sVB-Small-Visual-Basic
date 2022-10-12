@@ -76,14 +76,14 @@ Namespace Microsoft.SmallVisualBasic
 
 
         Public Sub GenerateExecutable(Optional forGlobalHelp As Boolean = False)
-            Dim assemblyName As New AssemblyName(_outputName)
-            Dim assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
-                assemblyName,
+            Dim asmName As New AssemblyName(_outputName)
+            Dim asm = AppDomain.CurrentDomain.DefineDynamicAssembly(
+                asmName,
                 AssemblyBuilderAccess.Save,
                 _directory
             )
 
-            Dim moduleBuilder = assemblyBuilder.DefineDynamicModule(_outputName & ".exe", emitSymbolInfo:=True)
+            Dim moduleBuilder = asm.DefineDynamicModule(_outputName & ".exe", emitSymbolInfo:=True)
 
             Dim mainFormInit As MethodInfo = Nothing
             Dim formInit As MethodInfo = Nothing
@@ -97,10 +97,11 @@ Namespace Microsoft.SmallVisualBasic
                 End If
             Next
 
-            EmitMain(If(mainFormInit, formInit), moduleBuilder)
-
-            assemblyBuilder.SetEntryPoint(_entryPoint, PEFileKinds.WindowApplication)
-            If Not forGlobalHelp Then assemblyBuilder.Save(_outputName & ".exe")
+            If Not forGlobalHelp Then
+                EmitMain(If(mainFormInit, formInit), moduleBuilder)
+                asm.SetEntryPoint(_entryPoint, PEFileKinds.WindowApplication)
+                asm.Save(_outputName & ".exe")
+            End If
         End Sub
 
         Dim globalScope As CodeGenScope
