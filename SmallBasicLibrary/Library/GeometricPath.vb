@@ -4,6 +4,9 @@ Imports System.Windows.Shapes
 
 Namespace Library
 
+    ''' <summary>
+    ''' Allows you to combine shapes into one path, and create new geometric figures from line and arc segments, so you can create new complex custom shapes. You can add the geometric path to the shapes collection by calling the Shapes.AddGeometricPath() method, then you can apply any rotation or animation on it as you do with any other normal shape.
+    ''' </summary>
     <SmallBasicType>
     Public Class GeometricPath
         Friend Shared _path As Path

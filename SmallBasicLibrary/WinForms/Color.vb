@@ -90,6 +90,14 @@ Namespace WinForms
             End Try
         End Function
 
+        Friend Shared Function GetPen(penColor As Primitive, penWidth As Primitive) As Pen
+            Return New Pen(GetBrush(penColor), penWidth)
+        End Function
+
+        Friend Shared Function GetBrush(brushColor As Primitive) As Brush
+            Return New SolidColorBrush(FromString(brushColor))
+        End Function
+
         ''' <summary>
         ''' Returms the English name name of the color if its defined.
         ''' </summary>

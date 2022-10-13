@@ -25,10 +25,29 @@ GraphicsWindow.PenWidth = 5
 GeometricPath.CreatePath()
 GeometricPath.CreateFigure(100, 100)
 GeometricPath.AddLineSegment(50, 150, True)
-GeometricPath.AddArcSegment(100, 200, 20, 30, 30, False, True, True)
+GeometricPath.AddArcSegment(
+   100, 200,
+   20, 30,
+   30,
+   False,
+   True,
+   True
+)
+
 GeometricPath.AddLineSegment(200, 200, True)
-GeometricPath.AddBezierSegment(210, 210, 230, 230, 250, 150, True)
-GeometricPath.AddQuadraticBezierSegment(230, 110, 200, 100, True)
+GeometricPath.AddBezierSegment(
+   210, 210, ' First control point
+   230, 230, ' Seccond control point
+   250, 150, ' End point
+   True
+)
+
+GeometricPath.AddQuadraticBezierSegment(
+   230, 110, ' Contol point
+   200, 100, ' End point
+   True
+)
+
 GeometricPath.AddLineSegment(100, 100, True)
 Sh2 = Shapes.AddGeometricPath()
 Shapes.Move(Sh2, 130, 100)
@@ -43,7 +62,12 @@ GeometricPath.CreatePath()
 GeometricPath.AddLine(100, 100, 400, 400)
 GeometricPath.AddRectangle(100, 100, 200, 200)
 GeometricPath.AddEllipse(150, 150, 100, 100)
-GeometricPath.AddTriangle(300, 300, 400, 200, 400, 400)
+GeometricPath.AddTriangle(
+   300, 300,
+   400, 200,
+   400, 400
+)
+
 Sh3 = Shapes.AddGeometricPath()
 Shapes.Move(Sh3, 300, 0)
 Shapes.Rotate(Sh3, 45)

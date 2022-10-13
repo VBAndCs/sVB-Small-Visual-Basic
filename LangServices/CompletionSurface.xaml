@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Canvas x:Class="Microsoft.SmallVisualBasic.LanguageService.CompletionAdornmentSurface" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:l="clr-namespace:Microsoft.SmallVisualBasic.LanguageService" x:Name="completionSurface">
+<Canvas x:Class="Microsoft.SmallVisualBasic.LanguageService.CompletionSurface" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:l="clr-namespace:Microsoft.SmallVisualBasic.LanguageService" x:Name="completionSurface">
   <FrameworkElement.Resources>
     <ResourceDictionary>
       <DataTemplate x:Key="{DataTemplateKey {x:Type l:CompletionItemWrapper}}" DataType="{x:Type l:CompletionItemWrapper}">

@@ -41,7 +41,7 @@ Namespace WinForms
                         Dim strValue = CStr(value)
                         GetLabel(labelName).Content = strValue
                     Catch ex As Exception
-                        Control.RepottyPropertyError(labelName, "Text", value, ex)
+                        Control.RepotPropertyError(labelName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -85,5 +85,38 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Sub
+
+        ''' <summary>
+        ''' Draws the shape defined by GeometricPath on the label
+        ''' </summary>
+        ''' <param name="penColor">The color used to draw the shape outline</param>
+        ''' <param name="penWidth">The width of the shape outline</param>
+        ''' <param name="brushColor">The color used to fill the shape</param>
+        <ExMethod>
+        Public Shared Sub AddGeometricPath(
+                         labelName As Primitive,
+                         penColor As Primitive,
+                         penWidth As Primitive,
+                         brushColor As Primitive
+                    )
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim path = GeometricPath._path
+                        path.Fill = Color.GetBrush(brushColor)
+                        path.Stroke = Color.GetBrush(penColor)
+                        path.StrokeThickness = penWidth
+
+                        Dim lbl = GetLabel(labelName)
+                        lbl.Width = Double.NaN
+                        lbl.Height = Double.NaN
+                        lbl.Content = path
+                    Catch ex As Exception
+                        Control.ReportSubError(labelName, "AddGeometricPath", ex)
+                    End Try
+                End Sub)
+        End Sub
+
     End Class
 End Namespace

@@ -7,7 +7,7 @@ Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Microsoft.SmallVisualBasic.LanguageService
-    Partial Public Class CompletionAdornmentSurface
+    Partial Public Class CompletionSurface
         Inherits Canvas
         Implements IAdornmentSurface
 
@@ -45,7 +45,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Public Sub AddAdornment(adornment As IAdornment) Implements IAdornmentSurface.AddAdornment
-            _adornment = TryCast(adornment, CompletionAdornment)
+            _Adornment = TryCast(adornment, CompletionAdornment)
             Dispatcher.BeginInvoke(
                     DispatcherPriority.Normal,
                     CType(Function()
@@ -57,7 +57,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Public Sub RemoveAdornment(adornment As IAdornment) Implements IAdornmentSurface.RemoveAdornment
-            _adornment = Nothing
+            _Adornment = Nothing
             CompletionPopup.IsOpen = False
         End Sub
 
@@ -86,8 +86,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Private Sub OnCompletionClosed(sender As Object, e As EventArgs)
-            If _adornment IsNot Nothing Then
-                _adornment.Dismiss(force:=False)
+            If _Adornment IsNot Nothing Then
+                _Adornment.Dismiss(force:=False)
             End If
         End Sub
 
@@ -104,8 +104,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Private Sub DisplayListBox()
-            If _adornment IsNot Nothing Then
-                Dim span = _adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
+            If _Adornment IsNot Nothing Then
+                Dim span = _Adornment.ReplaceSpan.GetSpan(textView.TextSnapshot)
                 Dim textLine = textView.FormattedTextLines.GetTextLineContainingPosition(span.Start)
 
                 If textLine IsNot Nothing Then
@@ -330,7 +330,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Function
 
         Private Sub OnCompletionListDoubleClicked(sender As Object, e As MouseButtonEventArgs)
-            If _adornment IsNot Nothing Then
+            If _Adornment IsNot Nothing Then
                 Dim completionItemWrapper As CompletionItemWrapper = TryCast(Me.CompletionListBox.SelectedItem, CompletionItemWrapper)
 
                 If completionItemWrapper IsNot Nothing Then

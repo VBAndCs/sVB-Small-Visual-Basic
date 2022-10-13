@@ -15,7 +15,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
 
         Public Overrides Sub KeyDown(textView As IAvalonTextView, args As KeyEventArgs)
-            Dim completionSurface = textView.Properties.GetProperty(Of CompletionAdornmentSurface)()
+            Dim completionSurface = textView.Properties.GetProperty(Of CompletionSurface)()
 
             If completionSurface IsNot Nothing AndAlso completionSurface.IsAdornmentVisible Then
                 Dim completionListBox = completionSurface.CompletionListBox
@@ -64,10 +64,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Public Overrides Sub KeyUp(textView As IAvalonTextView, args As KeyEventArgs)
-            Dim adornmentSurface As CompletionAdornmentSurface = Nothing
+            Dim adornmentSurface As CompletionSurface = Nothing
 
             If (args.Key = Key.LeftCtrl OrElse args.Key = Key.RightCtrl) AndAlso
-                        textView.Properties.TryGetProperty(Of CompletionAdornmentSurface)(adornmentSurface) AndAlso
+                        textView.Properties.TryGetProperty(Of CompletionSurface)(adornmentSurface) AndAlso
                         adornmentSurface.IsAdornmentVisible Then
                 adornmentSurface.UnfadeCompletionList()
             End If
@@ -76,9 +76,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Public Overrides Sub TextInput(textView As IAvalonTextView, args As TextCompositionEventArgs)
-            Dim completionSurface As CompletionAdornmentSurface = Nothing
+            Dim completionSurface As CompletionSurface = Nothing
 
-            If textView.Properties.TryGetProperty(GetType(CompletionAdornmentSurface), completionSurface) Then
+            If textView.Properties.TryGetProperty(GetType(CompletionSurface), completionSurface) Then
                 If completionSurface.IsAdornmentVisible Then
                     Select Case args.Text
                         Case "+", "-", "*", "/"
@@ -109,11 +109,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Private Function CommitConditionally(
-                                textView As IAvalonTextView,
-                                completionSurface As CompletionAdornmentSurface,
-                                Optional extraText As String = "",
-                                Optional showCompletionAdornmentAgain As Boolean = False
-                       ) As Boolean
+                        textView As IAvalonTextView,
+                        completionSurface As CompletionSurface,
+                        Optional extraText As String = "",
+                        Optional showCompletionAdornmentAgain As Boolean = False
+                     ) As Boolean
 
             If Not completionSurface.IsFaded AndAlso completionSurface.CompletionListBox.SelectedItem IsNot Nothing Then
                 Dim editorOperations = EditorOperationsProvider.GetEditorOperations(textView)
@@ -125,10 +125,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim replaceSpan = provider.GetReplacementSpane()
 
                 Dim key = item.HistoryKey
-                If key <> "" Then CompletionProvider.compHistory(key) = item.DisplayName
+                If key <> "" Then CompletionProvider.CompHistory(key) = item.DisplayName
 
-                If extraText.EndsWith("( ") AndAlso (repWith.EndsWith("(") OrElse repWith.EndsWith(")")) Then
-                    extraText = ""
+                If repWith.EndsWith("(") OrElse repWith.EndsWith(")") Then
+                    If extraText.EndsWith("( ") Then extraText = ""
+                    Dim pos = textView.Caret.Position.TextInsertionIndex
+                    Dim line = textView.TextSnapshot.GetLineFromPosition(pos)
+                    Dim txt = line.GetText().Substring(pos - line.Start)
+                    If LineScanner.GetFirstToken(txt, 0).Type = TokenType.LeftParens Then
+                        repWith = repWith.TrimEnd("("c, ")"c)
+                    End If
                 End If
 
                 Dim leadingSpace = ""
@@ -168,7 +174,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         End Function
 
-        Private Function CommitItem(textView As IAvalonTextView, adornmentSurface As CompletionAdornmentSurface) As Boolean
+        Private Function CommitItem(textView As IAvalonTextView, adornmentSurface As CompletionSurface) As Boolean
             Dim compList = adornmentSurface.CompletionListBox
             Dim itemWrapper = TryCast(compList.SelectedItem, CompletionItemWrapper)
             Dim provider As CompletionProvider = Nothing

@@ -23,8 +23,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         <AdornmentDiscriminator(GetType(CompletionAdornment))>
         <Export(GetType(AdornmentSurfaceFactory))>
         Public Function CreateCompletionItemsSurface(textView As IAvalonTextView) As IAdornmentSurface
-            Dim completionAdornmentSurface As CompletionAdornmentSurface = New CompletionAdornmentSurface(textView)
-            textView.Properties.AddProperty(GetType(CompletionAdornmentSurface), completionAdornmentSurface)
+            Dim completionAdornmentSurface As CompletionSurface = New CompletionSurface(textView)
+            textView.Properties.AddProperty(GetType(CompletionSurface), completionAdornmentSurface)
             Return completionAdornmentSurface
         End Function
     End Class

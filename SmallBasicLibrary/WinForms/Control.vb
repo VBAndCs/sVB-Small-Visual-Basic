@@ -46,7 +46,7 @@ Namespace WinForms
             End If
         End Sub
 
-        Shared Sub RepottyPropertyError(key As String, memberName As String, value As String, ex As Exception)
+        Shared Sub RepotPropertyError(key As String, memberName As String, value As String, ex As Exception)
             Dim names = If(key.Contains("."),
                 key.Split("."),
                 {key, key}
@@ -104,7 +104,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).Tag = value.AsString()
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "Tag", value, ex)
+                        RepotPropertyError(controlName, "Tag", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -136,7 +136,7 @@ Namespace WinForms
                         obj.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
                         Wpf.Canvas.SetLeft(obj, CDbl(value))
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "Left", value, ex)
+                        RepotPropertyError(controlName, "Left", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -167,7 +167,7 @@ Namespace WinForms
                         obj.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
                         Wpf.Canvas.SetTop(obj, value)
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "Top", value, ex)
+                        RepotPropertyError(controlName, "Top", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -209,7 +209,7 @@ Namespace WinForms
                             obj.Width = value
                         End If
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "Width", value, ex)
+                        RepotPropertyError(controlName, "Width", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -251,7 +251,7 @@ Namespace WinForms
                             obj.Height = value
                         End If
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "Height", value, ex)
+                        RepotPropertyError(controlName, "Height", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -280,7 +280,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).IsEnabled = value
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "Enabled", value, ex)
+                        RepotPropertyError(controlName, "Enabled", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -309,11 +309,10 @@ Namespace WinForms
                     Try
                         GetControl(controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden)
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "Visible", value, ex)
+                        RepotPropertyError(controlName, "Visible", value, ex)
                     End Try
                 End Sub)
         End Sub
-
 
         ''' <summary>
         ''' Gets or sets whether the control content is displayed from right to left.
@@ -337,7 +336,7 @@ Namespace WinForms
                        Try
                            GetControl(controlName).FlowDirection = If(CBool(Value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
                        Catch ex As Exception
-                           RepottyPropertyError(controlName, "RightToLeft", Value, ex)
+                           RepotPropertyError(controlName, "RightToLeft", Value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -393,6 +392,35 @@ Namespace WinForms
                  End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Releases the mouse if the currrent control captured it by calling the CaptureMouse method.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub ReleaseMouse(controlName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetControl(controlName).ReleaseMouseCapture()
+                    Catch ex As Exception
+                        ReportSubError(controlName, "ReleaseMouse", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Makes the current control owns the mouse and its events, until you call the ReleaseMouse function.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub CaptureMouse(controlName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Input.Mouse.Capture(GetControl(controlName), Input.CaptureMode.SubTree)
+                    Catch ex As Exception
+                        ReportSubError(controlName, "CaptureMouse", ex)
+                    End Try
+                End Sub)
+        End Sub
 
         Public Shared ReadOnly ErrorProperty As _
                    DependencyProperty = DependencyProperty.RegisterAttached("Error",
@@ -444,7 +472,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "Error", value, ex)
+                        RepotPropertyError(controlName, "Error", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -477,7 +505,7 @@ Namespace WinForms
                         c.ToolTip = tip
 
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "ToolTip", value, ex)
+                        RepotPropertyError(controlName, "ToolTip", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -596,7 +624,7 @@ Namespace WinForms
                         obj.BeginAnimation(BackColorProperty, Nothing)
                         obj.SetValue(BackColorProperty, _color)
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "BackColor", value, ex)
+                        RepotPropertyError(controlName, "BackColor", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -639,7 +667,7 @@ Namespace WinForms
                            c.Foreground = New SolidColorBrush(_color)
                            c.SetValue(ForeColorProperty, value.ToString())
                        Catch ex As Exception
-                           RepottyPropertyError(controlName, "ForeColor", value, ex)
+                           RepotPropertyError(controlName, "ForeColor", value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -668,7 +696,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).FontFamily = New Media.FontFamily(Value)
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "FontName", Value, ex)
+                        RepotPropertyError(controlName, "FontName", Value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -696,7 +724,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).FontSize = Value
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "FontSize", Value, ex)
+                        RepotPropertyError(controlName, "FontSize", Value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -724,7 +752,7 @@ Namespace WinForms
                        Try
                            GetControl(controlName).FontWeight = If(CBool(Value), FontWeights.Bold, FontWeights.Normal)
                        Catch ex As Exception
-                           RepottyPropertyError(controlName, "FontBold", Value, ex)
+                           RepotPropertyError(controlName, "FontBold", Value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -752,7 +780,7 @@ Namespace WinForms
                        Try
                            GetControl(controlName).FontStyle = If(CBool(Value), FontStyles.Italic, FontStyles.Normal)
                        Catch ex As Exception
-                           RepottyPropertyError(controlName, "FontItalic", Value, ex)
+                           RepotPropertyError(controlName, "FontItalic", Value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -793,7 +821,7 @@ Namespace WinForms
                     Try
                         SetAngle(GetControl(controlName), value)
                     Catch ex As Exception
-                        RepottyPropertyError(controlName, "Angle", value, ex)
+                        RepotPropertyError(controlName, "Angle", value, ex)
                     End Try
                 End Sub)
         End Sub

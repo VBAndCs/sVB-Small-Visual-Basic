@@ -39,7 +39,7 @@ Namespace WinForms
                     Try
                         GetButton(buttonName).Content = CStr(value)
                     Catch ex As Exception
-                        Control.RepottyPropertyError(buttonName, "Text", value, ex)
+                        Control.RepotPropertyError(buttonName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub

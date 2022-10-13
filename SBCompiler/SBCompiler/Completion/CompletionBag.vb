@@ -11,6 +11,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
         Friend NextToOperator As Boolean
         Public ForHelp As Boolean
         Public IsMethod As Boolean
+        Friend IsHandler As Boolean
         Public ReadOnly Property ParseTree As List(Of Statement)
         Public ReadOnly Property GlobalParseTree As List(Of Statement)
         Public ReadOnly Property SymbolTable As SymbolTable

@@ -198,7 +198,17 @@ Namespace Microsoft.SmallVisualBasic
             For Each libraryFile In _libraryFiles
                 Try
                     fileName = Path.GetFileName(libraryFile)
-                    IO.File.Copy(libraryFile, Path.Combine(directory, fileName), overwrite:=True)
+                    IO.File.Copy(libraryFile, Path.Combine(directory, fileName))
+                    If fileName.ToLower().EndsWith(".exe") Then
+                        Dim dir = IO.Path.GetDirectoryName(libraryFile)
+                        For Each file In IO.Directory.GetFiles(dir)
+                            Select Case IO.Path.GetExtension(file).ToLower().TrimStart("."c)
+                                Case "bmp", "jpg", "jpeg", "png", "gif", "txt", "xaml"
+                                    fileName = Path.GetFileName(file)
+                                    IO.File.Copy(file, Path.Combine(directory, fileName))
+                            End Select
+                        Next
+                    End If
                 Catch
                 End Try
             Next

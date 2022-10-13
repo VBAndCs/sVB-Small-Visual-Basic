@@ -1,0 +1,103 @@
+
+CreateFigure1()
+CreateFigure2()
+CreateFigure3()
+
+
+LastX = 0
+LastY = 0
+DraggedLabel = ""
+Label2.OnMouseMove = Label1_OnMouseMove
+Label3.OnMouseMove = Label1_OnMouseMove
+
+Sub Label1_OnMouseMove()
+   If Event.IsLeftButtonDown Then ' Drag the figure
+      curlablel = Event.SenderControl
+      If DraggedLabel = "" Then
+         DraggedLabel = curlablel
+      ElseIf DraggedLabel <> curlablel Then
+         Return
+      EndIf
+      
+      
+      curlablel.Left = curlablel.Left + Event.MouseX - LastX
+      curlablel.Top = curlablel.Top + Event.MouseY - LastY
+      Event.Handled = True
+      
+   Else
+      DraggedLabel = ""
+   EndIf
+   
+   LastX = Event.MouseX
+   LastY = Event.MouseY
+EndSub
+
+
+'------------------------------------------------
+Sub CreateFigure1()
+   ' Crate a figure to draw a new custom shape
+   GeometricPath.CreateFigure(50, 0)
+   GeometricPath.AddLineSegment(0, 50, True)
+   GeometricPath.AddLineSegment(50, 100, True)
+   GeometricPath.AddLineSegment(150, 100, False)
+   GeometricPath.AddLineSegment(200, 50, True)
+   GeometricPath.AddLineSegment(150, 0, True)
+   GeometricPath.AddLineSegment(50, 0, True)
+   
+   Label1.AddGeometricPath(Colors.Black, 2, Colors.Orange)
+   Label1.Rotate(45)
+EndSub
+
+
+'------------------------------------------------
+Sub CreateFigure2()
+   
+   ' Create a new empty geometric path
+   GeometricPath.CreatePath()
+   GeometricPath.CreateFigure(50, 0)
+   GeometricPath.AddLineSegment(0, 50, True)
+   GeometricPath.AddArcSegment(
+      50, 100,
+      20, 30,
+      30,
+      False,
+      True,
+      True
+   )
+   
+   GeometricPath.AddLineSegment(150, 100, True)
+   GeometricPath.AddBezierSegment(
+      160, 110, ' First control point
+      180, 130, ' Seccond control point
+      200, 50, ' End point
+      True
+   )
+   
+   GeometricPath.AddQuadraticBezierSegment(
+      180, 10, ' Contol point
+      150, 0, ' End point
+      True
+   )
+   
+   GeometricPath.AddLineSegment(50, 0, True)
+   Label2.AddGeometricPath(Colors.Black, 5, Colors.Transparent)
+   
+EndSub
+
+
+'------------------------------------------------
+Sub CreateFigure3()
+   
+   ' You can also combine some basic shapes in one path
+   GeometricPath.CreatePath()
+   GeometricPath.AddLine(0, 0, 300, 300)
+   GeometricPath.AddRectangle(0, 0, 200, 200)
+   GeometricPath.AddEllipse(50, 50, 100, 100)
+   GeometricPath.AddTriangle(
+      200, 200,
+      300, 100,
+      300, 300
+   )
+   
+   Label3.AddGeometricPath(Colors.Red, 2, Colors.Yellow)
+EndSub

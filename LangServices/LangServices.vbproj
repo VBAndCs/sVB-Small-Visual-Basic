@@ -97,8 +97,8 @@
     <Compile Include="CompletionAdornment.vb" />
     <Compile Include="CompletionAdornmentComponent.vb" />
     <Compile Include="CompletionProvider.vb" />
-    <Compile Include="completionAdornmentSurface.xaml.vb">
-      <DependentUpon>completionAdornmentSurface.xaml</DependentUpon>
+    <Compile Include="CompletionSurface.xaml.vb">
+      <DependentUpon>CompletionSurface.xaml</DependentUpon>
     </Compile>
     <Compile Include="CompletionItemDocumentation.vb" />
     <Compile Include="CompletionItemWrapper.vb" />
@@ -140,7 +140,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="completionAdornmentSurface.xaml">
+    <Page Include="CompletionSurface.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

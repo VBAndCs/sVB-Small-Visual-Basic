@@ -7,7 +7,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Implements IAdornment
 
         Public Property AdornmentProvider As CompletionProvider
-        Public Property AdornmentSurface As CompletionAdornmentSurface
+        Public Property AdornmentSurface As CompletionSurface
 
         Public ReadOnly Property CompletionBag As CompletionBag
 
@@ -35,7 +35,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                    )
 
             _AdornmentProvider = provider
-            _AdornmentSurface = provider.textView.Properties.GetProperty(Of CompletionAdornmentSurface)()
+            _AdornmentSurface = provider.textView.Properties.GetProperty(Of CompletionSurface)()
 
             _CompletionBag = completionBag
             _Span = adornmentSpan

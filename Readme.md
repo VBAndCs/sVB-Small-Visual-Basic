@@ -628,4 +628,72 @@ For a full example, see the `Validation` app in the samples folder.
 46. Starting from V2.1, sVB tries to infer the type of an expression, and the type of the function return value.
 
 47. sVB 2.2 supports creating custom complex shapes using the GeometricPath type.
-For more info, see the `Geometric Path` app in the samples folder.
+For example, you can draw a hex polygon shape, add it to the shapes, then rotate it by this code:
+```vb
+GraphicsWindow.BrushColor = Colors.AliceBlue
+GraphicsWindow.PenColor = Colors.Red
+GraphicsWindow.PenWidth = 3
+
+' Crate a figure to draw a new custom shape
+GeometricPath.CreateFigure(100, 100)
+GeometricPath.AddLineSegment(50, 150, True)
+GeometricPath.AddLineSegment(100, 200, True)
+GeometricPath.AddLineSegment(200, 200, False) ' using `False` hides the line
+GeometricPath.AddLineSegment(250, 150, True)
+GeometricPath.AddLineSegment(200, 100, True)
+GeometricPath.AddLineSegment(100, 100, True)
+
+Sh1 = Shapes.AddGeometricPath()
+Shapes.Rotate(Sh1, 45)
+```
+
+And you may use curves and arcs not just lines:
+```
+GraphicsWindow.BrushColor = Colors.Transparent
+GraphicsWindow.PenColor = Colors.Blue
+GraphicsWindow.PenWidth = 5
+
+' Create a new empty geometric path
+GeometricPath.CreatePath()
+GeometricPath.CreateFigure(100, 100)
+GeometricPath.AddLineSegment(50, 150, True)
+GeometricPath.AddArcSegment(100, 200, 20, 30, 30, False, True, True)
+GeometricPath.AddLineSegment(200, 200, True)
+GeometricPath.AddBezierSegment(210, 210, 230, 230, 250, 150, True)
+GeometricPath.AddQuadraticBezierSegment(230, 110, 200, 100, True)
+GeometricPath.AddLineSegment(100, 100, True)
+Sh2 = Shapes.AddGeometricPath()
+Shapes.Move(Sh2, 130, 100)
+```
+
+
+You can also combine some basic shapes in one path:
+```vb
+GraphicsWindow.BrushColor = Colors.Yellow
+GraphicsWindow.PenColor = Colors.Black
+GraphicsWindow.PenWidth = 1
+
+GeometricPath.CreatePath()
+GeometricPath.AddLine(100, 100, 400, 400)
+GeometricPath.AddRectangle(100, 100, 200, 200)
+GeometricPath.AddEllipse(150, 150, 100, 100)
+GeometricPath.AddTriangle(300, 300, 400, 200, 400, 400)
+Sh3 = Shapes.AddGeometricPath()
+Shapes.Move(Sh3, 300, 0)
+Shapes.Rotate(Sh3, 45)
+```
+
+You can see this code in action in the `Geometric Path` app in the samples folder. And this is the 3 shapes that the above code draws:
+![image](https://user-images.githubusercontent.com/48354902/195464252-203037b8-b057-4253-b7c6-bdc34e94ffe6.png)
+
+You can also add the geometric path to a label, by calling the `AddGeometricPath()` method of this label:
+```vb
+Label1.AddGeometricPath(
+    Colors.Red, ' Pen color
+    2, ' Pen width
+    Colors.Yellow ' Brush color
+)
+```
+
+This allows you to add complex shpes on the form with code, and program their events.
+See the `Geometric Path2` in the samples folder. It adds the same shapes of the previous sample to the form, and allow you to drag them by the mouse.

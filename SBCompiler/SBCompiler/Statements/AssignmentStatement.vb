@@ -175,10 +175,16 @@ Namespace Microsoft.SmallVisualBasic.Statements
                          globalScope As Boolean)
 
             If EqualsToken.IsBefore(line, column) Then
+
                 CompletionHelper.FillExpressionItems(bag)
                 Dim prop = TryCast(LeftValue, PropertyExpression)
-                Dim canBeAHandler = bag.NextToEquals AndAlso prop IsNot Nothing AndAlso Not prop.IsDynamic
-                CompletionHelper.FillSubroutines(bag, functionsOnly:=Not canBeAHandler)
+                Dim isHandler = False
+                If bag.NextToEquals AndAlso prop IsNot Nothing AndAlso Not prop.IsDynamic Then
+                    Dim propName = prop.PropertyName.Text
+                    isHandler = propName.Length > 2 AndAlso propName.StartsWith("On") AndAlso Char.IsUpper(propName(2))
+                End If
+                bag.IsHandler = isHandler
+                CompletionHelper.FillSubroutines(bag, functionsOnly:=Not isHandler)
             Else
                 Dim arrayExpr = TryCast(LeftValue, ArrayExpression)
                 If arrayExpr Is Nothing Then

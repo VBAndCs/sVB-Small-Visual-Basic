@@ -43,7 +43,7 @@ Namespace WinForms
                         t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                         t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                     Catch ex As Exception
-                        Control.RepottyPropertyError(textBoxName, "Text", value, ex)
+                        Control.RepotPropertyError(textBoxName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -71,7 +71,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).SelectionStart = value - 1
                     Catch ex As Exception
-                        Control.RepottyPropertyError(textBoxName, "SelectionStart", value, ex)
+                        Control.RepotPropertyError(textBoxName, "SelectionStart", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -99,7 +99,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).SelectionLength = value
                     Catch ex As Exception
-                        Control.RepottyPropertyError(textBoxName, "SelectionLength", value, ex)
+                        Control.RepotPropertyError(textBoxName, "SelectionLength", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -130,7 +130,7 @@ Namespace WinForms
                         t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                         t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                     Catch ex As Exception
-                        Control.RepottyPropertyError(textBoxName, "SelectedText", value, ex)
+                        Control.RepotPropertyError(textBoxName, "SelectedText", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -158,7 +158,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).CaretIndex = value - 1
                     Catch ex As Exception
-                        Control.RepottyPropertyError(textBoxName, "CaretIndex", value, ex)
+                        Control.RepotPropertyError(textBoxName, "CaretIndex", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -186,7 +186,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).AcceptsReturn = CBool(value)
                     Catch ex As Exception
-                        Control.RepottyPropertyError(textBoxName, "MuliLine", value, ex)
+                        Control.RepotPropertyError(textBoxName, "MuliLine", value, ex)
                     End Try
                 End Sub)
         End Sub

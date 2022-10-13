@@ -82,7 +82,7 @@ Namespace WinForms
                     Try
                         Wpf.Canvas.SetLeft(GetImageBox(ImageBoxName), value)
                     Catch ex As Exception
-                        Control.RepottyPropertyError(ImageBoxName, "Left", value, ex)
+                        Control.RepotPropertyError(ImageBoxName, "Left", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -110,7 +110,7 @@ Namespace WinForms
                     Try
                         Wpf.Canvas.SetTop(GetImageBox(ImageBoxName), value)
                     Catch ex As Exception
-                        Control.RepottyPropertyError(ImageBoxName, "Top", value, ex)
+                        Control.RepotPropertyError(ImageBoxName, "Top", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -138,7 +138,7 @@ Namespace WinForms
                     Try
                         GetImageBox(ImageBoxName).Width = value
                     Catch ex As Exception
-                        Control.RepottyPropertyError(ImageBoxName, "Width", value, ex)
+                        Control.RepotPropertyError(ImageBoxName, "Width", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -166,7 +166,7 @@ Namespace WinForms
                     Try
                         GetImageBox(ImageBoxName).Height = value
                     Catch ex As Exception
-                        Control.RepottyPropertyError(ImageBoxName, "Height", value, ex)
+                        Control.RepotPropertyError(ImageBoxName, "Height", value, ex)
                     End Try
                 End Sub)
         End Sub

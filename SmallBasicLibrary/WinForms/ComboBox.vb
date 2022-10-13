@@ -188,7 +188,7 @@ Namespace WinForms
                     Try
                         GetComboBox(textBoxName).Text = value
                     Catch ex As Exception
-                        Control.RepottyPropertyError(textBoxName, "Text", value, ex)
+                        Control.RepotPropertyError(textBoxName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub

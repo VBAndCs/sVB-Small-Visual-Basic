@@ -122,20 +122,29 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             If adornment IsNot Nothing Then
                 Dim key = item.HistoryKey
                 If key <> "" Then CompHistory(key) = item.DisplayName
-                Dim repText = itemWrapper.ReplacementText
+                Dim repWith = itemWrapper.ReplacementText
                 Dim replaceSpan = GetReplacementSpane()
 
                 If replaceSpan.Length = 0 And replaceSpan.Start > 0 Then
                     Select Case textView.TextSnapshot(replaceSpan.Start - 1)
                         Case "=", "<", ">", "+", "-", "*", "/"
-                            repText = " " + repText
+                            repWith = " " + repWith
                     End Select
                 End If
 
-                editorOperations.ReplaceText(replaceSpan, repText, undoHistory)
+                If repWith.EndsWith("(") OrElse repWith.EndsWith(")") Then
+                    Dim pos = textView.Caret.Position.TextInsertionIndex
+                    Dim line = textView.TextSnapshot.GetLineFromPosition(pos)
+                    Dim txt = line.GetText().Substring(pos - line.Start)
+                    If LineScanner.GetFirstToken(txt, 0).Type = TokenType.LeftParens Then
+                        repWith = repWith.TrimEnd("("c, ")"c)
+                    End If
+                End If
+
+                editorOperations.ReplaceText(replaceSpan, repWith, undoHistory)
                 DismissAdornment(force:=True)
                 TryCast(textView, Control)?.Focus()
-                If repText.EndsWith("(") Then ShowHelp()
+                If repWith.EndsWith("(") Then ShowHelp()
             End If
         End Sub
 

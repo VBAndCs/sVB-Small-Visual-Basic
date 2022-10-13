@@ -379,7 +379,7 @@ Namespace WinForms
                            Dim frm = Forms.GetForm(formName)
                            frm.SetValue(ArgsArrProperty, value.AsString())
                        Catch ex As Exception
-                           Control.RepottyPropertyError(formName, "ArgsArr", value, ex)
+                           Control.RepotPropertyError(formName, "ArgsArr", value, ex)
                        End Try
                    End Sub)
         End Sub

@@ -141,9 +141,9 @@ Namespace Microsoft.SmallVisualBasic.Utility
         Dim mainWindow As MainWindow = Helper.MainWindow
 
         Function IsCompletionListOpen() As Boolean
-            Dim completionSurface As CompletionAdornmentSurface = Nothing
+            Dim completionSurface As CompletionSurface = Nothing
             Dim properties = mainWindow.ActiveDocument.EditorControl.TextView.Properties
-            Dim adornmentType = GetType(CompletionAdornmentSurface)
+            Dim adornmentType = GetType(CompletionSurface)
 
             Return properties.TryGetProperty(adornmentType, completionSurface) AndAlso
                     completionSurface.IsAdornmentVisible

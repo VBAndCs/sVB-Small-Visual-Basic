@@ -186,11 +186,11 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 If functionsOnly AndAlso nameToken.Type = TokenType.Sub Then Continue For
 
                 Dim subName = nameToken.Text
-                Dim subroutine = CompletionHelper.GetSubroutine(item.Key, bag.ParseTree)
+                Dim subroutine = GetSubroutine(item.Key, bag.ParseTree)
                 bag.CompletionItems.Add(New CompletionItem() With {
                     .Key = item.Key,
                     .DisplayName = subName,
-                    .ReplacementText = subName & If(subroutine.Params?.Count > 0, "(", "()"),
+                    .ReplacementText = subName & If(bag.IsHandler, "", If(subroutine.Params?.Count > 0, "(", "()")),
                     .ItemType = CompletionItemType.SubroutineName,
                     .DefinitionIdintifier = nameToken
                 })

@@ -7,6 +7,7 @@ Namespace Microsoft.SmallVisualBasic
     Public Class CodeGenerator
         Private _outputName As String
         Private _directory As String
+        Private _appName As String
         Private _parsers As List(Of Parser)
         Private _entryPoint As MethodInfo
         Private _currentScope As CodeGenScope
@@ -24,6 +25,7 @@ Namespace Microsoft.SmallVisualBasic
             _parsers = parsers
             _typeInfoBag = typeInfoBag
             _outputName = outputName
+            _appName = IO.Path.GetFileName(_outputName).Replace(" ", "")
             _directory = directory
         End Sub
 
@@ -197,7 +199,12 @@ Namespace Microsoft.SmallVisualBasic
                 )
                 _currentScope.Fields.Add(var.Key, fieldBuilder)
 
-                If isGlobal Then ' Define a public property for the field
+                If isGlobal Then
+                    If Not _currentScope.ForGlobalHelp Then
+                        AddPropertyDoc(var.Value)
+                    End If
+
+                    ' Define a public property for the field
                     Dim propName = var.Value.Text
                     Dim propBuilder = typeBuilder.DefineProperty(
                             propName,
@@ -252,6 +259,38 @@ Namespace Microsoft.SmallVisualBasic
                 End If
             Next
         End Sub
+
+
+        Dim _xmlDoc As Xml.XmlDocument
+        Dim _members As Xml.XmlElement
+
+        Private ReadOnly Property XmlDoc As Xml.XmlDocument
+            Get
+                If _xmlDoc Is Nothing Then
+                    _xmlDoc = New Xml.XmlDocument
+                    Dim doc = _xmlDoc.CreateElement("doc")
+                    Dim asm = _xmlDoc.CreateElement("assembly")
+                    asm.InnerXml = <name><%= _appName %></name>
+                    doc.AppendChild(asm)
+                    _members = _xmlDoc.CreateElement("members")
+                    doc.AppendChild(_members)
+                    _xmlDoc.AppendChild(doc)
+                End If
+
+                Return _xmlDoc
+            End Get
+        End Property
+
+        Private Sub AddPropertyDoc(token As Token)
+            If token.Comment = "" Then Return
+            Dim prop = XmlDoc.CreateElement("member")
+            Dim name = XmlDoc.CreateAttribute("name")
+            name.Value = "P:" & _appName & "." & token.Text
+            prop.Attributes.Append(name)
+            prop.InnerXml = <summary><%= token.Comment %></summary>
+            _members.AppendChild(prop)
+        End Sub
+
 
         Private Sub EmitIL(parseTree As List(Of Statements.Statement), Optional prepareOnly As Boolean = False)
             For Each item In parseTree
