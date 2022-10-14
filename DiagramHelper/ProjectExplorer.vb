@@ -18,20 +18,18 @@ Public Class ProjectExplorer
         Set()
             Dim fileName = ""
             If Value = "" OrElse Not (Directory.Exists(Value) OrElse File.Exists(Value)) Then
-                _projDir = Value.ToLower()
+                _projDir = Value
                 Title = "New Project Files"
                 projFiles.Clear()
                 Return
             End If
 
-            If File.GetAttributes(Value) = FileAttributes.Directory Then
-                Value = Value.ToLower()
-            Else
+            If File.GetAttributes(Value) <> FileAttributes.Directory Then
                 fileName = Value
-                Value = Path.GetDirectoryName(Value).ToLower()
+                Value = Path.GetDirectoryName(Value)
             End If
 
-            If Value = _projDir Then
+            If Value.ToLower() = _projDir.ToLower() Then
                 If fileName <> "" Then
                     If Path.GetFileNameWithoutExtension(fileName).ToLower() = "global" Then
                         SelectItem(Path.Combine(_projDir, "Global.sb"))
@@ -71,11 +69,11 @@ Public Class ProjectExplorer
     End Property
 
     Private Sub SelectItem(fileName As String)
-        fileName = fileName.ToLower()
-        If SelectedFile.ToLower() = fileName Then Return
+        Dim f = fileName.ToLower()
+        If SelectedFile.ToLower() = f Then Return
 
         For i = 0 To projFiles.Count - 1
-            If projFiles(i).FilePath.ToLower() = fileName Then
+            If projFiles(i).FilePath.ToLower() = f Then
                 FilesList.SelectedIndex = i
                 Return
             End If

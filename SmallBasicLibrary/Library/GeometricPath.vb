@@ -31,7 +31,7 @@ Namespace Library
 
         Private Shared ReadOnly Property PathFigure As PathFigure
             Get
-                If _figure Is Nothing Then CreateFigure(0, 0)
+                If _figure Is Nothing Then CreateFigure(0, 0, True)
                 Return _figure
             End Get
         End Property
@@ -135,11 +135,12 @@ Namespace Library
         ''' </summary>
         ''' <param name="x">The x co-ordinate of the start point of the figure</param>
         ''' <param name="y">The y co-ordinate of the start point of the figure</param>
-        Public Shared Sub CreateFigure(x As Primitive, y As Primitive)
+        ''' <param name="isClosed">When True, a line segment is automatically drown between the last point and the start point of the figure to make it a closed shape. Use Fals if you want to draw an open figure like a curve.</param>
+        Public Shared Sub CreateFigure(x As Primitive, y As Primitive, isClosed As Primitive)
             GraphicsWindow.Invoke(
                 Sub()
                     _figure = New PathFigure With {
-                        .IsClosed = True,
+                        .IsClosed = isClosed,
                         .StartPoint = New Point(x, y)
                     }
                     PathGeometry.Figures = New PathFigureCollection From {_figure}

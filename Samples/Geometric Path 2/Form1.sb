@@ -36,13 +36,14 @@ EndSub
 '------------------------------------------------
 Sub CreateFigure1()
    ' Crate a figure to draw a new custom shape
-   GeometricPath.CreateFigure(50, 0)
+   GeometricPath.CreateFigure(50, 0, True)
    GeometricPath.AddLineSegment(0, 50, True)
    GeometricPath.AddLineSegment(50, 100, True)
    GeometricPath.AddLineSegment(150, 100, False)
    GeometricPath.AddLineSegment(200, 50, True)
    GeometricPath.AddLineSegment(150, 0, True)
-   GeometricPath.AddLineSegment(50, 0, True)
+   ' No need for this line as the figure is created as a colsed shape
+   'GeometricPath.AddLineSegment(50, 0, True)
    
    Label1.AddGeometricPath(Colors.Black, 2, Colors.Orange)
    Label1.Rotate(45)
@@ -54,7 +55,7 @@ Sub CreateFigure2()
    
    ' Create a new empty geometric path
    GeometricPath.CreatePath()
-   GeometricPath.CreateFigure(50, 0)
+   GeometricPath.CreateFigure(50, 0, False)
    GeometricPath.AddLineSegment(0, 50, True)
    GeometricPath.AddArcSegment(
       50, 100,

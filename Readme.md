@@ -635,13 +635,12 @@ GraphicsWindow.PenColor = Colors.Red
 GraphicsWindow.PenWidth = 3
 
 ' Crate a figure to draw a new custom shape
-GeometricPath.CreateFigure(100, 100)
+GeometricPath.CreateFigure(100, 100, True)
 GeometricPath.AddLineSegment(50, 150, True)
 GeometricPath.AddLineSegment(100, 200, True)
 GeometricPath.AddLineSegment(200, 200, False) ' using `False` hides the line
 GeometricPath.AddLineSegment(250, 150, True)
 GeometricPath.AddLineSegment(200, 100, True)
-GeometricPath.AddLineSegment(100, 100, True)
 
 Sh1 = Shapes.AddGeometricPath()
 Shapes.Rotate(Sh1, 45)
@@ -655,13 +654,12 @@ GraphicsWindow.PenWidth = 5
 
 ' Create a new empty geometric path
 GeometricPath.CreatePath()
-GeometricPath.CreateFigure(100, 100)
+GeometricPath.CreateFigure(100, 100, True)
 GeometricPath.AddLineSegment(50, 150, True)
 GeometricPath.AddArcSegment(100, 200, 20, 30, 30, False, True, True)
 GeometricPath.AddLineSegment(200, 200, True)
 GeometricPath.AddBezierSegment(210, 210, 230, 230, 250, 150, True)
 GeometricPath.AddQuadraticBezierSegment(230, 110, 200, 100, True)
-GeometricPath.AddLineSegment(100, 100, True)
 Sh2 = Shapes.AddGeometricPath()
 Shapes.Move(Sh2, 130, 100)
 ```

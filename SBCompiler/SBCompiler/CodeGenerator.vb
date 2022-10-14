@@ -13,7 +13,13 @@ Namespace Microsoft.SmallVisualBasic
         Private _currentScope As CodeGenScope
         Private _typeInfoBag As TypeInfoBag
 
-        Public Sub New(parsers As List(Of Parser), typeInfoBag As TypeInfoBag, outputName As String, directory As String)
+        Public Sub New(
+                          parsers As List(Of Parser),
+                          typeInfoBag As TypeInfoBag,
+                          outputName As String,
+                          directory As String
+                    )
+
             If parsers Is Nothing Then
                 Throw New ArgumentNullException(NameOf(parsers))
             End If
@@ -24,9 +30,22 @@ Namespace Microsoft.SmallVisualBasic
 
             _parsers = parsers
             _typeInfoBag = typeInfoBag
-            _outputName = outputName
-            _appName = IO.Path.GetFileName(_outputName).Replace(" ", "")
+            _outputName = Char.ToUpper(outputName(0)) & If(outputName.Length > 1, outputName.Substring(1), "")
+            _appName = "Global"
             _directory = directory
+
+            _xmlDoc = New XDocument
+            Dim doc =
+                <doc>
+                    <assembly>
+                        <name><%= _appName %></name>
+                    </assembly>
+                </doc>
+
+            _members = <members/>
+                doc.Add(_members)
+                _xmlDoc.Add(doc)
+
         End Sub
 
         Public Shared IgnoreVarErrors As Boolean
@@ -76,7 +95,6 @@ Namespace Microsoft.SmallVisualBasic
             End If
         End Sub
 
-
         Public Sub GenerateExecutable(Optional forGlobalHelp As Boolean = False)
             Dim asmName As New AssemblyName(_outputName)
             Dim asm = AppDomain.CurrentDomain.DefineDynamicAssembly(
@@ -96,6 +114,7 @@ Namespace Microsoft.SmallVisualBasic
                     mainFormInit = formInit
                 ElseIf parser.IsGlobal Then
                     AddGlobalTypeToList(formInit.DeclaringType)
+                    AddMethodDocs(parser)
                 End If
             Next
 
@@ -103,8 +122,11 @@ Namespace Microsoft.SmallVisualBasic
                 EmitMain(If(mainFormInit, formInit), moduleBuilder)
                 asm.SetEntryPoint(_entryPoint, PEFileKinds.WindowApplication)
                 asm.Save(_outputName & ".exe")
+                _xmlDoc.Save(IO.Path.Combine(_directory, _outputName & ".xml"))
             End If
         End Sub
+
+
 
         Dim globalScope As CodeGenScope
 
@@ -112,7 +134,7 @@ Namespace Microsoft.SmallVisualBasic
                           parser As Parser,
                           moduleBuilder As ModuleBuilder,
                           Optional forGlobalHelp As Boolean = False
-                     ) As MethodInfo
+                    ) As MethodInfo
 
             Dim domain = TypeAttributes.Sealed
             If parser.IsGlobal Then
@@ -144,6 +166,7 @@ Namespace Microsoft.SmallVisualBasic
             If parser.IsGlobal Then
                 globalScope = _currentScope
                 _currentScope.GlobalScope = globalScope
+                If Not forGlobalHelp Then AddTypeDoc(parser)
             End If
 
             BuildFields(typeBuilder, parser.SymbolTable, parser.IsGlobal)
@@ -260,37 +283,95 @@ Namespace Microsoft.SmallVisualBasic
             Next
         End Sub
 
+        Dim _xmlDoc As XDocument
+        Dim _members As XElement
 
-        Dim _xmlDoc As Xml.XmlDocument
-        Dim _members As Xml.XmlElement
-
-        Private ReadOnly Property XmlDoc As Xml.XmlDocument
-            Get
-                If _xmlDoc Is Nothing Then
-                    _xmlDoc = New Xml.XmlDocument
-                    Dim doc = _xmlDoc.CreateElement("doc")
-                    Dim asm = _xmlDoc.CreateElement("assembly")
-                    asm.InnerXml = <name><%= _appName %></name>
-                    doc.AppendChild(asm)
-                    _members = _xmlDoc.CreateElement("members")
-                    doc.AppendChild(_members)
-                    _xmlDoc.AppendChild(doc)
+        Private Sub AddTypeDoc(parser As Parser)
+            Dim atStart = True
+            Dim sb As New System.Text.StringBuilder()
+            For Each st In parser.ParseTree
+                If TypeOf st Is Statements.EmptyStatement Then
+                    Dim comment = st.EndingComment.Text
+                    If comment = "" Then
+                        If Not atStart Then Exit For
+                    Else
+                        atStart = False
+                        sb.AppendLine(comment)
+                    End If
+                Else
+                    Exit For
                 End If
+            Next
 
-                Return _xmlDoc
-            End Get
-        End Property
+            Dim typeInfo = sb.ToString().Trim()
+            If typeInfo <> "" Then
+                Dim typeDoc =
+                    <member name=<%= "T:" & _appName %>>
+                        <summary><%= typeInfo %></summary>
+                    </member>
+                _members.Add(typeDoc)
+            End If
+        End Sub
 
         Private Sub AddPropertyDoc(token As Token)
             If token.Comment = "" Then Return
-            Dim prop = XmlDoc.CreateElement("member")
-            Dim name = XmlDoc.CreateAttribute("name")
-            name.Value = "P:" & _appName & "." & token.Text
-            prop.Attributes.Append(name)
-            prop.InnerXml = <summary><%= token.Comment %></summary>
-            _members.AppendChild(prop)
+
+            Dim propDoc =
+                <member name=<%= "P:" & _appName & "." & token.Text %>>
+                    <summary><%= token.Comment %></summary>
+                </member>
+            _members.Add(propDoc)
         End Sub
 
+        Private Sub AddMethodDocs(parser As Parser)
+            Dim prmtv = "Microsoft.SmallVisualBasic.Library.Primitive"
+            For Each st In parser.ParseTree
+                Dim method = TryCast(st, Statements.SubroutineStatement)
+                If method Is Nothing Then Continue For
+                Dim hasDoc As Boolean = False
+                Dim paramsCount = If(method.Params Is Nothing, 0, method.Params.Count)
+                Dim paramsList = If(
+                    paramsCount = 0,
+                    "",
+                    "(" & String.Join(",", Enumerable.Repeat(prmtv, paramsCount)) & ")"
+                )
+
+                Dim methodDoc =
+                    <member name=<%= $"M:{_appName}.{method.Name.Text}{paramsList}" %>/>
+
+                Dim summery = method.GetSummery()
+                If summery <> "" Then
+                    hasDoc = True
+                    methodDoc.Add(
+                          <summary><%= summery %></summary>
+                    )
+                End If
+
+                If paramsCount > 0 Then
+                    For Each param In method.Params
+                        Dim paramInfo = param.Comment
+                        If paramInfo <> "" Then
+                            hasDoc = True
+                            methodDoc.Add(
+                                <param name=<%= param.Text %>><%= paramInfo %></param>
+                            )
+                        End If
+                    Next
+                End If
+
+                If method.SubToken.Type = TokenType.Function Then
+                    Dim returnInfo = method.GetRetunDoc()
+                    If returnInfo <> "" Then
+                        hasDoc = True
+                        methodDoc.Add(
+                            <returns><%= returnInfo %></returns>
+                        )
+                    End If
+                End If
+
+                If hasDoc Then _members.Add(methodDoc)
+            Next
+        End Sub
 
         Private Sub EmitIL(parseTree As List(Of Statements.Statement), Optional prepareOnly As Boolean = False)
             For Each item In parseTree
