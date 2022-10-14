@@ -84,15 +84,26 @@ Namespace Library
         Public Shared Property BrushColor As Primitive
             Get
                 VerifyAccess()
-                Return CStr(InvokeWithReturn(Function() GetStringFromColor(_fillBrush.Color)))
+                If _fillBrush Is Nothing Then
+                    Return WinForms.Colors.None
+                End If
+
+                Return CStr(InvokeWithReturn(
+                    Function() GetStringFromColor(_fillBrush.Color))
+                )
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                _fillBrush = New SolidColorBrush(GetColorFromString(Value))
-                                _fillBrush.Freeze()
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        If WinForms.Color.IsNon(Value) Then
+                            _fillBrush = Nothing
+                        Else
+                            _fillBrush = New SolidColorBrush(GetColorFromString(Value))
+                            _fillBrush.Freeze()
+                        End If
+                    End Sub)
             End Set
         End Property
 
@@ -147,16 +158,25 @@ Namespace Library
         Public Shared Property PenColor As Primitive
             Get
                 VerifyAccess()
-                Return CStr(InvokeWithReturn(Function() If((_pen IsNot Nothing), GetStringFromColor(CType(_pen.Brush, SolidColorBrush).Color), "Black")))
+                Return CStr(InvokeWithReturn(
+                    Function() If(
+                        _pen IsNot Nothing,
+                        GetStringFromColor(CType(_pen.Brush, SolidColorBrush).Color),
+                        WinForms.Colors.None)
+                    ))
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
                 BeginInvoke(
                     Sub()
-                        Dim colorFromString As Media.Color = GetColorFromString(Value)
-                        _pen = New Media.Pen(New SolidColorBrush(colorFromString), _pen.Thickness)
-                        _pen.Freeze()
+                        If WinForms.Color.IsNon(Value) Then
+                            _pen = Nothing
+                        Else
+                            Dim colorFromString As Media.Color = GetColorFromString(Value)
+                            _pen = New Media.Pen(New SolidColorBrush(colorFromString), _pen.Thickness)
+                            _pen.Freeze()
+                        End If
                     End Sub)
             End Set
         End Property

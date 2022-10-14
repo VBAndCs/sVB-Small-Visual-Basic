@@ -59,6 +59,10 @@ Namespace WinForms
             Return $"#{A:X2}{R:X2}{G:X2}{B:X2}"
         End Function
 
+        Friend Shared Function IsNon(color As String) As Boolean
+            Return color = "" OrElse color = "0" OrElse color.ToLower() = "none"
+        End Function
+
         ''' <summary>
         ''' Crates a new color based on the given colr, with the transparency set to the given value.
         ''' </summary>
@@ -66,6 +70,8 @@ Namespace WinForms
         ''' <param name="percentage">a 0 to 100 value that represents the percentage of the transparency of the color</param>
         ''' <returns>a new color with the given transparency</returns>
         Public Shared Function ChangeTransparency(color As Primitive, percentage As Primitive) As Primitive
+            If IsNon(color) Then Return color
+
             Dim _color = FromString(color)
             Dim A As Byte = System.Math.Round((100 - InRange(percentage, 0, 100)) * 255 / 100)
             Return $"#{A:X2}{_color.R:X2}{_color.G:X2}{_color.B:X2}"
@@ -78,23 +84,26 @@ Namespace WinForms
         ''' <returns>a 0 to 100 value represents the transparency percentage of the color</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetTransparency(color As Primitive) As Primitive
+            If IsNon(color) Then Return 100
             Dim _color = FromString(color)
             Return System.Math.Round(100 - _color.A * 100 / 255, 1)
         End Function
 
         Friend Shared Function FromString(color As String) As System.Windows.Media.Color
             Try
-                Return CType(ColorConverter.ConvertFromString(color), System.Windows.Media.Color)
+                Return ColorConverter.ConvertFromString(color)
             Catch
-                Return System.Windows.Media.Colors.Black
+                Return System.Windows.Media.Colors.Transparent
             End Try
         End Function
 
         Friend Shared Function GetPen(penColor As Primitive, penWidth As Primitive) As Pen
+            If IsNon(penColor) Then Return Nothing
             Return New Pen(GetBrush(penColor), penWidth)
         End Function
 
         Friend Shared Function GetBrush(brushColor As Primitive) As Brush
+            If IsNon(brushColor) Then Return Nothing
             Return New SolidColorBrush(FromString(brushColor))
         End Function
 
@@ -119,11 +128,20 @@ Namespace WinForms
         End Function
 
         Private Shared Function DoGetName(color As String, ingnoreTrans As Boolean) As String
-            If Not color.StartsWith("#") Then Return color
-            If color = Colors.Transparent.ToString Then Return "Transparent"
+            Select Case color.ToLower()
+                Case "", "0", "none"
+                    Return "None"
+
+                Case Colors.Transparent.ToString().ToLower()
+                    Return "Transparent"
+
+                Case Else
+                    If Not color.StartsWith("#") Then Return color
+            End Select
 
             Dim _color = FromString(color)
             Dim key = FromRGB(_color.R, _color.G, _color.B)
+
             If _colorNames.ContainsKey(key) Then
                 If ingnoreTrans OrElse _color.A = 255 Then
                     Return _colorNames(key)
@@ -142,6 +160,7 @@ Namespace WinForms
         ''' <returns>A number betwwen 0 and 255 thet represents the red ration in the color</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetRedRatio(color As Primitive) As Primitive
+            If IsNon(color) Then Return 0
             Dim _color = FromString(color)
             Return _color.R
         End Function
@@ -153,6 +172,7 @@ Namespace WinForms
         ''' <returns>A number betwwen 0 and 255 thet represents the green ration in the color</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetGreenRatio(color As Primitive) As Primitive
+            If IsNon(color) Then Return 0
             Dim _color = FromString(color)
             Return _color.G
         End Function
@@ -165,6 +185,7 @@ Namespace WinForms
 
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetBlueRatio(color As Primitive) As Primitive
+            If IsNon(color) Then Return 0
             Dim _color = FromString(color)
             Return _color.B
         End Function
@@ -177,6 +198,7 @@ Namespace WinForms
         ''' <returns>a new color with the red component changed to the given value</returns>
         <ReturnValueType(VariableType.Color)>
         Public Shared Function ChangeRedRatio(color As Primitive, value As Primitive) As Primitive
+            If IsNon(color) Then Return color
             Dim _color = FromString(color)
             Return FromARGB(_color.A, value, _color.G, _color.B)
         End Function
@@ -189,6 +211,7 @@ Namespace WinForms
         ''' <returns>a new color with the green component changed to the given value</returns>
         <ReturnValueType(VariableType.Color)>
         Public Shared Function ChangeGreenRatio(color As Primitive, value As Primitive) As Primitive
+            If IsNon(color) Then Return color
             Dim _color = FromString(color)
             Return FromARGB(_color.A, _color.R, value, _color.B)
         End Function
@@ -201,11 +224,14 @@ Namespace WinForms
         ''' <returns>a new color with the blue component changed to the given value</returns>
         <ReturnValueType(VariableType.Color)>
         Public Shared Function ChangeBlueRatio(color As Primitive, value As Primitive) As Primitive
+            If IsNon(color) Then Return color
             Dim _color = FromString(color)
             Return FromARGB(_color.A, _color.R, _color.G, value)
         End Function
 
         Friend Shared _colorNames As New Dictionary(Of String, String) From {
+                {"0", "None"},
+                {"None", "None"},
                 {"#F0F8FF", "AliceBlue"},
                 {"#FAEBD7", "AntiqueWhite"},
                 {"#7FFFD4", "Aquamarine"},

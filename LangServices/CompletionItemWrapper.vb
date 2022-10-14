@@ -360,16 +360,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private Function GetMethodName() As String
             Dim result = ""
             Try
-                Dim methodInfo As MethodInfo = TryCast(_item.MemberInfo, MethodInfo)
-                Dim parameters As ParameterInfo() = methodInfo?.GetParameters()
+                Dim methodInfo = TryCast(_item.MemberInfo, MethodInfo)
+                Dim parameters = methodInfo?.GetParameters()
 
                 If parameters?.Length > 0 Then
-                    Dim stringBuilder As StringBuilder = New StringBuilder($"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}")
+                    Dim stringBuilder As New StringBuilder($"M:{methodInfo.DeclaringType.FullName}.{methodInfo.Name}")
                     stringBuilder.Append("(")
-                    Dim array = parameters
 
-                    For Each parameterInfo In array
-                        stringBuilder.AppendFormat("{0},", parameterInfo.ParameterType.FullName)
+                    For Each parameterInfo In parameters
+                        stringBuilder.Append(parameterInfo.ParameterType.FullName)
+                        stringBuilder.Append(",")
                     Next
 
                     stringBuilder.Remove(stringBuilder.Length - 1, 1)

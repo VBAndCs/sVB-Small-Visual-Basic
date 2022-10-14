@@ -47,15 +47,20 @@ Namespace Library
         ''' </summary>
         ''' <returns></returns>
         <WinForms.ReturnValueType(VariableType.String)>
-        Public Shared Function AddGeometricPath() As Primitive
+        Public Shared Function AddGeometricPath(
+                         penColor As Primitive,
+                         penWidth As Primitive,
+                         brushColor As Primitive
+                    ) As Primitive
+
             Dim name = GenerateNewName("GeoPath")
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
-                    Dim path = GeometricPath._path
-                    path.Stroke = GraphicsWindow._pen.Brush
-                    path.StrokeThickness = GraphicsWindow._pen.Thickness
-                    path.Fill = GraphicsWindow._fillBrush
+                    Dim path = WinForms.GeometricPath._path
+                    path.Fill = WinForms.Color.GetBrush(brushColor)
+                    path.Stroke = WinForms.Color.GetBrush(penColor)
+                    path.StrokeThickness = penWidth
                     GraphicsWindow.AddShape(name, path)
                 End Sub)
             Return name

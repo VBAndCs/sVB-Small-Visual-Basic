@@ -8,6 +8,24 @@
 - SB Code Enhancements:
 - ToDo:
 
+# sVB v2.4 can create a code library!
+For the first time, it is now possible to use an sVB app as a library! Follow these instructions:
+1. Create a sVB project with a global file. Choose a suitable name for the folder that you save the project files to (such as MyLib), because the name of this folder will be the name of your library. Don't use spaces nor symbols. 
+2. Add variables, subroutines, and functions to the global files. These are the members that you can access from the lib.
+3. Add comments for each variable, subroutine, parameter, and return value. These comments will be saved as the documentation for your lib, and will be shown in popup help in sVB when you use this lib.
+4. You can also add a comment at the beginning of the global file, to be used as the documentation for the Lib Type.
+5. The project can contain as many forms as you need, but you must choose unique names when saving them to the project folder. Form1.xaml, Form2.xaml and Form3.xaml can cause troubles later, so, if you must, name them MyLib_Form1.xaml, MyLib_Form2.xaml and MyLib_Form3.xaml. Don't rename the files manually from windows explorer, and use the sVB project explorer to rename them, to do necessary changes to the .sb.gen file.
+6. Run the project to create the exe file in the Bin folder in the project folder.
+7. Now you can copy the Bin folder and paste in the `sVB\Bin\Lib` folder, then rename it to the name of your lib such as `MyLib` in this example. The name of this folder is not important, but Bin is not a suitable name, and of course you can't add tow libraries with folders named Bin because they will be merged, which can cause troubles later!
+8. Restart sVB, and in the code editor write the name of your library such as MyLib, then press dot. The auto completion list will show the members you declared in the global file and can use them. If you add comments to those members, you will get help info about them while typing.
+It is so simple. You can apply it on the `Show Dialogs` project in samples folder, but I advice to change the folder name to Dialogs instead, so, you can use this library like this:
+```vb
+Name = Dialogs.InputBox("Enter your name")
+```
+
+So, now you can create reusable code, and write your own libraries for sVB. In the past, this was available only by using C# and VB.NET to create SB and sVB libraries!
+Have fun.
+
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
 

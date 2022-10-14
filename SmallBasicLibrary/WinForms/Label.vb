@@ -98,7 +98,7 @@ Namespace WinForms
                          penColor As Primitive,
                          penWidth As Primitive,
                          brushColor As Primitive
-                    )
+                   )
 
             App.Invoke(
                 Sub()
@@ -111,6 +111,7 @@ Namespace WinForms
                         Dim lbl = GetLabel(labelName)
                         lbl.Width = Double.NaN
                         lbl.Height = Double.NaN
+                        lbl.Background = Nothing
                         lbl.Content = path
                     Catch ex As Exception
                         Control.ReportSubError(labelName, "AddGeometricPath", ex)

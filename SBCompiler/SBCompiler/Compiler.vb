@@ -181,12 +181,16 @@ Namespace Microsoft.SmallVisualBasic
 
             Dim gen As New CodeGenerator(
                     parsers, _typeInfoBag, outputName, directory)
-            gen.GenerateExecutable()
-            CopyLibraryAssemblies(directory)
+            Dim refs = gen.GenerateExecutable()
+            CopyLibraryAssemblies(directory, refs)
             Return _errors
         End Function
 
-        Private Sub CopyLibraryAssemblies(directory As String)
+        Private Sub CopyLibraryAssemblies(
+                    directory As String,
+                    refs() As AssemblyName
+            )
+
             Dim location = GetType(Primitive).Assembly.Location
             Dim fileName = Path.GetFileName(location)
 
@@ -197,6 +201,16 @@ Namespace Microsoft.SmallVisualBasic
 
             For Each libraryFile In _libraryFiles
                 Try
+                    Dim asmName = Path.GetFileNameWithoutExtension(libraryFile)
+                    Dim found = False
+                    For Each ref In refs
+                        If ref.Name.ToLower() = asmName.ToLower() Then
+                            found = True
+                            Exit For
+                        End If
+                    Next
+                    If Not found Then Continue For
+
                     fileName = Path.GetFileName(libraryFile)
                     IO.File.Copy(libraryFile, Path.Combine(directory, fileName))
                     If fileName.ToLower().EndsWith(".exe") Then

@@ -14,11 +14,12 @@ Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 Form.Show(Form1)
 '#Events{
-'    Label1: OnMouseMove
+'    Label1: OnMouseMove OnMouseLeftDown
 '}
 
 ' Label1 Events:
 Control.HandleEvents(Label1)
 Control.OnMouseMove = Label1_OnMouseMove
+Control.OnMouseLeftDown = Label1_OnMouseLeftDown
 
 

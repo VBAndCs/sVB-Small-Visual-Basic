@@ -547,24 +547,27 @@ Namespace WinForms
                            New PropertyMetadata(SystemColors.ControlColor, AddressOf BackColor_Changed))
 
         Private Shared Sub BackColor_Changed(c As DependencyObject, e As DependencyPropertyChangedEventArgs)
-            Dim _color = CType(e.NewValue, Media.Color)
-            Dim brush As New SolidColorBrush(_color)
-            Dim L = TryCast(c, Wpf.Label)
+            Dim brush As SolidColorBrush = Nothing
+            If e.NewValue IsNot Nothing Then
+                Dim _color = CType(e.NewValue, Media.Color)
+                Brush = New SolidColorBrush(_color)
+            End If
 
+            Dim L = TryCast(c, Wpf.Label)
             If L IsNot Nothing Then
                 If L.Content Is Nothing Then
-                    L.Background = brush
+                    L.Background = Brush
                 ElseIf TypeOf L.Content Is System.Windows.Shapes.Shape Then
-                    CType(L.Content, System.Windows.Shapes.Shape).Fill = brush
+                    CType(L.Content, System.Windows.Shapes.Shape).Fill = Brush
                 Else
-                    L.Content.Background = brush
+                    L.Content.Background = Brush
                 End If
             Else
                 If TypeOf c Is Window Then
-                    CType(CType(c, Window).Content, Wpf.Canvas).Background = brush
+                    CType(CType(c, Window).Content, Wpf.Canvas).Background = Brush
                 End If
 
-                CType(c, Wpf.Control).Background = brush
+                CType(c, Wpf.Control).Background = Brush
             End If
         End Sub
 
@@ -618,7 +621,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim _color = Color.FromString(value)
+                        Dim _color? As Media.Color = If(Color.IsNon(value), Nothing, Color.FromString(value))
                         Dim obj = GetControl(controlName)
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(BackColorProperty, Nothing)
@@ -663,9 +666,14 @@ Namespace WinForms
                    Sub()
                        Try
                            Dim c = GetControl(controlName)
-                           Dim _color = Color.FromString(value)
-                           c.Foreground = New SolidColorBrush(_color)
+                           If Color.IsNon(value) Then
+                               c.Foreground = Nothing
+                           Else
+                               Dim _color = Color.FromString(value)
+                               c.Foreground = New SolidColorBrush(_color)
+                           End If
                            c.SetValue(ForeColorProperty, value.ToString())
+
                        Catch ex As Exception
                            RepotPropertyError(controlName, "ForeColor", value, ex)
                        End Try
@@ -900,6 +908,7 @@ Namespace WinForms
                 Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
+                        If Color.IsNon(newColor) Then newColor = Colors.Transparent
                         Dim animation As New Animation.ColorAnimation() With {
                             .From = GetBackColor(obj),
                             .To = Color.FromString(newColor),

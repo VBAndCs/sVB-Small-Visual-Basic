@@ -4,32 +4,45 @@ CreateFigure2()
 CreateFigure3()
 
 
-LastX = 0
-LastY = 0
+LastX = -1
+LastY = -1
 DraggedLabel = ""
+
 Label2.OnMouseMove = Label1_OnMouseMove
 Label3.OnMouseMove = Label1_OnMouseMove
+Label2.OnMouseLeftDown = Label1_OnMouseLeftDown
+Label3.OnMouseLeftDown = Label1_OnMouseLeftDown
+
+
+'------------------------------------------------
+Sub Label1_OnMouseLeftDown()
+   LastX = Mouse.X
+   LastY = Mouse.Y
+EndSub
 
 Sub Label1_OnMouseMove()
-   If Event.IsLeftButtonDown Then ' Drag the figure
+   x = Mouse.X
+   y = Mouse.Y
+   
+   If LastX > -1 And Event.IsLeftButtonDown Then ' Drag the figure
       curlablel = Event.SenderControl
-      If DraggedLabel = "" Then
+      If DraggedLabel = "" Or DraggedLabel = curlablel Then
          DraggedLabel = curlablel
-      ElseIf DraggedLabel <> curlablel Then
-         Return
+         curlablel.Left = curlablel.Left + x - LastX
+         curlablel.Top = curlablel.Top + y - LastY
+         Event.Handled = True
+         LastX = x
+         LastY = y
+      Else
+         LastX = -1
+         LastY = -1
       EndIf
-      
-      
-      curlablel.Left = curlablel.Left + Event.MouseX - LastX
-      curlablel.Top = curlablel.Top + Event.MouseY - LastY
-      Event.Handled = True
-      
    Else
       DraggedLabel = ""
+      LastX = -1
+      LastY = -1
    EndIf
    
-   LastX = Event.MouseX
-   LastY = Event.MouseY
 EndSub
 
 
@@ -102,3 +115,4 @@ Sub CreateFigure3()
    
    Label3.AddGeometricPath(Colors.Red, 2, Colors.Yellow)
 EndSub
+

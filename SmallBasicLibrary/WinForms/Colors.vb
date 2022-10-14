@@ -774,6 +774,14 @@ Namespace WinForms
         Public Shared ReadOnly Property Navy As Primitive = "#000080"
 
         ''' <summary>
+        ''' No color. Use this value when you don't want to draw the background color or the outline color.
+        ''' There is a difference between Colors.None and Colors.Transparent:
+        ''' * The None color deletes the surface of the graphic, so, it doesn't respond to mouse and keyboard events, which are delevered to the underneath control.
+        ''' * The Transparent color keeps the surfuce of the graphic but you can see throgh it, while it is still responding to  mouse and keyboard events.
+        ''' </summary>
+        Public Shared ReadOnly Property None As Primitive = "None"
+
+        ''' <summary>
         ''' OldLace Color:
         ''' Hex: "#FDF5E6"
         ''' R=253, G=245, B=230
@@ -1073,6 +1081,9 @@ Namespace WinForms
         ''' Transparent Color:
         ''' Hex: "#00FFFFFF"
         ''' R=255, G=255, B=255
+        ''' There is a difference between Colors.Transparent and Colors.None:
+        ''' * The None color deletes the surface of the graphic, so, it doesn't respond to mouse and keyboard events, which are delevered to the underneath control.
+        ''' * The Transparent color keeps the surfuce of the graphic but you can see throgh it, while it is still responding to  mouse and keyboard events.
         ''' </summary>
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property Transparent As Primitive = "#00FFFFFF"

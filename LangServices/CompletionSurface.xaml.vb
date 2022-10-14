@@ -238,8 +238,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             ElseIf token.ParseType = ParseType.Operator Then
                 Select Case token.Type
-                    Case token.Type = TokenType.Or, TokenType.And,
-                                       TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
+                    Case TokenType.Or, TokenType.And, TokenType.RightBracket,
+                             TokenType.RightCurlyBracket, TokenType.RightParens
 
                     Case Else
                         Return ""

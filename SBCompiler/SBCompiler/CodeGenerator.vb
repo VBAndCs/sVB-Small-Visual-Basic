@@ -95,7 +95,7 @@ Namespace Microsoft.SmallVisualBasic
             End If
         End Sub
 
-        Public Sub GenerateExecutable(Optional forGlobalHelp As Boolean = False)
+        Public Function GenerateExecutable(Optional forGlobalHelp As Boolean = False) As AssemblyName()
             Dim asmName As New AssemblyName(_outputName)
             Dim asm = AppDomain.CurrentDomain.DefineDynamicAssembly(
                 asmName,
@@ -123,8 +123,11 @@ Namespace Microsoft.SmallVisualBasic
                 asm.SetEntryPoint(_entryPoint, PEFileKinds.WindowApplication)
                 asm.Save(_outputName & ".exe")
                 _xmlDoc.Save(IO.Path.Combine(_directory, _outputName & ".xml"))
+                Return asm.GetReferencedAssemblies()
             End If
-        End Sub
+
+            Return Nothing
+        End Function
 
 
 
@@ -324,10 +327,11 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub AddMethodDocs(parser As Parser)
-            Dim prmtv = "Microsoft.SmallVisualBasic.Library.Primitive"
+            Dim prmtv = GetType(Primitive).FullName
             For Each st In parser.ParseTree
                 Dim method = TryCast(st, Statements.SubroutineStatement)
                 If method Is Nothing Then Continue For
+
                 Dim hasDoc As Boolean = False
                 Dim paramsCount = If(method.Params Is Nothing, 0, method.Params.Count)
                 Dim paramsList = If(
