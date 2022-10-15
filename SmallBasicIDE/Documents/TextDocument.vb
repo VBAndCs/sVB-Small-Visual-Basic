@@ -909,9 +909,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
             genCode.AppendLine()
             genCode.Append(declaration)
             ' Take the xaml path if exists, to consider the file name change in save as case.
-            Dim xamlFile = If(formDesigner.FormFile = "",
+            Dim xamlFile = If(formDesigner.XamlFile = "",
                     Path.GetFileNameWithoutExtension(Me.File) & ".xaml",
-                    IO.Path.GetFileName(formDesigner.FormFile)
+                    IO.Path.GetFileName(formDesigner.XamlFile)
             )
             genCode.AppendLine($"_path = Program.Directory + ""\{xamlFile}""")
             genCode.AppendLine($"{formName} = Forms.LoadForm(""{formName}"", _path)")

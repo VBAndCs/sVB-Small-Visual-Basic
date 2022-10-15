@@ -23,13 +23,13 @@ Public Class Helper
     End Function
 
     Public Shared Function FormNameExists(designer As Designer, Optional newFormName As String = "") As Boolean
-        If designer.FormFile = "" Then Return False
+        If designer.XamlFile = "" Then Return False
 
         Dim formName = If(newFormName = "",
                 designer.Name.ToLower(),
                 newFormName.ToLower()
         )
-        Dim fileName = designer.FormFile.ToLower()
+        Dim fileName = designer.XamlFile.ToLower()
         Dim projectDir = IO.Path.GetDirectoryName(fileName)
 
         For Each xamlFile In Directory.GetFiles(projectDir, "*.xaml")

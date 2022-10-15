@@ -325,12 +325,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     ShowPopupHelp(wrapper)
                 End If
                 lastSpan = span
-                Return
+                If Not checkEspecialArgs Then Return
             End If
 
             If symbol <> "" AndAlso symbol <> "(" AndAlso line.Start + column = pos Then Return
-            If checkEspecialArgs Then symbol = ","
-            ShowHelpInfo(line, column, paramIndex, span, symbol)
+            ShowHelpInfo(line, column, paramIndex, span, If(checkEspecialArgs, ",", symbol))
 
         End Sub
 

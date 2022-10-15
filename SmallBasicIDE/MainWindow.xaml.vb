@@ -609,7 +609,7 @@ Namespace Microsoft.SmallVisualBasic
                         fileName = newFilePath & ".xaml"
                         If File.Exists(fileName) Then File.Delete(fileName)
 
-                        formDesigner.FormFile = fileName
+                        formDesigner.XamlFile = fileName
                         formDesigner.CodeFile = saveFileDialog.FileName
                         formDesigner.HasChanges = True ' Force saving
                         SaveDesignInfo(document)
@@ -1032,7 +1032,7 @@ Namespace Microsoft.SmallVisualBasic
                 Return doc
             End If
 
-            If formDesigner.FormFile = "" Then
+            If formDesigner.XamlFile = "" Then
                 If formDesigner.CodeFile = "" Then
                     Dim projectPath = GetProjectPath()
                     xamlPath = ""
@@ -1061,7 +1061,7 @@ Namespace Microsoft.SmallVisualBasic
                 IO.File.Create(formPath & ".sb").Close()
 
             Else
-                formPath = formDesigner.FormFile.Substring(0, formDesigner.FormFile.Length - 5)
+                formPath = formDesigner.XamlFile.Substring(0, formDesigner.XamlFile.Length - 5)
 
                 If doc Is Nothing Then doc = GetDoc(formPath & ".sb", openDoc)
                 formName = formDesigner.Name
@@ -1182,12 +1182,12 @@ Namespace Microsoft.SmallVisualBasic
 
         Function SavePage(oldPath As String, saveAs As Boolean) As Boolean
             If DiagramHelper.Helper.FormNameExists(formDesigner) Then
-                If saveAs Then formDesigner.FormFile = oldPath
+                If saveAs Then formDesigner.XamlFile = oldPath
                 Return False
             End If
 
-            Dim newFormName = Path.GetFileNameWithoutExtension(formDesigner.FormFile)
-            Dim newDir = Path.GetDirectoryName(formDesigner.FormFile)
+            Dim newFormName = Path.GetFileNameWithoutExtension(formDesigner.XamlFile)
+            Dim newDir = Path.GetDirectoryName(formDesigner.XamlFile)
             Dim newFilePath = Path.Combine(newDir, newFormName)
             Dim fileName = newFilePath & ".sb"
 
@@ -1213,7 +1213,7 @@ Namespace Microsoft.SmallVisualBasic
                 End If
             End If
 
-            ProjExplorer.ProjectDirectory = formDesigner.FormFile
+            ProjExplorer.ProjectDirectory = formDesigner.XamlFile
             Return True
         End Function
 
@@ -1239,7 +1239,7 @@ Namespace Microsoft.SmallVisualBasic
             Else
                 txtControlName.IsEnabled = True
                 txtControlText.IsEnabled = True
-                ProjExplorer.ProjectDirectory = formDesigner.FormFile
+                ProjExplorer.ProjectDirectory = formDesigner.XamlFile
             End If
 
             ' Remove the handler if exists not to be called twice
@@ -1328,9 +1328,9 @@ Namespace Microsoft.SmallVisualBasic
             If tabDesigner.IsSelected Then
                 grdNameText.Visibility = Visibility.Visible
                 txtTitle.Text = "Form Designer - "
-                txtForm.Text = If(formDesigner.FormFile = "",
+                txtForm.Text = If(formDesigner.XamlFile = "",
                         formDesigner.Name & " *",
-                        Path.GetFileName(formDesigner.FormFile)
+                        Path.GetFileName(formDesigner.XamlFile)
                 )
 
             Else
@@ -1624,19 +1624,11 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub ProjExplorer_FileNameChanged(oldFileName As String, newFileName As String)
             formDesigner.CodeFile = newFileName
-            formDesigner.FormFile = newFileName.Substring(0, newFileName.Length - 2) & "xaml"
-            Dim doc = GetDocIfOpened(oldFileName)
+            formDesigner.XamlFile = newFileName.Substring(0, newFileName.Length - 2) & "xaml"
+            Dim doc = GetDoc(oldFileName, False)
             Dim genFile = newFileName & ".gen"
-
-            If doc IsNot Nothing Then doc.File = newFileName
-
-            If File.Exists(genFile) Then
-                Dim oldXamlFile = oldFileName.Substring(0, oldFileName.Length - 2).ToLower() & "xaml"
-                oldXamlFile = Path.GetFileName(oldXamlFile)
-                Dim newXamlFile = Path.GetFileName(formDesigner.FormFile)
-                Dim code = File.ReadAllText(genFile)
-                File.WriteAllText(genFile, code.Replace(oldXamlFile, newXamlFile))
-            End If
+            doc.File = newFileName
+            File.WriteAllText(genFile, doc.GenerateCodeBehind(formDesigner, True))
         End Sub
 
         Dim ShowGlobalFile As New RunAction(

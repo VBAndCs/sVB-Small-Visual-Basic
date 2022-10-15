@@ -17,7 +17,7 @@
                     Case "Save"
                         Mi.IsEnabled = Dsn.HasChanges
                     Case "Save As..."
-                        Mi.IsEnabled = Dsn.FormFile <> ""
+                        Mi.IsEnabled = Dsn.XamlFile <> ""
                     Case "Save To Image", "Print"
                         Mi.IsEnabled = Dsn.Items.Count > 0
                     Case "Paste"

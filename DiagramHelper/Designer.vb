@@ -45,16 +45,16 @@ Public Class Designer
         End Set
     End Property
 
-    Dim _formFile As String = ""
-    Public Property FormFile As String
+    Dim _xamlFile As String = ""
+    Public Property XamlFile As String
         Get
-            Return _formFile
+            Return _xamlFile
         End Get
 
         Set(value As String)
-            _formFile = If(value = "", "", IO.Path.GetFullPath(value))
-            If _formFile <> "" AndAlso CodeFile = "" Then
-                _codeFile = _formFile.Substring(0, _formFile.Length - 5) & ".sb"
+            _xamlFile = If(value = "", "", IO.Path.GetFullPath(value))
+            If _xamlFile <> "" AndAlso CodeFile = "" Then
+                _codeFile = _xamlFile.Substring(0, _xamlFile.Length - 5) & ".sb"
             End If
         End Set
     End Property
@@ -243,7 +243,7 @@ Public Class Designer
 
     Public ReadOnly Property IsNew As Boolean
         Get
-            Return Not HasChanges AndAlso _formFile = ""
+            Return Not HasChanges AndAlso _xamlFile = ""
         End Get
     End Property
 
@@ -266,7 +266,7 @@ Public Class Designer
                 Return globalKey
             Else
                 For Each p In Pages
-                    If p.Value._formFile.ToLower() = pagePath Then
+                    If p.Value._xamlFile.ToLower() = pagePath Then
                         Return p.Key
                     End If
                 Next
@@ -284,7 +284,7 @@ Public Class Designer
     End Sub
 
     Private Shared Sub UpdateFormInfo()
-        Dim displayName = " ● " & CurrentPage.Name & If(CurrentPage._formFile = "", " *", "")
+        Dim displayName = " ● " & CurrentPage.Name & If(CurrentPage._xamlFile = "", " *", "")
         Dim i = FormKeys.IndexOf(CurrentPage.PageKey)
         If i = -1 Then
             If CurrentPage.Name <> "global" Then
@@ -411,7 +411,7 @@ Public Class Designer
 
         If CurrentPage IsNot Nothing Then
             If CurrentPage.PageKey = key Then Return key
-            If CurrentPage._formFile.ToLower() = key.ToLower() Then Return key
+            If CurrentPage._xamlFile.ToLower() = key.ToLower() Then Return key
             If UpdateCurrentPage Then UpdatePageInfo()
         End If
 
@@ -429,7 +429,7 @@ Public Class Designer
 
             For Each item In Pages
                 Dim page = item.Value
-                If page._formFile.ToLower() = xamlPath OrElse
+                If page._xamlFile.ToLower() = xamlPath OrElse
                              page._codeFile.ToLower() = codePath Then
                     ' File is already opened. Stwich to it.
                     Return SwitchTo(item.Key, False)
@@ -848,10 +848,10 @@ Public Class Designer
 
 
     Public Function Save() As Boolean
-        If _formFile = "" Then
+        If _xamlFile = "" Then
             Return SaveAs()
         ElseIf Me.HasChanges Then
-            Return SavePage(_formFile, False)
+            Return SavePage(_xamlFile, False)
         Else
             Return True
         End If
@@ -866,19 +866,19 @@ Public Class Designer
         }
 
         Dim saveName As String
-        If _formFile = "" Then
+        If _xamlFile = "" Then
             saveName = Me.Name
         Else
-            dlg.InitialDirectory = _formFile
-            saveName = IO.Path.GetFileNameWithoutExtension(_formFile)
+            dlg.InitialDirectory = _xamlFile
+            saveName = IO.Path.GetFileNameWithoutExtension(_xamlFile)
         End If
         dlg.FileName = saveName
 
         If dlg.ShowDialog() = True Then
-            Dim oldPath = _formFile
-            _formFile = dlg.FileName ' don't use FileName property to keep the old code file path
+            Dim oldPath = _xamlFile
+            _xamlFile = dlg.FileName ' don't use FileName property to keep the old code file path
             If Not SavePage(oldPath, True) Then Return False
-            FormFile = _formFile ' Update the old code file path
+            XamlFile = _xamlFile ' Update the old code file path
             Return True
         End If
         Return False
@@ -889,7 +889,7 @@ Public Class Designer
 
         For Each page In Pages
             Dim dsn = page.Value
-            If dsn._formFile.ToLower() = formFile Then
+            If dsn._xamlFile.ToLower() = formFile Then
                 If dsn.HasChanges Then
                     SwitchTo(page.Key)
                     CurrentPage.Save()
@@ -907,7 +907,7 @@ Public Class Designer
     Public Function DoSave(Optional tmpPath As String = Nothing, Optional saveAs As Boolean = False) As Boolean
         Try
             Dim xmal = PageToXaml()
-            Dim saveTo = If(tmpPath = "", _formFile, tmpPath)
+            Dim saveTo = If(tmpPath = "", _xamlFile, tmpPath)
             IO.File.WriteAllText(saveTo, xmal, System.Text.Encoding.UTF8)
             _codeFile = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
             If tmpPath = "" Then
@@ -930,7 +930,7 @@ Public Class Designer
         Me.SelectedIndex = -1
         Me.Focus()
         Dim ImgSaver As New ImageSaver
-        ImgSaver.Save(DesignerGrid, _formFile)
+        ImgSaver.Save(DesignerGrid, _xamlFile)
         Me.Scale = Sc
     End Sub
 
@@ -975,8 +975,8 @@ Public Class Designer
 
             CurrentPage.XamlToPage(xaml)
             CurrentPage.ShowGrid = True
-            CurrentPage._formFile = IO.Path.GetFullPath(fileName)
-            CurrentPage.PageKey = GetTempKey(CurrentPage._formFile)
+            CurrentPage._xamlFile = IO.Path.GetFullPath(fileName)
+            CurrentPage.PageKey = GetTempKey(CurrentPage._xamlFile)
             Pages(CurrentPage.PageKey) = CurrentPage
             UpdateFormInfo()
 
@@ -1011,7 +1011,7 @@ Public Class Designer
         Me.Focus()
         Dim dialog As New PrintDialog()
         If dialog.ShowDialog() = True Then
-            dialog.PrintVisual(Me.DesignerGrid, _formFile)
+            dialog.PrintVisual(Me.DesignerGrid, _xamlFile)
         End If
         Me.Scale = Sc
     End Sub
@@ -1908,9 +1908,9 @@ Public Class Designer
 
     Private ReadOnly Property IsDirty As Boolean
         Get
-            If IO.Path.GetFileNameWithoutExtension(_formFile).ToLower() = "global" Then Return False
+            If IO.Path.GetFileNameWithoutExtension(_xamlFile).ToLower() = "global" Then Return False
             Return Me.HasChanges OrElse (
-                _formFile = "" AndAlso _codeFile <> "" AndAlso
+                _xamlFile = "" AndAlso _codeFile <> "" AndAlso
                 Not _codeFile.ToLower().StartsWith(TempProjectPath)
             )
         End Get

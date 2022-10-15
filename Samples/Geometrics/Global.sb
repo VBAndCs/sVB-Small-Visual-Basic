@@ -1,11 +1,15 @@
+' contains methods to create custom geometric figures
 
 _LastX = -1
 _LastY = -1
 _DraggedLabel = ""
 
-Sub AllowDrag(targetLabel)
-   targetLabel.OnMouseMove = _OnMouseMove
-   targetLabel.OnMouseLeftDown = _OnMouseLeftDown
+' Allows the user to drag the control by mouse
+Sub AllowDrag(
+      targetControl ' the control you want to allow the user to drag
+   )
+   targetControl.OnMouseMove = _OnMouseMove
+   targetControl.OnMouseLeftDown = _OnMouseLeftDown
 EndSub
 
 
@@ -42,12 +46,22 @@ EndSub
 
 
 '------------------------------------------------
-Sub CreateFigure1(targetLabel, penColor, penWidth, brushColor)
-   ' Crate a figure to draw a new custom shape
+' Creates a hexagonal figure with strait lines.
+Sub CreateHexagon(
+      targetLabel, ' The label to draw the figure on.
+      penColor, ' the color used to draw the figure outline
+      penWidth, ' the thickness of the outline
+      brushColor ' the color used to fill the internal area of the figure
+   )
+   
+   ' Create a new empty geometric path
+   GeometricPath.CreatePath()
+   
+   ' Crate a figure to draw a new custom figure
    GeometricPath.CreateFigure(50, 0, True)
    GeometricPath.AddLineSegment(0, 50, True)
    GeometricPath.AddLineSegment(50, 100, True)
-   GeometricPath.AddLineSegment(150, 100, False)
+   GeometricPath.AddLineSegment(150, 100, True)
    GeometricPath.AddLineSegment(200, 50, True)
    GeometricPath.AddLineSegment(150, 0, True)
    ' No need for this line as the figure is created as a colsed shape
@@ -58,10 +72,17 @@ EndSub
 
 
 '------------------------------------------------
-Sub CreateFigure2(targetLabel, penColor, penWidth, brushColor)
+' Creates a hexagonal figure with curves.
+Sub CreateCurvyHexagon(
+      targetLabel, ' The label to draw the figure on.
+      penColor, ' the color used to draw the figure outline
+      penWidth, ' the thickness of the outline
+      brushColor ' the color used to fill the internal area of the figure
+   )
    
    ' Create a new empty geometric path
    GeometricPath.CreatePath()
+   
    GeometricPath.CreateFigure(50, 0, False)
    GeometricPath.AddLineSegment(0, 50, True)
    GeometricPath.AddArcSegment(
@@ -94,7 +115,13 @@ EndSub
 
 
 '------------------------------------------------
-Sub CreateFigure3(targetLabel, penColor, penWidth, brushColor)
+' Creates a shape composed of basic seometric shapes.
+Sub CreateCompositShape(
+      targetLabel, ' The label to draw the figure on.
+      penColor, ' the color used to draw the figure outline
+      penWidth, ' the thickness of the outline
+      brushColor ' the color used to fill the internal area of the figure
+   )
    
    ' You can also combine some basic shapes in one path
    GeometricPath.CreatePath()
