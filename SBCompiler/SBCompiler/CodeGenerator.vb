@@ -220,7 +220,7 @@ Namespace Microsoft.SmallVisualBasic
             For Each var In symbolTable.GlobalVariables
                 Dim fieldName = var.Value.LCaseText
                 Dim fieldBuilder = typeBuilder.DefineField(
-                        "_" & fieldName,
+                        "_p_" & fieldName,
                         GetType(Primitive),
                         FieldAttributes.Private Or FieldAttributes.Static
                 )

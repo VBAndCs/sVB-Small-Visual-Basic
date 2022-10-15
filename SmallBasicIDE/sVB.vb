@@ -196,52 +196,50 @@ Class sVB
         Dim sVBCompiler As New sVB(genCode, code, formNames)
         _compiler.Parser.IsGlobal = isGlobal
 
-        With sVBCompiler
-            .errors = .Compile(ignoreErrors)
-            If .errors?.Count > 0 Then
-                Dim controlNamesList As New Dictionary(Of String, String)
-                Dim variableTypes As New Dictionary(Of String, VariableType)
-                Dim normalErrors As New List(Of [Error])
+        sVBCompiler.errors = sVBCompiler.Compile(ignoreErrors)
+        If sVBCompiler.errors?.Count > 0 Then
+            Dim controlNamesList As New Dictionary(Of String, String)
+            Dim variableTypes As New Dictionary(Of String, VariableType)
+            Dim normalErrors As New List(Of [Error])
 
-                For Each [error] In .errors
-                    Dim errMsg = [error].Description
-                    If Not (errMsg = "!" OrElse errMsg.StartsWith("Cannot find object", StringComparison.InvariantCultureIgnoreCase)) Then
-                        normalErrors.Add([error])
+            For Each [error] In sVBCompiler.errors
+                Dim errMsg = [error].Description
+                If Not (errMsg = "!" OrElse errMsg.StartsWith("Cannot find object", StringComparison.InvariantCultureIgnoreCase)) Then
+                    normalErrors.Add([error])
 
-                    ElseIf normalErrors.Count = 0 Then
-                        Dim pos = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
-                        Dim obj As String = errMsg.Substring(pos, errMsg.Length - pos - 2).ToLower()
+                ElseIf normalErrors.Count = 0 Then
+                    Dim pos = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
+                    Dim obj As String = errMsg.Substring(pos, errMsg.Length - pos - 2).ToLower()
 
-                        If Not controlNamesList.ContainsKey(obj) AndAlso Not variableTypes.ContainsKey(obj) Then
-                            If .hints IsNot Nothing AndAlso .hints.ControlsInfo.ContainsKey(obj) Then
-                                controlNamesList(obj) = .hints.ControlsInfo(obj)
-                            Else
-                                Dim controlName = WinForms.PreCompiler.GetModuleFromVarName(obj)
-                                If controlName = "" Then
-                                    Dim varType = sVB._compiler.Parser.SymbolTable.GetInferedType([error].Token)
-                                    If varType = VariableType.Any Then
-                                        normalErrors.Add([error])
-                                    Else
-                                        variableTypes(obj) = varType
-                                    End If
+                    If Not controlNamesList.ContainsKey(obj) AndAlso Not variableTypes.ContainsKey(obj) Then
+                        If sVBCompiler.hints IsNot Nothing AndAlso sVBCompiler.hints.ControlsInfo.ContainsKey(obj) Then
+                            controlNamesList(obj) = sVBCompiler.hints.ControlsInfo(obj)
+                        Else
+                            Dim controlName = WinForms.PreCompiler.GetModuleFromVarName(obj)
+                            If controlName = "" Then
+                                Dim varType = _compiler.Parser.SymbolTable.GetInferedType([error].Token)
+                                If varType = VariableType.Any Then
+                                    normalErrors.Add([error])
                                 Else
-                                    controlNamesList(obj) = controlName
+                                    variableTypes(obj) = varType
                                 End If
+                            Else
+                                controlNamesList(obj) = controlName
                             End If
                         End If
                     End If
-                Next
-
-                If normalErrors.Count > 0 Then
-                    ' Fix normal errors first
-                    Return normalErrors
                 End If
+            Next
 
-                .PreCompile(controlNamesList, variableTypes)
+            If normalErrors.Count > 0 Then
+                ' Fix normal errors first
+                Return normalErrors
             End If
 
-            Return .errors
-        End With
+            sVBCompiler.PreCompile(controlNamesList, variableTypes)
+        End If
+
+        Return sVBCompiler.errors
     End Function
 
     Private Sub Compile(
@@ -250,6 +248,7 @@ Class sVB
                 )
 
         errors = Compile()
+
         If errors.Count > 0 Then
             Dim normalErrors As New List(Of [Error])
 
@@ -318,15 +317,16 @@ Class sVB
 
             'use (lineNum) to be passed by value
             Dim tokens = LineScanner.GetTokens(line, (lineNum), lines)
-
             Dim objId As Integer
+
             For objId = 0 To tokens.Count - 1
                 If tokens(objId).Line = lineNum AndAlso tokens(objId).Column = charNum Then Exit For
             Next
 
             If objId + 2 >= tokens.Count Then
-                errors(i) = New [Error](lineNum, tokens(objId + 1).EndColumn, charNum, "Method name is expected.")
-                Continue For
+                errors.Clear()
+                errors.Add(New [Error](lineNum, tokens(objId + 1).EndColumn, charNum, "Method name is expected."))
+                Exit Sub
             End If
 
             If tokens(objId + 1).Type <> TokenType.Dot Then Continue For
@@ -342,23 +342,26 @@ Class sVB
                 Dim restText = line.Substring(tokens(objId + 3).Column + 1)
                 Dim argsExprList = Parser.ParseArgumentList(restText, lineNum, lines, TokenType.LeftParens)
                 If argsExprList Is Nothing Then
-                    errors(i) = New [Error](nameToken, "Wrong brackets pairs")
-                    Continue For
+                    errors.Clear()
+                    errors.Add(New [Error](nameToken, "Wrong brackets pairs"))
+                    Exit Sub
                 End If
 
                 Dim methodInfo = WinForms.PreCompiler.GetMethodInfo(controlName, varType, method)
                 Dim ModuleName = methodInfo.Module
                 If ModuleName = "" Then
-                    errors(i) = New [Error](nameToken, $"Method `{method}` doesn't exist.")
-                    Continue For
+                    errors.Clear()
+                    errors.Add(New [Error](nameToken, $"Method `{method}` doesn't exist."))
+                    Exit Sub
                 End If
 
                 Dim argsCount = argsExprList.Count
                 Dim paramsCount = methodInfo.ParamsCount
                 If paramsCount = 0 OrElse paramsCount <= argsCount OrElse
                           argsCount <> paramsCount - 1 Then
-                    errors(i) = New [Error](nameToken, "Wrong number of parameters.")
-                    Continue For
+                    errors.Clear()
+                    errors.Add(New [Error](nameToken, "Wrong number of parameters."))
+                    Exit Sub
                 End If
 
                 lines(lineNum) = prevText &
@@ -369,15 +372,16 @@ Class sVB
                 ReRun = True
 
             ElseIf objId = 0 AndAlso err.subLine = 0 Then 'Property Set 
-
                 If nameToken.Type <> TokenType.Identifier Then
-                    errors(i) = New [Error](nameToken, $"Expected a property name.")
-                    Continue For
+                    errors.Clear()
+                    errors.Add(New [Error](nameToken, $"Expected a property name."))
+                    Exit Sub
                 End If
 
                 If objId + 3 >= tokens.Count OrElse tokens(objId + 3).Type <> TokenType.Equals Then
-                    errors(i) = New [Error](nameToken, $"Expected `=` and a value to set the property")
-                    Continue For
+                    errors.Clear()
+                    errors.Add(New [Error](nameToken, $"Expected `=` and a value to set the property"))
+                    Exit Sub
                 End If
 
                 Dim propName = nameToken.Text
@@ -389,13 +393,15 @@ Class sVB
                     Dim ModuleName = methodInfo.Module
 
                     If ModuleName = "" Then
-                        errors(i) = New [Error](nameToken, $"Property `{propName}` doesn't exist.")
-                        Continue For
+                        errors.Clear()
+                        errors.Add(New [Error](nameToken, $"Property `{propName}` doesn't exist."))
+                        Exit Sub
                     End If
 
                     If methodInfo.ParamsCount <> 2 Then
-                        errors(i) = New [Error](nameToken, $"`{method}` definition is not supported.")
-                        Continue For
+                        errors.Clear()
+                        errors.Add(New [Error](nameToken, $"`{method}` definition is not supported."))
+                        Exit Sub
                     End If
 
                     pos = tokens(objId + 3).Column
@@ -407,16 +413,17 @@ Class sVB
 
                 Else ' Event
                     Dim ModuleName = propInfo.Module
-                    lines.Insert(lineNum, $"Control.HandleEvents({obj})")
-                    lines(lineNum + 1) = prevText & $"{ModuleName}.{nextText}"
+                    lines(lineNum) = $"Control.HandleEvents({obj})" & vbLf &
+                                                prevText & $"{ModuleName}.{nextText}"
                     errors.RemoveAt(i)
                     ReRun = True
                 End If
 
             Else 'Property Get                     
                 If tokens.Count > objId + 2 AndAlso nameToken.Type <> TokenType.Identifier Then
-                    errors(i) = New [Error](nameToken, "property name is expected.")
-                    Continue For
+                    errors.Clear()
+                    errors.Add(New [Error](nameToken, "property name is expected."))
+                    Exit Sub
                 End If
 
                 Dim propName = nameToken.Text
@@ -425,8 +432,9 @@ Class sVB
                 Dim ModuleName = methodInfo.Module
 
                 If ModuleName = "" Then
-                    errors(i) = New [Error](nameToken, $"Property `{propName}` doesn't exist.")
-                    Continue For
+                    errors.Clear()
+                    errors.Add(New [Error](nameToken, $"Property `{propName}` doesn't exist."))
+                    Exit Sub
                 End If
 
                 If methodInfo.ParamsCount = 1 Then
@@ -435,8 +443,9 @@ Class sVB
                        $"{ModuleName}.{method}({obj})" &
                        nextText.Substring(propName.Length)
                 Else
-                    errors(i) = New [Error](nameToken, $"`{method}` definition is not supported.")
-                    Continue For
+                    errors.Clear()
+                    errors.Add(New [Error](nameToken, $"`{method}` definition is not supported."))
+                    Exit Sub
                 End If
 
                 errors.RemoveAt(i)

@@ -541,7 +541,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     If item.ParamIndex > -1 Then
                         Dim params = wrapper.Documentation.ParamsDoc.Keys
                         If item.ParamIndex < params.Count Then
-                            Dim name = params(item.ParamIndex).ToLower()
+                            Dim name = params(item.ParamIndex).ToLower().Trim("_")
                             Dim especialItem = ""
 
                             If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
@@ -1168,7 +1168,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         Loop
 
 LineElse:
-                        Dim name = tokens(index).LCaseText
+                        Dim name = tokens(index).LCaseText.Trim("_")
 
                         If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
                             especialItem = "Colors"

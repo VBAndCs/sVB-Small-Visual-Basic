@@ -10,7 +10,7 @@ Namespace Microsoft.SmallVisualBasic
     Public Class Parser
         Private codeLines As List(Of String)
         Private _currentLine As Integer
-        Private _currentLineEnumerator As TokenEnumerator
+        Private _currentLineEnum As TokenEnumerator
         Private _rewindRequested As Boolean
         Private _FunctionsCall As New List(Of MethodCallExpression)
         Private keepSymbols As Boolean
@@ -1148,18 +1148,46 @@ Namespace Microsoft.SmallVisualBasic
             End While
         End Sub
 
+        Dim loweredLines() As String
+        Dim loweredIndex As Integer = -1
+
         Friend Function ReadNextLine() As TokenEnumerator
             If _rewindRequested Then
                 _rewindRequested = False
-                Return _currentLineEnumerator
+                Return _currentLineEnum
             End If
 
             LineScanner.SubLineComments.Clear()
-            _currentLine += 1
-            If _currentLine >= codeLines.Count Then Return Nothing
+            Dim line As String
 
-            _currentLineEnumerator = LineScanner.GetTokenEnumerator(codeLines(_currentLine), _currentLine, codeLines, lineOffset)
-            Return _currentLineEnumerator
+            If loweredIndex > -1 AndAlso loweredIndex < loweredLines.Count - 1 Then
+                loweredIndex += 1
+                line = loweredLines(loweredIndex)
+
+            Else
+                loweredIndex = -1
+                _currentLine += 1
+                If _currentLine >= codeLines.Count Then Return Nothing
+                line = codeLines(_currentLine)
+
+                If line.Contains(vbLf) Then
+                    ' This lines contains more than one line.
+                    ' This happens due to lowering code.
+                    ' These lines are combined not to change the source code lines numbers.
+                    loweredLines = line.Split({vbLf}, StringSplitOptions.RemoveEmptyEntries)
+                    loweredIndex = 0
+                    line = loweredLines(0)
+                End If
+            End If
+
+            _currentLineEnum = LineScanner.GetTokenEnumerator(
+                line,
+                _currentLine,
+                codeLines,
+                lineOffset
+            )
+
+            Return _currentLineEnum
         End Function
 
         Friend Sub RewindLine()

@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.Globalization
+﻿Imports System.Globalization
 Imports System.Text
 Imports System.Runtime.InteropServices
 
@@ -65,7 +63,8 @@ Namespace Microsoft.SmallVisualBasic
                     If IsLineContinuity(tokens,
                               If(lineNumber < lines.Count - 1,
                                   lines(lineNumber + 1),
-                                  "")
+                                  ""
+                              )
                          ) Then
                         ' Scan the next line as a part of this line
 

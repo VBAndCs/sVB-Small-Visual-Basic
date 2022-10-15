@@ -1,0 +1,30 @@
+' Contains methods to show message box and input box dialogs.
+
+'------------------------------------------------
+' Shows a message box dialog with Yes, No and cancel buttons
+Function MsgBox(
+      strTitle, ' The title to show on the form title bar
+      strMessage ' The message tto show to the user.
+   ) ' The button that the user clicked
+   
+   
+   info!Title = strTitle  ' The dialog form title
+   info!Message = strMessage ' The message to show by the dialog form
+   
+   Return Forms.ShowDialog("FrmMsg", info)
+EndFunction
+
+
+'------------------------------------------------
+' Shows an input box dialog to allow the user to enter some text
+Function InputBox(
+      message ' The message to show to the user
+   ) ' The text the user entered. or an empty string if the user cancelled the dialog.
+   
+   result = Forms.ShowDialog("FrmInput", message)
+   If result = DialogResults.Cancel Then
+      Return ""
+   Else
+      Return result!InputText
+   EndIf
+EndFunction

@@ -134,6 +134,7 @@ Namespace WinForms
     }
 
         Public Shared Function GetVarType(variableName As String) As VariableType
+            variableName = variableName.Trim("_")
             Dim varName = variableName.ToLower()
 
             For Each sh In typeShortcuts
