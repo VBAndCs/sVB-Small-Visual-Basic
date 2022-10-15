@@ -8,7 +8,7 @@
 - SB Code Enhancements:
 - ToDo:
 
-# sVB v2.4 can create a code library!
+# sVB v2.3 can create a code library!
 For the first time, it is now possible to use an sVB app as a library! Follow these instructions:
 1. Create a sVB project with a global file. Choose a suitable name for the folder that you save the project files to (such as MyLib), because the name of this folder will be the name of your library. Don't use spaces nor symbols. 
 2. Add variables, subroutines, and functions to the global files. These are the members that you can access from the lib.

@@ -45,7 +45,10 @@ Namespace Library
         ''' <summary>
         ''' Add the geometic path that you create using the GeometricPath type to shapes.
         ''' </summary>
-        ''' <returns></returns>
+        ''' <param name="penColor">The color used to draw the shape outline</param>
+        ''' <param name="penWidth">The width of the shape outline</param>
+        ''' <param name="brushColor">The color used to fill the shape</param>
+        ''' <returns>The geometic path that was just added to the Graphics Window</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function AddGeometricPath(
                          penColor As Primitive,

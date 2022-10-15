@@ -10,7 +10,7 @@ Sub Button1_OnClick()
    TextBox1.AppendLine("<SmallBasicType>")
    TextBox1.AppendLine("public NotInheritable Class Colors")
    
-   ForEach color1 In Colors.AllColors
+   ForEach color1 In Color.AllColors
       TextBox1.AppendLine("  ''' <summary>")
       TextBox1.AppendLine(
          Text.Format("  ''' [1] Color:", color1.Name)

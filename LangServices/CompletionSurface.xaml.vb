@@ -179,10 +179,25 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Return list
         End Function
 
-        Private Function CanAddItem(item As CompletionItem, isFirstToken As Boolean, inputText As String) As Boolean
+        Private Function CanAddItem(
+                         item As CompletionItem,
+                         isFirstToken As Boolean,
+                         inputText As String
+                    ) As Boolean
+
             Dim displayName = item.DisplayName
 
-            If displayName.StartsWith("_") Then Return False
+            If displayName.StartsWith("_") Then
+                Select Case item.ItemType
+                    Case CompletionItemType.LocalVariable,
+                             CompletionItemType.GlobalVariable,
+                             CompletionItemType.SubroutineName
+
+                    Case Else
+                        Return False
+                End Select
+            End If
+
             Select Case displayName
                 Case "GetHashCode", "ToString", "Equals", "GetType"
                     Return False
@@ -255,14 +270,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             Dim textLength = text.Length
 
-            If textLength < 2 Then
+            If textLength <2 Then
                 Dim firstItem = filteredCompletionItems(0).CompletionItem
                 Dim key = firstItem.HistoryKey
                 If key <> "" AndAlso CompletionProvider.CompHistory.ContainsKey(key) Then
                     Dim word = CompletionProvider.CompHistory(key).ToLower()
-                    If text = "" OrElse word.StartsWith(text) Then
-                        text = word
-                        textLength = text.Length
+                    If Text = "" OrElse word.StartsWith(Text) Then
+                        Text = word
+                        textLength = Text.Length
                     End If
 
                 End If

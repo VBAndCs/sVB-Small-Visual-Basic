@@ -512,7 +512,13 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         If item.ItemType <> CompletionItemType.MethodName Then Continue For
                     End If
 
-                    Dim spans = HeighLightIdentifiers(currentToken, bag.SubroutineName, item.ItemType, bag.SymbolTable, textView.TextSnapshot)?.ToArray()
+                    Dim spans = HeighLightIdentifiers(
+                                currentToken,
+                                bag.SubroutineName,
+                                item.ItemType,
+                                bag.SymbolTable,
+                                textView.TextSnapshot
+                    )?.ToArray()
                     highlightCashe(span) = spans
                     If Not editor.ContainsWordHighlights Then
                         editor.HighlightWords(WordHighlightColor, spans)
@@ -532,6 +538,32 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     End If
 
                     Dim wrapper = New CompletionItemWrapper(item, bag)
+                    If item.ParamIndex > -1 Then
+                        Dim params = wrapper.Documentation.ParamsDoc.Keys
+                        If item.ParamIndex < params.Count Then
+                            Dim name = params(item.ParamIndex).ToLower()
+                            Dim especialItem = ""
+
+                            If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
+                                especialItem = "Colors"
+                            ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then
+                                especialItem = "Keys"
+                            ElseIf name = "showdialog" OrElse name.StartsWith("dialogresult") OrElse name.EndsWith("dialogresult") Then
+                                especialItem = "DialogResults"
+                            End If
+
+                            If especialItem <> "" Then
+                                Dim pos = textView.Caret.Position.TextInsertionIndex
+                                Dim txt = line.GetText().Substring(pos - line.Start)
+                                Dim token = LineScanner.GetFirstToken(txt, 0)
+                                If especialItem.ToLower <> token.LCaseText Then
+                                    bag = GetCompletionBag(especialItem)
+                                    ShowCompletionAdornment(textView.TextSnapshot, bag, token, line)
+                                End If
+                            End If
+                        End If
+                    End If
+
                     ShowPopupHelp(wrapper)
                     helpCashe(span) = wrapper
                     Return
@@ -1174,21 +1206,21 @@ LineElse:
             If especialItem = "" Then
                 bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
             Else
-                Dim typeInfo As TypeInfo = Nothing
-                bag = compHelper.GetEmptyCompletionBag(GlobalParser)
-                If bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
-                    CompletionHelper.FillMemberNames(bag, typeInfo, "")
-                    bag.CompletionItems.Sort(
-                        Function(ci1, ci2) ci1.DisplayName.CompareTo(ci2.DisplayName))
-                End If
+                bag = GetCompletionBag(especialItem)
             End If
 
-            If bag Is Nothing OrElse bag.CompletionItems.Count <= 0 Then
-                Return
+            If bag IsNot Nothing AndAlso bag.CompletionItems.Count > 0 Then
+                ShowCompletionAdornment(snapshot, bag, curToken, line)
             End If
 
-            bag.SelectEspecialItem = especialItem
+        End Sub
 
+        Private Sub ShowCompletionAdornment(
+                            snapshot As ITextSnapshot,
+                            bag As CompletionBag,
+                            curToken As Token,
+                            line As ITextSnapshotLine
+                     )
             Dim adornmentSpan = GetTextSpanFromToken(line, curToken)
             Dim textSpan = adornmentSpan
 
@@ -1200,6 +1232,7 @@ LineElse:
                         System.Math.Min(curToken.EndColumn + 1, snapshot.Length),
                         SpanTrackingMode.EdgeInclusive
                     )
+
                 Else
                     adornmentSpan = New TextSpan(
                         line.TextSnapshot,
@@ -1220,6 +1253,24 @@ LineElse:
                 End Function, DispatcherOperationCallback), Nothing)
         End Sub
 
+        Private Function GetCompletionBag(especialItem As String) As CompletionBag
+            Dim bag As CompletionBag
+            Dim typeInfo As TypeInfo = Nothing
+            bag = compHelper.GetEmptyCompletionBag(GlobalParser)
+            If bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
+                CompletionHelper.FillMemberNames(bag, typeInfo, "")
+                bag.CompletionItems.Sort(
+                    Function(ci1, ci2)
+                        Return ci1.DisplayName.CompareTo(ci2.DisplayName)
+                    End Function)
+            End If
+
+            If bag IsNot Nothing Then
+                bag.SelectEspecialItem = especialItem
+            End If
+
+            Return bag
+        End Function
 
         Private Function GetTextSpanFromToken(line As ITextSnapshotLine, token As Token) As ITextSpan
             If token.IsIllegal AndAlso token.Column = 0 Then

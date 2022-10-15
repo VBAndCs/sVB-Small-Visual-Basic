@@ -1144,27 +1144,5 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property YellowGreen As Primitive = "#9ACD32"
 
-        Private Shared _colors As Primitive
-
-        ''' <summary>
-        ''' Returns an array of all pre-defined colors
-        ''' </summary>
-        <ReturnValueType(VariableType.Array)>
-        Public Shared ReadOnly Property AllColors As Primitive
-            Get
-                If _colors.IsEmpty Then
-                    Dim map = New Dictionary(Of Primitive, Primitive)
-                    Dim num = 1
-
-                    For Each key In Color._colorNames.Keys
-                        map(num) = key
-                        num += 1
-                    Next
-                    _colors._arrayMap = map
-                End If
-                Return _colors
-            End Get
-        End Property
-
     End Class
 End Namespace

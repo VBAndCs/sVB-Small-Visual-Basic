@@ -212,8 +212,10 @@ Namespace Microsoft.SmallVisualBasic
                     If Not found Then Continue For
 
                     fileName = Path.GetFileName(libraryFile)
-                    IO.File.Copy(libraryFile, Path.Combine(directory, fileName))
                     If fileName.ToLower().EndsWith(".exe") Then
+                        Dim dllName = fileName.Substring(0, fileName.Length - 3) & "dll"
+                        IO.File.Copy(libraryFile, Path.Combine(directory, dllName))
+
                         Dim dir = IO.Path.GetDirectoryName(libraryFile)
                         For Each file In IO.Directory.GetFiles(dir)
                             Select Case IO.Path.GetExtension(file).ToLower().TrimStart("."c)
@@ -222,7 +224,11 @@ Namespace Microsoft.SmallVisualBasic
                                     IO.File.Copy(file, Path.Combine(directory, fileName))
                             End Select
                         Next
+
+                    Else
+                        IO.File.Copy(libraryFile, Path.Combine(directory, fileName))
                     End If
+
                 Catch
                 End Try
             Next

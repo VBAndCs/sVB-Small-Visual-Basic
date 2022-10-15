@@ -215,7 +215,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Button control to the form
         ''' </summary>
-        ''' <param name="datePickerName">A unigue name of the new Button.</param>
+        ''' <param name="buttonName">A unigue name of the new Button.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>

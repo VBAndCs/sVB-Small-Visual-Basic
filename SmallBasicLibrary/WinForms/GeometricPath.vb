@@ -144,7 +144,7 @@ Namespace WinForms
                         .IsClosed = isClosed,
                         .StartPoint = New Point(x, y)
                     }
-                    PathGeometry.Figures = New PathFigureCollection From {_figure}
+                    PathGeometry.Figures.Add(_figure)
                 End Sub)
         End Sub
 

@@ -218,12 +218,16 @@ Namespace Microsoft.SmallVisualBasic
                     )
 
             For Each var In symbolTable.GlobalVariables
+                Dim fieldName = var.Value.LCaseText
                 Dim fieldBuilder = typeBuilder.DefineField(
-                        "_" & var.Value.LCaseText,
+                        "_" & fieldName,
                         GetType(Primitive),
                         FieldAttributes.Private Or FieldAttributes.Static
                 )
                 _currentScope.Fields.Add(var.Key, fieldBuilder)
+
+                ' private fields starts with _. They will be hidden
+                If fieldName.StartsWith("_") Then Continue For
 
                 If isGlobal Then
                     If Not _currentScope.ForGlobalHelp Then

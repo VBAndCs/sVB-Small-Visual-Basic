@@ -1,8 +1,5 @@
-﻿Imports System
-Imports System.Collections.Generic
-Imports System.IO
+﻿Imports System.IO
 Imports Microsoft.Nautilus.Text
-Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.SmallVisualBasic.Completion
 
 Namespace Microsoft.SmallVisualBasic.LanguageService
@@ -292,12 +289,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 For i = 0 To locals.Count - 1
                     Dim expr = locals.Values(i)
                     Dim id = expr.Identifier
-                    If Char.IsUpper(id.Text(0)) Then
+                    Dim idName = id.Text
+                    Dim n = 0
+
+                    If idName.StartsWith("_") Then
+                        If idName.Length = 1 Then Continue For
+                        n = 1
+                    End If
+
+                    If Char.IsUpper(idName(n)) Then
                         Dim line = snapshot.GetLineFromLineNumber(id.Line)
-                        Dim name = id.Text
-                        Dim c = name(0).ToString().ToLower()
-                        textEdit.Replace(line.Start + id.Column, 1, c)
-                        id.Text = c + If(name.Length > 1, name.Substring(1), "")
+                        Dim c = idName(n).ToString().ToLower()
+                        textEdit.Replace(line.Start + id.Column + n, 1, c)
+                        id.Text = idName.Substring(0, n) & c + If(idName.Length > n + 1, idName.Substring(n + 1), "")
                         expr.Identifier = id
                         symbolTable.LocalVariables(locals.Keys(i)) = expr
                     End If
@@ -396,13 +400,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private Sub ToUpper(start As Integer, [end] As Integer, snapshot As ITextSnapshot, dictionary As Dictionary(Of String, Token), textEdit As ITextEdit)
             For i = 0 To dictionary.Count - 1
                 Dim token = dictionary.Values(i)
-                If Char.IsLower(token.Text(0)) Then
+                Dim name = token.Text
+                Dim n = 0
+                If name.StartsWith("_") Then
+                    If name.Length = 1 Then Continue For
+                    n = 1
+                End If
+
+                If Char.IsLower(name(n)) Then
                     Dim line = snapshot.GetLineFromLineNumber(token.Line)
                     If line.LineNumber >= start AndAlso line.LineNumber <= [end] Then
-                        Dim name = token.Text
-                        Dim c = token.Text(0).ToString().ToUpper()
-                        textEdit.Replace(line.Start + token.Column, 1, c)
-                        token.Text = c + If(name.Length > 1, name.Substring(1), "")
+                        Dim c = token.Text(n).ToString().ToUpper()
+                        textEdit.Replace(line.Start + token.Column + n, 1, c)
+                        token.Text = name.Substring(0, n) & c + If(name.Length > n + 1, name.Substring(n + 1), "")
                         dictionary(dictionary.Keys(i)) = token
                     End If
                 End If

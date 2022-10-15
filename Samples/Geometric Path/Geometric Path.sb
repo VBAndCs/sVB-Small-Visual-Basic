@@ -1,9 +1,7 @@
 GraphicsWindow.Width = 700
 GraphicsWindow.Height = 500
 
-GraphicsWindow.BrushColor = Colors.AliceBlue
-GraphicsWindow.PenColor = Colors.Red
-GraphicsWindow.PenWidth = 3
+
 
 ' Crate a figure to draw a new custom shape
 GeometricPath.CreateFigure(100, 100, True)
@@ -15,12 +13,9 @@ GeometricPath.AddLineSegment(200, 100, True)
 ' No need to close the figure because we sent True to the CreateFigure and it will close the figure for us.
 'GeometricPath.AddLineSegment(100, 100, True)
 
-Sh1 = Shapes.AddGeometricPath()
+Sh1 = Shapes.AddGeometricPath(Colors.Red, 3, Colors.AliceBlue)
 Shapes.Rotate(Sh1, 45)
 
-GraphicsWindow.BrushColor = Colors.Transparent
-GraphicsWindow.PenColor = Colors.Blue
-GraphicsWindow.PenWidth = 5
 
 ' Create a new empty geometric path
 GeometricPath.CreatePath()
@@ -50,13 +45,9 @@ GeometricPath.AddQuadraticBezierSegment(
 )
 
 
-Sh2 = Shapes.AddGeometricPath()
+Sh2 = Shapes.AddGeometricPath(Colors.Blue, 5, 0)
 Shapes.Move(Sh2, 130, 100)
 
-
-GraphicsWindow.BrushColor = Colors.Yellow
-GraphicsWindow.PenColor = Colors.Black
-GraphicsWindow.PenWidth = 1
 
 ' You can also combine some basic shapes in one path
 GeometricPath.CreatePath()
@@ -69,6 +60,6 @@ GeometricPath.AddTriangle(
    400, 400
 )
 
-Sh3 = Shapes.AddGeometricPath()
+Sh3 = Shapes.AddGeometricPath(Colors.Black, 1, Colors.Yellow)
 Shapes.Move(Sh3, 300, 0)
 Shapes.Rotate(Sh3, 45)

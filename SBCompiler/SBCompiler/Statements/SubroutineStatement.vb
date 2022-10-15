@@ -169,11 +169,18 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
-            If scope.ForGlobalHelp AndAlso Name.IsIllegal Then Return
+            If scope.ForGlobalHelp AndAlso Name.IsIllegal Then
+                Return
+            End If
+
+            Dim domain = If(Name.Text.StartsWith("_"),
+                MethodAttributes.Private,
+                MethodAttributes.Public
+            )
 
             Dim methodBuilder = scope.TypeBuilder.DefineMethod(
                 Name.Text,
-                MethodAttributes.Static Or MethodAttributes.Public
+                MethodAttributes.Static Or domain
             )
 
             Dim prmtvType = GetType(Library.Primitive)
