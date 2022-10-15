@@ -180,7 +180,7 @@ Namespace Microsoft.Nautilus.Text.StringRebuilder
                 Throw New ArgumentOutOfRangeException("lineNumber")
             End If
 
-            Dim start1 As Integer = (If((lineNumber <> 0), _lineBreakSpans(lineNumber - 1).End, 0))
+            Dim start1 As Integer = If(lineNumber = 0, 0, _lineBreakSpans(lineNumber - 1).End)
             Dim [end] As Integer
             Dim lineBreakLength1 As Integer
 

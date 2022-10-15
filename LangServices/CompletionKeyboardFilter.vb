@@ -54,11 +54,21 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 If provider Is Nothing Then Return
 
                 If args.Key = Key.Space AndAlso args.KeyboardDevice.Modifiers = ModifierKeys.Control Then
-                    provider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex, True)
+                    provider.ShowHelp("*")
+
+                    If provider.IsSpectialListVisible Then
+                        provider.IsSpectialListVisible = False
+                    Else
+                        provider.ShowCompletionAdornment(
+                            textView.TextSnapshot,
+                            textView.Caret.Position.TextInsertionIndex,
+                            True
+                        )
+                    End If
                     args.Handled = True
 
-                ElseIf args.Key = Key.F1 Then
-                    provider.ShowHelp(True)
+                    ElseIf args.Key = Key.F1 Then
+                        provider.ShowHelp(True)
                 End If
             End If
         End Sub
@@ -157,7 +167,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 textView.VisualElement.Focus()
 
-                If extraText = ", " OrElse repWith.EndsWith("(") Then
+                If extraText = ", " Then
+                    provider.ShowHelp(", ")
+                ElseIf repWith.EndsWith("(") Then
                     provider.ShowHelp(True)
                 ElseIf showCompletionAdornmentAgain Then
                     provider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex, True)

@@ -22,6 +22,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private editorOperations As IEditorOperations
         Private undoHistory As UndoHistory
         Public Event AdornmentsChanged As EventHandler(Of AdornmentsChangedEventArgs) Implements IAdornmentProvider.AdornmentsChanged
+        Friend IsSpectialListVisible As Boolean
 
         Public Sub New(textView As ITextView,
                        editorOperationsProvider As IEditorOperationsProvider,
@@ -261,6 +262,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Private Sub OnHelpUpdate(sender As Object, e As EventArgs)
             helpUpdateTimer.Stop()
+            IsSpectialListVisible = False
+
             Dim snapshot = textBuffer.CurrentSnapshot
             If snapshot.Length = 0 Then Return
 
@@ -280,11 +283,23 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             Dim force = False
             Dim symbol = ""
+            Dim checkEspecialArgs = False
 
             If TypeOf sender Is Boolean Then
                 force = CType(sender, Boolean)
             ElseIf TypeOf sender Is String Then
                 symbol = CType(sender, String)
+            ElseIf TypeOf sender Is (String, Boolean) Then
+                Dim info = CType(sender, (Symbol As String, Force As Boolean))
+                force = info.Force
+                symbol = info.Symbol
+                If symbol = ", " Then
+                    symbol = ","
+                    column -= 2
+                ElseIf symbol = "*" Then
+                    symbol = ""
+                    checkEspecialArgs = True
+                End If
             End If
 
             Dim span As New Span(pos, 0)
@@ -314,8 +329,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
 
             If symbol <> "" AndAlso symbol <> "(" AndAlso line.Start + column = pos Then Return
-
-            ShowHelpInfo(line, column, paramIndex, span)
+            If checkEspecialArgs Then symbol = ","
+            ShowHelpInfo(line, column, paramIndex, span, symbol)
 
         End Sub
 
@@ -379,8 +394,13 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             nextToken = GetNonCommentToken(tokens, i + 1, True)
                             Exit For
 
-                        ElseIf token.Column > column OrElse i = n Then
+                        ElseIf token.Column > column Then
                             prevToken = GetNonCommentToken(tokens, i - 1, True)
+                            prevIsSep = IsPrevSeparator(currentLine, symbol, prevToken, prevChar)
+                            Exit For
+
+                        ElseIf i = n Then
+                            prevToken = GetNonCommentToken(tokens, i, True)
                             prevIsSep = IsPrevSeparator(currentLine, symbol, prevToken, prevChar)
                             Exit For
                         End If
@@ -479,7 +499,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                        line As ITextSnapshotLine,
                        column As Integer,
                        paramIndex As Integer,
-                       span As Span
+                       span As Span,
+                       symbol As String
              )
 
             Dim currentToken As Token
@@ -519,6 +540,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 bag.SymbolTable,
                                 textView.TextSnapshot
                     )?.ToArray()
+
                     highlightCashe(span) = spans
                     If Not editor.ContainsWordHighlights Then
                         editor.HighlightWords(WordHighlightColor, spans)
@@ -538,7 +560,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     End If
 
                     Dim wrapper = New CompletionItemWrapper(item, bag)
-                    If item.ParamIndex > -1 Then
+                    If item.ParamIndex > -1 AndAlso
+                                (symbol = "(" OrElse symbol = ",") AndAlso
+                                wrapper.Documentation IsNot Nothing Then
                         Dim params = wrapper.Documentation.ParamsDoc.Keys
                         If item.ParamIndex < params.Count Then
                             Dim name = params(item.ParamIndex).ToLower().Trim("_")
@@ -554,11 +578,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                             If especialItem <> "" Then
                                 Dim pos = textView.Caret.Position.TextInsertionIndex
+                                line = textView.TextSnapshot.GetLineFromPosition(pos)
                                 Dim txt = line.GetText().Substring(pos - line.Start)
                                 Dim token = LineScanner.GetFirstToken(txt, 0)
+
                                 If especialItem.ToLower <> token.LCaseText Then
+                                    IsSpectialListVisible = True
                                     bag = GetCompletionBag(especialItem)
-                                    ShowCompletionAdornment(textView.TextSnapshot, bag, token, line)
+                                    ShowCompletionAdornment(
+                                        textView.TextSnapshot,
+                                        bag,
+                                        token,
+                                        line
+                                    )
                                 End If
                             End If
                         End If
@@ -1221,6 +1253,7 @@ LineElse:
                             curToken As Token,
                             line As ITextSnapshotLine
                      )
+
             Dim adornmentSpan = GetTextSpanFromToken(line, curToken)
             Dim textSpan = adornmentSpan
 
@@ -1395,6 +1428,9 @@ LineElse:
 
         Public Sub ShowHelp(Optional force As Boolean = False)
             OnHelpUpdate(force, Nothing)
+        End Sub
+        Public Sub ShowHelp(symbol As String)
+            OnHelpUpdate((symbol, True), Nothing)
         End Sub
     End Class
 End Namespace

@@ -18,10 +18,10 @@ For the first time, it is now possible to use an sVB app as a library! Follow th
 6. Run the project to create the exe file in the Bin folder in the project folder.
 7. Now you can copy the Bin folder and paste in the `sVB\Bin\Lib` folder, then rename it to the name of your lib such as `MyLib` in this example. The name of this folder is not important, but Bin is not a suitable name, and of course you can't add tow libraries with folders named Bin because they will be merged, which can cause troubles later!
 8. Restart sVB, and in the code editor write the name of your library such as MyLib, then press dot. The auto completion list will show the members you declared in the global file and can use them. If you add comments to those members, you will get help info about them while typing.
-It is so simple. You can apply it on the `Dialogs` and `Geometrics` projects in the samples folder, so, you can use this library like this:
+It is so simple. I already applied it on the `Dialogs` and `Geometrics` projects in the samples folder, and added the two libraries to the Lib folder of the sVB realease, so, you can now use this code in any form that have a label:
 ```vb
 Name = Dialogs.InputBox("Enter your name")
-Geometrics.CreateFigure1(Label1, Colors.AliceBlue, 7, Colors.Brown)
+Geometrics.CreateHexagon(Label1, Colors.AliceBlue, 7, Colors.Brown)
 Geometrics.AllowDrag(Label1)
 ```
 

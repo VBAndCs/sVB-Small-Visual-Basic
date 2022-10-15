@@ -395,7 +395,7 @@
                 <TextBlock VerticalAlignment="Center"
                     Margin="0,1,5,0" Foreground="Brown" Background="LightYellow" >Name:</TextBlock>
                 <TextBox x:Name="txtControlName"  Grid.Column="1" VerticalAlignment="Center"
-                       Width="100" Background="AliceBlue"  Margin="0,1,10,1" Padding="0"
+                       Width="100" MaxHeight="50" Background="AliceBlue"  Margin="0,1,10,1" Padding="0"
                        PreviewKeyDown="TxtControlName_PreviewKeyDown"
                        PreviewTextInput="TxtControlName_PreviewTextInput"
                        GotFocus="TxtControl_GotFocus"
@@ -403,7 +403,7 @@
 
                 <TextBlock VerticalAlignment="Center" Margin="0,1,5,0"  Grid.Column="2" Foreground="Brown" Background="LightYellow" >Text:</TextBlock>
                 <TextBox x:Name="txtControlText"  Grid.Column="3" VerticalAlignment="Center"
-                        Width="100" Background="AliceBlue" Margin="0,1,15,1" Padding="0"
+                        Width="100" MaxHeight="30" Background="AliceBlue" Margin="0,1,15,1" Padding="0"
                         PreviewKeyDown="TxtControlText_PreviewKeyDown"
                         GotFocus="TxtControl_GotFocus"
                         LostFocus="TxtControlText_LostFocus"/>

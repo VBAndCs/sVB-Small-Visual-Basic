@@ -1,5 +1,4 @@
 ﻿Imports System.ComponentModel.Composition
-Imports System.Windows.Input
 Imports System.Windows.Threading
 Imports Microsoft.Nautilus.Core.Undo
 Imports Microsoft.Nautilus.Text
@@ -40,7 +39,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             If e.Changes(0).NewText.StartsWith(vbCrLf) Then
                 Dim after = e.After
                 Dim lineNumber = after.GetLineNumberFromPosition(e.Changes(0).NewEnd)
-                CompilerService.FormatDocument(textBuffer, lineNumber)
+                FormatDocument(textBuffer, lineNumber)
             End If
         End Sub
 
