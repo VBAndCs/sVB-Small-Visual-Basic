@@ -9,7 +9,8 @@
     <ControlTemplate>
       <Grid ClipToBounds="True">
         <Canvas Name="itemsHost" ClipToBounds="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-        <Ellipse Width="340" Height="340" Margin="-540,-100,0,0" Fill="#aFc9d3" Stroke="#8fa9b3" StrokeThickness="1" />
+        <Ellipse Width="340" Height="340" Margin="-575,-100,0,0" 
+             Fill="#aFc9d3" Stroke="#8fa9b3" StrokeThickness="1" />
         <Border Name="enabledIndicator" CornerRadius="4" BorderThickness="0" />
       </Grid>
         

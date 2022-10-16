@@ -91,14 +91,14 @@ Namespace Microsoft.SmallVisualBasic.Completion
                         line As Integer
                   ) As Statement
 
-            Return GetStatement(compiler.Parser, line)
+            Return GetRootStatement(compiler.Parser, line)
         End Function
 
-        Public Function GetStatement(line As Integer) As Statement
-            Return GetStatement(_compiler.Parser, line)
+        Public Function GetRootStatement(line As Integer) As Statement
+            Return GetRootStatement(_compiler.Parser, line)
         End Function
 
-        Public Shared Function GetStatement(
+        Public Shared Function GetRootStatement(
                         parser As Parser,
                         line As Integer
                   ) As Statement

@@ -15,14 +15,14 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
-            If lineNumber <= RightValue?.EndToken.Line Then Return Me
+            If RightValue Is Nothing OrElse lineNumber <= RightValue.EndToken.Line Then Return Me
             Return Nothing
         End Function
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             EqualsToken.Parent = Me
-            Dim isPropertySet = False
+            Dim isEventHandler = False
             If LeftValue IsNot Nothing Then
                 LeftValue.Parent = Me
                 Dim prop = TryCast(LeftValue, PropertyExpression)
@@ -33,11 +33,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         typeName.Parent = Me ' Important to get the parent subroutine
                         Dim key = symbolTable.GetKey(typeName)
                         symbolTable.InferedTypes(key) = VariableType.Array
-                        InferType(symbolTable, prop.PropertyName, prop.Key)
+                        InferType(symbolTable, prop.PropertyName, prop.DynamicKey)
                     Else
                         Dim typeInfo = symbolTable.GetTypeInfo(prop.TypeName)
                         If typeInfo IsNot Nothing AndAlso typeInfo.Events.TryGetValue(prop.PropertyName.LCaseText, Nothing) Then
-                            isPropertySet = True
+                            isEventHandler = True
                         End If
                     End If
                 End If
@@ -49,7 +49,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             If RightValue IsNot Nothing Then
                 RightValue.Parent = Me
                 RightValue.AddSymbols(symbolTable)
-                If isPropertySet AndAlso TypeOf RightValue Is IdentifierExpression Then
+                If isEventHandler AndAlso TypeOf RightValue Is IdentifierExpression Then
                     Dim id = CType(RightValue, IdentifierExpression).Identifier
                     symbolTable.PossibleEventHandlers.Add((id, symbolTable.AllIdentifiers.Count - 1))
                 End If
@@ -216,7 +216,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             ElseIf TypeOf LeftValue Is PropertyExpression Then
                 Dim prop = CType(LeftValue, PropertyExpression)
                 If prop.IsDynamic Then
-                    InferType(symbolTable, prop.PropertyName, prop.Key)
+                    InferType(symbolTable, prop.PropertyName, prop.DynamicKey)
                 End If
             End If
         End Sub

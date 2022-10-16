@@ -260,6 +260,60 @@ Namespace WinForms
         End Function
 
         ''' <summary>
+        ''' Adds a new Button control to the form
+        ''' </summary>
+        ''' <param name="checkBoxName">A unigue name of the new CheckBox.</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="text">the text to desply on the CheckBox</param>
+        ''' <param name="checked">The value to set to the Checked property</param>
+        ''' <returns>The neame of the button</returns>
+        <ReturnValueType(VariableType.CheckBox)>
+        <ExMethod>
+        Public Shared Function AddCheckBox(
+                         formName As Primitive,
+                         checkBoxName As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         text As Primitive,
+                         checked As Primitive
+                   ) As Primitive
+
+            Dim key = ValidateArgs(formName, checkBoxName)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+
+                          Dim ch As New Wpf.CheckBox With {
+                               .Name = checkBoxName,
+                               .Content = text
+                          }
+
+                          ' Don't use if() expression, because it will return a new primitive not Nothing
+                          If checked.AsString() = "" Then
+                              ch.IsChecked = Nothing
+                          Else
+                              ch.IsChecked = checked
+                          End If
+
+                          Wpf.Canvas.SetLeft(ch, left)
+                          Wpf.Canvas.SetTop(ch, top)
+
+                          Dim cnv As Wpf.Canvas = frm.Content
+                          cnv.Children.Add(ch)
+                          Forms._controls(key) = ch
+
+                      Catch ex As Exception
+                          ReportSubError(formName, "AddCheckBox", ex)
+                      End Try
+                  End Sub)
+
+            Return key
+        End Function
+
+
+        ''' <summary>
         ''' Adds a new ListBox control to the form
         ''' </summary>
         ''' <param name="listBoxName">A unigue name of the new ListBox.</param>

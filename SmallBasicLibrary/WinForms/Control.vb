@@ -268,7 +268,7 @@ Namespace WinForms
                     Try
                         GetEnabled = GetControl(controlName).IsEnabled
                     Catch ex As Exception
-                        ReportError(controlName, "Ebabled", ex)
+                        ReportError(controlName, "Enabled", ex)
                     End Try
                 End Sub)
         End Function

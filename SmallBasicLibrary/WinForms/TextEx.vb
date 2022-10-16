@@ -209,5 +209,25 @@ Namespace WinForms
             Return Library.Text.ToNumber(text)
         End Function
 
+        ''' <summary>
+        '''Removes all leading and trailing white-space characters from the given text
+        '''Wite-space chars iclude spaces, tabs, and line symbols.
+        ''' </summary>
+        ''' <returns>the trimmed string</returns>
+        <ExMethod>
+        <ReturnValueType(VariableType.String)>
+        Public Shared Function Trim(text As Primitive) As Primitive
+            Return Library.Text.Trim(text)
+        End Function
+
+        ''' <summary>
+        '''Returns true if the current text is empty, or returns false otherwise.
+        ''' </summary>
+        ''' <returns>True or False</returns>
+        <ExProperty>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Function GetIsEmpty(text As Primitive) As Primitive
+            Return text.IsEmpty
+        End Function
     End Class
 End Namespace

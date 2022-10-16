@@ -345,11 +345,45 @@ Namespace Library
         ''' If text contains only one character, returns the ascii code of this character
         ''' Otherwise, returns 0.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ToNumber(text As Primitive) As Primitive
             If text.IsNumber Then Return text.AsDecimal
             Dim x = text.AsString()
             If x.Length > 1 Then Return New Primitive(0D)
             Return AscW(x)
+        End Function
+
+        ''' <summary>
+        '''Removes all leading and trailing white-space characters from the given text
+        '''Wite-space chars iclude spaces, tabs, and line symbols.
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <returns>the trimmed string</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function Trim(text As Primitive) As Primitive
+            If text.IsEmpty Then Return text
+            If text.IsArray Then Return text
+            Return text.AsString().Trim()
+        End Function
+
+        ''' <summary>
+        '''Converts the given value to a string
+        ''' </summary>
+        ''' <param name="value">the input value</param>
+        ''' <returns>the trimmed string</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function ToStr(value As Primitive) As Primitive
+            Return value.AsString()
+        End Function
+
+        ''' <summary>
+        '''Returns true if the given text is empty, or returns false otherwise.
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <returns>True or False</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Function IsEmpty(text As Primitive) As Primitive
+            Return text.IsEmpty
         End Function
     End Class
 End Namespace

@@ -17,4 +17,5 @@
     ListBox
     ComboBox
     DatePicker
+    CheckBox
 End Enum

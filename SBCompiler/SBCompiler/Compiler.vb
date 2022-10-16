@@ -94,6 +94,7 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             Dim codeLines As New List(Of String)
+
             Do
                 Dim line = source.ReadLine()
                 If line Is Nothing Then Exit Do

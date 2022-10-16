@@ -1126,11 +1126,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             ' Wait until code editor respond to changes, to avoid any conflicts
             ShowCompletion.After(
                   20,
-                  Sub() DoShowCompletionAdornment(snapshot, caretPosition, checkEspecialItem)
+                  Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem)
             )
         End Sub
 
-        Public Sub DoShowCompletionAdornment(
+        Public Sub DoShowCompletion(
                            snapshot As ITextSnapshot,
                            caretPosition As Integer,
                            Optional checkEspecialItem As Boolean = False
@@ -1218,15 +1218,24 @@ LineElse:
                             ).Parser.SymbolTable
 
                             needsToReCompile = False
-                            token.Parent = compHelper.GetStatement(line.LineNumber)
+                            token.Parent = compHelper.GetRootStatement(line.LineNumber)
+                            Dim varType = symbolTable.GetInferedType(token)
+                            If varType = VariableType.Any Then
+                                Dim st = TryCast(token.Parent.GetStatementAt(line.LineNumber), Statements.AssignmentStatement)
+                                If st IsNot Nothing Then
+                                    varType = st.LeftValue.InferType(symbolTable)
+                                End If
+                            End If
 
-                            Select Case symbolTable.GetInferedType(token)
+                            Select Case varType
                                 Case VariableType.Color
                                     especialItem = "Colors"
                                 Case VariableType.Key
                                     especialItem = "Keys"
                                 Case VariableType.DialogResult
                                     especialItem = "DialogResults"
+                                Case VariableType.Boolean
+                                    especialItem = "Boolean"
                                 Case Else
                                     Return
                             End Select
@@ -1289,7 +1298,20 @@ LineElse:
             Dim bag As CompletionBag
             Dim typeInfo As TypeInfo = Nothing
             bag = compHelper.GetEmptyCompletionBag(GlobalParser)
-            If bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
+            If especialItem = "Boolean" Then
+                bag.CompletionItems.AddRange({
+                    New CompletionItem() With {
+                        .Key = "False",
+                        .DisplayName = "False",
+                        .ItemType = CompletionItemType.Keyword
+                    },
+                    New CompletionItem() With {
+                        .Key = "True",
+                        .DisplayName = "True",
+                        .ItemType = CompletionItemType.Keyword
+                    }
+                })
+            ElseIf bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
                 CompletionHelper.FillMemberNames(bag, typeInfo, "")
                 bag.CompletionItems.Sort(
                     Function(ci1, ci2)
@@ -1297,7 +1319,7 @@ LineElse:
                     End Function)
             End If
 
-            If bag IsNot Nothing Then
+            If bag IsNot Nothing AndAlso especialItem <> "Boolean" Then
                 bag.SelectEspecialItem = especialItem
             End If
 

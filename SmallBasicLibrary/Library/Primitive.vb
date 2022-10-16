@@ -346,6 +346,12 @@ Namespace Library
                 Dim b1 = s1.ToLower(CultureInfo.InvariantCulture)
                 Dim b2 = s2.ToLower(CultureInfo.InvariantCulture)
 
+                If s1 = "" Then
+                    If s2 <> "" Then Return False
+                ElseIf s2 = "" Then
+                    Return False
+                End If
+
                 If b1 = "true" OrElse b1 = "false" Then
                     Return CBool(Me) = Boolean.Parse(b1)
 

@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Globalization
-Imports System.Reflection
+﻿Imports System.Reflection
 Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Completion
 Imports Microsoft.SmallVisualBasic.Statements
@@ -16,7 +14,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public IsDynamic As Boolean
         Public isSet As Boolean
 
-        Public ReadOnly Property Key As String
+        Public ReadOnly Property DynamicKey As String
             Get
                 Dim dynTypeName = CompletionHelper.TrimData(TypeName.Text)
                 Return $"dynprop.{dynTypeName}.{PropertyName.LCaseText}"
@@ -73,7 +71,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
             If IsDynamic Then
-                Return symbolTable.GetInferedType(Key)
+                Return symbolTable.GetInferedType(DynamicKey)
             Else
                 Return symbolTable.GetReturnValueType(_TypeName, _PropertyName, False)
             End If
