@@ -219,45 +219,88 @@ Namespace WinForms
         End Sub
 
         Private Shared Sub NavigateToLink(sender As Object, e As RequestNavigateEventArgs)
-            Process.Start(e.Uri.AbsoluteUri)
+            Try
+                Dim url = If(e.Uri.IsFile, e.Uri.LocalPath, e.Uri.AbsoluteUri)
+                Process.Start(url)
+            Catch ex As Exception
+                Process.Start("about:blank")
+                ReportError(ex.Message, ex)
+            End Try
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with the given font name.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="fontName">The name of the font to apply on the text. Send an empty string to use the current label font</param>
         <ExMethod>
         Public Shared Sub AppendWithFontName(labelName As Primitive, text As Primitive, fontName As Primitive)
             AppendFormatted(labelName, text, fontName, 0, "", "", "", Colors.None, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with the given font size.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendWithFontSize(labelName As Primitive, text As Primitive, fontSize As Primitive)
             AppendFormatted(labelName, text, "", fontSize, "", "", "", Colors.None, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with the given font name and size.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="fontName">The name of the font to apply on the text. Send an empty string to use the current label font</param>
+        ''' <param name="fontSize">The font size of the text. Send 0 to use the current label font size</param>
         <ExMethod>
         Public Shared Sub AppendWithFontNameAndSize(labelName As Primitive, text As Primitive, fontName As Primitive, fontSize As Primitive)
             AppendFormatted(labelName, text, fontName, fontSize, "", "", "", Colors.None, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with a bold font.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendBold(labelName As Primitive, text As Primitive)
             AppendFormatted(labelName, text, "", 0, True, "", "", Colors.None, Colors.None, "")
         End Sub
 
-
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with an italic font.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendItalic(labelName As Primitive, text As Primitive)
             AppendFormatted(labelName, text, "", 0, "", True, "", Colors.None, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with a bold and italic font.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendBoldItalic(labelName As Primitive, text As Primitive)
             AppendFormatted(labelName, text, "", 0, True, True, "", Colors.None, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with a line drawn under it.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendUnderlined(labelName As Primitive, text As Primitive)
             AppendFormatted(labelName, text, "", 0, "", "", True, Colors.None, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with the given font effects.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="isBold">True to use a bold font, False otherwise.</param>
+        ''' <param name="isItalic">True to use an italic font, False otherwise.</param>
+        ''' <param name="isUnderlined">True to draw aline under the text, False otherwise.</param>
         <ExMethod>
         Public Shared Sub AppendWithFontEffects(
                            labelName As Primitive,
@@ -270,6 +313,15 @@ Namespace WinForms
             AppendFormatted(labelName, text, "", 0, isBold, isItalic, isUnderlined, Colors.None, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with the given font properties.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="fontName">The name of the font to apply on the text. Send an empty string to use the current label font</param>
+        ''' <param name="fontSize">The font size of the text. Send 0 to use the current label font size</param>
+        ''' <param name="isBold">True to use a bold font, False otherwise.</param>
+        ''' <param name="isItalic">True to use an italic font, False otherwise.</param>
+        ''' <param name="isUnderlined">True to draw aline under the text, False otherwise.</param>
         <ExMethod>
         Public Shared Sub AppendWithFont(
                            labelName As Primitive,
@@ -284,46 +336,90 @@ Namespace WinForms
             AppendFormatted(labelName, text, fontName, fontSize, isBold, isItalic, isUnderlined, Colors.None, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with the given for color.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="forecolor">The color of the text. Send Colors.None to use the current label forecolor.</param>
         <ExMethod>
         Public Shared Sub AppendWithForecolor(labelName As Primitive, text As Primitive, forecolor As Primitive)
             AppendFormatted(labelName, text, "", 0, "", "", "", forecolor, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with the given back color.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="backcolor">The background color of the text. Send Colors.None to use the current label backcolor></param>
         <ExMethod>
         Public Shared Sub AppendWithBackcolor(labelName As Primitive, text As Primitive, backcolor As Primitive)
             AppendFormatted(labelName, text, "", 0, "", "", "", Colors.None, backcolor, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with the given fore and back colors.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="forecolor">The color of the text. Send Colors.None to use the current label forecolor.</param>
+        ''' <param name="backcolor">The background color of the text. Send Colors.None to use the current label backcolor></param>
         <ExMethod>
         Public Shared Sub AppendWithColors(labelName As Primitive, text As Primitive, forecolor As Primitive, backcolor As Primitive)
             AppendFormatted(labelName, text, "", 0, "", "", "", forecolor, backcolor, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label and formates it as a hyper link that opens the gives url.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendLink(labelName As Primitive, text As Primitive, url As Primitive)
             AppendFormatted(labelName, text, "", 0, "", "", "", Colors.None, Colors.None, url)
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with a bold font and formates it as a hyper link that opens the gives url.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendBoldLink(labelName As Primitive, text As Primitive, url As Primitive)
             AppendFormatted(labelName, text, "", 0, True, "", "", Colors.None, Colors.None, url)
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with an italic font and formates it as a hyper link that opens the gives url.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendItalicLink(labelName As Primitive, text As Primitive, url As Primitive)
             AppendFormatted(labelName, text, "", 0, "", True, "", Colors.None, Colors.None, url)
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label with a bold and italic font and formates it as a hyper link that opens the gives url.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
+        ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendBoldItalicLink(labelName As Primitive, text As Primitive, url As Primitive)
             AppendFormatted(labelName, text, "", 0, True, True, "", Colors.None, Colors.None, url)
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub Append(labelName As Primitive, text As Primitive)
             AppendFormatted(labelName, text, "", 0, "", "", "", Colors.None, Colors.None, "")
         End Sub
 
+        ''' <summary>
+        ''' Adds the given text at the end of the current label then inserts a new line.
+        ''' </summary>
+        ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendLine(labelName As Primitive, text As Primitive)
             AppendFormatted(labelName, text + vbCrLf, "", 0, "", "", "", Colors.None, Colors.None, "")

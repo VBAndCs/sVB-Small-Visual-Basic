@@ -98,8 +98,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     args.Handled = CommitConditionally(textView, completionSurface, " = ", True)
                             End Select
 
-                        Case "<", ">"
-                            args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ", True)
+                        Case "<" ' don't add a space after, because user may want to write <>
+                            args.Handled = CommitConditionally(textView, completionSurface, " <", True)
+
+                        Case ">"
+                            args.Handled = CommitConditionally(textView, completionSurface, " > ", True)
 
                         Case "!", ")", "[", "]", "{", "}"
                             CommitConditionally(textView, completionSurface)

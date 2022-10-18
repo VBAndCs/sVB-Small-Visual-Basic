@@ -489,10 +489,20 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 Select Case token.Type
                     Case TokenType.Equals, TokenType.NotEqualTo, TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
-                                   TokenType.LessThan, TokenType.LessThanEqualTo,
+                                   TokenType.LessThanEqualTo,
                                    TokenType.And, TokenType.Or,
                                    TokenType.Addition, TokenType.Multiplication, TokenType.Division
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 1)
+
+                    Case TokenType.LessThan
+                        If notLastToken Then
+                            If nextToken.Type = TokenType.GreaterThan Then
+                                FixSpaces(textEdit, line, token, nextToken, 0)
+                            Else
+                                FixSpaces(textEdit, line, token, nextToken, 1)
+                            End If
+                        End If
+
 
                     Case TokenType.Subtraction
                         If notLastToken Then

@@ -511,7 +511,7 @@ Public Class DiagramPanel
     End Sub
 
     Private Sub RemoveFromGroupMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        Designer.SetGroupID(Diagram, Nothing)
+        Diagram.ClearValue(Designer.GroupIDProperty)
     End Sub
 
 

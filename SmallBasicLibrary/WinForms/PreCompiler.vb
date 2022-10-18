@@ -16,11 +16,11 @@ Namespace WinForms
             FillModuleMembers(GetType(Control))
             FillModuleMembers(GetType(TextBox))
             FillModuleMembers(GetType(Label))
-            FillModuleMembers(GetType(Button))
             FillModuleMembers(GetType(ListBox))
             FillModuleMembers(GetType(ComboBox))
             FillModuleMembers(GetType(CheckBox))
             FillModuleMembers(GetType(RadioButton))
+            FillModuleMembers(GetType(Button))
             FillModuleMembers(GetType(DatePicker))
             FillModuleMembers(GetType(ImageBox))
             FillModuleMembers(GetType(TextEx))
@@ -130,11 +130,11 @@ Namespace WinForms
                 New ShortcutInfo("Form", VariableType.Form),
                 New ShortcutInfo("TextBox", VariableType.TextBox),
                 New ShortcutInfo("Label", VariableType.Label),
-                New ShortcutInfo("Button", VariableType.Button),
                 New ShortcutInfo("ListBox", VariableType.ListBox),
                 New ShortcutInfo("ComboBox", VariableType.ComboBox),
                 New ShortcutInfo("CheckBox", VariableType.CheckBox),
                 New ShortcutInfo("RadioButton", VariableType.RadioButton),
+                New ShortcutInfo("Button", VariableType.Button),
                 New ShortcutInfo("DatePicker", VariableType.DatePicker),
                 New ShortcutInfo("ImageBox", VariableType.ImageBox)
     }

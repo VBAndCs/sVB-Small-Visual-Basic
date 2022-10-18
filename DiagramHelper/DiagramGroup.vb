@@ -6,17 +6,18 @@ Friend Class DiagramGroup
     Friend Panels As New List(Of DiagramPanel)
     Dim SelectionBorder As Border
     Dim Canvas As Canvas
+    Dim timeStamp As String
 
     Shared Sub Clear()
         Groups.Clear()
     End Sub
 
-    Private Shared Function GetGroup(GroupTimeStamp As Date, Canvas As Canvas) As DiagramGroup
-        If Groups.ContainsKey(GroupTimeStamp) Then
-            Return Groups(GroupTimeStamp)
+    Private Shared Function GetGroup(timeStamp As Date, Canvas As Canvas) As DiagramGroup
+        If Groups.ContainsKey(timeStamp) Then
+            Return Groups(timeStamp)
         Else
             Dim G As New DiagramGroup(Canvas)
-            Groups.Add(GroupTimeStamp, G)
+            Groups.Add(timeStamp, G)
             Return G
         End If
     End Function
@@ -42,6 +43,7 @@ Friend Class DiagramGroup
     Private Shared Sub Remove(Pnl As DiagramPanel)
         Dim G = Pnl.DiagramGroup
         If G Is Nothing Then Return
+
         If G.Panels.Count < 3 Then
             Remove(G)
         Else
@@ -58,18 +60,25 @@ Friend Class DiagramGroup
         Next
     End Sub
 
-    Private Sub New(Canvas As Canvas)
+    Private Sub New(canvas As Canvas)
         SelectionBorder = New Border With {.IsHitTestVisible = False,
                       .Visibility = Visibility.Collapsed, .BorderBrush = Brushes.DarkRed,
                        .BorderThickness = New Thickness(1)}
 
-        Me.Canvas = Canvas
-        Canvas.Children.Add(SelectionBorder)
+        Me.Canvas = canvas
+        canvas.Children.Add(SelectionBorder)
+        timeStamp = Now.Ticks().ToString()
     End Sub
 
     Private Sub Add(Pnl As DiagramPanel)
         If Panels.Contains(Pnl) Then Return
+
         Panels.Add(Pnl)
+        Dim rd = TryCast(Pnl.Diagram, RadioButton)
+        If rd IsNot Nothing Then
+            rd.GroupName = timeStamp
+        End If
+
         If Pnl.DiagramGroup IsNot Nothing Then Pnl.DiagramGroup.DoRemove(Pnl)
         Pnl.DiagramGroup = Me
         AddHandler Pnl.IsSelectedChanged, AddressOf Pnl_IsSelectedChanged
@@ -80,6 +89,11 @@ Friend Class DiagramGroup
         RemoveHandler Pnl.IsSelectedChanged, AddressOf Pnl_IsSelectedChanged
 
         Panels.Remove(Pnl)
+        Dim rd = TryCast(Pnl.Diagram, RadioButton)
+        If rd IsNot Nothing Then
+            rd.GroupName = ""
+        End If
+
         Pnl.ExitGroupChecked = True
         Pnl.GroupMenuItem.IsChecked = False
         Pnl.ExitGroupChecked = False
@@ -90,10 +104,10 @@ Friend Class DiagramGroup
             Case 0
                 SelectionBorder.Visibility = Visibility.Collapsed
                 Canvas.Children.Remove(SelectionBorder)
-                DiagramGroup.Remove(Me)
+                Remove(Me)
             Case 1
                 If RemoveLastItem Then
-                    Designer.SetGroupID(Panels(0).Diagram, Nothing)
+                    Panels(0).Diagram.ClearValue(Designer.GroupIDProperty)
                 Else
                     UpdateSelection()
                 End If
@@ -156,7 +170,7 @@ Friend Class DiagramGroup
             Dim Diagram = Panels(0).Diagram
             Dim A As Action = AddressOf DiagramObject.Diagrams(Diagram).AfterRestoreAction
             Dim OldSate As New PropertyState(A, Diagram, Designer.GroupIDProperty)
-            Designer.SetGroupID(Diagram, Nothing)
+            Diagram.ClearValue(Designer.GroupIDProperty)
             UndoUnit.Add(OldSate.SetNewValue)
         Loop
         Dim Dsn = Helper.GetDesigner(Canvas)

@@ -1,0 +1,67 @@
+FavFruit = ""
+FavColor = ""
+
+RdoNoFruit.OnCheck = Fruits_OnCheck
+RdoBanana.OnCheck = Fruits_OnCheck
+RdoOrangFruit.OnCheck = Fruits_OnCheck
+RdoAppel.OnCheck = Fruits_OnCheck
+
+RdoNoColor.OnCheck = Colors_OnCheck
+RdoYellow.OnCheck = Colors_OnCheck
+RdoOrangColor.OnCheck = Colors_OnCheck
+RdoRed.OnCheck = Colors_OnCheck
+
+
+'------------------------------------------------
+Sub Fruits_OnCheck()
+   x = SelectItem()
+   If x <> "" Then
+      FavFruit = x
+      Print()
+   EndIf
+EndSub
+
+Sub Colors_OnCheck()
+   x = SelectItem()
+   If x <> "" Then
+      FavColor = x
+      Print()
+   EndIf
+EndSub
+
+'------------------------------------------------
+Sub Print()
+   
+   If FavFruit <> "" Then
+      LblResult.Text = ""
+      LblResult.Append("Your favorit fruit is: ")
+      LblResult.AppendWithForecolor(FavFruit, Colors.Red)
+   EndIf
+   
+   If FavColor <> "" Then
+      If FavFruit = "" Then
+         LblResult.Text = ""
+      Else
+         LblResult.AppendLine("")
+      EndIf
+      
+      LblResult.Append("Your favorit color is: ")
+      LblResult.AppendWithForecolor(FavColor, Colors.Blue)
+   EndIf
+   
+EndSub
+
+
+'------------------------------------------------
+Function SelectItem()
+   checkedRadioButton = Event.SenderControl
+   If checkedRadioButton.Checked Then
+      checkedRadioButton.FontBold = True
+      checkedRadioButton.Underlined = True
+      Return checkedRadioButton.Text
+   Else
+      checkedRadioButton.FontBold = False
+      checkedRadioButton.Underlined = False
+      Return ""
+   EndIf
+EndFunction

@@ -13,10 +13,10 @@
     TextBox
     Label
     ImageBox
-    Button
     ListBox
     ComboBox
     DatePicker
     CheckBox
     RadioButton
+    Button
 End Enum

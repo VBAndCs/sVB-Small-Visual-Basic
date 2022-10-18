@@ -150,6 +150,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Friend Function GetReplacementSpane() As SnapshotSpan
+            If adornment Is Nothing Then Return Nothing
+
             Dim replaceSpan = adornment.ReplaceSpan
             Dim snapshot = textView.TextSnapshot
             Dim span = replaceSpan.GetSpan(snapshot)

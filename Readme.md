@@ -6,27 +6,56 @@
 - Why do we need sVB:
 - Form designer Features:
 - SB Code Enhancements:
-- ToDo:
+- Create a code library!
 
-# sVB v2.3 can create a code library!
-For the first time, it is now possible to use an sVB app as a library! Follow these instructions:
-1. Create a sVB project with a global file. Choose a suitable name for the folder that you save the project files to (such as MyLib), because the name of this folder will be the name of your library. Don't use spaces nor symbols. 
-2. Add variables, subroutines, and functions to the global files. These are the members that you can access from the lib. But if you want to declare some private members to use them inside the global module only, you can simply give these members names that starts with `_` such as `_count` and `_GetNames()`.
-3. Add comments for each variable, subroutine, parameter, and return value. These comments will be saved as the documentation for your lib, and will be shown in popup help in sVB when you use this lib.
-4. You can also add a comment at the beginning of the global file, to be used as the documentation for the Lib Type.
-5. The project can contain as many forms as you need, but you must choose unique names when saving them to the project folder. Form1.xaml, Form2.xaml and Form3.xaml can cause troubles later, so, if you must, name them MyLib_Form1.xaml, MyLib_Form2.xaml and MyLib_Form3.xaml. Don't rename the files manually from windows explorer, and use the sVB project explorer to rename them, to do necessary changes to the .sb.gen file.
-6. Run the project to create the exe file in the Bin folder in the project folder.
-7. Now you can copy the Bin folder and paste in the `sVB\Bin\Lib` folder, then rename it to the name of your lib such as `MyLib` in this example. The name of this folder is not important, but Bin is not a suitable name, and of course you can't add tow libraries with folders named Bin because they will be merged, which can cause troubles later!
-8. Restart sVB, and in the code editor write the name of your library such as MyLib, then press dot. The auto completion list will show the members you declared in the global file and can use them. If you add comments to those members, you will get help info about them while typing.
-It is so simple. I already applied it on the `Dialogs` and `Geometrics` projects in the samples folder, and added the two libraries to the Lib folder of the sVB realease, so, you can now use this code in any form that have a label:
-```vb
-Name = Dialogs.InputBox("Enter your name")
-Geometrics.CreateHexagon(Label1, Colors.AliceBlue, 7, Colors.Brown)
-Geometrics.AllowDrag(Label1)
+# What's new in sVB v2.4:
+1. The toolbox now contains a CheckBox control.
+Note that the Checked property is a tri-state property, as it accepts 3 valid values:
+* True: to check the box.
+* False: to uncheck the box.
+* empty string `""`: to dim the box to indicate an indeterminate state.
+You can also allow the user to switch by these tri-states while he is clicking the checkbox, by setting the `AllowTriState` property to `True`, but this property doesn't affect your ability to set the indeterminate state from code at anytime.
+For more info, see the `CheckBox Sample` app in the samples folders.
+
+2. The toolbox now contains a RadioButton control.
+Radio buttons work in groups. Buttons belong to the same group can have only one button selected at a time, so, you can have many groups on the form to let the user choose between deferent sets of options. 
+You can combine some radio buttons into one group by setting the `GroupName` property of each of then to the same name like `Group1`. Or as an easier alternative, you can use the Form Designer to group radio buttons by selecting them, right-click, and click the `Group` command from the context menu. This will combine the radio buttons into one border so you can drag them together, and also will set the GroupName property of each of the to the same name, so they work as a group.
+For more info, see the ` Radio Button sample` app in the samples folders.
+
+3. Label, Button, CheckBox and RadioButton controls got an `Underlined` property, that you can set to True to draw a line under the text displayed in these controls.
+
+4. You can now use the Append methods to add a formatted text to the Label. These methods are:
+* Append: Adds a normal text to the end of the label text. This text will be formatted according the properties of the label like BackColor, ForeColor, Underlined and other Font properties.
+* AppendLine: Similar the Append method, but it adds a new line after the text.
+* AppendBold: Appends a text to the label with a bold font.
+* AppendItalic: Appends a text to the label with an italic font.
+* AppendBoldItalic: Appends text to the label with a bold and italic font.
+* AppendUnderlined: Appends a text to the label with a line drawn under it.
+* AppendWithFontEffects: Allows to control the Bold, Italic, underline effects of the appended text, by sending `True`, `False` or `""` to the corresponding parameters. Not that sending empty string means using the original label property to set this effect. For example, if you send "" to the isBold parameter, the value Label.FontBold property will be used to draw the text. Ex:
+```VB
+Label1.AppendWithFontEffects(
+    "Hello", 
+    "",              ' ignore isBold param and use that of the label
+    True,         ' isItalic = True
+    False         ' isUnderLined = False
+)
 ```
 
-So, now you can create reusable code, and write your own libraries for sVB. In the past, this was available only by using C# and VB.NET to create SB and sVB libraries!
-Have fun.
+* You can control the Font name and size by calling the ` AppendWithFontName`, ` AppendWithFontSize` or ` AppendWithFontNameAndSize` methods. Note that sending "" to font name or size will draw the text with the original label properties.
+
+* The `AppendWithFont` methods allows you to set font name, size, and effects together.
+
+* You can control the fore and back colors by calling the ` AppendWithForecolor`, ` AppendWithBackcolor` or ` AppendWithColors` methods. Note that sending "" as the fore color or the back color will draw the text with the original label properties.
+
+* You can also append a hyper link to the label, by calling the `AppendLink`, `AppendBoldLink`, `AppendItalicLink` or ` AppendBoldItalicLink`, passing to the text of the link and a url to navigate to when the user clicks it. You can supply a local folder or file path or an IP address for the url parameter. When the user clicks the link, the folder or the file will be oppened (using the default program for this type of files) and the IP address will be navigated to in the default browsr on the user PC. If url is bad of file is not found, a blank page will be opened in the browser.
+
+* The `AppendFormatted` method combines all the above method. It can add a formatted text, or a formatted link if you send a non-empty string to the url parameter. In fact all other methods calls the `AppendFormatted` method, with ignored parameters set to `""`, so, they are just shortcuts to make your code shorter.
+
+Note that appending text and changing font size can make the label width and height smaller than showing all the text, so, you may need to use the Label.Width and Label.Height to adjust the label size afterwards. You can also make one or both of them aut-size by setting it to `-1`. If you set the width to a fixed length (not -1), then the longer text will be wrapped to next lines, so you need to enlarge the Height or make it auto-size (`= -1`).
+For more info, see the `Label Formats` app in the samples folder.
+
+5. More enhancements to the intellisense. For example, the auto completion list will offer the color names when you are in a pos of a color argument of a method. This will happen just you write the `,` in the argument list. If you hide the list and want to show it again, just press Ctrl+Space to show the color names again.
+Also, you can commit the suggested name from the completion list to a new line, just press Ctrl+Enter. This is helpful if you are splitting the arguments over multi-lines, so, when you write one argument then `,` and the auto completion appears to offer color, font or key names, just choose the name and press Ctrl+Enter to add it to the next line.
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
@@ -715,3 +744,23 @@ Label1.AddGeometricPath(
 
 This allows you to add complex shpes on the form with code, and program their events.
 See the `Geometric Path2` in the samples folder. It adds the same shapes of the previous sample to the form, and allow you to drag them by the mouse.
+
+# Create a code library!
+For the first time, it is now possible to use an sVB app as a library! Follow these instructions:
+1. Create a sVB project with a global file. Choose a suitable name for the folder that you save the project files to (such as MyLib), because the name of this folder will be the name of your library. Don't use spaces nor symbols. 
+2. Add variables, subroutines, and functions to the global files. These are the members that you can access from the lib. But if you want to declare some private members to use them inside the global module only, you can simply give these members names that starts with `_` such as `_count` and `_GetNames()`.
+3. Add comments for each variable, subroutine, parameter, and return value. These comments will be saved as the documentation for your lib, and will be shown in popup help in sVB when you use this lib.
+4. You can also add a comment at the beginning of the global file, to be used as the documentation for the Lib Type.
+5. The project can contain as many forms as you need, but you must choose unique names when saving them to the project folder. Form1.xaml, Form2.xaml and Form3.xaml can cause troubles later, so, if you must, name them MyLib_Form1.xaml, MyLib_Form2.xaml and MyLib_Form3.xaml. Don't rename the files manually from windows explorer, and use the sVB project explorer to rename them, to do necessary changes to the .sb.gen file.
+6. Run the project to create the exe file in the Bin folder in the project folder.
+7. Now you can copy the Bin folder and paste in the `sVB\Bin\Lib` folder, then rename it to the name of your lib such as `MyLib` in this example. The name of this folder is not important, but Bin is not a suitable name, and of course you can't add tow libraries with folders named Bin because they will be merged, which can cause troubles later!
+8. Restart sVB, and in the code editor write the name of your library such as MyLib, then press dot. The auto completion list will show the members you declared in the global file and can use them. If you add comments to those members, you will get help info about them while typing.
+It is so simple. I already applied it on the `Dialogs` and `Geometrics` projects in the samples folder, and added the two libraries to the Lib folder of the sVB realease, so, you can now use this code in any form that have a label:
+```vb
+Name = Dialogs.InputBox("Enter your name")
+Geometrics.CreateHexagon(Label1, Colors.AliceBlue, 7, Colors.Brown)
+Geometrics.AllowDrag(Label1)
+```
+
+So, now you can create reusable code, and write your own libraries for sVB. In the past, this was available only by using C# and VB.NET to create SB and sVB libraries!
+Have fun.
