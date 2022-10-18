@@ -1,18 +1,16 @@
-﻿Imports System.ComponentModel
-
-Friend Class DiagramGroup
-    Private Shared Groups As New Dictionary(Of Date, DiagramGroup)
+﻿Friend Class DiagramGroup
+    Private Shared Groups As New Dictionary(Of Long, DiagramGroup)
 
     Friend Panels As New List(Of DiagramPanel)
     Dim SelectionBorder As Border
     Dim Canvas As Canvas
-    Dim timeStamp As String
+    Dim timeStamp As Long
 
     Shared Sub Clear()
         Groups.Clear()
     End Sub
 
-    Private Shared Function GetGroup(timeStamp As Date, Canvas As Canvas) As DiagramGroup
+    Private Shared Function GetGroup(timeStamp As Long, Canvas As Canvas) As DiagramGroup
         If Groups.ContainsKey(timeStamp) Then
             Return Groups(timeStamp)
         Else
@@ -22,11 +20,11 @@ Friend Class DiagramGroup
         End If
     End Function
 
-    Shared Sub Add(Pnl As DiagramPanel, GroupTimeStamp As Date?)
-        If GroupTimeStamp Is Nothing Then
+    Shared Sub Add(Pnl As DiagramPanel, timeStamp As Long)
+        If timeStamp = 0 Then
             If Pnl.DiagramGroup IsNot Nothing Then Pnl.DiagramGroup.DoRemove(Pnl)
         Else
-            Dim G = GetGroup(GroupTimeStamp, Pnl.Dsn.ConnectionCanvas)
+            Dim G = GetGroup(timeStamp, Pnl.Dsn.ConnectionCanvas)
             G.Add(Pnl)
             Pnl.ExitGroupChecked = True
             Pnl.GroupMenuItem.IsChecked = True
@@ -51,10 +49,10 @@ Friend Class DiagramGroup
         End If
     End Sub
 
-    Private Shared Sub Remove(Group As DiagramGroup)
-        For Each G In Groups
-            If G.Value Is Group Then
-                Groups.Remove(G.Key)
+    Private Shared Sub Remove(group As DiagramGroup)
+        For Each g In Groups
+            If g.Value Is group Then
+                Groups.Remove(g.Key)
                 Return
             End If
         Next
@@ -67,20 +65,21 @@ Friend Class DiagramGroup
 
         Me.Canvas = canvas
         canvas.Children.Add(SelectionBorder)
-        timeStamp = Now.Ticks().ToString()
+        timeStamp = Now.Ticks()
     End Sub
 
     Private Sub Add(Pnl As DiagramPanel)
         If Panels.Contains(Pnl) Then Return
 
         Panels.Add(Pnl)
-        Dim rd = TryCast(Pnl.Diagram, RadioButton)
-        If rd IsNot Nothing Then
-            rd.GroupName = timeStamp
-        End If
-
         If Pnl.DiagramGroup IsNot Nothing Then Pnl.DiagramGroup.DoRemove(Pnl)
         Pnl.DiagramGroup = Me
+
+        Dim rd = TryCast(Pnl.Diagram, RadioButton)
+        If rd IsNot Nothing Then
+            rd.GroupName = timeStamp.ToString()
+        End If
+
         AddHandler Pnl.IsSelectedChanged, AddressOf Pnl_IsSelectedChanged
         UpdateSelection()
     End Sub
@@ -164,7 +163,7 @@ Friend Class DiagramGroup
         End Get
     End Property
 
-    Sub Ungroup(DiagramGroup As DiagramGroup)
+    Sub Ungroup()
         Dim UndoUnit As New UndoRedoUnit
         Do Until Panels.Count = 0
             Dim Diagram = Panels(0).Diagram

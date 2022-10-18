@@ -64,7 +64,7 @@ Public Class DiagramPanel
         End If
 
         Dim Id = Designer.GetGroupID(Diagram)
-        If Id <> "" Then DiagramGroup.Add(Me, Date.Parse(Id))
+        If Id > 0 Then DiagramGroup.Add(Me, Id)
 
         Dim sk = TryCast(Diagram.LayoutTransform, SkewTransform)
         If sk Is Nothing OrElse sk.AngleY = 0 Then Diagram.LayoutTransform = New SkewTransform(0, 0.000000000001, 0, 0.000000000001)
@@ -477,13 +477,13 @@ Public Class DiagramPanel
     Private Sub ContextMenu_Opened(sender As Object, e As RoutedEventArgs)
         If Me.DiagramGroup Is Nothing Then
             GroupMenuItem.IsEnabled = (Dsn.SelectedItems.Count > 1)
-            RemoveFromGroupMenuItem.Visibility = Windows.Visibility.Collapsed
+            RemoveFromGroupMenuItem.Visibility = Visibility.Collapsed
         Else
             GroupMenuItem.IsEnabled = True
             If DiagramGroup.Count > 2 Then
-                RemoveFromGroupMenuItem.Visibility = Windows.Visibility.Visible
+                RemoveFromGroupMenuItem.Visibility = Visibility.Visible
             Else
-                RemoveFromGroupMenuItem.Visibility = Windows.Visibility.Collapsed
+                RemoveFromGroupMenuItem.Visibility = Visibility.Collapsed
             End If
         End If
     End Sub
@@ -494,20 +494,22 @@ Public Class DiagramPanel
         If ExitGroupChecked Then Return
 
         Dim UndoUnit As New UndoRedoUnit
-        Dim GroupTimeStamp = Now
-        For Each D As FrameworkElement In Dsn.SelectedItems
-            Dim A As Action = AddressOf DiagramObject.Diagrams(D).AfterRestoreAction
-            Dim OldSate As New PropertyState(A, D, Designer.GroupIDProperty)
-            Designer.SetGroupID(D, GroupTimeStamp)
+        Dim timeStamp = Now.Ticks
+
+        For Each d As FrameworkElement In Dsn.SelectedItems
+            Dim act As Action = AddressOf DiagramObject.Diagrams(d).AfterRestoreAction
+            Dim OldSate As New PropertyState(act, d, Designer.GroupIDProperty)
+            Designer.SetGroupID(d, timeStamp)
             UndoUnit.Add(OldSate.SetNewValue)
         Next
+
         Dsn.UndoStack.ReportChanges(UndoUnit)
         DiagramGroup.Select()
     End Sub
 
     Private Sub GroupMenuItem_Unchecked(sender As Object, e As RoutedEventArgs)
         If ExitGroupChecked Then Return
-        DiagramGroup.Ungroup(Me.DiagramGroup)
+        DiagramGroup.Ungroup()
     End Sub
 
     Private Sub RemoveFromGroupMenuItem_Click(sender As Object, e As RoutedEventArgs)

@@ -490,7 +490,7 @@ Public Class Designer
             ' Use any wpf built-in properety to hold theor values
 
             Dim gID = GetGroupID(diagram2)
-            If gID <> "" Then
+            If gID > 0 Then
                 Automation.AutomationProperties.SetAutomationId(diagram2, gID)
                 diagram2.ClearValue(GroupIDProperty)
             Else
@@ -1931,7 +1931,7 @@ Public Class Designer
 
 #Region "GroupID"
 
-    Public Shared Function GetGroupID(element As DependencyObject) As String
+    Public Shared Function GetGroupID(element As DependencyObject) As Long
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1939,7 +1939,7 @@ Public Class Designer
         Return element.GetValue(GroupIDProperty)
     End Function
 
-    Public Shared Sub SetGroupID(element As DependencyObject, value As String)
+    Public Shared Sub SetGroupID(element As DependencyObject, value As Long)
         If element Is Nothing Then
             Throw New ArgumentNullException("element")
         End If
@@ -1950,7 +1950,7 @@ Public Class Designer
 
     Public Shared ReadOnly GroupIDProperty As _
                            DependencyProperty = DependencyProperty.RegisterAttached("GroupID",
-                           GetType(String), GetType(Designer),
+                           GetType(Long), GetType(Designer),
                            New PropertyMetadata(AddressOf GroupIDChanged))
 
     Public Const UpdateFormName As Integer = -2
@@ -1960,9 +1960,7 @@ Public Class Designer
     Shared Sub GroupIDChanged(Diagram As DependencyObject, e As DependencyPropertyChangedEventArgs)
         Dim Pnl = Helper.GetDiagramPanel(Diagram)
         If Pnl Is Nothing Then Return
-        Dim d As Date? = Nothing
-        If e.NewValue <> "" Then d = Date.Parse(e.NewValue)
-        DiagramGroup.Add(Pnl, d)
+        DiagramGroup.Add(Pnl, CLng(e.NewValue))
     End Sub
 
 #End Region
