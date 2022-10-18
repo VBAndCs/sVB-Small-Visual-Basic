@@ -344,6 +344,8 @@ Namespace Microsoft.SmallVisualBasic.Completion
                         objName As String
                    )
 
+            'If typeInfo Is Nothing Then Return
+
             Dim typeName = typeInfo.Key
             If typeName = "global" OrElse Not membersCompletionItems.ContainsKey(typeName) Then
                 Dim members As New List(Of CompletionItem)

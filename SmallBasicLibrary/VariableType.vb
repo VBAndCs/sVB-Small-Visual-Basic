@@ -18,4 +18,5 @@
     ComboBox
     DatePicker
     CheckBox
+    RadioButton
 End Enum

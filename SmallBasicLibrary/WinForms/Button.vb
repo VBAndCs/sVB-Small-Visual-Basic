@@ -25,7 +25,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetText = GetButton(buttonName).Content.ToString()
+                        GetText = Label.GetTextBlock(buttonName).Text
                     Catch ex As Exception
                         Control.ReportError(buttonName, "Text", ex)
                     End Try
@@ -37,11 +37,39 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetButton(buttonName).Content = CStr(value)
+                        Label.GetTextBlock(buttonName).Text = CStr(value)
                     Catch ex As Exception
-                        Control.RepotPropertyError(buttonName, "Text", value, ex)
+                        Control.ReportPropertyError(buttonName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
+
+        ''' <summary>
+        ''' Gets or sets whether or not to draw a line under the text.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetUnderlined(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetUnderlined = (Label.GetTextBlock(controlName).TextDecorations Is System.Windows.TextDecorations.Underline)
+                    Catch ex As Exception
+                        Control.ReportError(controlName, "Underlined", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetUnderlined(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           Label.GetTextBlock(controlName).TextDecorations = If(CBool(Value), System.Windows.TextDecorations.Underline, Nothing)
+                       Catch ex As Exception
+                           Control.ReportPropertyError(controlName, "Underlined", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
     End Class
 End Namespace

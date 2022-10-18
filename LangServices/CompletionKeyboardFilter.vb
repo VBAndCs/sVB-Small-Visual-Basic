@@ -12,8 +12,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         <Import>
         Public Property UndoHistoryRegistry As IUndoHistoryRegistry
 
-
-
         Public Overrides Sub KeyDown(textView As IAvalonTextView, args As KeyEventArgs)
             Dim completionSurface = textView.Properties.GetProperty(Of CompletionSurface)()
 
@@ -22,9 +20,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim __ = completionListBox.SelectedIndex
 
                 Select Case args.Key
-                    Case Key.LeftCtrl, Key.RightCtrl
-                        completionSurface.FadeCompletionList()
-
                     Case Key.Escape
                         completionSurface.Adornment.Dismiss(force:=True)
                         textView.VisualElement.Focus()
@@ -39,7 +34,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         args.Handled = True
 
                     Case Key.Return
-                        args.Handled = CommitConditionally(textView, completionSurface)
+                        args.Handled = CommitConditionally(textView, completionSurface, If(Keyboard.Modifiers And ModifierKeys.Control > 0, "+nl", ""))
 
                     Case Key.Space, Key.Tab
                         args.Handled = CommitConditionally(textView, completionSurface, " ")
@@ -153,6 +148,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         Case "=", "<", ">", "+", "-", "*", "/"
                             leadingSpace = " "
                     End Select
+                End If
+
+                If extraText = "+nl" Then
+                    leadingSpace = vbCrLf & leadingSpace
+                    extraText = ""
                 End If
 
                 editorOperations.ReplaceText(

@@ -62,7 +62,7 @@ Namespace WinForms
         ''' Gets or sets the item that is curruntly selected in the ComboBox
         ''' </summary>
         ''' <remarks>This property returns empty string if there is no item selected.
-        ''' But some there can ba a selected item that displays an empty string!
+        ''' But there can ba a selected item that displays an empty string!
         ''' So, use the SelectedIndex property if you want to distinguish between the two cases.
         ''' If you set the selectedItem to a value that doesn't existed in the list, 
         ''' no item will be selected.
@@ -188,7 +188,7 @@ Namespace WinForms
                     Try
                         GetComboBox(textBoxName).Text = value
                     Catch ex As Exception
-                        Control.RepotPropertyError(textBoxName, "Text", value, ex)
+                        Control.ReportPropertyError(textBoxName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub

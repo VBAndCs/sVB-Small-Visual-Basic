@@ -329,7 +329,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
 
             If symbol <> "" AndAlso symbol <> "(" AndAlso line.Start + column = pos Then Return
-            ShowHelpInfo(line, column, paramIndex, span, If(checkEspecialArgs, ",", symbol))
+            ShowHelpInfo(line, column, paramIndex, span, If(checkEspecialArgs OrElse force, ",", symbol))
 
         End Sub
 
@@ -359,6 +359,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim prevToken As Token
                 Dim nextToken As Token
                 Dim n = tokens.Count - 1
+                Dim notFound = True
 
                 For i = 0 To n
                     Dim token = tokens(i)
@@ -368,21 +369,26 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         exactToken = token
 
                         If column > token.Column Then
-                            currentToken = If(prevIsSep AndAlso token.ParseType = ParseType.Comment,
-                                                        Token.Illegal,
-                                                         token)
+                            currentToken = If(
+                                  prevIsSep AndAlso token.ParseType = ParseType.Comment,
+                                  Token.Illegal,
+                                  token
+                            )
                             nextToken = GetNonCommentToken(tokens, i + 1, False)
 
                         ElseIf Not (prevIsSep AndAlso textView.Selection.IsEmpty) Then
                             currentToken = token
                             nextToken = GetNonCommentToken(tokens, i + 1, False)
                         End If
+
+                        notFound = False
                         Exit For
 
                     ElseIf token.Line > currentLine Then
                         prevToken = GetNonCommentToken(tokens, i - 1, True)
                         prevIsSep = IsPrevSeparator(currentLine, symbol, prevToken, prevChar)
                         nextToken = GetNonCommentToken(tokens, i, False)
+                        notFound = False
                         Exit For
 
                     ElseIf token.Line = currentLine Then
@@ -391,20 +397,28 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             prevToken = GetNonCommentToken(tokens, i, True)
                             prevIsSep = IsPrevSeparator(currentLine, symbol, prevToken, prevChar)
                             nextToken = GetNonCommentToken(tokens, i + 1, True)
+                            notFound = False
                             Exit For
 
                         ElseIf token.Column > column Then
                             prevToken = GetNonCommentToken(tokens, i - 1, True)
                             prevIsSep = IsPrevSeparator(currentLine, symbol, prevToken, prevChar)
+                            notFound = False
                             Exit For
 
                         ElseIf i = n Then
                             prevToken = GetNonCommentToken(tokens, i, True)
                             prevIsSep = IsPrevSeparator(currentLine, symbol, prevToken, prevChar)
+                            notFound = False
                             Exit For
                         End If
                     End If
                 Next
+
+                If notFound Then
+                    prevToken = GetNonCommentToken(tokens, n, True)
+                    prevIsSep = IsPrevSeparator(currentLine, symbol, prevToken, prevChar)
+                End If
 
                 span = If(currentToken.IsIllegal,
                      GetSpan(prevToken, nextToken, snapshot, startLine, endLine),
@@ -573,6 +587,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 especialItem = "Keys"
                             ElseIf name = "showdialog" OrElse name.StartsWith("dialogresult") OrElse name.EndsWith("dialogresult") Then
                                 especialItem = "DialogResults"
+                            ElseIf name.Contains("fontname") Then
+                                especialItem = "FontName"
+                            ElseIf name.Contains("formname") Then
+                                especialItem = "FormName"
+                            ElseIf name.Length > 2 AndAlso name.StartsWith("is") AndAlso Char.IsUpper(params(item.ParamIndex)(2)) Then
+                                especialItem = "Boolean"
                             End If
 
                             If especialItem <> "" Then
@@ -580,10 +600,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 line = textView.TextSnapshot.GetLineFromPosition(pos)
                                 Dim txt = line.GetText().Substring(pos - line.Start)
                                 Dim token = LineScanner.GetFirstToken(txt, 0)
+                                IsSpectialListVisible = True
 
-                                If especialItem.ToLower <> token.LCaseText Then
-                                    IsSpectialListVisible = True
+                                If especialItem.ToLower <> token.LCaseText AndAlso
+                                        Not (especialItem.EndsWith("Name") AndAlso token.Type = TokenType.StringLiteral) AndAlso Not (
+                                                especialItem = "Boolean" AndAlso (token.Type = TokenType.False OrElse token.Type = TokenType.True)
+                                        ) Then
                                     bag = GetCompletionBag(especialItem)
+                                    token.Column = pos - line.Start
+                                    token.Text = ""
+
                                     ShowCompletionAdornment(
                                         textView.TextSnapshot,
                                         bag,
@@ -1207,6 +1233,8 @@ LineElse:
                             especialItem = "Keys"
                         ElseIf name = "showdialog" OrElse name.StartsWith("dialogresult") OrElse name.EndsWith("dialogresult") Then
                             especialItem = "DialogResults"
+                        ElseIf name.Contains("fontname") Then
+                            especialItem = "FontName"
                         Else
                             Dim properties = textBuffer.Properties
                             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
@@ -1296,30 +1324,43 @@ LineElse:
 
         Private Function GetCompletionBag(especialItem As String) As CompletionBag
             Dim bag As CompletionBag
-            Dim typeInfo As TypeInfo = Nothing
             bag = compHelper.GetEmptyCompletionBag(GlobalParser)
-            If especialItem = "Boolean" Then
-                bag.CompletionItems.AddRange({
-                    New CompletionItem() With {
-                        .Key = "False",
-                        .DisplayName = "False",
-                        .ItemType = CompletionItemType.Keyword
-                    },
-                    New CompletionItem() With {
-                        .Key = "True",
-                        .DisplayName = "True",
-                        .ItemType = CompletionItemType.Keyword
-                    }
-                })
-            ElseIf bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
-                CompletionHelper.FillMemberNames(bag, typeInfo, "")
-                bag.CompletionItems.Sort(
-                    Function(ci1, ci2)
-                        Return ci1.DisplayName.CompareTo(ci2.DisplayName)
-                    End Function)
-            End If
+            Select Case especialItem
+                Case "Boolean"
+                    especialItem = ""
+                    bag.CompletionItems.AddRange({
+                        New CompletionItem() With {
+                            .Key = "False",
+                            .DisplayName = "False",
+                            .ItemType = CompletionItemType.Keyword
+                        },
+                        New CompletionItem() With {
+                            .Key = "True",
+                            .DisplayName = "True",
+                            .ItemType = CompletionItemType.Keyword
+                        }
+                    })
 
-            If bag IsNot Nothing AndAlso especialItem <> "Boolean" Then
+                Case "FontName"
+                    bag.CompletionItems.AddRange(FontNames)
+                    especialItem = ""
+
+                Case "FormName"
+                    bag.CompletionItems.AddRange(FormNames)
+                    especialItem = ""
+
+                Case Else
+                    Dim typeInfo As TypeInfo = Nothing
+                    If bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
+                        CompletionHelper.FillMemberNames(bag, typeInfo, "")
+                        bag.CompletionItems.Sort(
+                            Function(ci1, ci2)
+                                Return ci1.DisplayName.CompareTo(ci2.DisplayName)
+                            End Function)
+                    End If
+            End Select
+
+            If bag IsNot Nothing Then
                 bag.SelectEspecialItem = especialItem
             End If
 

@@ -1,0 +1,42 @@
+
+
+ChkShowTextBox.Checked = True
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   If ChkShowTextBox.Checked Then
+      ChkShowTextBox.Checked = False
+   Else
+      ChkShowTextBox.Checked = True
+   EndIf
+   
+EndSub
+
+
+'------------------------------------------------
+Sub Button2_OnClick()
+   ChkShowTextBox.Checked = ""
+EndSub
+
+
+'------------------------------------------------
+Sub ChkShowTextBox_OnCheck()
+   state = ChkShowTextBox.Checked
+   If state Then
+      TextBox1.Visible = True
+      TextBox1.Enabled = True
+   ElseIf state = "" Then
+      TextBox1.Visible = True
+      TextBox1.Enabled = False
+   Else
+      TextBox1.Visible = False
+      TextBox1.Enabled = False
+   EndIf
+   
+EndSub
+
+
+'------------------------------------------------
+Sub ChkTriState_OnCheck()
+   ChkShowTextBox.AllowThreeState = ChkTriState.Checked
+EndSub

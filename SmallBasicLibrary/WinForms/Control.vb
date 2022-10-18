@@ -46,16 +46,16 @@ Namespace WinForms
             End If
         End Sub
 
-        Shared Sub RepotPropertyError(key As String, memberName As String, value As String, ex As Exception)
+        Shared Sub ReportPropertyError(key As String, memberName As String, value As String, ex As Exception)
             Dim names = If(key.Contains("."),
                 key.Split("."),
                 {key, key}
             )
-            RepottyPropertyError(names(0), names(1), memberName, value, ex)
+            ReportyPropertyError(names(0), names(1), memberName, value, ex)
         End Sub
 
 
-        Shared Sub RepottyPropertyError(formName As String, controlName As String, memberName As String, value As String, ex As Exception)
+        Shared Sub ReportyPropertyError(formName As String, controlName As String, memberName As String, value As String, ex As Exception)
             If controlName.ToLower() = formName.ToLower Then
                 Helper.ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             Else
@@ -104,7 +104,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).Tag = value.AsString()
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "Tag", value, ex)
+                        ReportPropertyError(controlName, "Tag", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -136,7 +136,7 @@ Namespace WinForms
                         obj.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
                         Wpf.Canvas.SetLeft(obj, CDbl(value))
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "Left", value, ex)
+                        ReportPropertyError(controlName, "Left", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -167,7 +167,7 @@ Namespace WinForms
                         obj.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
                         Wpf.Canvas.SetTop(obj, value)
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "Top", value, ex)
+                        ReportPropertyError(controlName, "Top", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -198,18 +198,21 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
+                        Dim w = CDbl(value)
+                        If w < 0 Then w = Double.NaN
                         Dim obj = GetControl(controlName)
+
                         If TypeOf obj Is Window Then
                             ' Remove any animation effect to allow setting the new value
                             obj.BeginAnimation(Wpf.Canvas.WidthProperty, Nothing)
-                            CType(CType(obj, Window).Content, Wpf.Canvas).Width = value
+                            CType(CType(obj, Window).Content, Wpf.Canvas).Width = w
                         Else
                             ' Remove any animation effect to allow setting the new value
-                            obj.BeginAnimation(Wpf.Control.WidthProperty, Nothing)
-                            obj.Width = value
+                            obj.BeginAnimation(FrameworkElement.WidthProperty, Nothing)
+                            obj.Width = w
                         End If
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "Width", value, ex)
+                        ReportPropertyError(controlName, "Width", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -240,18 +243,22 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
+                        Dim h = CDbl(value)
+                        If h < 0 Then h = Double.NaN
                         Dim obj = GetControl(controlName)
+
                         If TypeOf obj Is Window Then
                             ' Remove any animation effect to allow setting the new value
-                            obj.BeginAnimation(Wpf.Canvas.HeightProperty, Nothing)
-                            CType(CType(obj, Window).Content, Wpf.Canvas).Height = value
+                            obj.BeginAnimation(FrameworkElement.HeightProperty, Nothing)
+                            CType(CType(obj, Window).Content, Wpf.Canvas).Height = h
                         Else
                             ' Remove any animation effect to allow setting the new value
-                            obj.BeginAnimation(Wpf.Control.HeightProperty, Nothing)
-                            obj.Height = value
+                            obj.BeginAnimation(FrameworkElement.HeightProperty, Nothing)
+                            obj.Height = h
                         End If
+
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "Height", value, ex)
+                        ReportPropertyError(controlName, "Height", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -280,7 +287,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).IsEnabled = value
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "Enabled", value, ex)
+                        ReportPropertyError(controlName, "Enabled", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -309,7 +316,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden)
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "Visible", value, ex)
+                        ReportPropertyError(controlName, "Visible", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -336,7 +343,7 @@ Namespace WinForms
                        Try
                            GetControl(controlName).FlowDirection = If(CBool(Value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
                        Catch ex As Exception
-                           RepotPropertyError(controlName, "RightToLeft", Value, ex)
+                           ReportPropertyError(controlName, "RightToLeft", Value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -472,7 +479,7 @@ Namespace WinForms
                         End If
 
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "Error", value, ex)
+                        ReportPropertyError(controlName, "Error", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -494,18 +501,23 @@ Namespace WinForms
                 End Sub)
         End Function
 
-        <ExProperty>
-        Public Shared Sub SetToolTip(controlName As Primitive, value As Primitive)
+        ''' <summary>
+        ''' Gets or sets the style of the control.
+        ''' This allows you to design advanced styles in with other tools like VS.NET, save then as a resource dictionary in a file, then use this method to load it.
+        ''' </summary>
+        ''' <param name="fileName">The xaml file that contains the resource dictionary.</param>
+        ''' <param name="styleKey">The key of style. The resource dictionary can contain many styles targetting the same control. This method will search for the style that have a key</param>
+        <ExMethod>
+        Public Shared Sub SetStyle(controlName As Primitive, fileName As Primitive, styleKey As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Dim tip = value.AsString()
-                        Dim c = GetControl(controlName)
-                        c.SetValue(TipProperty, tip)
-                        c.ToolTip = tip
+                        Dim stream = IO.File.OpenRead(fileName)
+                        Dim resDic = CType(Markup.XamlReader.Load(stream), ResourceDictionary)
+                        GetControl(controlName).Style = resDic(styleKey)
 
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "ToolTip", value, ex)
+                        ReportSubError(controlName, "SetStyle", styleKey, ex)
                     End Try
                 End Sub)
         End Sub
@@ -550,24 +562,24 @@ Namespace WinForms
             Dim brush As SolidColorBrush = Nothing
             If e.NewValue IsNot Nothing Then
                 Dim _color = CType(e.NewValue, Media.Color)
-                Brush = New SolidColorBrush(_color)
+                brush = New SolidColorBrush(_color)
             End If
 
             Dim L = TryCast(c, Wpf.Label)
             If L IsNot Nothing Then
                 If L.Content Is Nothing Then
-                    L.Background = Brush
+                    L.Background = brush
                 ElseIf TypeOf L.Content Is System.Windows.Shapes.Shape Then
-                    CType(L.Content, System.Windows.Shapes.Shape).Fill = Brush
+                    CType(L.Content, System.Windows.Shapes.Shape).Fill = brush
                 Else
-                    L.Content.Background = Brush
+                    L.Content.Background = brush
                 End If
             Else
                 If TypeOf c Is Window Then
-                    CType(CType(c, Window).Content, Wpf.Canvas).Background = Brush
+                    CType(CType(c, Window).Content, Wpf.Canvas).Background = brush
                 End If
 
-                CType(c, Wpf.Control).Background = Brush
+                CType(c, Wpf.Control).Background = brush
             End If
         End Sub
 
@@ -627,7 +639,7 @@ Namespace WinForms
                         obj.BeginAnimation(BackColorProperty, Nothing)
                         obj.SetValue(BackColorProperty, _color)
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "BackColor", value, ex)
+                        ReportPropertyError(controlName, "BackColor", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -675,7 +687,7 @@ Namespace WinForms
                            c.SetValue(ForeColorProperty, value.ToString())
 
                        Catch ex As Exception
-                           RepotPropertyError(controlName, "ForeColor", value, ex)
+                           ReportPropertyError(controlName, "ForeColor", value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -702,9 +714,9 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetControl(controlName).FontFamily = New Media.FontFamily(Value)
+                        GetControl(controlName).FontFamily = New FontFamily(Value)
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "FontName", Value, ex)
+                        ReportPropertyError(controlName, "FontName", Value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -732,7 +744,7 @@ Namespace WinForms
                     Try
                         GetControl(controlName).FontSize = Value
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "FontSize", Value, ex)
+                        ReportPropertyError(controlName, "FontSize", Value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -760,7 +772,7 @@ Namespace WinForms
                        Try
                            GetControl(controlName).FontWeight = If(CBool(Value), FontWeights.Bold, FontWeights.Normal)
                        Catch ex As Exception
-                           RepotPropertyError(controlName, "FontBold", Value, ex)
+                           ReportPropertyError(controlName, "FontBold", Value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -788,7 +800,7 @@ Namespace WinForms
                        Try
                            GetControl(controlName).FontStyle = If(CBool(Value), FontStyles.Italic, FontStyles.Normal)
                        Catch ex As Exception
-                           RepotPropertyError(controlName, "FontItalic", Value, ex)
+                           ReportPropertyError(controlName, "FontItalic", Value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -829,7 +841,7 @@ Namespace WinForms
                     Try
                         SetAngle(GetControl(controlName), value)
                     Catch ex As Exception
-                        RepotPropertyError(controlName, "Angle", value, ex)
+                        ReportPropertyError(controlName, "Angle", value, ex)
                     End Try
                 End Sub)
         End Sub

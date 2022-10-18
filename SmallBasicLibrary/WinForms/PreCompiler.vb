@@ -20,6 +20,7 @@ Namespace WinForms
             FillModuleMembers(GetType(ListBox))
             FillModuleMembers(GetType(ComboBox))
             FillModuleMembers(GetType(CheckBox))
+            FillModuleMembers(GetType(RadioButton))
             FillModuleMembers(GetType(DatePicker))
             FillModuleMembers(GetType(ImageBox))
             FillModuleMembers(GetType(TextEx))
@@ -33,6 +34,7 @@ Namespace WinForms
             deafaultControlEvents(NameOf(ListBox).ToLower()) = "OnSelection"
             deafaultControlEvents(NameOf(ComboBox).ToLower()) = "OnSelection"
             deafaultControlEvents(NameOf(CheckBox).ToLower()) = "OnCheck"
+            deafaultControlEvents(NameOf(RadioButton).ToLower()) = "OnCheck"
             deafaultControlEvents(NameOf(DatePicker).ToLower()) = "OnSelection"
         End Sub
 
@@ -132,6 +134,7 @@ Namespace WinForms
                 New ShortcutInfo("ListBox", VariableType.ListBox),
                 New ShortcutInfo("ComboBox", VariableType.ComboBox),
                 New ShortcutInfo("CheckBox", VariableType.CheckBox),
+                New ShortcutInfo("RadioButton", VariableType.RadioButton),
                 New ShortcutInfo("DatePicker", VariableType.DatePicker),
                 New ShortcutInfo("ImageBox", VariableType.ImageBox)
     }

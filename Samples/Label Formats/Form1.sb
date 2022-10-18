@@ -1,0 +1,43 @@
+
+'----------- Format Label1 ------------
+Label1.Text = ""
+Label1.RightToLeft = True
+Label1.Width = -1
+Label1.Height = -1
+Label1.FontSize = 30
+Label1.FontName = "Simplified Arabic"
+
+Label1.AppendWithForecolor("محمد ", Colors.Red)
+Label1.AppendWithBackcolor("حمدي", Colors.LightGreen)
+Label1.AppendBold(" غانم: ")
+
+
+
+Label1.Underlined = True
+Label1.Left = Me.Width - Label1.Width - 10
+
+'----------- Format Label2 ------------
+Label2.Text = ""
+Label2.Height = -1
+
+Label2.AppendUnderlined("Mohammed")
+Label2.AppendWithFontSize(" Hamdy ", 24)
+Label2.AppendBoldLink("Ghanem: ", "https://github.com/VBAndCs")
+
+
+'----------- Format Label3 ------------
+Label3.Append(" ")
+Label3.Width = -1
+Label3.Height = -1
+Label3.AppendFormatted(
+   "Small Visual Basic",
+   "Times New Roman",
+   20,
+   False,
+   True,
+   False,
+   Colors.None,
+   Colors.AliceBlue,
+   "https://github.com/VBAndCs/sVB-Small-Visual-Basic"
+)
+

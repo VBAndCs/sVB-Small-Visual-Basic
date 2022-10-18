@@ -2,7 +2,7 @@
 Imports System.Windows.Media
 
 Namespace WinForms
-    Module Extentions
+    Public Module Extentions
         <System.Runtime.CompilerServices.Extension()>
         Public Iterator Function GetChildren(parent As UIElement, Optional recurse As Boolean = True) As IEnumerable(Of UIElement)
             If parent IsNot Nothing Then
@@ -24,6 +24,13 @@ Namespace WinForms
             End If
         End Function
 
+        <System.Runtime.CompilerServices.Extension()>
+        Public Function GetChild(Of T)(parent As UIElement) As UIElement
+            For Each c In parent.GetChildren()
+                If TypeOf c Is T Then Return c
+            Next
+            Return Nothing
+        End Function
     End Module
 
 

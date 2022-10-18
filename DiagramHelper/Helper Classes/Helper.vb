@@ -1,5 +1,4 @@
-﻿Imports System.Windows.Resources
-Imports System.Xml
+﻿Imports System.Xml
 Imports System.IO
 Imports System.Windows.Markup
 Imports System.Windows.Threading

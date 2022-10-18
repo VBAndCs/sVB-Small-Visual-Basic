@@ -6,50 +6,79 @@ Imports System.Windows
 Namespace WinForms
     <SmallBasicType>
     <HideFromIntellisense>
-    Public NotInheritable Class CheckBox
+    Public NotInheritable Class RadioButton
 
-        Private Shared Function GetCheckBox(CheckBoxName As String) As Wpf.CheckBox
-            Dim c = Control.GetControl(CheckBoxName)
-            Dim chk = TryCast(c, Wpf.CheckBox)
-            If chk Is Nothing Then
-                Throw New Exception($"{CheckBoxName} is not a name of a CheckBox.")
+        Private Shared Function GetRadioButton(radioButtonName As String) As Wpf.RadioButton
+            Dim c = Control.GetControl(radioButtonName)
+            Dim rd = TryCast(c, Wpf.RadioButton)
+            If rd Is Nothing Then
+                Throw New Exception($"{radioButtonName} is not a name of a RadioButton.")
             End If
-            Return chk
+            Return rd
         End Function
 
         ''' <summary>
-        ''' Gets or sets the text that is displayed by the CheckBox
+        ''' Gets or sets the text that is displayed by the RadioButton
         ''' </summary>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
-        Public Shared Function GetText(CheckBoxName As Primitive) As Primitive
+        Public Shared Function GetText(radioButtonName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetText = Label.GetTextBlock(CheckBoxName).Text
+                        GetText = Label.GetTextBlock(radioButtonName).Text
                     Catch ex As Exception
-                        Control.ReportError(CheckBoxName, "Text", ex)
+                        Control.ReportError(radioButtonName, "Text", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetText(CheckBoxName As Primitive, value As Primitive)
+        Public Shared Sub SetText(radioButtonName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        Label.GetTextBlock(CheckBoxName).Text = value.AsString()
+                        Label.GetTextBlock(radioButtonName).Text = value.AsString()
                     Catch ex As Exception
-                        Control.ReportPropertyError(CheckBoxName, "Text", value, ex)
+                        Control.ReportPropertyError(radioButtonName, "Text", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Gets or sets the name of the radio buttons group. Radio buttons that belong to the same group can have only one seleected button at a time, so, if the user checks one button, the previously checked button will be unchecked.
+        ''' </summary>
+        <ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetGroupName(radioButtonName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetGroupName = GetRadioButton(radioButtonName).GroupName
+                    Catch ex As Exception
+                        Control.ReportError(radioButtonName, "GroupName", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetGroupName(radioButtonName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim rd = GetRadioButton(radioButtonName)
+                        rd.GroupName = value
+                    Catch ex As Exception
+                        Control.ReportPropertyError(radioButtonName, "GroupName", value, ex)
                     End Try
                 End Sub)
         End Sub
 
 
         ''' <summary>
-        ''' When True, the check box is checked.
-        ''' When False, the check box is unchecked.
-        ''' When empty string "",  the check box is not checked nor unchecked (indeterminate state)
+        ''' When True, the radio button is checked.
+        ''' When False, the radio button is unchecked.
+        ''' When empty string "",  the radio button is not checked nor unchecked (indeterminate state)
         ''' </summary>
         <ReturnValueType(VariableType.Boolean)>
         <ExProperty>
@@ -57,12 +86,12 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim chk = GetCheckBox(controlName)
-                        Dim state = chk.IsChecked
+                        Dim rd = GetRadioButton(controlName)
+                        Dim state = rd.IsChecked
                         If state.HasValue Then
                             GetChecked = New Primitive(state.Value)
                         Else
-                            GetChecked = ""
+                            GetChecked = New Primitive(False)
                         End If
                     Catch ex As Exception
                         Control.ReportError(controlName, "Checked", ex)
@@ -75,50 +104,13 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim chk = GetCheckBox(controlName)
-                        ' Don'chk use if() expression, because it will return a new primitive not Nothing
-                        If value.AsString() = "" Then
-                            chk.IsChecked = Nothing
-                        Else
-                            chk.IsChecked = CBool(value)
-                        End If
+                        Dim rd = GetRadioButton(controlName)
+                        rd.IsChecked = CBool(value)
                     Catch ex As Exception
                         Control.ReportPropertyError(controlName, "Checked", value, ex)
                     End Try
                 End Sub)
         End Sub
-
-        ''' <summary>
-        ''' Controls what happens when the user clicks the checkbox to cange its state:
-        ''' * When False(the defaust value): the checkbox state goes from checked to unchecked then back to checked and so on.
-        ''' * When True, the the checkbox state goes from checked to dimmed (indeterminate) to unchecked then back to checked and so on.
-        ''' Note that you can set the dimmed (indeterminate) state from code by setting the Checked property to an empty string "". This will always work regardless the value of AllowTriState, which has effect on the user interaction only.
-        ''' </summary>
-        <ReturnValueType(VariableType.Boolean)>
-        <ExProperty>
-        Public Shared Function GetAllowThreeState(controlName As Primitive) As Primitive
-            App.Invoke(
-                Sub()
-                    Try
-                        GetAllowThreeState = GetCheckBox(controlName).IsThreeState
-                    Catch ex As Exception
-                        Control.ReportError(controlName, "AllowThreeState", ex)
-                    End Try
-                End Sub)
-        End Function
-
-        <ExProperty>
-        Public Shared Sub SetAllowThreeState(controlName As Primitive, value As Primitive)
-            App.Invoke(
-                Sub()
-                    Try
-                        GetCheckBox(controlName).IsThreeState = CBool(value)
-                    Catch ex As Exception
-                        Control.ReportPropertyError(controlName, "Checked", value, ex)
-                    End Try
-                End Sub)
-        End Sub
-
 
         ''' <summary>
         ''' Gets or sets whether or not to draw a line under the text.
@@ -154,7 +146,7 @@ Namespace WinForms
         Public Shared Custom Event OnCheck As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Try
-                    Dim _sender = GetCheckBox([Event].SenderControl)
+                    Dim _sender = GetRadioButton([Event].SenderControl)
                     Dim _handler = Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
                     AddHandler _sender.Checked, _handler
                     AddHandler _sender.Unchecked, _handler

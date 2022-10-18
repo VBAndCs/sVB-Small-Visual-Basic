@@ -36,9 +36,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         InferType(symbolTable, prop.PropertyName, prop.DynamicKey)
                     Else
                         Dim typeInfo = symbolTable.GetTypeInfo(prop.TypeName)
-                        If typeInfo IsNot Nothing AndAlso typeInfo.Events.TryGetValue(prop.PropertyName.LCaseText, Nothing) Then
-                            isEventHandler = True
-                        End If
+                        isEventHandler = typeInfo IsNot Nothing AndAlso
+                                typeInfo.Events.TryGetValue(
+                                        prop.PropertyName.LCaseText,
+                                        Nothing
+                                )
                     End If
                 End If
 

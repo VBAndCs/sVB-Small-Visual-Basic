@@ -8,7 +8,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private _item As CompletionItem
         Private _enumName As String
         Private Shared _moduleDocMap As New Dictionary(Of String, ModuleDocumentation)()
-        Private _documentation As CompletionItemDocumentation
+        Private _docs As CompletionItemDocumentation
 
         Public ReadOnly Property CompletionItem As CompletionItem
             Get
@@ -24,7 +24,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Public ReadOnly Property Summary As String
             Get
-                Return _documentation?.Summary
+                Return _docs?.Summary
             End Get
         End Property
 
@@ -138,7 +138,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Public ReadOnly Property Documentation As CompletionItemDocumentation
             Get
-                Return _documentation
+                Return _docs
             End Get
         End Property
 
@@ -180,7 +180,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         NavigateTo = NavigateTo.GlobalModule
                     End If
 
-                    _documentation = New CompletionItemDocumentation() With {
+                    _docs = New CompletionItemDocumentation() With {
                             .Prefix = subrotine.SubToken.Text & " ",
                             .Summary = subrotine.GetSummery,
                             .Suffix = InferType(
@@ -192,21 +192,21 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     }
 
                 Case SymbolType.DynamicProperty
-                    _documentation = New CompletionItemDocumentation() With {
+                    _docs = New CompletionItemDocumentation() With {
                             .Prefix = "Dynamic Property: " & item.ObjectName & "!",
                             .Suffix = InferType(item.Key, bag.SymbolTable),
                             .Summary = item.DefinitionIdintifier.Comment
                     }
 
                 Case SymbolType.Label
-                    _documentation = New CompletionItemDocumentation() With {
+                    _docs = New CompletionItemDocumentation() With {
                             .Prefix = "Label: ",
                             .Summary = item.DefinitionIdintifier.Comment
                     }
 
                 Case SymbolType.Literal
                     Dim result = Parser.ParseDateLiteral(item.DisplayName)
-                    _documentation = New CompletionItemDocumentation() With {
+                    _docs = New CompletionItemDocumentation() With {
                             .Prefix = If(result.IsDate, "Date Literal: ", "Time Span Literal: "),
                             .Summary = If(result.Ticks = 0,
                                     $"Invalid {If(result.IsDate, "date", "time span")} format!",
@@ -230,7 +230,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         symbolTable = bag.SymbolTable
                     End If
 
-                    _documentation = New CompletionItemDocumentation() With {
+                    _docs = New CompletionItemDocumentation() With {
                             .Prefix = "Global Variable: ",
                             .Suffix = If(
                                     isGlobal OrElse item.ObjectName = "",
@@ -246,7 +246,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     If Not vars.ContainsKey(var) Then Return
                     Dim varExpr = vars(var)
 
-                    _documentation = New CompletionItemDocumentation() With {
+                    _docs = New CompletionItemDocumentation() With {
                             .Prefix = If(varExpr.IsParam,
                                 "Parameter: " & varExpr.Subroutine.Name.Text & ".",
                                 "Local Variable: "
@@ -266,14 +266,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     }
                     NavigateTo = NavigateTo.GlobalModule
 
-                    _documentation = New CompletionItemDocumentation() With {
+                    _docs = New CompletionItemDocumentation() With {
                             .Suffix = " Type",
                             .Summary = "The global module of the project. You can define global functions and variables in this module and use it from any form in the project."
                     }
 
                 Case SymbolType.Control
                     NavigateTo = NavigateTo.Designer
-                    _documentation = New CompletionItemDocumentation() With {
+                    _docs = New CompletionItemDocumentation() With {
                             .Prefix = "Global Variable: ",
                             .Suffix = If(item.ObjectName = "", "", $" As {item.ObjectName}"),
                             .Summary = If(item.DisplayName = "Me",
@@ -285,10 +285,30 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Case Else
                     Dim name = GetSymbolName()
                     If name <> "" AndAlso moduleDoc IsNot Nothing Then
-                        _documentation = moduleDoc.GetItemDocumentation(name)
-                        If _documentation IsNot Nothing Then
-                            _documentation.Suffix = InferType(item.MemberInfo)
+                        _docs = moduleDoc.GetItemDocumentation(name)
+                        If _docs Is Nothing Then
+                            If item.MemberInfo IsNot Nothing AndAlso item.MemberInfo.MemberType = MemberTypes.Method Then
+                                Dim m = CType(item.MemberInfo, MethodInfo)
+                                Dim paramsDocs As New Dictionary(Of String, String)
+                                Dim params = m.GetParameters()
+                                Dim isExMethod = m.GetCustomAttributes(GetType(WinForms.ExMethodAttribute), inherit:=False).Count > 0
+
+                                If params IsNot Nothing Then
+                                    For Each param In params
+                                        If isExMethod Then
+                                            isExMethod = False
+                                            Continue For
+                                        End If
+                                        paramsDocs(param.Name) = ""
+                                    Next
+                                End If
+
+                                _docs = New CompletionItemDocumentation()
+                                _docs.ParamsDoc = paramsDocs
+                            End If
                         End If
+
+                        If _docs IsNot Nothing Then _docs.Suffix = InferType(item.MemberInfo)
                     End If
             End Select
 

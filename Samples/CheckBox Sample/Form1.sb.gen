@@ -1,0 +1,43 @@
+'@Form Hints:
+'#Form1{
+'    ChkShowTextBox: CheckBox
+'    Button1: Button
+'    Button2: Button
+'    TextBox1: TextBox
+'    ChkTriState: CheckBox
+'}
+
+Me = "Form1"
+ChkShowTextBox = "form1.chkshowtextbox"
+Button1 = "form1.button1"
+Button2 = "form1.button2"
+TextBox1 = "form1.textbox1"
+ChkTriState = "form1.chktristate"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    ChkShowTextBox: OnCheck
+'    Button1: OnClick
+'    Button2: OnClick
+'    ChkTriState: OnCheck
+'}
+
+' ChkShowTextBox Events:
+Control.HandleEvents(ChkShowTextBox)
+CheckBox.OnCheck = ChkShowTextBox_OnCheck
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+' Button2 Events:
+Control.HandleEvents(Button2)
+Control.OnClick = Button2_OnClick
+
+' ChkTriState Events:
+Control.HandleEvents(ChkTriState)
+CheckBox.OnCheck = ChkTriState_OnCheck
+
+

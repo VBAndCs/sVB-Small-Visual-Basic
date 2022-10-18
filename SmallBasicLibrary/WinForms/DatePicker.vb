@@ -41,7 +41,7 @@ Namespace WinForms
                     Try
                         GetDatePicker(datePickerName).SelectedDate = value.AsDate()
                     Catch ex As Exception
-                        Control.RepotPropertyError(datePickerName, "SelectedDate", value, ex)
+                        Control.ReportPropertyError(datePickerName, "SelectedDate", value, ex)
                     End Try
                 End Sub)
         End Sub

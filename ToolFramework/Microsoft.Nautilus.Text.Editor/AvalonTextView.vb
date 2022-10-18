@@ -72,12 +72,12 @@ Namespace Microsoft.Nautilus.Text.Editor
                 End If
 
                 For i As Integer = 0 To _cachedLinesCount - 1
-                    Dim lineWidth1 As LineWidth = _cachedLines(i)
-                    If CInt(CLng(Fix(lineWidth1.Span.GetStartPoint(snapshot))) Mod Integer.MaxValue) = span.Start Then
-                        If lineWidth1.Width = _maxWidth AndAlso width < lineWidth1.Width Then
+                    Dim lineWidth = _cachedLines(i)
+                    If CInt(CLng(Fix(lineWidth.Span.GetStartPoint(snapshot))) Mod Integer.MaxValue) = span.Start Then
+                        If lineWidth.Width = _maxWidth AndAlso width < lineWidth.Width Then
                             _maxWidth = Double.MaxValue
                         End If
-                        lineWidth1.Width = width
+                        lineWidth.Width = width
                         Return
                     End If
                 Next
@@ -104,11 +104,11 @@ Namespace Microsoft.Nautilus.Text.Editor
             Public Sub InvalidateTextLine(snapshot As ITextSnapshot, span As Span)
                 Dim num As Integer = 0
                 While num < _cachedLinesCount
-                    Dim lineWidth1 As LineWidth = _cachedLines(num)
+                    Dim lineWidth = _cachedLines(num)
 
-                    If lineWidth1.Span.GetSpan(snapshot).OverlapsWith(span) Then
+                    If lineWidth.Span.GetSpan(snapshot).OverlapsWith(span) Then
 
-                        If lineWidth1.Width = _maxWidth Then
+                        If lineWidth.Width = _maxWidth Then
                             _maxWidth = Double.MaxValue
                         End If
 

@@ -260,7 +260,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Adds a new Button control to the form
+        ''' Adds a new CheckBox control to the form
         ''' </summary>
         ''' <param name="checkBoxName">A unigue name of the new CheckBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
@@ -306,6 +306,56 @@ Namespace WinForms
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddCheckBox", ex)
+                      End Try
+                  End Sub)
+
+            Return key
+        End Function
+
+        ''' <summary>
+        ''' Adds a new RadioButton control to the form
+        ''' </summary>
+        ''' <param name="radioButtonName">A unigue name of the new RadioButton.</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="text">The text to desply on the RadioButton</param>
+        ''' <param name="groupName">The name of the group to add the button to</param>
+        ''' <param name="checked">The value to set to the Checked property</param>
+        ''' <returns>The neame of the button</returns>
+        <ReturnValueType(VariableType.RadioButton)>
+        <ExMethod>
+        Public Shared Function AddRadioButton(
+                         formName As Primitive,
+                         radioButtonName As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         text As Primitive,
+                         groupName As Primitive,
+                         checked As Primitive
+                   ) As Primitive
+
+            Dim key = ValidateArgs(formName, radioButtonName)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+
+                          Dim rd As New Wpf.RadioButton With {
+                               .Name = radioButtonName,
+                               .Content = text,
+                               .GroupName = groupName,
+                               .IsChecked = checked
+                          }
+
+                          Wpf.Canvas.SetLeft(rd, left)
+                          Wpf.Canvas.SetTop(rd, top)
+
+                          Dim cnv As Wpf.Canvas = frm.Content
+                          cnv.Children.Add(rd)
+                          Forms._controls(key) = rd
+
+                      Catch ex As Exception
+                          ReportSubError(formName, "AddRadioButton", ex)
                       End Try
                   End Sub)
 
@@ -433,7 +483,7 @@ Namespace WinForms
                            Dim frm = Forms.GetForm(formName)
                            frm.SetValue(ArgsArrProperty, value.AsString())
                        Catch ex As Exception
-                           Control.RepotPropertyError(formName, "ArgsArr", value, ex)
+                           Control.ReportPropertyError(formName, "ArgsArr", value, ex)
                        End Try
                    End Sub)
         End Sub

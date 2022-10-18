@@ -43,7 +43,7 @@ Namespace WinForms
                         t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                         t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                     Catch ex As Exception
-                        Control.RepotPropertyError(textBoxName, "Text", value, ex)
+                        Control.ReportPropertyError(textBoxName, "Text", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -71,7 +71,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).SelectionStart = value - 1
                     Catch ex As Exception
-                        Control.RepotPropertyError(textBoxName, "SelectionStart", value, ex)
+                        Control.ReportPropertyError(textBoxName, "SelectionStart", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -99,7 +99,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).SelectionLength = value
                     Catch ex As Exception
-                        Control.RepotPropertyError(textBoxName, "SelectionLength", value, ex)
+                        Control.ReportPropertyError(textBoxName, "SelectionLength", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -130,7 +130,7 @@ Namespace WinForms
                         t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                         t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                     Catch ex As Exception
-                        Control.RepotPropertyError(textBoxName, "SelectedText", value, ex)
+                        Control.ReportPropertyError(textBoxName, "SelectedText", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -158,7 +158,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).CaretIndex = value - 1
                     Catch ex As Exception
-                        Control.RepotPropertyError(textBoxName, "CaretIndex", value, ex)
+                        Control.ReportPropertyError(textBoxName, "CaretIndex", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -186,7 +186,7 @@ Namespace WinForms
                     Try
                         GetTextBox(textBoxName).AcceptsReturn = CBool(value)
                     Catch ex As Exception
-                        Control.RepotPropertyError(textBoxName, "MuliLine", value, ex)
+                        Control.ReportPropertyError(textBoxName, "MuliLine", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -276,6 +276,35 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Sub
+
+
+        ''' <summary>
+        ''' Gets or sets whether or not to draw a line under the text.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetUnderlined(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetUnderlined = (GetTextBox(controlName).TextDecorations Is TextDecorations.Underline)
+                    Catch ex As Exception
+                        Control.ReportError(controlName, "Underlined", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetUnderlined(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           GetTextBox(controlName).TextDecorations = If(CBool(Value), TextDecorations.Underline, Nothing)
+                       Catch ex As Exception
+                           Control.ReportPropertyError(controlName, "Underlined", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
 
         ''' <summary>
         ''' Fired when the text is changed.
