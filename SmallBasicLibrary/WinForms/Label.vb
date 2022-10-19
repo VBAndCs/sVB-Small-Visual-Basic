@@ -203,6 +203,7 @@ Namespace WinForms
                         Else
                             Dim link As New Documents.Hyperlink(txtRun)
                             Try
+                                url = GetAbsUrl(url)
                                 link.NavigateUri = New Uri(url)
                             Catch ex As Exception
                                 link.NavigateUri = New Uri("about:blank")
@@ -217,6 +218,17 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Sub
+
+        Private Shared Function GetAbsUrl(url As String) As String
+            Try
+                If IO.File.Exists(url) OrElse IO.Directory.Exists(url) Then
+                    Return IO.Path.GetFullPath(url)
+                End If
+            Catch
+            End Try
+
+            Return url
+        End Function
 
         Private Shared Sub NavigateToLink(sender As Object, e As RequestNavigateEventArgs)
             Try
