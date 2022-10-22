@@ -141,7 +141,7 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Fired when the text is changed.
+        ''' Fired when the checked state is changed.
         ''' </summary>
         Public Shared Custom Event OnCheck As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)

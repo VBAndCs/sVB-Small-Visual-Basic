@@ -119,7 +119,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Private Sub FilterItems()
             Dim inputText = GetInputText()
-            BuildFilteredCompletionList(inputText)
+            BuildFilteredCompletionList(inputText, _Adornment.CompletionBag)
 
             If filteredCompletionItems.Count > 0 Then
                 CompletionListBox.ItemsSource = filteredCompletionItems
@@ -128,9 +128,27 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 UnfadeCompletionList()
 
             ElseIf CompletionPopup.IsOpen Then
-                FadeCompletionList()
+                If _Adornment.CompletionBag.SelectEspecialItem = "" Then
+                    FadeCompletionList()
+                Else
+                    Dim bag = _Adornment.AdornmentProvider.GetOriginalBag()
+                    If bag Is Nothing Then
+                        _Adornment.Dismiss(True)
+                    Else
+                        BuildFilteredCompletionList(inputText, bag)
+                        If filteredCompletionItems.Count > 0 Then
+                            CompletionListBox.ItemsSource = filteredCompletionItems
+                            CompletionPopup.IsOpen = True
+                            CompletionListBox.SelectedIndex = GetSelectedItemIndex(inputText)
+                            UnfadeCompletionList()
+                        Else
+                            FadeCompletionList()
+                        End If
+                    End If
+                End If
+
             Else
-                _Adornment.Dismiss(True)
+                _Adornment?.Dismiss(True)
             End If
         End Sub
 
@@ -138,11 +156,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             If IsAdornmentVisible Then FilterItems()
         End Sub
 
-        Private Sub BuildFilteredCompletionList(inputText As String)
+        Private Sub BuildFilteredCompletionList(inputText As String, bag As CompletionBag)
             filteredCompletionItems = New List(Of CompletionItemWrapper)
-            Dim bag = _Adornment.CompletionBag
-
             Dim items As New List(Of CompletionItemWrapper)
+
             For Each item In bag.CompletionItems
                 If CanAddItem(item, bag.IsFirstToken, inputText) Then
                     Dim itemWrapper = New CompletionItemWrapper(item, bag, _Adornment.CompletionBag.SelectEspecialItem)
@@ -152,6 +169,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Next
 
             If items.Count = 0 Then Return
+
+            If items.Count = 1 AndAlso bag.CtrlSpace Then
+                _Adornment.AdornmentProvider.CommitItem(items(0))
+                filteredCompletionItems.Clear()
+                Return
+            End If
 
             ' Completion list must contain 7 items at least
             ' Otherwise repeat the items to fill the gaps
@@ -264,10 +287,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Function
 
         Private Function GetSelectedItemIndex(text As String) As Integer
-            'If _Adornment.CompletionBag.SelectEspecialItem <> "" Then
-            '    text = _Adornment.CompletionBag.SelectEspecialItem
-            'End If
-
             Dim textLength = text.Length
 
             If textLength <2 Then

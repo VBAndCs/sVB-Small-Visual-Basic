@@ -97,7 +97,7 @@ Namespace Library
                 VerifyAccess()
                 BeginInvoke(
                     Sub()
-                        If WinForms.Color.IsNon(Value) Then
+                        If WinForms.Color.IsNone(Value) Then
                             _fillBrush = Nothing
                         Else
                             _fillBrush = New SolidColorBrush(GetColorFromString(Value))
@@ -170,7 +170,7 @@ Namespace Library
                 VerifyAccess()
                 BeginInvoke(
                     Sub()
-                        If WinForms.Color.IsNon(Value) Then
+                        If WinForms.Color.IsNone(Value) Then
                             _pen = Nothing
                         Else
                             Dim colorFromString As Media.Color = GetColorFromString(Value)

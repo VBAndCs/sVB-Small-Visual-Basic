@@ -21,6 +21,8 @@ Namespace WinForms
             FillModuleMembers(GetType(CheckBox))
             FillModuleMembers(GetType(RadioButton))
             FillModuleMembers(GetType(Button))
+            FillModuleMembers(GetType(MenuItem))
+            FillModuleMembers(GetType(MainMenu))
             FillModuleMembers(GetType(DatePicker))
             FillModuleMembers(GetType(ImageBox))
             FillModuleMembers(GetType(TextEx))
@@ -57,7 +59,8 @@ Namespace WinForms
                     Return NameOf(DateEx)
 
                 Case VariableType.Any, VariableType.Boolean,
-                          VariableType.Key, VariableType.DialogResult
+                         VariableType.Key, VariableType.DialogResult,
+                         VariableType.ControlType
                     Return ""
 
                 Case Else
@@ -125,6 +128,8 @@ Namespace WinForms
                 New ShortcutInfo("Color", VariableType.Color),
                 New ShortcutInfo("Key", VariableType.Key),
                 New ShortcutInfo("Dialog", VariableType.DialogResult),
+                New ShortcutInfo("TypeName", VariableType.ControlType),
+                New ShortcutInfo("ControlType", VariableType.ControlType),
                 New ShortcutInfo("Date", VariableType.Date),
                 New ShortcutInfo("Control", VariableType.Control),
                 New ShortcutInfo("Form", VariableType.Form),
@@ -135,6 +140,8 @@ Namespace WinForms
                 New ShortcutInfo("CheckBox", VariableType.CheckBox),
                 New ShortcutInfo("RadioButton", VariableType.RadioButton),
                 New ShortcutInfo("Button", VariableType.Button),
+                New ShortcutInfo("MenuItem", VariableType.MenuItem),
+                New ShortcutInfo("MainMenu", VariableType.MainMenu),
                 New ShortcutInfo("DatePicker", VariableType.DatePicker),
                 New ShortcutInfo("ImageBox", VariableType.ImageBox)
     }
@@ -211,6 +218,26 @@ Namespace WinForms
 
             events.Sort()
             Return events
+        End Function
+
+        Public Shared Function ContainsEvent(controlName As String, eventName As String) As Boolean
+            If controlName = NameOf(Forms) Then Return False
+
+            eventName = eventName.ToLower()
+
+            If controlName <> NameOf(ImageBox) Then
+                For Each e In eventsInfo(NameOf(Control))
+                    If e.ToLower = eventName Then Return True
+                Next
+            End If
+
+            If eventsInfo.ContainsKey(controlName) Then
+                For Each e In eventsInfo(controlName)
+                    If e.ToLower() = eventName Then Return True
+                Next
+            End If
+
+            Return False
         End Function
 
         Public Shared Function GetMethodInfo(

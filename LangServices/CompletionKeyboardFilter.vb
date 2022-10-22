@@ -57,6 +57,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         provider.ShowCompletionAdornment(
                             textView.TextSnapshot,
                             textView.Caret.Position.TextInsertionIndex,
+                            True,
                             True
                         )
                     End If
@@ -135,11 +136,25 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim key = item.HistoryKey
                 If key <> "" Then CompletionProvider.CompHistory(key) = item.DisplayName
 
+                Dim pos = textView.Caret.Position.TextInsertionIndex
+                Dim line = textView.TextSnapshot.GetLineFromPosition(pos)
+
+                If extraText.Trim() = ">" Then
+                    Dim prevText = line.GetText().Substring(0, pos - line.Start)
+                    For i = prevText.Length - 1 To 0 Step -1
+                        Dim c = prevText(i)
+                        If c = "<" Then
+                            editorOperations.InsertText("> ", UndoHistoryRegistry.GetHistory(textView.TextBuffer))
+                            Return True
+                        ElseIf Not Char.IsWhiteSpace(c) Then
+                            Exit For
+                        End If
+                    Next
+                End If
+
                 If repWith.EndsWith("(") OrElse repWith.EndsWith(")") Then
                     If extraText.EndsWith("( ") Then extraText = ""
-                    Dim pos = textView.Caret.Position.TextInsertionIndex
-                    Dim line = textView.TextSnapshot.GetLineFromPosition(pos)
-                    Dim txt = line.GetText().Substring(pos - line.Start)
+                    Dim txt = Line.GetText().Substring(pos - Line.Start)
                     If LineScanner.GetFirstToken(txt, 0).Type = TokenType.LeftParens Then
                         repWith = repWith.TrimEnd("("c, ")"c)
                     End If

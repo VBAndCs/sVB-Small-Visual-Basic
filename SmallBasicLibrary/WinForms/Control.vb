@@ -65,9 +65,9 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Gets the name of the control.           
+        ''' Gets the name of the control.
+        ''' Note that you can't change the control name at runtime. Use the designer to change the name.
         ''' </summary>
-        ''' <remarks>You can't change the control name at runtime. Use the designer to change the name</remarks>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetName(controlName As Primitive) As Primitive
@@ -80,6 +80,23 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Function
+
+        ''' <summary>
+        ''' Gets the name of the control type, like TextBox, Label, and Button.           
+        ''' </summary>
+        <ReturnValueType(VariableType.ControlType)>
+        <ExProperty>
+        Public Shared Function GetTypeName(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTypeName = GetControl(controlName).GetType().Name
+                    Catch ex As Exception
+                        ReportError(controlName, "TypeName", ex)
+                    End Try
+                End Sub)
+        End Function
+
 
         ''' <summary>
         ''' An extra property to store any value you want that is related to the control. you can store multiple values as by putting them in an array or a dynamic object
@@ -174,6 +191,8 @@ Namespace WinForms
 
         ''' <summary>
         ''' The width of the control.
+        ''' If you want an auto-width to fit the control's content width, set this property to -1. 
+        ''' You can also limit the auto width by setting the MaxWidth property.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -218,7 +237,9 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' The height of the control.
+        ''' The height of the control. 
+        ''' If you want an auto-heigh to fit the control's content heigh, set this property to -1. 
+        ''' You can also limit the auto height by setting the MaxHeigh property.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -259,6 +280,153 @@ Namespace WinForms
 
                     Catch ex As Exception
                         ReportPropertyError(controlName, "Height", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' The max width of the control. It is useful when you set the control's width to auto (Width = -1), to force the auto witdth not to exceed a max length. 
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetMaxWidth(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim obj = GetControl(controlName)
+                        If TypeOf obj Is Window Then
+                            GetMaxWidth = CType(CType(obj, Window).Content, Wpf.Canvas).MaxWidth
+                        Else
+                            GetMaxWidth = obj.MaxWidth
+                        End If
+                    Catch ex As Exception
+                        ReportError(controlName, "MaxWidth", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetMaxWidth(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim w = System.Math.Max(CDbl(value), 0)
+                        Dim obj = GetControl(controlName)
+
+                        If TypeOf obj Is Window Then
+                            CType(CType(obj, Window).Content, Wpf.Canvas).MaxWidth = w
+                        Else
+                            obj.MaxWidth = w
+                        End If
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "MaxWidth", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' The max height of the control. It is useful when you set the control's height to auto (Height = -1), to force the auto height not to exceed a max length.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetMaxHeight(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim obj = GetControl(controlName)
+                        If TypeOf obj Is Window Then
+                            GetMaxHeight = CType(CType(obj, Window).Content, Wpf.Canvas).MaxHeight
+                        Else
+                            GetMaxHeight = obj.MaxHeight
+                        End If
+                    Catch ex As Exception
+                        ReportError(controlName, "MaxHeight", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetMaxHeight(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim h = System.Math.Max(CDbl(value), 0)
+                        Dim obj = GetControl(controlName)
+
+                        If TypeOf obj Is Window Then
+                            CType(CType(obj, Window).Content, Wpf.Canvas).MaxHeight = h
+                        Else
+                            obj.MaxHeight = h
+                        End If
+
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "MaxHeight", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Changes the witdth of the control to fit its content width.
+        ''' Thisis a one time change, and will not make the control width auto-szied.
+        ''' If you want to make the width auto-size, set the Width properties to -1.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub FitContentWidth(controlName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        c.Width = Double.NaN
+                        c.Dispatcher.Invoke(Threading.DispatcherPriority.Render, Sub() Exit Sub)
+                        c.Width = c.ActualWidth
+
+                    Catch ex As Exception
+                        ReportSubError(controlName, "FitContentWidth", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Changes the height of the control to fit its content height.
+        ''' Thisis a one time change, and will not make the control height auto-szied.
+        ''' If you want to make the height auto-size, set the Height properties to -1.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub FitContentHeight(controlName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        c.Height = Double.NaN
+                        c.Dispatcher.Invoke(Threading.DispatcherPriority.Render, Sub() Exit Sub)
+                        c.Height = c.ActualHeight
+
+                    Catch ex As Exception
+                        ReportSubError(controlName, "FitContentHeight", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Changes the witdth and height of the control to fit its content size.
+        ''' Thisis a one time change, and will not make the control width and height auto-szie.
+        ''' If you want to make them auto-size, set the Width or Height properties or both  to -1.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub FitContentSize(controlName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        c.Width = Double.NaN
+                        c.Height = Double.NaN
+                        c.Dispatcher.Invoke(Threading.DispatcherPriority.Render, Sub() Exit Sub)
+                        c.Width = c.ActualWidth
+                        c.Height = c.ActualHeight
+
+                    Catch ex As Exception
+                        ReportSubError(controlName, "FitContentSize", ex)
                     End Try
                 End Sub)
         End Sub
@@ -337,13 +505,13 @@ Namespace WinForms
                 End Sub)
         End Function
 
-        Public Shared Sub SetRightToLeft(controlName As Primitive, Value As Primitive)
+        Public Shared Sub SetRightToLeft(controlName As Primitive, value As Primitive)
             App.Invoke(
                    Sub()
                        Try
-                           GetControl(controlName).FlowDirection = If(CBool(Value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
+                           GetControl(controlName).FlowDirection = If(CBool(value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
                        Catch ex As Exception
-                           ReportPropertyError(controlName, "RightToLeft", Value, ex)
+                           ReportPropertyError(controlName, "RightToLeft", value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -604,7 +772,7 @@ Namespace WinForms
         Public Shared Function GetBackColor(control As Wpf.Control) As Media.Color
             Dim brush As SolidColorBrush
             If TypeOf control Is Window Then
-                Dim canvas = CType(CType(control, Window).Content, Wpf.Canvas)
+                Dim canvas = Form.GetCanvas(control)
                 brush = TryCast(canvas.Background, SolidColorBrush)
 
             ElseIf TypeOf control Is Wpf.Label Then
@@ -633,7 +801,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim _color? As Media.Color = If(Color.IsNon(value), Nothing, Color.FromString(value))
+                        Dim _color? As Media.Color = If(Color.IsNone(value), Nothing, Color.FromString(value))
                         Dim obj = GetControl(controlName)
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(BackColorProperty, Nothing)
@@ -678,7 +846,7 @@ Namespace WinForms
                    Sub()
                        Try
                            Dim c = GetControl(controlName)
-                           If Color.IsNon(value) Then
+                           If Color.IsNone(value) Then
                                c.Foreground = Nothing
                            Else
                                Dim _color = Color.FromString(value)
@@ -690,6 +858,122 @@ Namespace WinForms
                            ReportPropertyError(controlName, "ForeColor", value, ex)
                        End Try
                    End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Shows the color dialog to allow user to change the back color of the current control
+        ''' </summary>
+        ''' <returns>The color that the user choosed, or "" if he cancelled the operation</returns>
+        <ReturnValueType(VariableType.Color)>
+        <ExMethod>
+        Public Shared Function ChooseBackColor(controlName As Primitive) As Primitive
+            Dim color = WinForms.Color.ShowDialog(GetBackColor(controlName))
+            If Not color.IsEmpty Then
+                SetBackColor(controlName, color)
+            End If
+            Return color
+        End Function
+
+
+        ''' <summary>
+        ''' Shows the color dialog to allow user to change the fore color of the current control
+        ''' </summary>
+        ''' <returns>The color that the user choosed, or "" if he cancelled the operation</returns>
+        <ReturnValueType(VariableType.Color)>
+        <ExMethod>
+        Public Shared Function ChooseForeColor(controlName As Primitive) As Primitive
+            Dim color = WinForms.Color.ShowDialog(GetForeColor(controlName))
+            If Not color.IsEmpty Then
+                SetForeColor(controlName, color)
+            End If
+            Return color
+        End Function
+
+
+        ''' <summary>
+        ''' Shows the font dialog to allow user to change the font properties including the fore color of the current control
+        ''' </summary>
+        ''' <returns>The font properties that the user choosed, or "" if he cancelled the operation</returns>
+        <ReturnValueType(VariableType.Array)>
+        <ExMethod>
+        Public Shared Function ChooseFont(controlName As Primitive) As Primitive
+            Dim font = Text.ShowFontDialog(GetFont(controlName))
+            If Not font.IsEmpty Then
+                SetFont(controlName, font)
+            End If
+            Return font
+        End Function
+
+        ''' <summary>
+        ''' Gets or sets an array containing the font properties under the keys: Name, Size, Bold, Italic, Underlined and Color, so you can use them as dynamic properties.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        <ExProperty>
+        Public Shared Function GetFont(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim font As New Primitive
+                        Dim c = GetControl(controlName)
+                        font("Name") = c.FontFamily.Source
+                        font("Size") = c.FontSize
+                        font("Bold") = (c.FontWeight = FontWeights.Bold)
+                        font("Italic") = (c.FontStyle = FontStyles.Italic)
+                        font("Color") = GetForeColor(controlName)
+
+                        Dim cc = TryCast(c, Wpf.ContentControl)
+                        If cc Is Nothing Then
+                            Dim txt = TryCast(c, Wpf.TextBox)
+                            If txt Is Nothing Then
+                                font("Underlined") = False
+                            Else
+                                font("Underlined") = txt.TextDecorations Is TextDecorations.Underline
+                            End If
+                        Else
+                            Dim tb = TryCast(cc.Content, Wpf.TextBlock)
+                            If tb Is Nothing Then
+                                font("Underlined") = False
+                            Else
+                                font("Underlined") = tb.TextDecorations Is TextDecorations.Underline
+                            End If
+                        End If
+
+                        GetFont = font
+                    Catch ex As Exception
+                        ReportError(controlName, "Font", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetFont(controlName As Primitive, font As Primitive)
+            If font.IsEmpty Then Return
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        c.FontFamily = New FontFamily(font("Name"))
+                        c.FontSize = font("Size")
+                        c.FontWeight = If(font("Bold"), FontWeights.Bold, FontWeights.Normal)
+                        c.FontStyle = If(font("Italic"), FontStyles.Italic, FontStyles.Normal)
+                        SetForeColor(controlName, font("Color"))
+
+                        Dim cc = TryCast(c, Wpf.ContentControl)
+                        If cc Is Nothing Then
+                            Dim txt = TryCast(c, Wpf.TextBox)
+                            If txt IsNot Nothing Then
+                                txt.TextDecorations = If(font("Underlined"), TextDecorations.Underline, Nothing)
+                            End If
+                        Else
+                            Dim tb = TryCast(cc.Content, Wpf.TextBlock)
+                            If tb IsNot Nothing Then
+                                tb.TextDecorations = If(font("Underlined"), TextDecorations.Underline, Nothing)
+                            End If
+                        End If
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "FontName", font, ex)
+                    End Try
+                End Sub)
         End Sub
 
 
@@ -710,13 +994,13 @@ Namespace WinForms
                 End Sub)
         End Function
 
-        Public Shared Sub SetFontName(controlName As Primitive, Value As Primitive)
+        Public Shared Sub SetFontName(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        GetControl(controlName).FontFamily = New FontFamily(Value)
+                        GetControl(controlName).FontFamily = New FontFamily(value)
                     Catch ex As Exception
-                        ReportPropertyError(controlName, "FontName", Value, ex)
+                        ReportPropertyError(controlName, "FontName", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -738,13 +1022,13 @@ Namespace WinForms
                 End Sub)
         End Function
 
-        Public Shared Sub SetFontSize(controlName As Primitive, Value As Primitive)
+        Public Shared Sub SetFontSize(controlName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
-                        GetControl(controlName).FontSize = Value
+                        GetControl(controlName).FontSize = value
                     Catch ex As Exception
-                        ReportPropertyError(controlName, "FontSize", Value, ex)
+                        ReportPropertyError(controlName, "FontSize", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -766,13 +1050,13 @@ Namespace WinForms
                 End Sub)
         End Function
 
-        Public Shared Sub SetFontBold(controlName As Primitive, Value As Primitive)
+        Public Shared Sub SetFontBold(controlName As Primitive, value As Primitive)
             App.Invoke(
                    Sub()
                        Try
-                           GetControl(controlName).FontWeight = If(CBool(Value), FontWeights.Bold, FontWeights.Normal)
+                           GetControl(controlName).FontWeight = If(CBool(value), FontWeights.Bold, FontWeights.Normal)
                        Catch ex As Exception
-                           ReportPropertyError(controlName, "FontBold", Value, ex)
+                           ReportPropertyError(controlName, "FontBold", value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -794,13 +1078,13 @@ Namespace WinForms
                 End Sub)
         End Function
 
-        Public Shared Sub SetFontItalic(controlName As Primitive, Value As Primitive)
+        Public Shared Sub SetFontItalic(controlName As Primitive, value As Primitive)
             App.Invoke(
                    Sub()
                        Try
-                           GetControl(controlName).FontStyle = If(CBool(Value), FontStyles.Italic, FontStyles.Normal)
+                           GetControl(controlName).FontStyle = If(CBool(value), FontStyles.Italic, FontStyles.Normal)
                        Catch ex As Exception
-                           ReportPropertyError(controlName, "FontItalic", Value, ex)
+                           ReportPropertyError(controlName, "FontItalic", value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -920,7 +1204,7 @@ Namespace WinForms
                 Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
-                        If Color.IsNon(newColor) Then newColor = Colors.Transparent
+                        If Color.IsNone(newColor) Then newColor = Colors.Transparent
                         Dim animation As New Animation.ColorAnimation() With {
                             .From = GetBackColor(obj),
                             .To = Color.FromString(newColor),
@@ -1045,7 +1329,7 @@ Namespace WinForms
                     App.Invoke(
                            Sub()
                                Dim win = CType(_sender, Window)
-                               Dim canvas = CType(win.Content, Wpf.Canvas)
+                               Dim canvas = Form.GetCanvas(win)
                                If canvas.Background IsNot Nothing OrElse win.AllowsTransparency Then
                                    ' Use the camvas events instead of the form, because form events will not fire if the form is transperent or if the canvas has a non-transparent back color
                                    _sender = canvas

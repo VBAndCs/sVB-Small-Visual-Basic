@@ -166,6 +166,9 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 End If
             Next
 
+            If SubToken.Type = TokenType.Function Then
+                symbolTable.InferedTypes(Name.LCaseText) = InferReturnType(symbolTable)
+            End If
         End Sub
 
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
@@ -351,6 +354,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim returnType = VariableType.Any
 
             For Each retSt In ReturnStatements
+                If retSt.ReturnExpression Is Nothing Then Continue For
+
                 Dim type = retSt.ReturnExpression.InferType(symbolTable)
                 If type <> VariableType.Any Then
                     Select Case type

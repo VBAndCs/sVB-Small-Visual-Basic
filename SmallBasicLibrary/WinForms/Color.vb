@@ -59,7 +59,7 @@ Namespace WinForms
             Return $"#{A:X2}{R:X2}{G:X2}{B:X2}"
         End Function
 
-        Friend Shared Function IsNon(color As String) As Boolean
+        Friend Shared Function IsNone(color As String) As Boolean
             Return color = "" OrElse color = "0" OrElse color.ToLower() = "none"
         End Function
 
@@ -70,7 +70,7 @@ Namespace WinForms
         ''' <param name="percentage">a 0 to 100 value that represents the percentage of the transparency of the color</param>
         ''' <returns>a new color with the given transparency</returns>
         Public Shared Function ChangeTransparency(color As Primitive, percentage As Primitive) As Primitive
-            If IsNon(color) Then Return color
+            If IsNone(color) Then Return color
 
             Dim _color = FromString(color)
             Dim A As Byte = System.Math.Round((100 - InRange(percentage, 0, 100)) * 255 / 100)
@@ -84,7 +84,7 @@ Namespace WinForms
         ''' <returns>a 0 to 100 value represents the transparency percentage of the color</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetTransparency(color As Primitive) As Primitive
-            If IsNon(color) Then Return 100
+            If IsNone(color) Then Return 100
             Dim _color = FromString(color)
             Return System.Math.Round(100 - _color.A * 100 / 255, 1)
         End Function
@@ -98,12 +98,12 @@ Namespace WinForms
         End Function
 
         Friend Shared Function GetPen(penColor As Primitive, penWidth As Primitive) As Pen
-            If IsNon(penColor) Then Return Nothing
+            If IsNone(penColor) Then Return Nothing
             Return New Pen(GetBrush(penColor), penWidth)
         End Function
 
         Friend Shared Function GetBrush(brushColor As Primitive) As Brush
-            If IsNon(brushColor) Then Return Nothing
+            If IsNone(brushColor) Then Return Nothing
             Return New SolidColorBrush(FromString(brushColor))
         End Function
 
@@ -160,7 +160,7 @@ Namespace WinForms
         ''' <returns>A number betwwen 0 and 255 thet represents the red ration in the color</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetRedRatio(color As Primitive) As Primitive
-            If IsNon(color) Then Return 0
+            If IsNone(color) Then Return 0
             Dim _color = FromString(color)
             Return _color.R
         End Function
@@ -172,7 +172,7 @@ Namespace WinForms
         ''' <returns>A number betwwen 0 and 255 thet represents the green ration in the color</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetGreenRatio(color As Primitive) As Primitive
-            If IsNon(color) Then Return 0
+            If IsNone(color) Then Return 0
             Dim _color = FromString(color)
             Return _color.G
         End Function
@@ -185,7 +185,7 @@ Namespace WinForms
 
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetBlueRatio(color As Primitive) As Primitive
-            If IsNon(color) Then Return 0
+            If IsNone(color) Then Return 0
             Dim _color = FromString(color)
             Return _color.B
         End Function
@@ -198,7 +198,7 @@ Namespace WinForms
         ''' <returns>a new color with the red component changed to the given value</returns>
         <ReturnValueType(VariableType.Color)>
         Public Shared Function ChangeRedRatio(color As Primitive, value As Primitive) As Primitive
-            If IsNon(color) Then Return color
+            If IsNone(color) Then Return color
             Dim _color = FromString(color)
             Return FromARGB(_color.A, value, _color.G, _color.B)
         End Function
@@ -211,7 +211,7 @@ Namespace WinForms
         ''' <returns>a new color with the green component changed to the given value</returns>
         <ReturnValueType(VariableType.Color)>
         Public Shared Function ChangeGreenRatio(color As Primitive, value As Primitive) As Primitive
-            If IsNon(color) Then Return color
+            If IsNone(color) Then Return color
             Dim _color = FromString(color)
             Return FromARGB(_color.A, _color.R, value, _color.B)
         End Function
@@ -224,10 +224,83 @@ Namespace WinForms
         ''' <returns>a new color with the blue component changed to the given value</returns>
         <ReturnValueType(VariableType.Color)>
         Public Shared Function ChangeBlueRatio(color As Primitive, value As Primitive) As Primitive
-            If IsNon(color) Then Return color
+            If IsNone(color) Then Return color
             Dim _color = FromString(color)
             Return FromARGB(_color.A, _color.R, _color.G, value)
         End Function
+
+
+        Private Shared customColors As New List(Of Integer)()
+        Private Shared customColorsStr As String
+
+        Shared Sub New()
+            customColorsStr = GetSetting("sVB", "Colors", "CustomColors", "")
+            If customColorsStr <> "" Then
+                customColors.AddRange(
+                        From s In customColorsStr.Split(",")
+                        Select Convert.ToInt32(s)
+                )
+            End If
+        End Sub
+
+        ''' <summary>
+        ''' Shows the color dialog to allow the user to select a color.
+        ''' </summary>
+        ''' <param name="initialColor">the color that will be selected when the dialog is opened</param>
+        ''' <returns>a new color with the blue component changed to the given value</returns>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared Function ShowDialog(initialColor As Primitive) As Primitive
+            Dim c = System.Drawing.Color.Black
+            If Not IsNone(initialColor) Then
+                Dim wpfColor = FromString(initialColor)
+                c = System.Drawing.Color.FromArgb(
+                    wpfColor.A,
+                    wpfColor.R,
+                    wpfColor.G,
+                    wpfColor.B
+                )
+            End If
+
+            Dim dlg As New System.Windows.Forms.ColorDialog() With {
+                .AllowFullOpen = True,
+                .FullOpen = True,
+                .AnyColor = True,
+                .Color = c,
+                .ShowHelp = True,
+                .CustomColors = customColors.ToArray()
+            }
+
+            If dlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+                For Each clr In dlg.CustomColors
+                    If Not customColors.Contains(clr) Then
+                        customColors.Insert(0, clr)
+                    End If
+                Next
+
+                c = dlg.Color
+                Dim c2 = System.Drawing.Color.FromArgb(0, c.B, c.B, c.R).ToArgb()
+
+                If Not customColors.Contains(c2) Then
+                    customColors.Insert(0, c2)
+                End If
+
+                If customColors.Count > 16 Then
+                    customColors.RemoveAt(16)
+                End If
+
+                Dim x = String.Join(",", customColors.ToArray())
+                If x <> customColorsStr Then
+                    customColorsStr = x
+                    SaveSetting("sVB", "Colors", "CustomColors", x)
+                End If
+
+
+                Return FromARGB(c.A, c.R, c.G, c.B)
+            End If
+
+            Return ""
+        End Function
+
 
         Private Shared _colors As Primitive
 

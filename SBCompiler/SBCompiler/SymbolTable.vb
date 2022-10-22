@@ -150,7 +150,12 @@ Namespace Microsoft.SmallVisualBasic
             End If
         End Function
 
-        Friend Sub FixNames(typeName As Token, memberName As Token, isMethod As Boolean)
+        Friend Sub FixNames(
+                        typeName As Token,
+                        memberName As Token,
+                        isMethod As Boolean
+                    )
+
             If _typeInfoBag Is Nothing Then Return
 
             Dim type = GetTypeInfo(typeName)
@@ -215,7 +220,12 @@ Namespace Microsoft.SmallVisualBasic
             Return type
         End Function
 
-        Friend Function GetMemberInfo(ByRef memberName As Token, type As TypeInfo, isMethod As Boolean) As System.Reflection.MemberInfo
+        Friend Function GetMemberInfo(
+                          ByRef memberName As Token,
+                          type As TypeInfo,
+                          isMethod As Boolean
+                    ) As System.Reflection.MemberInfo
+
             Dim memberKey = memberName.LCaseText
             Dim memberInfo As System.Reflection.MemberInfo
 

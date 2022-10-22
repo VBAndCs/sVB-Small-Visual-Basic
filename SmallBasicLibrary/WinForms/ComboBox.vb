@@ -457,8 +457,8 @@ Namespace WinForms
         Public Shared Custom Event OnSelection As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Try
-                    Dim VisualElement = GetComboBox([Event].SenderControl)
-                    AddHandler VisualElement.SelectionChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    Dim _sender = GetComboBox([Event].SenderControl)
+                    AddHandler _sender.SelectionChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnSelection), ex)
                 End Try

@@ -2,6 +2,7 @@
 Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows.Media
+Imports System.Windows
 
 Namespace WinForms
 
@@ -62,7 +63,9 @@ Namespace WinForms
                          Dim textBox1 As New Wpf.TextBox With {
                            .Name = textBoxName,
                            .Width = width,
-                           .Height = height
+                           .Height = height,
+                           .VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto,
+                           .HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                          }
 
                          Wpf.Canvas.SetLeft(textBox1, left)
@@ -178,7 +181,7 @@ Namespace WinForms
             Return key
         End Function
 
-        Private Shared Function ValidateArgs(formName As String, controlName As String) As String
+        Friend Shared Function ValidateArgs(formName As String, controlName As String) As String
             If formName = "" Then
                 Dim msg = "`formName` can't be empty string"
                 Dim ex As New ArgumentException(msg)
@@ -211,6 +214,50 @@ Namespace WinForms
 
             Return key
         End Function
+
+        ''' <summary>
+        ''' Adds a main menu to the current form. If there is already a main menu, it will be replaced.
+        ''' </summary>
+        ''' <param name="menuName">The name of the main menu</param>
+        ''' <returns>The menu item that have been added.</returns>
+
+        <ExMethod>
+        <ReturnValueType(VariableType.MainMenu)>
+        Public Shared Function AddMainMenu(
+                         formName As Primitive,
+                         menuName As Primitive
+                    ) As Primitive
+
+            Dim key = ValidateArgs(formName, menuName)
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+                        Dim memu As New Wpf.Menu()
+                        memu.Name = menuName
+                        Forms._controls(key) = memu
+
+                        If TypeOf frm.Content Is Wpf.Canvas Then
+                            Dim canvas = frm.Content
+                            Dim sp As New Wpf.StackPanel()
+                            sp.Orientation = Wpf.Orientation.Vertical
+                            frm.Content = sp
+                            sp.Children.Add(memu)
+                            sp.Children.Add(canvas)
+                        Else
+                            Dim sp = CType(frm.Content, Wpf.StackPanel)
+                            sp.Children(0) = memu
+                        End If
+
+                    Catch ex As Exception
+                        Control.ReportSubError(menuName, "AddItem", ex)
+                    End Try
+                End Sub)
+
+            Return key
+        End Function
+
 
         ''' <summary>
         ''' Adds a new Button control to the form
@@ -664,6 +711,7 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+
         ''' <summary>
         ''' Closes the form. You can't show the form after it is closed.
         ''' </summary>
@@ -733,11 +781,11 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim frm = Forms.GetForm(formName)
-                        frm.ResizeMode = System.Windows.ResizeMode.NoResize
-                        frm.WindowStyle = System.Windows.WindowStyle.None
+                        frm.ResizeMode = ResizeMode.NoResize
+                        frm.WindowStyle = WindowStyle.None
                         frm.AllowsTransparency = True
                         frm.Background = Brushes.Transparent
-                        Dim canvas = CType(frm.Content, Wpf.Canvas)
+                        Dim canvas = GetCanvas(frm)
                         canvas.Focusable = True
                         AddHandler canvas.PreviewMouseDown, Sub() canvas.Focus()
                     Catch ex As Exception
@@ -745,6 +793,13 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Sub
+
+        Friend Shared Function GetCanvas(frm As Window) As Wpf.Canvas
+            Dim content = frm.Content
+            If TypeOf content Is Wpf.Canvas Then Return content
+            Dim sp = CType(content, Wpf.StackPanel)
+            Return sp.Children(1)
+        End Function
 
         ''' <summary>
         ''' Raises the OnLostFocus event for every control on the current form, to apply any validation logic supplied by you in each OnLostFocuse handler, then checks the Error property to see if the control has errors or not. The process stops at first control with errors and returns false.
@@ -787,7 +842,7 @@ Namespace WinForms
                         End If
 
                         Dim win = Forms.GetForm(formName)
-                        Dim canvas = win.Content
+                        Dim canvas = GetCanvas(win)
                         IO.File.WriteAllText(
                             xamlPath,
                             System.Windows.Markup.XamlWriter.Save(canvas)

@@ -1201,9 +1201,15 @@ Namespace Microsoft.SmallVisualBasic
                 If oldCodeFile?.ToLower() = fileName.ToLower() Then
                     If doc IsNot Nothing Then doc.Save()
                 Else
-                    If File.Exists(fileName) Then File.Delete(fileName)
+                    If File.Exists(fileName) Then
+                        If MsgBox(
+                                $"There is a file with the same name `{fileName}`. Do you want to overwrite if? ",
+                                MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
+                            File.Delete(fileName)
+                        End If
+                    End If
 
-                    If doc IsNot Nothing Then
+                        If doc IsNot Nothing Then
                         doc.SaveAs(fileName)
                     ElseIf File.Exists(oldCodeFile) Then
                         File.Copy(oldCodeFile, fileName)

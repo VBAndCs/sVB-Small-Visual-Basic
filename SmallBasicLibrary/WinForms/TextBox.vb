@@ -40,8 +40,6 @@ Namespace WinForms
                     Try
                         Dim t = GetTextBox(textBoxName)
                         t.Text = value
-                        t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
-                        t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                     Catch ex As Exception
                         Control.ReportPropertyError(textBoxName, "Text", value, ex)
                     End Try
@@ -127,8 +125,6 @@ Namespace WinForms
                     Try
                         Dim t = GetTextBox(textBoxName)
                         t.SelectedText = value
-                        t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
-                        t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                     Catch ex As Exception
                         Control.ReportPropertyError(textBoxName, "SelectedText", value, ex)
                     End Try
@@ -248,8 +244,6 @@ Namespace WinForms
                     Try
                         Dim t = GetTextBox(textBoxName)
                         t.AppendText(text.AsString())
-                        t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
-                        t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
 
                     Catch ex As Exception
                         Control.ReportSubError(textBoxName, "Append", ex)
@@ -268,8 +262,6 @@ Namespace WinForms
                     Try
                         Dim t = GetTextBox(textBoxName)
                         t.AppendText(lineText.AsString() & vbCrLf)
-                        t.VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
-                        t.HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
 
                     Catch ex As Exception
                         Control.ReportSubError(textBoxName, "AppendLine", ex)
@@ -279,32 +271,166 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Gets or sets whether or not to draw a line under the text.
+        ''' Gets or sets whether or not to wrap words to the next line if they exceed the textbox width.
+        ''' When set this property to False, the horizontal scroll bar will appear when any line exceeds the textbox width.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         <ExProperty>
-        Public Shared Function GetUnderlined(controlName As Primitive) As Primitive
+        Public Shared Function GetWordWrap(textBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetUnderlined = (GetTextBox(controlName).TextDecorations Is TextDecorations.Underline)
+                        GetWordWrap = (GetTextBox(textBoxName).TextWrapping <> TextWrapping.NoWrap)
                     Catch ex As Exception
-                        Control.ReportError(controlName, "Underlined", ex)
+                        Control.ReportError(textBoxName, "WordWrap", ex)
                     End Try
                 End Sub)
         End Function
 
-        Public Shared Sub SetUnderlined(controlName As Primitive, Value As Primitive)
+        Public Shared Sub SetWordWrap(textBoxName As Primitive, Value As Primitive)
             App.Invoke(
                    Sub()
                        Try
-                           GetTextBox(controlName).TextDecorations = If(CBool(Value), TextDecorations.Underline, Nothing)
+                           GetTextBox(textBoxName).TextWrapping = If(CBool(Value), TextWrapping.Wrap, TextWrapping.NoWrap)
                        Catch ex As Exception
-                           Control.ReportPropertyError(controlName, "Underlined", Value, ex)
+                           Control.ReportPropertyError(textBoxName, "WordWrap", Value, ex)
                        End Try
                    End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Gets or sets whether or not to draw a line under the text.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetUnderlined(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetUnderlined = (GetTextBox(textBoxName).TextDecorations Is TextDecorations.Underline)
+                    Catch ex As Exception
+                        Control.ReportError(textBoxName, "Underlined", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetUnderlined(textBoxName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           GetTextBox(textBoxName).TextDecorations = If(CBool(Value), TextDecorations.Underline, Nothing)
+                       Catch ex As Exception
+                           Control.ReportPropertyError(textBoxName, "Underlined", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Returns True if you can redo the last action on the TextBox.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetCanRedo(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetCanRedo = GetTextBox(textBoxName).CanRedo
+                    Catch ex As Exception
+                        Control.ReportError(textBoxName, "CanRedo", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        ''' <summary>
+        ''' Returns True if you can undo the last action on the TextBox.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetCanUndo(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetCanUndo = GetTextBox(textBoxName).CanUndo
+                    Catch ex As Exception
+                        Control.ReportError(textBoxName, "CanUndo", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        ''' <summary>
+        ''' Call this method to Redo the last action on the TextBox
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub Redo(textBoxName As Primitive)
+            App.Invoke(
+                 Sub()
+                     Try
+                         GetTextBox(textBoxName).Redo()
+                     Catch ex As Exception
+                         Control.ReportSubError(textBoxName, "Redo", ex)
+                     End Try
+                 End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Call this method to undo the last action on the TextBox
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub Undo(textBoxName As Primitive)
+            App.Invoke(
+                 Sub()
+                     Try
+                         GetTextBox(textBoxName).Undo()
+                     Catch ex As Exception
+                         Control.ReportSubError(textBoxName, "Undo", ex)
+                     End Try
+                 End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Call this method to cut the selected text from the TextBox and add it to the clibboard.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub Cut(textBoxName As Primitive)
+            App.Invoke(
+                 Sub()
+                     Try
+                         GetTextBox(textBoxName).Cut()
+                     Catch ex As Exception
+                         Control.ReportSubError(textBoxName, "Cut", ex)
+                     End Try
+                 End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Call this method to copy the selected text from the TextBox to the clibboard.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub Copy(textBoxName As Primitive)
+            App.Invoke(
+                 Sub()
+                     Try
+                         GetTextBox(textBoxName).Copy()
+                     Catch ex As Exception
+                         Control.ReportSubError(textBoxName, "Copy", ex)
+                     End Try
+                 End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Call this method to paste the text from the clibboard to the current caret pos in the textbox.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub Paste(textBoxName As Primitive)
+            App.Invoke(
+                 Sub()
+                     Try
+                         GetTextBox(textBoxName).Paste()
+                     Catch ex As Exception
+                         Control.ReportSubError(textBoxName, "Paste", ex)
+                     End Try
+                 End Sub)
+        End Sub
 
         ''' <summary>
         ''' Fired when the text is changed.
@@ -312,8 +438,8 @@ Namespace WinForms
         Public Shared Custom Event OnTextChanged As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Try
-                    Dim VisualElement = GetTextBox([Event].SenderControl)
-                    AddHandler VisualElement.TextChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    Dim _sender = GetTextBox([Event].SenderControl)
+                    AddHandler _sender.TextChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnTextChanged), ex)
                 End Try
@@ -327,18 +453,18 @@ Namespace WinForms
         End Event
 
         ''' <summary>
-        ''' Fired when before text is written to thee TextBox. 
+        ''' Fired just before text is written to the TextBox. 
         ''' Use Event.LastTextInput to get this text.
         ''' Use Event.Handled = True if you want to cancel writing this text to the TexBox. 
         ''' </summary>
         Public Shared Custom Event OnTextInput As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Try
-                    Dim VisualElement = GetTextBox([Event].SenderControl)
+                    Dim _sender = GetTextBox([Event].SenderControl)
 
                     ' Wpf doesn't raise TextInput when space is pressed!
                     ' We will fix this by raising this special case from the KeyDown event
-                    AddHandler VisualElement.PreviewKeyDown,
+                    AddHandler _sender.PreviewKeyDown,
                         Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
                             If e.Key = Keys.Space Then
                                 Keyboard._lastTextInput = " "
@@ -346,9 +472,40 @@ Namespace WinForms
                             End If
                         End Sub
 
-                    AddHandler VisualElement.PreviewTextInput, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    AddHandler _sender.PreviewTextInput, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnTextInput), ex)
+                End Try
+            End AddHandler
+
+            RemoveHandler(handler As SmallBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
+        ''' <summary>
+        ''' Fired when the selected text is changed in TextBox.
+        ''' </summary>
+        Public Shared Custom Event OnSelect As SmallBasicCallback
+            AddHandler(handler As SmallBasicCallback)
+                Try
+                    Dim _sender = GetTextBox([Event].SenderControl)
+
+                    ' Wpf doesn't raise TextInput when space is pressed!
+                    ' We will fix this by raising this special case from the KeyDown event
+                    AddHandler _sender.PreviewKeyDown,
+                        Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
+                            If e.Key = Keys.Space Then
+                                Keyboard._lastTextInput = " "
+                                [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                            End If
+                        End Sub
+
+                    AddHandler _sender.SelectionChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                Catch ex As Exception
+                    [Event].ShowErrorMessage(NameOf(OnSelect), ex)
                 End Try
             End AddHandler
 

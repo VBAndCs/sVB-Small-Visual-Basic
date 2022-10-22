@@ -41,6 +41,14 @@ Namespace Microsoft.SmallVisualBasic.Statements
                                         prop.PropertyName.LCaseText,
                                         Nothing
                                 )
+
+                        If Not isEventHandler AndAlso typeInfo IsNot Nothing Then
+                            isEventHandler = WinForms.PreCompiler.ContainsEvent(
+                                typeInfo.Name,
+                                prop.PropertyName.Text
+                            )
+                        End If
+
                     End If
                 End If
 

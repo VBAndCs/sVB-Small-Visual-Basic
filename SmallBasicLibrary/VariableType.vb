@@ -8,6 +8,7 @@
     Color
     Key
     DialogResult
+    ControlType
     Control
     Form
     TextBox
@@ -19,4 +20,6 @@
     CheckBox
     RadioButton
     Button
+    MenuItem
+    MainMenu
 End Enum

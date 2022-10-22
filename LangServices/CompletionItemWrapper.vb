@@ -157,7 +157,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Public Sub New(item As CompletionItem, bag As CompletionBag, Optional enumName As String = "")
             _item = item
-            _enumName = enumName
+            _enumName = If(enumName = "*", "", enumName)
 
             Dim moduleName = GetNormalizedModuleName()
             Dim moduleDoc As ModuleDocumentation = Nothing

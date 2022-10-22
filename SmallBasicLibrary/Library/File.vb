@@ -1,5 +1,6 @@
 
 Imports System.IO
+Imports System.Text
 Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
@@ -13,6 +14,7 @@ Namespace Library
         ''' Gets or sets the last encountered file operation based error message.  This property is useful for finding out when some method fails to execute.
         ''' </para>
         ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Property LastError As Primitive
 
         ''' <summary>
@@ -36,8 +38,9 @@ Namespace Library
                 If Not IO.File.Exists(path) Then
                     Return ""
                 End If
-                Using streamReader1 As New StreamReader(path)
-                    Dim value As String = streamReader1.ReadToEnd()
+
+                Using reader As New StreamReader(path, Encoding.Default)
+                    Dim value As String = reader.ReadToEnd()
                     Return value
                 End Using
             Catch ex As Exception
@@ -67,17 +70,16 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function WriteContents(filePath As Primitive, contents As Primitive) As Primitive
-            LastError = ""
-            Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
             Try
-                Using streamWriter1 As New StreamWriter(path)
-                    streamWriter1.Write(CStr(contents))
+                LastError = ""
+                Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
+                Using writer As New StreamWriter(path, False, Encoding.Default)
+                    writer.Write(CStr(contents))
                     Return "SUCCESS"
                 End Using
             Catch ex As Exception
                 LastError = ex.Message
             End Try
-
             Return "FAILED"
         End Function
 
@@ -490,9 +492,7 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' <para>
         ''' Gets the full path of the settings file for this program.  The settings file name is based on the program's name and is present in the same location as the program.
-        ''' </para>
         ''' </summary>
         ''' <returns>
         ''' The full path of the settings file specific for this program.
@@ -502,5 +502,176 @@ Namespace Library
             Dim entryAssemblyPath As String = SmallBasicApplication.GetEntryAssemblyPath()
             Return Path.ChangeExtension(entryAssemblyPath, ".settings")
         End Function
+
+        ''' <summary>
+        ''' Shows the open file dialog, to allow the user to select a file from his PC file system.
+        ''' </summary>
+        ''' <param name="extFilters">
+        ''' An array containing extention filters, to allow you specify the file types you want to open. Each extenstion filter itself is an array, where the first Item descrips the file type, and the rset of items contains one or more extebrion, such as {"Images", "bmp", "jpg", "gif"}
+        ''' If you will open only one file type catagory like images, you can sent the extention filter directly like {"Images", "bmp", "jpg", "gif"}.
+        ''' else, send an array of extenstion filter like: {{"Text Files", ".txt"}, {"Images", "bmp", "jpg", "gif"}}
+        ''' If you will open only a single extenstion, you can just use it as a single string like: "doc". This can also be done for extention filter elements, such as:
+        ''' {{"Text Files", ".txt"}, {"Images", "bmp", "jpg", "gif"}, "doc"}
+        ''' If you want to show all filess, use "" or "*" as the extension, like: {"All Files", "*"}, or just use "*".
+        ''' </param>
+        ''' <returns>
+        ''' The file name that the user selected, or an empty string "" if he canceled the operation.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function OpenFileDialog(extFilters As Primitive) As Primitive
+            Dim filter = BuildFilter(extFilters)
+            Dim key = GetKey(filter)
+
+            Dim dlg As New Win32.OpenFileDialog With {
+                .Filter = filter,
+                .Title = "Open File",
+                .RestoreDirectory = False,
+                .InitialDirectory = GetSetting("sVB", "OpenFile", key, ""),
+                .FilterIndex = GetSetting("sVB", "OpenFile", key & "_FilterIndex", 1)
+            }
+
+            If dlg.ShowDialog() = True Then
+                SaveSetting("sVB", "OpenFile", key, IO.Path.GetDirectoryName(dlg.FileName))
+                SaveSetting("sVB", "OpenFile", key & "_FilterIndex", dlg.FilterIndex)
+                Return dlg.FileName
+            Else
+                Return ""
+            End If
+        End Function
+
+        ''' <summary>
+        ''' Shows the save file dialog, to allow the user to choose a folder from his PC file system to save the file to.
+        ''' </summary>
+        ''' <param name="fileName">The name to save the file with. User can change this name in the dialog. You can use the full path of the file, to suggest the initial directory in the dialog, otherwise, the initial directory will be the last opened one</param>
+        ''' <param name="extFilters">
+        ''' An array containing extention filters, to allow you specify the file types you want to save. Each extenstion filter itself is an array, where the first Item descrips the file type, and the rset of items contains one or more extebrion, such as {"Images", "bmp", "jpg", "gif"}
+        ''' If you will open only one file type catagory like images, you can sent the extention filter directly like {"Images", "bmp", "jpg", "gif"}.
+        ''' else, send an array of extenstion filter like: {{"Text Files", ".txt"}, {"Images", "bmp", "jpg", "gif"}}
+        ''' If you will open only a single extenstion, you can just use it as a single string like: "doc". This can also be done for extention filter elements, such as:
+        ''' {{"Text Files", ".txt"}, {"Images", "bmp", "jpg", "gif"}, "doc"}
+        ''' If you want to show all filess, use "" or "*" as the extension, like: {"All Files", "*"}, or just use "*".
+        ''' In fact, you can combine all filters in on string using the .NET standard formula, where you separate filter parts with | and separate extensions with ; like:
+        ''' "Images|*.bmp;*.jpg;*.gif|Text Files|*.txt|docs|*.doc|All Files|*.*"
+        ''' </param>
+        ''' <returns>
+        ''' The file name that the user selected, or an empty string "" if he canceled the operation.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function SaveFileDialog(fileName As Primitive, extFilters As Primitive) As Primitive
+            Dim filter = BuildFilter(extFilters)
+            Dim key = GetKey(filter)
+            Dim d As String
+            Dim file = fileName.ToString()
+            Dim name = ""
+            Dim index As Primitive
+
+            If file <> "" Then
+                name = IO.Path.GetFileName(file)
+
+                If file = "" OrElse file.ToLower() = name.ToLower() Then
+                    d = GetSetting("sVB", "SaveFile", key, "")
+                Else
+                    d = IO.Path.GetDirectoryName(file)
+                End If
+
+                Dim ext = IO.Path.GetExtension(name).TrimStart("."c)
+                If extFilters.IsArray Then
+                    index = Array.Find(extFilters, ext, 1, True)
+                Else
+                    Dim str = extFilters.AsString()
+                    Dim pos = str.LastIndexOf("*." & ext)
+                    Dim x = Str.Substring(0, pos)
+                    index = (x.Length - x.Replace("|", "").Length + 1) \ 2
+                End If
+
+                If index.IsEmpty Then
+                    For Each item In extFilters._arrayMap.Values
+                        index = Array.Find(item, ext, 1, True)
+                        If Not index.IsEmpty Then Exit For
+                    Next
+                End If
+            End If
+
+            Dim dlg As New Win32.SaveFileDialog With {
+                .Filter = filter,
+                .Title = "Save File",
+                .RestoreDirectory = False,
+                .InitialDirectory = d,
+                .FileName = name,
+                .FilterIndex = index
+            }
+
+            If dlg.ShowDialog() = True Then
+                SaveSetting("sVB", "SaveFile", key, IO.Path.GetDirectoryName(dlg.FileName))
+                Return dlg.FileName
+            Else
+                Return ""
+            End If
+        End Function
+
+
+        Private Shared Function GetKey(filter As String) As String
+            Return filter.Replace("|", "_").
+                                 Replace(";", "_").
+                                 Replace(",", "_").
+                                 Replace(" ", "_").
+                                 Replace("(", "_").
+                                 Replace(")", "_").
+                                 Replace("*", "_").
+                                 Replace(".", "_")
+        End Function
+
+        Private Shared Function GetFilter(fileType As String)
+            If fileType.Contains("|") OrElse fileType.Contains(";") Then
+                Return fileType
+            Else
+                Dim x = fileType.Trim("."c, "*"c)
+                If x = "" Then x = "*"
+                Dim ext = "*." & x
+                Return $"{ext}|{ext}"
+            End If
+        End Function
+
+        Private Shared Function BuildFilter(extFilters As Primitive) As String
+            Dim filter As New StringBuilder
+            If extFilters.IsArray Then
+                If extFilters._arrayMap("1").IsArray Then
+                    For Each ext In extFilters._arrayMap.Values
+                        If ext.IsArray Then
+                            AddFileType(filter, ext)
+                        Else
+                            filter.Append(GetFilter(ext))
+                            filter.Append("|")
+                        End If
+                    Next
+                Else
+                    AddFileType(filter, extFilters)
+                End If
+            Else
+                filter.Append(GetFilter(extFilters))
+            End If
+            Return filter.ToString().TrimEnd("|"c)
+
+        End Function
+
+        Private Shared Sub AddFileType(filter As StringBuilder, ext As Primitive)
+            Dim st = 0
+            Dim parts = ext._arrayMap.Values
+            Dim description = parts(0).AsString()
+            If Not description.Contains(".") Then
+                st = 1
+                filter.Append(description)
+                filter.Append("|")
+            End If
+
+            Dim n = parts.Count - 1
+            For i = st To n
+                filter.Append("*.")
+                Dim x = parts(i).AsString().Trim("*"c, "."c)
+                If x = "" Then x = "*"
+                filter.Append(x)
+                filter.Append(If(i < n, ";", "|"))
+            Next
+        End Sub
     End Class
 End Namespace

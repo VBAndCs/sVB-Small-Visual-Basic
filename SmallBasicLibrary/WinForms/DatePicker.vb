@@ -53,8 +53,8 @@ Namespace WinForms
         Public Shared Custom Event OnSelection As SmallBasicCallback
             AddHandler(handler As SmallBasicCallback)
                 Try
-                    Dim VisualElement = GetDatePicker([Event].SenderControl)
-                    AddHandler VisualElement.SelectedDateChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    Dim _sender = GetDatePicker([Event].SenderControl)
+                    AddHandler _sender.SelectedDateChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnSelection), ex)
                 End Try

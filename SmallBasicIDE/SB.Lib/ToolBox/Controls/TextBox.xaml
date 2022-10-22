@@ -6,7 +6,9 @@
     
          <d:SBControl.Control>
 
-                <TextBox d:Designer.FrameWidth="180" d:Designer.FrameHeight="40"/>
+                <TextBox d:Designer.FrameWidth="180" d:Designer.FrameHeight="40"
+                        VerticalScrollBarVisibility = "Auto"
+                        HorizontalScrollBarVisibility = "Auto"/>
             </d:SBControl.Control>
 
 </d:SBControl>

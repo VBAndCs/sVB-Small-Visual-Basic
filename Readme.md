@@ -22,7 +22,7 @@ Radio buttons work in groups. Buttons belong to the same group can have only one
 You can combine some radio buttons into one group by setting the `GroupName` property of each of then to the same name like `Group1`. Or as an easier alternative, you can use the Form Designer to group radio buttons by selecting them, right-click, and click the `Group` command from the context menu. This will combine the radio buttons into one border so you can drag them together, and also will set the GroupName property of each of the to the same name, so they work as a group.
 For more info, see the ` Radio Button sample` app in the samples folders.
 
-3. Label, Button, CheckBox and RadioButton controls got an `Underlined` property, that you can set to True to draw a line under the text displayed in these controls.
+3. Label, TextBox, Button, CheckBox and RadioButton controls got an `Underlined` property, that you can set to True to draw a line under the text displayed in these controls.
 
 4. You can now use the Append methods to add a formatted text to the Label. These methods are:
 * Append: Adds a normal text to the end of the label text. This text will be formatted according the properties of the label like BackColor, ForeColor, Underlined and other Font properties.

@@ -69,5 +69,28 @@ Namespace Library
             Return New Primitive("")
         End Function
 
+        ''' <summary>
+        ''' Gets a value from the regestry.
+        ''' </summary>
+        ''' <param name="section">The regetry section name, which refers to the category that the data lies under. For example, you may use "Form1" as a section name when you save values of  controls of this form.</param>
+        ''' <param name="name">The regestry key where the data is saved in</param>
+        ''' <param name="defaultValue">The value to return in the data is not found in the regestry.</param>
+        ''' <returns>A string holding the required setting.</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function GetSetting(section As Primitive, name As Primitive, defaultValue As Primitive) As Primitive
+            Dim appName = "sVB_" & IO.Path.GetDirectoryName(Directory).Replace(" ", "_")
+            Return Interaction.GetSetting(appName, section, name, defaultValue)
+        End Function
+
+        ''' <summary>
+        ''' Saves a value in the regestry.
+        ''' </summary>
+        ''' <param name="section">The regetry section name, which refers to the category that the data lies under. For example, you may use "Form1" as a section name when you save values of  controls of this form.</param>
+        ''' <param name="name">The regestry key where the data is saved in</param>
+        ''' <param name="value">The value to save in the regestry.</param>
+        Public Shared Sub SaveSetting(section As Primitive, name As Primitive, value As Primitive)
+            Dim appName = "sVB_" & IO.Path.GetDirectoryName(Directory).Replace(" ", "_")
+            Interaction.SaveSetting(appName, section, name, value)
+        End Sub
     End Class
 End Namespace

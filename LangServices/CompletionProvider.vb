@@ -142,11 +142,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     End If
                 End If
 
-                editorOperations.ReplaceText(replaceSpan, repWith, undoHistory)
+                If textView.TextSnapshot.GetText(replaceSpan) <> repWith Then
+                    editorOperations.ReplaceText(replaceSpan, repWith, undoHistory)
+                End If
+
                 DismissAdornment(force:=True)
-                TryCast(textView, Control)?.Focus()
-                If repWith.EndsWith("(") Then ShowHelp()
-            End If
+                    TryCast(textView, Control)?.Focus()
+                    If repWith.EndsWith("(") Then ShowHelp()
+                End If
         End Sub
 
         Friend Function GetReplacementSpane() As SnapshotSpan
@@ -579,6 +582,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 (symbol = "(" OrElse symbol = ",") AndAlso
                                 wrapper.Documentation IsNot Nothing Then
                         Dim params = wrapper.Documentation.ParamsDoc.Keys
+
                         If item.ParamIndex < params.Count Then
                             Dim name = params(item.ParamIndex).ToLower().Trim("_")
                             Dim especialItem = ""
@@ -587,8 +591,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 especialItem = "Colors"
                             ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then
                                 especialItem = "Keys"
-                            ElseIf name = "showdialog" OrElse name.StartsWith("dialogresult") OrElse name.EndsWith("dialogresult") Then
+                            ElseIf name = "showdialog" OrElse name.Contains("dialogresult") Then
                                 especialItem = "DialogResults"
+                            ElseIf name.Contains("typename") OrElse name.Contains("controltype") Then
+                                especialItem = "ControlTypes"
                             ElseIf name.Contains("fontname") Then
                                 especialItem = "FontName"
                             ElseIf name.Contains("formname") Then
@@ -611,7 +617,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     bag = GetCompletionBag(especialItem)
                                     token.Column = pos - line.Start
                                     token.Text = ""
-
+                                    canGetOriginalBag = True
                                     ShowCompletionAdornment(
                                         textView.TextSnapshot,
                                         bag,
@@ -1148,20 +1154,22 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Public Sub ShowCompletionAdornment(
                            snapshot As ITextSnapshot,
                            caretPosition As Integer,
-                           Optional checkEspecialItem As Boolean = False
+                           Optional checkEspecialItem As Boolean = False,
+                           Optional ctrlSpace As Boolean = False
                     )
 
             ' Wait until code editor respond to changes, to avoid any conflicts
             ShowCompletion.After(
                   20,
-                  Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem)
+                  Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem, ctrlSpace)
             )
         End Sub
 
-        Public Sub DoShowCompletion(
+        Private Sub DoShowCompletion(
                            snapshot As ITextSnapshot,
                            caretPosition As Integer,
-                           Optional checkEspecialItem As Boolean = False
+                           checkEspecialItem As Boolean,
+                           ctrlSpace As Boolean
                     )
 
             Dim bag As CompletionBag
@@ -1233,8 +1241,10 @@ LineElse:
                             especialItem = "Colors"
                         ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then
                             especialItem = "Keys"
-                        ElseIf name = "showdialog" OrElse name.StartsWith("dialogresult") OrElse name.EndsWith("dialogresult") Then
+                        ElseIf name = "showdialog" OrElse name.Contains("dialogresult") Then
                             especialItem = "DialogResults"
+                        ElseIf name.Contains("typename") OrElse name.Contains("controltype") Then
+                            especialItem = "ControlTypes"
                         ElseIf name.Contains("fontname") Then
                             especialItem = "FontName"
                         Else
@@ -1264,6 +1274,8 @@ LineElse:
                                     especialItem = "Keys"
                                 Case VariableType.DialogResult
                                     especialItem = "DialogResults"
+                                Case VariableType.ControlType
+                                    especialItem = "ControlTypes"
                                 Case VariableType.Boolean
                                     especialItem = "Boolean"
                                 Case Else
@@ -1275,15 +1287,36 @@ LineElse:
 
             If especialItem = "" Then
                 bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
+                canGetOriginalBag = False
             Else
                 bag = GetCompletionBag(especialItem)
+                canGetOriginalBag = True
             End If
 
             If bag IsNot Nothing AndAlso bag.CompletionItems.Count > 0 Then
+                bag.CtrlSpace = ctrlSpace
                 ShowCompletionAdornment(snapshot, bag, curToken, line)
             End If
 
         End Sub
+
+        Dim canGetOriginalBag As Boolean
+
+        Public Function GetOriginalBag() As CompletionBag
+            If Not canGetOriginalBag Then Return Nothing
+
+            Dim snapshot = textView.TextSnapshot
+            Dim pos = textView.Caret.Position.TextInsertionIndex
+            Dim line = snapshot.GetLineFromPosition(pos)
+            Dim curToken As Token
+            Dim bag = GetCompletionBag(line, pos - line.Start, curToken)
+
+            If bag IsNot Nothing AndAlso bag.CompletionItems.Count > 0 Then
+                Return bag
+            End If
+
+            Return Nothing
+        End Function
 
         Private Sub ShowCompletionAdornment(
                             snapshot As ITextSnapshot,
@@ -1329,7 +1362,7 @@ LineElse:
             bag = compHelper.GetEmptyCompletionBag(GlobalParser)
             Select Case especialItem
                 Case "Boolean"
-                    especialItem = ""
+                    especialItem = "*"
                     bag.CompletionItems.AddRange({
                         New CompletionItem() With {
                             .Key = "False",
@@ -1345,11 +1378,11 @@ LineElse:
 
                 Case "FontName"
                     bag.CompletionItems.AddRange(FontNames)
-                    especialItem = ""
+                    especialItem = "*"
 
                 Case "FormName"
                     bag.CompletionItems.AddRange(FormNames)
-                    especialItem = ""
+                    especialItem = "*"
 
                 Case Else
                     Dim typeInfo As TypeInfo = Nothing
