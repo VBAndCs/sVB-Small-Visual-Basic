@@ -6,7 +6,7 @@
              xmlns:s="clr-namespace:DiagramHelper"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             MinHeight="1cm" MinWidth="1cm"
+             MinHeight="0.5cm" MinWidth="0.5cm"
              RenderTransformOrigin="0.5,0.5"
              SnapsToDevicePixels="True"  IsTabStop = "False">
 
@@ -59,7 +59,7 @@
             <MenuItem x:Name="BringToFrontMenuItem" Header="Bring To Front" Click="BringToFrontMenuItem_Click"/>
             <MenuItem x:Name="SendToBackMenuItem" Header="Send To Back" Click="SendToBackMenuItem_Click"/>
             <Separator/>
-            <MenuItem Header="Diagram Text">
+            <MenuItem Header="Diagram Text" SubmenuOpened="MenuItem_SubmenuOpened">
                 <MenuItem Header="Edit Text" InputGestureText="Enter" Click="EditTextMenuItem_Click"/>
                 <MenuItem Header="Choose Font" InputGestureText="Ctrl+F" Click="TextFontMenuItem_Click"/>
                 <MenuItem Header="Decrease Size" InputGestureText="Ctrl+[" Click="DecreaseSizeMenuItem_Click"/>

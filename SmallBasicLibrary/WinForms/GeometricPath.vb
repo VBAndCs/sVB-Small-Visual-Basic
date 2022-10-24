@@ -94,7 +94,12 @@ Namespace WinForms
         ''' <param name="y2">The y co-ordinate of the second point.</param>
         ''' <param name="x3">The x co-ordinate of the third point.</param>
         ''' <param name="y3">The y co-ordinate of the third point.</param>
-        Public Shared Sub AddTriangle(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive, x3 As Primitive, y3 As Primitive)
+        Public Shared Sub AddTriangle(
+                          x1 As Primitive, y1 As Primitive,
+                          x2 As Primitive, y2 As Primitive,
+                          x3 As Primitive, y3 As Primitive
+                   )
+
             GraphicsWindow.Invoke(
                 Sub()
                     Dim figure As New PathFigure With {

@@ -4,6 +4,7 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows.Media.Imaging
 Imports System.Windows
 Imports System.Windows.Navigation
+Imports System.Windows.Shapes
 
 Namespace WinForms
     <SmallBasicType>
@@ -83,39 +84,6 @@ Namespace WinForms
                         GetLabel(labelName).Content = New Wpf.Image() With {.Source = New BitmapImage(New Uri(imageFile))}
                     Catch ex As Exception
                         Control.ReportError(labelName, "Text", imageFile, ex)
-                    End Try
-                End Sub)
-        End Sub
-
-        ''' <summary>
-        ''' Draws the shape defined by GeometricPath on the label
-        ''' </summary>
-        ''' <param name="penColor">The color used to draw the shape outline</param>
-        ''' <param name="penWidth">The width of the shape outline</param>
-        ''' <param name="brushColor">The color used to fill the shape</param>
-        <ExMethod>
-        Public Shared Sub AddGeometricPath(
-                         labelName As Primitive,
-                         penColor As Primitive,
-                         penWidth As Primitive,
-                         brushColor As Primitive
-                   )
-
-            App.Invoke(
-                Sub()
-                    Try
-                        Dim path = GeometricPath._path
-                        path.Fill = Color.GetBrush(brushColor)
-                        path.Stroke = Color.GetBrush(penColor)
-                        path.StrokeThickness = penWidth
-
-                        Dim lbl = GetLabel(labelName)
-                        lbl.Width = Double.NaN
-                        lbl.Height = Double.NaN
-                        lbl.Background = Nothing
-                        lbl.Content = path
-                    Catch ex As Exception
-                        Control.ReportSubError(labelName, "AddGeometricPath", ex)
                     End Try
                 End Sub)
         End Sub
@@ -465,6 +433,251 @@ Namespace WinForms
                    End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Draws the shape defined by GeometricPath on the label
+        ''' </summary>
+        ''' <param name="penColor">The color used to draw the shape outline</param>
+        ''' <param name="penWidth">The width of the shape outline</param>
+        ''' <param name="brushColor">The color used to fill the shape</param>
+        <ExMethod>
+        Public Shared Sub AddGeometricPath(
+                         labelName As Primitive,
+                         penColor As Primitive,
+                         penWidth As Primitive,
+                         brushColor As Primitive
+                   )
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim path = GeometricPath._path
+                        path.Fill = Color.GetBrush(brushColor)
+                        path.Stroke = Color.GetBrush(penColor)
+                        path.StrokeThickness = penWidth
+
+                        Dim lbl = GetLabel(labelName)
+                        lbl.Width = Double.NaN
+                        lbl.Height = Double.NaN
+                        lbl.Background = Nothing
+                        lbl.Content = path
+                    Catch ex As Exception
+                        Control.ReportSubError(labelName, "AddGeometricPath", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Draws a rectangle shape with the specified width and height on the current array..
+        ''' </summary>
+        ''' <param name="width">The width of the rectangle shape.</param>
+        ''' <param name="height">The height of the rectangle shape.</param>
+        ''' <param name="penColor">The color used to draw the shape outline</param>
+        ''' <param name="penWidth">The width of the shape outline</param>
+        ''' <param name="brushColor">The color used to fill the shape</param>
+        <ExMethod>
+        Public Shared Sub AddRectangle(
+                         labelName As Primitive,
+                         width As Primitive,
+                         height As Primitive,
+                         penColor As Primitive,
+                         penWidth As Primitive,
+                         brushColor As Primitive
+                   )
+
+            GraphicsWindow.Invoke(
+                Sub()
+                    Try
+                        Dim lbl = GetLabel(labelName)
+                        lbl.Width = Double.NaN
+                        lbl.Height = Double.NaN
+                        lbl.Background = Nothing
+                        lbl.Content = New Rectangle With {
+                            .Width = width,
+                            .Height = height,
+                            .Fill = Color.GetBrush(brushColor),
+                            .Stroke = Color.GetBrush(penColor),
+                            .StrokeThickness = penWidth
+                        }
+
+                    Catch ex As Exception
+                        Control.ReportSubError(labelName, "AddRectangle", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Draws an ellipse shape with the specified width and height on the currentLabel.
+        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' </summary>
+        ''' <param name="width">The width of the ellipse shape.</param>
+        ''' <param name="height">The height of the ellipse shape.</param>
+        ''' <param name="penColor">The color used to draw the shape outline</param>
+        ''' <param name="penWidth">The width of the shape outline</param>
+        ''' <param name="brushColor">The color used to fill the shape</param>
+        <ExMethod>
+        Public Shared Sub AddEllipse(
+                         labelName As Primitive,
+                         width As Primitive,
+                         height As Primitive,
+                         penColor As Primitive,
+                         penWidth As Primitive,
+                         brushColor As Primitive
+                   )
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim lbl = GetLabel(labelName)
+                        lbl.Width = Double.NaN
+                        lbl.Height = Double.NaN
+                        lbl.Background = Nothing
+                        lbl.Content = New Ellipse With {
+                              .Width = width,
+                              .Height = height,
+                              .Fill = Color.GetBrush(brushColor),
+                              .Stroke = Color.GetBrush(penColor),
+                              .StrokeThickness = penWidth
+                        }
+
+                    Catch ex As Exception
+                        Control.ReportSubError(labelName, "AddEllipse", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Draws a triangle shape represented by the specified points on the current label.
+        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' </summary>
+        ''' <param name="x1">The x co-ordinate of the first point.</param>
+        ''' <param name="y1">The y co-ordinate of the first point.</param>
+        ''' <param name="x2">The x co-ordinate of the second point.</param>
+        ''' <param name="y2">The y co-ordinate of the second point.</param>
+        ''' <param name="x3">The x co-ordinate of the third point.</param>
+        ''' <param name="y3">The y co-ordinate of the third point.</param>
+        ''' <param name="penColor">The color used to draw the shape outline</param>
+        ''' <param name="penWidth">The width of the shape outline</param>
+        ''' <param name="brushColor">The color used to fill the shape</param>
+        <ExMethod>
+        Public Shared Sub AddTriangle(
+                         labelName As Primitive,
+                         x1 As Primitive, y1 As Primitive,
+                         x2 As Primitive, y2 As Primitive,
+                         x3 As Primitive, y3 As Primitive,
+                         penColor As Primitive,
+                         penWidth As Primitive,
+                         brushColor As Primitive
+                   )
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim lbl = GetLabel(labelName)
+                        lbl.Width = Double.NaN
+                        lbl.Height = Double.NaN
+                        lbl.Background = Nothing
+                        lbl.Content = New Polygon With {
+                              .Points = New Media.PointCollection() From {
+                                    New Point(x1, y1),
+                                    New Point(x2, y2),
+                                    New Point(x3, y3)
+                              },
+                              .Fill = Color.GetBrush(brushColor),
+                              .Stroke = Color.GetBrush(penColor),
+                              .StrokeThickness = penWidth
+                        }
+
+                    Catch ex As Exception
+                        Control.ReportSubError(labelName, "AddTriangle", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Draws a polygon shape represented by the given points array on the current label.       
+        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' </summary>
+        ''' <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
+        ''' <param name="penColor">The color used to draw the shape outline</param>
+        ''' <param name="penWidth">The width of the shape outline</param>
+        ''' <param name="brushColor">The color used to fill the shape</param>
+        <ExMethod>
+        Public Shared Sub AddPolygon(
+                         labelName As Primitive,
+                         pointsArr As Primitive,
+                         penColor As Primitive,
+                         penWidth As Primitive,
+                         brushColor As Primitive
+                   )
+
+            If pointsArr.IsEmpty OrElse Not pointsArr.IsArray Then Return
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim Points As New Media.PointCollection()
+                        For Each point In pointsArr._arrayMap.Values
+                            Points.Add(New Point(point(1), point(2)))
+                        Next
+
+                        Dim lbl = GetLabel(labelName)
+                        lbl.Width = Double.NaN
+                        lbl.Height = Double.NaN
+                        lbl.Background = Nothing
+                        lbl.Content = New Polygon With {
+                             .Points = Points,
+                             .Fill = Color.GetBrush(brushColor),
+                             .Stroke = Color.GetBrush(penColor),
+                             .StrokeThickness = penWidth
+                        }
+
+                    Catch ex As Exception
+                        Control.ReportSubError(labelName, "AddPolygon", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Draws a line between the specified two points on the current label.
+        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' </summary>
+        ''' <param name="x1">The x co-ordinate of the first point.</param>
+        ''' <param name="y1">The y co-ordinate of the first point.''' </param>
+        ''' <param name="x2">The x co-ordinate of the second point.</param>
+        ''' <param name="y2">The y co-ordinate of the second point.</param>
+        ''' <param name="penColor">The color used to draw the shape outline</param>
+        ''' <param name="penWidth">The width of the shape outline</param>
+        <ExMethod>
+        Public Shared Sub AddLine(
+                         labelName As Primitive,
+                          x1 As Primitive, y1 As Primitive,
+                          x2 As Primitive, y2 As Primitive,
+                         penColor As Primitive,
+                         penWidth As Primitive
+                   )
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim lbl = GetLabel(labelName)
+                        lbl.Width = Double.NaN
+                        lbl.Height = Double.NaN
+                        lbl.Background = Nothing
+                        lbl.Content = New Line With {
+                            .X1 = x1,
+                            .Y1 = y1,
+                            .X2 = x2,
+                            .Y2 = y2,
+                            .Stroke = Color.GetBrush(penColor),
+                            .StrokeThickness = penWidth
+                        }
+
+                    Catch ex As Exception
+                        Control.ReportSubError(labelName, "AddLine", ex)
+                    End Try
+                End Sub)
+        End Sub
 
     End Class
 End Namespace

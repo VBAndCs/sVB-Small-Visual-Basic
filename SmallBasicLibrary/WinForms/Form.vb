@@ -71,7 +71,7 @@ Namespace WinForms
                          Wpf.Canvas.SetLeft(textBox1, left)
                          Wpf.Canvas.SetTop(textBox1, top)
 
-                         Dim cnv As Wpf.Canvas = frm.Content
+                         Dim cnv = GetCanvas(frm)
                          cnv.Children.Add(textBox1)
                          Forms._controls(key) = textBox1
 
@@ -114,7 +114,7 @@ Namespace WinForms
                             Wpf.Canvas.SetLeft(label1, left)
                             Wpf.Canvas.SetTop(label1, top)
 
-                            Dim cnv As Wpf.Canvas = frm.Content
+                            Dim cnv = GetCanvas(frm)
                             cnv.Children.Add(label1)
                             Forms._controls(key) = label1
 
@@ -169,7 +169,7 @@ Namespace WinForms
                             Wpf.Canvas.SetLeft(img, left)
                             Wpf.Canvas.SetTop(img, top)
 
-                            Dim cnv As Wpf.Canvas = frm.Content
+                            Dim cnv = GetCanvas(frm)
                             cnv.Children.Add(img)
                             Forms._controls(key) = img
 
@@ -294,7 +294,7 @@ Namespace WinForms
                           Wpf.Canvas.SetLeft(button1, left)
                           Wpf.Canvas.SetTop(button1, top)
 
-                          Dim cnv As Wpf.Canvas = frm.Content
+                          Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(button1)
                           Forms._controls(key) = button1
 
@@ -347,7 +347,7 @@ Namespace WinForms
                           Wpf.Canvas.SetLeft(ch, left)
                           Wpf.Canvas.SetTop(ch, top)
 
-                          Dim cnv As Wpf.Canvas = frm.Content
+                          Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(ch)
                           Forms._controls(key) = ch
 
@@ -397,7 +397,7 @@ Namespace WinForms
                           Wpf.Canvas.SetLeft(rd, left)
                           Wpf.Canvas.SetTop(rd, top)
 
-                          Dim cnv As Wpf.Canvas = frm.Content
+                          Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(rd)
                           Forms._controls(key) = rd
 
@@ -444,7 +444,7 @@ Namespace WinForms
                           Wpf.Canvas.SetLeft(listBox1, left)
                           Wpf.Canvas.SetTop(listBox1, top)
 
-                          Dim cnv As Wpf.Canvas = frm.Content
+                          Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(listBox1)
                           Forms._controls(key) = listBox1
 
@@ -488,7 +488,7 @@ Namespace WinForms
                           Wpf.Canvas.SetLeft(dp, left)
                           Wpf.Canvas.SetTop(dp, top)
 
-                          Dim cnv As Wpf.Canvas = frm.Content
+                          Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(dp)
                           Forms._controls(key) = dp
 

@@ -285,12 +285,13 @@ Namespace Library
             Dim obj As Object = Nothing
             If GraphicsWindow._objectsMap.TryGetValue(control, obj) Then
                 _positionMap(control) = New Point(x, y)
-                GraphicsWindow.BeginInvoke(Sub()
-                                               obj.BeginAnimation(Canvas.LeftProperty, Nothing)
-                                               obj.BeginAnimation(Canvas.TopProperty, Nothing)
-                                               Canvas.SetLeft(obj, x)
-                                               Canvas.SetTop(obj, y)
-                                           End Sub)
+                GraphicsWindow.BeginInvoke(
+                    Sub()
+                        obj.BeginAnimation(Canvas.LeftProperty, Nothing)
+                        obj.BeginAnimation(Canvas.TopProperty, Nothing)
+                        Canvas.SetLeft(obj, x)
+                        Canvas.SetTop(obj, y)
+                    End Sub)
             End If
         End Sub
 

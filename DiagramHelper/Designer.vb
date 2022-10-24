@@ -453,10 +453,10 @@ Public Class Designer
     Private Shared Sub BringPageToFront()
         Dim z = 0
         For Each item In PagesGrid.Children
-            z = Math.Max(z, Grid.GetZIndex(item))
+            z = Math.Max(z, Panel.GetZIndex(item))
         Next
 
-        Grid.SetZIndex(CurrentPage, z + 1)
+        Panel.SetZIndex(CurrentPage, z + 1)
     End Sub
 
     Private Function PageToXaml() As String
@@ -512,9 +512,11 @@ Public Class Designer
             diagram2.ClearValue(Designer.FrameWidthProperty)
             diagram2.ClearValue(Designer.FrameHeightProperty)
             diagram2.ClearValue(Designer.DiagramTextFontPropsProperty)
+            Dim content = TryCast(diagram2, ContentControl)?.Content
+            TryCast(content, TextBlock)?.ClearValue(Designer.DiagramTextFontPropsProperty)
 
-            Dim z = Canvas.GetZIndex(Helper.GetListBoxItem(diagram))
-            Canvas.SetZIndex(diagram2, z)
+            Dim z = Panel.GetZIndex(Helper.GetListBoxItem(diagram))
+            Panel.SetZIndex(diagram2, z)
 
             Dim angle = Designer.GetRotationAngle(diagram2)
             If angle <> 0 Then Helper.Rotate(diagram2, angle)
@@ -537,8 +539,10 @@ Public Class Designer
     Dim OpenFileCanvas As Canvas
     Private Sub XamlToPage(xaml As String)
         If xaml = "" Then Return
+
         Dim obj = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
         Dim canvas = TryCast(obj, Canvas)
+
         If canvas Is Nothing Then
             canvas = New Canvas
             canvas.Name = "UnKnownForm"
@@ -568,7 +572,6 @@ Public Class Designer
             If Diagram Is Nothing Then Continue For
 
             Me.Items.Add(Diagram)
-
             ' Restore the GroupID and DiagramText properties
             Dim txt = Automation.AutomationProperties.GetHelpText(Diagram)
             If txt <> "" Then
@@ -585,14 +588,14 @@ Public Class Designer
             End If
 
             Designer.SetFrameWidth(Diagram, Diagram.Width)
-            Diagram.ClearValue(FrameworkElement.WidthProperty)
+            Diagram.ClearValue(WidthProperty)
 
             Designer.SetFrameHeight(Diagram, Diagram.Height)
-            Diagram.ClearValue(FrameworkElement.HeightProperty)
+            Diagram.ClearValue(HeightProperty)
 
             Dim left = Canvas.GetLeft(Diagram)
             If Double.IsNaN(left) Then left = 0
-            Designer.SetLeft(Diagram, left)
+            SetLeft(Diagram, left)
 
             Dim top = Canvas.GetTop(Diagram)
             If Double.IsNaN(top) Then top = 0
@@ -857,6 +860,8 @@ Public Class Designer
         End If
     End Function
 
+    Public Shared RecentDirectory As String
+
     Public Function SaveAs() As Boolean
         ' Configure open file dialog box 
         Dim dlg As New Microsoft.Win32.SaveFileDialog With {
@@ -867,6 +872,7 @@ Public Class Designer
 
         Dim saveName As String
         If _xamlFile = "" Then
+            dlg.InitialDirectory = RecentDirectory
             saveName = Me.Name
         Else
             dlg.InitialDirectory = _xamlFile
@@ -1316,9 +1322,16 @@ Public Class Designer
             Return CObj(control).Text
         Catch
             Try
-                Dim x = CObj(control).Content
-                If x IsNot Nothing AndAlso TypeOf x Is String Then
-                    Return CStr(CObj(control).Content)
+                Dim contentControl = TryCast(control, ContentControl)
+                If contentControl IsNot Nothing Then
+                    Dim content = contentControl.Content
+                    If content Is Nothing Then Return ""
+
+                    If TypeOf content Is String Then
+                        Return CStr(content)
+                    Else
+                        Return content.Text
+                    End If
                 End If
             Catch
             End Try
@@ -1368,22 +1381,19 @@ Public Class Designer
             UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue()))
         End If
 
-        If trySetText Then
+        Dim contentControl = TryCast(control, ContentControl)
+        If contentControl IsNot Nothing Then
+            contentControl.Content = New TextBlock() With {
+                .Text = value
+            }
+
+        ElseIf trySetText Then
             Try
                 CObj(control).Text = value
-                RaiseEvent PageShown(UpdateControlNameAndText) ' To Update text
-                Return
             Catch
             End Try
         End If
 
-        Try
-            Dim x = CObj(control).Content
-            If x Is Nothing OrElse TypeOf x Is String Then
-                CObj(control).Content = value
-            End If
-        Catch
-        End Try
         RaiseEvent PageShown(UpdateControlNameAndText) ' To Update text
     End Sub
 

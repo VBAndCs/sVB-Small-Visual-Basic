@@ -9,6 +9,7 @@ Public Class ProjectExplorer
     Public Shared CurrentProject As String
 
     Public Event FileNameChanged(oldFileName As String, newFileName As String)
+    Public Event FileDeleted()
 
     Public Property ProjectDirectory As String
         Get
@@ -65,6 +66,8 @@ Public Class ProjectExplorer
             Else
                 SelectItem(fileName)
             End If
+
+            Designer.RecentDirectory = _projDir
         End Set
     End Property
 
@@ -132,28 +135,42 @@ Public Class ProjectExplorer
             Return
         End If
 
-        Try
-            Dim i = FilesList.SelectedIndex
-            Dim projFileInfo = CType(FilesList.SelectedItem, ProjFileInfo)
-            Dim fileName = projFileInfo.FilePath
-            FileIO.FileSystem.DeleteFile(fileName, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+        Dim i = FilesList.SelectedIndex
+        Dim projFileInfo = CType(FilesList.SelectedItem, ProjFileInfo)
+        Dim fileName = projFileInfo.FilePath
 
-            fileName = fileName.Substring(0, fileName.Length - 4) & "sb"
-            FileIO.FileSystem.DeleteFile(fileName, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+        If File.Exists(fileName) Then
+            Try
+                FileIO.FileSystem.DeleteFile(fileName, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+            Catch ex As Exception
+                MsgBox(ex.Message)
+            End Try
+        End If
 
-            fileName &= ".gen"
-            FileIO.FileSystem.DeleteFile(fileName, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+        fileName = fileName.Substring(0, fileName.Length - 4) & "sb"
+        If File.Exists(fileName) Then
+            Try
+                FileIO.FileSystem.DeleteFile(fileName, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+            Catch ex As Exception
+                MsgBox(ex.Message)
+            End Try
+        End If
 
-            projFiles.Remove(projFileInfo)
+        fileName &= ".gen"
+        If File.Exists(fileName) Then
+            Try
+                FileIO.FileSystem.DeleteFile(fileName, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
+            Catch ex As Exception
+                MsgBox(ex.Message)
+            End Try
+        End If
 
-            Dim n = FilesList.Items.Count
-            If n = 0 Then Return
-            FilesList.SelectedIndex = If(i >= n, n - 1, i)
+        projFiles.Remove(projFileInfo)
+        RaiseEvent FileDeleted()
 
-        Catch ex As Exception
-            MsgBox(ex.Message)
-        End Try
-
+        Dim n = FilesList.Items.Count
+        If n = 0 Then Return
+        FilesList.SelectedIndex = If(i >= n, n - 1, i)
     End Sub
 
     Protected Overrides Function OnCommit(newName As String) As Boolean

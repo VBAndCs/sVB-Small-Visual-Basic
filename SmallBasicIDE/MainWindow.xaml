@@ -184,6 +184,7 @@
                     <DH:ProjectExplorer x:Name="ProjExplorer" 
                                     Title="Project Files" Grid.Row="2" MaxHeight="180"
                                      FileNameChanged="ProjExplorer_FileNameChanged"
+                                     FileDeleted="ProjExplorer_FileDeleted"
                                      ItemDoubleClick="OFExplorer_ItemDoubleClick" />
 
                     <DH:ToolBox x:Name="ToolBox"  Grid.Row="3"

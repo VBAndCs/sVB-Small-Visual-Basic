@@ -149,6 +149,42 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Adds a polygon shape represented by the given points array.       
+        ''' </summary>
+        ''' <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
+        ''' <returns>
+        ''' The polygon shape that was just added to the Graphics Window.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function AddPolygon(
+                         pointsArr As Primitive
+                    ) As Primitive
+
+            If pointsArr.IsEmpty OrElse Not pointsArr.IsArray Then Return ""
+            Dim name As String = GenerateNewName("Polygon")
+
+            GraphicsWindow.Invoke(
+                Sub()
+                    Dim Points As New PointCollection()
+                    For Each point In pointsArr._arrayMap.Values
+                        Points.Add(New Point(point(1), point(2)))
+                    Next
+
+                    GraphicsWindow.AddShape(
+                        name,
+                        New Polygon With {
+                            .Points = Points,
+                            .Fill = GraphicsWindow._fillBrush,
+                            .Stroke = GraphicsWindow._pen.Brush,
+                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                        }
+                    )
+                End Sub)
+            Return name
+        End Function
+
+
+        ''' <summary>
         ''' Adds a line between the specified points.
         ''' </summary>
         ''' <param name="x1">

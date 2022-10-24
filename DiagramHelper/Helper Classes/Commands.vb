@@ -153,16 +153,14 @@
 
     End Sub
 
-    Shared Sub ChangeFontProperty(Diagram As FrameworkElement, Prop As DependencyProperty, Value As Object)
-        Dim control = TryCast(Diagram, Control)
-        If control Is Nothing Then Return
-
-        Dim Pnl = Helper.GetDiagramPanel(Diagram)
+    Shared Sub ChangeFontProperty(diagram As FrameworkElement, Prop As DependencyProperty, Value As Object)
+        Dim Pnl = Helper.GetDiagramPanel(diagram)
+        If Pnl Is Nothing Then Return
 
         Dim A As Action = AddressOf Pnl.DiagramObj.AfterRestoreAction
-        Dim FontProps As New PropertyDictionary(control, Prop)
-        Designer.SetDiagramTextFontProps(Diagram, FontProps)
-        Dim OldState As New PropertyState(A, Diagram, Designer.DiagramTextFontPropsProperty)
+        Dim FontProps As New PropertyDictionary(diagram, Prop)
+        Designer.SetDiagramTextFontProps(diagram, FontProps)
+        Dim OldState As New PropertyState(A, diagram, Designer.DiagramTextFontPropsProperty)
         FontProps(Prop) = Value
         Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
 

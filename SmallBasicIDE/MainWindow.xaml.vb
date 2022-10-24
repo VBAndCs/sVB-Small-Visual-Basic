@@ -1192,16 +1192,16 @@ Namespace Microsoft.SmallVisualBasic
             Dim fileName = newFilePath & ".sb"
 
             Dim oldCodeFile = formDesigner.CodeFile
-            If oldCodeFile = "" Then oldCodeFile = oldPath.Substring(0, oldPath.Length - 4) & "sb"
+            If oldCodeFile = "" AndAlso oldPath <> "" Then oldCodeFile = oldPath.Substring(0, oldPath.Length - 4) & "sb"
             SaveDesignInfo(Nothing, False, saveAs)
 
             If saveAs Then
                 Dim doc = GetDocIfOpened()
 
                 If oldCodeFile?.ToLower() = fileName.ToLower() Then
-                    If doc IsNot Nothing Then doc.Save()
+                    doc?.Save()
                 Else
-                    If File.Exists(fileName) Then
+                    If oldCodeFile <> "" AndAlso File.Exists(fileName) Then
                         If MsgBox(
                                 $"There is a file with the same name `{fileName}`. Do you want to overwrite if? ",
                                 MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
@@ -1209,7 +1209,7 @@ Namespace Microsoft.SmallVisualBasic
                         End If
                     End If
 
-                        If doc IsNot Nothing Then
+                    If doc IsNot Nothing Then
                         doc.SaveAs(fileName)
                     ElseIf File.Exists(oldCodeFile) Then
                         File.Copy(oldCodeFile, fileName)
@@ -1676,6 +1676,17 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub CmbOpenedDocs_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             Dim view = CType(CmbOpenedDocs.SelectedItem, MdiView)
             view?.Document.Focus()
+        End Sub
+
+        Private Sub ProjExplorer_FileDeleted()
+            Dim doc = GetDocIfOpened()
+            If doc IsNot Nothing Then
+                doc.IsDirty = False
+                CloseView(doc.MdiView)
+            End If
+
+            formDesigner.HasChanges = False
+            DiagramHelper.Designer.ClosePage(True, True)
         End Sub
     End Class
 

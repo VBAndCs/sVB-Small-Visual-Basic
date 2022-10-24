@@ -1,0 +1,18 @@
+GraphicsWindow.PenColor = Colors.Black
+GraphicsWindow.PenWidth = 3
+GraphicsWindow.BrushColor = Colors.Red
+X = Shapes.AddPolygon(
+   {
+      {0, 100},
+      {76.5, 100},
+      {100, 25},
+      {123.5, 100},
+      {200, 100},
+      {140, 142.5},
+      {160, 200},
+      {100, 145},
+      {40, 200},
+      {62, 142.5}
+   }
+)
+

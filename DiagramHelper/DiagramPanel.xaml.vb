@@ -26,6 +26,8 @@ Public Class DiagramPanel
         Diagram = TryCast(CType(Me.Content, ContentPresenter).Content, FrameworkElement)
         If Diagram Is Nothing Then Return
 
+        Panel.SetZIndex(DesignerItem, Panel.GetZIndex(Diagram))
+
         Diagram.AllowDrop = True
         Diagram.Cursor = Cursors.SizeAll
 
@@ -153,11 +155,12 @@ Public Class DiagramPanel
         Dim PropState = TryCast(Unit(0), PropertyState)
         If PropState Is Nothing Then Return
 
-        For Each Obj As FrameworkElement In Dsn.SelectedItems
-            If Obj Is Diagram Then Continue For
-            Dim NewPropState As New PropertyState(Obj, PropState.Keys.ToArray)
-            For Each Pair In PropState
-                Obj.SetValue(Pair.Key, Helper.Clone(Pair.Value.NewValue))
+        For Each obj As FrameworkElement In Dsn.SelectedItems
+            If obj Is Diagram Then Continue For
+
+            Dim NewPropState As New PropertyState(obj, PropState.Keys.ToArray)
+            For Each pair In PropState
+                obj.SetValue(pair.Key, Helper.Clone(pair.Value.NewValue))
             Next
             If NewPropState.HasChanges Then Unit.Add(NewPropState.SetNewValue())
         Next
@@ -258,14 +261,17 @@ Public Class DiagramPanel
                 End If
             Case Key.B
                 If Keyboard.Modifiers = ModifierKeys.Control Then
+                    MenuItem_SubmenuOpened(Nothing, Nothing)
                     BoldMenuItem.IsChecked = Not BoldMenuItem.IsChecked
                 End If
             Case Key.I
                 If Keyboard.Modifiers = ModifierKeys.Control Then
+                    MenuItem_SubmenuOpened(Nothing, Nothing)
                     ItalicMenuItem.IsChecked = Not ItalicMenuItem.IsChecked
                 End If
             Case Key.U
                 If Keyboard.Modifiers = ModifierKeys.Control Then
+                    MenuItem_SubmenuOpened(Nothing, Nothing)
                     UnderlineMenuItem.IsChecked = Not UnderlineMenuItem.IsChecked
                 End If
             Case Key.G
@@ -447,6 +453,8 @@ Public Class DiagramPanel
     End Sub
 
     Private Sub BoldMenuItem_Checked(sender As Object, e As RoutedEventArgs)
+        If freezMenuCheck Then Return
+
         If BoldMenuItem.IsChecked Then
             Commands.ChangeFontProperty(Diagram, TextBlock.FontWeightProperty, FontWeights.Bold)
         Else
@@ -456,6 +464,8 @@ Public Class DiagramPanel
     End Sub
 
     Private Sub ItalicMenuItem_Checked(sender As Object, e As RoutedEventArgs)
+        If freezMenuCheck Then Return
+
         If ItalicMenuItem.IsChecked Then
             Commands.ChangeFontProperty(Diagram, TextBlock.FontStyleProperty, FontStyles.Italic)
         Else
@@ -465,11 +475,36 @@ Public Class DiagramPanel
     End Sub
 
     Private Sub UnderlineMenuItem_Checked(sender As Object, e As RoutedEventArgs)
+        If freezMenuCheck Then Return
+
         Dim Decorations As TextDecorationCollection = Nothing
-        If UnderlineMenuItem.IsChecked Then Decorations = TextDecorations.Underline
-        Commands.ChangeFontProperty(Diagram, TextBlock.TextDecorationsProperty, Decorations)
+        If UnderlineMenuItem.IsChecked Then
+            Decorations = TextDecorations.Underline
+        End If
+
+        Commands.ChangeFontProperty(
+            GetTextObject(),
+            TextBlock.TextDecorationsProperty,
+            Decorations
+        )
         ApplyLastChangeToSelected()
     End Sub
+
+    Private Function GetTextObject() As FrameworkElement
+        Dim contentControl = TryCast(Diagram, ContentControl)
+        Dim obj = Nothing
+
+        If contentControl IsNot Nothing Then
+            obj = contentControl.Content
+            If TypeOf obj Is String Then
+                obj = New TextBlock With {.Text = obj}
+                contentControl.Content = obj
+            End If
+            Return obj
+        End If
+
+        Return Diagram
+    End Function
 
 
 #End Region
@@ -548,5 +583,36 @@ Public Class DiagramPanel
 
     Private Sub SendToBackMenuItem_Click(sender As Object, e As RoutedEventArgs)
         SendToBack()
+    End Sub
+
+    Dim freezMenuCheck As Boolean
+
+    Private Sub MenuItem_SubmenuOpened(sender As Object, e As RoutedEventArgs)
+        Dim obj As Object = GetTextObject()
+        freezMenuCheck = True
+
+        If obj Is Nothing Then
+            BoldMenuItem.IsChecked = False
+            ItalicMenuItem.IsChecked = False
+            UnderlineMenuItem.IsChecked = False
+
+        Else
+            Try
+                BoldMenuItem.IsChecked = (obj.FontWeight = FontWeights.Bold)
+            Catch
+            End Try
+
+            Try
+                ItalicMenuItem.IsChecked = (obj.FontStyle = FontStyles.Italic)
+            Catch
+            End Try
+
+            Try
+                UnderlineMenuItem.IsChecked = (obj.TextDecorations Is TextDecorations.Underline)
+            Catch
+            End Try
+        End If
+
+        freezMenuCheck = False
     End Sub
 End Class

@@ -59,7 +59,9 @@ Public Class Helper
         Do
             p = VisualTreeHelper.GetParent(p)
             If p Is Nothing Then Return Nothing
-            If p.GetType Is t Then Return CType(CObj(p), ParentType)
+            If p.GetType() Is t Then
+                Return CObj(p)
+            End If
         Loop
     End Function
 

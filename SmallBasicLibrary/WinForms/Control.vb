@@ -202,7 +202,7 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetWidth = CType(CType(obj, Window).Content, Wpf.Canvas).ActualWidth
+                            GetWidth = Form.GetCanvas(obj).ActualWidth
                         Else
                             GetWidth = obj.ActualWidth
                         End If
@@ -223,8 +223,8 @@ Namespace WinForms
 
                         If TypeOf obj Is Window Then
                             ' Remove any animation effect to allow setting the new value
-                            obj.BeginAnimation(Wpf.Canvas.WidthProperty, Nothing)
-                            CType(CType(obj, Window).Content, Wpf.Canvas).Width = w
+                            obj.BeginAnimation(FrameworkElement.WidthProperty, Nothing)
+                            Form.GetCanvas(obj).Width = w
                         Else
                             ' Remove any animation effect to allow setting the new value
                             obj.BeginAnimation(FrameworkElement.WidthProperty, Nothing)
@@ -249,7 +249,7 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetHeight = CType(CType(obj, Window).Content, Wpf.Canvas).ActualHeight
+                            GetHeight = Form.GetCanvas(obj).ActualHeight
                         Else
                             GetHeight = obj.ActualHeight
                         End If
@@ -271,7 +271,7 @@ Namespace WinForms
                         If TypeOf obj Is Window Then
                             ' Remove any animation effect to allow setting the new value
                             obj.BeginAnimation(FrameworkElement.HeightProperty, Nothing)
-                            CType(CType(obj, Window).Content, Wpf.Canvas).Height = h
+                            Form.GetCanvas(obj).Height = h
                         Else
                             ' Remove any animation effect to allow setting the new value
                             obj.BeginAnimation(FrameworkElement.HeightProperty, Nothing)
@@ -295,7 +295,7 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetMaxWidth = CType(CType(obj, Window).Content, Wpf.Canvas).MaxWidth
+                            GetMaxWidth = Form.GetCanvas(obj).MaxWidth
                         Else
                             GetMaxWidth = obj.MaxWidth
                         End If
@@ -314,7 +314,7 @@ Namespace WinForms
                         Dim obj = GetControl(controlName)
 
                         If TypeOf obj Is Window Then
-                            CType(CType(obj, Window).Content, Wpf.Canvas).MaxWidth = w
+                            Form.GetCanvas(obj).MaxWidth = w
                         Else
                             obj.MaxWidth = w
                         End If
@@ -335,7 +335,7 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetMaxHeight = CType(CType(obj, Window).Content, Wpf.Canvas).MaxHeight
+                            GetMaxHeight = Form.GetCanvas(obj).MaxHeight
                         Else
                             GetMaxHeight = obj.MaxHeight
                         End If
@@ -354,7 +354,7 @@ Namespace WinForms
                         Dim obj = GetControl(controlName)
 
                         If TypeOf obj Is Window Then
-                            CType(CType(obj, Window).Content, Wpf.Canvas).MaxHeight = h
+                            Form.GetCanvas(obj).MaxHeight = h
                         Else
                             obj.MaxHeight = h
                         End If
@@ -742,12 +742,12 @@ Namespace WinForms
                 Else
                     L.Content.Background = brush
                 End If
-            Else
-                If TypeOf c Is Window Then
-                    CType(CType(c, Window).Content, Wpf.Canvas).Background = brush
-                End If
 
+            Else
                 CType(c, Wpf.Control).Background = brush
+                If TypeOf c Is Window Then
+                    Form.GetCanvas(c).Background = brush
+                End If
             End If
         End Sub
 
@@ -792,7 +792,7 @@ Namespace WinForms
             If brush IsNot Nothing Then
                 Return brush.Color
             Else
-                Return CType(control.GetValue(BackColorProperty), Media.Color)
+                Return control.GetValue(BackColorProperty)
             End If
         End Function
 
