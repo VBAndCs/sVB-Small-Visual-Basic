@@ -52,9 +52,22 @@ Namespace Microsoft.SmallVisualBasic.Shell
 
             Dim token = ErrorTokens(SelectedIndex)
             If token.Line < 0 Then Return
+
             Dim textView = _document.EditorControl.TextView
-            Dim lineStart = TextView.TextSnapshot.GetLineFromLineNumber(token.Line).Start
-            _document.EditorControl.EditorOperations.Select(lineStart + token.Column, token.EndColumn - token.Column)
+            Dim line = textView.TextSnapshot.GetLineFromLineNumber(token.Line)
+            Dim lineText = line.GetText().ToLower()
+            Dim start = token.Column
+            Dim length = token.EndColumn - token.Column
+            Dim txt = token.LCaseText
+
+            If start >= lineText.Length OrElse
+                    start + length > lineText.Length OrElse
+                    lineText.Substring(start, length) <> txt Then
+                Dim start2 = lineText.LastIndexOf(txt, Math.Min(start, lineText.Length - 1))
+                If start2 > -1 Then start = start2
+            End If
+
+            _document.EditorControl.EditorOperations.Select(line.Start + start, length)
             _document.Focus()
         End Sub
 

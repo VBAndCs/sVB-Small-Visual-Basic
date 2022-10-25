@@ -1384,7 +1384,8 @@ Public Class Designer
         Dim contentControl = TryCast(control, ContentControl)
         If contentControl IsNot Nothing Then
             contentControl.Content = New TextBlock() With {
-                .Text = value
+                .Text = value,
+                .TextWrapping = TextWrapping.Wrap
             }
 
         ElseIf trySetText Then

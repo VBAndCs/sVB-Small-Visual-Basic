@@ -67,11 +67,10 @@ Namespace Microsoft.SmallVisualBasic
                               )
                          ) Then
                         ' Scan the next line as a part of this line
-
-                        _lineText = lines(lineNumber + 1)
+                        lineNumber += 1
+                        _lineText = lines(lineNumber)
                         _lineLength = _lineText.Length
                         _currentIndex = 0
-                        lineNumber += 1
                         subLine += 1
 
                         If _lineText.Trim() = "" Then
@@ -98,8 +97,8 @@ Namespace Microsoft.SmallVisualBasic
         Friend Shared LineOffset As Integer
 
         Public Shared Function IsLineContinuity(
-                               tokens As List(Of Token),
-                               nextLine As String
+                             tokens As List(Of Token),
+                             nextLine As String
                      ) As Boolean
 
             Dim last = tokens.Count - 1
@@ -120,11 +119,12 @@ Namespace Microsoft.SmallVisualBasic
             ' comment lines are not allowed as sublines
             If currentToken.Line > lastToken.Line Then Return False
 
-            Dim nextLineFirstToken = GetFirstToken(nextLine, 0).LCaseText
+            Dim nextLineFirstToken = GetFirstToken(nextLine, 0)
+            Dim nextLineFirstTokenText = nextLineFirstToken.LCaseText
 
             Select Case lastToken.LCaseText
                 Case "_"
-                    If last = 0 OrElse tokens(last - 1).Text = "." OrElse nextLineFirstToken = "." Then
+                    If last = 0 OrElse tokens(last - 1).Text = "." OrElse nextLineFirstTokenText = "." Then
                         Return False
                     Else
                         tokens.RemoveAt(last) ' remove the Hyphen
@@ -135,10 +135,19 @@ Namespace Microsoft.SmallVisualBasic
                     If tokens(0).Type = TokenType.ContinueLoop OrElse tokens(0).Type = TokenType.ExitLoop Then
                         Return False
                     End If
+
                 Case ",", "{", "(", "[", "+", "*", "\", "/", "=", "or", "and"
+                    Select Case nextLineFirstToken.Type
+                        Case TokenType.If, TokenType.Else, TokenType.ElseIf, TokenType.EndIf,
+                                 TokenType.Goto, TokenType.ExitLoop, TokenType.ContinueLoop, TokenType.Return,
+                                 TokenType.While, TokenType.EndWhile, TokenType.Wend,
+                                 TokenType.For, TokenType.ForEach, TokenType.Next, TokenType.EndFor,
+                                 TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
+                            Return False ' a start or end of a block can't be a line continuty
+                    End Select
 
                 Case Else
-                    Select Case nextLineFirstToken
+                    Select Case nextLineFirstTokenText
                         Case ")", "]", "}", "+", "-", "*", "\", "/", "or", "and"
 
                         Case Else
@@ -150,6 +159,7 @@ Namespace Microsoft.SmallVisualBasic
                 SubLineComments.Add(tokens(comment))
                 tokens.RemoveAt(comment)
             End If
+
             Return True
         End Function
 

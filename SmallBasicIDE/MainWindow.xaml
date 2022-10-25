@@ -177,12 +177,12 @@
                                     Designer="{Binding ElementName=formDesigner}"  />
 
                     <DH:OpenedPagesExplorer x:Name="OFExplorer" 
-                                    Title="Opened Forms" Grid.Row="1" MaxHeight="180"
+                                    Title="Opened Forms" Grid.Row="1" MaxHeight="140"
                                     Designer="{Binding ElementName=formDesigner}"  
                                     ItemDoubleClick="OFExplorer_ItemDoubleClick" />
 
                     <DH:ProjectExplorer x:Name="ProjExplorer" 
-                                    Title="Project Files" Grid.Row="2" MaxHeight="180"
+                                    Title="Project Files" Grid.Row="2" MaxHeight="140"
                                      FileNameChanged="ProjExplorer_FileNameChanged"
                                      FileDeleted="ProjExplorer_FileDeleted"
                                      ItemDoubleClick="OFExplorer_ItemDoubleClick" />

@@ -155,8 +155,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Property
 
 
-        Public Sub New(item As CompletionItem, bag As CompletionBag, Optional enumName As String = "")
+        Public Sub New(item As CompletionItem, bag As CompletionBag)
             _item = item
+            Dim enumName = bag.SelectEspecialItem
             _enumName = If(enumName = "*", "", enumName)
 
             Dim moduleName = GetNormalizedModuleName()

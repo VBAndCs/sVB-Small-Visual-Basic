@@ -76,11 +76,8 @@ Namespace WinForms
         Shared Sub EventsHandler(Sender As FrameworkElement, e As RoutedEventArgs, userEventHandler As SmallBasicCallback, Optional allowTunneling As Boolean = False)
             Try
                 If e.Source IsNot Sender Then
-                    If TypeOf Sender IsNot Wpf.Label AndAlso Not allowTunneling Then Return
-
-                ElseIf TypeOf Sender Is Wpf.Label Then
-                    ' Shape in a lable. Respond only to the shape
-                    If CType(Sender, Wpf.Label).Content IsNot Nothing Then Return
+                    If TypeOf Sender IsNot Wpf.Label AndAlso
+                        Not allowTunneling Then Return
                 End If
 
                 _SenderControl = GetControlName(Sender)
@@ -90,6 +87,7 @@ Namespace WinForms
                 ' the handler may set the Handled property. We will use it and reset it.
                 e.Handled = _Handled
                 _Handled = False
+
             Catch ex As Exception
                 ReportError($"The event handler sub `{userEventHandler.Method.Name}` caused this error: {ex.Message}", ex)
             End Try

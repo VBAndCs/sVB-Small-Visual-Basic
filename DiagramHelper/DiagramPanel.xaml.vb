@@ -497,7 +497,10 @@ Public Class DiagramPanel
         If contentControl IsNot Nothing Then
             obj = contentControl.Content
             If TypeOf obj Is String Then
-                obj = New TextBlock With {.Text = obj}
+                obj = New TextBlock With {
+                    .Text = obj,
+                    .TextWrapping = TextWrapping.Wrap
+                }
                 contentControl.Content = obj
             End If
             Return obj

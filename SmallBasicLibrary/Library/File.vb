@@ -9,40 +9,32 @@ Namespace Library
     ''' </summary>
     <SmallBasicType>
     Public NotInheritable Class File
+
         ''' <summary>
-        ''' <para>
         ''' Gets or sets the last encountered file operation based error message.  This property is useful for finding out when some method fails to execute.
-        ''' </para>
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Property LastError As Primitive
 
         ''' <summary>
-        ''' <para>
         ''' Opens a file and reads the entire file's contents.  This method will be fast for small files that are less than an MB in size, but will start to slow down and will be noticeable for files greater than 10MB.
-        ''' </para>
         ''' </summary>
         ''' <param name="filePath">
-        ''' <para>
-        ''' The full path of the file to read.  An example of a full path will be c:\temp\settings.data.
-        ''' </para>
+        ''' The full path of the file to read, like c:\temp\settings.data.
         ''' </param>
-        ''' <returns>
-        ''' The entire contents of the file.
-        ''' </returns>
+        ''' <returns>The entire contents of the file.</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadContents(filePath As Primitive) As Primitive
             LastError = ""
             Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
             Try
-                If Not IO.File.Exists(path) Then
-                    Return ""
-                End If
+                If Not IO.File.Exists(path) Then Return ""
 
                 Using reader As New StreamReader(path, Encoding.Default)
                     Dim value As String = reader.ReadToEnd()
                     Return value
                 End Using
+
             Catch ex As Exception
                 LastError = ex.Message
             End Try
@@ -51,71 +43,49 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' <para>
         ''' Opens a file and writes the specified contents into it, replacing the original contents with the new content.
-        ''' </para>
         ''' </summary>
-        ''' <param name="filePath">
-        ''' <para>
-        ''' The full path of the file to write to.  An example of a full path will be c:\temp\settings.data.
-        ''' </para>
-        ''' </param>
-        ''' <param name="contents">
-        ''' The contents to write into the specified file.
-        ''' </param>
-        ''' <returns>
-        ''' <para>
-        ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
-        ''' </para>
-        ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        ''' <param name="filePath">The full path of the file to write to, like c:\temp\settings.data.</param>
+        ''' <param name="contents">The contents to write into the specified file.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function WriteContents(filePath As Primitive, contents As Primitive) As Primitive
             Try
                 LastError = ""
                 Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
                 Using writer As New StreamWriter(path, False, Encoding.Default)
                     writer.Write(CStr(contents))
-                    Return "SUCCESS"
+                    Return True
                 End Using
             Catch ex As Exception
                 LastError = ex.Message
             End Try
-            Return "FAILED"
+            Return False
         End Function
 
         ''' <summary>
         ''' Opens the specified file and reads the contents at the specified line number.
+        ''' Don't use this method in a loop to read many lines from the same file, because it aleays starts reading from the first line of the file until it reaches the rewuired line, which will have a very bad impact in loops.
+        ''' In such case, you can use the ReadLines method to read all the file lines then walk through it using the loop as you want.
         ''' </summary>
-        ''' <param name="filePath">
-        ''' <para>
-        ''' The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.
-        ''' </para>
-        ''' </param>
-        ''' <param name="lineNumber">
-        ''' The line number of the text to be read.
-        ''' </param>
-        ''' <returns>
-        ''' The text at the specified line of the specified file.
-        ''' </returns>
+        ''' <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
+        ''' <param name="lineNumber">The line number of the text to be read.</param>
+        ''' <returns>The text at the specified line of the specified file.</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadLine(filePath As Primitive, lineNumber As Primitive) As Primitive
             LastError = ""
             Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
-            If CBool((lineNumber < 0)) Then
-                Return ""
-            End If
+            If lineNumber < 1 Then Return ""
+
             Try
-                If Not IO.File.Exists(path) Then
-                    Return ""
-                End If
-                Using streamReader1 As New StreamReader(path)
-                    For i As Integer = 0 To CInt(lineNumber) - 2
-                        If streamReader1.ReadLine() Is Nothing Then
-                            Return ""
-                        End If
+                If Not IO.File.Exists(path) Then Return ""
+
+                Using reader As New StreamReader(path)
+                    For i = 1 To CInt(lineNumber) - 1
+                        If reader.ReadLine() Is Nothing Then Return ""
                     Next
 
-                    Return streamReader1.ReadLine()
+                    Return reader.ReadLine()
                 End Using
             Catch ex As Exception
                 LastError = ex.Message
@@ -125,363 +95,393 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' <para>
-        ''' Opens the specified file and write the contents at the specified line number.
-        ''' </para>
-        ''' <para>
-        ''' This operation will overwrite any existing content at the specified line.
-        ''' </para>
+        ''' Opens the specified file and reads all its lines.
         ''' </summary>
-        ''' <param name="filePath">
-        ''' <para>
-        ''' The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.
-        ''' </para>
-        ''' </param>
-        ''' <param name="lineNumber">
-        ''' The line number of the text to write.
-        ''' </param>
-        ''' <param name="contents">
-        ''' <para>
-        ''' The contents to write at the specified line of the specified file.
-        ''' </para>
-        ''' </param>
-        ''' <returns>
-        ''' <para>
-        ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
-        ''' </para>
-        ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
-        Public Shared Function WriteLine(filePath As Primitive, lineNumber As Primitive, contents As Primitive) As Primitive
+        ''' <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
+        ''' <returns>an array containing the lines of the specified file.</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        Public Shared Function ReadLines(filePath As Primitive) As Primitive
             LastError = ""
-            Dim path1 As String = Environment.ExpandEnvironmentVariables(filePath)
-            Dim tempFileName As String = Path.GetTempFileName()
-            Try
-                If Not IO.File.Exists(path1) Then
-                    Using streamWriter1 As New StreamWriter(path1)
-                        streamWriter1.WriteLine(CStr(contents))
-                    End Using
+            Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
 
-                    Return "SUCCESS"
-                End If
-                Using streamWriter2 As New StreamWriter(tempFileName)
-                    Using streamReader1 As New StreamReader(path1)
-                        Dim num As Integer = 1
-                        While True
-                            Dim text As String = streamReader1.ReadLine()
-                            If text Is Nothing Then
-                                Exit While
-                            End If
-                            If CBool((num = lineNumber)) Then
-                                streamWriter2.WriteLine(CStr(contents))
-                            Else
-                                streamWriter2.WriteLine(text)
-                            End If
-                            num += 1
-                        End While
-                        If CBool((num <= lineNumber)) Then
-                            streamWriter2.WriteLine(CStr(contents))
-                        End If
-                    End Using
+            Try
+                If Not IO.File.Exists(path) Then Return ""
+                Dim lines As New Dictionary(Of Primitive, Primitive)
+                Dim n = 1
+
+                Using reader As New StreamReader(path)
+                    Do
+                        Dim line = reader.ReadLine()
+                        If line Is Nothing Then Exit Do
+                        lines(n) = line
+                        n += 1
+                    Loop
                 End Using
-                IO.File.Copy(tempFileName, filePath, overwrite:=True)
-                IO.File.Delete(tempFileName)
-                Return "SUCCESS"
+
+                Dim result As New Primitive
+                result._arrayMap = lines
+                Return result
+
             Catch ex As Exception
                 LastError = ex.Message
             End Try
 
-            Return "FAILED"
+            Return ""
+        End Function
+
+
+        ''' <summary>
+        ''' Opens the specified file and writes the contents at the specified line number.
+        ''' This operation will overwrite any existing content at the specified line.
+        ''' Don't use this method to write many lines in the same file using a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to insert the the given content at the given line number, which will be reoeated for every line you write using the loop!
+        ''' In such case, use the AppendContents method insread, to add accumulated content to the end of the file, or add all the lines to one variable and use the InsertLine method to insert it for once.
+        ''' </summary>
+        ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
+        ''' <param name="lineNumber">The line number of the text to write.</param>
+        ''' <param name="contents">The contents to write at the specified line of the specified file.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Function WriteLine(
+                         filePath As Primitive,
+                         lineNumber As Primitive,
+                         contents As Primitive
+                   ) As Primitive
+
+            LastError = ""
+            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+            Dim tempFileName = Path.GetTempFileName()
+
+            Try
+                If Not IO.File.Exists(path1) Then
+                    Using writer1 As New StreamWriter(path1)
+                        writer1.WriteLine(CStr(contents))
+                    End Using
+
+                    Return True
+                End If
+
+                Using writer2 As New StreamWriter(tempFileName)
+                    Using reader As New StreamReader(path1)
+                        Dim num As Integer = 1
+                        While True
+                            Dim text As String = reader.ReadLine()
+                            If text Is Nothing Then Exit While
+
+                            If num = lineNumber Then
+                                writer2.WriteLine(CStr(contents))
+                            Else
+                                writer2.WriteLine(text)
+                            End If
+                            num += 1
+                        End While
+
+                        If num <= lineNumber Then
+                            writer2.WriteLine(CStr(contents))
+                        End If
+                    End Using
+                End Using
+
+                IO.File.Copy(tempFileName, filePath, overwrite:=True)
+                IO.File.Delete(tempFileName)
+                Return True
+
+            Catch ex As Exception
+                LastError = ex.Message
+            End Try
+
+            Return False
         End Function
 
         ''' <summary>
-        ''' <para>
         ''' Opens the specified file and inserts the contents at the specified line number.
-        ''' </para>
-        ''' <para>
         ''' This operation will not overwrite any existing content at the specified line.
-        ''' </para>
+        ''' Don't use this method to write many lines in the same file using a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to insert the the given content at the given line number, which will be reoeated for every line you write using the loop!
+        ''' In such case, use the AppendContents method insread, to add accumulated content to the end of the file, or add all the lines to one variable and use the InsertLine method to insert it for once.
         ''' </summary>
-        ''' <param name="filePath">
-        ''' <para>
-        ''' The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.
-        ''' </para>
-        ''' </param>
-        ''' <param name="lineNumber">
-        ''' The line number of the text to insert.
-        ''' </param>
-        ''' <param name="contents">
-        ''' The contents to insert into the file.
-        ''' </param>
-        ''' <returns>
-        ''' <para>
-        ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
-        ''' </para>
-        ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        ''' <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
+        ''' <param name="lineNumber">The line number of the text to insert.</param>
+        ''' <param name="contents">The contents to insert into the file.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function InsertLine(filePath As Primitive, lineNumber As Primitive, contents As Primitive) As Primitive
             LastError = ""
-            Dim path1 As String = Environment.ExpandEnvironmentVariables(filePath)
-            Dim tempFileName As String = Path.GetTempFileName()
+            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+            Dim tempFileName = Path.GetTempFileName()
+
             Try
                 If Not IO.File.Exists(path1) Then
-                    Using streamWriter1 As New StreamWriter(path1)
-                        streamWriter1.WriteLine(CStr(contents))
+                    Using writer1 As New StreamWriter(path1)
+                        writer1.WriteLine(CStr(contents))
                     End Using
 
-                    Return "SUCCESS"
+                    Return True
                 End If
-                Using streamWriter2 As New StreamWriter(tempFileName)
+
+                Using writer2 As New StreamWriter(tempFileName)
                     Using streamReader1 As New StreamReader(path1)
                         Dim num As Integer = 1
                         While True
                             Dim text As String = streamReader1.ReadLine()
-                            If text Is Nothing Then
-                                Exit While
+                            If text Is Nothing Then Exit While
+
+                            If num = lineNumber Then
+                                writer2.WriteLine(CStr(contents))
                             End If
-                            If CBool((num = lineNumber)) Then
-                                streamWriter2.WriteLine(CStr(contents))
-                            End If
-                            streamWriter2.WriteLine(text)
+
+                            writer2.WriteLine(text)
                             num += 1
                         End While
-                        If CBool((num <= lineNumber)) Then
-                            streamWriter2.WriteLine(CStr(contents))
+
+                        If num <= lineNumber Then
+                            writer2.WriteLine(CStr(contents))
                         End If
                     End Using
                 End Using
+
                 IO.File.Copy(tempFileName, filePath, overwrite:=True)
                 IO.File.Delete(tempFileName)
-                Return "SUCCESS"
+                Return True
+
             Catch ex As Exception
                 LastError = ex.Message
             End Try
 
-            Return "FAILED"
+            Return False
         End Function
 
         ''' <summary>
-        ''' <para>
-        ''' Opens the specified file and appends the contents to the end of the file.
-        ''' </para>
+        ''' Opens the specified file and appends the contents to the end of the file then adds a new line.
         ''' </summary>
-        ''' <param name="filePath">
-        ''' <para>
-        ''' The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.
-        ''' </para>
-        ''' </param>
-        ''' <param name="contents">
-        ''' The contents to append to the end of the file.
-        ''' </param>
-        ''' <returns>
-        ''' <para>
-        ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
-        ''' </para>
-        ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
+        ''' <param name="contents">The contents to append to the end of the file.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <HideFromIntellisense>
         Public Shared Function AppendContents(filePath As Primitive, contents As Primitive) As Primitive
+            Return AppendLine(filePath, contents)
+        End Function
+
+        ''' <summary>
+        ''' Opens the specified file and appends the contents to the end of the file then adds a new line.
+        ''' </summary>
+        ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
+        ''' <param name="contents">The contents to append to the end of the file.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <HideFromIntellisense>
+        Public Shared Function AppendLine(filePath As Primitive, contents As Primitive) As Primitive
             LastError = ""
-            Environment.ExpandEnvironmentVariables(filePath)
+            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+
             Try
-                Using streamWriter1 As New StreamWriter(filePath, append:=True)
+                Using streamWriter1 As New StreamWriter(path1, append:=True)
                     streamWriter1.WriteLine(CStr(contents))
                 End Using
+                Return True
 
-                Return "SUCCESS"
             Catch ex As Exception
                 LastError = ex.Message
             End Try
 
-            Return "FAILED"
+            Return False
         End Function
 
         ''' <summary>
-        ''' <para>
-        ''' Copies the specified source file to the destination file path.  If the destination points to a location that doesn't exist, the method will attempt to create it automatically.
-        ''' </para>
-        ''' <para>
-        ''' Existing files will be overwritten.  It is always best to check if the destination file exists if you don't want to overwrite existing files.
-        ''' </para>
+        ''' Opens the specified file and appends the contents to the end of the file.
         ''' </summary>
-        ''' <param name="sourceFilePath">
-        ''' <para>
-        ''' The full path of the file that needs to be copied.  An example of a full path will be c:\temp\settings.data.
-        ''' </para>
-        ''' </param>
-        ''' <param name="destinationFilePath">
-        ''' The destination location or the file path.  
-        ''' </param>
-        ''' <returns>
-        ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
-        ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
+        ''' <param name="contents">The contents to append to the end of the file.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <HideFromIntellisense>
+        Public Shared Function Append(filePath As Primitive, contents As Primitive) As Primitive
+            LastError = ""
+            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+
+            Try
+                Using writer As New StreamWriter(path1, append:=True)
+                    writer.Write(CStr(contents))
+                End Using
+                Return True
+
+            Catch ex As Exception
+                LastError = ex.Message
+            End Try
+
+            Return False
+        End Function
+
+
+        ''' <summary>
+        ''' Copies the specified source file to the destination file path.  If the destination points to a location that doesn't exist, the method will attempt to create it automatically.
+        ''' Existing files will be overwritten. It is always best to check if the destination file exists if you don't want to overwrite existing files.
+        ''' </summary>
+        ''' <param name="sourceFilePath">The full path of the file that needs to be copied.  An example of a full path will be c:\temp\settings.data.</param>
+        ''' <param name="destinationFilePath">The destination location or the file path.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function CopyFile(sourceFilePath As Primitive, destinationFilePath As Primitive) As Primitive
             LastError = ""
-            Dim text As String = Environment.ExpandEnvironmentVariables(sourceFilePath)
-            Dim text2 As String = Environment.ExpandEnvironmentVariables(destinationFilePath)
-            If Not IO.File.Exists(text) Then
+            Dim file1 = Environment.ExpandEnvironmentVariables(sourceFilePath)
+            Dim file2 = Environment.ExpandEnvironmentVariables(destinationFilePath)
+
+            If Not IO.File.Exists(file1) Then
                 LastError = "Source file doesn't exist."
-                Return "FAILED"
+                Return False
             End If
-            If Directory.Exists(text2) OrElse text2(text2.Length - 1) = "\"c Then
-                text2 = Path.Combine(text2, Path.GetFileName(text))
+
+            If Directory.Exists(file2) OrElse file2.EndsWith("\") Then
+                file2 = Path.Combine(file2, Path.GetFileName(file1))
             End If
+
             Try
-                Dim directoryName As String = Path.GetDirectoryName(text2)
+                Dim directoryName = Path.GetDirectoryName(file2)
                 If Not Directory.Exists(directoryName) Then
                     Directory.CreateDirectory(directoryName)
                 End If
-                IO.File.Copy(text, text2, overwrite:=True)
-                Return "SUCCESS"
+
+                IO.File.Copy(file1, file2, overwrite:=True)
+                Return True
+
             Catch ex As Exception
                 LastError = ex.Message
             End Try
 
-            Return "FAILED"
+            Return False
         End Function
 
         ''' <summary>
         ''' Deletes the specified file.
         ''' </summary>
-        ''' <param name="filePath">
-        ''' <para>
-        ''' The destination location or the file path.  An example of a full path will be
-        ''' c:\temp\settings.data.
-        ''' </para>
-        ''' </param>
-        ''' <returns>
-        ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
-        ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        ''' <param name="filePath">The destination location or the file path, like c:\temp\settings.data.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function DeleteFile(filePath As Primitive) As Primitive
             LastError = ""
             Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
+
             Try
                 IO.File.Delete(path)
-                Return "SUCCESS"
+                Return True
             Catch ex As Exception
                 LastError = ex.Message
             End Try
 
-            Return "FAILED"
+            Return False
         End Function
 
         ''' <summary>
         ''' Creates the specified directory.
         ''' </summary>
-        ''' <param name="directoryPath">
-        ''' The full path of the directory to be created.
-        ''' </param>
-        ''' <returns>
-        ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
-        ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        ''' <param name="directoryPath">The full path of the directory to be created.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function CreateDirectory(directoryPath As Primitive) As Primitive
             LastError = ""
-            Environment.ExpandEnvironmentVariables(directoryPath)
+            Dim dir = Environment.ExpandEnvironmentVariables(directoryPath)
+
             Try
-                Directory.CreateDirectory(directoryPath)
-                Return "SUCCESS"
+                Directory.CreateDirectory(dir)
+                Return True
             Catch ex As Exception
                 LastError = ex.Message
             End Try
 
-            Return "FAILED"
+            Return False
         End Function
 
         ''' <summary>
         ''' Deletes the specified directory.
         ''' </summary>
-        ''' <param name="directoryPath">
-        ''' The full path of the directory to be deleted.
-        ''' </param>
-        ''' <returns>
-        ''' If the operation was successful, this will return "SUCCESS".  Otherwise, it will return "FAILED".
-        ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        ''' <param name="directoryPath">The full path of the directory to be deleted.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function DeleteDirectory(directoryPath As Primitive) As Primitive
             LastError = ""
-            Environment.ExpandEnvironmentVariables(directoryPath)
+            Dim dir = Environment.ExpandEnvironmentVariables(directoryPath)
+
             Try
-                Directory.Delete(directoryPath, recursive:=True)
-                Return "SUCCESS"
+                Directory.Delete(dir, recursive:=True)
+                Return True
             Catch ex As Exception
                 LastError = ex.Message
             End Try
 
-            Return "FAILED"
+            Return False
         End Function
 
         ''' <summary>
         ''' Gets the path of all the files in the specified directory path.
         ''' </summary>
-        ''' <param name="directoryPath">
-        ''' The directory to look for files.
-        ''' </param>
+        ''' <param name="directoryPath">The directory to look for files.</param>
         ''' <returns>
-        ''' If the operation was successful, this will return the files as an array.  Otherwise, it will return "FAILED".
+        ''' If the operation was successful, this will return the files as an array.  Otherwise, it will return an empty string "".
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function GetFiles(directoryPath As Primitive) As Primitive
             LastError = ""
-            Environment.ExpandEnvironmentVariables(directoryPath)
+            Dim dir = Environment.ExpandEnvironmentVariables(directoryPath)
+
             Try
-                If Directory.Exists(directoryPath) Then
-                    Dim dictionary1 As New Dictionary(Of Primitive, Primitive)
-                    Dim num As Integer = 1
-                    Dim files As String() = Directory.GetFiles(directoryPath)
-                    For Each value As String In files
-                        dictionary1(num) = value
-                        num += 1
+                If Directory.Exists(dir) Then
+                    Dim dictionary As New Dictionary(Of Primitive, Primitive)
+                    Dim n As Integer = 1
+                    Dim files = Directory.GetFiles(dir)
+
+                    For Each file In files
+                        dictionary(n) = file
+                        n += 1
                     Next
 
-                    Return Primitive.ConvertFromMap(dictionary1)
+                    Return Primitive.ConvertFromMap(dictionary)
                 End If
+
                 LastError = "Directory Path does not exist."
-                Return "FAILED"
+                Return ""
+
             Catch ex As Exception
                 LastError = ex.Message
-                Return "FAILED"
+                Return ""
             End Try
         End Function
 
         ''' <summary>
         ''' Gets the path of all the directories in the specified directory path.
         ''' </summary>
-        ''' <param name="directoryPath">
-        ''' The directory to look for subdirectories.
-        ''' </param>
+        ''' <param name="directoryPath">The directory to look for subdirectories.</param>
         ''' <returns>
-        ''' If the operation was successful, this will return the list of directories as an array.  Otherwise, it will return "FAILED".
+        ''' If the operation was successful, this will return the list of directories as an array.  Otherwise, it will return an empty string "".
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function GetDirectories(directoryPath As Primitive) As Primitive
             LastError = ""
-            Environment.ExpandEnvironmentVariables(directoryPath)
+            Dim dir = Environment.ExpandEnvironmentVariables(directoryPath)
+
             Try
-                If Directory.Exists(directoryPath) Then
-                    Dim dictionary1 As New Dictionary(Of Primitive, Primitive)
-                    Dim num As Integer = 1
-                    Dim directories As String() = Directory.GetDirectories(directoryPath)
-                    For Each value As String In directories
-                        dictionary1(num) = value
-                        num += 1
+                If Directory.Exists(dir) Then
+                    Dim dictionary As New Dictionary(Of Primitive, Primitive)
+                    Dim n As Integer = 1
+                    Dim directories = Directory.GetDirectories(dir)
+
+                    For Each item In directories
+                        dictionary(n) = item
+                        n += 1
                     Next
 
-                    Return Primitive.ConvertFromMap(dictionary1)
+                    Return Primitive.ConvertFromMap(dictionary)
                 End If
+
                 LastError = "Directory Path does not exist."
-                Return "FAILED"
+                Return ""
+
             Catch ex As Exception
                 LastError = ex.Message
-                Return "FAILED"
+                Return ""
             End Try
         End Function
 
         ''' <summary>
-        ''' <para>
-        ''' Creates a new temporary file in a temporary directory and returns the 
-        ''' full file path.
-        ''' </para>
+        ''' Creates a new temporary file in a temporary directory and returns the full file path.
         ''' </summary>
         ''' <returns>
         ''' The full file path of the temporary file.
@@ -499,7 +499,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetSettingsFilePath() As Primitive
-            Dim entryAssemblyPath As String = SmallBasicApplication.GetEntryAssemblyPath()
+            Dim entryAssemblyPath = SmallBasicApplication.GetEntryAssemblyPath()
             Return Path.ChangeExtension(entryAssemblyPath, ".settings")
         End Function
 
@@ -580,7 +580,7 @@ Namespace Library
                 Else
                     Dim str = extFilters.AsString()
                     Dim pos = str.LastIndexOf("*." & ext)
-                    Dim x = Str.Substring(0, pos)
+                    Dim x = str.Substring(0, pos)
                     index = (x.Length - x.Replace("|", "").Length + 1) \ 2
                 End If
 
@@ -608,7 +608,6 @@ Namespace Library
                 Return ""
             End If
         End Function
-
 
         Private Shared Function GetKey(filter As String) As String
             Return filter.Replace("|", "_").

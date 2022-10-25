@@ -56,6 +56,7 @@ Public MustInherit Class Explorer
     Private Sub FilesList_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles FilesList.SelectionChanged
         item = FilesList.ItemContainerGenerator.ContainerFromItem(FilesList.SelectedItem)
         If FreezListFiles Then Return
+
         Dim i = FilesList.SelectedIndex
         If i = -1 Then Return
         selectedAt = Now
@@ -219,7 +220,6 @@ Public MustInherit Class Explorer
             focusTextBox.Start()
         End If
     End Sub
-
 
     Public Property Title As String
         Get

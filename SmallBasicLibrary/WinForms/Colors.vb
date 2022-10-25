@@ -1,8 +1,6 @@
 ﻿Imports Microsoft.SmallVisualBasic.Library
 Namespace WinForms
-    ''' <summary>
-    ''' Defines all known color names
-    ''' </summary>
+    ''' <summary>Defines all known color names</summary>
     <SmallBasicType>
     Public NotInheritable Class Colors
         ''' <summary>

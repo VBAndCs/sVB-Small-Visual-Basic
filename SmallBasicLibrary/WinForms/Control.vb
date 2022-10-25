@@ -735,12 +735,10 @@ Namespace WinForms
 
             Dim L = TryCast(c, Wpf.Label)
             If L IsNot Nothing Then
-                If L.Content Is Nothing Then
-                    L.Background = brush
-                ElseIf TypeOf L.Content Is System.Windows.Shapes.Shape Then
+                If TypeOf L.Content Is System.Windows.Shapes.Shape Then
                     CType(L.Content, System.Windows.Shapes.Shape).Fill = brush
                 Else
-                    L.Content.Background = brush
+                    L.Background = brush
                 End If
 
             Else
@@ -777,12 +775,10 @@ Namespace WinForms
 
             ElseIf TypeOf control Is Wpf.Label Then
                 Dim L = CType(control, Wpf.Label)
-                If L.Content Is Nothing Then
-                    brush = TryCast(control.Background, SolidColorBrush)
-                ElseIf TypeOf L.Content Is System.Windows.Shapes.Shape Then
+                If TypeOf L.Content Is System.Windows.Shapes.Shape Then
                     brush = CType(L.Content, System.Windows.Shapes.Shape).Fill
                 Else
-                    brush = L.Content.Background
+                    brush = TryCast(control.Background, SolidColorBrush)
                 End If
 
             Else
@@ -897,7 +893,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Array)>
         <ExMethod>
         Public Shared Function ChooseFont(controlName As Primitive) As Primitive
-            Dim font = Text.ShowFontDialog(GetFont(controlName))
+            Dim font = Desktop.ShowFontDialog(GetFont(controlName))
             If Not font.IsEmpty Then
                 SetFont(controlName, font)
             End If
@@ -1369,7 +1365,9 @@ Namespace WinForms
             AddHandler(handler As SmallBasicCallback)
                 Dim _sender = GetSender(NameOf(OnClick))
                 AddHandler _sender.PreviewMouseLeftButtonUp,
-                    Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    Sub(Sender As Object, e As RoutedEventArgs)
+                        [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    End Sub
             End AddHandler
 
             RemoveHandler(handler As SmallBasicCallback)

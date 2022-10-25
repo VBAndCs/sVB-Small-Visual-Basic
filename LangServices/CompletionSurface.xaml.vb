@@ -162,7 +162,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             For Each item In bag.CompletionItems
                 If CanAddItem(item, bag.IsFirstToken, inputText) Then
-                    Dim itemWrapper = New CompletionItemWrapper(item, bag, _Adornment.CompletionBag.SelectEspecialItem)
+                    Dim itemWrapper = New CompletionItemWrapper(item, bag)
                     items.Add(itemWrapper)
                     filteredCompletionItems.Add(itemWrapper)
                 End If

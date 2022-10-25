@@ -386,42 +386,5 @@ Namespace Library
             Return text.IsEmpty
         End Function
 
-        Public Shared Function ShowFontDialog(font As Primitive) As Primitive
-            Dim wpfColor = WinForms.Color.FromString(font("Color"))
-            Dim color = Drawing.Color.FromArgb(wpfColor.A, wpfColor.R, wpfColor.G, wpfColor.B)
-
-            Dim family As New Drawing.FontFamily(font("Name"))
-            Dim style As New Drawing.FontStyle
-            If font("Bold") Then style = style Or Drawing.FontStyle.Bold
-            If font("Italic") Then style = style Or Drawing.FontStyle.Italic
-            If font("Underlined") Then style = style Or Drawing.FontStyle.Underline
-
-            Dim dlg As New System.Windows.Forms.FontDialog() With {
-                .AllowScriptChange = True,
-                .AllowSimulations = True,
-                .FontMustExist = True,
-                .MaxSize = 72,
-                .MinSize = 1,
-                .ShowColor = True,
-                .ShowHelp = True,
-                .ShowEffects = True,
-                .Font = New Drawing.Font(family, font("Size"), style),
-                .Color = color
-            }
-
-            If dlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-                Dim f = dlg.Font
-                font = New Primitive
-                font("Name") = f.FontFamily.Name
-                font("Size") = f.Size
-                font("Bold") = (f.Style And Drawing.FontStyle.Bold) > 0
-                font("Italic") = (f.Style And Drawing.FontStyle.Italic) > 0
-                font("Underlined") = (f.Style And Drawing.FontStyle.Underline) > 0
-                font("Color") = WinForms.Color.FromARGB(dlg.Color.A, dlg.Color.R, dlg.Color.G, dlg.Color.B)
-                Return font
-            End If
-
-            Return ""
-        End Function
     End Class
 End Namespace

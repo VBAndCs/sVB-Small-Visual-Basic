@@ -92,12 +92,14 @@ Namespace WinForms
             Dim cntrl = CType(Control.GetControl(controlName), Wpf.ContentControl)
             Dim content = cntrl.Content
             Dim tb = TryCast(content, Wpf.TextBlock)
+
             If tb Is Nothing Then
                 tb = New Wpf.TextBlock()
-                tb.TextWrapping = TextWrapping.Wrap
                 If content IsNot Nothing Then tb.Text = content.ToString()
                 cntrl.Content = tb
             End If
+
+            tb.TextWrapping = TextWrapping.Wrap
             Return tb
         End Function
 

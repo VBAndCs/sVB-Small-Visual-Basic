@@ -1,4 +1,3 @@
-Imports System.Collections.Generic
 Imports System.IO
 
 Namespace Microsoft.Nautilus.Text
@@ -14,21 +13,21 @@ Namespace Microsoft.Nautilus.Text
 
         ReadOnly Property Lines As IEnumerable(Of ITextSnapshotLine)
 
-        Function GetText(span1 As Span) As String
+        Function GetText(span As Span) As String
 
-        Function GetText(startIndex As Integer, length1 As Integer) As String
+        Function GetText(startIndex As Integer, length As Integer) As String
 
         Function GetText(textSpan As ITextSpan) As String
 
-        Function ToCharArray(startIndex As Integer, length1 As Integer) As Char()
+        Function ToCharArray(startIndex As Integer, length As Integer) As Char()
 
         Sub CopyTo(sourceIndex As Integer, destination As Char(), destinationIndex As Integer, count As Integer)
 
-        Function CreateTextPoint(position As Integer, trackingMode1 As TrackingMode) As ITextPoint
+        Function CreateTextPoint(position As Integer, trackingMode As TrackingMode) As ITextPoint
 
-        Function CreateTextSpan(span1 As Span, spanTrackingMode1 As SpanTrackingMode) As ITextSpan
+        Function CreateTextSpan(span As Span, spanTrackingMode As SpanTrackingMode) As ITextSpan
 
-        Function CreateTextSpan(start As Integer, length1 As Integer, spanTrackingMode1 As SpanTrackingMode) As ITextSpan
+        Function CreateTextSpan(start As Integer, length As Integer, spanTrackingMode As SpanTrackingMode) As ITextSpan
 
         Function GetLineFromLineNumber(lineNumber As Integer) As ITextSnapshotLine
 
@@ -36,7 +35,7 @@ Namespace Microsoft.Nautilus.Text
 
         Function GetLineNumberFromPosition(position As Integer) As Integer
 
-        Sub Write(writer As TextWriter, span1 As Span)
+        Sub Write(writer As TextWriter, span As Span)
 
         Sub Write(writer As TextWriter)
     End Interface
