@@ -157,9 +157,8 @@ Namespace WinForms
         ''' </returns>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
-        Public Shared Function LowerCase(text As Primitive) As Primitive
-            If text.IsEmpty Then Return text
-            Return CStr(text).ToLower(CultureInfo.CurrentUICulture)
+        Public Shared Function GetLowerCase(text As Primitive) As Primitive
+            Return Library.Text.ToLower(text)
         End Function
 
         ''' <summary>
@@ -170,9 +169,8 @@ Namespace WinForms
         ''' </returns>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
-        Public Shared Function UpperCase(text As Primitive) As Primitive
-            If text.IsEmpty Then Return text
-            Return CStr(text).ToUpper(CultureInfo.InvariantCulture)
+        Public Shared Function GetUpperCase(text As Primitive) As Primitive
+            Return Library.Text.ToUpper(text)
         End Function
 
         ''' <summary>

@@ -49,6 +49,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                             )
                         End If
 
+                        prop.IsEvent = isEventHandler
                     End If
                 End If
 
@@ -185,16 +186,14 @@ Namespace Microsoft.SmallVisualBasic.Statements
                          globalScope As Boolean)
 
             If EqualsToken.IsBefore(line, column) Then
-
-                CompletionHelper.FillExpressionItems(bag)
                 Dim prop = TryCast(LeftValue, PropertyExpression)
-                Dim isHandler = False
-                If bag.NextToEquals AndAlso prop IsNot Nothing AndAlso Not prop.IsDynamic Then
-                    Dim propName = prop.PropertyName.Text
-                    isHandler = propName.Length > 2 AndAlso propName.StartsWith("On") AndAlso Char.IsUpper(propName(2))
-                End If
+                Dim isHandler = prop IsNot Nothing AndAlso prop.IsEvent
                 bag.IsHandler = isHandler
                 CompletionHelper.FillSubroutines(bag, functionsOnly:=Not isHandler)
+                If Not isHandler Then
+                    CompletionHelper.FillExpressionItems(bag)
+                End If
+
             Else
                 Dim arrayExpr = TryCast(LeftValue, ArrayExpression)
                 If arrayExpr Is Nothing Then

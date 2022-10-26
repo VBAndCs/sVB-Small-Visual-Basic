@@ -354,6 +354,26 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Converts all characters of the input text to lower case.
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <returns>a lower-case text</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function ToLower(text As Primitive) As Primitive
+            Return text.AsString().ToLower()
+        End Function
+
+        ''' <summary>
+        ''' Converts all characters of the input text to upper case.
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <returns>an upper-case text</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function ToUpper(text As Primitive) As Primitive
+            Return text.AsString().ToUpper()
+        End Function
+
+        ''' <summary>
         '''Removes all leading and trailing white-space characters from the given text
         '''Wite-space chars iclude spaces, tabs, and line symbols.
         ''' </summary>

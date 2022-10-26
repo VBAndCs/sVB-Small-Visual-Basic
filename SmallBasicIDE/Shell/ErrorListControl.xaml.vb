@@ -63,7 +63,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
             If start >= lineText.Length OrElse
                     start + length > lineText.Length OrElse
                     lineText.Substring(start, length) <> txt Then
-                Dim start2 = lineText.LastIndexOf(txt, Math.Min(start, lineText.Length - 1))
+                Dim start2 = lineText.LastIndexOf(txt, Math.Min(start + length, lineText.Length - 1))
                 If start2 > -1 Then start = start2
             End If
 

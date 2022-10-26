@@ -4,6 +4,7 @@ Imports System.Text
 Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
+
     ''' <summary>
     ''' The File object provides methods to access, read and write information from and to a file on disk.  Using this object, it is possible to save and open settings across multiple sessions of your program.
     ''' </summary>
@@ -46,20 +47,33 @@ Namespace Library
         ''' Opens a file and writes the specified contents into it, replacing the original contents with the new content.
         ''' </summary>
         ''' <param name="filePath">The full path of the file to write to, like c:\temp\settings.data.</param>
-        ''' <param name="contents">The contents to write into the specified file.</param>
+        ''' <param name="contents">The contents to write into the specified file. You can send an array to write its elements to the file, each element in a line</param>
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function WriteContents(filePath As Primitive, contents As Primitive) As Primitive
             Try
                 LastError = ""
                 Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
+
                 Using writer As New StreamWriter(path, False, Encoding.Default)
-                    writer.Write(CStr(contents))
-                    Return True
+                    If contents.IsArray Then
+                        Dim lines = contents._arrayMap.Values
+                        Dim n = lines.Count - 1
+                        For i = 0 To n - 1
+                            writer.WriteLine(lines(i).AsString())
+                        Next
+                        writer.Write(lines(n).AsString())
+                    Else
+                        writer.Write(contents.AsString())
+                    End If
                 End Using
+
+                Return True
+
             Catch ex As Exception
                 LastError = ex.Message
             End Try
+
             Return False
         End Function
 
@@ -80,7 +94,7 @@ Namespace Library
             Try
                 If Not IO.File.Exists(path) Then Return ""
 
-                Using reader As New StreamReader(path)
+                Using reader As New StreamReader(path, Encoding.Default)
                     For i = 1 To CInt(lineNumber) - 1
                         If reader.ReadLine() Is Nothing Then Return ""
                     Next
@@ -109,7 +123,7 @@ Namespace Library
                 Dim lines As New Dictionary(Of Primitive, Primitive)
                 Dim n = 1
 
-                Using reader As New StreamReader(path)
+                Using reader As New StreamReader(path, Encoding.Default)
                     Do
                         Dim line = reader.ReadLine()
                         If line Is Nothing Then Exit Do
@@ -153,15 +167,15 @@ Namespace Library
 
             Try
                 If Not IO.File.Exists(path1) Then
-                    Using writer1 As New StreamWriter(path1)
+                    Using writer1 As New StreamWriter(path1, False, Encoding.Default)
                         writer1.WriteLine(CStr(contents))
                     End Using
 
                     Return True
                 End If
 
-                Using writer2 As New StreamWriter(tempFileName)
-                    Using reader As New StreamReader(path1)
+                Using writer2 As New StreamWriter(tempFileName, False, Encoding.Default)
+                    Using reader As New StreamReader(path1, Encoding.Default)
                         Dim num As Integer = 1
                         While True
                             Dim text As String = reader.ReadLine()
@@ -210,18 +224,18 @@ Namespace Library
 
             Try
                 If Not IO.File.Exists(path1) Then
-                    Using writer1 As New StreamWriter(path1)
+                    Using writer1 As New StreamWriter(path1, False, Encoding.Default)
                         writer1.WriteLine(CStr(contents))
                     End Using
 
                     Return True
                 End If
 
-                Using writer2 As New StreamWriter(tempFileName)
-                    Using streamReader1 As New StreamReader(path1)
+                Using writer2 As New StreamWriter(tempFileName, False, Encoding.Default)
+                    Using reader As New StreamReader(path1, Encoding.Default)
                         Dim num As Integer = 1
                         While True
-                            Dim text As String = streamReader1.ReadLine()
+                            Dim text As String = reader.ReadLine()
                             If text Is Nothing Then Exit While
 
                             If num = lineNumber Then
@@ -264,8 +278,8 @@ Namespace Library
         ''' <summary>
         ''' Opens the specified file and appends the contents to the end of the file then adds a new line.
         ''' </summary>
-        ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
-        ''' <param name="contents">The contents to append to the end of the file.</param>
+        ''' <param name="filePath">The full path of the file to write to.  An example of a full path will be c:\temp\settings.data.</param>
+        ''' <param name="contents">The contents to append to the end of the file. You can send an array to append its elements to the file, each element in a line.</param>
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         <HideFromIntellisense>
@@ -274,9 +288,16 @@ Namespace Library
             Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
 
             Try
-                Using streamWriter1 As New StreamWriter(path1, append:=True)
-                    streamWriter1.WriteLine(CStr(contents))
+                Using writer As New StreamWriter(path1, append:=True, Encoding.Default)
+                    If contents.IsArray Then
+                        For Each line In contents._arrayMap.Values
+                            writer.WriteLine(line.AsString())
+                        Next
+                    Else
+                        writer.WriteLine(contents.AsString())
+                    End If
                 End Using
+
                 Return True
 
             Catch ex As Exception
@@ -299,8 +320,8 @@ Namespace Library
             Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
 
             Try
-                Using writer As New StreamWriter(path1, append:=True)
-                    writer.Write(CStr(contents))
+                Using writer As New StreamWriter(path1, append:=True, Encoding.Default)
+                    writer.Write(contents.AsString())
                 End Using
                 Return True
 

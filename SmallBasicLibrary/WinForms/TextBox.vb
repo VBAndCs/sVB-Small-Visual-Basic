@@ -164,25 +164,25 @@ Namespace WinForms
         ''' </summary>
         <ReturnValueType(VariableType.Boolean)>
         <ExProperty>
-        Public Shared Function GetMuliLine(textBoxName As Primitive) As Primitive
+        Public Shared Function GetMultiLine(textBoxName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetMuliLine = GetTextBox(textBoxName).AcceptsReturn
+                        GetMultiLine = GetTextBox(textBoxName).AcceptsReturn
                     Catch ex As Exception
-                        Control.ReportError(textBoxName, "MuliLine", ex)
+                        Control.ReportError(textBoxName, "MultiLine", ex)
                     End Try
                 End Sub)
         End Function
 
         <ExProperty>
-        Public Shared Sub SetMuliLine(textBoxName As Primitive, value As Primitive)
+        Public Shared Sub SetMultiLine(textBoxName As Primitive, value As Primitive)
             App.Invoke(
                 Sub()
                     Try
                         GetTextBox(textBoxName).AcceptsReturn = CBool(value)
                     Catch ex As Exception
-                        Control.ReportPropertyError(textBoxName, "MuliLine", value, ex)
+                        Control.ReportPropertyError(textBoxName, "MultiLine", value, ex)
                     End Try
                 End Sub)
         End Sub

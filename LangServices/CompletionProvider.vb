@@ -1260,10 +1260,16 @@ LineElse:
                             needsToReCompile = False
                             token.Parent = compHelper.GetRootStatement(line.LineNumber)
                             Dim varType = symbolTable.GetInferedType(token)
+
                             If varType = VariableType.Any Then
                                 Dim st = TryCast(token.Parent.GetStatementAt(line.LineNumber), Statements.AssignmentStatement)
                                 If st IsNot Nothing Then
-                                    varType = st.LeftValue.InferType(symbolTable)
+                                    Dim prop = TryCast(st.LeftValue, Expressions.PropertyExpression)
+                                    If prop Is Nothing Then
+                                        varType = st.LeftValue.InferType(symbolTable)
+                                    ElseIf prop.IsEvent Then
+                                        especialItem = "Sub"
+                                    End If
                                 End If
                             End If
 
@@ -1279,7 +1285,7 @@ LineElse:
                                 Case VariableType.Boolean
                                     especialItem = "Boolean"
                                 Case Else
-                                    Return
+                                    If Not ctrlSpace Then Return
                             End Select
                         End If
                 End Select
@@ -1378,11 +1384,16 @@ LineElse:
 
                 Case "FontName"
                     bag.CompletionItems.AddRange(FontNames)
-                    especialItem = "*"
+                    especialItem = "*"      ' * means that global completion items can appear if user writes names that are not in these especial items.
 
                 Case "FormName"
                     bag.CompletionItems.AddRange(FormNames)
                     especialItem = "*"
+
+                Case "Sub"
+                    bag.IsHandler = True
+                    CompletionHelper.FillSubroutines(bag)
+                    especialItem = "" ' Don't offer any other global items
 
                 Case Else
                     Dim typeInfo As TypeInfo = Nothing

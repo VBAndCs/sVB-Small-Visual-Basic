@@ -178,12 +178,17 @@ Namespace Microsoft.SmallVisualBasic.Completion
             If Not bag.IsFirstToken Then FillBooleanLitrals(bag)
         End Sub
 
-        Public Shared Sub FillSubroutines(bag As CompletionBag, Optional functionsOnly As Boolean = False)
+        Public Shared Sub FillSubroutines(
+                       bag As CompletionBag,
+                       Optional functionsOnly As Boolean = False
+                   )
+
             If DoNotAddGlobals Then Return
 
             For Each item In bag.SymbolTable.Subroutines
                 Dim nameToken = item.Value
                 If functionsOnly AndAlso nameToken.Type = TokenType.Sub Then Continue For
+                If bag.IsHandler AndAlso nameToken.Type = TokenType.Function Then Continue For
 
                 Dim subName = nameToken.Text
                 Dim subroutine = GetSubroutine(item.Key, bag.ParseTree)

@@ -188,21 +188,16 @@ Namespace Microsoft.SmallVisualBasic
                 End If
 
                 Dim id = New IdentifierExpression() With {
-                        .Identifier = typeNameInfo,
-                        .Subroutine = subroutine
+                    .Identifier = typeNameInfo,
+                    .Subroutine = subroutine
                 }
 
                 If Not _symbolTable.IsDefined(id) Then
                     _symbolTable.Errors.Add(New [Error](typeNameInfo, $"The variable `{typeNameInfo.Text}` is used before being initialized."))
                 End If
-                'ElseIf _symbolTable.Dynamics.ContainsKey(typeName) Then
-                '    If Not _symbolTable.Dynamics(typeName).ContainsKey(propertyName) Then
-                '        ' _symbolTable.Errors.Add(New [Error](propertyNameInfo, "Trying to read property before setting its value. "))
-                '    End If
-                'End If
 
             ElseIf _typeInfoBag.Types.TryGetValue(typeName, typeInfo) Then
-                    Dim prop As PropertyInfo = Nothing
+                Dim prop As PropertyInfo = Nothing
                 Dim ev As EventInfo = Nothing
 
                 If typeInfo.Properties.TryGetValue(propertyName, prop) Then
@@ -215,7 +210,8 @@ Namespace Microsoft.SmallVisualBasic
                     End If
 
                 ElseIf typeInfo.Events.TryGetValue(propertyNameInfo.LCaseText, ev) Then
-                    _parser.AddError(propertyNameInfo, $"Event {ev.Name} can only be set to a Sub. If you wrote a sub nmae, nake sure there is a sub with this name, or check the spelling. ")
+                    _parser.AddError(propertyNameInfo,
+                               $"Event {ev.Name} can only be set to a Sub.{vbCrLf}If you wrote a sub name, don't add () after it, {vbCrLf}and make sure there is a sub with this name, or check the spelling. ")
                 Else
                     _parser.AddError(propertyNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("PropertyNotFound"), New Object(1) {propertyNameInfo.Text, typeNameInfo.Text}))
                 End If
@@ -393,12 +389,26 @@ Namespace Microsoft.SmallVisualBasic
             Next
         End Sub
 
-        Private Sub NoteEventReference(leftValue As Expression, subroutineName As Token)
-            Dim propertyExpression = TryCast(leftValue, PropertyExpression)
+        Private Sub NoteEventReference(
+                           leftValue As Expression,
+                           subName As Token
+                     )
 
-            If propertyExpression IsNot Nothing Then
-                Dim typeName = propertyExpression.TypeName
-                Dim propertyName = propertyExpression.PropertyName
+            If _symbolTable.Subroutines.ContainsKey(subName.LCaseText) Then
+                Dim token = _symbolTable.Subroutines(subName.LCaseText)
+                Dim subroutine = CType(token.Parent, SubroutineStatement)
+                If subroutine.SubToken.Type = TokenType.Function Then
+                    _parser.AddError(subName, $"Functions can't be used as event handlers.")
+                End If
+            Else
+                _parser.AddError(subName, $"Subroutine `{subName.Text}` is not defiend.")
+            End If
+
+            Dim propExpr = TryCast(leftValue, PropertyExpression)
+
+            If propExpr IsNot Nothing Then
+                Dim typeName = propExpr.TypeName
+                Dim propertyName = propExpr.PropertyName
 
                 If typeName.Type = TokenType.Illegal OrElse propertyName.Type = TokenType.Illegal Then
                     Return
@@ -414,7 +424,7 @@ Namespace Microsoft.SmallVisualBasic
                     _parser.AddError(typeName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("TypeNotFound"), New Object(0) {typeName.Text}))
                 End If
             Else
-                _parser.AddError(subroutineName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineEventAssignment"), New Object(0) {subroutineName.Text}))
+                _parser.AddError(subName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("SubroutineEventAssignment"), New Object(0) {subName.Text}))
             End If
         End Sub
 

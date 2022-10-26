@@ -1,6 +1,5 @@
 ﻿Option Explicit On
 
-
 Imports Wpf = System.Windows.Controls
 Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication

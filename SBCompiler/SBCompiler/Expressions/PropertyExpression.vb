@@ -13,6 +13,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public IsDynamic As Boolean
         Public isSet As Boolean
+        Public IsEvent As Boolean
 
         Public ReadOnly Property DynamicKey As String
             Get

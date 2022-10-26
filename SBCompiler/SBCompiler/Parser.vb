@@ -1065,6 +1065,13 @@ Namespace Microsoft.SmallVisualBasic
                     Dim id = _SymbolTable.AllIdentifiers(e.index)
                     id.SymbolType = Completion.CompletionItemType.SubroutineName
                     _SymbolTable.AllIdentifiers(e.index) = id
+
+                    Dim token = _SymbolTable.Subroutines(e.Id.LCaseText)
+                    Dim subroutine = CType(token.Parent, SubroutineStatement)
+                    If subroutine.SubToken.Type = TokenType.Function Then
+                        AddError(e.Id, $"Functions can't be used as event handlers.")
+                    End If
+
                 Else
                     AddError(e.Id, $"Subroutine `{e.Id.Text}` is not defiend.")
                 End If
