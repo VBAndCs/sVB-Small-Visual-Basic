@@ -176,7 +176,11 @@ Namespace Library
         ''' The requested sub-text
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
-        Public Shared Function GetSubText(text As Primitive, start As Primitive, length As Primitive) As Primitive
+        Public Shared Function GetSubText(
+                       text As Primitive,
+                       start As Primitive,
+                       length As Primitive
+                   ) As Primitive
             If text.IsEmpty OrElse start.IsEmpty OrElse length.IsEmpty Then Return ""
 
             Dim strText = text.AsString()
@@ -221,24 +225,30 @@ Namespace Library
         ''' <summary>
         ''' Finds the position where a sub-text appears in the specified text.
         ''' </summary>
-        ''' <param name="text">
-        ''' The text to search in.
-        ''' </param>
-        ''' <param name="subText">
-        ''' The text to search for.
-        ''' </param>
+        ''' <param name="text">the text to search in.</param>
+        ''' <param name="subText">the text to search for.</param>
+        ''' <param name="start">the text position to start seacting from</param>
+        ''' <param name="isBackward">True if you want to search from start back to the the first position in the text (1), or False if you want to go forward to the end of the text.</param>
         ''' <returns>
         ''' The position at which the sub-text appears in the specified text.  If the text doesn't appear, it returns 0.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
-        Public Shared Function GetIndexOf(text As Primitive, subText As Primitive) As Primitive
+        Public Shared Function GetIndexOf(
+                         text As Primitive,
+                         subText As Primitive,
+                         start As Primitive,
+                         isBackward As Primitive
+                   ) As Primitive
+
             If text.IsEmpty OrElse subText.IsEmpty Then Return 0
-            If text.IsArray Then
-                Dim index = Array.Find(text, subText, 1, False)
-                If index.IsEmpty OrElse Not index.IsNumber Then Return 0
-                Return index.AsDecimal()
+            If Not start.IsNumber OrElse start.AsDecimal < 1 Then Return 0
+            If start.AsDecimal > text.AsString.Length + 1 Then Return 0
+
+            If isBackward Then
+                Return text.AsString().LastIndexOf(subText, start - 1) + 1
+            Else
+                Return text.AsString().IndexOf(subText, start - 1) + 1
             End If
-            Return text.AsString().IndexOf(subText) + 1
         End Function
 
         ''' <summary>

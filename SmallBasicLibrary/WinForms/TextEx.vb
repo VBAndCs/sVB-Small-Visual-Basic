@@ -137,16 +137,22 @@ Namespace WinForms
         ''' <summary>
         ''' Finds the position where a sub-text appears in the specified text.
         ''' </summary>
-        ''' <param name="subText">
-        ''' The text to search for.
-        ''' </param>
+        ''' <param name="subText">the text to search for.</param>
+        ''' <param name="start">the text position to start seacting from</param>
+        ''' <param name="isBackward">True if you want to search from start back to the the first position in the text (1), or False if you want to go forward to the end of the text.</param>
         ''' <returns>
         ''' The position at which the sub-text appears in the specified text.  If the text doesn't appear, it returns 0.
         ''' </returns>
-        <ReturnValueType(VariableType.Double)>
+        <WinForms.ReturnValueType(VariableType.Double)>
         <ExMethod>
-        Public Shared Function IndexOf(text As Primitive, subText As Primitive) As Primitive
-            Return Library.Text.GetIndexOf(text, subText)
+        Public Shared Function GetIndexOf(
+                         text As Primitive,
+                         subText As Primitive,
+                         start As Primitive,
+                         isBackward As Primitive
+                   ) As Primitive
+
+            Return Library.Text.GetIndexOf(text, subText, start, isBackward)
         End Function
 
         ''' <summary>

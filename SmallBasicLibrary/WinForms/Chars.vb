@@ -92,6 +92,26 @@ Namespace WinForms
             Return AscW(character)
         End Function
 
+        ''' <summary>
+        ''' Checks if the given character is a letter in any human language.
+        ''' </summary>
+        ''' <param name="character">the character to ckeck.</param>
+        ''' <returns>True of False.</returns>
+        <ReturnValueType(VariableType.Boolean)>
+        Public Shared Function IsLetter(character As Primitive) As Primitive
+            Return Char.IsLetter(character)
+        End Function
+
+        ''' <summary>
+        ''' Checks if the given character is a digit (0-9).
+        ''' </summary>
+        ''' <param name="character">the character to ckeck.</param>
+        ''' <returns>True of False.</returns>
+        <ReturnValueType(VariableType.Boolean)>
+        Public Shared Function IsDigit(character As Primitive) As Primitive
+            Return Char.IsDigit(character)
+        End Function
+
     End Class
 
 

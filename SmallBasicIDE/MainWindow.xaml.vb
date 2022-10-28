@@ -1008,6 +1008,11 @@ Namespace Microsoft.SmallVisualBasic
                            Optional saveAs As Boolean = False
                     ) As TextDocument
 
+            If DoNotOpenDefaultDoc Then
+                DoNotOpenDefaultDoc = False
+                Return Nothing
+            End If
+
             Dim formName As String
             Dim xamlPath As String
             Dim formPath As String
@@ -1332,6 +1337,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub UpdateTitle()
             If tabDesigner.IsSelected Then
+                StkToolbar.Visibility = Visibility.Visible
                 grdNameText.Visibility = Visibility.Visible
                 txtTitle.Text = "Form Designer - "
                 txtForm.Text = If(formDesigner.XamlFile = "",
@@ -1340,6 +1346,7 @@ Namespace Microsoft.SmallVisualBasic
                 )
 
             Else
+                StkToolbar.Visibility = Visibility.Collapsed
                 grdNameText.Visibility = Visibility.Collapsed
                 txtTitle.Text = "Code Editor - "
                 txtForm.Text = If(formDesigner.CodeFile = "",
@@ -1534,6 +1541,8 @@ Namespace Microsoft.SmallVisualBasic
             txt.Tag = formDesigner.SelectedIndex
         End Sub
 
+        Dim DoNotOpenDefaultDoc As Boolean
+
         Private Sub Window_ContentRendered(sender As Object, e As EventArgs)
             Dim doc As TextDocument
 
@@ -1568,7 +1577,11 @@ Namespace Microsoft.SmallVisualBasic
             Next
 
             ' Load the code editor
-            tabCode.IsSelected = True
+            If doc Is Nothing Then
+                tabCode.IsSelected = True
+            Else
+                DoNotOpenDefaultDoc = True
+            End If
 
             If SelectCodeTab Then
                 If doc IsNot Nothing Then
@@ -1592,6 +1605,8 @@ Namespace Microsoft.SmallVisualBasic
                     End Sub)
                 selectDesigner.After(10)
             End If
+
+            DoNotOpenDefaultDoc = False
         End Sub
 
         Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
@@ -1687,6 +1702,21 @@ Namespace Microsoft.SmallVisualBasic
 
             formDesigner.HasChanges = False
             DiagramHelper.Designer.ClosePage(True, True)
+        End Sub
+
+        Private Sub BtnSavePage_Click(sender As Object, e As RoutedEventArgs)
+            formDesigner.Save()
+            formDesigner.Focus()
+        End Sub
+
+        Private Sub BtnNewPage_Click(sender As Object, e As RoutedEventArgs)
+            DiagramHelper.Designer.OpenNewPage()
+            formDesigner.Focus()
+        End Sub
+
+        Private Sub BtnOpenPage_Click(sender As Object, e As RoutedEventArgs)
+            DiagramHelper.Designer.Open()
+            formDesigner.Focus()
         End Sub
     End Class
 

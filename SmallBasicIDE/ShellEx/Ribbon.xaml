@@ -480,7 +480,7 @@
                                 <TabPanel Name="HeaderPanel" Grid.Row="0" ZIndex="1" Margin="4,0,4,-1" IsItemsHost="True" KeyboardNavigation.TabIndex="1" />
                                 <Border Name="Border" Grid.Row="1" Background="{TemplateBinding Background}" BorderThickness="0,0,0,1" CornerRadius="0" KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" BorderBrush="{StaticResource DefaultDarkDarkBrush}">
                                     <ScrollViewer Style="{StaticResource TabControlScrollViewerStyle}">
-                                        <ContentPresenter Name="PART_SelectedContentHost" Margin="1" ContentSource="SelectedContent" Height="85" />
+                                        <ContentPresenter Name="PART_SelectedContentHost" Margin="1" ContentSource="SelectedContent" Height="69" />
                                     </ScrollViewer>
                                 </Border>
                             </Grid>
@@ -493,7 +493,11 @@
                 <Setter Property="ItemTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <Button Style="{DynamicResource LargeActionCommandStyle}" CommandParameter="{Binding Path=(m:Ribbon.Parameter)}" Command="{Binding}" AutomationProperties.AutomationId="{Binding Path=(AutomationProperties.AutomationId)}">
+                            <Button Margin="5,0"
+                                    Style="{DynamicResource LargeActionCommandStyle}" 
+                                    CommandParameter="{Binding Path=(m:Ribbon.Parameter)}" 
+                                    Command="{Binding}" 
+                                    AutomationProperties.AutomationId="{Binding Path=(AutomationProperties.AutomationId)}">
                                 <StackPanel>
                                     <ContentControl HorizontalAlignment="Center" Content="{Binding Path=(m:Ribbon.LargeIcon)}" />
                                     <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="11" Text="{Binding Path=Name}" />
@@ -511,7 +515,7 @@
                                     <Style x:Key="LargeCheckCommandStyle" TargetType="{x:Type ButtonBase}" BasedOn="{StaticResource CommandBaseStyle}" />
                                     <Style x:Key="LargeItem" TargetType="{x:Type HeaderedContentControl}">
                                         <Setter Property="MaxWidth" Value="48" />
-                                        <Setter Property="Height" Value="66" />
+                                        <Setter Property="Height" Value="50" />
                                         <Setter Property="VerticalAlignment" Value="Stretch" />
                                         <Setter Property="Template">
                                             <Setter.Value>
@@ -532,7 +536,7 @@
                                     <Style x:Key="LargeCommandSeparatorStyle" TargetType="{x:Type Control}">
                                         <Setter Property="Focusable" Value="False" />
                                         <Setter Property="VerticalAlignment" Value="Center" />
-                                        <Setter Property="Height" Value="64" />
+                                        <Setter Property="Height" Value="48" />
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate>
@@ -820,27 +824,39 @@
                 </Setter>
             </Style>
 
-            <DataTemplate x:Key="{DataTemplateKey {x:Type m:SmallestCommandGroup}}" DataType="{x:Type m:SmallestCommandGroup}">
-                <ItemsControl Style="{StaticResource SmallestCommandGroupStyle}" MaxWidth="{Binding Path=MaxSize}" ItemsSource="{Binding Path=Commands}" />
+            <DataTemplate x:Key="{DataTemplateKey {x:Type m:SmallestCommandGroup}}" 
+                          DataType="{x:Type m:SmallestCommandGroup}">
+                <ItemsControl Style="{StaticResource SmallestCommandGroupStyle}" 
+                              MaxWidth="{Binding Path=MaxSize}" 
+                              ItemsSource="{Binding Path=Commands}" />
             </DataTemplate>
             
-            <DataTemplate x:Key="{DataTemplateKey {x:Type m:SmallCommandGroup}}" DataType="{x:Type m:SmallCommandGroup}">
-                <ItemsControl Style="{StaticResource SmallCommandGroupStyle}" ItemsSource="{Binding Path=Commands}" />
+            <DataTemplate x:Key="{DataTemplateKey {x:Type m:SmallCommandGroup}}" 
+                      DataType="{x:Type m:SmallCommandGroup}">
+                <ItemsControl Style="{StaticResource SmallCommandGroupStyle}" 
+                      ItemsSource="{Binding Path=Commands}" />
             </DataTemplate>
             
-            <DataTemplate x:Key="{DataTemplateKey {x:Type m:LargeCommandGroup}}" DataType="{x:Type m:LargeCommandGroup}">
-                <ItemsControl Style="{StaticResource LargeCommandGroupStyle}" MaxWidth="{Binding Path=MaxSize}" ItemsSource="{Binding Path=Commands}" />
+            <DataTemplate x:Key="{DataTemplateKey {x:Type m:LargeCommandGroup}}" 
+                         DataType="{x:Type m:LargeCommandGroup}">
+                <ItemsControl Style="{StaticResource LargeCommandGroupStyle}" 
+                         MaxWidth="{Binding Path=MaxSize}" 
+                         ItemsSource="{Binding Path=Commands}" />
             </DataTemplate>
             
-            <DataTemplate x:Key="{DataTemplateKey {x:Type m:GalleryCommandGroup}}" DataType="{x:Type m:GalleryCommandGroup}">
-                <ItemsControl Style="{StaticResource GalleryCommandGroupStyle}" Width="{Binding Path=MaxSize}" ItemsSource="{Binding Path=Commands}" />
+            <DataTemplate x:Key="{DataTemplateKey {x:Type m:GalleryCommandGroup}}" 
+                          DataType="{x:Type m:GalleryCommandGroup}">
+                <ItemsControl Style="{StaticResource GalleryCommandGroupStyle}" 
+                          Width="{Binding Path=MaxSize}" 
+                          ItemsSource="{Binding Path=Commands}" />
             </DataTemplate>
         </ResourceDictionary>
     </FrameworkElement.Resources>
 
     <Control.Template>
         <ControlTemplate  TargetType="{x:Type m:Ribbon}">
-            <TabControl ItemsSource="{TemplateBinding ContentControl.Content}" Style="{StaticResource CommandTabControlStyle}" />
+            <TabControl ItemsSource="{TemplateBinding ContentControl.Content}" 
+                     Style="{StaticResource CommandTabControlStyle}" />
         </ControlTemplate>
     </Control.Template>
 </ContentControl>

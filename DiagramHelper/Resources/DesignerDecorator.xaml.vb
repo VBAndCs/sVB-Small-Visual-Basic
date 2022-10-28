@@ -52,7 +52,7 @@
     End Sub
 
     Private Sub OpenMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        GetDesigner(sender).Open()
+        Designer.Open()
     End Sub
 
     Private Sub SaveImageMenuItem_Click(sender As Object, e As RoutedEventArgs)

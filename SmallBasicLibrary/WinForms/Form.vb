@@ -652,6 +652,43 @@ Namespace WinForms
         End Function
 
         ''' <summary>
+        ''' Shows the form that has the given name as a child form of the current form.
+        ''' </summary>
+        ''' <param name="childFormName">the name of the form.</param>
+        ''' <param name="argsArr">any additional data, array, or a dynamic object you want to pass to the form. It will be stored in the ArgsArr property of the form, so you can use it as you want</param>
+        ''' <returns>the child form name</returns>
+        <ReturnValueType(VariableType.Form)>
+        <ExMethod>
+        Public Shared Function ShowChildForm(parentFormName As Primitive, childFormName As Primitive, argsArr As Primitive) As Primitive
+            Dim asm = System.Reflection.Assembly.GetCallingAssembly()
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim parentWnd = Forms.GetForm(parentFormName)
+
+                          If GetIsLoaded(childFormName) Then
+                              Dim childWnd = Forms.GetForm(childFormName)
+                              childWnd.Owner = parentWnd
+                              SetArgsArr(childFormName, argsArr)
+                              Show(childFormName)
+                              childWnd.RaiseEvent(New RoutedEventArgs(OnFormShownEvent))
+                          Else
+                              Stack.PushValue("_" & childFormName.AsString().ToLower() & "_argsArr", argsArr)
+                              Form.Initialize(childFormName, asm)
+                              Dim childWnd = Forms.GetForm(childFormName)
+                              childWnd.Owner = parentWnd
+                          End If
+
+                      Catch ex As Exception
+                          Form.ReportSubError(childFormName, "ShowChildForm", ex)
+                      End Try
+                  End Sub)
+
+            Return childFormName
+        End Function
+
+
+        ''' <summary>
         ''' Gets or sets the name of the button that the user clicked when he closes the dialog form.
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>

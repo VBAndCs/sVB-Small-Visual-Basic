@@ -167,7 +167,7 @@
                         <RowDefinition Height ="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    
+
                     <Grid x:Name="DesignerGrid" Grid.Column="1" Grid.RowSpan="4">
                         <DH:Designer x:Name="formDesigner"  
 			                      PageWidth="700" PageHeight="500" ShowGrid="True" />
@@ -225,87 +225,93 @@
                                             <shell:LargeCommandGroup>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.NewCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileNew.png" Width="48" Height="48" />
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileNew.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
 
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.OpenCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileOpen.png" Width="48" Height="48" />
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileOpen.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
 
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="48" Height="48" />
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
 
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveAsCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileSaveAs.png" Width="48" Height="48" />
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileSaveAs.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                             </shell:LargeCommandGroup>
                                         </shell:CommandChunk>
 
                                         <shell:CommandChunk Name="{lu:Localized WebGroup}">
-                                            <shell:SmallCommandGroup>
-                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebLoadCommand}" ShowCommandText="True">
-                                                    <shell:Ribbon.SmallIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/WebOpen.png" Width="28" Height="28" />
-                                                    </shell:Ribbon.SmallIcon>
+                                            <shell:LargeCommandGroup>
+                                                <shell:RoutedRibbonCommand 
+                                                        Command="{x:Static l:MainWindow.WebLoadCommand}"
+                                                        ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/WebOpen.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
-                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.WebSaveCommand}" ShowCommandText="True">
-                                                    <shell:Ribbon.SmallIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/WebSave.png" Width="28" Height="28" />
-                                                    </shell:Ribbon.SmallIcon>
+                                                <shell:RoutedRibbonCommand 
+                                                        Command="{x:Static l:MainWindow.WebSaveCommand}" 
+                                                        ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/WebSave.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
-                                            </shell:SmallCommandGroup>
+                                            </shell:LargeCommandGroup>
                                         </shell:CommandChunk>
 
                                         <shell:CommandChunk Name="{lu:Localized ClipboardGroup}">
                                             <shell:LargeCommandGroup>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CutCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditCut.png" Width="48" Height="48" />
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditCut.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CopyCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditCopy.png" Width="48" Height="48" />
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditCopy.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.PasteCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditPaste.png" Width="48" Height="48" />
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditPaste.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                             </shell:LargeCommandGroup>
-                                            <shell:SmallCommandGroup>
+
+                                            <shell:LargeCommandGroup>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.UndoCommand}" ShowCommandText="True">
-                                                    <shell:Ribbon.SmallIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditUndo.png" Width="24" Height="24" />
-                                                    </shell:Ribbon.SmallIcon>
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditUndo.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RedoCommand}" ShowCommandText="True">
-                                                    <shell:Ribbon.SmallIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditRedo.png" Width="24" Height="24" />
-                                                    </shell:Ribbon.SmallIcon>
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditRedo.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
-                                            </shell:SmallCommandGroup>
+                                            </shell:LargeCommandGroup>
                                         </shell:CommandChunk>
 
                                         <shell:CommandChunk Name="{lu:Localized ProgramGroup}">
                                             <shell:LargeCommandGroup>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RunCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/ProgramRun.png" Width="48" Height="48" />
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/ProgramRun.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
+
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/VBExport.png" Width="48" Height="48" />
+                                                        <Image Source="pack://application:,,/sVB;component/Resources/VBExport.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                             </shell:LargeCommandGroup>
@@ -319,7 +325,7 @@
                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                        FontSize="16" FontWeight="Bold" Foreground="White"
                                        Text="Opened Code Documents" />
-                            
+
                             <ComboBox x:Name="CmbOpenedDocs" Grid.Column="1" Grid.Row="1"
                                       Background="Azure" Foreground="Blue" 
                                       FontSize="16" FontWeight="Bold" IsEditable="True"
@@ -382,10 +388,30 @@
             </TabItem>
 
         </TabControl>
+
         <StackPanel x:Name="stkInfo"
                     Orientation="Horizontal" HorizontalAlignment="Right" 
-                    VerticalAlignment="Center"   Margin="0,0,5,0">
+                    VerticalAlignment="Center" Margin="0,0,5,0">
 
+            <StackPanel x:Name="StkToolbar" Orientation="Horizontal" Background="AliceBlue"
+                        HorizontalAlignment="Left">
+                <Button x:Name="BtnNewPage" Margin="20,0,0,0" ToolTip="Add New Form (Ctrl+N)"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                       Click="BtnNewPage_Click" >
+                    <Image Source="pack://application:,,/sVB;component/Resources/NewForm.png" Width="24" Height="24" />
+                </Button>
+                <Button x:Name="BtnOpenPage"  ToolTip="Open Existing Form (Ctrl+O)"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Click="BtnOpenPage_Click">
+                    <Image Source="pack://application:,,/sVB;component/Resources/FileOpen.png" Width="24" Height="24" />
+                </Button>
+                <Button x:Name="BtnSavePage"  Margin="0,0,20,0" ToolTip="Save Current Form (Ctrl+S)"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Click="BtnSavePage_Click">
+                    <Image Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="24" Height="24" />
+                </Button>
+            </StackPanel>
+            
             <Grid x:Name="grdNameText">
                 <Grid.ColumnDefinitions >
                     <ColumnDefinition/>
@@ -393,16 +419,17 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock VerticalAlignment="Center"
+                <TextBlock VerticalAlignment="Center" FontWeight="Bold" FontSize="14"
                     Margin="0,1,5,0" Foreground="Brown" Background="LightYellow" >Name:</TextBlock>
                 <TextBox x:Name="txtControlName"  Grid.Column="1" VerticalAlignment="Center"
-                       Width="100" MaxHeight="50" Background="AliceBlue"  Margin="0,1,10,1" Padding="0"
-                       PreviewKeyDown="TxtControlName_PreviewKeyDown"
-                       PreviewTextInput="TxtControlName_PreviewTextInput"
-                       GotFocus="TxtControl_GotFocus"
-                       LostFocus="TxtControlName_LostFocus"/>
+                        Width="100" MaxHeight="50" Background="AliceBlue"  Margin="0,1,10,1" Padding="0"
+                        PreviewKeyDown="TxtControlName_PreviewKeyDown"
+                        PreviewTextInput="TxtControlName_PreviewTextInput"
+                        GotFocus="TxtControl_GotFocus"
+                        LostFocus="TxtControlName_LostFocus"/>
 
-                <TextBlock VerticalAlignment="Center" Margin="0,1,5,0"  Grid.Column="2" Foreground="Brown" Background="LightYellow" >Text:</TextBlock>
+                <TextBlock VerticalAlignment="Center" FontWeight="Bold" FontSize="14"
+                        Margin="0,1,5,0"  Grid.Column="2" Foreground="Brown" Background="LightYellow" >Text:</TextBlock>
                 <TextBox x:Name="txtControlText"  Grid.Column="3" VerticalAlignment="Center"
                         Width="100" MaxHeight="30" Background="AliceBlue" Margin="0,1,15,1" Padding="0"
                         PreviewKeyDown="TxtControlText_PreviewKeyDown"
@@ -411,8 +438,8 @@
 
             </Grid>
 
-            <TextBlock VerticalAlignment="Center" x:Name="txtTitle"/>
-            <TextBlock x:Name="txtForm" VerticalAlignment="Center" FontWeight="Bold" Foreground="Blue"/>
+            <TextBlock VerticalAlignment="Center" x:Name="txtTitle"  FontSize="16"/>
+            <TextBlock x:Name="txtForm" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" Foreground="Blue"/>
 
             <Border BorderThickness="1,1,1,1"  Margin="8,1,0,0" Padding="0,3"
                     VerticalAlignment="Center" HorizontalAlignment="Right"

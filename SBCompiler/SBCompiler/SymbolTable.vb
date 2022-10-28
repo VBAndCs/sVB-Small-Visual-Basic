@@ -187,37 +187,40 @@ Namespace Microsoft.SmallVisualBasic
                 type = _typeInfoBag.Types(typeKey)
                 typeName.Comment = type.Name
 
+            ElseIf ControlNames Is Nothing Then
+                Return GetTypeInfoFromInfered(typeName)
+
             Else
-                Dim varType = GetInferedType(typeName)
-                Dim varTypeName = WinForms.PreCompiler.GetTypeName(varType)
-
-                If varTypeName <> "" Then
-                    typeKey = varTypeName.ToLower()
-                    type = _typeInfoBag.Types(typeKey)
-
-                ElseIf ControlNames Is Nothing Then
-                    Return Nothing
-
-                Else
-                    For Each controlName In ControlNames
-                        If controlName.ToLower = typeKey Then
-                            typeName.Comment = controlName
-                            typeKey = ModuleNames(typeKey).ToLower()
-                            Exit For
-                        End If
-                    Next
-
-                    If typeName.Comment = "" Then
-                        Dim name = WinForms.PreCompiler.GetModuleFromVarName(typeKey)
-                        If name = "" Then Return Nothing
-                        type = _typeInfoBag.Types(name.ToLower())
-                    Else
-                        type = _typeInfoBag.Types(typeKey)
+                For Each controlName In ControlNames
+                    If controlName.ToLower = typeKey Then
+                        typeName.Comment = controlName
+                        typeKey = ModuleNames(typeKey).ToLower()
+                        Exit For
                     End If
+                Next
+
+                If typeName.Comment = "" Then
+                    Dim name = WinForms.PreCompiler.GetModuleFromVarName(typeKey)
+                    If name = "" Then Return GetTypeInfoFromInfered(typeName)
+                    type = _typeInfoBag.Types(name.ToLower())
+                Else
+                    type = _typeInfoBag.Types(typeKey)
                 End If
             End If
 
             Return type
+        End Function
+
+        Private Function GetTypeInfoFromInfered(typeName As Token) As TypeInfo
+            Dim varType = GetInferedType(typeName)
+            Dim varTypeName = WinForms.PreCompiler.GetTypeName(varType)
+
+            If varTypeName <> "" Then
+                Dim typeKey = varTypeName.ToLower()
+                Return _typeInfoBag.Types(typeKey)
+            End If
+
+            Return Nothing
         End Function
 
         Friend Function GetMemberInfo(

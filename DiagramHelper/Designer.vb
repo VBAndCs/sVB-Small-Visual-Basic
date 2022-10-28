@@ -278,6 +278,8 @@ Public Class Designer
     End Function
 
     Private Shared Sub UpdatePageInfo(Optional updateForms As Boolean = True)
+        If CurrentPage Is Nothing Then Return
+
         If CurrentPage.PageKey = "" Then CurrentPage.PageKey = GetTempKey()
         Pages(CurrentPage.PageKey) = CurrentPage
         If updateForms Then UpdateFormInfo()
@@ -940,7 +942,7 @@ Public Class Designer
         Me.Scale = Sc
     End Sub
 
-    Public Sub Open()
+    Public Shared Sub Open()
         ' Configure open file dialog box 
         Dim dlg As New Microsoft.Win32.OpenFileDialog With {
             .DefaultExt = ".xaml", ' Default file extension
@@ -1140,11 +1142,11 @@ Public Class Designer
                     e.Handled = True
                     Return
                 Case Key.O
-                    Me.Open()
+                    Open()
                     e.Handled = True
                     Return
                 Case Key.N
-                    Me.OpenNewPage()
+                    OpenNewPage()
                     e.Handled = True
                     Return
                 Case Key.P

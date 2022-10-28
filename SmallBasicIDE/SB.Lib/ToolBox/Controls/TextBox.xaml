@@ -8,7 +8,8 @@
 
                 <TextBox d:Designer.FrameWidth="180" d:Designer.FrameHeight="40"
                         VerticalScrollBarVisibility = "Auto"
-                        HorizontalScrollBarVisibility = "Auto"/>
+                        HorizontalScrollBarVisibility = "Auto"
+                        IsInactiveSelectionHighlightEnabled ="True"/>
             </d:SBControl.Control>
 
 </d:SBControl>

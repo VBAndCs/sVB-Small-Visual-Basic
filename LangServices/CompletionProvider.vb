@@ -585,21 +585,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                         If item.ParamIndex < params.Count Then
                             Dim name = params(item.ParamIndex).ToLower().Trim("_")
-                            Dim especialItem = ""
+                            Dim especialItem = GetEspecialItem(name)
 
-                            If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
-                                especialItem = "Colors"
-                            ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then
-                                especialItem = "Keys"
-                            ElseIf name = "showdialog" OrElse name.Contains("dialogresult") Then
-                                especialItem = "DialogResults"
-                            ElseIf name.Contains("typename") OrElse name.Contains("controltype") Then
-                                especialItem = "ControlTypes"
-                            ElseIf name.Contains("fontname") Then
-                                especialItem = "FontName"
-                            ElseIf name.Contains("formname") Then
-                                especialItem = "FormName"
-                            ElseIf name.Length > 2 AndAlso name.StartsWith("is") AndAlso Char.IsUpper(params(item.ParamIndex)(2)) Then
+                            If especialItem = "" AndAlso name.Length > 2 AndAlso
+                                       name.StartsWith("is") AndAlso
+                                       Char.IsUpper(params(item.ParamIndex)(2)
+                                    ) Then
                                 especialItem = "Boolean"
                             End If
 
@@ -1174,7 +1165,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             Dim bag As CompletionBag
             Dim especialItem = ""
-            Dim leadingSpace = ""
             Dim curToken As Token
 
             Dim line = snapshot.GetLineFromPosition(caretPosition)
@@ -1191,102 +1181,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                              TokenType.LessThan, TokenType.LessThanEqualTo
 
                         Dim index = n - 1
-                        Dim matchingPair1 As Char
-                        Dim matchingPair2 As Char
-                        Dim token = tokens(index)
-
                         curToken = tokens(n)
-                        If caretPosition - line.Start - tokens(n).EndColumn = 0 Then leadingSpace = " "
-
-                        Select Case token.Type
-                            Case TokenType.RightParens
-                                matchingPair1 = ")"c
-                                matchingPair2 = "("c
-
-                            Case TokenType.RightBracket
-                                matchingPair1 = "]"c
-                                matchingPair2 = "["c
-
-                            Case TokenType.RightCurlyBracket
-                                matchingPair1 = "}"c
-                                matchingPair2 = "{"c
-
-                            Case Else
-                                GoTo LineElse
-                        End Select
-
-                        Dim pair1Count = 0
-                        Dim startPos = token.Column + line.Start
-
-                        Do
-                            token = GetNextToken(index, -1, line, tokens)
-                            Select Case token.Text
-                                Case ""
-                                    Return
-                                Case matchingPair1
-                                    pair1Count += 1
-                                Case matchingPair2
-                                    If pair1Count = 0 Then
-                                        token = GetNextToken(index, -1, line, tokens)
-                                        Exit Do
-                                    End If
-                                    pair1Count -= 1
-                            End Select
-                        Loop
-
-LineElse:
+                        Dim token = GetIdentifier(tokens, index, line)
                         Dim name = tokens(index).LCaseText.Trim("_")
+                        especialItem = GetEspecialItem(name)
 
-                        If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
-                            especialItem = "Colors"
-                        ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then
-                            especialItem = "Keys"
-                        ElseIf name = "showdialog" OrElse name.Contains("dialogresult") Then
-                            especialItem = "DialogResults"
-                        ElseIf name.Contains("typename") OrElse name.Contains("controltype") Then
-                            especialItem = "ControlTypes"
-                        ElseIf name.Contains("fontname") Then
-                            especialItem = "FontName"
-                        Else
-                            Dim properties = textBuffer.Properties
-                            Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
-                            Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
-                            Dim source = New TextBufferReader(line.TextSnapshot)
-                            Dim gp = GlobalParser
-                            Dim symbolTable = compHelper.Compile(
-                                source, controlNames, controlsInfo, gp
-                            ).Parser.SymbolTable
-
-                            needsToReCompile = False
-                            token.Parent = compHelper.GetRootStatement(line.LineNumber)
-                            Dim varType = symbolTable.GetInferedType(token)
-
-                            If varType = VariableType.Any Then
-                                Dim st = TryCast(token.Parent.GetStatementAt(line.LineNumber), Statements.AssignmentStatement)
-                                If st IsNot Nothing Then
-                                    Dim prop = TryCast(st.LeftValue, Expressions.PropertyExpression)
-                                    If prop Is Nothing Then
-                                        varType = st.LeftValue.InferType(symbolTable)
-                                    ElseIf prop.IsEvent Then
-                                        especialItem = "Sub"
-                                    End If
-                                End If
+                        If especialItem = "" Then
+                            especialItem = InferEspType(token, line)
+                            If especialItem = "" AndAlso Not ctrlSpace Then
+                                Return
                             End If
-
-                            Select Case varType
-                                Case VariableType.Color
-                                    especialItem = "Colors"
-                                Case VariableType.Key
-                                    especialItem = "Keys"
-                                Case VariableType.DialogResult
-                                    especialItem = "DialogResults"
-                                Case VariableType.ControlType
-                                    especialItem = "ControlTypes"
-                                Case VariableType.Boolean
-                                    especialItem = "Boolean"
-                                Case Else
-                                    If Not ctrlSpace Then Return
-                            End Select
                         End If
                 End Select
             End If
@@ -1305,6 +1209,116 @@ LineElse:
             End If
 
         End Sub
+
+        Private Function InferEspType(token As Token, line As ITextSnapshotLine) As String
+            Dim especialItem = ""
+            Dim properties = textBuffer.Properties
+            Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
+            Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
+            Dim source = New TextBufferReader(line.TextSnapshot)
+            Dim gp = GlobalParser
+            Dim symbolTable = compHelper.Compile(
+                                source, controlNames, controlsInfo, gp
+                            ).Parser.SymbolTable
+
+            needsToReCompile = False
+            token.Parent = compHelper.GetRootStatement(line.LineNumber)
+            Dim varType = symbolTable.GetInferedType(token)
+
+            If varType = VariableType.Any Then
+                Dim st = TryCast(token.Parent.GetStatementAt(line.LineNumber), Statements.AssignmentStatement)
+                If st IsNot Nothing Then
+                    Dim prop = TryCast(st.LeftValue, Expressions.PropertyExpression)
+                    If prop Is Nothing Then
+                        varType = st.LeftValue.InferType(symbolTable)
+                    ElseIf prop.IsEvent Then
+                        especialItem = "Sub"
+                    End If
+                End If
+            End If
+
+            Select Case varType
+                Case VariableType.Color
+                    especialItem = "Colors"
+                Case VariableType.Key
+                    especialItem = "Keys"
+                Case VariableType.DialogResult
+                    especialItem = "DialogResults"
+                Case VariableType.ControlType
+                    especialItem = "ControlTypes"
+                Case VariableType.Boolean
+                    especialItem = "Boolean"
+            End Select
+
+            Return especialItem
+        End Function
+
+        Private Function GetEspecialItem(name As String) As String
+            If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
+                Return "Colors"
+            ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then
+                Return "Keys"
+            ElseIf name = "showdialog" OrElse name.Contains("dialogresult") Then
+                Return "DialogResults"
+            ElseIf name.Contains("typename") OrElse name.Contains("controltype") Then
+                Return "ControlTypes"
+            ElseIf name.Contains("fontname") Then
+                Return "FontName"
+            ElseIf name.Contains("formname") Then
+                Return "FormName"
+            End If
+
+            Return ""
+        End Function
+
+        Private Function GetIdentifier(
+                            tokens As List(Of Token),
+                           ByRef index As Integer,
+                           ByRef line As ITextSnapshotLine
+                     ) As Token
+
+            Dim matchingPair1 As Char
+            Dim matchingPair2 As Char
+            Dim token = tokens(index)
+
+            Select Case token.Type
+                Case TokenType.RightParens
+                    matchingPair1 = ")"c
+                    matchingPair2 = "("c
+
+                Case TokenType.RightBracket
+                    matchingPair1 = "]"c
+                    matchingPair2 = "["c
+
+                Case TokenType.RightCurlyBracket
+                    matchingPair1 = "}"c
+                    matchingPair2 = "{"c
+
+                Case Else
+                    Return token
+            End Select
+
+            Dim pair1Count = 0
+            Dim startPos = token.Column + line.Start
+
+            Do
+                token = GetNextToken(index, -1, line, tokens)
+                Select Case token.Text
+                    Case ""
+                        Return token
+                    Case matchingPair1
+                        pair1Count += 1
+                    Case matchingPair2
+                        If pair1Count = 0 Then
+                            Return GetNextToken(index, -1, line, tokens)
+                        End If
+                        pair1Count -= 1
+                End Select
+            Loop
+
+            Return token
+        End Function
+
 
         Dim canGetOriginalBag As Boolean
 
