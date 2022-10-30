@@ -7,7 +7,7 @@ Public Class ZoomBox
     Dim ScrollViewer As ScrollViewer
     Private zoomThumb As Thumb
     Private zoomCanvas As Canvas
-    Friend zoomSlider As Slider
+    Friend ZoomSlider As Slider
     Private ZoomExpander As Expander
     Private Scale As Double = 1.0
     Private WithEvents DesignerCanvas As Canvas

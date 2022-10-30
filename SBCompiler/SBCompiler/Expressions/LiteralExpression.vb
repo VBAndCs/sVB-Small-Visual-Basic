@@ -29,7 +29,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             _Literal.Parent = Me.Parent
             If Literal.Type = TokenType.DateLiteral Then
                 Dim result = Parser.ParseDateLiteral(Literal.Text)
-                If result.Ticks = 0 Then
+                If Not result.Ticks.HasValue Then
                     Dim kind = If(result.IsDate, "date", "time span")
                     symbolTable.Errors.Add(New [Error](Literal, $"Invalid {kind} format!"))
                 End If
@@ -52,7 +52,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
                 Case TokenType.DateLiteral
                     Dim result = Parser.ParseDateLiteral(Literal.Text)
-                    scope.ILGenerator.Emit(OpCodes.Ldc_I8, result.Ticks)
+                    scope.ILGenerator.Emit(OpCodes.Ldc_I8, result.Ticks.Value)
                     scope.ILGenerator.EmitCall(OpCodes.Call, If(result.IsDate, scope.TypeInfoBag.DateToPrimitive, scope.TypeInfoBag.TimeSpanToPrimitive), Nothing)
 
                 Case TokenType.True

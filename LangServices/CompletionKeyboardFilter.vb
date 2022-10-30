@@ -134,7 +134,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim replaceSpan = provider.GetReplacementSpane()
 
                 Dim key = item.HistoryKey
-                If key <> "" Then CompletionProvider.CompHistory(key) = item.DisplayName
+                If key <> "" Then
+                    Dim properties = textView.TextBuffer.Properties
+                    Dim controls = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
+                    If controls?.ContainsKey(key) Then key = controls(key)
+                    CompletionProvider.CompHistory(key) = item.DisplayName
+                End If
 
                 Dim pos = textView.Caret.Position.TextInsertionIndex
                 Dim line = textView.TextSnapshot.GetLineFromPosition(pos)

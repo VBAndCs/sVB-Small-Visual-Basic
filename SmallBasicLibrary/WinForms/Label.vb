@@ -98,8 +98,6 @@ Namespace WinForms
                 If content IsNot Nothing Then tb.Text = content.ToString()
                 cntrl.Content = tb
             End If
-
-            tb.TextWrapping = TextWrapping.Wrap
             Return tb
         End Function
 
@@ -434,6 +432,34 @@ Namespace WinForms
                        End Try
                    End Sub)
         End Sub
+
+        ''' <summary>
+        ''' Gets or sets whether or not to the text will be continue on the next line if it exceeds the width of the control.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetWordWrap(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetWordWrap = (GetTextBlock(controlName).TextWrapping = TextWrapping.Wrap)
+                    Catch ex As Exception
+                        Control.ReportError(controlName, "WordWrap", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetWordWrap(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           GetTextBlock(controlName).TextWrapping = If(Value, TextWrapping.Wrap, TextWrapping.NoWrap)
+                       Catch ex As Exception
+                           Control.ReportPropertyError(controlName, "WordWrap", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
 
         ''' <summary>
         ''' Draws the shape defined by GeometricPath on the label

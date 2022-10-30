@@ -16,8 +16,8 @@
     </UserControl.Resources>
 
     <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1">
-        <ScrollViewer>
-             <StackPanel x:Name="ToolBoxTabs"/>
+        <ScrollViewer x:Name="Scv">
+             <StackPanel x:Name="ToolBoxTabs" PreviewMouseWheel="ToolBoxTabs_PreviewMouseWheel"/>
         </ScrollViewer>
     </Border>
 </UserControl>

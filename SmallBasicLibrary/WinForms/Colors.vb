@@ -1,4 +1,6 @@
 ﻿Imports Microsoft.SmallVisualBasic.Library
+Imports SysColors = System.Windows.SystemColors
+
 Namespace WinForms
     ''' <summary>Defines all known color names</summary>
     <SmallBasicType>
@@ -1141,6 +1143,337 @@ Namespace WinForms
         ''' </summary>
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property YellowGreen As Primitive = "#9ACD32"
+
+        Public Shared Function GetHexaName(brush As System.Windows.Media.SolidColorBrush) As String
+            Dim color = brush.Color
+            Return $"#{Color.A:X2}{Color.R:X2}{Color.G:X2}{Color.B:X2}"
+        End Function
+
+        Public Shared Function GetHexaName(color As System.Windows.Media.Color) As String
+            Return $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}"
+        End Function
+
+
+        ''' <summary>
+        ''' Gets the color of active window's border as defiend on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemActiveBorder As Primitive
+            Get
+                Return GetHexaName(SysColors.ActiveBorderBrush)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color used on the usrs system to highlight a selected item that is inactive.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemInactiveSelectionHighlight As Primitive
+            Get
+                Return GetHexaName(SysColors.InactiveSelectionHighlightBrush)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of an inactive selected item’s text, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemInactiveSelectionHighlightText As Primitive
+            Get
+                Return GetHexaName(SysColors.InactiveSelectionHighlightTextBrush)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the background color in the client area of a window, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemWindow As Primitive
+            Get
+                Return GetHexaName(SysColors.WindowColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the background color of a scroll bar, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemScrollBar As Primitive
+            Get
+                Return GetHexaName(SysColors.ScrollBarColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of a menu's text, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemMenuText As Primitive
+            Get
+                Return GetHexaName(SysColors.MenuTextColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color used to highlight a menu item, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemMenuHighlight As Primitive
+            Get
+                Return GetHexaName(SysColors.MenuHighlightColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the background color for a menu bar, as defined on the user system.
+        ''' </summary>
+        '     The background color for a menu bar, as defined on the user system.
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemMenuBar As Primitive
+            Get
+                Return GetHexaName(SysColors.MenuBarColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of a menu's background, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemMenu As Primitive
+            Get
+                Return GetHexaName(SysColors.MenuColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the text color for the ToolTip control, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemInfoText As Primitive
+            Get
+                Return GetHexaName(SysColors.InfoTextColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the background color for the ToolTip control, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemInfo As Primitive
+            Get
+                Return GetHexaName(SysColors.InfoColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of the text of an inactive window's title bar, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemInactiveCaptionText As Primitive
+            Get
+                Return GetHexaName(SysColors.InactiveCaptionTextColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the background color of an inactive window's title bar, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemInactiveCaption As Primitive
+            Get
+                Return GetHexaName(SysColors.InactiveCaptionColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of an inactive window's border, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemInactiveBorder As Primitive
+            Get
+                Return GetHexaName(SysColors.InactiveBorderColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color used to designate a hot-tracked item, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemHotTrack As Primitive
+            Get
+                Return GetHexaName(SysColors.HotTrackColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of the text of selected items, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemHighlightText As Primitive
+            Get
+                Return GetHexaName(SysColors.HighlightTextColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the background color of selected items, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemHighlight As Primitive
+            Get
+                Return GetHexaName(SysColors.HighlightColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of disabled text, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemGrayText As Primitive
+            Get
+                Return GetHexaName(SysColors.GrayTextColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the right side color in the gradient of an inactive window's title bar, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemGradientInactiveCaption As Primitive
+            Get
+                Return GetHexaName(SysColors.GradientInactiveCaptionColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the right side color in the gradient of an active window's title bar, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemGradientActiveCaption As Primitive
+            Get
+                Return GetHexaName(SysColors.GradientActiveCaptionColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of the desktop, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemDesktop As Primitive
+            Get
+                Return GetHexaName(SysColors.DesktopColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of text in a three-dimensional display element, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemControlText As Primitive
+            Get
+                Return GetHexaName(SysColors.ControlTextColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the highlight color of a three-dimensional display element, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemControlHighlight As Primitive
+            Get
+                Return GetHexaName(SysColors.ControlLightLightColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the light color of a three-dimensional display element, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemControlLight As Primitive
+            Get
+                Return GetHexaName(SysColors.ControlLightColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the dark shadow color of a three-dimensional display element, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemControlDarkShadow As Primitive
+            Get
+                Return GetHexaName(SysColors.ControlDarkDarkColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the shadow color of a three-dimensional display element, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemControlShadow As Primitive
+            Get
+                Return GetHexaName(SysColors.ControlDarkColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the face color of a three-dimensional display element, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemControl As Primitive
+            Get
+                Return GetHexaName(SysColors.ControlColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of the application workspace, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemAppWorkspace As Primitive
+            Get
+                Return GetHexaName(SysColors.AppWorkspaceColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of the text in      the active window's title bar, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemActiveCaptionText As Primitive
+            Get
+                Return GetHexaName(SysColors.ActiveCaptionTextColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the background color of the active window's title bar, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemActiveCaption As Primitive
+            Get
+                Return GetHexaName(SysColors.ActiveCaptionColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of a window frame, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemWindowFrame As Primitive
+            Get
+                Return GetHexaName(SysColors.WindowFrameColor)
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Gets the color of the text in the client area of a window, as defined on the user system.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property SystemWindowText As Primitive
+            Get
+                Return GetHexaName(SysColors.WindowTextColor)
+            End Get
+        End Property
 
     End Class
 End Namespace

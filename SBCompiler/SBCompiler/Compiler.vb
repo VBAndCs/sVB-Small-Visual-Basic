@@ -220,7 +220,7 @@ Namespace Microsoft.SmallVisualBasic
                         Dim dir = IO.Path.GetDirectoryName(libraryFile)
                         For Each file In IO.Directory.GetFiles(dir)
                             Select Case IO.Path.GetExtension(file).ToLower().TrimStart("."c)
-                                Case "bmp", "jpg", "jpeg", "png", "gif", "txt", "xaml"
+                                Case "bmp", "jpg", "jpeg", "png", "gif", "txt", "xaml", "style"
                                     fileName = Path.GetFileName(file)
                                     IO.File.Copy(file, Path.Combine(directory, fileName))
                             End Select

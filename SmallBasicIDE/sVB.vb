@@ -88,7 +88,7 @@ Class sVB
 
         For Each f In IO.Directory.EnumerateFiles(docDirectory)
             Select Case IO.Path.GetExtension(f).ToLower().TrimStart("."c)
-                Case "bmp", "jpg", "jpeg", "png", "gif", "txt", "xaml"
+                Case "bmp", "jpg", "jpeg", "png", "gif", "txt", "xaml", "style"
                     Dim f2 = IO.Path.Combine(binDirectory, IO.Path.GetFileName(f))
                     Try
                         IO.File.Copy(f, f2, True)

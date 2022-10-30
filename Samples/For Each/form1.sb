@@ -1,4 +1,4 @@
-TextBox1.MuliLine = True
+TextBox1.MultiLine = True
 
 Arr = {1, 2, 3, 4, 5}
 Arr["test"] = "Hello"
@@ -31,8 +31,8 @@ Sub Button2_OnClick()
    
    ListBox1.RemoveAllItems()
    
-   ForEach line In lines
-      ListBox1.AddItem(line)
+   ForEach strLine In lines
+      ListBox1.AddItem(strLine)
    Next
    
 EndSub
@@ -40,9 +40,9 @@ EndSub
 
 
 '------------------------------------------------
-Function GetLines(text)
+Function GetLines(txt)
    str = ""
-   str = text
+   str = txt
    pos = 1
    a = {}
    length = str.Length

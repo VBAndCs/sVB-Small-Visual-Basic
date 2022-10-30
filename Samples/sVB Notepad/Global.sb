@@ -1,0 +1,37 @@
+
+FontNames = Desktop.FontNames
+
+Ops!FontName = "Segoe UI"
+Ops!FontSize = 20
+Ops!Bold = False
+Ops!Italic = False
+Ops!Underlined = False
+Ops!ForeColor = Colors.Black
+Ops!BackColor = Colors.White
+Ops!FrameColor = Colors.SystemControl
+Ops!RightToLeft = False
+Ops!MultiLine = True
+Ops!WordWrap = True
+
+LoadSettings()
+
+
+'------------------------------------------------
+Sub LoadSettings()
+   _file = File.GetSettingsFilePath()
+   settings = File.ReadLines(_file)
+   If settings <> "" Then
+      Ops!FontName = settings[1]
+      Ops!FontSize = settings[2]
+      Ops!Bold = settings[3]
+      Ops!Italic = settings[4]
+      Ops!Underlined = settings[5]
+      Ops!ForeColor = settings[6]
+      Ops!BackColor = settings[7]
+      Ops!FrameColor = settings[8]
+      Ops!RightToLeft = settings[9]
+      Ops!MultiLine = settings[10]
+      Ops!WordWrap = settings[11]
+   EndIf
+   
+EndSub

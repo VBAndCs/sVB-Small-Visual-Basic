@@ -1,0 +1,50 @@
+'@Form Hints:
+'#FrmFind{
+'    Label1: Label
+'    TxtFind: TextBox
+'    RdoUp: RadioButton
+'    RdoDown: RadioButton
+'    BtnFind: Button
+'    BtnReplace: Button
+'    ChkWord: CheckBox
+'    ChkCase: CheckBox
+'    TxtReplace: TextBox
+'    Label2: Label
+'    BtnReplaceAll: Button
+'}
+
+Me = "FrmFind"
+Label1 = "frmfind.label1"
+TxtFind = "frmfind.txtfind"
+RdoUp = "frmfind.rdoup"
+RdoDown = "frmfind.rdodown"
+BtnFind = "frmfind.btnfind"
+BtnReplace = "frmfind.btnreplace"
+ChkWord = "frmfind.chkword"
+ChkCase = "frmfind.chkcase"
+TxtReplace = "frmfind.txtreplace"
+Label2 = "frmfind.label2"
+BtnReplaceAll = "frmfind.btnreplaceall"
+_path = Program.Directory + "\FrmFind.xaml"
+FrmFind = Forms.LoadForm("FrmFind", _path)
+Form.SetArgsArr(frmfind, Stack.PopValue("_frmfind_argsArr"))
+Form.Show(FrmFind)
+'#Events{
+'    BtnFind: OnClick
+'    BtnReplace: OnClick
+'    BtnReplaceAll: OnClick
+'}
+
+' BtnFind Events:
+Control.HandleEvents(BtnFind)
+Control.OnClick = BtnFind_OnClick
+
+' BtnReplace Events:
+Control.HandleEvents(BtnReplace)
+Control.OnClick = BtnReplace_OnClick
+
+' BtnReplaceAll Events:
+Control.HandleEvents(BtnReplaceAll)
+Control.OnClick = BtnReplaceAll_OnClick
+
+

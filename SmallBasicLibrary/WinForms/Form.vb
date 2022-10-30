@@ -58,7 +58,7 @@ Namespace WinForms
             App.Invoke(
                  Sub()
                      Try
-                         Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+                         Dim frm = CType(Forms._forms(CStr(formName).ToLower), Window)
 
                          Dim textBox1 As New Wpf.TextBox With {
                            .Name = textBoxName,
@@ -181,6 +181,42 @@ Namespace WinForms
             Return key
         End Function
 
+        ''' <summary>
+        ''' Adds a new Timer control to the form
+        ''' </summary>
+        ''' <param name="timerName">A unigue name of the new Timer.</param>
+        ''' <param name="interval">The delay time in milliseconds between ticks</param>
+        ''' <returns>The neame of the Timer</returns>
+        <ReturnValueType(VariableType.WinTimer)>
+        <ExMethod>
+        Public Shared Function AddTimer(
+                         formName As Primitive,
+                         timerName As Primitive,
+                         interval As Primitive
+                   ) As Primitive
+
+            Dim key = ValidateArgs(formName, timerName)
+            App.Invoke(
+                    Sub()
+                        Try
+                            Dim frm = CType(Forms._forms(CStr(formName).ToLower), Window)
+                            Dim t As New Threading.DispatcherTimer() With {
+                                .Tag = timerName,
+                                .Interval = TimeSpan.FromMilliseconds(interval)
+                            }
+
+                            WinTimer.Timers(key) = t
+                            t.Start()
+
+                        Catch ex As Exception
+                            ReportSubError(formName, "AddTimer", ex)
+                        End Try
+                    End Sub)
+
+            Return key
+        End Function
+
+
         Friend Shared Function ValidateArgs(formName As String, controlName As String) As String
             If formName = "" Then
                 Dim msg = "`formName` can't be empty string"
@@ -190,7 +226,7 @@ Namespace WinForms
             End If
 
             If controlName = "" Then
-                Dim msg = "`buttonName` can't be empty string"
+                Dim msg = "Control name can't be empty string"
                 Dim ex As New ArgumentException(msg)
                 Helper.ReportError(msg, ex)
                 Throw ex
@@ -305,6 +341,54 @@ Namespace WinForms
 
             Return key
         End Function
+
+        ''' <summary>
+        ''' Adds a new ToggleButton control to the form
+        ''' </summary>
+        ''' <param name="toggleButtonName">A unigue name of the new ToggleButton.</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control.</param>
+        ''' <param name="height">The height of the control.</param>
+        ''' <returns>The neame of the toggleButton</returns>
+        <ReturnValueType(VariableType.ToggleButton)>
+        <ExMethod>
+        Public Shared Function AddToggleButton(
+                         formName As Primitive,
+                         toggleButtonName As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive
+                    ) As Primitive
+
+            Dim key = ValidateArgs(formName, toggleButtonName)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+
+                          Dim toggleButton1 As New Wpf.Primitives.ToggleButton With {
+                               .Name = toggleButtonName,
+                               .Width = width,
+                               .Height = height
+                          }
+
+                          Wpf.Canvas.SetLeft(toggleButton1, left)
+                          Wpf.Canvas.SetTop(toggleButton1, top)
+
+                          Dim cnv = GetCanvas(frm)
+                          cnv.Children.Add(toggleButton1)
+                          Forms._controls(key) = toggleButton1
+
+                      Catch ex As Exception
+                          ReportSubError(formName, "AddToggleButton", ex)
+                      End Try
+                  End Sub)
+
+            Return key
+        End Function
+
 
         ''' <summary>
         ''' Adds a new CheckBox control to the form
@@ -463,6 +547,7 @@ Namespace WinForms
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
+        ''' <param name="selectedDate">the date that will be selected in the control</param>
         ''' <returns>The neame of the DatePicker</returns>
         <ReturnValueType(VariableType.DatePicker)>
         <ExMethod>
@@ -471,7 +556,8 @@ Namespace WinForms
                          datePickerName As Primitive,
                          left As Primitive,
                          top As Primitive,
-                         width As Primitive
+                         width As Primitive,
+                         selectedDate As Primitive
                     ) As Primitive
 
             Dim key = ValidateArgs(formName, datePickerName)
@@ -482,7 +568,8 @@ Namespace WinForms
 
                           Dim dp As New Wpf.DatePicker With {
                                .Name = datePickerName,
-                               .Width = width
+                               .Width = width,
+                               .SelectedDate = selectedDate
                           }
 
                           Wpf.Canvas.SetLeft(dp, left)
@@ -500,11 +587,178 @@ Namespace WinForms
             Return key
         End Function
 
-        Private Shared ReadOnly ArgsArrProperty As _
-                System.Windows.DependencyProperty =
-                       System.Windows.DependencyProperty.RegisterAttached("ArgsArr",
-                       GetType(String), GetType(System.Windows.Window)
-                )
+        ''' <summary>
+        ''' Adds a new ProgressBar control to the form
+        ''' </summary>
+        ''' <param name="progressBarName">A unigue name of the new ProgressBar.</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control.</param>
+        ''' <param name="height">The height of the control.</param>
+        ''' <param name="minimum">The progress minimum value</param>
+        ''' <param name="maximum">The progress maximum value. Use 0 if the max value is indeterminate.</param>
+        ''' <returns>The neame of the ProgressBar</returns>
+        <ReturnValueType(VariableType.ProgressBar)>
+        <ExMethod>
+        Public Shared Function AddProgressBar(
+                         formName As Primitive,
+                         progressBarName As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive,
+                         minimum As Primitive,
+                         maximum As Primitive
+                    ) As Primitive
+
+            Dim key = ValidateArgs(formName, progressBarName)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+
+                          Dim pb As New Wpf.ProgressBar With {
+                               .Name = progressBarName,
+                               .Width = width,
+                               .Height = height,
+                               .Minimum = minimum,
+                               .Maximum = maximum
+                          }
+
+                          Wpf.Canvas.SetLeft(pb, left)
+                          Wpf.Canvas.SetTop(pb, top)
+
+                          Dim cnv = GetCanvas(frm)
+                          cnv.Children.Add(pb)
+                          Forms._controls(key) = pb
+
+                      Catch ex As Exception
+                          ReportSubError(formName, "AddProgressBar", ex)
+                      End Try
+                  End Sub)
+
+            Return key
+        End Function
+
+        ''' <summary>
+        ''' Adds a new Slider control to the form
+        ''' </summary>
+        ''' <param name="sliderName">A unigue name of the new Slider.</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control.</param>
+        ''' <param name="height">The height of the control.</param>
+        ''' <param name="minimum">The slider minimum value</param>
+        ''' <param name="maximum">The slider maximum value.</param>
+        ''' <param name="value">The slider current value</param>
+        ''' <param name="tickFrequency">The distance between slide ticks</param>
+        ''' <returns>The neame of the Slider</returns>
+        <ReturnValueType(VariableType.Slider)>
+        <ExMethod>
+        Public Shared Function AddSlider(
+                         formName As Primitive,
+                         sliderName As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive,
+                         minimum As Primitive,
+                         maximum As Primitive,
+                         value As Primitive,
+                         tickFrequency As Primitive
+                    ) As Primitive
+
+            Dim key = ValidateArgs(formName, sliderName)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+
+                          Dim s As New Wpf.Slider With {
+                               .Name = sliderName,
+                               .Width = width,
+                               .Height = height,
+                               .Minimum = minimum,
+                               .Maximum = maximum,
+                               .TickFrequency = tickFrequency,
+                               .Value = value
+                          }
+
+                          Wpf.Canvas.SetLeft(s, left)
+                          Wpf.Canvas.SetTop(s, top)
+
+                          Dim cnv = GetCanvas(frm)
+                          cnv.Children.Add(s)
+                          Forms._controls(key) = s
+
+                      Catch ex As Exception
+                          ReportSubError(formName, "AddSlider", ex)
+                      End Try
+                  End Sub)
+
+            Return key
+        End Function
+
+        ''' <summary>
+        ''' Adds a new ScrollBar control to the form
+        ''' </summary>
+        ''' <param name="scrollBarName">A unigue name of the new ScrollBar.</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control.</param>
+        ''' <param name="height">The height of the control.</param>
+        ''' <param name="minimum">The scrollbar minimum value</param>
+        ''' <param name="maximum">The scrollbar maximum value.</param>
+        ''' <param name="value">The scrollbar current value</param>
+        ''' <returns>The neame of the scrollbar.</returns>
+        <ReturnValueType(VariableType.ScrollBar)>
+        <ExMethod>
+        Public Shared Function AddScrollBar(
+                         formName As Primitive,
+                         scrollBarName As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive,
+                         minimum As Primitive,
+                         maximum As Primitive,
+                         value As Primitive
+                   ) As Primitive
+
+            Dim key = ValidateArgs(formName, scrollBarName)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), Window)
+
+                          Dim s As New Wpf.Primitives.ScrollBar With {
+                               .Name = scrollBarName,
+                               .Width = width,
+                               .Height = height,
+                               .Minimum = minimum,
+                               .Maximum = maximum,
+                               .Value = value
+                          }
+
+                          Wpf.Canvas.SetLeft(s, left)
+                          Wpf.Canvas.SetTop(s, top)
+
+                          Dim cnv = GetCanvas(frm)
+                          cnv.Children.Add(s)
+                          Forms._controls(key) = s
+
+                      Catch ex As Exception
+                          ReportSubError(formName, "AddScrollBar", ex)
+                      End Try
+                  End Sub)
+
+            Return key
+        End Function
+
+        Private Shared ReadOnly ArgsArrProperty As DependencyProperty =
+                DependencyProperty.RegisterAttached("ArgsArr",
+                GetType(String), GetType(System.Windows.Window)
+        )
 
         ''' <summary>
         ''' Returns the additional data sent to the form via Forms.ShowForm and Forms.ShowDialog methods.

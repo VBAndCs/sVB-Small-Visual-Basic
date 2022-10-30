@@ -6,6 +6,7 @@
     Private Sub ToolBox_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         If tabsLoaded Then Return
         tabsLoaded = True
+
         Try
             Dim appDir = IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
             Dim toolBoxDir = IO.Path.Combine(appDir, "ToolBox")
@@ -102,6 +103,10 @@
         If e.Key = Key.Escape Then
             Me.DeSelectAll()
         End If
+    End Sub
+
+    Private Sub ToolBoxTabs_PreviewMouseWheel(sender As Object, e As MouseWheelEventArgs)
+        Scv.ScrollToVerticalOffset(-e.Delta)
     End Sub
 End Class
 

@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v2.4" Loaded="Window_Loaded"
+        Title="Small Visual Basic v2.5" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -357,27 +357,6 @@
                         </Grid>
                     </Grid>
 
-                    <Grid Name="programRunningOverlay" Visibility="Hidden">
-                        <Panel.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                <GradientStop Color="#cc000000" Offset="0" />
-                                <GradientStop Color="#cc333363" Offset="1" />
-                            </LinearGradientBrush>
-                        </Panel.Background>
-
-                        <DockPanel>
-                            <StackPanel DockPanel.Dock="Bottom">
-                                <Button Name="endProgramButton" Padding="4" Margin="8" FontWeight="Bold" HorizontalAlignment="Right" Command="{x:Static l:MainWindow.EndProgramCommand}" IsDefault="True" Content="{lu:Localized EndProgramCommand}" />
-                            </StackPanel>
-
-                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <TextBlock Name="processRunningMessage" TextAlignment="Center" Margin="8" FontWeight="Bold" FontSize="32" Foreground="#649Db4" TextWrapping="WrapWithOverflow" />
-                                <TextBlock TextAlignment="Center" Margin="8" FontSize="24" Foreground="#999999" TextWrapping="WrapWithOverflow" Text="{lu:Localized WaitForProgramExit}" />
-                                <TextBlock TextAlignment="Center" Margin="8" FontSize="12" Foreground="#FFFFFFFF" FontWeight="Bold" TextWrapping="WrapWithOverflow" Text="{lu:Localized OverlayCloseAtEnd}" />
-                            </StackPanel>
-                        </DockPanel>
-                    </Grid>
-
                     <!--<StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2">
                       <TextBlock Name="versionText" Margin="2" IsHitTestVisible="False" Foreground="#66ffffff" FontSize="10" FontWeight="Bold" />
                       <TextBlock Name="updateAvailable" Margin="2" Visibility="Collapsed" Foreground="#FC9E59" FontSize="11" FontWeight="Bold">
@@ -405,11 +384,16 @@
                         Click="BtnOpenPage_Click">
                     <Image Source="pack://application:,,/sVB;component/Resources/FileOpen.png" Width="24" Height="24" />
                 </Button>
-                <Button x:Name="BtnSavePage"  Margin="0,0,20,0" ToolTip="Save Current Form (Ctrl+S)"
+                <Button x:Name="BtnSavePage"  ToolTip="Save Current Form (Ctrl+S)"
                         Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                         Click="BtnSavePage_Click">
                     <Image Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="24" Height="24" />
                 </Button>
+                <Button x:Name="BtnRun" Margin="5,0,20,0" ToolTip="Run Program (F5)"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Click="BtnRun_Click">
+                    <Image Source="pack://application:,,/sVB;component/Resources/ProgramRun.png" Width="24" Height="24" />
+                </Button>                
             </StackPanel>
             
             <Grid x:Name="grdNameText">
@@ -450,5 +434,27 @@
                 </Border>
             </Border>
         </StackPanel>
+
+        <Grid Name="programRunningOverlay" Visibility="Hidden">
+            <Panel.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#cc000000" Offset="0" />
+                    <GradientStop Color="#cc333363" Offset="1" />
+                </LinearGradientBrush>
+            </Panel.Background>
+
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Bottom">
+                    <Button Name="endProgramButton" Padding="4" Margin="8" FontWeight="Bold" HorizontalAlignment="Right" Command="{x:Static l:MainWindow.EndProgramCommand}" IsDefault="True" Content="{lu:Localized EndProgramCommand}" />
+                </StackPanel>
+
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Name="processRunningMessage" TextAlignment="Center" Margin="8" FontWeight="Bold" FontSize="32" Foreground="#649Db4" TextWrapping="WrapWithOverflow" />
+                    <TextBlock TextAlignment="Center" Margin="8" FontSize="24" Foreground="#999999" TextWrapping="WrapWithOverflow" Text="{lu:Localized WaitForProgramExit}" />
+                    <TextBlock TextAlignment="Center" Margin="8" FontSize="12" Foreground="#FFFFFFFF" FontWeight="Bold" TextWrapping="WrapWithOverflow" Text="{lu:Localized OverlayCloseAtEnd}" />
+                </StackPanel>
+            </DockPanel>
+        </Grid>
+
     </Grid>
 </Window>

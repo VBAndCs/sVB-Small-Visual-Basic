@@ -25,9 +25,18 @@ Namespace WinForms
         End Function
 
         <System.Runtime.CompilerServices.Extension()>
-        Public Function GetChild(Of T)(parent As UIElement) As UIElement
+        Public Function GetChild(Of T)(parent As UIElement, Optional recurse As Boolean = False) As T
+            For Each c In parent.GetChildren(recurse)
+                If TypeOf c Is T Then Return CObj(c)
+            Next
+            Return Nothing
+        End Function
+
+        <System.Runtime.CompilerServices.Extension()>
+        Public Function GetChild(parent As FrameworkElement, name As String) As FrameworkElement
             For Each c In parent.GetChildren()
-                If TypeOf c Is T Then Return c
+                Dim fw = TryCast(c, FrameworkElement)
+                If fw?.Name = name Then Return fw
             Next
             Return Nothing
         End Function

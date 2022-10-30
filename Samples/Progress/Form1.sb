@@ -1,0 +1,20 @@
+ProgressBar1.Visible = False
+LblValue.Visible = False
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   ProgressBar1.Visible = True
+   LblValue.Visible = True
+   Button1.Enabled = False
+   
+   For i = 1 To 100
+      ProgressBar1.Value = i
+      LblValue.Text = i + "%"
+      Program.WinDelay(100)
+   Next
+   
+   ProgressBar1.Visible = False
+   LblValue.Visible = False
+   Button1.Enabled = True
+EndSub
+

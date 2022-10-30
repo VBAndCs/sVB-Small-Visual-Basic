@@ -289,16 +289,21 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private Function GetSelectedItemIndex(text As String) As Integer
             Dim textLength = text.Length
 
-            If textLength <2 Then
+            If textLength < 2 Then
                 Dim firstItem = filteredCompletionItems(0).CompletionItem
                 Dim key = firstItem.HistoryKey
-                If key <> "" AndAlso CompletionProvider.CompHistory.ContainsKey(key) Then
-                    Dim word = CompletionProvider.CompHistory(key).ToLower()
-                    If Text = "" OrElse word.StartsWith(Text) Then
-                        Text = word
-                        textLength = Text.Length
-                    End If
+                If key <> "" Then
+                    Dim properties = textView.TextBuffer.Properties
+                    Dim controls = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
+                    If controls?.ContainsKey(key) Then key = controls(key)
 
+                    If CompletionProvider.CompHistory.ContainsKey(key) Then
+                        Dim word = CompletionProvider.CompHistory(key).ToLower()
+                        If text = "" OrElse word.StartsWith(text) Then
+                            text = word
+                            textLength = text.Length
+                        End If
+                    End If
                 End If
             End If
 

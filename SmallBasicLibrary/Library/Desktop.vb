@@ -68,6 +68,7 @@ Namespace Library
         ''' </summary>
         ''' <param name="font">The initial font to show its properties in the dialog.</param>
         ''' <returns>an array containing the font properties under the keys Name, Size, Bold, Italic, Underlined and Color, or returns an empty string "" if the user canceled the operation</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function ShowFontDialog(font As Primitive) As Primitive
             Dim wpfColor = WinForms.Color.FromString(font("Color"))
             Dim color = Drawing.Color.FromArgb(wpfColor.A, wpfColor.R, wpfColor.G, wpfColor.B)

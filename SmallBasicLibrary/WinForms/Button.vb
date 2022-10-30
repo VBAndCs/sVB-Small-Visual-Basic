@@ -49,24 +49,90 @@ Namespace WinForms
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         <ExProperty>
-        Public Shared Function GetUnderlined(controlName As Primitive) As Primitive
+        Public Shared Function GetUnderlined(buttonName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetUnderlined = (Label.GetTextBlock(controlName).TextDecorations Is System.Windows.TextDecorations.Underline)
+                        GetUnderlined = (Label.GetTextBlock(buttonName).TextDecorations Is System.Windows.TextDecorations.Underline)
                     Catch ex As Exception
-                        Control.ReportError(controlName, "Underlined", ex)
+                        Control.ReportError(buttonName, "Underlined", ex)
                     End Try
                 End Sub)
         End Function
 
-        Public Shared Sub SetUnderlined(controlName As Primitive, Value As Primitive)
+        Public Shared Sub SetUnderlined(buttonName As Primitive, Value As Primitive)
             App.Invoke(
                    Sub()
                        Try
-                           Label.GetTextBlock(controlName).TextDecorations = If(CBool(Value), System.Windows.TextDecorations.Underline, Nothing)
+                           Label.GetTextBlock(buttonName).TextDecorations = If(CBool(Value), System.Windows.TextDecorations.Underline, Nothing)
                        Catch ex As Exception
-                           Control.ReportPropertyError(controlName, "Underlined", Value, ex)
+                           Control.ReportPropertyError(buttonName, "Underlined", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Gets or sets whether or not to the text will be continue on the next line if it exceeds the width of the control.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetWordWrap(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetWordWrap = (Label.GetTextBlock(controlName).TextWrapping = System.Windows.TextWrapping.Wrap)
+                    Catch ex As Exception
+                        Control.ReportError(controlName, "WordWrap", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetWordWrap(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           Label.GetTextBlock(controlName).TextWrapping = If(Value, System.Windows.TextWrapping.Wrap, System.Windows.TextWrapping.NoWrap)
+                       Catch ex As Exception
+                           Control.ReportPropertyError(controlName, "WordWrap", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
+
+
+        Public Shared ReadOnly IsFlatProperty As System.Windows.DependencyProperty =
+                System.Windows.DependencyProperty.RegisterAttached("IsFlat",
+                GetType(Boolean), GetType(Button),
+                New System.Windows.PropertyMetadata(False))
+
+        ''' <summary>
+        ''' Gets or sets whether or not to show the button with a flat style.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetIsFlat(buttonName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetIsFlat = CBool(Control.GetControl(buttonName).GetValue(IsFlatProperty))
+                    Catch ex As Exception
+                        Control.ReportError(buttonName, "IsFlat", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetIsFlat(buttonName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           Dim btn = GetButton(buttonName)
+                           Dim flat = CBool(Value)
+                           btn.SetValue(IsFlatProperty, flat)
+                           btn.Style = If(flat,
+                                            btn.FindResource(Wpf.ToolBar.ButtonStyleKey),
+                                            Nothing)
+
+                       Catch ex As Exception
+                           Control.ReportPropertyError(buttonName, "IsFlat", Value, ex)
                        End Try
                    End Sub)
         End Sub

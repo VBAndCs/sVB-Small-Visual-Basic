@@ -1103,20 +1103,20 @@ Namespace Microsoft.SmallVisualBasic
             _SymbolTable.AutoCompletion = False
         End Sub
 
-        Public Shared Function ParseDateLiteral(literal As String) As (Ticks As Long, IsDate As Boolean)
+        Public Shared Function ParseDateLiteral(literal As String) As (Ticks As Long?, IsDate As Boolean)
             If literal(1) = "-" OrElse literal(1) = "+" Then
                 Dim s As TimeSpan
                 If TimeSpan.TryParse(literal.Trim("#"c, "+"c), CultureInfo.InvariantCulture, s) Then
                     Return (s.Ticks, False)
                 Else
-                    Return (0, False)
+                    Return (Nothing, False)
                 End If
             Else
                 Dim d As Date
                 If Date.TryParse(literal.Trim("#"), CultureInfo.InvariantCulture, DateTimeStyles.None, d) Then
                     Return (d.Ticks, True)
                 Else
-                    Return (0, True)
+                    Return (Nothing, True)
                 End If
             End If
 

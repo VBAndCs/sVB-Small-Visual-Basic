@@ -50,7 +50,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
         End Sub
 
-        Public Shared CompHistory As New Dictionary(Of String, String)
+        Public Shared CompHistory As Dictionary(Of String, String) = WinForms.PreCompiler.FillControlDefaultProperties()
 
         Private Shared _fontNames As New List(Of CompletionItem)
         ReadOnly Property FontNames As List(Of CompletionItem)
@@ -122,7 +122,13 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim item = itemWrapper.CompletionItem
             If adornment IsNot Nothing Then
                 Dim key = item.HistoryKey
-                If key <> "" Then CompHistory(key) = item.DisplayName
+                If key <> "" Then
+                    Dim properties = textBuffer.Properties
+                    Dim controls = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
+                    If controls?.ContainsKey(key) Then key = controls(key)
+                    CompHistory(key) = item.DisplayName
+                End If
+
                 Dim repWith = itemWrapper.ReplacementText
                 Dim replaceSpan = GetReplacementSpane()
 
@@ -1229,9 +1235,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim st = TryCast(token.Parent.GetStatementAt(line.LineNumber), Statements.AssignmentStatement)
                 If st IsNot Nothing Then
                     Dim prop = TryCast(st.LeftValue, Expressions.PropertyExpression)
-                    If prop Is Nothing Then
+                    If prop Is Nothing OrElse Not prop.IsEvent Then
                         varType = st.LeftValue.InferType(symbolTable)
-                    ElseIf prop.IsEvent Then
+                    Else
                         especialItem = "Sub"
                     End If
                 End If
@@ -1529,7 +1535,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                          NameOf(WinForms.TextEx),
                          NameOf(WinForms.ArrayEx),
                          NameOf(WinForms.MathEx),
-                         NameOf(WinForms.DateEx)
+                         NameOf(WinForms.DateEx),
+                         NameOf(WinForms.WinTimer)
 
                 Case Else
                     For Each item In completionItems(controlModule)

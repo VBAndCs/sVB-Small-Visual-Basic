@@ -20,11 +20,16 @@ Namespace WinForms
             FillModuleMembers(GetType(ComboBox))
             FillModuleMembers(GetType(CheckBox))
             FillModuleMembers(GetType(RadioButton))
+            FillModuleMembers(GetType(ToggleButton))
             FillModuleMembers(GetType(Button))
             FillModuleMembers(GetType(MenuItem))
             FillModuleMembers(GetType(MainMenu))
             FillModuleMembers(GetType(DatePicker))
+            FillModuleMembers(GetType(ProgressBar))
+            FillModuleMembers(GetType(Slider))
+            FillModuleMembers(GetType(ScrollBar))
             FillModuleMembers(GetType(ImageBox))
+            FillModuleMembers(GetType(WinTimer))
             FillModuleMembers(GetType(TextEx))
             FillModuleMembers(GetType(MathEx))
             FillModuleMembers(GetType(ArrayEx))
@@ -37,6 +42,9 @@ Namespace WinForms
             deafaultControlEvents(NameOf(ComboBox).ToLower()) = "OnSelection"
             deafaultControlEvents(NameOf(CheckBox).ToLower()) = "OnCheck"
             deafaultControlEvents(NameOf(RadioButton).ToLower()) = "OnCheck"
+            deafaultControlEvents(NameOf(ToggleButton).ToLower()) = "OnCheck"
+            deafaultControlEvents(NameOf(Slider).ToLower()) = "OnSlide"
+            deafaultControlEvents(NameOf(ScrollBar).ToLower()) = "OnScroll"
             deafaultControlEvents(NameOf(DatePicker).ToLower()) = "OnSelection"
         End Sub
 
@@ -139,11 +147,16 @@ Namespace WinForms
                 New ShortcutInfo("ComboBox", VariableType.ComboBox),
                 New ShortcutInfo("CheckBox", VariableType.CheckBox),
                 New ShortcutInfo("RadioButton", VariableType.RadioButton),
+                New ShortcutInfo("ToggleButton", VariableType.ToggleButton),
                 New ShortcutInfo("Button", VariableType.Button),
                 New ShortcutInfo("MenuItem", VariableType.MenuItem),
                 New ShortcutInfo("MainMenu", VariableType.MainMenu),
                 New ShortcutInfo("DatePicker", VariableType.DatePicker),
-                New ShortcutInfo("ImageBox", VariableType.ImageBox)
+                New ShortcutInfo("ProgressBar", VariableType.ProgressBar),
+                New ShortcutInfo("Slider", VariableType.Slider),
+                New ShortcutInfo("ScrollBar", VariableType.ScrollBar),
+                New ShortcutInfo("ImageBox", VariableType.ImageBox),
+                New ShortcutInfo("Timer", VariableType.WinTimer)
     }
 
         Public Shared Function GetVarType(variableName As String) As VariableType
@@ -200,11 +213,34 @@ Namespace WinForms
             eventsInfo(t.Name) = events
         End Sub
 
+        Public Shared Function FillControlDefaultProperties() As Dictionary(Of String, String)
+            Dim defaultProperties As New Dictionary(Of String, String)
+            defaultProperties(NameOf(Form)) = "text"
+            defaultProperties(NameOf(Control)) = "name"
+            defaultProperties(NameOf(TextBox)) = "text"
+            defaultProperties(NameOf(Label)) = "text"
+            defaultProperties(NameOf(ListBox)) = "additem"
+            defaultProperties(NameOf(ComboBox)) = "additem"
+            defaultProperties(NameOf(CheckBox)) = "checked"
+            defaultProperties(NameOf(RadioButton)) = "checked"
+            defaultProperties(NameOf(ToggleButton)) = "checked"
+            defaultProperties(NameOf(Button)) = "enabled"
+            defaultProperties(NameOf(MenuItem)) = "additem"
+            defaultProperties(NameOf(MainMenu)) = "additem"
+            defaultProperties(NameOf(DatePicker)) = "selecteddate"
+            defaultProperties(NameOf(ProgressBar)) = "maximum"
+            defaultProperties(NameOf(Slider)) = "maximum"
+            defaultProperties(NameOf(ScrollBar)) = "maximum"
+            defaultProperties(NameOf(ImageBox)) = "filename"
+            defaultProperties(NameOf(WinTimer)) = "interval"
+            Return defaultProperties
+        End Function
+
         Public Shared Function GetEvents(controlName As String) As List(Of String)
             Dim events As New List(Of String)
             If controlName = NameOf(Forms) Then Return events
 
-            If controlName <> NameOf(ImageBox) Then
+            If controlName <> NameOf(ImageBox) AndAlso controlName <> NameOf(WinTimer) Then
                 For Each e In eventsInfo(NameOf(Control))
                     events.Add(e)
                 Next
@@ -225,7 +261,7 @@ Namespace WinForms
 
             eventName = eventName.ToLower()
 
-            If controlName <> NameOf(ImageBox) Then
+            If controlName <> NameOf(ImageBox) AndAlso controlName <> NameOf(WinTimer) Then
                 For Each e In eventsInfo(NameOf(Control))
                     If e.ToLower = eventName Then Return True
                 Next
@@ -260,7 +296,7 @@ Namespace WinForms
             ElseIf varType < VariableType.Control AndAlso varType <> VariableType.Any Then
                 Return New MethodInformation("", 0)
 
-            ElseIf controlName = NameOf(ImageBox) Then
+            ElseIf controlName = NameOf(ImageBox) OrElse controlName = NameOf(WinTimer) Then
                 Return New MethodInformation("", 0)
 
             ElseIf moduleInfo(NameOf(Control)).Contains(method) Then

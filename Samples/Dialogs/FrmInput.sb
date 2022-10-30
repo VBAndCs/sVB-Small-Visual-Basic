@@ -1,4 +1,4 @@
-TxtInput.MuliLine = True
+TxtInput.MultiLine = True
 BtnOK.Enabled = False
 LblMsg.Text = Me.ArgsArr
 

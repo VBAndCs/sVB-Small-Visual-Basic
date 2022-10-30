@@ -1,0 +1,13 @@
+﻿<d:SBControl xmlns:d="clr-namespace:DiagramHelper;assembly=DiagramHelper"
+ 
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 
+     DisplayImage="ScrollBar.png">
+
+         <d:SBControl.Control>
+
+            <ScrollBar d:Designer.FrameWidth="180" d:Designer.FrameHeight="30" 
+                Maximum = "100" Orientation="Horizontal" SmallChange="5" LargeChange="10"/>
+         </d:SBControl.Control>
+
+</d:SBControl>

@@ -1,0 +1,24 @@
+'@Form Hints:
+'#Form1{
+'    ProgressBar1: ProgressBar
+'    LblValue: Label
+'    Button1: Button
+'}
+
+Me = "Form1"
+ProgressBar1 = "form1.progressbar1"
+LblValue = "form1.lblvalue"
+Button1 = "form1.button1"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+

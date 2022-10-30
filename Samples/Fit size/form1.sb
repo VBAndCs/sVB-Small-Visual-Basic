@@ -1,4 +1,4 @@
-
+Label1.WordWrap = True
 
 '------------------------------------------------
 Sub Button1_OnClick()

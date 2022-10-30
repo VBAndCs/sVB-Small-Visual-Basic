@@ -1,6 +1,5 @@
 ﻿Namespace Microsoft.SmallVisualBasic
     Public Class [Error]
-
         Public ReadOnly Property Line As Integer
         Public ReadOnly Property subLine As Integer
         Public ReadOnly Property Column As Integer

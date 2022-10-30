@@ -147,6 +147,32 @@ Namespace WinForms
                    End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Gets or sets whether or not to the text will be continue on the next line if it exceeds the width of the control.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetWordWrap(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetWordWrap = (Label.GetTextBlock(controlName).TextWrapping = TextWrapping.Wrap)
+                    Catch ex As Exception
+                        Control.ReportError(controlName, "WordWrap", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetWordWrap(controlName As Primitive, Value As Primitive)
+            App.Invoke(
+                   Sub()
+                       Try
+                           Label.GetTextBlock(controlName).TextWrapping = If(Value, TextWrapping.Wrap, TextWrapping.NoWrap)
+                       Catch ex As Exception
+                           Control.ReportPropertyError(controlName, "WordWrap", Value, ex)
+                       End Try
+                   End Sub)
+        End Sub
 
         ''' <summary>
         ''' Fired when the checked state is changed.

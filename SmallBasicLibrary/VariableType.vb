@@ -19,7 +19,12 @@
     DatePicker
     CheckBox
     RadioButton
+    ToggleButton
     Button
     MenuItem
     MainMenu
+    ProgressBar
+    Slider
+    ScrollBar
+    WinTimer
 End Enum

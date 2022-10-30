@@ -126,7 +126,6 @@ Namespace WinForms
                 End Sub)
         End Sub
 
-
         ''' <summary>
         ''' The x-pos of the control on its parent control.
         ''' </summary>
@@ -367,7 +366,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Changes the witdth of the control to fit its content width.
-        ''' Thisis a one time change, and will not make the control width auto-szied.
+        ''' This is a one time change, and will not make the control width auto-szied.
         ''' If you want to make the width auto-size, set the Width properties to -1.
         ''' </summary>
         <ExMethod>
@@ -387,8 +386,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Changes the height of the control to fit its content height.
-        ''' Thisis a one time change, and will not make the control height auto-szied.
+        ''' Changes the height of the control to fit its content height. This may be useful when you set WordWrap = True in labels and buttons.
+        ''' This is a one time change, and will not make the control height auto-szied.
         ''' If you want to make the height auto-size, set the Height properties to -1.
         ''' </summary>
         <ExMethod>
@@ -410,7 +409,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Changes the witdth and height of the control to fit its content size.
-        ''' Thisis a one time change, and will not make the control width and height auto-szie.
+        ''' This is a one time change, and will not make the control width and height auto-szie.
         ''' If you want to make them auto-size, set the Width or Height properties or both  to -1.
         ''' </summary>
         <ExMethod>
@@ -669,8 +668,47 @@ Namespace WinForms
                 End Sub)
         End Function
 
+        Public Shared Sub SetToolTip(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        c.SetValue(TipProperty, value.AsString())
+                        c.ToolTip = value.AsString()
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "ToolTip", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
         ''' <summary>
-        ''' Gets or sets the style of the control.
+        ''' Sets the resource dictionary of the control, that contains its controls styles.
+        ''' This allows you to design advanced styles in with other tools like VS.NET, save then as a resource dictionary in a file, then use this method to load it.
+        ''' </summary>
+        ''' <param name="fileName">The xaml file that contains the resource dictionary.</param>
+        <ExMethod>
+        Public Shared Sub SetRecourceDictionary(controlName As Primitive, fileName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim file = If(
+                             IO.Path.IsPathRooted(fileName),
+                             fileName,
+                             IO.Path.Combine(Program.Directory, fileName)
+                         )
+
+                        Dim stream = IO.File.OpenRead(file)
+                        Dim resDic = CType(Markup.XamlReader.Load(stream), ResourceDictionary)
+                        GetControl(controlName).Resources = resDic
+
+                    Catch ex As Exception
+                        ReportSubError(controlName, "SetRecourceDictionary", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Sets the style of the control.
         ''' This allows you to design advanced styles in with other tools like VS.NET, save then as a resource dictionary in a file, then use this method to load it.
         ''' </summary>
         ''' <param name="fileName">The xaml file that contains the resource dictionary.</param>
@@ -680,9 +718,14 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim stream = IO.File.OpenRead(fileName)
+                        Dim file = If(
+                             IO.Path.IsPathRooted(fileName),
+                             fileName,
+                             IO.Path.Combine(Program.Directory, fileName)
+                         )
+                        Dim stream = IO.File.OpenRead(file)
                         Dim resDic = CType(Markup.XamlReader.Load(stream), ResourceDictionary)
-                        GetControl(controlName).Style = resDic(styleKey)
+                        GetControl(controlName).Style = resDic(styleKey.AsString)
 
                     Catch ex As Exception
                         ReportSubError(controlName, "SetStyle", styleKey, ex)

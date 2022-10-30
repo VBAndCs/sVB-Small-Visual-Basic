@@ -524,12 +524,6 @@ Namespace Microsoft.SmallVisualBasic
                     CloseView(doc.MdiView)
                 End If
 
-                If Path.GetFileNameWithoutExtension(filePath).ToLower() = "global" OrElse
-                        File.Exists(filePath.Substring(0, filePath.Length - 2) & "xaml") Then
-                    If formDesigner.IsNew AndAlso Not formDesigner.HasChanges Then
-                        DiagramHelper.Designer.ClosePage(False, True)
-                    End If
-                End If
             End If
 
             tabCode.IsSelected = True
@@ -1545,9 +1539,9 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub Window_ContentRendered(sender As Object, e As EventArgs)
             Dim doc As TextDocument
+            Dim closePage = False
 
             If FilesToOpen.Count > 0 Then
-                Dim closePage = False
                 For Each fileName In FilesToOpen
                     fileName = fileName.ToLower()
                     If Path.GetExtension(fileName) = ".xaml" OrElse (
@@ -1580,7 +1574,7 @@ Namespace Microsoft.SmallVisualBasic
             If doc Is Nothing Then
                 tabCode.IsSelected = True
             Else
-                DoNotOpenDefaultDoc = True
+                DoNotOpenDefaultDoc = Not closePage
             End If
 
             If SelectCodeTab Then
@@ -1605,8 +1599,6 @@ Namespace Microsoft.SmallVisualBasic
                     End Sub)
                 selectDesigner.After(10)
             End If
-
-            DoNotOpenDefaultDoc = False
         End Sub
 
         Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
@@ -1717,6 +1709,10 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub BtnOpenPage_Click(sender As Object, e As RoutedEventArgs)
             DiagramHelper.Designer.Open()
             formDesigner.Focus()
+        End Sub
+
+        Private Sub BtnRun_Click(sender As Object, e As RoutedEventArgs)
+            RunProgram()
         End Sub
     End Class
 

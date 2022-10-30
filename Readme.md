@@ -8,54 +8,72 @@
 - SB Code Enhancements:
 - Create a code library!
 
-# What's new in sVB v2.4:
-1. The toolbox now contains a CheckBox control.
-Note that the Checked property is a tri-state property, as it accepts 3 valid values:
-* True: to check the box.
-* False: to uncheck the box.
-* empty string `""`: to dim the box to indicate an indeterminate state.
-You can also allow the user to switch by these tri-states while he is clicking the checkbox, by setting the `AllowTriState` property to `True`, but this property doesn't affect your ability to set the indeterminate state from code at anytime.
-For more info, see the `CheckBox Sample` app in the samples folders.
+# What's new in sVB v2.5:
+sVB is ready to create productive desktop apps.
+1. The toolbox now contains four new controls:
+* ProgressBar, ScrollBar and Slider: These bars are horizontal only, but you can use the rotate thumb of the control on the designer to rotate them to become vertical! For more info, see the `Progress` and `Slider Color Composer` apps in the samples folder.
+* ToggleButton: This control can be checked or unchecked but it seems like a button that appears clicked or un-clicked. See the `Toggle Buttons` app in the samples folder.
 
-2. The toolbox now contains a RadioButton control.
-Radio buttons work in groups. Buttons belong to the same group can have only one button selected at a time, so, you can have many groups on the form to let the user choose between deferent sets of options. 
-You can combine some radio buttons into one group by setting the `GroupName` property of each of then to the same name like `Group1`. Or as an easier alternative, you can use the Form Designer to group radio buttons by selecting them, right-click, and click the `Group` command from the context menu. This will combine the radio buttons into one border so you can drag them together, and also will set the GroupName property of each of the to the same name, so they work as a group.
-For more info, see the ` Radio Button sample` app in the samples folders.
+2. You can add many timers to the form, by calling the `Form.AddTimer` Method. Small Basic library already contains the Timer object, but it is only one timer, and it makes code harder to make it handle different actions in different intervals. Besides, it may not work properly with forms and controls, and of course it will be missy if you try to use this single timer to handle different actions in many forms. So, to make things easier, you can now add as many timers as you need to each form!
+For example, the `Stop Watch` app in the samples folder uses two timers, one to update the current date and time displayed on the form title bar, and the other one to count the elapsed time for the stop watch.
 
-3. Label, TextBox, Button, CheckBox and RadioButton controls got an `Underlined` property, that you can set to True to draw a line under the text displayed in these controls.
-
-4. You can now use the Append methods to add a formatted text to the Label. These methods are:
-* Append: Adds a normal text to the end of the label text. This text will be formatted according the properties of the label like BackColor, ForeColor, Underlined and other Font properties.
-* AppendLine: Similar the Append method, but it adds a new line after the text.
-* AppendBold: Appends a text to the label with a bold font.
-* AppendItalic: Appends a text to the label with an italic font.
-* AppendBoldItalic: Appends text to the label with a bold and italic font.
-* AppendUnderlined: Appends a text to the label with a line drawn under it.
-* AppendWithFontEffects: Allows to control the Bold, Italic, underline effects of the appended text, by sending `True`, `False` or `""` to the corresponding parameters. Not that sending empty string means using the original label property to set this effect. For example, if you send "" to the isBold parameter, the value Label.FontBold property will be used to draw the text. Ex:
-```VB
-Label1.AppendWithFontEffects(
-    "Hello", 
-    "",              ' ignore isBold param and use that of the label
-    True,         ' isItalic = True
-    False         ' isUnderLined = False
-)
+3. You can show the open file and save file dialogs to the user by calling `File.OpenFileDialog` and `File.SaveFileDialog` methods. You must send the extensions filter to these methods, which controls the types of files that the browser will show to the user. You can use the standard .NET filter string like `"Text Files|*.txt;*.rtf|Docs|*.doc"`, or you can send the filter as an array like 
+```vb
+fileName = File.OpenFileDialog ({
+   {"Text Files", "txt", "rtf"},
+   {"Docs", "doc"}
+})
 ```
 
-* You can control the Font name and size by calling the ` AppendWithFontName`, ` AppendWithFontSize` or ` AppendWithFontNameAndSize` methods. Note that sending "" to font name or size will draw the text with the original label properties.
+For an example, see how these methods are used to open and save files in the `sVB notepad` app in the samples folder.
 
-* The `AppendWithFont` methods allows you to set font name, size, and effects together.
+4. You can show the font dialog to let the user choose font properties, by calling the ` Desktop.ShowFontDialog` method. This method empty string "" if the user canceled the operation, otherwise it returns an array containing the font properties under the keys Name, Size, Bold, Italic, Underlined and Color, so you can use these keys as dynamic properties:
+```vb
+Font = Desktop.ShowFontDialog(Me.Font)
+Me.FontName = Font!Name
+Me.FontSize = Font!Size
+```
 
-* You can control the fore and back colors by calling the ` AppendWithForecolor`, ` AppendWithBackcolor` or ` AppendWithColors` methods. Note that sending "" as the fore color or the back color will draw the text with the original label properties.
+In the above example, you see that the ShowFontDialog has a parameter that receives an array containing the initial font properties. To make this easy, each control now has a Font property that returns an array with the font properties. You can also use this property to change font properties of the control in one step:
+```vb
+font = Desktop.ShowFontDialog(Me.Font)
+If font <>"" Then
+   Me.Font = font
+EndIf
+```
 
-* You can also append a hyper link to the label, by calling the `AppendLink`, `AppendBoldLink`, `AppendItalicLink` or ` AppendBoldItalicLink`, passing to the text of the link and a url to navigate to when the user clicks it. You can supply a local folder or file path or an IP address for the url parameter. When the user clicks the link, the folder or the file will be oppened (using the default program for this type of files) and the IP address will be navigated to in the default browsr on the user PC. If url is bad of file is not found, a blank page will be opened in the browser.
+And to make this even easier, each control has a `ChooseFont` methods that shows the font dialog and sets its result to the controls Font property, so the above 4 lines can be replaced with this single line (or in fact these two words!):
+```
+Me.ChooseFont()
+```
 
-* The `AppendFormatted` method combines all the above method. It can add a formatted text, or a formatted link if you send a non-empty string to the url parameter. In fact all other methods calls the `AppendFormatted` method, with ignored parameters set to `""`, so, they are just shortcuts to make your code shorter.
+5. If you want to crate a custom font dialog, you will need to know the font names defined on the user's system. In such case, use the `Desktop.FontNames` property to get an array containing these font names.
+For a sample on how to create a custom font dialog, see the `FrmOps` in the `sVB notepad` app in the samples folder.
 
-Note that appending text and changing font size can make the label width and height smaller than showing all the text, so, you may need to use the Label.Width and Label.Height to adjust the label size afterwards. You can also make one or both of them aut-size by setting it to `-1`. If you set the width to a fixed length (not -1), then the longer text will be wrapped to next lines, so you need to enlarge the Height or make it auto-size (`= -1`).
-For more info, see the `Label Formats` app in the samples folder.
+6. You can show the color dialog to allow the user to choose a color, by calling the `Color.ShowDialog` method. And for simplicity, each control has the `ChooseForeColor` and `ChooseBackColor` methods to show the dialog and change the control fore and back colors directly.
 
-5. More enhancements to the intellisense. For example, the auto completion list will offer the color names when you are in a pos of a color argument of a method. This will happen just you write the `,` in the argument list. If you hide the list and want to show it again, just press Ctrl+Space to show the color names again.
-Also, you can commit the suggested name from the completion list to a new line, just press Ctrl+Enter. This is helpful if you are splitting the arguments over multi-lines, so, when you write one argument then `,` and the auto completion appears to offer color, font or key names, just choose the name and press Ctrl+Enter to add it to the next line.
+7. You can now crate a main menu for the form by using the `Form.AddMainMenu` method, that returns the main menu object, which you can use it's `AddItem` method to add menu items.
+For more info, see how the menus are defined in the `formMain` in the `sVB notepad` in the samples folder.
+
+8. You can show a child form that it owened by a parent form by calling the `Form.ShowChildForm` method. 
+A child form will alowys appear on top of its parent form even when you activate the parent form. If you hide or minimize the parent form, its child will be hideen with it, and when you show the parent form again, its child will appear again.
+For example, this is how the FormMain shows the frmFind as a child form in the `sVB notepad` in the samples folder"
+```
+Me.ShowChildForm("FrmFind", TxtEditor)
+```
+
+Ther first argument is the name of the child form (and the auto completion list will offer the names of the forms for you), and the second param is an extra data that will be passed to the ArgsArr property in the child form.
+
+9. You can change the style of the form and controls by loading styles from a recource dictionary. This is an advanced topic, that needs knowlage about XAML and WPF, but it always you to make use of syles and thems defiend for WPF, UWP or WinUI3 to make a beautiful design, and change how controls look and even work!
+All you need is to have a Resource dictonary in a Xaml file, then use these two methods to load it:
+* Control.SetRecourceDictionary: send the xaml file path to this method to load stryles from it into the control and its child controls. This means that if you called it from a form. the styles will affect all target controls if exists on it. Note that this method needs that styles have no keys. Styles with names (keys) will not be aplied to controls here.
+*  Control. SetStyle: it is similal to the previous method, but it has a second parameter that recives the name (key) of the style. It is useful when you want to apply a style on only one control.
+Note that if the style have no name, you can call SetRecourceDictionary from this control instead to apply the style on it, but this can also apply another styles on the controls if the resource dictionary has many styles targetting the same control type.
+For mor info, see the `Custom Styles` app in the samples folder. the tow files `RoundCorner.style` and `RoundCorner2.style` are in fact XAML files, but I changed there extensions from `.xaml` to `.style` not to be cinfused with form design files. But if you used .xaml extension it will also work.
+
+10. If you want something easier, you can change the Button and ToggleButton appearenace by setting the Flat property to True. This will help you use theem as a toolbar buttons by butting a label under them, as you can see in the ` Toggle Buttons` app in the samples folder.
+
+Now we can announce sVB as a mature productive disktop programming language, and tou can use it to build interesting apps. Have fun.
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
@@ -744,6 +762,57 @@ Label1.AddGeometricPath(
 
 This allows you to add complex shpes on the form with code, and program their events.
 See the `Geometric Path2` in the samples folder. It adds the same shapes of the previous sample to the form, and allow you to drag them by the mouse.
+
+48. The toolbox now contains a CheckBox control.
+Note that the Checked property is a tri-state property, as it accepts 3 valid values:
+* True: to check the box.
+* False: to uncheck the box.
+* empty string `""`: to dim the box to indicate an indeterminate state.
+You can also allow the user to switch by these tri-states while he is clicking the checkbox, by setting the `AllowTriState` property to `True`, but this property doesn't affect your ability to set the indeterminate state from code at anytime.
+For more info, see the `CheckBox Sample` app in the samples folders.
+
+49. The toolbox now contains a RadioButton control.
+Radio buttons work in groups. Buttons belong to the same group can have only one button selected at a time, so, you can have many groups on the form to let the user choose between deferent sets of options. 
+You can combine some radio buttons into one group by setting the `GroupName` property of each of then to the same name like `Group1`. Or as an easier alternative, you can use the Form Designer to group radio buttons by selecting them, right-click, and click the `Group` command from the context menu. This will combine the radio buttons into one border so you can drag them together, and also will set the GroupName property of each of the to the same name, so they work as a group.
+For more info, see the ` Radio Button sample` app in the samples folders.
+
+50. Label, TextBox, Button, CheckBox and RadioButton controls got an `Underlined` property, that you can set to True to draw a line under the text displayed in these controls.
+
+51. You can now use the Append methods to add a formatted text to the Label. These methods are:
+* Append: Adds a normal text to the end of the label text. This text will be formatted according the properties of the label like BackColor, ForeColor, Underlined and other Font properties.
+* AppendLine: Similar the Append method, but it adds a new line after the text.
+* AppendBold: Appends a text to the label with a bold font.
+* AppendItalic: Appends a text to the label with an italic font.
+* AppendBoldItalic: Appends text to the label with a bold and italic font.
+* AppendUnderlined: Appends a text to the label with a line drawn under it.
+* AppendWithFontEffects: Allows to control the Bold, Italic, underline effects of the appended text, by sending `True`, `False` or `""` to the corresponding parameters. Not that sending empty string means using the original label property to set this effect. For example, if you send "" to the isBold parameter, the value Label.FontBold property will be used to draw the text. Ex:
+```VB
+Label1.AppendWithFontEffects(
+    "Hello", 
+    "",              ' ignore isBold param and use that of the label
+    True,         ' isItalic = True
+    False         ' isUnderLined = False
+)
+```
+
+* You can control the Font name and size by calling the ` AppendWithFontName`, ` AppendWithFontSize` or ` AppendWithFontNameAndSize` methods. Note that sending "" to font name or size will draw the text with the original label properties.
+
+* The `AppendWithFont` methods allows you to set font name, size, and effects together.
+
+* You can control the fore and back colors by calling the ` AppendWithForecolor`, ` AppendWithBackcolor` or ` AppendWithColors` methods. Note that sending "" as the fore color or the back color will draw the text with the original label properties.
+
+* You can also append a hyper link to the label, by calling the `AppendLink`, `AppendBoldLink`, `AppendItalicLink` or ` AppendBoldItalicLink`, passing to the text of the link and a url to navigate to when the user clicks it. You can supply a local folder or file path or an IP address for the url parameter. When the user clicks the link, the folder or the file will be oppened (using the default program for this type of files) and the IP address will be navigated to in the default browsr on the user PC. If url is bad of file is not found, a blank page will be opened in the browser.
+
+* The `AppendFormatted` method combines all the above method. It can add a formatted text, or a formatted link if you send a non-empty string to the url parameter. In fact all other methods calls the `AppendFormatted` method, with ignored parameters set to `""`, so, they are just shortcuts to make your code shorter.
+
+Note that appending text and changing font size can make the label width and height smaller than showing all the text, so, you may need to use the Label.Width and Label.Height to adjust the label size afterwards. You can also make one or both of them auto-size by setting it to `-1`. If you set the width to a fixed length (not -1), then the longer text will be wrapped to next lines, so you need to enlarge the Height or make it auto-size (`= -1`).
+For more info, see the `Label Formats` app in the samples folder.
+
+52. More enhancements to the intellisense. For example, the auto completion list will offer the color names when you are in a pos of a color argument of a method. This will happen just you write the `,` in the argument list. If you hide the list and want to show it again, just press Ctrl+Space to show the color names again.
+Also, you can commit the suggested name from the completion list to a new line, just press Ctrl+Enter. This is helpful if you are splitting the arguments over multi-lines, so, when you write one argument then `,` and the auto completion appears to offer color, font or key names, just choose the name and press Ctrl+Enter to add it to the next line.
+
+53. Controls have `FitContentSize`, `FitContentWidth` and `FitContentHeight` to allow you to adjust the contol width and height to fit the contents. These methods will not make the control auto-sized, as their effect is for one time only.
+See the `Fit size` app in the samples folder.
 
 # Create a code library!
 For the first time, it is now possible to use an sVB app as a library! Follow these instructions:

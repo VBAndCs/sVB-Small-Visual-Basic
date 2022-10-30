@@ -209,11 +209,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Dim result = Parser.ParseDateLiteral(item.DisplayName)
                     _docs = New CompletionItemDocumentation() With {
                             .Prefix = If(result.IsDate, "Date Literal: ", "Time Span Literal: "),
-                            .Summary = If(result.Ticks = 0,
+                            .Summary = If(Not result.Ticks.HasValue,
                                     $"Invalid {If(result.IsDate, "date", "time span")} format!",
                                     "Value = """ & If(result.IsDate,
-                                            New Date(result.Ticks),
-                                            New TimeSpan(result.Ticks)
+                                            New Date(result.Ticks.Value),
+                                            New TimeSpan(result.Ticks.Value)
                                     ).ToString() & """"
                             )
                     }

@@ -9,9 +9,10 @@ Me = "Form1"
 TextBox1 = "form1.textbox1"
 BtnPrevLine = "form1.btnprevline"
 BtnNextLine = "form1.btnnextline"
-Form1 = Forms.LoadForm("Form1", "form1.xaml")
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 Form.Show(Form1)
-
 '#Events{
 '    BtnPrevLine: OnClick
 '    BtnNextLine: OnClick

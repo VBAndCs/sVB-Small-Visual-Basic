@@ -34,13 +34,29 @@ Namespace Library
         End Property
 
         ''' <summary>
-        ''' Delays program execution by the specified amount of MilliSeconds.
+        ''' Delays program execution by the specified amount of milliseconds.
+        ''' If this method caused any troubles, please use the WinDelay method
         ''' </summary>
-        ''' <param name="milliSeconds">
-        ''' The amount of delay.
-        ''' </param>
+        ''' <param name="milliSeconds">The amount of delay.</param>
         Public Shared Sub Delay(milliSeconds As Primitive)
-            Thread.Sleep(TimeSpan.FromMilliseconds(milliSeconds))
+            Dim t = CDbl(milliSeconds)
+            If t <= 0 Then Return
+            Thread.Sleep(TimeSpan.FromMilliseconds(t))
+        End Sub
+
+        ''' <summary>
+        ''' Delays program execution by the specified amount of milliseconds.
+        ''' If this method caused any troubles, please use the Delay method
+        ''' </summary>
+        ''' <param name="milliSeconds">The amount of delay.</param>
+        Public Shared Sub WinDelay(milliSeconds As Primitive)
+            Dim t = CDbl(milliSeconds)
+            If t <= 0 Then Return
+
+            SmallBasicApplication.Invoke(
+                Sub()
+                    Thread.Sleep(TimeSpan.FromMilliseconds(t))
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -53,9 +69,7 @@ Namespace Library
         ''' <summary>
         ''' Returns the specified argument passed to this program.
         ''' </summary>
-        ''' <param name="index">
-        ''' Index of the argument.
-        ''' </param>
+        ''' <param name="index">Index of the argument.</param>
         ''' <returns>
         ''' The command-line argument at the specified index.
         ''' </returns>

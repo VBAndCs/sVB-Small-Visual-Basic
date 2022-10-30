@@ -27,7 +27,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
             End Set
         End Property
 
-        Public ReadOnly Property HistoryKey As String
+        Public ReadOnly Property HistoryKey() As String
             Get
                 Select Case ItemType
                     Case CompletionItemType.EventName,
