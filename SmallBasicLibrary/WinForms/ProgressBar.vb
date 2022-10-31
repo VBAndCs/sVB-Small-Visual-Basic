@@ -37,7 +37,11 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetProgressBar(progressBarName).Value = value.AsDecimal()
+                        Dim pb = GetProgressBar(progressBarName)
+                        pb.Dispatcher.Invoke(
+                            Sub() pb.Value = value.AsDecimal(),
+                            System.Windows.Threading.DispatcherPriority.Render)
+
                     Catch ex As Exception
                         Control.ReportPropertyError(progressBarName, "Value", value, ex)
                     End Try

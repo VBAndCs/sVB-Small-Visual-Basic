@@ -1,6 +1,8 @@
 TxtInput.MultiLine = True
 BtnOK.Enabled = False
 LblMsg.Text = Me.ArgsArr
+LblMsg.WordWrap = True
+TxtInput.Focus()
 
 '------------------------------------------------
 Sub BtnOK_OnClick()

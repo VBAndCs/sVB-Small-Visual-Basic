@@ -95,6 +95,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             If key = "" Then Return
 
             Dim InferedTypes = symbolTable.InferedTypes
+            If InferedTypes.ContainsKey(key) Then Return
 
             Dim varType = WinForms.PreCompiler.GetVarType(identifier.Text)
 
@@ -105,11 +106,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 type = varType
             End If
 
-            If InferedTypes.ContainsKey(key) Then
-                If type <> VariableType.Any Then InferedTypes(key) = type
-            Else
-                InferedTypes(key) = type
-            End If
+            If type <> VariableType.Any Then InferedTypes(key) = type
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
@@ -223,7 +220,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 InferType(symbolTable, identifier, key)
 
             ElseIf TypeOf LeftValue Is PropertyExpression Then
-                Dim prop = CType(LeftValue, PropertyExpression)
+                    Dim prop = CType(LeftValue, PropertyExpression)
                 If prop.IsDynamic Then
                     InferType(symbolTable, prop.PropertyName, prop.DynamicKey)
                 End If

@@ -963,7 +963,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         Dim method = b4PrevToken.LCaseText
                         If method.Contains("fontname") Then
                             newBag.CompletionItems.AddRange(FontNames)
-                        ElseIf method.Contains("showform") OrElse method.Contains("showdialog") Then
+                        ElseIf method.Contains("showform") OrElse method.Contains("showdialog") OrElse method.Contains("showchildform") Then
                             newBag.CompletionItems.AddRange(FormNames)
                         End If
                     End If

@@ -14,3 +14,4 @@ Label1.AddPolygon(
    Colors.Black, 3, Colors.Red
 )
 
+Geometrics.AllowDrag(Label1)

@@ -284,11 +284,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
             ElseIf Name.Contains(line, column, bag.ForHelp) Then
                 bag.CompletionItems.Add(
-                            New Completion.CompletionItem() With {
-                                     .DisplayName = Name.Text,
-                                     .Key = Name.Text,
-                                     .ItemType = Completion.CompletionItemType.SubroutineName,
-                                     .DefinitionIdintifier = Name
+                          New Completion.CompletionItem() With {
+                                .DisplayName = Name.Text,
+                                .Key = Name.Text,
+                                .ItemType = Completion.CompletionItemType.SubroutineName,
+                                .DefinitionIdintifier = Name
                     })
 
             ElseIf Params IsNot Nothing AndAlso Params.Count > 0 AndAlso (
@@ -309,7 +309,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 Else
                     bag.ShowCompletion = False
                 End If
-            Else
+
+            ElseIf line > SubToken.Line Then
                 CompletionHelper.FillLocals(bag, Name.LCaseText)
                 Dim statement = GetStatementContaining(Body, line)
                 If statement IsNot Nothing Then
@@ -321,6 +322,9 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                     statement.PopulateCompletionItems(bag, line, column, globalScope:=False)
                 End If
+
+            Else
+                bag.ShowCompletion = False
             End If
         End Sub
 
