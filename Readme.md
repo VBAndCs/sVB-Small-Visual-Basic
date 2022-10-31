@@ -73,7 +73,7 @@ For mor info, see the `Custom Styles` app in the samples folder. the tow files `
 
 10. If you want something easier, you can change the Button and ToggleButton appearenace by setting the Flat property to True. This will help you use theem as a toolbar buttons by butting a label under them, as you can see in the ` Toggle Buttons` app in the samples folder.
 
-Now we can announce sVB as a mature productive disktop programming language, and tou can use it to build interesting apps. Have fun.
+Now we can announce sVB as a mature productive desktop programming language, and you can use it to build interesting apps. Have fun.
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 

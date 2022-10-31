@@ -203,6 +203,16 @@ Namespace Library
             _arrayMap = Nothing
         End Sub
 
+        Public Sub New(arr() As String, removeEmpty As Boolean)
+            _arrayMap = New Dictionary(Of Primitive, Primitive)
+            _isArray = True
+
+            For i = 0 To arr.Count - 1
+                Dim item = arr(i)
+                If Not removeEmpty OrElse item <> "" Then _arrayMap(i) = item
+            Next
+        End Sub
+
         Public Sub New(primitiveBool As Boolean)
             _decimalValue = Nothing
             If primitiveBool Then

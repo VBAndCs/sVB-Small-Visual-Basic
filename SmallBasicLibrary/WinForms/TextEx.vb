@@ -233,5 +233,19 @@ Namespace WinForms
         Public Shared Function GetIsEmpty(text As Primitive) As Primitive
             Return text.IsEmpty
         End Function
+
+        ''' <summary>
+        ''' Splits the current text at the given separator.
+        ''' </summary>
+        ''' <param name="separator">One character or more to split the text at. The separator will not appear in the result.</param>
+        ''' <param name="trim">Use True to trim white spaces from the start and end of the separated strings</param>
+        ''' <param name="removeEmpty">Use True to remove empty strings from the result</param>
+        ''' <returns>An array containing the splitted items</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        <ExMethod>
+        Public Shared Function Split(text As Primitive, separator As Primitive, trim As Primitive, removeEmpty As Primitive) As Primitive
+            Return Library.Text.Split(text, separator, trim, removeEmpty)
+        End Function
+
     End Class
 End Namespace

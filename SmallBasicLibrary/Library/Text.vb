@@ -416,5 +416,47 @@ Namespace Library
             Return text.IsEmpty
         End Function
 
+        ''' <summary>
+        ''' Splits the given text at the given separator.
+        ''' </summary>
+        ''' <param name="text">The input text</param>
+        ''' <param name="separator">One character or more to split the text at. The separator will not appear in the result. You can also send an array to use its items as separators.</param>
+        ''' <param name="trim">Use True to trim white spaces from the start and end of the separated strings</param>
+        ''' <param name="removeEmpty">Use True to remove empty strings from the result</param>
+        ''' <returns>An array containing the splitted items</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        Public Shared Function Split(
+                        text As Primitive,
+                        separator As Primitive,
+                        trim As Primitive,
+                        removeEmpty As Primitive
+                    ) As Primitive
+            If text.IsEmpty Then Return ""
+
+            Dim arr, separators As String()
+            If separator.IsArray Then
+                Dim items = separator._arrayMap.Values
+                Dim n = items.Count - 1
+                separators = New String(n) {}
+
+                For i = 0 To n
+                    separators(i) = items(i).AsString()
+                Next
+
+            Else
+                separators = {separator.AsString()}
+            End If
+
+            Dim options = If(removeEmpty, StringSplitOptions.RemoveEmptyEntries, StringSplitOptions.None)
+            arr = text.AsString().Split(separators, options)
+
+            If CBool(trim) Then
+                For i = 0 To arr.Count - 1
+                    arr(i) = arr(i).Trim()
+                Next
+            End If
+
+            Return New Primitive(arr, removeEmpty)
+        End Function
     End Class
 End Namespace

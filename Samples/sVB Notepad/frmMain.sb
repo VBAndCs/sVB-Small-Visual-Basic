@@ -192,10 +192,13 @@ EndFunction
 Function Save()
    If SavedFile = "" Then
       Return SaveAs()
+      
    ElseIf Text.EndsWith(SavedFile.LowerCase, ".txt") Then
       If File.WriteContents(SavedFile, TxtEditor.Text) = False Then
          Me.ShowMessage(File.LastError, "Error")
+         Return False
       EndIf
+      
    Else
       ops = {}
       ops!FontName = TxtEditor.FontName
@@ -210,8 +213,10 @@ Function Save()
       ops!MultiLine = TxtEditor.MultiLine
       ops!WordWrap = TxtEditor.WordWrap
       ops!Text = TxtEditor.Text
+      
       If File.WriteContents(SavedFile, ops) = False Then
          Me.ShowMessage(File.LastError, "Error")
+         Return False
       EndIf
    EndIf
    

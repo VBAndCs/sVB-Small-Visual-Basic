@@ -893,6 +893,7 @@ Namespace WinForms
                            Else
                                ShowDialog = _dialogResult
                            End If
+
                        ElseIf _dialogResult = "" Then
                            ShowDialog = If(dialogResult1, DialogResults.Yes, DialogResults.Cancel)
                        Else
