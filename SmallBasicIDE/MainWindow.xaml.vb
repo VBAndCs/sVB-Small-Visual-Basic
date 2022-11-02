@@ -1162,6 +1162,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim HeaderPanelGrid As Grid = CType(VisualTreeHelper.GetChild(sVBTabs, 0), Grid)
             CType(Me.Content, Grid).Children.Remove(stkInfo)
             HeaderPanelGrid.Children.Add(stkInfo)
+            stkInfo.SetValue(Panel.ZIndexProperty, 1000)
             UpdateTitle()
 
             AddHandler DiagramHelper.Designer.PageShown, AddressOf FormDesigner_CurrentPageChanged
