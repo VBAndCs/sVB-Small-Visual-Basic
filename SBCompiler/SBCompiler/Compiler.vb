@@ -309,13 +309,18 @@ Namespace Microsoft.SmallVisualBasic
             Dim types = assembly.GetTypes()
 
             For Each type In types
-                If type.GetCustomAttributes(GetType(SmallBasicTypeAttribute), inherit:=False).Length > 0 AndAlso type.IsVisible Then
+                If type.IsVisible AndAlso IsSBRtpe(type) Then
                     AddTypeToList(type)
                     result = True
                 End If
             Next
 
             Return result
+        End Function
+
+        Private Shared Function IsSBRtpe(type As Type) As Boolean
+            Return type.GetCustomAttributes(GetType(SmallBasicTypeAttribute), inherit:=False).Length > 0 OrElse
+                type.GetCustomAttributes(GetType(SmallBasic.Library.SmallBasicTypeAttribute), inherit:=False).Length > 0
         End Function
 
         Private Shared Sub AddTypeToList(type As Type, Optional typeName As String = Nothing)

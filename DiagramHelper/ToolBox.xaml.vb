@@ -25,8 +25,17 @@
         IsFirstTab = False
         Expan.Header = IO.Path.GetFileNameWithoutExtension(folderName)
 
-        Dim WrpPnl As New WrapPanel With {.Background = Brushes.White}
-        Dim Scv As New ScrollViewer With {.VerticalScrollBarVisibility = ScrollBarVisibility.Auto, .MaxHeight = 120, .Margin = New Thickness(1), .Content = WrpPnl}
+        Dim WrpPnl As New WrapPanel With {
+            .Background = Brushes.White,
+            .Margin = New Thickness(10, 0, 0, 0)
+        }
+        Dim Scv As New ScrollViewer With {
+            .VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            .MaxHeight = 120,
+            .Margin = New Thickness(1),
+            .Background = Brushes.White,
+            .Content = WrpPnl
+        }
         Expan.Content = Scv
         Dim Files = IO.Directory.GetFiles(folderName, "*.xaml")
         Array.Sort(Files)
