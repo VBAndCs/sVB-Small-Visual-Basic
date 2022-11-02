@@ -445,7 +445,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
 
                 If prevIsSep Then
-                    If currentToken.IsIllegal AndAlso symbol = "" Then
+                    If (currentToken.IsIllegal OrElse currentToken.Type = TokenType.NumericLiteral OrElse currentToken.Type = TokenType.StringLiteral) AndAlso symbol = "" Then
                         line = snapshot.GetLineFromLineNumber(prevToken.Line + startLine)
                         column = prevToken.EndColumn
                     End If

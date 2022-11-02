@@ -200,6 +200,8 @@ Namespace Microsoft.SmallVisualBasic
             Catch
             End Try
 
+            Dim copySBLib = False
+
             For Each libraryFile In _libraryFiles
                 Try
                     Dim asmName = Path.GetFileNameWithoutExtension(libraryFile)
@@ -228,11 +230,22 @@ Namespace Microsoft.SmallVisualBasic
 
                     Else
                         IO.File.Copy(libraryFile, Path.Combine(directory, fileName))
+                        copySBLib = True
                     End If
 
                 Catch
                 End Try
             Next
+
+            If copySBLib Then
+                location = GetType(SmallBasic.Library.Primitive).Assembly.Location
+                fileName = Path.GetFileName(location)
+
+                Try
+                    IO.File.Copy(location, Path.Combine(directory, fileName), overwrite:=False)
+                Catch
+                End Try
+            End If
         End Sub
 
         Private Shared Sub PopulateReferences()
@@ -309,7 +322,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim types = assembly.GetTypes()
 
             For Each type In types
-                If type.IsVisible AndAlso IsSBRtpe(type) Then
+                If type.IsVisible AndAlso IsSBType(type) Then
                     AddTypeToList(type)
                     result = True
                 End If
@@ -318,7 +331,7 @@ Namespace Microsoft.SmallVisualBasic
             Return result
         End Function
 
-        Private Shared Function IsSBRtpe(type As Type) As Boolean
+        Private Shared Function IsSBType(type As Type) As Boolean
             Return type.GetCustomAttributes(GetType(SmallBasicTypeAttribute), inherit:=False).Length > 0 OrElse
                 type.GetCustomAttributes(GetType(SmallBasic.Library.SmallBasicTypeAttribute), inherit:=False).Length > 0
         End Function
@@ -327,7 +340,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim typeInfo As New TypeInfo With {
                 .Type = type,
                 .Name = If(typeName, type.Name),
-                .HideFromIntellisense = type.GetCustomAttributes(GetType(HideFromIntellisenseAttribute), inherit:=False).Length > 0
+                .HideFromIntellisense = HideType(type)
             }
 
             Dim methods = type.GetMethods(BindingFlags.Static Or BindingFlags.Public)
@@ -362,20 +375,26 @@ Namespace Microsoft.SmallVisualBasic
             End If
         End Sub
 
+        Private Shared Function HideType(type As Type) As Boolean
+            Return type.GetCustomAttributes(GetType(HideFromIntellisenseAttribute), inherit:=False).Length > 0 OrElse
+                type.GetCustomAttributes(GetType(SmallBasic.Library.HideFromIntellisenseAttribute), inherit:=False).Length > 0
+        End Function
+
         Dim svbDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) & "\SmallVisualBasic"
 
         Private Shared Function CanAddMethod(methodInfo As MethodInfo) As Boolean
             If Not methodInfo.IsGenericMethod AndAlso
                     Not methodInfo.IsConstructor AndAlso
                     Not methodInfo.ContainsGenericParameters AndAlso
-                    Not methodInfo.IsSpecialName AndAlso
-                    (methodInfo.ReturnType Is GetType(Void) OrElse
-                    methodInfo.ReturnType Is GetType(Primitive)) Then
+                    Not methodInfo.IsSpecialName AndAlso (
+                        methodInfo.ReturnType Is GetType(Void) OrElse
+                        IsPrimitive(methodInfo.ReturnType)
+                    ) Then
 
                 Dim parameters = methodInfo.GetParameters()
 
                 For Each paramInfo In parameters
-                    If Not paramInfo.ParameterType Is GetType(Primitive) Then
+                    If Not IsPrimitive(paramInfo.ParameterType) Then
                         Return False
                     End If
                 Next
@@ -386,19 +405,23 @@ Namespace Microsoft.SmallVisualBasic
             Return False
         End Function
 
+        Private Shared Function IsPrimitive(returnType As Type) As Boolean
+            Return returnType Is GetType(Primitive) OrElse returnType Is GetType(SmallBasic.Library.Primitive)
+        End Function
+
         Private Shared Function CanAddProperty(propertyInfo As PropertyInfo) As Boolean
             If Not propertyInfo.IsSpecialName Then
-                Return propertyInfo.PropertyType Is GetType(Primitive)
+                Return IsPrimitive(propertyInfo.PropertyType)
             End If
 
             Return False
         End Function
 
         Private Shared Function CanAddEvent(eventInfo As EventInfo) As Boolean
-            If Not eventInfo.IsSpecialName Then
-                Return eventInfo.EventHandlerType Is GetType(SmallBasicCallback)
-            End If
-            Return False
+            If eventInfo.IsSpecialName Then Return False
+
+            Return eventInfo.EventHandlerType Is GetType(SmallBasicCallback) OrElse
+                    eventInfo.EventHandlerType Is GetType(SmallBasic.Library.SmallBasicCallback)
         End Function
 
         Private Shared Sub PopulatePrimitiveMethods()
