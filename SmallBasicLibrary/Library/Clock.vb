@@ -5,7 +5,7 @@ Namespace Library
     ''' <summary>
     ''' This class provides access to the system clock
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Clock
 
         ''' <summary>

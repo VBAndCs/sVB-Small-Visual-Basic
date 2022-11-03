@@ -9,7 +9,7 @@ Namespace Library
     ''' <summary>
     ''' The Shape object allows you to add, move and rotate shapes to the Graphics window.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Shapes
         Private Shared _nameGenerationMap As New Dictionary(Of String, Integer)
         Private Shared _rotateTransformMap As New Dictionary(Of String, RotateTransform)

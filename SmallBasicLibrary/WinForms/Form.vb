@@ -6,7 +6,7 @@ Imports System.Windows
 
 Namespace WinForms
 
-    <SmallBasicType>
+    <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Form
 
@@ -86,7 +86,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Label control to the form
         ''' </summary>
-        ''' <param name="labelName">A unigue name of the new Label.</param>
+        ''' <param name="formName">A unigue name of the new Label.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -94,34 +94,35 @@ Namespace WinForms
         ''' <returns>The neame of the label</returns>
         <ReturnValueType(VariableType.Label)>
         <ExMethod>
-        Public Shared Function AddLabel(formName As Primitive,
+        Public Shared Function AddLabel(
+                         formName As Primitive,
                          labelName As Primitive,
                          left As Primitive, top As Primitive,
                          width As Primitive, height As Primitive) As Primitive
 
             Dim key = ValidateArgs(formName, labelName)
             App.Invoke(
-                    Sub()
-                        Try
-                            Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+              Sub()
+                  Try
+                      Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
-                            Dim label1 As New Wpf.Label With {
-                               .Name = labelName,
-                               .Width = width,
-                               .Height = height
-                            }
+                      Dim label1 As New Wpf.Label With {
+                          .Name = labelName,
+                          .Width = width,
+                          .Height = height
+                      }
 
-                            Wpf.Canvas.SetLeft(label1, left)
-                            Wpf.Canvas.SetTop(label1, top)
+                      Wpf.Canvas.SetLeft(label1, left)
+                      Wpf.Canvas.SetTop(label1, top)
 
-                            Dim cnv = GetCanvas(frm)
-                            cnv.Children.Add(label1)
-                            Forms._controls(key) = label1
+                      Dim cnv = GetCanvas(frm)
+                      cnv.Children.Add(label1)
+                      Forms._controls(key) = label1
 
-                        Catch ex As Exception
-                            ReportSubError(formName, "AddLabel", ex)
-                        End Try
-                    End Sub)
+                  Catch ex As Exception
+                      ReportSubError(formName, "AddLabel", ex)
+                  End Try
+              End Sub)
 
             Return key
         End Function
@@ -852,6 +853,36 @@ Namespace WinForms
             result._arrayMap = map
             Return result
         End Function
+
+        ''' <summary>
+        ''' Gets or sets the image file path to be displayed as an icon on the title bar of the current form.
+        ''' </summary>
+        <ExProperty>
+        Public Shared Function GetIcon(formName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetIcon = CType(Forms.GetForm(formName).Icon, Imaging.BitmapImage).UriSource.AbsolutePath
+                    Catch ex As Exception
+                        Control.ReportError(formName, "Icon", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetIcon(formName As Primitive, imageFile As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        If Not IO.Path.IsPathRooted(imageFile) Then
+                            imageFile = IO.Path.Combine(Program.Directory, imageFile)
+                        End If
+                        Forms.GetForm(formName).Icon = New Imaging.BitmapImage(New Uri(imageFile))
+
+                    Catch ex As Exception
+                        Control.ReportError(formName, "Icon", imageFile, ex)
+                    End Try
+                End Sub)
+        End Sub
 
         ''' <summary>
         ''' Displayes the form on the screen.

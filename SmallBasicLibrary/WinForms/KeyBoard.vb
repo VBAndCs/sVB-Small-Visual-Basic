@@ -7,7 +7,7 @@ Namespace WinForms
     ''' <summary>
     ''' Contains info about the state of the keyboard keys.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Keyboard
 
         Shared Sub New()

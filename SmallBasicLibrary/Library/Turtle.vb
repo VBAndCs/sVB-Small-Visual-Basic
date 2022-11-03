@@ -12,7 +12,7 @@ Namespace Library
     ''' <summary>
     ''' The Turtle provides Logo-like functionality to draw shapes by manipulating the properties of a pen and drawing primitives.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Turtle
         Private Const _turtleName As String = "_turtle"
         Private Shared _initialized As Boolean = False

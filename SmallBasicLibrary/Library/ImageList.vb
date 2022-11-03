@@ -6,7 +6,7 @@ Namespace Library
     ''' <summary>
     ''' This class helps to load and store images in memory.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class ImageList
         Private Shared _savedImages As New Dictionary(Of String, BitmapSource)
 

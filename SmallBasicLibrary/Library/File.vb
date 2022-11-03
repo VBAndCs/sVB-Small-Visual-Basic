@@ -8,7 +8,7 @@ Namespace Library
     ''' <summary>
     ''' The File object provides methods to access, read and write information from and to a file on disk.  Using this object, it is possible to save and open settings across multiple sessions of your program.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class File
 
         ''' <summary>

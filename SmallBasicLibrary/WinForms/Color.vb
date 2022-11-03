@@ -3,7 +3,7 @@ Imports Microsoft.SmallVisualBasic.Library
 
 Namespace WinForms
 
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Color
         Private Shared _random As Random
 

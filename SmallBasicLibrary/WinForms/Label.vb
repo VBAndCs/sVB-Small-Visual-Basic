@@ -7,7 +7,7 @@ Imports System.Windows.Navigation
 Imports System.Windows.Shapes
 
 Namespace WinForms
-    <SmallBasicType>
+    <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Label
 
@@ -77,13 +77,13 @@ Namespace WinForms
                 Sub()
                     Try
                         If Not IO.Path.IsPathRooted(imageFile) Then
-                            Dim path = Environment.GetCommandLineArgs()(0)
-                            path = IO.Path.GetDirectoryName(path)
-                            imageFile = IO.Path.Combine(path, imageFile)
+                            imageFile = IO.Path.Combine(Program.Directory, imageFile)
                         End If
-                        GetLabel(labelName).Content = New Wpf.Image() With {.Source = New BitmapImage(New Uri(imageFile))}
+                        GetLabel(labelName).Content = New Wpf.Image() With {
+                            .Source = New BitmapImage(New Uri(imageFile))
+                        }
                     Catch ex As Exception
-                        Control.ReportError(labelName, "Text", imageFile, ex)
+                        Control.ReportError(labelName, "Image", imageFile, ex)
                     End Try
                 End Sub)
         End Sub

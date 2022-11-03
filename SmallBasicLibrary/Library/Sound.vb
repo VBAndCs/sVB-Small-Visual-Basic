@@ -9,7 +9,7 @@ Namespace Library
     ''' <summary>
     ''' The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Sound
         Private Shared _mediaPlayerMap As New Dictionary(Of Uri, MediaPlayer)
         Private Shared _midiOut As Integer = 0

@@ -1,6 +1,6 @@
 
 Namespace Library
-    Public Class SmallBasicTypeAttribute
+    Public Class SmallVisualBasicTypeAttribute
         Inherits Attribute
     End Class
 End Namespace

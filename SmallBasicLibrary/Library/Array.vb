@@ -10,7 +10,7 @@ Namespace Library
     ''' <summary>
     ''' This object provides a way of storing more than one value for a given name. These values can be accessed by another index.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Array
 
         ''' <summary>

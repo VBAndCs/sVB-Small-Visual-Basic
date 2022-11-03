@@ -6,7 +6,7 @@ Namespace Library
     ''' <summary>
     ''' This helper class provides network access methods
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Network
         ''' <summary>
         ''' Downloads a file from the network to a local temporary file.

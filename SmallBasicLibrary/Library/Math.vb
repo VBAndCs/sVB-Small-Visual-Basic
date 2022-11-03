@@ -3,7 +3,7 @@ Namespace Library
     ''' <summary>
     ''' The Math class provides lots of useful mathematics related methods
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Math
         Private Shared _random As Random
 

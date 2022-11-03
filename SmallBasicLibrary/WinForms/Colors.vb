@@ -3,7 +3,7 @@ Imports SysColors = System.Windows.SystemColors
 
 Namespace WinForms
     ''' <summary>Defines all known color names</summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Colors
         ''' <summary>
         ''' AliceBlue Color:

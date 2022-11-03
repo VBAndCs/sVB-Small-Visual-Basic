@@ -107,17 +107,18 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Private Sub OnDebuggerCurrentStateChanged(sender As Object, e As EventArgs)
             Dim lineNumber = ProgramEngine.CurrentInstruction.LineNumber
             Dim currentState = ProgramEngine.CurrentDebuggerState
-            Dispatcher.BeginInvoke(Sub()
-                                       Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(TextView)
-                                       stMarkerProvider.ClearAllMarkers()
+            Dispatcher.BeginInvoke(
+                Sub()
+                    Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(TextView)
+                    stMarkerProvider.ClearAllMarkers()
 
-                                       If currentState = DebuggerState.Paused Then
-                                           Dim lineFromLineNumber = Document.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber)
-                                           Dim span As TextSpan = New TextSpan(lineFromLineNumber.TextSnapshot, lineFromLineNumber.Start, lineFromLineNumber.Length, SpanTrackingMode.EdgeExclusive)
-                                           stMarkerProvider.AddStatementMarker(New StatementMarker(span, Colors.Gold))
-                                           TextView.ViewScroller.EnsureSpanVisible(New Span(lineFromLineNumber.Start, lineFromLineNumber.Length), 0.0, 0.0)
-                                       End If
-                                   End Sub)
+                    If currentState = DebuggerState.Paused Then
+                        Dim lineFromLineNumber = Document.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber)
+                        Dim span As TextSpan = New TextSpan(lineFromLineNumber.TextSnapshot, lineFromLineNumber.Start, lineFromLineNumber.Length, SpanTrackingMode.EdgeExclusive)
+                        stMarkerProvider.AddStatementMarker(New StatementMarker(span, Colors.Gold))
+                        TextView.ViewScroller.EnsureSpanVisible(New Span(lineFromLineNumber.Start, lineFromLineNumber.Length), 0.0, 0.0)
+                    End If
+                End Sub)
         End Sub
 
         Public Sub StepInto()
@@ -142,10 +143,11 @@ Namespace Microsoft.SmallVisualBasic.Documents
             IsDebuggerActive = False
             ProgramEngine = Nothing
             ReadOnlyRegion.Remove()
-            Dispatcher.BeginInvoke(Sub()
-                                       Dim sMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(TextView)
-                                       sMarkerProvider.ClearAllMarkers()
-                                   End Sub)
+            Dispatcher.BeginInvoke(
+                Sub()
+                    Dim sMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(TextView)
+                    sMarkerProvider.ClearAllMarkers()
+                End Sub)
         End Sub
     End Class
 End Namespace

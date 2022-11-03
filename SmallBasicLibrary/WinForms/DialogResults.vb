@@ -5,7 +5,7 @@ Namespace WinForms
     ''' <summary>
     ''' Contains the names of common dialog results
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class DialogResults
 
         ''' <summary>

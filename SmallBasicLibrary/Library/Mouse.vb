@@ -5,7 +5,7 @@ Namespace Library
     ''' <summary>
     ''' The mouse class provides accessors to get or set the mouse related properties, like the cursor position, pointer, etc.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Mouse
 
         ''' <summary>

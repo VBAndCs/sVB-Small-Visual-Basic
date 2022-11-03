@@ -4,7 +4,7 @@ Namespace Library
     ''' <summary>
     ''' The Timer object provides an easy way for doing something repeatedly with a constant interval between.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Timer
         Public Const _maxInterval As Integer = 100000000
         Private Shared _interval As Integer

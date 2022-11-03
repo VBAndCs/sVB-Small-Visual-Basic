@@ -3,7 +3,7 @@ Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
-    <SmallBasicType>
+    <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Button
 

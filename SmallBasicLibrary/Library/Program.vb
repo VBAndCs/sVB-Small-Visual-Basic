@@ -8,7 +8,7 @@ Namespace Library
     ''' <summary>
     ''' The Program class provides helpers to control the program execution.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Program
         Private Shared args As String() = Environment.GetCommandLineArgs()
 

@@ -6,7 +6,7 @@ Namespace WinForms
     ''' <summary>
     ''' This class provides methods to deal with date and time
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class [Date]
 
         ''' <summary>

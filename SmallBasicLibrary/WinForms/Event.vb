@@ -7,7 +7,7 @@ Namespace WinForms
     ''' <summary>
     ''' Contains info about thee last fired event
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class [Event]
         Shared Sub ShowErrorMessage(eventName As String, ex As Exception)
             ReportError($"Setting the handler for {[Event].SenderControl}.{eventName} caused an error: {vbCrLf}{ex.Message}", ex)

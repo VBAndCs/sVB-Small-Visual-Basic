@@ -6,7 +6,7 @@ Namespace Library
     ''' <summary>
     ''' The Controls object allows you to add, move and interact with controls.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Controls
         Private Shared _positionMap As New Dictionary(Of String, Point)
         Private Shared _lastClickedButton As Primitive

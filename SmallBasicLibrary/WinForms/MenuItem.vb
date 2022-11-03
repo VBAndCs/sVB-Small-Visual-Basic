@@ -5,7 +5,7 @@ Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
-    <SmallBasicType>
+    <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class MenuItem
         Private Shared Function GetMenuItem(itemName As String) As Wpf.MenuItem

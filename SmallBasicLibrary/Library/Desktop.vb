@@ -7,7 +7,7 @@ Namespace Library
     ''' <summary>
     ''' This class provides methods to interact with the desktop.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Desktop
         ''' <summary>
         ''' Gets the screen width of the primary desktop.

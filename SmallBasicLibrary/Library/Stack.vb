@@ -3,7 +3,7 @@ Namespace Library
     ''' <summary>
     ''' This object provides a way of storing values just like stacking up a plate.  You can push a value to the top of the stack and pop it off. You can only pop the values one by one off the stack and the last pushed value will be the first one to pop out.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Stack
         Private Shared _stackMap As New Dictionary(Of Primitive, Stack(Of Primitive))
 

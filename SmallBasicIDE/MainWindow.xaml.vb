@@ -1616,7 +1616,6 @@ Namespace Microsoft.SmallVisualBasic
             If e.Key = Key.Escape Then
                 PopHelp.IsOpen = False
             End If
-
         End Sub
 
         Dim closePopHelp As New RunAction(Sub() PopHelp.IsOpen = False)

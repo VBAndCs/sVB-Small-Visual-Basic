@@ -332,7 +332,7 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Private Shared Function IsSBType(type As Type) As Boolean
-            Return type.GetCustomAttributes(GetType(SmallBasicTypeAttribute), inherit:=False).Length > 0 OrElse
+            Return type.GetCustomAttributes(GetType(SmallVisualBasicTypeAttribute), inherit:=False).Length > 0 OrElse
                 type.GetCustomAttributes(GetType(SmallBasic.Library.SmallBasicTypeAttribute), inherit:=False).Length > 0
         End Function
 

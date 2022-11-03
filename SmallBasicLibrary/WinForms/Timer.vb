@@ -7,7 +7,7 @@ Namespace WinForms
     ''' <summary>
     ''' The Timer object provides an easy way for doing something repeatedly with a constant interval between.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class WinTimer
         Friend Shared Timers As New Dictionary(Of String, DispatcherTimer)

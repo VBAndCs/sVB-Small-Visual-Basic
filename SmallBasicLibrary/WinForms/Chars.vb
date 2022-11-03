@@ -5,7 +5,7 @@ Namespace WinForms
     ''' <summary>
     ''' Contains spme useful non-printed characters, such as the Escap and new line characters. 
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Chars
 
         ''' <summary>

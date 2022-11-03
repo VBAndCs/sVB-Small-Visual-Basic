@@ -3,7 +3,7 @@
 Namespace WinForms
     '
     '''<summary>Specifies the possible key values on a keyboard.</summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Keys
 
         '''<summary>No key pressed.</summary>

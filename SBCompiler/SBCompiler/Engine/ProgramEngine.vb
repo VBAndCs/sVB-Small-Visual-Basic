@@ -75,7 +75,10 @@ Namespace Microsoft.SmallVisualBasic.Engine
             End Sub
 
             Private Sub PrepareDebuggerForNextInstruction()
-                If CurrentInstruction.LineNumber <> previousLineNumber AndAlso (DebuggerCommand = DebuggerCommand.StepInto OrElse DebuggerCommand = DebuggerCommand.StepOver) Then
+                If CurrentInstruction.LineNumber <> previousLineNumber AndAlso (
+                            DebuggerCommand = DebuggerCommand.StepInto OrElse
+                            DebuggerCommand = DebuggerCommand.StepOver
+                        ) Then
                     DebuggerExecution.Reset()
                 End If
             End Sub
@@ -185,7 +188,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
                     Fields(normalizedText) = Primitive.SetArrayValue(value, value2, EvaluateExpression(lvalue.Indexer))
                 Else
-                    Dim arrayExpression As ArrayExpression = TryCast(lvalue.LeftHand, ArrayExpression)
+                    Dim arrayExpression = TryCast(lvalue.LeftHand, ArrayExpression)
 
                     If arrayExpression IsNot Nothing Then
                         SetArrayValue(arrayExpression, Primitive.SetArrayValue(value, EvaluateArrayExpression(arrayExpression), EvaluateExpression(lvalue.Indexer)))
@@ -358,12 +361,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 Next
 
                 Dim obj As Object = methodInfo.Invoke(Nothing, list.ToArray())
-
-                If TypeOf obj Is Primitive Then
-                    Return obj
-                End If
-
-                Return Nothing
+                Return If(TypeOf obj Is Primitive, obj, Nothing)
             End Function
 
             Private Function EvaluateNegativeExpression(expression As NegativeExpression) As Primitive

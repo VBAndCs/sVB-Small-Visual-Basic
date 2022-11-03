@@ -4,7 +4,7 @@ Namespace Library
     ''' <summary>
     ''' The Text object provides helpful operations for working with Text.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Text
 
         ''' <summary>

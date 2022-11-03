@@ -5,7 +5,7 @@ Namespace WinForms
     ''' <summary>
     ''' Contains the names of winforms controls
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class ControlTypes
         ''' <summary>Control</summary>
         <ReturnValueType(VariableType.ControlType)>

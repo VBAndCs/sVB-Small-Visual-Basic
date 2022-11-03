@@ -5,7 +5,7 @@ Namespace Library
     ''' <summary>
     ''' Provides text-related input and output functionalities.  For example using this class, it is possible to write or read some text or number to and from the text-based text window.
     ''' </summary>
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class TextWindow
         Friend Shared _windowVisible As Boolean
 

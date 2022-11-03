@@ -9,7 +9,7 @@ Imports System.ComponentModel
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
-    <SmallBasicType>
+    <SmallVisualBasicType>
     Public NotInheritable Class Forms
 
         Friend Shared _forms As New ControlsDictionay

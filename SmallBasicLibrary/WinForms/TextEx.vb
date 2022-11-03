@@ -3,7 +3,7 @@ Imports Microsoft.SmallVisualBasic.Library
 
 Namespace WinForms
 
-    <SmallBasicType>
+    <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class TextEx
 

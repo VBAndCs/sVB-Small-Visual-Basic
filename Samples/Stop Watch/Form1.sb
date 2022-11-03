@@ -1,5 +1,5 @@
 T = #+0.0:0#
-LastTime = Date.Now
+LastTick = Date.Now
 
 ShowClock()
 ClockTimer = Me.AddTimer("clockTimer", 1000)
@@ -18,7 +18,7 @@ EndSub
 
 '------------------------------------------------
 Sub BtnReset_OnClick()
-   LastTime = Date.Now
+   LastTick = Date.Now
    T = #+0.0:0#
    LblStopWatch.Text = "00:00:00.00"
    BtnStart.Text = "Start"
@@ -35,7 +35,7 @@ Sub BtnStart_OnClick()
       BtnReset.Enabled = True
    Else
       StopWatch.Resume()
-      LastTime = Date.Now
+      LastTick = Date.Now
       BtnStart.Text = "Puase"
       Counting = True
       BtnReset.Enabled = False
@@ -46,7 +46,7 @@ EndSub
 '------------------------------------------------
 Sub ShowStopWatch()
    now = Date.Now
-   T = T + (now - LastTime)
-   LastTime = now
-   LblStopWatch.Text = Text.GetSubText(T, 0, 11)
+   T = T + (now - LastTick)
+   lastTime = now
+   LblStopWatch.Text = Text.GetSubText(T, 1, 11)
 EndSub
