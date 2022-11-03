@@ -7,7 +7,7 @@
 - Form designer Features:
 - SB Code Enhancements:
 - Create a code library with sVB!
-- Create an external library:
+- Create an external library for sVB:
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
@@ -838,16 +838,18 @@ Geometrics.AllowDrag(Label1)
 So, now you can create reusable code, and write your own libraries for sVB. In the past, this was available only by using C# and VB.NET to create SB and sVB libraries!
 Have fun.
 
-# Create an external library:
-sVB can use external libraries created for Small Basic (like LitDev). Just insert those libraries dll files in the Lib folder of sVB and you are ready to go!
+# Create an external library for sVB:
+sVB can use external libraries created for Small Basic (like LitDev). Just insert those libraries dll files in the sVB\Bin\Lib folder and you are ready to go!
 This means you can also write such libraries (using C# or VB.NET), to add new functionality that is not available in sVB. To do this, you should follow these rules:
 https://social.technet.microsoft.com/wiki/contents/articles/53826.small-basic-extensions.aspx
-The above rules will allow you to create a library for Small Basic, which also will work with sVB. But you can create a library for sVB only, by targetting `.NET Framework 4.8` and refrencing the `SmallVisualBasicLibrary.dll` file (found in sVB\bin folder) instead of `SmallBasicLibrary.dll`, and you can mark your functions and properties with the `ReturnValueTypeAttribute` to specify the return value type, to allow sVB to infer the type of expressions that use these functions and properties. For example:
+The above rules will allow you to create a library for Small Basic, which also will work with sVB. But you can create a library for sVB only, by targeting `.NET Framework 4.8` and referencing the `SmallVisualBasicLibrary.dll` file (found in sVB\bin folder) instead of `SmallBasicLibrary.dll`, and you can mark your functions and properties with the `ReturnValueTypeAttribute` to specify the return value type, to allow sVB to infer the type of expressions that use these functions and properties. For example:
 ```
 <ReturnValueType(VariableType.Double)>
 Public Shared Function Sum(x As Primitive, y As primitive) As Primitive
-     Return x + y
+Return x + y
 End Function
 ```
 
-For more info, see the `DemoLib` project at the samples folder. It is a VB.NET project that crates a DemoLib.dll in its bin\release folder, which I copied to the sVB\bin\lib folder so you can try it with DemoLibSample app in the samoles folder.
+For more info, see the `DemoLib` project at the samples folder. It is a VB.NET project that crates a DemoLib.dll in its bin\release folder, which I copied to the sVB\bin\lib folder so you can try it with DemoLibSample app in the samples folder.
+
+Now we can announce sVB as a mature productive dssktop programming language, and you can use it to build interesting apps. Have fun.
