@@ -854,4 +854,4 @@ End Function
 
 For more info, see the `DemoLib` project at the samples folder. It is a VB.NET project that crates a DemoLib.dll in its bin\release folder, which I copied to the sVB\bin\lib folder so you can try it with DemoLibSample app in the samples folder.
 
-Now we can announce sVB as a mature productive dssktop programming language, and you can use it to build interesting apps. Have fun.
+Now we can announce sVB as a mature productive desktop programming language, and you can use it to build interesting apps. Have fun.
