@@ -42,7 +42,7 @@ To make this work, each form created by the designer has 3 files:
 
 # Using the source code:
 sVB is fully written with VB.NET, and targets .NET framework 4.8. You can run the source code in VS.NET 2019 and later.
-before running the code, please copy the two folders `Lib` and `Toolbar` from the `SmallBasicIDE\SB.Lib` folder to the `SmallBasicIDE\bin\Debug` folder, as obviously `Git` execluds this folder, and I prefer it this way.
+before running the code, please copy the two folders `Lib` and `Toolbar` from the `SmallBasicIDE\SB.Lib` folder to the `SmallBasicIDE\bin\Debug` folder, as obviously `Git` excludes this folder, and I prefer it this way.
 
 # Download the language:
 
