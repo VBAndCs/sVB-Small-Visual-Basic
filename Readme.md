@@ -143,7 +143,7 @@ TextWindow.WriteLine({"Adam", 11, "Succeeded"})
 SB uses `EndFor` and `EndWhile` to close `For` and `While` blocks respectively. This is still supported in sVB but I allowed also to use `Next` to close `For` and `Wend` to close `While`, as they are used in VB6. I encourage you to use Next and Wend, as they give the meaning of repeating and circulating over the loop. `End` gives the meaning of finishing and exiting, so, it is suitable in `EndIf` and `EndSub`, but confusing in `EndFor` and `EndWhile`, as they can imply that `the loop finishes here`, not just `the block ends here`!
 
 3. You can use `ExitLoop` to exit For and While loops, and `ContinueLoop` to skip the current iteration and jump back to the beginning of the loop body to continue the next iteration in for loop. Be aware that unlike For, while doesn't have an auto-incremented counter, so be sure you write the suitable code to update the variable that while condition depends on before using ContinueLoop inside the while block, otherwise you may end up stuck with an infinite loop.
-In the case of nested 2 loops of any kind, you can exit the outer loop by using `ExitLoop -`. You can add more `-` signs to exit up levels loops in case you have 3 or 4 nested loops, or just use `ExitLoop *` to exit all nested loops at once. The same rules applies to `ContinueLoop` if you want to use it to cointinue outer loops.
+In the case of nested 2 loops of any kind, you can exit the outer loop by using `ExitLoop -`. You can add more `-` signs to exit up levels loops in case you have 3 or 4 nested loops, or just use `ExitLoop *` to exit all nested loops at once. The same rules applies to `ContinueLoop` if you want to use it to continue outer loops.
 
 4. You can use `Me` to refer to the current Form.
 
@@ -164,7 +164,7 @@ And call this sub like this:
 Note that you can use `Return` inside the sub body to exit the sub immediately.
 
 
-7. sVB can define functions now. You can supply params to get the fyunction input and use `Return` to return the function output.
+7. sVB can define functions now. You can supply params to get the function input and use `Return` to return the function output.
 ```vb
 Function Sum(x, y)
     Return x + Y
@@ -178,12 +178,12 @@ x = Sum(1, 2)
 
 8. SB doesn't have variable scope, as all variables are considered global, and you can define them in any place in the file and use them from any other place in the file (up or down). sVB has cleaned this mess, which is a break change that can prevent some SB code from running probably in sVB, but it is a necessary step to make the kid organize his code and write clean code. This is also necessary to make sub and function params work correctly, and allow you to use recursive subs and functions. The new scope rules are:
 - Sub and function params are local, and hide any global vars with the same names.
-- The For loop counter(iterator) in subs and functiins is local and hides any global var with the same name.
+- The For loop counter(iterator) in subs and functions is local and hides any global var with the same name.
 - Any var defined inside the sub or the function is local unless there is a global var with the same name is defined above of the sub function. If the global var is defined below, then the local var will hide it.
 
 So, as a good practice:
 - Define all global vars at the very top pf the file.
-- Give global vars a prefix (such as `g_`) to avoid any conflictions with local vars.
+- Give global vars a prefix (such as `g_`) to avoid any conflicts with local vars.
 - Don't use global vars unless there is no other solution, instead pass values to subs and functions through params, and receive values from functions through their return values.
 
 9. The editor auto completes If, For, While, and Sub blocks just after writing a space after them.
@@ -238,7 +238,7 @@ Dim x = "First Line" + _
             "Second Line"
 ```
 
-You can use _ at any position expet before of after the dot `.`.
+You can use _ at any position except before or after the dot `.`.
 
 15. You can also split the line at some positions without using the _ . These positions are:
 - after the following symbols: `,`, `=`, `+`, `-`, `*`. `/`, `(`, `[`, `{`, `or`, `and`.
@@ -276,13 +276,13 @@ editor
 spaces between tokens.
 
 20. The code editor now highlights any matching pairs such as `()`, `[]` and `{}`. It also  
-highlights the keywords of the Sub, Function, If, For, and While bolcks whenever you insert  
+highlights the keywords of the Sub, Function, If, For, and While blocks whenever you insert  
 the caret on on of them. You can move to the next highlighted token by pressing `F4` or  
 `Ctrl+Shift+Down`, and you can move to the previous highlighted token by pressing `Shift 
 +F4` or `Ctrl+Shift+Up`.
 You can also press such shortcuts keys on any line even there is no highlighted keywords.  
-This will highlight the nearest block that contains the statement, and move to the neareest  
-keyword up or down according to the shourtcut keys you are using.
+This will highlight the nearest block that contains the statement, and move to the nearest  
+keyword up or down according to the shortcut keys you are using.
 
 21. Make it easy to crate a new form and show it from code:
 ```vb
@@ -312,7 +312,7 @@ You can say I brought the VS intellisense to sVB. The pop up help offers valuabl
  * The scope (local or global var).
  * The definition signature (Type, Property, Dynamic Property, Event, Method Parameters).
  * If the token is a `variable`, a `sub` or a `function`, it will be shown as a link, so, you can click it to go to its definition line. If the token it the name of the form or a control on it, clicking the link will select the form or the control on the form designer.
-* The documentation includes a summery, and info about parameters and return value. You can add a summery for user defined types by adding one or more comment lines above the var, sub, or function definitions. You can also add one more comment line at the end of the definition line. For subs and functions, you can add the additional summery line after the opining parans if you split the params over multi lines which also allows you to add a comment for each parameter to be used as a documentation. For Functions, the comment placed after the closing parans will be used as the documentation info for the return value. For subs, it will be considered an additional line of the summery. Ex:
+* The documentation includes a summery, and info about parameters and return value. You can add a summery for user defined types by adding one or more comment lines above the var, sub, or function definitions. You can also add one more comment line at the end of the definition line. For subs and functions, you can add the additional summery line after the opening params if you split the params over multi lines which also allows you to add a comment for each parameter to be used as a documentation. For Functions, the comment placed after the closing params will be used as the documentation info for the return value. For subs, it will be considered an additional line of the summery. Ex:
 ```VB
 XPos = 1   ' the horizontal position 
 
@@ -477,7 +477,7 @@ TextWindow.WriteLine(years)
 
 the above negative time span contains approximately `-2.74` years. There is no built in TotalMonths nor TotalYears in the Date class, as a monthe can contain 29, 30, or 31 days, and a year can contain 365 or 366 days, so, it is up to you to do the math according to the rules you see fit tour needs.
 
-* The Date class contains `Add` and `Subtract` methods, but you can do these operations directly using `+` and `-`. The trick here is that sVB stores dates and time spans as `ticks`. A tick is 1 over 10 million of a second (1 second = 10 million ticks). You can get the total ticks of a date or a time span by calling the `Date.GetTicks()` method, or the `Ticks` extension property. So, when using math operator with date and time span, sVB treats thesm as normal numbers. You can even multiply 2 dates but of course the result is meaningless :D.
+* The Date class contains `Add` and `Subtract` methods, but you can do these operations directly using `+` and `-`. The trick here is that sVB stores dates and time spans as `ticks`. A tick is 1 over 10 million of a second (1 second = 10 million ticks). You can get the total ticks of a date or a time span by calling the `Date.GetTicks()` method, or the `Ticks` extension property. So, when using math operator with date and time span, sVB treats them as normal numbers. You can even multiply 2 dates but of course the result is meaningless :D.
 The following code show you 2 different ways to subtract 1000 days from the today's date:
 ```VB
 d1 = Date.Now - #+1000.0:0#
@@ -566,7 +566,7 @@ Sub BtnCancel_OnClick()
 EndSub
 ```
 
-Note that the `DialogResults` type contains the names of famous dialog buttons, and it has a nice auto completion suuport in the code editor, but you can not use it and use any other names you want.
+Note that the `DialogResults` type contains the names of famous dialog buttons, and it has a nice auto completion support in the code editor, but you can not use it and use any other names you want.
 `Cancel` is the default value of the `DialogResult`, so we disn't need to set it in the `BtnCancel_OnClick()`.
 Now, how can we use the `DialogResult` value in the form that showed the dialog?
 It is simple: the `DialogResult` value will be the return value from the `Forms.ShowDialog`, so, it is easy to use it like this:
@@ -601,7 +601,7 @@ See the `Show Random Buttons 3` and `Show Dialogs` apps in the samples folders.
 The Error property sets the error message to display in the tooltip of the control while its borders becomes red. You can restore the normal state of the control by setting the Error  
 property to an empty string.
 
-45. Controls also got the `OnGotFocus` and `OnLostFocus` events, so, you can use the `OnLostFocus` event with the `Error` property to provide a validation logic for input controls. Each control also has the `Validate` method that fires the `OnLostFocus` event to execute your validation logic (if exists), then checks the Error property and returns `True` if it is empty. And to make things easier for you, the `Validate` method of the form calls the Validate method of each control on the form. If any controls has errors, the process stops and the focus goes to this contols with a beep sound. So, you should call `Me.Validate` before you execute you app logic. Ex:
+45. Controls also got the `OnGotFocus` and `OnLostFocus` events, so, you can use the `OnLostFocus` event with the `Error` property to provide a validation logic for input controls. Each control also has the `Validate` method that fires the `OnLostFocus` event to execute your validation logic (if exists), then checks the Error property and returns `True` if it is empty. And to make things easier for you, the `Validate` method of the form calls the Validate method of each control on the form. If any controls has errors, the process stops and the focus goes to this controls with a beep sound. So, you should call `Me.Validate` before you execute you app logic. Ex:
 ```VB
 Sub Button1_OnClick()
    If Me.Validate() Then
@@ -696,7 +696,7 @@ Label1.AddGeometricPath(
 )
 ```
 
-This allows you to add complex shpes on the form with code, and program their events.
+This allows you to add complex shapes on the form with code, and program their events.
 See the `Geometric Path2` in the samples folder. It adds the same shapes of the previous sample to the form, and allow you to drag them by the mouse.
 
 48. The toolbox now contains a CheckBox control.
@@ -755,7 +755,7 @@ See the `Fit size` app in the samples folder.
 * ProgressBar, ScrollBar and Slider: These bars are horizontal only, but you can use the rotate thumb of the control on the designer to rotate them to become vertical! For more info, see the `Progress` and `Slider Color Composer` apps in the samples folder.
 * ToggleButton: This control can be checked or unchecked but it seems like a button that appears clicked or un-clicked. See the `Toggle Buttons` app in the samples folder.
 
-55. You can add many timers to the form, by calling the `Form.AddTimer` Method. Small Basic library already contains the Timer object, but it is only one timer, and it makes code harder to make it handle different actions in different intervals. Besides, it may not work properly with forms and controls, and of course it will be missy if you try to use this single timer to handle different actions in many forms. So, to make things easier, you can now add as many timers as you need to each form!
+55. You can add many timers to the form, by calling the `Form.AddTimer` Method. Small Basic library already contains the Timer object, but it is only one timer, and it makes code harder to make it handle different actions in different intervals. Besides, it may not work properly with forms and controls, and of course it will be messy if you try to use this single timer to handle different actions in many forms. So, to make things easier, you can now add as many timers as you need to each form!
 For example, the `Stop Watch` app in the samples folder uses two timers, one to update the current date and time displayed on the form title bar, and the other one to count the elapsed time for the stop watch.
 
 56. You can show the open file and save file dialogs to the user by calling `File.OpenFileDialog` and `File.SaveFileDialog` methods. You must send the extensions filter to these methods, which controls the types of files that the browser will show to the user. You can use the standard .NET filter string like `"Text Files|*.txt;*.rtf|Docs|*.doc"`, or you can send the filter as an array like 
@@ -805,10 +805,10 @@ Me.ShowChildForm("FrmFind", TxtEditor)
 
 The first argument is the name of the child form (and the auto completion list will offer the names of the forms for you), and the second param is an extra data that will be passed to the ArgsArr property in the child form.
 
-62. You can change the style of the form and controls by loading styles from a recource dictionary. This is an advanced topic, that needs knowlage about XAML and WPF, but it always you to make use of syles and thems defiend for WPF, UWP or WinUI3 to make a beautiful design, and change how controls look and even work!
+62. You can change the style of the form and controls by loading styles from a recource dictionary. This is an advanced topic, that needs knowledge about XAML and WPF, but it always you to make use of syles and thems defiend for WPF, UWP or WinUI3 to make a beautiful design, and change how controls look and even work!
 All you need is to have a Resource dictonary in a Xaml file, then use these two methods to load it:
-* Control.SetRecourceDictionary: send the xaml file path to this method to load stryles from it into the control and its child controls. This means that if you called it from a form. the styles will affect all target controls if exists on it. Note that this method needs that styles have no keys. Styles with names (keys) will not be aplied to controls here.
-*  Control. SetStyle: it is similal to the previous method, but it has a second parameter that recives the name (key) of the style. It is useful when you want to apply a style on only one control.
+* Control.SetRecourceDictionary: send the xaml file path to this method to load styles from it into the control and its child controls. This means that if you called it from a form. the styles will affect all target controls if exists on it. Note that this method needs that styles have no keys. Styles with names (keys) will not be applied to controls here.
+*  Control. SetStyle: it is similar to the previous method, but it has a second parameter that recives the name (key) of the style. It is useful when you want to apply a style on only one control.
 Note that if the style have no name, you can call SetRecourceDictionary from this control instead to apply the style on it, but this can also apply another styles on the controls if the resource dictionary has many styles targetting the same control type. 
 For mor info, see the `Custom Styles` app in the samples folder. the tow files `RoundCorner.style` and `RoundCorner2.style` are in fact XAML files, but I changed there extensions from `.xaml` to `.style` not to be cinfused with form design files. But if you used .xaml extension it will also work.
 
