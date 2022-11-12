@@ -96,7 +96,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the local name of the month of the current date.
         ''' </summary>
-        ''' <returns>the name of the month in the local language defiend on the user system</returns>
+        ''' <returns>the name of the month in the local language defined on the user system</returns>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetMonthName([date] As Primitive) As Primitive
@@ -116,7 +116,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the day number in the year of the current date. 
         ''' </summary>
-        ''' <returns>a number between 1 and 366 that represnts the date in the week</returns>
+        ''' <returns>a number between 1 and 366 that Represents the date in the week</returns>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetDayOfYear([date] As Primitive) As Primitive
@@ -127,7 +127,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the day of the week of the current date. Note that Sunday is the first day of the week. 
         ''' </summary>
-        ''' <returns>a number between 1 and 7 that represnts the date in the week</returns>
+        ''' <returns>a number between 1 and 7 that Represents the date in the week</returns>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetDayOfWeek([date] As Primitive) As Primitive
@@ -148,7 +148,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the local name of the week day of the current date.
         ''' </summary>
-        ''' <returns>the name of the week day in the local language defiend on the user system</returns>
+        ''' <returns>the name of the week day in the local language defined on the user system</returns>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetDayName([date] As Primitive) As Primitive

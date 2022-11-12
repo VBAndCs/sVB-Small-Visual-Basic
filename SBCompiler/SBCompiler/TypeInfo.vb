@@ -11,7 +11,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Public ReadOnly Property Key As String
             Get
-                Return If(_Name, "").ToLower()
+                Return If(Name, "").ToLower()
             End Get
         End Property
 

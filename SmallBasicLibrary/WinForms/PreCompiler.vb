@@ -205,7 +205,7 @@ Namespace WinForms
 
             Dim events As New List(Of String)
             For Each e In t.GetEvents()
-                If e.EventHandlerType Is GetType(SmallBasicCallback) Then
+                If e.EventHandlerType Is GetType(SmallVisualBasicCallback) Then
                     events.Add(e.Name)
                 End If
             Next

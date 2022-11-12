@@ -197,7 +197,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
             End Sub
 
             Private Function ExecuteEventAssignmentInstruction(instruction As EventAssignmentInstruction) As String
-                instruction.EventInfo.AddEventHandler(Nothing, CType(Sub() ExecuteInstructions(SubroutineInstructions(instruction.SubroutineName)), SmallBasicCallback))
+                instruction.EventInfo.AddEventHandler(Nothing, CType(Sub() ExecuteInstructions(SubroutineInstructions(instruction.SubroutineName)), SmallVisualBasicCallback))
                 Return Nothing
             End Function
 

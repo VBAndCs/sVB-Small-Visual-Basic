@@ -29,9 +29,14 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Private Shared counter = 0
 
         Private Function Lower(leftValue As String) As String
-            If Arguments.Count = 0 Then Return $"{leftValue} = Array.EmptyArray"
             counter += 1
             Dim tmpVar = "__tmpArray__" & counter
+
+            If Arguments.Count = 0 Then
+                If leftValue = "" Then leftValue = tmpVar
+                Return $"{leftValue} = Array.EmptyArray"
+            End If
+
             Dim code As New StringBuilder($"{tmpVar} = """"")
             code.AppendLine()
 
@@ -48,7 +53,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             If leftValue <> "" Then
                 code.AppendLine($"{leftValue} = {tmpVar}")
             End If
-            counter -= 1
+
             Return code.ToString()
         End Function
 

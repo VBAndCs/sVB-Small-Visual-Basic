@@ -10,7 +10,15 @@ Namespace WinForms
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Label
-
+        ''' <summary>
+        ''' Represents a Label control, that shows a text, a hyper link, an image or a graphic to the user.
+        ''' Use the Text property to set the text displayed by the label. You can also use the Append methods to add formatted text to the label.
+        ''' Use the AppendLink method to add a Hyper link to the label.
+        ''' Use the Image property to load an image from a file and display it in the label.
+        ''' Use the Add methods to add geometric shapes to the label.
+        ''' You can use the form designer to add a label to the form by dragging it from the toolbox.
+        ''' It is also possible to use the Form.AddLabel method to create a new label and add it to the form at runtime.
+        ''' </summary>
         Private Shared Function GetLabel(labelName As String) As Wpf.Label
             Dim c = Control.GetControl(labelName)
             Dim t = TryCast(c, Wpf.Label)
@@ -646,7 +654,7 @@ Namespace WinForms
                     Try
                         Dim Points As New Media.PointCollection()
                         For Each point In pointsArr._arrayMap.Values
-                            Points.Add(New Point(point(1), point(2)))
+                            Points.Add(New Point(point.Items(1), point.Items(2)))
                         Next
 
                         Dim lbl = GetLabel(labelName)

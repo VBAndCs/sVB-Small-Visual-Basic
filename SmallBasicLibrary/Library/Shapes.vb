@@ -167,7 +167,7 @@ Namespace Library
                 Sub()
                     Dim Points As New PointCollection()
                     For Each point In pointsArr._arrayMap.Values
-                        Points.Add(New Point(point(1), point(2)))
+                        Points.Add(New Point(point.Items(1), point.Items(2)))
                     Next
 
                     GraphicsWindow.AddShape(

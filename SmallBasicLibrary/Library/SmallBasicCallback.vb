@@ -1,7 +1,7 @@
 
 Namespace Library
     ''' <summary>
-    ''' Signature callback that will be used by all Small Basic library events
+    ''' Signature callback that will be used by all Small Visual Basic library events
     ''' </summary>
-    Public Delegate Sub SmallBasicCallback()
+    Public Delegate Sub SmallVisualBasicCallback()
 End Namespace

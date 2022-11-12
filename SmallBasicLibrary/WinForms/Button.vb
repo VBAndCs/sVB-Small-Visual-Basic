@@ -3,6 +3,11 @@ Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents the Button control, that the user can click to perform the task that you provide in the OnClick event handler.
+    ''' You can use the form designer to add a button to the form by dragging it from the toolbox.
+    ''' It is also possible to use the Form.AddButton method to create a new button and add it to the form at runtime.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Button

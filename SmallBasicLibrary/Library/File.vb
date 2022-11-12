@@ -147,7 +147,7 @@ Namespace Library
         ''' <summary>
         ''' Opens the specified file and writes the contents at the specified line number.
         ''' This operation will overwrite any existing content at the specified line.
-        ''' Don't use this method to write many lines in the same file using a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to insert the the given content at the given line number, which will be reoeated for every line you write using the loop!
+        ''' Don't use this method to write many lines in the same file using a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to insert the the given content at the given line number, which will be repeated for every line you write using the loop!
         ''' In such case, use the AppendContents method insread, to add accumulated content to the end of the file, or add all the lines to one variable and use the InsertLine method to insert it for once.
         ''' </summary>
         ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
@@ -528,10 +528,10 @@ Namespace Library
         ''' Shows the open file dialog, to allow the user to select a file from his PC file system.
         ''' </summary>
         ''' <param name="extFilters">
-        ''' An array containing extention filters, to allow you specify the file types you want to open. Each extenstion filter itself is an array, where the first Item descrips the file type, and the rset of items contains one or more extebrion, such as {"Images", "bmp", "jpg", "gif"}
-        ''' If you will open only one file type catagory like images, you can sent the extention filter directly like {"Images", "bmp", "jpg", "gif"}.
+        ''' An array containing extension filters, to allow you specify the file types you want to open. Each extenstion filter itself is an array, where the first Item descries the file type, and the rset of items contains one or more extebrion, such as {"Images", "bmp", "jpg", "gif"}
+        ''' If you will open only one file type catagory like images, you can sent the extension filter directly like {"Images", "bmp", "jpg", "gif"}.
         ''' else, send an array of extenstion filter like: {{"Text Files", ".txt"}, {"Images", "bmp", "jpg", "gif"}}
-        ''' If you will open only a single extenstion, you can just use it as a single string like: "doc". This can also be done for extention filter elements, such as:
+        ''' If you will open only a single extenstion, you can just use it as a single string like: "doc". This can also be done for extension filter elements, such as:
         ''' {{"Text Files", ".txt"}, {"Images", "bmp", "jpg", "gif"}, "doc"}
         ''' If you want to show all filess, use "" or "*" as the extension, like: {"All Files", "*"}, or just use "*".
         ''' </param>
@@ -565,12 +565,12 @@ Namespace Library
         ''' </summary>
         ''' <param name="fileName">The name to save the file with. User can change this name in the dialog. You can use the full path of the file, to suggest the initial directory in the dialog, otherwise, the initial directory will be the last opened one</param>
         ''' <param name="extFilters">
-        ''' An array containing extention filters, to allow you specify the file types you want to save. Each extenstion filter itself is an array, where the first Item descrips the file type, and the rset of items contains one or more extebrion, such as {"Images", "bmp", "jpg", "gif"}
-        ''' If you will open only one file type catagory like images, you can sent the extention filter directly like {"Images", "bmp", "jpg", "gif"}.
+        ''' An array containing extension filters, to allow you specify the file types you want to save. Each extenstion filter itself is an array, where the first Item descries the file type, and the rset of items contains one or more extebrion, such as {"Images", "bmp", "jpg", "gif"}
+        ''' If you will open only one file type catagory like images, you can sent the extension filter directly like {"Images", "bmp", "jpg", "gif"}.
         ''' else, send an array of extenstion filter like: {{"Text Files", ".txt"}, {"Images", "bmp", "jpg", "gif"}}
-        ''' If you will open only a single extenstion, you can just use it as a single string like: "doc". This can also be done for extention filter elements, such as:
+        ''' If you will open only a single extenstion, you can just use it as a single string like: "doc". This can also be done for extension filter elements, such as:
         ''' {{"Text Files", ".txt"}, {"Images", "bmp", "jpg", "gif"}, "doc"}
-        ''' If you want to show all filess, use "" or "*" as the extension, like: {"All Files", "*"}, or just use "*".
+        ''' If you want to show all files, use "" or "*" as the extension, like: {"All Files", "*"}, or just use "*".
         ''' In fact, you can combine all filters in on string using the .NET standard formula, where you separate filter parts with | and separate extensions with ; like:
         ''' "Images|*.bmp;*.jpg;*.gif|Text Files|*.txt|docs|*.doc|All Files|*.*"
         ''' </param>

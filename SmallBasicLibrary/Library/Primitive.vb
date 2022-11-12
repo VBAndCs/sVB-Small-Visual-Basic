@@ -7,7 +7,7 @@ Namespace Library
     ''' The primitive type representing either text or number.
     ''' </summary>
     Public Structure Primitive
-        Private Class PrimitiveComparer
+        Friend Class PrimitiveComparer
             Implements IEqualityComparer(Of Primitive)
             Private Shared _instance As New PrimitiveComparer
 
@@ -67,7 +67,7 @@ Namespace Library
         Friend _arrayMap As Dictionary(Of Primitive, Primitive)
         Friend _isArray As Boolean
 
-        Default Public Property Items(index As Primitive) As Primitive
+        Public Property Items(index As Primitive) As Primitive
             Get
                 ConstructArrayMap()
                 If Not IsArray Then
@@ -230,6 +230,7 @@ Namespace Library
         Public Function Add(addend As Primitive) As Primitive
             Dim n1 = TryGetAsDecimal()
             Dim n2 = addend.TryGetAsDecimal()
+
             If n1.HasValue AndAlso n2.HasValue Then
                 Return New Primitive(
                         n1.Value + n2.Value,
@@ -339,11 +340,11 @@ Namespace Library
         End Function
 
         Public Function EqualTo(comparer As Primitive) As Boolean
-            Return Equals(comparer)
+            Return AreEqual(Me, comparer)
         End Function
 
         Public Function NotEqualTo(comparer As Primitive) As Boolean
-            Return Not Equals(comparer)
+            Return Not AreEqual(Me, comparer)
         End Function
 
         Public Overrides Function Equals(obj As Object) As Boolean
@@ -482,11 +483,57 @@ Namespace Library
         End Operator
 
         Public Shared Operator =(primitive1 As Primitive, primitive2 As Primitive) As Primitive
-            Return primitive1.Equals(primitive2)
+            Return New Primitive(AreEqual(primitive1, primitive2))
         End Operator
 
+        Private Shared Function AreEqual(p1 As Primitive, p2 As Primitive) As Boolean
+            If p1.IsEmpty Then
+                Return p2.IsEmpty
+            ElseIf p2.IsEmpty Then
+                Return p1.IsEmpty
+            End If
+
+            If p1.IsArray Then
+                If p2.IsArray Then
+                    Dim map1 = p1._arrayMap
+                    Dim map2 = p2._arrayMap
+                    Dim n = map1.Count
+
+                    If n = map2.Count Then
+                        Dim ids1 = map1.Keys
+                        Dim ids2 = map2.Keys
+
+                        For i = 0 To n - 1
+                            Dim id1 = ids1(i).ToString().ToLower()
+                            Dim id2 = ids2(i).ToString().ToLower()
+
+                            If id1 = id2 Then
+                                Dim v1 = map1(ids1(i))
+                                Dim v2 = map2(ids2(i))
+                                If Not AreEqual(v1, v2) Then Return False
+                            Else
+                                Return False
+                            End If
+                        Next
+                        Return True
+                    Else
+                        Return False
+                    End If
+
+                Else
+                    Return False
+                End If
+
+            ElseIf Array.IsArray(p2) Then
+                Return False
+            Else
+                Return p2.Equals(p1)
+            End If
+        End Function
+
+
         Public Shared Operator <>(primitive1 As Primitive, primitive2 As Primitive) As Primitive
-            Return Not primitive1.Equals(primitive2)
+            Return New Primitive(Not AreEqual(primitive1, primitive2))
         End Operator
 
         Public Shared Operator >(primitive1 As Primitive, primitive2 As Primitive) As Primitive
@@ -589,7 +636,7 @@ Namespace Library
             array.ConstructArrayMap()
             If array.GetItemCount() = 0 Then
                 ' index the string
-                Return array(indexer)
+                Return array.Items(indexer)
             Else
                 Dim value As Primitive = Nothing
                 If Not array._arrayMap.TryGetValue(indexer, value) Then
@@ -623,7 +670,7 @@ Namespace Library
             array.ConstructArrayMap()
             If array.GetItemCount = 0 AndAlso CStr(array) <> "" Then
                 ' imdex the string
-                array(indexer) = value
+                array.Items(indexer) = value
                 Return array
             Else
                 Dim map As New Dictionary(Of Primitive, Primitive)(array._arrayMap, PrimitiveComparer.Instance)

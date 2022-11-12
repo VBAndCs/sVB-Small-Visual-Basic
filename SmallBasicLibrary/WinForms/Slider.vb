@@ -4,6 +4,12 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents the Slider control, that allows the user to choose a value within a range.
+    ''' Use the Minimum and Maximun properties to set the slider range, use the Value property to set the current slide position, and use the OnSlide event to take action when the slider value changes.
+    ''' You can use the form designer to add a slider to the form by dragging it from the toolbox.
+    ''' It is also possible to use the Form.AddSlider method to create a new slider and add it to the form at runtime.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Slider
@@ -103,7 +109,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Gets or sets the distance between slide ticks
+        ''' Gets or sets the distance between slide ticks.
+        ''' Note that you can change the tics color by using the ForeColor property, which allows you to hid the ticks by setting the ForeColor property to Colors.None or Colors.Trabsparent.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -214,8 +221,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when the slider value changes.
         ''' </summary>
-        Public Shared Custom Event OnSlide As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnSlide As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetSlider([Event].SenderControl)
                     AddHandler _sender.ValueChanged,
@@ -227,7 +234,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()

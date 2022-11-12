@@ -26,8 +26,12 @@ Namespace Library
             End If
 
             Dim sb As New System.Text.StringBuilder(str)
+            For i = 1 To arr.Count
+                sb.Replace($"[{i}]", $"<<[[{i}]]>>")
+            Next
+
             For i = 0 To arr.Count - 1
-                sb.Replace($"[{i + 1}]", arr(i))
+                sb.Replace($"<<[[{i + 1}]]>>", arr(i))
             Next
 
             Return sb.ToString()
@@ -47,12 +51,8 @@ Namespace Library
         ''' <summary>
         ''' Appends two text inputs and returns the result as another text.  This operation is particularly useful when dealing with unknown text in variables which could accidentally be treated as numbers and get added, instead of getting appended.
         ''' </summary>
-        ''' <param name="text1">
-        ''' First part of the text to be appended.
-        ''' </param>
-        ''' <param name="text2">
-        ''' Second part of the text to be appended.
-        ''' </param>
+        ''' <param name="text1">First part of the text to be appended.</param>
+        ''' <param name="text2">Second part of the text to be appended. You can also send an array to append all its items.</param>
         ''' <returns>
         ''' The appended text containing both the specified parts.
         ''' </returns>
@@ -62,12 +62,15 @@ Namespace Library
                 Dim map1 = text1._arrayMap
                 Dim maxKey = map1.Count
                 For Each index In map1.Keys
-                    Dim numIndex = index.TryGetAsDecimal()
-                    If numIndex > maxKey Then maxKey = numIndex
+                    Dim id = index.TryGetAsDecimal()
+                    If id > maxKey Then maxKey = id
                 Next
                 map1(maxKey + 1) = text2
                 Return text1
 
+            ElseIf text2.IsArray Then
+                Dim map = text2._arrayMap
+                Return String.Concat(text1, String.Concat(map.Values))
             Else
                 Return String.Concat(text1, text2)
             End If
@@ -342,8 +345,13 @@ Namespace Library
         ''' <param name="pos">The posision of the char</param>
         ''' <returns>a new text with the char changed to the given value. The input text will not change</returns>
         <WinForms.ReturnValueType(VariableType.String)>
-        Public Shared Function SetCharacterAt(text As Primitive, pos As Primitive, value As Primitive) As Primitive
-            text(pos) = value
+        Public Shared Function SetCharacterAt(
+                   text As Primitive,
+                   pos As Primitive,
+                   value As Primitive
+            ) As Primitive
+
+            Primitive.SetArrayValue(value, text, pos)
             Return text
         End Function
 
@@ -400,10 +408,40 @@ Namespace Library
         '''Converts the given value to a string
         ''' </summary>
         ''' <param name="value">the input value</param>
-        ''' <returns>the trimmed string</returns>
+        ''' <returns>the string representaion of the value. For example, the array string can be of the form {1, 2, 3}</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ToStr(value As Primitive) As Primitive
-            Return value.AsString()
+            If value.IsArray Then
+                If value.IsEmpty Then Return "{}"
+
+                Dim sb As New System.Text.StringBuilder("{")
+                Dim map = value._arrayMap
+                Dim n = map.Count - 1
+                Dim keys = map.Keys
+                Dim values = map.Values
+                Dim isNormalArray = True
+
+                For i = 0 To n
+                    If keys(i) <> i + 1 Then
+                        isNormalArray = False
+                        Exit For
+                    End If
+                Next
+
+                For i = 0 To n
+                    If isNormalArray Then
+                        sb.Append(ToStr(values(i)).AsString())
+                    Else
+                        sb.AppendFormat("[{0}]={1}", keys(i), ToStr(values(i)))
+                    End If
+                    If i < n Then sb.Append(", ")
+                Next
+
+                sb.Append("}")
+                Return sb.ToString()
+            Else
+                Return value.AsString()
+            End If
         End Function
 
         ''' <summary>

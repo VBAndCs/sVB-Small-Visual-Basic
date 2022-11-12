@@ -36,19 +36,19 @@ Namespace Library
         ''' <summary>
         ''' Raises an event when any button control is clicked.
         ''' </summary>
-        Public Shared Custom Event ButtonClicked As SmallBasicCallback
-            AddHandler(Value As SmallBasicCallback)
-                Dim h = TryCast(Events("ButtonClicked"), SmallBasicCallback)
+        Public Shared Custom Event ButtonClicked As SmallVisualBasicCallback
+            AddHandler(Value As SmallVisualBasicCallback)
+                Dim h = TryCast(Events("ButtonClicked"), SmallVisualBasicCallback)
                 If h IsNot Nothing Then Events.RemoveHandler("ButtonClicked", h)
                 Events.AddHandler("ButtonClicked", Value)
             End AddHandler
 
-            RemoveHandler(Value As SmallBasicCallback)
+            RemoveHandler(Value As SmallVisualBasicCallback)
                 Events.RemoveHandler("ButtonClicked", Value)
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events("ButtonClicked"), SmallBasicCallback)
+                Dim h = TryCast(Events("ButtonClicked"), SmallVisualBasicCallback)
                 If h IsNot Nothing Then h.Invoke()
             End RaiseEvent
         End Event
@@ -56,19 +56,19 @@ Namespace Library
         ''' <summary>
         ''' Raises an event when text is typed into any TextBox control.
         ''' </summary>
-        Public Shared Custom Event TextTyped As SmallBasicCallback
-            AddHandler(Value As SmallBasicCallback)
-                Dim h = TryCast(Events("TextTyped"), SmallBasicCallback)
+        Public Shared Custom Event TextTyped As SmallVisualBasicCallback
+            AddHandler(Value As SmallVisualBasicCallback)
+                Dim h = TryCast(Events("TextTyped"), SmallVisualBasicCallback)
                 If h IsNot Nothing Then Events.RemoveHandler("TextTyped", h)
                 Events.AddHandler("TextTyped", Value)
             End AddHandler
 
-            RemoveHandler(Value As SmallBasicCallback)
+            RemoveHandler(Value As SmallVisualBasicCallback)
                 Events.RemoveHandler("TextTyped", Value)
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events("TextTyped"), SmallBasicCallback)
+                Dim h = TryCast(Events("TextTyped"), SmallVisualBasicCallback)
                 If h IsNot Nothing Then h.Invoke()
             End RaiseEvent
         End Event

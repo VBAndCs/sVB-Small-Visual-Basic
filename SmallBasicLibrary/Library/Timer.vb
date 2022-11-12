@@ -31,20 +31,20 @@ Namespace Library
         ''' <summary>
         ''' Raises an event when the timer ticks.
         ''' </summary>
-        Public Shared Custom Event Tick As SmallBasicCallback
-            AddHandler(Value As SmallBasicCallback)
+        Public Shared Custom Event Tick As SmallVisualBasicCallback
+            AddHandler(Value As SmallVisualBasicCallback)
                 Dim Key = NameOf(Tick)
-                Dim h = TryCast(Events(Key), SmallBasicCallback)
+                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
                 If h IsNot Nothing Then Events.RemoveHandler(Key, h)
                 Events.AddHandler(Key, Value)
             End AddHandler
 
-            RemoveHandler(Value As SmallBasicCallback)
+            RemoveHandler(Value As SmallVisualBasicCallback)
                 Events.RemoveHandler(NameOf(Tick), Value)
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(Tick)), SmallBasicCallback)
+                Dim h = TryCast(Events(NameOf(Tick)), SmallVisualBasicCallback)
                 If h IsNot Nothing Then h.Invoke()
             End RaiseEvent
 

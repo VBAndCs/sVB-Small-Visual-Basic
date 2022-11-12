@@ -178,7 +178,7 @@ Public Class ProjectExplorer
         If item.IsTheGlobalFile Then Return False
 
         Dim oldFile = item.FilePath
-        Dim x = newName(0).ToString().ToLower()
+        Dim x = newName(0).ToString().ToUpper()
         newName = x & If(newName.Length > 1, newName.Substring(1), "")
         Dim newFile = Path.Combine(_projDir, newName & ".xaml")
 

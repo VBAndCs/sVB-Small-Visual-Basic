@@ -5,7 +5,11 @@ Imports System.Windows.Media
 Imports System.Windows
 
 Namespace WinForms
-
+    ''' <summary>
+    ''' Represents the Form control, which is the window that the user interacts with.
+    ''' It is easier use the form designer to add new forms and save it to a XAML file.
+    ''' It is also possible to crate forms at run time, by calling the Forms.AddForm method to create a new form, or the Forms.LoadForm method to load a form from the XAML file that contains its design, then call the Form.Show method to display the form.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Form
@@ -22,12 +26,75 @@ Namespace WinForms
             Helper.ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
+        ''' <summary>
+        ''' Runs the test functions written in the current form, and shows the test results in the TxtTest textbox. If the form doesn't contain a textbox with this name, it will be added at run time to show the results.
+        ''' The test function must follow these rules:
+        ''' 1. Its name must start with `Test_`, like `Test_FindNames`.
+        ''' 2. It must be a function not a sub, and it can't have any parameters.
+        ''' 3. The function return value should be a string containing the test result like passed or failed. 
+        ''' For an example, see the tests written in the UnitTest Sample` project in the samples folder.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub RunTests(formName As Primitive)
+            Dim asm = System.Reflection.Assembly.GetEntryAssembly()
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim frm = formName.AsString().ToLower()
+                        Dim frmName = "_SmallVisualBasic_" & frm
+                        Dim frmType = asm.GetType(frmName)
+                        Dim methods = frmType?.GetMethods(System.Reflection.BindingFlags.Public Or System.Reflection.BindingFlags.Static)
+                        If methods Is Nothing Then Return
+
+                        Dim testMethods =
+                                From method In methods
+                                Where method.Name.ToLower().StartsWith("test_")
+
+                        If Not testMethods.Any Then Return
+
+                        Dim key = frm & ".txttest"
+                        If Not Forms._controls.ContainsKey(key) Then
+                            Dim wind = CType(Forms._forms(frm), Window)
+                            AddTexBox(formName, "txttest", 5, 5, wind.ActualWidth - 10, wind.ActualHeight - 10)
+                        End If
+
+                        Dim txtTest = CType(Forms._controls(key), Wpf.TextBox)
+                        Dim errMsg = " doesn't return a value. Use a test function and return a text showing the result of the test."
+
+                        For Each m In testMethods
+                            Dim testName = m.Name
+                            Try
+                                Dim msg = m.Invoke(Nothing, Nothing)
+
+                                If msg Is Nothing Then
+                                    txtTest.AppendText(testName)
+                                    txtTest.AppendText(errMsg)
+                                Else
+                                    txtTest.AppendText(msg.ToString())
+                                End If
+
+                            Catch ex As Exception
+                                txtTest.AppendText($"{testName} has caused the error: {ex.Message}.")
+                            End Try
+                            txtTest.AppendText(vbCrLf)
+                        Next
+
+                    Catch ex As Exception
+                        ReportSubError(formName, "RunTests", ex)
+                    End Try
+                End Sub)
+        End Sub
+
         Public Shared Sub Initialize(formName As String, asm As System.Reflection.Assembly)
             App.Invoke(
                 Sub()
                     Try
                         Dim frmName = "_SmallVisualBasic_" & formName.ToLower()
                         Dim frm = asm.GetType(frmName)
+                        If frm Is Nothing Then
+                            asm = System.Reflection.Assembly.GetEntryAssembly
+                            frm = asm.GetType(frmName)
+                        End If
                         Dim initializeMethod = frm?.GetMethod("Initialize", System.Reflection.BindingFlags.Public Or System.Reflection.BindingFlags.Static)
                         initializeMethod?.Invoke(Nothing, Nothing)
 
@@ -40,25 +107,26 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new TextBox control to the form
         ''' </summary>
-        ''' <param name="textBoxName">A unigue name of the new TextBox.</param>
+        ''' <param name="textBoxName">A unique name for the new TextBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The neame of the textBox</returns>
+        ''' <returns>The key of the textBox in the formula {formName.textBoxName} like "form1.textbox1".</returns>
         <ReturnValueType(VariableType.TextBox)>
         <ExMethod>
         Public Shared Function AddTexBox(
                          formName As Primitive,
                          textBoxName As Primitive,
                          left As Primitive, top As Primitive,
-                         width As Primitive, height As Primitive) As Primitive
+                         width As Primitive, height As Primitive
+                    ) As Primitive
 
             Dim key = ValidateArgs(formName, textBoxName)
             App.Invoke(
                  Sub()
                      Try
-                         Dim frm = CType(Forms._forms(CStr(formName).ToLower), Window)
+                         Dim frm = CType(Forms._forms(CStr(formName).ToLower()), Window)
 
                          Dim textBox1 As New Wpf.TextBox With {
                            .Name = textBoxName,
@@ -86,19 +154,20 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Label control to the form
         ''' </summary>
-        ''' <param name="formName">A unigue name of the new Label.</param>
+        ''' <param name="formName">A unique name for the new Label.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The neame of the label</returns>
+        ''' <returns>The key of the label in the formula {formName.labelName} like "form1.label1".</returns>
         <ReturnValueType(VariableType.Label)>
         <ExMethod>
         Public Shared Function AddLabel(
                          formName As Primitive,
                          labelName As Primitive,
                          left As Primitive, top As Primitive,
-                         width As Primitive, height As Primitive) As Primitive
+                         width As Primitive, height As Primitive
+                   ) As Primitive
 
             Dim key = ValidateArgs(formName, labelName)
             App.Invoke(
@@ -130,13 +199,13 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new IamgeBox control to the form
         ''' </summary>
-        ''' <param name="imageBoxName">A unigue name of the new ImageBox.</param>
+        ''' <param name="imageBoxName">A unique name for the new ImageBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
         ''' <param name="fileName">the path of the image file</param>
-        ''' <returns>The neame of the ImageBox</returns>
+        ''' <returns>The key of the ImageBox in the formula {formName.imageBoxName} like "form1.imagebox1".</returns>
         <ReturnValueType(VariableType.ImageBox)>
         <ExMethod>
         Public Shared Function AddImageBox(
@@ -185,9 +254,9 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Timer control to the form
         ''' </summary>
-        ''' <param name="timerName">A unigue name of the new Timer.</param>
+        ''' <param name="timerName">A unique name for the new Timer.</param>
         ''' <param name="interval">The delay time in milliseconds between ticks</param>
-        ''' <returns>The neame of the Timer</returns>
+        ''' <returns>The key of the Timer</returns>
         <ReturnValueType(VariableType.WinTimer)>
         <ExMethod>
         Public Shared Function AddTimer(
@@ -299,12 +368,12 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Button control to the form
         ''' </summary>
-        ''' <param name="buttonName">A unigue name of the new Button.</param>
+        ''' <param name="buttonName">A unique name for the new Button.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The neame of the button</returns>
+        ''' <returns>The key of the button in the formula {formName.buttonName} like "form1.button1".</returns>
         <ReturnValueType(VariableType.Button)>
         <ExMethod>
         Public Shared Function AddButton(
@@ -346,12 +415,12 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new ToggleButton control to the form
         ''' </summary>
-        ''' <param name="toggleButtonName">A unigue name of the new ToggleButton.</param>
+        ''' <param name="toggleButtonName">A unique name for the new ToggleButton.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The neame of the toggleButton</returns>
+        ''' <returns>The key of the toggleButton</returns>
         <ReturnValueType(VariableType.ToggleButton)>
         <ExMethod>
         Public Shared Function AddToggleButton(
@@ -394,12 +463,12 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new CheckBox control to the form
         ''' </summary>
-        ''' <param name="checkBoxName">A unigue name of the new CheckBox.</param>
+        ''' <param name="checkBoxName">A unique name for the new CheckBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="text">the text to desply on the CheckBox</param>
         ''' <param name="checked">The value to set to the Checked property</param>
-        ''' <returns>The neame of the button</returns>
+        ''' <returns>The key of the CheckBox in the formula {formName.checkBoxName} like "form1.checkbox1".</returns>
         <ReturnValueType(VariableType.CheckBox)>
         <ExMethod>
         Public Shared Function AddCheckBox(
@@ -447,13 +516,13 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new RadioButton control to the form
         ''' </summary>
-        ''' <param name="radioButtonName">A unigue name of the new RadioButton.</param>
+        ''' <param name="radioButtonName">A unique name for the new RadioButton.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="text">The text to desply on the RadioButton</param>
         ''' <param name="groupName">The name of the group to add the button to</param>
         ''' <param name="checked">The value to set to the Checked property</param>
-        ''' <returns>The neame of the button</returns>
+        ''' <returns>The key of the RadioButton in the formula {formName.radioButtonName} like "form1.radiobutton1".</returns>
         <ReturnValueType(VariableType.RadioButton)>
         <ExMethod>
         Public Shared Function AddRadioButton(
@@ -498,12 +567,12 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new ListBox control to the form
         ''' </summary>
-        ''' <param name="listBoxName">A unigue name of the new ListBox.</param>
+        ''' <param name="listBoxName">A unique name for the new ListBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The neame of the listBox</returns>
+        ''' <returns>The key of the listBox</returns>
         <ReturnValueType(VariableType.ListBox)>
         <ExMethod>
         Public Shared Function AddListBox(formName As Primitive,
@@ -544,12 +613,12 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new DatePicker control to the form
         ''' </summary>
-        ''' <param name="datePickerName">A unigue name of the new DatePicker.</param>
+        ''' <param name="datePickerName">A unique name for the new DatePicker.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="selectedDate">the date that will be selected in the control</param>
-        ''' <returns>The neame of the DatePicker</returns>
+        ''' <returns>The key of the DatePicker in the formula {formName.datePikkerName} like "form1.datepicker1".</returns>
         <ReturnValueType(VariableType.DatePicker)>
         <ExMethod>
         Public Shared Function AddDatePiker(
@@ -591,14 +660,14 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new ProgressBar control to the form
         ''' </summary>
-        ''' <param name="progressBarName">A unigue name of the new ProgressBar.</param>
+        ''' <param name="progressBarName">A unique name for the new ProgressBar.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
         ''' <param name="minimum">The progress minimum value</param>
         ''' <param name="maximum">The progress maximum value. Use 0 if the max value is indeterminate.</param>
-        ''' <returns>The neame of the ProgressBar</returns>
+        ''' <returns>The key of the ProgressBar</returns>
         <ReturnValueType(VariableType.ProgressBar)>
         <ExMethod>
         Public Shared Function AddProgressBar(
@@ -644,7 +713,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Slider control to the form
         ''' </summary>
-        ''' <param name="sliderName">A unigue name of the new Slider.</param>
+        ''' <param name="sliderName">A unique name for the new Slider.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -653,7 +722,7 @@ Namespace WinForms
         ''' <param name="maximum">The slider maximum value.</param>
         ''' <param name="value">The slider current value</param>
         ''' <param name="tickFrequency">The distance between slide ticks</param>
-        ''' <returns>The neame of the Slider</returns>
+        ''' <returns>The key of the Slider in the formula {formName.sliderName} like "form1.slider1".</returns>
         <ReturnValueType(VariableType.Slider)>
         <ExMethod>
         Public Shared Function AddSlider(
@@ -703,7 +772,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new ScrollBar control to the form
         ''' </summary>
-        ''' <param name="scrollBarName">A unigue name of the new ScrollBar.</param>
+        ''' <param name="scrollBarName">A unique name for the new ScrollBar.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
@@ -711,7 +780,7 @@ Namespace WinForms
         ''' <param name="minimum">The scrollbar minimum value</param>
         ''' <param name="maximum">The scrollbar maximum value.</param>
         ''' <param name="value">The scrollbar current value</param>
-        ''' <returns>The neame of the scrollbar.</returns>
+        ''' <returns>The key of the scrollbar in the formula {formName.scrollbarName} like "form1.scrollbar1".</returns>
         <ReturnValueType(VariableType.ScrollBar)>
         <ExMethod>
         Public Shared Function AddScrollBar(
@@ -907,7 +976,7 @@ Namespace WinForms
         ''' <summary>
         ''' Displayes the form on the screen as a modal dialog, so the user must close it first to ba able to accees other forms of your app.
         ''' </summary>
-        ''' <returns>the dialog result that represnts the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
+        ''' <returns>the dialog result that Represents the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
         <ReturnValueType(VariableType.DialogResult)>
         <ExMethod>
         Public Shared Function ShowDialog(formName As Primitive) As Primitive
@@ -1209,8 +1278,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired after the form is shown and all controls are rendered and are ready to use their properties.
         ''' </summary>
-        Public Shared Custom Event OnShown As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnShown As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 App.Invoke(
                      Sub()
                          Dim form = CType(Forms.GetForm([Event].SenderControl), System.Windows.Window)
@@ -1238,7 +1307,7 @@ Namespace WinForms
                      End Sub)
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()
@@ -1249,8 +1318,8 @@ Namespace WinForms
         ''' Fired jsut before the form is closed.
         ''' Use Event.Handled = True if you want to cancel closing the form.
         ''' </summary>
-        Public Shared Custom Event OnClosing As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnClosing As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 App.Invoke(
                      Sub()
                          Dim form = Forms.GetForm([Event].SenderControl)
@@ -1276,7 +1345,7 @@ Namespace WinForms
                      End Sub)
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()
@@ -1286,8 +1355,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired after the form is closed
         ''' </summary>
-        Public Shared Custom Event OnClosed As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnClosed As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 App.Invoke(
                      Sub()
                          Dim form = Forms.GetForm([Event].SenderControl)
@@ -1310,7 +1379,7 @@ Namespace WinForms
                      End Sub)
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()

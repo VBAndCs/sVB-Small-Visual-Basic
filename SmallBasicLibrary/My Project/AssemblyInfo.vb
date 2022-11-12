@@ -12,7 +12,7 @@ Imports System.Runtime.Versioning
 
 <Assembly: ComVisible(False)>
 <Assembly: Guid("41705d9d-a835-4805-bc47-d1ac225d3e71")>
-<Assembly: AssemblyFileVersion("2.5.5.0")>
+<Assembly: AssemblyFileVersion("2.6.0.0")>
 <Assembly: AssemblyTrademark("")>
 <Assembly: AssemblyCopyright("Copyright ©  2022")>
 <Assembly: NeutralResourcesLanguage("en")>
@@ -21,4 +21,4 @@ Imports System.Runtime.Versioning
 <Assembly: AssemblyConfiguration("")>
 <Assembly: AssemblyCompany("Microsoft Corporation")>
 <Assembly: AssemblyProduct("Small Visual Basic Library")>
-<Assembly: AssemblyVersion("2.5.5.0")>
+<Assembly: AssemblyVersion("2.6.0.0")>

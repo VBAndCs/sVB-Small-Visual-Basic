@@ -5,6 +5,13 @@ Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents the MenuItem control, which shows menuItem on the main menu bar or on a the dropdown list of a parent manuItem.
+    ''' The user can click the menu item to perform the task you programmed in the OnClick handler.
+    ''' The can also set the Checkable property to True to allow the user to check or unchick the menu item, hense you can use the Checked property and the OnCheck event to respond the user choices.
+    ''' The form designer doesn't supoport adding menu items at design time, but you can use the MainMenu.AddItem method to add an item to the main menu, or use the MenuItem.AddItem to add an item to a pearent menu item.
+    ''' You can also use the MenuItem.AddSeparator to add a separator line to the parent menu item.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class MenuItem
@@ -170,8 +177,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when the submenu is opened.
         ''' </summary>
-        Public Shared Custom Event OnOpen As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnOpen As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetMenuItem([Event].SenderControl)
                     AddHandler _sender.SubmenuOpened, Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs) [Event].EventsHandler(CType(Sender, System.Windows.FrameworkElement), e, handler)
@@ -180,7 +187,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()
@@ -190,8 +197,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when the checked state is changed.
         ''' </summary>
-        Public Shared Custom Event OnCheck As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnCheck As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetMenuItem([Event].SenderControl)
                     Dim _handler = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
@@ -202,7 +209,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()

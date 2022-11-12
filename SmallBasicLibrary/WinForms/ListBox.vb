@@ -5,6 +5,11 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents a ListBox control, which shows a list of items to the user to select one of them.
+    ''' You can use the form designer to add a list box to the form by dragging it from the toolbox.
+    ''' It is also possible to use the Form.AddListBox method to create a new list box and add it to the form at runtime.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class ListBox
@@ -396,8 +401,8 @@ Namespace WinForms
         ''' <summary>
         ''' This event is fired when the selected item in the list is changed.
         ''' </summary>
-        Public Shared Custom Event OnSelection As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnSelection As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetListBox([Event].SenderControl)
                     AddHandler _sender.SelectionChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
@@ -407,7 +412,7 @@ Namespace WinForms
 
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()

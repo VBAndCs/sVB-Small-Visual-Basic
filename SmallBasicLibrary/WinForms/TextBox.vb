@@ -4,11 +4,19 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents the TextBox control, which allows the user to input text.
+    ''' Use the Text property to read the text the user wrote.
+    ''' Use the OnTextInput event to intercept the text before it is written to the textbox.
+    ''' Use the OnTextChanged to take action after the text of the textbox changes.
+    ''' You can use the form designer to add a textbox to the form by dragging it from the toolbox.
+    ''' It is also possible to use the Form.AddTextBox method to create a new textbox and add it to the form at runtime.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class TextBox
 
-        Private Shared Function GetTextBox(textBoxName As String) As Wpf.TextBox
+        Friend Shared Function GetTextBox(textBoxName As String) As Wpf.TextBox
             Dim c = Control.GetControl(textBoxName)
             Dim t = TryCast(c, Wpf.TextBox)
             If t Is Nothing Then
@@ -435,8 +443,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when the text is changed.
         ''' </summary>
-        Public Shared Custom Event OnTextChanged As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnTextChanged As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetTextBox([Event].SenderControl)
                     AddHandler _sender.TextChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
@@ -445,7 +453,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()
@@ -457,8 +465,8 @@ Namespace WinForms
         ''' Use Event.LastTextInput to get this text.
         ''' Use Event.Handled = True if you want to cancel writing this text to the TexBox. 
         ''' </summary>
-        Public Shared Custom Event OnTextInput As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnTextInput As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetTextBox([Event].SenderControl)
 
@@ -478,7 +486,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()
@@ -488,8 +496,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when the selected text is changed in TextBox.
         ''' </summary>
-        Public Shared Custom Event OnSelect As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnSelect As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetTextBox([Event].SenderControl)
 
@@ -509,7 +517,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()

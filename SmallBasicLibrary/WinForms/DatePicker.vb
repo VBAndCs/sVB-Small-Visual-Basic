@@ -4,6 +4,11 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents a DatePicker control, that allows the user to enter a date or pick it from the drop down calendar.
+    ''' You can use the form designer to add a date picker to the form by dragging it from the toolbox.
+    ''' It is also possible to use the Form.AddDatePicker method to create a new date picker and add it to the form at runtime.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class DatePicker
@@ -50,8 +55,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when the text is changed.
         ''' </summary>
-        Public Shared Custom Event OnSelection As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnSelection As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetDatePicker([Event].SenderControl)
                     AddHandler _sender.SelectedDateChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
@@ -60,7 +65,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()

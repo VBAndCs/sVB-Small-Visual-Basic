@@ -5,7 +5,10 @@ Imports System.Windows.Threading
 
 Namespace WinForms
     ''' <summary>
-    ''' The Timer object provides an easy way for doing something repeatedly with a constant interval between.
+    ''' Represents the WinTimer control, which provides an easy way for doing something repeatedly with a constant interval between.
+    ''' Use the Interval property to set the time between ticks, and write the code you want to be executed in the OnTick event handler.
+    ''' This object differs that the Timer object, as you can add many win timers as you want to each form in the project, while there is only a single Timer object that was suitable to SB code files.
+    ''' You can't use the form designer to add Win timers to thee form, but you can use the Form.AddTimer method to add a new timer to the form.
     ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
@@ -85,8 +88,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when user releases the left mouse-button
         ''' </summary>
-        Public Shared Custom Event OnTick As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnTick As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetTimer([Event].SenderControl)
                     AddHandler _sender.Tick,
@@ -104,7 +107,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()

@@ -59,6 +59,23 @@ Namespace WinForms
         <ReturnValueType(VariableType.ControlType)>
         Public Shared ReadOnly Property MainMenu As Primitive = "Menu"
 
+        ''' <summary>Slider</summary>
+        <ReturnValueType(VariableType.ControlType)>
+        Public Shared ReadOnly Property Slider As Primitive = "Slider"
+
+        ''' <summary>ProgressBar</summary>
+        <ReturnValueType(VariableType.ControlType)>
+        Public Shared ReadOnly Property ProgressBar As Primitive = "ProgressBar"
+
+        ''' <summary>ScrollBar</summary>
+        <ReturnValueType(VariableType.ControlType)>
+        Public Shared ReadOnly Property ScrollBar As Primitive = "ScrollBar"
+
+
+        ''' <summary>ToggleButton</summary>
+        <ReturnValueType(VariableType.ControlType)>
+        Public Shared ReadOnly Property ToggleButton As Primitive = "ToggleButton"
+
     End Class
 
 End Namespace

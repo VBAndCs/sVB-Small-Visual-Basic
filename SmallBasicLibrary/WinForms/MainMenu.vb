@@ -6,6 +6,10 @@ Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents the Menu control, which shows menu items on a bar, so the user can click amy of them to drop down down a list of sub menu items.
+    ''' The form designer doesn't supoport adding a main menu at design time, but you can use the Form.AddMainMenu method to add it in runtime.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class MainMenu

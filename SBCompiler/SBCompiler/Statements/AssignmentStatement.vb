@@ -148,7 +148,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         Dim meth = scope.MethodBuilders(token.LCaseText)
                         scope.ILGenerator.Emit(OpCodes.Ldnull)
                         scope.ILGenerator.Emit(OpCodes.Ldftn, meth)
-                        scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallBasicCallback).GetConstructors()(0))
+                        scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallVisualBasicCallback).GetConstructors()(0))
                         scope.ILGenerator.EmitCall(OpCodes.Call, eventInfo.GetAddMethod(), Nothing)
 
                     Else

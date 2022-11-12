@@ -31,15 +31,12 @@ Namespace Library
         ''' </summary>
         ''' <param name="array">the input array</param>
         ''' <param name="value">the item you want to add after the last item in the array.</param>
-        ''' <returns>a new array with the new item added. The input array will bot be cahmged</returns>
+        ''' <returns>a new array with the new item added. The input array will not be changed</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function AddItem(array As Primitive, value As Primitive) As Primitive
             Dim map = array._arrayMap
-            If map Is Nothing Then
-                Return SetValue(array, 1, value)
-            Else
-                Return SetValue(array, map.Count + 1, value)
-            End If
+            Dim index = If(map Is Nothing, 1, map.Count + 1)
+            Return Primitive.SetArrayValue(value, array, index)
         End Function
 
         ''' <summary>
@@ -47,20 +44,31 @@ Namespace Library
         ''' </summary>
         ''' <param name="array">the input array</param>
         ''' <param name="items">an array containing the items to add eact of them as a single item at the end of the array.</param>
-        ''' <returns>a new array with the given items. The input array will bot be cahmged</returns>
+        ''' <returns>a new array with the given items. The input array will not be changed</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function AddItems(array As Primitive, items As Primitive) As Primitive
             If items.IsEmpty Then Return array
+            If array.IsEmpty Then Return items
+
+            Dim p As New Primitive
+            Dim map As New Dictionary(Of Primitive, Primitive)(
+                array._arrayMap,
+                Primitive.PrimitiveComparer.Instance
+            )
+
+            Dim index As Integer = map.Count + 1
+            p._arrayMap = map
+
             If items.IsArray Then
-                Dim index As Integer = array.GetItemCount() + 1
                 For Each item In items._arrayMap.Values
-                    array(index) = item
-                    index += 1
+                    map(Index) = item
+                    Index += 1
                 Next
-                Return array
             Else
-                Return AddItem(array, items)
+                map(index) = items
             End If
+
+            Return p
         End Function
 
 
@@ -72,33 +80,78 @@ Namespace Library
         ''' <param name="value">the value of the item</param>
         ''' <returns>a new arry with the item added. the input array will not be changed</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
-        Public Shared Function AddKeyValue(array As Primitive, key As Primitive, value As Primitive) As Primitive
-            Return SetValue(array, key, value)
-        End Function
+        Public Shared Function AddKeyValue(
+                   array As Primitive,
+                   key As Primitive,
+                   value As Primitive
+        ) As Primitive
 
-        <HideFromIntellisense>
-        Public Shared Function GetItemAt(array As Primitive, index As Primitive) As Primitive
-            Return array(index)
+            Return Primitive.SetArrayValue(value, array, key)
         End Function
 
         ''' <summary>
-        ''' 
+        ''' Gets the value of the array item that exists at the given numeric position.
         ''' </summary>
-        ''' <param name="array">the input array.</param>
-        ''' <param name="index">the index or the key of the item you want to change</param>
-        ''' <param name="value">the value of the item</param>
-        ''' <returns>a new array with the value set. The input array will bot be cahmged</returns>
-        <HideFromIntellisense>
+        ''' <param name="array">The given array.</param>
+        ''' <param name="position">A number that represents the position of the item in the array, which not always be the same as its index (key). Note that position must be > 0.</param>
+        ''' <returns>the item value if found, otherwise empty string "".</returns>
+        Public Shared Function GetItemAt(array As Primitive, position As Primitive) As Primitive
+            If position < 1 Then Return ""
+
+            Dim keys = array._arrayMap.Keys
+            If position > keys.Count Then Return ""
+
+            Return array._arrayMap(keys(position - 1))
+        End Function
+
+        ''' <summary>
+        ''' Sets the value of the array item that exists at the given numeric position.
+        ''' </summary>
+        ''' <param name="array">The given array.</param>
+        ''' <param name="position">A number that represents the position of the item in the array, which not always be the same as its index (key). Note that position must be > 0.</param>
+        ''' <param name="value">The item value.</param>
+        ''' <returns>a new array with the item set to the new value. The original array will not change.</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function SetItemAt(
                           array As Primitive,
-                          index As Primitive,
+                          position As Primitive,
                           value As Primitive
                    ) As Primitive
 
-            array(index) = value
-            Return array
+            If position < 1 Then Return array
+
+            Dim map = array._arrayMap
+            If map Is Nothing Then Return array
+
+            Dim keys = map.Keys
+            If position > keys.Count Then Return array
+
+            Dim key = keys(position - 1)
+            Dim map2 As New Dictionary(Of Primitive, Primitive)(array._arrayMap, Primitive.PrimitiveComparer.Instance)
+            map2(key) = value
+
+            Return New Primitive With {
+                ._isArray = True,
+                ._arrayMap = map2
+            }
         End Function
+
+        ''' <summary>
+        ''' Gets the key of the array item that exists at the given numeric position.
+        ''' </summary>
+        ''' <param name="array">The given array.</param>
+        ''' <param name="position">A number that represents the position of the item in the array, which not always be the same as its index (key). Note that position must be > 0.</param>
+        ''' <returns>the item key if found, otherwise empty string "".</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function GetKeyAt(array As Primitive, position As Primitive) As Primitive
+            If position < 1 Then Return ""
+
+            Dim keys = array._arrayMap.Keys
+            If position > keys.Count Then Return ""
+
+            Return keys(position - 1)
+        End Function
+
 
         ''' <summary>
         ''' Gets whether or not the array contains the specified index.  This is very useful when deciding if the array's index was initialized by some value or not.
@@ -182,7 +235,7 @@ Namespace Library
         ''' <param name="array">the input array</param>
         ''' <param name="index">the index or the key of the item.</param>
         ''' <param name="value">the value to set.''' </param>
-        ''' <returns>a new array with the value set. The input array will bot be cahmged</returns>
+        ''' <returns>a new array with the value set. The input array will not be changed</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         <HideFromIntellisense>
         Public Shared Function SetValue(
@@ -191,8 +244,7 @@ Namespace Library
                             value As Primitive
                     ) As Primitive
 
-            array(index) = value
-            Return array
+            Return Primitive.SetArrayValue(value, array, index)
         End Function
 
         ''' <summary>
@@ -221,28 +273,32 @@ Namespace Library
         ''' Removes the array item at the specified index.
         ''' </summary>
         ''' <param name="array">The name of the array.</param>
-        ''' <param name="index">
-        ''' The index of the item to remove.
-        ''' </param>
-        Public Shared Sub RemoveItemAt(array As Primitive, index As Primitive)
-            array._arrayMap?.Remove(index)
-        End Sub
+        ''' <param name="index">The index of the item to remove.</param>
+        ''' <returns>a new array with the item removed. The original array will not change</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        Public Shared Function RemoveItem(array As Primitive, index As Primitive) As Primitive
+            If index.AsString() = "" Then Return array
+
+            Dim map = array._arrayMap
+            If map Is Nothing OrElse Not map.ContainsKey(index) Then Return array
+
+            Dim map2 As New Dictionary(Of Primitive, Primitive)(map, Primitive.PrimitiveComparer.Instance)
+            map2?.Remove(index)
+
+            Return New Primitive With {
+                ._isArray = True,
+                ._arrayMap = map2
+            }
+        End Function
+
 
         ''' <summary>
-        ''' Removes all items from the array.
-        ''' </summary>
-        ''' <param name="array">The name of the array.</param>
-        Public Shared Sub Clear(array As Primitive)
-            array._arrayMap?.Clear()
-        End Sub
-
-        ''' <summary>
-        ''' Searches the array for the given value.
+        ''' Searches the array for the given value, and return its key.
         ''' </summary>
         ''' <param name="array">the input array</param>
-        ''' <param name="value">the item to sarch for</param>
-        ''' <param name="start">an integer representing the array index to sratr swarching at</param>
-        ''' <param name="ignoreCase">set it to true if you want to do an case-insensetive search</param>
+        ''' <param name="value">the item to search for</param>
+        ''' <param name="start">an integer representing the array index to start searching at</param>
+        ''' <param name="ignoreCase">set it to true if you want to do an case-insensitive search</param>
         ''' <returns>the key of the item if found, otherwise empty string</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Find(array As Primitive, value As Primitive, start As Primitive, ignoreCase As Primitive) As Primitive
@@ -252,16 +308,18 @@ Namespace Library
             Dim intStart = System.Math.Max(CInt(start), 1)
             intStart = System.Math.Min(intStart, count)
 
-            Dim values = array._arrayMap.Values()
+
+            Dim ids = array._arrayMap.Keys
+            Dim map = array._arrayMap
             Dim ignCase = CBool(ignoreCase)
             Dim lowercaseValue = value.AsString().ToLower()
 
             For i = intStart - 1 To count - 1
                 If ignCase Then
-                    If values(i).AsString().ToLower() = lowercaseValue Then
+                    If map(ids(i)).AsString().ToLower() = lowercaseValue Then
                         Return array._arrayMap.Keys(i)
                     End If
-                ElseIf values(i) = value Then
+                ElseIf map(ids(i)) = value Then
                     Return array._arrayMap.Keys(i)
                 End If
             Next
@@ -270,11 +328,46 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Searches the array for the given value, and returns its index position in the array.
+        ''' </summary>
+        ''' <param name="array">the input array</param>
+        ''' <param name="value">the item to search for</param>
+        ''' <param name="start">an integer representing the array index to start searching at</param>
+        ''' <param name="ignoreCase">set it to true if you want to do an case-insensitive search</param>
+        ''' <returns>the position (order) of the item in the array if found, otherwise 0. </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function IndexOf(array As Primitive, value As Primitive, start As Primitive, ignoreCase As Primitive) As Primitive
+            If array.IsEmpty OrElse value.IsEmpty Then Return ""
+            Dim count = array._arrayMap.Count
+
+            Dim intStart = System.Math.Max(CInt(start), 1)
+            intStart = System.Math.Min(intStart, count)
+
+            Dim ids = array._arrayMap.Keys
+            Dim map = array._arrayMap
+            Dim ignCase = CBool(ignoreCase)
+            Dim lowercaseValue = value.AsString().ToLower()
+
+            For i = intStart - 1 To count - 1
+                If ignCase Then
+                    If map(ids(i)).AsString().ToLower() = lowercaseValue Then
+                        Return i
+                    End If
+                ElseIf map(ids(i)) = value Then
+                    Return i
+                End If
+            Next
+
+            Return 0
+        End Function
+
+
+        ''' <summary>
         ''' Joins the given array items into one text.
         ''' </summary>
         ''' <param name="array">the input array</param>
         ''' <param name="separator">a string to use as a separator between array items</param>
-        ''' <returns>a string containing the array items, seperated by the given separator</returns>
+        ''' <returns>a string containing the array items, separated by the given separator</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Join(array As Primitive, separator As Primitive) As Primitive
             If array.IsEmpty Then Return ""
@@ -293,5 +386,14 @@ Namespace Library
             End If
         End Function
 
+        ''' <summary>
+        '''Converts the given array to a string
+        ''' </summary>
+        ''' <param name="array">the input array</param>
+        ''' <returns>The string representation of the array. If the array is simple, its string can be of the form {1, 2, 3}. If the array contains keys, its string can be of the form {[1]=1, [2]=2, [Name]=Adam}.</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function ToStr(array As Primitive) As Primitive
+            Return Text.ToStr(array)
+        End Function
     End Class
 End Namespace

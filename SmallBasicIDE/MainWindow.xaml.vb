@@ -767,7 +767,7 @@ Namespace Microsoft.SmallVisualBasic
 
             Catch ex As Exception
                 If errors Is Nothing Then errors = New List(Of [Error])
-                errors.Add(New [Error](-1, 0, 0, ex.Message))
+            errors.Add(New [Error](-1, 0, 0, ex.Message))
             End Try
 
             If errors?.Count > 0 Then

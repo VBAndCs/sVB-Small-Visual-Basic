@@ -70,14 +70,14 @@ Namespace Library
         ''' <returns>an array containing the font properties under the keys Name, Size, Bold, Italic, Underlined and Color, or returns an empty string "" if the user canceled the operation</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function ShowFontDialog(font As Primitive) As Primitive
-            Dim wpfColor = WinForms.Color.FromString(font("Color"))
+            Dim wpfColor = WinForms.Color.FromString(font.Items("Color"))
             Dim color = Drawing.Color.FromArgb(wpfColor.A, wpfColor.R, wpfColor.G, wpfColor.B)
 
-            Dim family As New Drawing.FontFamily(font("Name"))
+            Dim family As New Drawing.FontFamily(font.Items("Name"))
             Dim style As New Drawing.FontStyle
-            If font("Bold") Then style = style Or Drawing.FontStyle.Bold
-            If font("Italic") Then style = style Or Drawing.FontStyle.Italic
-            If font("Underlined") Then style = style Or Drawing.FontStyle.Underline
+            If font.Items("Bold") Then style = style Or Drawing.FontStyle.Bold
+            If font.Items("Italic") Then style = style Or Drawing.FontStyle.Italic
+            If font.Items("Underlined") Then style = style Or Drawing.FontStyle.Underline
 
             Dim dlg As New Forms.FontDialog() With {
                 .AllowScriptChange = True,
@@ -88,19 +88,19 @@ Namespace Library
                 .ShowColor = True,
                 .ShowHelp = True,
                 .ShowEffects = True,
-                .Font = New Drawing.Font(family, font("Size"), style),
+                .Font = New Drawing.Font(family, font.Items("Size"), style),
                 .Color = color
             }
 
             If dlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
                 Dim f = dlg.Font
                 font = New Primitive
-                font("Name") = f.FontFamily.Name
-                font("Size") = f.Size
-                font("Bold") = (f.Style And Drawing.FontStyle.Bold) > 0
-                font("Italic") = (f.Style And Drawing.FontStyle.Italic) > 0
-                font("Underlined") = (f.Style And Drawing.FontStyle.Underline) > 0
-                font("Color") = WinForms.Color.FromARGB(dlg.Color.A, dlg.Color.R, dlg.Color.G, dlg.Color.B)
+                font.Items("Name") = f.FontFamily.Name
+                font.Items("Size") = f.Size
+                font.Items("Bold") = (f.Style And Drawing.FontStyle.Bold) > 0
+                font.Items("Italic") = (f.Style And Drawing.FontStyle.Italic) > 0
+                font.Items("Underlined") = (f.Style And Drawing.FontStyle.Underline) > 0
+                font.Items("Color") = WinForms.Color.FromARGB(dlg.Color.A, dlg.Color.R, dlg.Color.G, dlg.Color.B)
                 Return font
             End If
 
@@ -108,7 +108,7 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' Gets an array containing the font names defiend on the users system.
+        ''' Gets an array containing the font names defined on the users system.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared ReadOnly Property FontNames() As Primitive

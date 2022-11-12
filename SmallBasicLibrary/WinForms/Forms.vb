@@ -5,10 +5,12 @@ Imports Wpf = System.Windows.Controls
 Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, System.Windows.FrameworkElement)
 Imports System.Windows.Controls
 Imports System.Windows
-Imports System.ComponentModel
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
+    ''' <summary>
+    ''' This types provides methods to create forms, show them, and get a list of all opened forms in the program.
+    ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class Forms
 
@@ -32,17 +34,30 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Returns an array containing the names of all forms you created.
+        ''' Gets the forms of the current app.
         ''' </summary>
-        ''' <returns></returns>
+        ''' <param name="loadedFormsOnly">If True, this method will return the loaded forms only, otherwise, it will return all forms defined in this app even if you didn't load them yet.</param>
+        ''' <returns>an array containing the names the forms</returns>
         <ReturnValueType(VariableType.Array)>
-        Public Shared Function GetForms() As Primitive
+        Public Shared Function GetForms(loadedFormsOnly As Primitive) As Primitive
             Dim map = New Dictionary(Of Primitive, Primitive)
             Dim num = 1
-            For Each key In _forms.Keys
-                map(num) = key
-                num += 1
-            Next
+
+            If loadedFormsOnly Then
+                For Each key In _forms.Keys
+                    map(num) = key
+                    num += 1
+                Next
+            Else
+                Dim asm = System.Reflection.Assembly.GetEntryAssembly()
+
+                For Each frmType In asm.GetTypes()
+                    If frmType.Name.StartsWith("_SmallVisualBasic_") Then
+                        map(num) = frmType.Name.Substring(18).ToLower()
+                        num += 1
+                    End If
+                Next
+            End If
             Return Primitive.ConvertFromMap(map)
         End Function
 
@@ -287,7 +302,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="formName">the name of the form.</param>
         ''' <param name="argsArr">any additional data, array, or a dynamic object you want to pass to the form. It will be stored in the Form.ArgsArr property, so you can use it as you want</param>
-        ''' <returns>the dialog result that represnts the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
+        ''' <returns>the dialog result that Represents the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
         <ReturnValueType(VariableType.DialogResult)>
         Public Shared Function ShowDialog(formName As Primitive, argsArr As Primitive) As Primitive
             Dim asm = System.Reflection.Assembly.GetCallingAssembly()

@@ -1,0 +1,112 @@
+Errors = {} ' Array contaning the test errors.
+_HasErrors = False
+
+'------------------------------------------------
+' Add a test error to the Errors array
+Sub AddError(
+      msg ' The message that describs the test error.
+   )
+   _HasErrors = True
+   Errors[Errors.Count + 1] = msg
+EndSub
+
+'-----------------------------------------------
+' Runs the tests of the given form
+Sub RunFormTests(
+      formName ' The name of the tested form
+   )
+   
+   _HasErrors = False
+   _TestForm(formName, "", "")
+EndSub
+
+'-----------------------------------------------
+' Runs all the tests of all forms
+Sub RunAllTests(
+      resultsTextBox '  The textbox that will deisplay the test results.
+   )
+   
+   resultsTextBox.Text = ""
+   _HasErrors = False
+   resultsForm = resultsTextBox.ParentForm
+   
+   ForEach frm In Forms.GetForms(False)
+      _TestForm(frm, resultsForm, resultsTextBox)
+   Next
+   
+   
+   If _HasErrors = False Then
+      resultsTextBox.Text = "All tests passed successfully."
+   EndIf
+   
+EndSub
+
+'------------------------------------------------
+' Checks if the test actual value is the expected value
+Function AssertEqual(
+      actualValue, ' The actual value of the test
+      expectedValue, ' The expected value from the test
+      testName       ' The name of the test, to be displyed in the result.
+   ) ' Returns a string message that displays the test result, saying whether it passed or failed and why.
+   
+   If actualValue = expectedValue Then
+      n = Text.GetLength(testName)
+      n = 53 - n
+      Return testName + _Repeat(" ", n) + Chars.Tab + "Passed"
+   Else
+      msg = Text.Format(
+         "[1] xxxxxxxxx failed.[4]    Actual value:      `[2]`[4]    Expected Vlaue: `[3]`",
+         {
+            testName,
+            Text.ToStr(actualValue),
+            Text.ToStr(expectedValue),
+            Chars.CrLf
+         }
+      )
+      AddError(msg)
+      Return msg
+   EndIf
+EndFunction
+
+
+
+'------------------------------------------------
+Function _Repeat(str, count)
+   If count < 1 Then
+      Return ""
+   ElseIf count = 1 Then
+      Return str
+   EndIf
+   
+   x = str
+   For i = 2 To count
+      x = x.Append(str)
+   Next
+   
+   Return x
+EndFunction
+
+
+'------------------------------------------------
+Sub _TestForm(frm, resultsForm, resultsTextBox)
+   testForm = Forms.ShowForm(frm, "")
+   Errors = {}
+   testForm.RunTests()
+   If Errors.Count > 0 And resultsTextBox <> "" Then
+      resultsTextBox.AppendLine("")
+      resultsTextBox.AppendLine("--------------------------------")
+      resultsTextBox.AppendLine("")
+      
+      resultsTextBox.AppendLine(testForm.Text + " Errors:")
+      n = 1
+      ForEach error In Errors
+         id = Text.Append(" ", {n, ". ", error})
+         resultsTextBox.AppendLine(id)
+         n = n + 1
+      Next
+   EndIf
+   
+   If resultsForm <> "" And frm <> resultsForm Then
+      testForm.Close()
+   EndIf
+EndSub

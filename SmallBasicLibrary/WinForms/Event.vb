@@ -73,7 +73,7 @@ Namespace WinForms
             _SenderControl = ControlName
         End Sub
 
-        Shared Sub EventsHandler(Sender As FrameworkElement, e As RoutedEventArgs, userEventHandler As SmallBasicCallback, Optional allowTunneling As Boolean = False)
+        Shared Sub EventsHandler(Sender As FrameworkElement, e As RoutedEventArgs, userEventHandler As SmallVisualBasicCallback, Optional allowTunneling As Boolean = False)
             Try
                 If e.Source IsNot Sender Then
                     If TypeOf Sender IsNot Wpf.Label AndAlso

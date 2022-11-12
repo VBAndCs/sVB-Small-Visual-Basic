@@ -2,7 +2,7 @@
 Imports System.Windows.Media
 
 Namespace WinForms
-    Public Module Extentions
+    Public Module extensions
         <System.Runtime.CompilerServices.Extension()>
         Public Iterator Function GetChildren(parent As UIElement, Optional recurse As Boolean = True) As IEnumerable(Of UIElement)
             If parent IsNot Nothing Then

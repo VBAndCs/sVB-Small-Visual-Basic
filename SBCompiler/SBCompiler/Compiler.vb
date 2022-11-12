@@ -420,7 +420,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Shared Function CanAddEvent(eventInfo As EventInfo) As Boolean
             If eventInfo.IsSpecialName Then Return False
 
-            Return eventInfo.EventHandlerType Is GetType(SmallBasicCallback) OrElse
+            Return eventInfo.EventHandlerType Is GetType(SmallVisualBasicCallback) OrElse
                     eventInfo.EventHandlerType Is GetType(SmallBasic.Library.SmallBasicCallback)
         End Function
 

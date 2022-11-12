@@ -1,3 +1,5 @@
+![Untitled2](https://user-images.githubusercontent.com/48354902/199864253-01d16df7-bfa9-4c4f-9052-1ae4e6dfee41.png)
+
 # Contents
 - Small Visual Basic (sVB):
 - Using the source code:
@@ -7,7 +9,8 @@
 - Form designer Features:
 - SB Code Enhancements:
 - Create a code library with sVB!
-- Create an external library:
+- Create an external library for sVB:
+- Write and run unit tests in sVB:
 
 # Small Visual Basic (sVB):
 sVB is an evolved version of Microsoft Small Basic with a small WinForms library and a graphics form designer. 
@@ -40,7 +43,7 @@ To make this work, each form created by the designer has 3 files:
 
 # Using the source code:
 sVB is fully written with VB.NET, and targets .NET framework 4.8. You can run the source code in VS.NET 2019 and later.
-before running the code, please copy the two folders `Lib` and `Toolbar` from the `SmallBasicIDE\SB.Lib` folder to the `SmallBasicIDE\bin\Debug` folder, as obviously `Git` execluds this folder, and I prefer it this way.
+before running the code, please copy the two folders `Lib` and `Toolbar` from the `SmallBasicIDE\SB.Lib` folder to the `SmallBasicIDE\bin\Debug` folder, as obviously `Git` excludes this folder, and I prefer it this way.
 
 # Download the language:
 
@@ -141,7 +144,7 @@ TextWindow.WriteLine({"Adam", 11, "Succeeded"})
 SB uses `EndFor` and `EndWhile` to close `For` and `While` blocks respectively. This is still supported in sVB but I allowed also to use `Next` to close `For` and `Wend` to close `While`, as they are used in VB6. I encourage you to use Next and Wend, as they give the meaning of repeating and circulating over the loop. `End` gives the meaning of finishing and exiting, so, it is suitable in `EndIf` and `EndSub`, but confusing in `EndFor` and `EndWhile`, as they can imply that `the loop finishes here`, not just `the block ends here`!
 
 3. You can use `ExitLoop` to exit For and While loops, and `ContinueLoop` to skip the current iteration and jump back to the beginning of the loop body to continue the next iteration in for loop. Be aware that unlike For, while doesn't have an auto-incremented counter, so be sure you write the suitable code to update the variable that while condition depends on before using ContinueLoop inside the while block, otherwise you may end up stuck with an infinite loop.
-In the case of nested 2 loops of any kind, you can exit the outer loop by using `ExitLoop -`. You can add more `-` signs to exit up levels loops in case you have 3 or 4 nested loops, or just use `ExitLoop *` to exit all nested loops at once. The same rules applies to `ContinueLoop` if you want to use it to cointinue outer loops.
+In the case of nested 2 loops of any kind, you can exit the outer loop by using `ExitLoop -`. You can add more `-` signs to exit up levels loops in case you have 3 or 4 nested loops, or just use `ExitLoop *` to exit all nested loops at once. The same rules applies to `ContinueLoop` if you want to use it to continue outer loops.
 
 4. You can use `Me` to refer to the current Form.
 
@@ -162,7 +165,7 @@ And call this sub like this:
 Note that you can use `Return` inside the sub body to exit the sub immediately.
 
 
-7. sVB can define functions now. You can supply params to get the fyunction input and use `Return` to return the function output.
+7. sVB can define functions now. You can supply params to get the function input and use `Return` to return the function output.
 ```vb
 Function Sum(x, y)
     Return x + Y
@@ -176,12 +179,12 @@ x = Sum(1, 2)
 
 8. SB doesn't have variable scope, as all variables are considered global, and you can define them in any place in the file and use them from any other place in the file (up or down). sVB has cleaned this mess, which is a break change that can prevent some SB code from running probably in sVB, but it is a necessary step to make the kid organize his code and write clean code. This is also necessary to make sub and function params work correctly, and allow you to use recursive subs and functions. The new scope rules are:
 - Sub and function params are local, and hide any global vars with the same names.
-- The For loop counter(iterator) in subs and functiins is local and hides any global var with the same name.
+- The For loop counter(iterator) in subs and functions is local and hides any global var with the same name.
 - Any var defined inside the sub or the function is local unless there is a global var with the same name is defined above of the sub function. If the global var is defined below, then the local var will hide it.
 
 So, as a good practice:
 - Define all global vars at the very top pf the file.
-- Give global vars a prefix (such as `g_`) to avoid any conflictions with local vars.
+- Give global vars a prefix (such as `g_`) to avoid any conflicts with local vars.
 - Don't use global vars unless there is no other solution, instead pass values to subs and functions through params, and receive values from functions through their return values.
 
 9. The editor auto completes If, For, While, and Sub blocks just after writing a space after them.
@@ -236,7 +239,7 @@ Dim x = "First Line" + _
             "Second Line"
 ```
 
-You can use _ at any position expet before of after the dot `.`.
+You can use _ at any position except before or after the dot `.`.
 
 15. You can also split the line at some positions without using the _ . These positions are:
 - after the following symbols: `,`, `=`, `+`, `-`, `*`. `/`, `(`, `[`, `{`, `or`, `and`.
@@ -274,13 +277,13 @@ editor
 spaces between tokens.
 
 20. The code editor now highlights any matching pairs such as `()`, `[]` and `{}`. It also  
-highlights the keywords of the Sub, Function, If, For, and While bolcks whenever you insert  
+highlights the keywords of the Sub, Function, If, For, and While blocks whenever you insert  
 the caret on on of them. You can move to the next highlighted token by pressing `F4` or  
 `Ctrl+Shift+Down`, and you can move to the previous highlighted token by pressing `Shift 
 +F4` or `Ctrl+Shift+Up`.
 You can also press such shortcuts keys on any line even there is no highlighted keywords.  
-This will highlight the nearest block that contains the statement, and move to the neareest  
-keyword up or down according to the shourtcut keys you are using.
+This will highlight the nearest block that contains the statement, and move to the nearest  
+keyword up or down according to the shortcut keys you are using.
 
 21. Make it easy to crate a new form and show it from code:
 ```vb
@@ -310,7 +313,7 @@ You can say I brought the VS intellisense to sVB. The pop up help offers valuabl
  * The scope (local or global var).
  * The definition signature (Type, Property, Dynamic Property, Event, Method Parameters).
  * If the token is a `variable`, a `sub` or a `function`, it will be shown as a link, so, you can click it to go to its definition line. If the token it the name of the form or a control on it, clicking the link will select the form or the control on the form designer.
-* The documentation includes a summery, and info about parameters and return value. You can add a summery for user defined types by adding one or more comment lines above the var, sub, or function definitions. You can also add one more comment line at the end of the definition line. For subs and functions, you can add the additional summery line after the opining parans if you split the params over multi lines which also allows you to add a comment for each parameter to be used as a documentation. For Functions, the comment placed after the closing parans will be used as the documentation info for the return value. For subs, it will be considered an additional line of the summery. Ex:
+* The documentation includes a summery, and info about parameters and return value. You can add a summery for user defined types by adding one or more comment lines above the var, sub, or function definitions. You can also add one more comment line at the end of the definition line. For subs and functions, you can add the additional summery line after the opening params if you split the params over multi lines which also allows you to add a comment for each parameter to be used as a documentation. For Functions, the comment placed after the closing params will be used as the documentation info for the return value. For subs, it will be considered an additional line of the summery. Ex:
 ```VB
 XPos = 1   ' the horizontal position 
 
@@ -475,7 +478,7 @@ TextWindow.WriteLine(years)
 
 the above negative time span contains approximately `-2.74` years. There is no built in TotalMonths nor TotalYears in the Date class, as a monthe can contain 29, 30, or 31 days, and a year can contain 365 or 366 days, so, it is up to you to do the math according to the rules you see fit tour needs.
 
-* The Date class contains `Add` and `Subtract` methods, but you can do these operations directly using `+` and `-`. The trick here is that sVB stores dates and time spans as `ticks`. A tick is 1 over 10 million of a second (1 second = 10 million ticks). You can get the total ticks of a date or a time span by calling the `Date.GetTicks()` method, or the `Ticks` extension property. So, when using math operator with date and time span, sVB treats thesm as normal numbers. You can even multiply 2 dates but of course the result is meaningless :D.
+* The Date class contains `Add` and `Subtract` methods, but you can do these operations directly using `+` and `-`. The trick here is that sVB stores dates and time spans as `ticks`. A tick is 1 over 10 million of a second (1 second = 10 million ticks). You can get the total ticks of a date or a time span by calling the `Date.GetTicks()` method, or the `Ticks` extension property. So, when using math operator with date and time span, sVB treats them as normal numbers. You can even multiply 2 dates but of course the result is meaningless :D.
 The following code show you 2 different ways to subtract 1000 days from the today's date:
 ```VB
 d1 = Date.Now - #+1000.0:0#
@@ -564,7 +567,7 @@ Sub BtnCancel_OnClick()
 EndSub
 ```
 
-Note that the `DialogResults` type contains the names of famous dialog buttons, and it has a nice auto completion suuport in the code editor, but you can not use it and use any other names you want.
+Note that the `DialogResults` type contains the names of famous dialog buttons, and it has a nice auto completion support in the code editor, but you can not use it and use any other names you want.
 `Cancel` is the default value of the `DialogResult`, so we disn't need to set it in the `BtnCancel_OnClick()`.
 Now, how can we use the `DialogResult` value in the form that showed the dialog?
 It is simple: the `DialogResult` value will be the return value from the `Forms.ShowDialog`, so, it is easy to use it like this:
@@ -599,7 +602,7 @@ See the `Show Random Buttons 3` and `Show Dialogs` apps in the samples folders.
 The Error property sets the error message to display in the tooltip of the control while its borders becomes red. You can restore the normal state of the control by setting the Error  
 property to an empty string.
 
-45. Controls also got the `OnGotFocus` and `OnLostFocus` events, so, you can use the `OnLostFocus` event with the `Error` property to provide a validation logic for input controls. Each control also has the `Validate` method that fires the `OnLostFocus` event to execute your validation logic (if exists), then checks the Error property and returns `True` if it is empty. And to make things easier for you, the `Validate` method of the form calls the Validate method of each control on the form. If any controls has errors, the process stops and the focus goes to this contols with a beep sound. So, you should call `Me.Validate` before you execute you app logic. Ex:
+45. Controls also got the `OnGotFocus` and `OnLostFocus` events, so, you can use the `OnLostFocus` event with the `Error` property to provide a validation logic for input controls. Each control also has the `Validate` method that fires the `OnLostFocus` event to execute your validation logic (if exists), then checks the Error property and returns `True` if it is empty. And to make things easier for you, the `Validate` method of the form calls the Validate method of each control on the form. If any controls has errors, the process stops and the focus goes to this controls with a beep sound. So, you should call `Me.Validate` before you execute you app logic. Ex:
 ```VB
 Sub Button1_OnClick()
    If Me.Validate() Then
@@ -694,7 +697,7 @@ Label1.AddGeometricPath(
 )
 ```
 
-This allows you to add complex shpes on the form with code, and program their events.
+This allows you to add complex shapes on the form with code, and program their events.
 See the `Geometric Path2` in the samples folder. It adds the same shapes of the previous sample to the form, and allow you to drag them by the mouse.
 
 48. The toolbox now contains a CheckBox control.
@@ -753,7 +756,7 @@ See the `Fit size` app in the samples folder.
 * ProgressBar, ScrollBar and Slider: These bars are horizontal only, but you can use the rotate thumb of the control on the designer to rotate them to become vertical! For more info, see the `Progress` and `Slider Color Composer` apps in the samples folder.
 * ToggleButton: This control can be checked or unchecked but it seems like a button that appears clicked or un-clicked. See the `Toggle Buttons` app in the samples folder.
 
-55. You can add many timers to the form, by calling the `Form.AddTimer` Method. Small Basic library already contains the Timer object, but it is only one timer, and it makes code harder to make it handle different actions in different intervals. Besides, it may not work properly with forms and controls, and of course it will be missy if you try to use this single timer to handle different actions in many forms. So, to make things easier, you can now add as many timers as you need to each form!
+55. You can add many timers to the form, by calling the `Form.AddTimer` Method. Small Basic library already contains the Timer object, but it is only one timer, and it makes code harder to make it handle different actions in different intervals. Besides, it may not work properly with forms and controls, and of course it will be messy if you try to use this single timer to handle different actions in many forms. So, to make things easier, you can now add as many timers as you need to each form!
 For example, the `Stop Watch` app in the samples folder uses two timers, one to update the current date and time displayed on the form title bar, and the other one to count the elapsed time for the stop watch.
 
 56. You can show the open file and save file dialogs to the user by calling `File.OpenFileDialog` and `File.SaveFileDialog` methods. You must send the extensions filter to these methods, which controls the types of files that the browser will show to the user. You can use the standard .NET filter string like `"Text Files|*.txt;*.rtf|Docs|*.doc"`, or you can send the filter as an array like 
@@ -803,10 +806,10 @@ Me.ShowChildForm("FrmFind", TxtEditor)
 
 The first argument is the name of the child form (and the auto completion list will offer the names of the forms for you), and the second param is an extra data that will be passed to the ArgsArr property in the child form.
 
-62. You can change the style of the form and controls by loading styles from a recource dictionary. This is an advanced topic, that needs knowlage about XAML and WPF, but it always you to make use of syles and thems defiend for WPF, UWP or WinUI3 to make a beautiful design, and change how controls look and even work!
+62. You can change the style of the form and controls by loading styles from a recource dictionary. This is an advanced topic, that needs knowledge about XAML and WPF, but it always you to make use of syles and thems defiend for WPF, UWP or WinUI3 to make a beautiful design, and change how controls look and even work!
 All you need is to have a Resource dictonary in a Xaml file, then use these two methods to load it:
-* Control.SetRecourceDictionary: send the xaml file path to this method to load stryles from it into the control and its child controls. This means that if you called it from a form. the styles will affect all target controls if exists on it. Note that this method needs that styles have no keys. Styles with names (keys) will not be aplied to controls here.
-*  Control. SetStyle: it is similal to the previous method, but it has a second parameter that recives the name (key) of the style. It is useful when you want to apply a style on only one control.
+* Control.SetRecourceDictionary: send the xaml file path to this method to load styles from it into the control and its child controls. This means that if you called it from a form. the styles will affect all target controls if exists on it. Note that this method needs that styles have no keys. Styles with names (keys) will not be applied to controls here.
+*  Control. SetStyle: it is similar to the previous method, but it has a second parameter that recives the name (key) of the style. It is useful when you want to apply a style on only one control.
 Note that if the style have no name, you can call SetRecourceDictionary from this control instead to apply the style on it, but this can also apply another styles on the controls if the resource dictionary has many styles targetting the same control type. 
 For mor info, see the `Custom Styles` app in the samples folder. the tow files `RoundCorner.style` and `RoundCorner2.style` are in fact XAML files, but I changed there extensions from `.xaml` to `.style` not to be cinfused with form design files. But if you used .xaml extension it will also work.
 
@@ -838,16 +841,61 @@ Geometrics.AllowDrag(Label1)
 So, now you can create reusable code, and write your own libraries for sVB. In the past, this was available only by using C# and VB.NET to create SB and sVB libraries!
 Have fun.
 
-# Create an external library:
-sVB can use external libraries created for Small Basic (like LitDev). Just insert those libraries dll files in the Lib folder of sVB and you are ready to go!
+# Create an external library for sVB:
+sVB can use external libraries created for Small Basic (like LitDev). Just insert those libraries dll files in the sVB\Bin\Lib folder and you are ready to go!
 This means you can also write such libraries (using C# or VB.NET), to add new functionality that is not available in sVB. To do this, you should follow these rules:
 https://social.technet.microsoft.com/wiki/contents/articles/53826.small-basic-extensions.aspx
-The above rules will allow you to create a library for Small Basic, which also will work with sVB. But you can create a library for sVB only, by targetting `.NET Framework 4.8` and refrencing the `SmallVisualBasicLibrary.dll` file (found in sVB\bin folder) instead of `SmallBasicLibrary.dll`, and you can mark your functions and properties with the `ReturnValueTypeAttribute` to specify the return value type, to allow sVB to infer the type of expressions that use these functions and properties. For example:
+The above rules will allow you to create a library for Small Basic, which also will work with sVB. But you can create a library for sVB only, by targeting `.NET Framework 4.8` and referencing the `SmallVisualBasicLibrary.dll` file (found in sVB\bin folder) instead of `SmallBasicLibrary.dll`, and you can mark your functions and properties with the `ReturnValueTypeAttribute` to specify the return value type, to allow sVB to infer the type of expressions that use these functions and properties. For example:
 ```
 <ReturnValueType(VariableType.Double)>
 Public Shared Function Sum(x As Primitive, y As primitive) As Primitive
-     Return x + y
+Return x + y
 End Function
 ```
 
-For more info, see the `DemoLib` project at the samples folder. It is a VB.NET project that crates a DemoLib.dll in its bin\release folder, which I copied to the sVB\bin\lib folder so you can try it with DemoLibSample app in the samoles folder.
+For more info, see the `DemoLib` project at the samples folder. It is a VB.NET project that crates a DemoLib.dll in its bin\release folder, which I copied to the sVB\bin\lib folder so you can try it with DemoLibSample app in the samples folder.
+
+# Write and run unit tests in sVB v2.6!
+sVB makes it easy to write unit tests. Every form can define test functions among its normal function, and you can run them all easily just by calling the `Form.RunTests()` function, which will run the tests, and display the results on the form on a textbox named "txtTest". If the form doesn't contain a text with this name, it will be added in runtime, and this will not affect your form design when you run your app normally (not in test mode).
+The test function must follow these rules, to be recognized by the RunTests method:
+1. Its name must start with `Test_`, like `Test_FindNames`.
+2. It must be a function not a sub, and it can't have any parameters.
+3. The function return value should be a string containing the test result like "passed" or "failed". It is better to mention the test name in the result.
+
+# The UnitTest Library:
+To make things more easier, sVB samples folder contains the UnitTest project, which is used to create the `UnitTest Library` that is included in the `sVB\Bin\Lib` folder, so you can use it in your projects.
+The library has these important methods:
+1. UnitTest.AssertEqual:
+Use this method to perform your tests. It receives three arguments:
+* The actual value that you got from executing the 
+code being tested.
+* The expected value, that is the correct value that you should get when executing the code being tested.
+* The name of the test to include in the result.
+The AssertEqual method compares the actual value to the expected value And this method returns a string message, saying what is the result of the test:
+* If the two values are equal, it returns the message: "[Test Name] Passed".
+* If the two values are equal, this indicates that the test has failed, so, this methods returns the message: "[Test Name] Failed", and appends the actual and expected values to the message, so you can see what went wrong.
+Note that the both actual and expected values can be two single values, or two arrays. Using array of values allows you to do many small tests in the same test function. You should only do this if all these small tests are related and do the same test but with different values to cover all possible situations.
+
+For an example on how to use this method, see the tests written in the `UnitTest Sample` app in the samples folder.
+
+2. UnitTest.RunAllTests:
+This method runs all the tests in all forms of the project. It has only one parameter, that receives the textbox you want to use to show the test results. This allows you to add a test form to your project, add a textbox on it, then add this line at the global section of the form code:
+```
+UnitTest.RunAllTests(TextBox1)
+```
+
+Now when you select the test form and run the project, all the tests in all forms of the project will be run, and you will see the error report (if any) in the textbox, so you can fix any errors.
+Then, when you want to run your app normally, just select the main form and run the project!
+By this simple way, you can switch easily between test mode and normal mode!
+For an example on how to use this method, see the tests written in the `UnitTest Sample` app in the samples folder.
+
+3. UnitTest.RunFormTests:
+This method is just an alias to the Form.RunTests method. It is better to keep all unit test method together.
+The RunFormTests has one parameter that receives the name of the form you want to test. This makes it capable of running the form tests from another form or from the global module.
+
+Note that I kept the UnitTest lib out of the Small Visual Basic Library, so you can modify its sVB source code, in case you want to add more Assert methods, or want to change the format of the result message.
+So, have fun writing test for your code. Unit tests makes it easy to discover hidden errors, and you should run them each time you make changes to your code, as such changes can break some functionality of you app, so running the tests can make sure that every thing is working as expected, or there are some issues that needs to be fixed, which of course are related to the latest changes you have made.
+This is why I am using the UnitTest lib right now to write a test project for Small Visual Basic Library, which discovers some small hidden bugs in the sVB library and the compiler, and I fixed them in this version.
+In fact, what made me walk this path, is that I was adding example code snippets to the sVB reference book (still in progress), when I realized these snippets can be reused to test the sVB library, hence I crated the UnitTest Library and the `sVB Tests` project (still in progress too).
+
+Now we can announce sVB as a mature productive desktop programming language, and you can use it to build interesting apps. Have fun.

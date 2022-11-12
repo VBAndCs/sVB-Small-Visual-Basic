@@ -1,0 +1,22 @@
+'@Form Hints:
+'#FrmTestResults{
+'    TxtTest: TextBox
+'    Button1: Button
+'}
+
+Me = "FrmTestResults"
+TxtTest = "frmtestresults.txttest"
+Button1 = "frmtestresults.button1"
+_path = Program.Directory + "\FrmTestResults.xaml"
+FrmTestResults = Forms.LoadForm("FrmTestResults", _path)
+Form.SetArgsArr(frmtestresults, Stack.PopValue("_frmtestresults_argsArr"))
+Form.Show(FrmTestResults)
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+

@@ -318,10 +318,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Private Function InferType(memberInfo As MemberInfo) As String
             If memberInfo Is Nothing Then Return ""
+
             Dim attrs = memberInfo.GetCustomAttributes(
                 GetType(WinForms.ReturnValueTypeAttribute),
                 False
             )
+
             If attrs Is Nothing OrElse attrs.Count = 0 Then Return ""
             Dim type = CType(
                 attrs(0),

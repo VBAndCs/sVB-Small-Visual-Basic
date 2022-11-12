@@ -1236,7 +1236,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 If st IsNot Nothing Then
                     Dim prop = TryCast(st.LeftValue, Expressions.PropertyExpression)
                     If prop Is Nothing OrElse Not prop.IsEvent Then
-                        varType = st.LeftValue.InferType(symbolTable)
+                        varType = If(st.LeftValue Is Nothing, VariableType.Any, st.LeftValue.InferType(symbolTable))
                     Else
                         especialItem = "Sub"
                     End If
@@ -1466,7 +1466,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             For Each t In WinForms.PreCompiler.GetTypes()
                 AddCompletionList(t)
             Next
-
         End Sub
 
         Private Shared Sub AddCompletionList(type As Type)
@@ -1505,7 +1504,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             Dim events = type.GetEvents(System.Reflection.BindingFlags.Static Or System.Reflection.BindingFlags.Public)
             For Each eventInfo In events
-                If eventInfo.EventHandlerType Is GetType(Library.SmallBasicCallback) Then
+                If eventInfo.EventHandlerType Is GetType(Library.SmallVisualBasicCallback) Then
                     Dim name = eventInfo.Name
                     compList.Add(New CompletionItem() With {
                     .Key = name,
@@ -1518,7 +1517,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Next
 
             completionItems.Add(type.Name, compList)
-
         End Sub
 
         Private Sub FillMemberNames(

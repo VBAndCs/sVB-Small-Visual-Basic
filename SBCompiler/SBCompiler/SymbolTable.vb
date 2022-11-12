@@ -79,7 +79,9 @@ Namespace Microsoft.SmallVisualBasic
                          {propName, propNameInfo}
                     }
                 )
+            End If
 
+            If prop.isSet Then
                 Dim subroutine = If(_GlobalVariables.ContainsKey(typeName), Nothing, Statements.SubroutineStatement.GetSubroutine(prop))
                 Dim idExpr = New IdentifierExpression() With {
                         .Identifier = typeNameInfo,

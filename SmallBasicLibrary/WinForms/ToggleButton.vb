@@ -4,6 +4,12 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents a ToggleButton control, that the user can check or uncheck. The toggle button looks like a bormal button, but when the user clicks it it stays down (checked), and when he clicks it again, the button returns to its normal state (unchecked)
+    ''' Use the Checked property and OnCheck event to respond to the user choices.
+    ''' You can use the form designer to add a toggle button to the form by dragging it from the toolbox.
+    ''' It is also possible to use the Form.AddToggleButton method to create a new toggle button and add it to the form at runtime.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class ToggleButton
@@ -180,8 +186,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when the checked state is changed.
         ''' </summary>
-        Public Shared Custom Event OnCheck As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnCheck As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetToggleButton([Event].SenderControl)
                     Dim _handler = Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
@@ -193,7 +199,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()

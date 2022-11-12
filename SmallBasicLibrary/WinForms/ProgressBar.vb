@@ -3,6 +3,12 @@ Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents the ProgressBar control, that indicates how much of the task has done.
+    ''' Use the Minimum and Maximun properties to set the progress range, and use the Value property to set the current progress.
+    ''' You can use the form designer to add a progress bar to the form by dragging it from the toolbox.
+    ''' It is also possible to use the Form.AddProgressBar method to create a new progress bar and add it to the form at runtime.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class ProgressBar

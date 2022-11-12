@@ -10,7 +10,7 @@ Namespace WinForms
     Public NotInheritable Class [Date]
 
         ''' <summary>
-        ''' Returns the current date and time as defiend by the user system.
+        ''' Returns the current date and time as defined by the user system.
         ''' </summary>
         <ReturnValueType(VariableType.Date)>
         Public Shared ReadOnly Property Now As Primitive
@@ -265,7 +265,7 @@ Namespace WinForms
         ''' Gets the local name of the month of the given date.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>the name of the month in the local language defiend on the user system</returns>
+        ''' <returns>the name of the month in the local language defined on the user system</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetMonthName([date] As Primitive) As Primitive
             Dim d = [date].AsDate()
@@ -289,7 +289,7 @@ Namespace WinForms
         ''' Gets the day number in the year of the given date. 
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a number between 1 and 366 that represnts the date in the week</returns>
+        ''' <returns>a number between 1 and 366 that Represents the date in the week</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetDayOfYear([date] As Primitive) As Primitive
             Dim d = [date].AsDate()
@@ -302,7 +302,7 @@ Namespace WinForms
         ''' Gets the day of the week of the given date. Note that Sunday is the first day of the week. 
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a number between 1 and 7 that represnts the date in the week</returns>
+        ''' <returns>a number between 1 and 7 that Represents the date in the week</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetDayOfWeek([date] As Primitive) As Primitive
             Dim d = [date].AsDate()
@@ -327,7 +327,7 @@ Namespace WinForms
         ''' Gets the local name of the week day of the given date.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>the name of the week day in the local language defiend on the user system</returns>
+        ''' <returns>the name of the week day in the local language defined on the user system</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetDayName([date] As Primitive) As Primitive
             Dim d = [date].AsDate()

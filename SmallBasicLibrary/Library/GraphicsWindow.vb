@@ -388,21 +388,21 @@ Namespace Library
         ''' <summary>
         ''' Raises an event when a key is pressed down on the keyboard.
         ''' </summary>
-        Public Shared Custom Event KeyDown As SmallBasicCallback
-            AddHandler(Value As SmallBasicCallback)
+        Public Shared Custom Event KeyDown As SmallVisualBasicCallback
+            AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
                 Dim Key = NameOf(KeyDown)
-                Dim h = TryCast(Events(Key), SmallBasicCallback)
+                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
                 If h IsNot Nothing Then Events.RemoveHandler(Key, h)
                 Events.AddHandler(Key, Value)
             End AddHandler
 
-            RemoveHandler(Value As SmallBasicCallback)
+            RemoveHandler(Value As SmallVisualBasicCallback)
                 Events.RemoveHandler(NameOf(KeyDown), Value)
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(KeyDown)), SmallBasicCallback)
+                Dim h = TryCast(Events(NameOf(KeyDown)), SmallVisualBasicCallback)
                 If h IsNot Nothing Then h.Invoke()
             End RaiseEvent
         End Event
@@ -410,21 +410,21 @@ Namespace Library
         ''' <summary>
         ''' Raises an event when a key is released on the keyboard.
         ''' </summary>
-        Public Shared Custom Event KeyUp As SmallBasicCallback
-            AddHandler(Value As SmallBasicCallback)
+        Public Shared Custom Event KeyUp As SmallVisualBasicCallback
+            AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
                 Dim Key = NameOf(KeyUp)
-                Dim h = TryCast(Events(Key), SmallBasicCallback)
+                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
                 If h IsNot Nothing Then Events.RemoveHandler(Key, h)
                 Events.AddHandler(Key, Value)
             End AddHandler
 
-            RemoveHandler(Value As SmallBasicCallback)
+            RemoveHandler(Value As SmallVisualBasicCallback)
                 Events.RemoveHandler(NameOf(KeyUp), Value)
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(KeyUp)), SmallBasicCallback)
+                Dim h = TryCast(Events(NameOf(KeyUp)), SmallVisualBasicCallback)
                 If h IsNot Nothing Then h.Invoke()
             End RaiseEvent
         End Event
@@ -432,21 +432,21 @@ Namespace Library
         ''' <summary>
         ''' Raises an event when the mouse button is clicked down.
         ''' </summary>
-        Public Shared Custom Event MouseDown As SmallBasicCallback
-            AddHandler(Value As SmallBasicCallback)
+        Public Shared Custom Event MouseDown As SmallVisualBasicCallback
+            AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
                 Dim Key = NameOf(MouseDown)
-                Dim h = TryCast(Events(Key), SmallBasicCallback)
+                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
                 If h IsNot Nothing Then Events.RemoveHandler(Key, h)
                 Events.AddHandler(Key, Value)
             End AddHandler
 
-            RemoveHandler(Value As SmallBasicCallback)
+            RemoveHandler(Value As SmallVisualBasicCallback)
                 Events.RemoveHandler(NameOf(MouseDown), Value)
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(MouseDown)), SmallBasicCallback)
+                Dim h = TryCast(Events(NameOf(MouseDown)), SmallVisualBasicCallback)
                 If h IsNot Nothing Then h.Invoke()
             End RaiseEvent
 
@@ -455,21 +455,21 @@ Namespace Library
         ''' <summary>
         ''' Raises an event when the mouse button is released.
         ''' </summary>
-        Public Shared Custom Event MouseUp As SmallBasicCallback
-            AddHandler(Value As SmallBasicCallback)
+        Public Shared Custom Event MouseUp As SmallVisualBasicCallback
+            AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
                 Dim Key = NameOf(MouseUp)
-                Dim h = TryCast(Events(Key), SmallBasicCallback)
+                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
                 If h IsNot Nothing Then Events.RemoveHandler(Key, h)
                 Events.AddHandler(Key, Value)
             End AddHandler
 
-            RemoveHandler(Value As SmallBasicCallback)
+            RemoveHandler(Value As SmallVisualBasicCallback)
                 Events.RemoveHandler(NameOf(MouseUp), Value)
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(MouseUp)), SmallBasicCallback)
+                Dim h = TryCast(Events(NameOf(MouseUp)), SmallVisualBasicCallback)
                 If h IsNot Nothing Then h.Invoke()
             End RaiseEvent
 
@@ -478,21 +478,21 @@ Namespace Library
         ''' <summary>
         ''' Raises an event when the mouse is moved around.
         ''' </summary>
-        Public Shared Custom Event MouseMove As SmallBasicCallback
-            AddHandler(Value As SmallBasicCallback)
+        Public Shared Custom Event MouseMove As SmallVisualBasicCallback
+            AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
                 Dim Key = NameOf(MouseMove)
-                Dim h = TryCast(Events(Key), SmallBasicCallback)
+                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
                 If h IsNot Nothing Then Events.RemoveHandler(Key, h)
                 Events.AddHandler(Key, Value)
             End AddHandler
 
-            RemoveHandler(Value As SmallBasicCallback)
+            RemoveHandler(Value As SmallVisualBasicCallback)
                 Events.RemoveHandler(NameOf(MouseMove), Value)
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(MouseMove)), SmallBasicCallback)
+                Dim h = TryCast(Events(NameOf(MouseMove)), SmallVisualBasicCallback)
                 If h IsNot Nothing Then h.Invoke()
             End RaiseEvent
 
@@ -502,21 +502,21 @@ Namespace Library
         ''' <summary>
         ''' Raises an event when text is entered on the GraphicsWindow.
         ''' </summary>
-        Public Shared Custom Event TextInput As SmallBasicCallback
-            AddHandler(Value As SmallBasicCallback)
+        Public Shared Custom Event TextInput As SmallVisualBasicCallback
+            AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
                 Dim Key = NameOf(TextInput)
-                Dim h = TryCast(Events(Key), SmallBasicCallback)
+                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
                 If h IsNot Nothing Then Events.RemoveHandler(Key, h)
                 Events.AddHandler(Key, Value)
             End AddHandler
 
-            RemoveHandler(Value As SmallBasicCallback)
+            RemoveHandler(Value As SmallVisualBasicCallback)
                 Events.RemoveHandler(NameOf(TextInput), Value)
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(TextInput)), SmallBasicCallback)
+                Dim h = TryCast(Events(NameOf(TextInput)), SmallVisualBasicCallback)
                 If h IsNot Nothing Then h.Invoke()
             End RaiseEvent
 
@@ -977,41 +977,42 @@ Namespace Library
 
         Private Shared Sub CreateWindow()
             SyncLock _syncLock
-                Invoke(Sub()
-                           _window = New Window
-                           _windowCreated = True
-                           _window.Title = "Small Basic Graphics Window"
-                           If _backgroundBrush Is Nothing Then _backgroundBrush = Media.Brushes.White
-                           _window.Background = _backgroundBrush
-                           If _fillBrush Is Nothing Then _fillBrush = Media.Brushes.CornflowerBlue
-                           If _pen Is Nothing Then _pen = New Media.Pen(System.Windows.Media.Brushes.Black, 2.0)
-                           If _fontFamily Is Nothing Then _fontFamily = New Media.FontFamily("Tahoma")
-                           _window.Height = 480.0
-                           _window.Width = 640.0
-                           If Not _isHidden Then _window.Show()
+                Invoke(
+                    Sub()
+                        _window = New Window
+                        _windowCreated = True
+                        _window.Title = "Small Visual Basic Graphics Window"
+                        If _backgroundBrush Is Nothing Then _backgroundBrush = Media.Brushes.White
+                        _window.Background = _backgroundBrush
+                        If _fillBrush Is Nothing Then _fillBrush = Media.Brushes.CornflowerBlue
+                        If _pen Is Nothing Then _pen = New Media.Pen(System.Windows.Media.Brushes.Black, 2.0)
+                        If _fontFamily Is Nothing Then _fontFamily = New Media.FontFamily("Tahoma")
+                        _window.Height = 480.0
+                        _window.Width = 640.0
+                        If Not _isHidden Then _window.Show()
 
-                           AddHandler _window.SourceInitialized,
-                                  Sub()
-                                      Dim handle1 As IntPtr = CType(PresentationSource.FromVisual(_window), HwndSource).Handle
-                                      Dim windowLong As UInteger = NativeHelper.GetWindowLong(handle1, -16)
-                                      windowLong = (windowLong And &HFFFEFFFFUI) Or &H20000UI
-                                      NativeHelper.SetWindowLong(handle1, -16, windowLong)
-                                      Dim rect2 As Internal.RECT = Nothing
-                                      rect2.Left = 0
-                                      rect2.Top = 0
-                                      rect2.Right = _window.Width
-                                      rect2.Bottom = _window.Height
-                                      Dim lpRect As Internal.RECT = rect2
-                                      NativeHelper.AdjustWindowRect(lpRect, windowLong, bMenu:=False)
-                                      _window.Width = lpRect.Right - lpRect.Left
-                                      _window.Height = lpRect.Bottom - lpRect.Top
-                                      NativeHelper.SetForegroundWindow(handle1)
-                                  End Sub
+                        AddHandler _window.SourceInitialized,
+                             Sub()
+                                 Dim handle1 As IntPtr = CType(PresentationSource.FromVisual(_window), HwndSource).Handle
+                                 Dim windowLong As UInteger = NativeHelper.GetWindowLong(handle1, -16)
+                                 windowLong = (windowLong And &HFFFEFFFFUI) Or &H20000UI
+                                 NativeHelper.SetWindowLong(handle1, -16, windowLong)
+                                 Dim rect2 As Internal.RECT = Nothing
+                                 rect2.Left = 0
+                                 rect2.Top = 0
+                                 rect2.Right = _window.Width
+                                 rect2.Bottom = _window.Height
+                                 Dim lpRect As Internal.RECT = rect2
+                                 NativeHelper.AdjustWindowRect(lpRect, windowLong, bMenu:=False)
+                                 _window.Width = lpRect.Right - lpRect.Left
+                                 _window.Height = lpRect.Bottom - lpRect.Top
+                                 NativeHelper.SetForegroundWindow(handle1)
+                             End Sub
 
-                           SetWindowContent()
-                           SignupForWindowEvents()
-                           _window.UpdateLayout()
-                       End Sub)
+                        SetWindowContent()
+                        SignupForWindowEvents()
+                        _window.UpdateLayout()
+                    End Sub)
             End SyncLock
         End Sub
 

@@ -16,7 +16,7 @@ Namespace WinForms
         ''' Adds an item to the array.
         ''' </summary>
         ''' <param name="value">the item you want to add after the last item in the array.</param>
-        ''' <returns>a new array with the new item added. The input array will bot be cahmged</returns>
+        ''' <returns>a new array with the new item added. The input array will not be changed</returns>
         <WinForms.ExMethod>
         <ReturnValueType(VariableType.Array)>
         Public Shared Function AddItem(array As Primitive, value As Primitive) As Primitive
@@ -27,7 +27,7 @@ Namespace WinForms
         ''' Adds many items to the array.
         ''' </summary>
         ''' <param name="items">an array containing the items to add eact of them as a single item at the end of the array.</param>
-        ''' <returns>a new array with the new items added. The input array will bot be cahmged</returns>
+        ''' <returns>a new array with the new items added. The input array will not be changed</returns>
         <WinForms.ExMethod>
         <ReturnValueType(VariableType.Array)>
         Public Shared Function AddItems(array As Primitive, items As Primitive) As Primitive
@@ -40,7 +40,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="key">the key of the item. If there is already an item with this key, it's value will be modified</param>
         ''' <param name="value">the value of the item</param>
-        ''' <returns>a new arry with the item added. the input array will not be changed</returns>
+        ''' <returns>a new array with the item added. the input array will not be changed</returns>
         <WinForms.ExMethod>
         <ReturnValueType(VariableType.Array)>
         Public Shared Function AddKeyValue(array As Primitive, key As Primitive, value As Primitive) As Primitive
@@ -98,29 +98,74 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Removes the array item at the specified index.
+        ''' Removes the array item at the specified index (key).
         ''' </summary>
-        ''' <param name="index">
-        ''' The index of the item to remove.
-        ''' </param>
-        <WinForms.ExMethod>
-        Public Shared Sub RemoveAt(array As Primitive, index As Primitive)
-            array._arrayMap?.Remove(index)
-        End Sub
+        ''' <param name="index">The key of the item to remove.</param>
+        ''' <returns>a new array with the item removed. The original array will not change</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        <ExMethod>
+        Public Shared Function RemoveItem(array As Primitive, index As Primitive) As Primitive
+            Return Library.Array.RemoveItem(array, index)
+        End Function
+
+
 
         ''' <summary>
-        ''' Removes all items from the array.
+        ''' Searches the array for the given value, and returns its index position in the array.
         ''' </summary>
+        ''' <param name="value">the item to search for</param>
+        ''' <param name="start">an integer representing the array index to start searching at</param>
+        ''' <param name="ignoreCase">set it to true if you want to do an case-insensitive search</param>
+        ''' <returns>the position (order) of the item in the array if found, otherwise 0. </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
         <WinForms.ExMethod>
-        Public Shared Sub Clear(array As Primitive)
-            array._arrayMap?.Clear()
-        End Sub
+        Public Shared Function IndexOf(array As Primitive, value As Primitive, start As Primitive, ignoreCase As Primitive) As Primitive
+            Return Library.Array.IndexOf(array, value, start, ignoreCase)
+        End Function
+
+        ''' <summary>
+        ''' Gets value of the array item that exists at the given numeric position.
+        ''' </summary>
+        ''' <param name="position">A number that represents the position of the item in the array, which not always be the same as its index (key). Note that position must be > 0.</param>
+        ''' <returns>the item value if found, otherwise empty string "".</returns>
+        <ExMethod>
+        Public Shared Function GetItemAt(array As Primitive, position As Primitive) As Primitive
+            Return Library.Array.GetItemAt(array, position)
+        End Function
+
+        ''' <summary>
+        ''' Sets the value of the array item that exists at the given numeric position.
+        ''' </summary>
+        ''' <param name="position">A number that represents the position of the item in the array, which not always be the same as its index (key). Note that position must be > 0.</param>
+        ''' <param name="value">The item value.</param>
+        ''' <returns>a new array with the item set to the new value. The original array will not change.</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        <ExMethod>
+        Public Shared Function SetItemAt(
+                          array As Primitive,
+                          position As Primitive,
+                          value As Primitive
+                   ) As Primitive
+
+            Return Library.Array.SetItemAt(array, position, value)
+        End Function
+
+        ''' <summary>
+        ''' Gets the key of the array item that exists at the given numeric position.
+        ''' </summary>
+        ''' <param name="position">A number that represents the position of the item in the array, which not always be the same as its index (key). Note that position must be > 0.</param>
+        ''' <returns>the item key if found, otherwise empty string "".</returns>
+        <ExMethod>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function GetKeyAt(array As Primitive, position As Primitive) As Primitive
+            Return Library.Array.GetKeyAt(array, position)
+        End Function
 
         ''' <summary>
         ''' Searches the current array for the given value.
         ''' </summary>
-        ''' <param name="value">the item to sarch for</param>
-        ''' <param name="start">an integer representing the array index to sratr swarching at</param>
+        ''' <param name="value">the item to search for</param>
+        ''' <param name="start">an integer representing the array index to start searching at</param>
         ''' <param name="ignoreCase">set it to true if you want to do an case-insensetive search</param>
         ''' <returns>the index or string key of the item if found, otherwise empty string</returns>
         <WinForms.ReturnValueType(VariableType.String)>
@@ -139,12 +184,22 @@ Namespace WinForms
         ''' Joins the given array items into one text.
         ''' </summary>
         ''' <param name="separator">a string to use as a separator between array items</param>
-        ''' <returns>a string containing the array items, seperated by the given separator</returns>
+        ''' <returns>a string containing the array items, separated by the given separator</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         <ExMethod>
         Public Shared Function Join(array As Primitive, separator As Primitive) As Primitive
             Return Library.Array.Join(array, separator)
         End Function
 
+
+        ''' <summary>
+        '''Converts the current array to a string.
+        ''' </summary>
+        ''' <returns>The string representation of the array. If the array is simple, its string can be of the form {1, 2, 3}. If the array contains keys, its string can be of the form {[1]=1, [2]=2, [Name]=Adam}.</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function ToStr(array As Primitive) As Primitive
+            Return Text.ToStr(array)
+        End Function
     End Class
 End Namespace

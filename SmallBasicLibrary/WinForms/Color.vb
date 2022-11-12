@@ -2,7 +2,9 @@
 Imports Microsoft.SmallVisualBasic.Library
 
 Namespace WinForms
-
+    ''' <summary>
+    ''' Contains methods to create and modify colors.
+    ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class Color
         Private Shared _random As Random

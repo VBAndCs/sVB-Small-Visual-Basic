@@ -4,6 +4,12 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
 
 Namespace WinForms
+    ''' <summary>
+    ''' Represents the ScrollBar control, that allows the user to scroll a value within a range.
+    ''' Use the Minimum and Maximun properties to set the scroll range, use the Value property to set the current scroll position, and use the OnScroll event to take action when the scroll position changes.
+    ''' You can use the form designer to add a scroll bar to the form by dragging it from the toolbox.
+    ''' It is also possible to use the Form.AddScrollBar method to create a new scroll bar and add it to the form at runtime.
+    ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class ScrollBar
@@ -110,8 +116,8 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when the scrollBar value changes.
         ''' </summary>
-        Public Shared Custom Event OnScroll As SmallBasicCallback
-            AddHandler(handler As SmallBasicCallback)
+        Public Shared Custom Event OnScroll As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetScrollBar([Event].SenderControl)
                     AddHandler _sender.ValueChanged,
@@ -124,7 +130,7 @@ Namespace WinForms
                 End Try
             End AddHandler
 
-            RemoveHandler(handler As SmallBasicCallback)
+            RemoveHandler(handler As SmallVisualBasicCallback)
             End RemoveHandler
 
             RaiseEvent()
