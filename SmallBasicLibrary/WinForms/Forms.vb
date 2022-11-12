@@ -52,7 +52,7 @@ Namespace WinForms
                 Dim asm = System.Reflection.Assembly.GetEntryAssembly()
 
                 For Each frmType In asm.GetTypes()
-                    If frmType.Name.StartsWith("_SmallVisualBasic_") Then
+                    If frmType.Name.StartsWith("_SmallVisualBasic_") AndAlso frmType.Name <> "_SmallVisualBasic_Program" Then
                         map(num) = frmType.Name.Substring(18).ToLower()
                         num += 1
                     End If

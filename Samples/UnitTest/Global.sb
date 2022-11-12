@@ -36,7 +36,8 @@ Sub RunAllTests(
    
    
    If _HasErrors = False Then
-      resultsTextBox.Text = "All tests passed successfully."
+      resultsTextBox.AppendLine("")
+      resultsTextBox.AppendLine("All tests passed successfully.")
    EndIf
    
 EndSub
@@ -92,6 +93,7 @@ Sub _TestForm(frm, resultsForm, resultsTextBox)
    testForm = Forms.ShowForm(frm, "")
    Errors = {}
    testForm.RunTests()
+   
    If Errors.Count > 0 And resultsTextBox <> "" Then
       resultsTextBox.AppendLine("")
       resultsTextBox.AppendLine("--------------------------------")
@@ -104,6 +106,9 @@ Sub _TestForm(frm, resultsForm, resultsTextBox)
          resultsTextBox.AppendLine(id)
          n = n + 1
       Next
+      
+   Else
+      resultsTextBox.AppendLine(testForm.Text + " OK.")
    EndIf
    
    If resultsForm <> "" And frm <> resultsForm Then
