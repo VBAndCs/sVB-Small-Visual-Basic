@@ -67,7 +67,7 @@ Namespace Library
         Friend _arrayMap As Dictionary(Of Primitive, Primitive)
         Friend _isArray As Boolean
 
-        Public Property Items(index As Primitive) As Primitive
+        Default Public Property Items(index As Primitive) As Primitive
             Get
                 ConstructArrayMap()
                 If Not IsArray Then

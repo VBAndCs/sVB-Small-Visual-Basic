@@ -1,6 +1,6 @@
 '@Form Hints:
 '#Form1{
-'    ChkShowTextBox: CheckBox
+'    ChkShowText: CheckBox
 '    Button1: Button
 '    Button2: Button
 '    TextBox1: TextBox
@@ -8,7 +8,7 @@
 '}
 
 Me = "Form1"
-ChkShowTextBox = "form1.chkshowtextbox"
+ChkShowText = "form1.chkshowtext"
 Button1 = "form1.button1"
 Button2 = "form1.button2"
 TextBox1 = "form1.textbox1"
@@ -18,15 +18,15 @@ Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 Form.Show(Form1)
 '#Events{
-'    ChkShowTextBox: OnCheck
+'    ChkShowText: OnCheck
 '    Button1: OnClick
 '    Button2: OnClick
 '    ChkTriState: OnCheck
 '}
 
-' ChkShowTextBox Events:
-Control.HandleEvents(ChkShowTextBox)
-CheckBox.OnCheck = ChkShowTextBox_OnCheck
+' ChkShowText Events:
+Control.HandleEvents(ChkShowText)
+CheckBox.OnCheck = ChkShowText_OnCheck
 
 ' Button1 Events:
 Control.HandleEvents(Button1)

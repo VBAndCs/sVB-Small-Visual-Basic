@@ -55,11 +55,21 @@ Namespace WinForms
                         Dim key = frm & ".txttest"
                         If Not Forms._controls.ContainsKey(key) Then
                             Dim wind = CType(Forms._forms(frm), Window)
-                            AddTexBox(formName, "txttest", 5, 5, wind.ActualWidth - 10, wind.ActualHeight - 10)
+                            Dim canv = GetCanvas(wind)
+
+                            AddTexBox(
+                                    formName,
+                                    "txttest",
+                                    5,
+                                    5,
+                                    canv.ActualWidth - 10,
+                                    canv.ActualHeight - 10
+                            )
                         End If
 
                         Dim txtTest = CType(Forms._controls(key), Wpf.TextBox)
                         Dim errMsg = " doesn't return a value. Use a test function and return a text showing the result of the test."
+                        txtTest.IsReadOnly = True
 
                         For Each m In testMethods
                             Dim testName = m.Name

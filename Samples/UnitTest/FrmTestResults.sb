@@ -6,3 +6,16 @@ Sub Button1_OnClick()
 EndSub
 
 
+
+
+'------------------------------------------------
+Function Test_1()
+   
+   Return Global.AssertEqual(5, 7, "Test")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_2()
+   Return Global.AssertEqual(5, 7, "Test")
+EndFunction

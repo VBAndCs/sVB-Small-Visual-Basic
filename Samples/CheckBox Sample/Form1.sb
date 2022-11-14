@@ -1,13 +1,13 @@
 
 
-ChkShowTextBox.Checked = True
+ChkShowText.Checked = True
 
 '------------------------------------------------
 Sub Button1_OnClick()
-   If ChkShowTextBox.Checked Then
-      ChkShowTextBox.Checked = False
+   If ChkShowText.Checked Then
+      ChkShowText.Checked = False
    Else
-      ChkShowTextBox.Checked = True
+      ChkShowText.Checked = True
    EndIf
    
 EndSub
@@ -15,20 +15,20 @@ EndSub
 
 '------------------------------------------------
 Sub Button2_OnClick()
-   ChkShowTextBox.Checked = ""
+   ChkShowText.Checked = ""
 EndSub
 
 
 '------------------------------------------------
-Sub ChkShowTextBox_OnCheck()
-   state = ChkShowTextBox.Checked
-   If state Then
+Sub ChkShowText_OnCheck()
+   state = ChkShowText.Checked
+   If state Then  ' Checked
       TextBox1.Visible = True
       TextBox1.Enabled = True
-   ElseIf state = "" Then
+   ElseIf state = "" Then  ' Indeterminate
       TextBox1.Visible = True
       TextBox1.Enabled = False
-   Else
+   Else ' Unchecked
       TextBox1.Visible = False
       TextBox1.Enabled = False
    EndIf
@@ -38,5 +38,5 @@ EndSub
 
 '------------------------------------------------
 Sub ChkTriState_OnCheck()
-   ChkShowTextBox.AllowThreeState = ChkTriState.Checked
+   ChkShowText.AllowThreeState = ChkTriState.Checked
 EndSub

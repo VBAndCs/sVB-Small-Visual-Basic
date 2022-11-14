@@ -1104,6 +1104,10 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Public Shared Function ParseDateLiteral(literal As String) As (Ticks As Long?, IsDate As Boolean)
+            If literal.Length < 2 Then
+                Return (Nothing, False)
+            End If
+
             If literal(1) = "-" OrElse literal(1) = "+" Then
                 Dim s As TimeSpan
                 If TimeSpan.TryParse(literal.Trim("#"c, "+"c), CultureInfo.InvariantCulture, s) Then

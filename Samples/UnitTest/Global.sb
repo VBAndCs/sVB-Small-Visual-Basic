@@ -51,8 +51,7 @@ Function AssertEqual(
    ) ' Returns a string message that displays the test result, saying whether it passed or failed and why.
    
    If actualValue = expectedValue Then
-      n = Text.GetLength(testName)
-      n = 53 - n
+      n = 53 - Text.GetLength(testName)
       Return testName + _Repeat(" ", n) + Chars.Tab + "Passed"
    Else
       msg = Text.Format(
@@ -89,16 +88,18 @@ EndFunction
 
 
 '------------------------------------------------
-Sub _TestForm(frm, resultsForm, resultsTextBox)
-   testForm = Forms.ShowForm(frm, "")
+Sub _TestForm(testForm, resultsForm, resultsTextBox)
+   Forms.ShowForm(testForm, "")
    Errors = {}
    testForm.RunTests()
    
-   If Errors.Count > 0 And resultsTextBox <> "" Then
+   If resultsForm = "" Then
+      Return
+   EndIf
+   
+   If Errors.Count > 0 Then
       resultsTextBox.AppendLine("")
       resultsTextBox.AppendLine("--------------------------------")
-      resultsTextBox.AppendLine("")
-      
       resultsTextBox.AppendLine(testForm.Text + " Errors:")
       n = 1
       ForEach error In Errors
@@ -106,12 +107,15 @@ Sub _TestForm(frm, resultsForm, resultsTextBox)
          resultsTextBox.AppendLine(id)
          n = n + 1
       Next
+      resultsTextBox.AppendLine("--------------------------------")
+      resultsTextBox.AppendLine("")
       
    Else
       resultsTextBox.AppendLine(testForm.Text + " OK.")
    EndIf
    
-   If resultsForm <> "" And frm <> resultsForm Then
+   
+   If testForm <> resultsForm Then
       testForm.Close()
    EndIf
 EndSub

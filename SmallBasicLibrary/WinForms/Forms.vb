@@ -97,6 +97,8 @@ Namespace WinForms
                                 canvas = LoadContent(xamlPath)
                             End If
 
+                            canvas.Margin = New Thickness(0)
+
                             Dim wnd As New Window() With {
                                    .SizeToContent = SizeToContent.WidthAndHeight,
                                    .WindowStartupLocation = WindowStartupLocation.CenterScreen,

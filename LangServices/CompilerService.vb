@@ -549,25 +549,27 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         If token.Type = TokenType.DateLiteral Then
                             Dim d = token.Text
                             Dim length = d.Length
-                            Dim index = 1
+                            If length > 1 Then
+                                Dim index = 1
 
-                            Do
-                                If d(index) <> " " Then Exit Do
-                                index += 1
-                            Loop While index < length
+                                Do
+                                    If d(index) <> " " Then Exit Do
+                                    index += 1
+                                Loop While index < length
 
-                            If index > 1 Then textEdit.Replace(line.Start + token.Column + 1, index - 1, "")
+                                If index > 1 Then textEdit.Replace(line.Start + token.Column + 1, index - 1, "")
 
-                            index = length - 2
-                            Do
-                                If d(index) <> " " Then Exit Do
-                                index -= 1
-                            Loop While index > 0
+                                index = length - 2
+                                Do
+                                    If d(index) <> " " Then Exit Do
+                                    index -= 1
+                                Loop While index > 0
 
-                            If index < length - 2 Then textEdit.Replace(line.Start + token.Column + index + 1, length - 2 - index, "")
+                                If index < length - 2 Then textEdit.Replace(line.Start + token.Column + index + 1, length - 2 - index, "")
+                            End If
                         End If
 
-                    Case TokenType.Dot, TokenType.Lookup
+                            Case TokenType.Dot, TokenType.Lookup
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 0)
 
                     Case Else
