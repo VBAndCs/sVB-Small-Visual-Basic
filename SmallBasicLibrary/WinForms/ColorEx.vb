@@ -8,7 +8,7 @@ Namespace WinForms
     Public NotInheritable Class ColorEx
 
         ''' <summary>
-        ''' Crates a new color based on the current color, with the transparency set to the given value.
+        ''' Creates a new color based on the current color, with the transparency set to the given value.
         ''' </summary>
         ''' <param name="percentage">a 0 to 100 value that represents the percentage of the transparency of the color</param>
         ''' <returns>a new color with the given transparency. The current color will not change.</returns>
@@ -19,7 +19,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' reterns the transparency percentage of the color
+        ''' Gets the transparency percentage of the color
         ''' </summary>
         ''' <returns>a 0 to 100 value represents the transparency percentage of the color</returns>
         <ReturnValueType(VariableType.Double)>
@@ -29,18 +29,18 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Returms the English name name of the color if its defined.
+        ''' Gets the English name of the color if its defined.
         ''' </summary>
-        ''' <returns>the English name name of the color</returns>
+        ''' <returns>the English name of the color</returns>
         <ReturnValueType(VariableType.String)>
         <WinForms.ExProperty> Public Shared Function GetName(color As Primitive) As Primitive
             Return WinForms.Color.GetName(color)
         End Function
 
         ''' <summary>
-        ''' Returms the English name name of the color if its defined, followed by the transparency percentage of the color.
+        ''' Gets the English name  of the color if its defined, followed by the transparency percentage of the color.
         ''' </summary>
-        ''' <returns>the English name name of the color, followed by the transparency percentage of the color</returns>
+        ''' <returns>the English name of the color, followed by the transparency percentage of the color</returns>
         <WinForms.ExProperty>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetNameAndTransparency(color As Primitive) As Primitive
@@ -49,9 +49,8 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Gets the red component of the color
+        ''' Gets the red component of the color, which is a number between 0 and 255.
         ''' </summary>
-        ''' <returns>A number betwwen 0 and 255 thet represents the red ration in the color</returns>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetRedRatio(color As Primitive) As Primitive
@@ -59,9 +58,8 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the green component of the color
+        ''' Gets the green component of the color, which is a number between 0 and 255.
         ''' </summary>
-        ''' <returns>A number betwwen 0 and 255 thet represents the green ration in the color</returns>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetGreenRatio(color As Primitive) As Primitive
@@ -69,10 +67,8 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the blue component of the color
+        ''' Gets the blue component of the color, which is a number between 0 and 255.
         ''' </summary>
-        ''' <returns>A number betwwen 0 and 255 thet represents the blue ration in the color</returns>
-
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetBlueRatio(color As Primitive) As Primitive
@@ -112,5 +108,30 @@ Namespace WinForms
             Return WinForms.Color.ChangeBlueRatio(color, value)
         End Function
 
+
+
+        ''' <summary>
+        ''' Creates a new color based on the current color, with the alpha component changed to the given value.
+        ''' The alpha component is an indicator of the color opacity, where 0 means a fully transparent color, while 255 means a fully opaque solid color.
+        ''' </summary>
+        ''' <param name="value">A number between 0 and 255 for the new value of the alpha component.</param>
+        ''' <returns>a new color with the alpha component changed to the given value</returns>
+        <ReturnValueType(VariableType.Color)>
+        <ExMethod>
+        Public Shared Function ChangeAlpha(color As Primitive, value As Primitive) As Primitive
+            Return WinForms.Color.ChangeAlpha(color, value)
+        End Function
+
+
+        ''' <summary>
+        ''' Gets the alpha component of the color, which is a number betwwn 0 and 255, that indicats the color opacity, where:
+        '''   • 0 means a fully transparent color.
+        '''   • 255 means a fully opaque solid color.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetAlpha(color As Primitive) As Primitive
+            Return WinForms.Color.GetAlpha(color)
+        End Function
     End Class
 End Namespace

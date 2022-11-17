@@ -308,6 +308,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.DialogResult)>
         Public Shared Function ShowDialog(formName As Primitive, argsArr As Primitive) As Primitive
             Dim asm = System.Reflection.Assembly.GetCallingAssembly()
+
             App.Invoke(
                 Sub()
                     Try

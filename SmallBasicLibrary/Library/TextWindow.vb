@@ -296,6 +296,26 @@ Namespace Library
         End Sub
 
         ''' <summary>
+        ''' Writes the given array items to the TextWindw, and appends a new line after each of them.
+        ''' </summary>
+        ''' <param name="lines">An array of text lines</param>
+        Public Shared Sub WriteLines(lines As Primitive)
+            VerifyAccess()
+            If lines.IsArray Then
+                Dim map = lines._arrayMap
+                If map Is Nothing Then
+                    Console.WriteLine()
+                Else
+                    For Each line In map.Values
+                        Console.WriteLine(CStr(line))
+                    Next
+                End If
+            Else
+                Console.WriteLine(CStr(lines))
+            End If
+        End Sub
+
+        ''' <summary>
         ''' Writes text or number to the text window.  Unlike WriteLine, this will not append a new line character, which means, anything written to the text window after this call will be on the same line.
         ''' </summary>
         ''' <param name="data">

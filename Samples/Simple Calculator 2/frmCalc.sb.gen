@@ -21,9 +21,10 @@ btnSubtract = "frmcalc.btnsubtract"
 btnMultply = "frmcalc.btnmultply"
 btnDivide = "frmcalc.btndivide"
 lblResult = "frmcalc.lblresult"
-frmCalc = Forms.LoadForm("frmCalc", "frmcalc.xaml")
+_path = Program.Directory + "\frmCalc.xaml"
+frmCalc = Forms.LoadForm("frmCalc", _path)
+Form.SetArgsArr(frmcalc, Stack.PopValue("_frmcalc_argsArr"))
 Form.Show(frmCalc)
-
 '#Events{
 '    btnAdd: OnClick
 '    btnSubtract: OnClick
@@ -33,18 +34,18 @@ Form.Show(frmCalc)
 
 ' btnAdd Events:
 Control.HandleEvents(btnAdd)
-Control.OnClick = btnAdd_OnClick
+Control.OnClick = BtnAdd_OnClick
 
 ' btnSubtract Events:
 Control.HandleEvents(btnSubtract)
-Control.OnClick = btnSubtract_OnClick
+Control.OnClick = BtnSubtract_OnClick
 
 ' btnMultply Events:
 Control.HandleEvents(btnMultply)
-Control.OnClick = btnMultply_OnClick
+Control.OnClick = BtnMultply_OnClick
 
 ' btnDivide Events:
 Control.HandleEvents(btnDivide)
-Control.OnClick = btnDivide_OnClick
+Control.OnClick = BtnDivide_OnClick
 
 

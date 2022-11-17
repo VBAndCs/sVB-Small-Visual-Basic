@@ -195,7 +195,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 ElseIf repWith.EndsWith("(") Then
                     provider.ShowHelp(True)
                 ElseIf showCompletionAdornmentAgain Then
-                    provider.ShowCompletionAdornment(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex, True)
+                    provider.ShowCompletionAdornment(
+                        textView.TextSnapshot,
+                        textView.Caret.Position.TextInsertionIndex,
+                        True
+                    )
                 End If
                 Return True
 

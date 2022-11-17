@@ -135,6 +135,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     If bag Is Nothing Then
                         _Adornment.Dismiss(True)
                     Else
+                        bag.IsBackSpace = _Adornment.CompletionBag.IsBackSpace
                         BuildFilteredCompletionList(inputText, bag)
                         If filteredCompletionItems.Count > 0 Then
                             CompletionListBox.ItemsSource = filteredCompletionItems
@@ -153,7 +154,15 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Private Sub OnTextChanged(sender As Object, e As Nautilus.Text.TextChangedEventArgs)
-            If IsAdornmentVisible Then FilterItems()
+            If IsAdornmentVisible Then
+                Dim c = e.Changes(0)
+                If c.Delta = -1 Then
+                    Dim x = c.OldText
+                    Dim bag = _Adornment.CompletionBag
+                    bag.IsBackSpace = (x = "(" OrElse x = ",")
+                End If
+                FilterItems()
+            End If
         End Sub
 
         Private Sub BuildFilteredCompletionList(inputText As String, bag As CompletionBag)
@@ -170,10 +179,15 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             If items.Count = 0 Then Return
 
-            If items.Count = 1 AndAlso bag.CtrlSpace Then
-                _Adornment.AdornmentProvider.CommitItem(items(0))
-                filteredCompletionItems.Clear()
-                Return
+            If items.Count = 1 Then
+                If bag.CtrlSpace Then
+                    _Adornment.AdornmentProvider.CommitItem(items(0))
+                    filteredCompletionItems.Clear()
+                    Return
+                ElseIf bag.IsBackSpace Then
+                    filteredCompletionItems.Clear()
+                    Return
+                End If
             End If
 
             ' Completion list must contain 7 items at least

@@ -12,7 +12,8 @@ Namespace Microsoft.SmallVisualBasic.Completion
         Public ForHelp As Boolean
         Public IsMethod As Boolean
         Public IsHandler As Boolean
-        Public CtrlSpace As Boolean
+        Public IsBackSpace As Boolean
+        Public Property CtrlSpace As Boolean
         Public ReadOnly Property ParseTree As List(Of Statement)
         Public ReadOnly Property GlobalParseTree As List(Of Statement)
         Public ReadOnly Property SymbolTable As SymbolTable

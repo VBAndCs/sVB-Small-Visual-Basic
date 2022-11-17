@@ -35,27 +35,27 @@ Form.Show(frmCalc)
 
 ' btnAdd Events:
 Control.HandleEvents(btnAdd)
-Control.OnClick = btnAdd_OnClick
+Control.OnClick = BtnAdd_OnClick
 
 ' btnSubtract Events:
 Control.HandleEvents(btnSubtract)
-Control.OnClick = btnSubtract_OnClick
+Control.OnClick = BtnSubtract_OnClick
 
 ' btnMultply Events:
 Control.HandleEvents(btnMultply)
-Control.OnClick = btnMultply_OnClick
+Control.OnClick = BtnMultply_OnClick
 
 ' btnDivide Events:
 Control.HandleEvents(btnDivide)
-Control.OnClick = btnDivide_OnClick
+Control.OnClick = BtnDivide_OnClick
 
 ' txtNum1 Events:
 Control.HandleEvents(txtNum1)
-TextBox.OnTextInput = txtNum1_OnTextInput
-TextBox.OnTextChanged = txtNum1_OnTextChanged
+TextBox.OnTextInput = TxtNum1_OnTextInput
+TextBox.OnTextChanged = TxtNum1_OnTextChanged
 
 ' txtNum2 Events:
 Control.HandleEvents(txtNum2)
-TextBox.OnTextChanged = txtNum2_OnTextChanged
+TextBox.OnTextChanged = TxtNum2_OnTextChanged
 
 

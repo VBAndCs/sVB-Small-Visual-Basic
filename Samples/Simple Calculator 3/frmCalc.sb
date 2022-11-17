@@ -1,3 +1,4 @@
+lblResult.WordWrap = False
 
 '----------------------------
 Sub BtnAdd_OnClick

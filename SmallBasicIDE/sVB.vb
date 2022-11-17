@@ -365,7 +365,7 @@ Class sVB
                 End If
 
                 lines(lineNum) = prevText &
-                        $"{ModuleName}.{method}({objName}, " &
+                        $"{ModuleName}.{method}({objName}{If(argsCount = 0, "", ", ")}" &
                         restText
 
                 errors.RemoveAt(i)
@@ -380,7 +380,7 @@ Class sVB
 
                 If objId + 3 >= tokens.Count OrElse tokens(objId + 3).Type <> TokenType.Equals Then
                     errors.Clear()
-                    errors.Add(New [Error](nameToken, $"Expected `=` and a value to set the property"))
+                    errors.Add(New [Error](nameToken, $"Expected `=` And a value to set the property"))
                     Exit Sub
                 End If
 
@@ -395,7 +395,7 @@ Class sVB
                     If ModuleName = "" Then
                         errors.Clear()
                         errors.Add(New [Error](nameToken, $"Property `{propName}` doesn't exist."))
-                        Exit Sub
+                Exit Sub
                     End If
 
                     If methodInfo.ParamsCount <> 2 Then

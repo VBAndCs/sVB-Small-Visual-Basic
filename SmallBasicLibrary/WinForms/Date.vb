@@ -408,7 +408,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Calculates the difference in milliseconds betwwen the start of the year 1900 and the given date.
+        ''' Calculates the difference in milliseconds between the start of the year 1900 and the given date.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
         ''' <returns>the number of milliseconds that have elapsed since 1900 until the given date</returns>

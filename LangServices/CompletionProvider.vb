@@ -340,7 +340,13 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
 
             If symbol <> "" AndAlso symbol <> "(" AndAlso line.Start + column = pos Then Return
-            ShowHelpInfo(line, column, paramIndex, span, If(checkEspecialArgs OrElse force, ",", symbol))
+            ShowHelpInfo(
+                line,
+                column,
+                paramIndex,
+                span,
+                If(checkEspecialArgs OrElse force, ",", symbol)
+            )
 
         End Sub
 
@@ -472,7 +478,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim isComma = currentChar = "," OrElse symbol = ","
             Dim commaOrParans = prevIsSep OrElse isClosing OrElse isComma
 
-            If commaOrParans Then
+            If commaOrParans OrElse symbol = "(" Then
                 Dim editor = CType(textView, AvalonTextView).Editor
                 Dim caller As CallerInfo
 
@@ -511,9 +517,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             ElseIf prevChar = "("c Then
                 paramIndex = 0
                 column -= 1
-
-            ElseIf symbol = "(" Then
-                paramIndex = 0
             End If
 
             Return True
@@ -875,7 +878,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
             End If
         End Sub
-
 
         Dim byConventionName As String
 

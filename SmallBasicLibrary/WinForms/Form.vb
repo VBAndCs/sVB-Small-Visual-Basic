@@ -102,8 +102,7 @@ Namespace WinForms
                         Dim frmName = "_SmallVisualBasic_" & formName.ToLower()
                         Dim frm = asm.GetType(frmName)
                         If frm Is Nothing Then
-                            asm = System.Reflection.Assembly.GetEntryAssembly
-                            frm = asm.GetType(frmName)
+                            frm = System.Reflection.Assembly.GetEntryAssembly.GetType(frmName)
                         End If
                         Dim initializeMethod = frm?.GetMethod("Initialize", System.Reflection.BindingFlags.Public Or System.Reflection.BindingFlags.Static)
                         initializeMethod?.Invoke(Nothing, Nothing)
@@ -164,7 +163,7 @@ Namespace WinForms
         ''' <summary>
         ''' Adds a new Label control to the form
         ''' </summary>
-        ''' <param name="formName">A unique name for the new Label.</param>
+        ''' <param name="labelName">A unique name for the new Label.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>

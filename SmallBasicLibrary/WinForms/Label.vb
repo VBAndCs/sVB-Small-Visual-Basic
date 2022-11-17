@@ -105,7 +105,9 @@ Namespace WinForms
                 tb = New Wpf.TextBlock()
                 If content IsNot Nothing Then tb.Text = content.ToString()
                 cntrl.Content = tb
+                tb.TextWrapping = TextWrapping.Wrap
             End If
+
             Return tb
         End Function
 

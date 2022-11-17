@@ -471,7 +471,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim openP = tokenEnum.Current
             If EatToken(tokenEnum, TokenType.LeftParens) Then
                 Dim caller = (subroutineCall.Name.Line, subroutineCall.Name.EndColumn)
-                If openP.Line = commaLine AndAlso openP.Column = commaColumn Then
+                If openP.Line = commaLine AndAlso (openP.Column = commaColumn OrElse openP.EndColumn = commaColumn) Then
                     callerInfo = New CallerInfo(caller.Line, caller.EndColumn, 0)
                     commaLine = -2
                     Return Nothing
@@ -648,7 +648,7 @@ Namespace Microsoft.SmallVisualBasic
                     End If
 
                     Dim caller = (variable.Line, variable.EndColumn)
-                    If openP.Line = commaLine AndAlso openP.Column = commaColumn Then
+                    If openP.Line = commaLine AndAlso (openP.Column = commaColumn OrElse openP.EndColumn = commaColumn) Then
                         callerInfo = New CallerInfo(caller.Line, caller.EndColumn, 0)
                         commaLine = -2
                         Return Nothing
@@ -732,7 +732,7 @@ Namespace Microsoft.SmallVisualBasic
             openP = tokenEnum.Current
             If EatOptionalToken(tokenEnum, TokenType.LeftParens) Then
                 Dim caller = (current.Line, current.EndColumn)
-                If openP.Line = commaLine AndAlso openP.Column = commaColumn Then
+                If openP.Line = commaLine AndAlso (openP.Column = commaColumn OrElse openP.EndColumn = commaColumn) Then
                     callerInfo = New CallerInfo(caller.Line, caller.EndColumn, 0)
                     commaLine = -2
                     Return Nothing
@@ -826,6 +826,7 @@ Namespace Microsoft.SmallVisualBasic
 
             Dim items As New List(Of Expression)
             closeTokenFound = False
+            Dim exprExpected = False
 
             Do
                 Dim current = tokenEnum.Current
@@ -837,7 +838,16 @@ Namespace Microsoft.SmallVisualBasic
                             Return Nothing
                         End If
                     End If
+
                     closeTokenFound = True
+                    If exprExpected Then
+                        Dim exprToken As New Token With {
+                            .Line = current.Line,
+                            .Column = If(tokenEnum.IsEnd, current.EndColumn, current.Column)
+                        }
+                        AddError(exprToken, ResourceHelper.GetString("ExpressionExpected"))
+                    End If
+
                     Exit Do
                 End If
 
@@ -850,10 +860,13 @@ Namespace Microsoft.SmallVisualBasic
                 End If
 
                 items.Add(expression)
+                ExprExpected = False
+
                 If tokenEnum.IsEndOrComment Then Exit Do
 
                 Dim comma = tokenEnum.Current
                 If EatOptionalToken(tokenEnum, TokenType.Comma) Then
+                    ExprExpected = True
                     If comma.Line = commaLine AndAlso comma.Column = commaColumn Then
                         If caller.HasValue Then
                             callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count)
