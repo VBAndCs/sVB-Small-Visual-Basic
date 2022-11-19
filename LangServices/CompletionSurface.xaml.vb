@@ -186,6 +186,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Return
                 ElseIf bag.IsBackSpace Then
                     filteredCompletionItems.Clear()
+                    _Adornment?.Dismiss(True)
                     Return
                 End If
             End If

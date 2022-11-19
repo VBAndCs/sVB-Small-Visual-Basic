@@ -280,7 +280,10 @@ Namespace WinForms
         ''' Shows the color dialog to allow the user to select a color.
         ''' </summary>
         ''' <param name="initialColor">the color that will be selected when the dialog is opened</param>
-        ''' <returns>a new color with the blue component changed to the given value</returns>
+        ''' <returns>
+        ''' If the user selected a color and clicks the OK button, this method will return the selected color.
+        ''' If the user canceled the color dialog, this method returms an empty String "".
+        ''' </returns>
         <ReturnValueType(VariableType.Color)>
         Public Shared Function ShowDialog(initialColor As Primitive) As Primitive
             Dim c = System.Drawing.Color.Black

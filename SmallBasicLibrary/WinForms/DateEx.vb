@@ -1,4 +1,3 @@
-Imports System.Globalization
 Imports Microsoft.SmallVisualBasic.Library
 
 Namespace WinForms
@@ -13,9 +12,9 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Gets the full time part (including seconds and milliseconds) of the current date.
+        ''' Gets the full time part in the user local culture (including seconds, AM/PM and milliseconds) of the current date.
         ''' </summary>
-        ''' <returns>a string representing the long time</returns>
+        ''' <returns>a string representing the long time in the user local culture</returns>
         <ReturnValueType(VariableType.Date)>
         <ExProperty>
         Public Shared Function GetLongTime([date] As Primitive) As Primitive
@@ -23,9 +22,9 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the short time part of the current date. The time will incude hours and minutes and AM or PM, but not seconds and milliseconds.
+        ''' Gets the short time part of the current date in the user local culture. The time will incude hours and minutes and AM or PM, but not seconds and milliseconds.
         ''' </summary>
-        ''' <returns>a string representing the short time</returns>
+        ''' <returns>a string representing the short time in the user local culture</returns>
         <ReturnValueType(VariableType.Date)>
         <ExProperty>
         Public Shared Function GetShortTime([date] As Primitive) As Primitive
@@ -33,9 +32,9 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the long form of the current date. The long date contains the month name instead of its number.
+        ''' Gets the long form of the current date. The long date contains the month name in the user local culture instead of its number.
         ''' </summary>
-        ''' <returns>a string representing the long date</returns>
+        ''' <returns>a string representing the long date in the user local culture</returns>
         <ReturnValueType(VariableType.Date)>
         <ExProperty>
         Public Shared Function GetLongDate([date] As Primitive) As Primitive
@@ -43,9 +42,9 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the short form of the current date, like 1/1/2020
+        ''' Gets the short form of the current date in the user local culture, like 1/1/2020
         ''' </summary>
-        ''' <returns>a string representing the short date</returns>
+        ''' <returns>a string representing the short date in the user local culture.</returns>
         <ReturnValueType(VariableType.Date)>
         <ExProperty>
         Public Shared Function GetShortDate([date] As Primitive) As Primitive
@@ -53,9 +52,9 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the full date and time representaion of the current date.
+        ''' Gets the short date and long time representaion of the current date in the user local culture.
         ''' </summary>
-        ''' <returns>a string representing the full date and time</returns>
+        ''' <returns>a string representing the short date and long time in the user local culture</returns>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetDateAndTime([date] As Primitive) As Primitive

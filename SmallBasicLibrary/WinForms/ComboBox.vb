@@ -270,13 +270,17 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim lst = GetComboBox(comboBoxName)
+                        Dim id As Integer
+
                         If value.IsArray Then
                             For Each value In value._arrayMap.Values
-                                AddItem = lst.Items.Add(CStr(value))
+                                id = lst.Items.Add(CStr(value))
                             Next
                         Else
-                            AddItem = lst.Items.Add(CStr(value))
+                            id = lst.Items.Add(CStr(value))
                         End If
+
+                        AddItem = id + 1
 
                     Catch ex As Exception
                         Control.ReportSubError(comboBoxName, "AddItem", ex)

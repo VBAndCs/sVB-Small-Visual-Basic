@@ -121,7 +121,10 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The key of the textBox in the formula {formName.textBoxName} like "form1.textbox1".</returns>
+        ''' <returns>
+        ''' The key of the TextBox in the formula {formName.textBoxName} like "form1.textbox1".
+        ''' sVB can deal with this key as an object of type TextBox, so, you can access the TextBox methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.TextBox)>
         <ExMethod>
         Public Shared Function AddTexBox(
@@ -168,7 +171,10 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The key of the label in the formula {formName.labelName} like "form1.label1".</returns>
+        ''' <returns>
+        ''' The key of the label in the formula {formName.labelName} like "form1.label1".
+        ''' sVB can deal with this key as an object of type Label, so, you can access the Label methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.Label)>
         <ExMethod>
         Public Shared Function AddLabel(
@@ -214,7 +220,10 @@ Namespace WinForms
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
         ''' <param name="fileName">the path of the image file</param>
-        ''' <returns>The key of the ImageBox in the formula {formName.imageBoxName} like "form1.imagebox1".</returns>
+        ''' <returns>
+        ''' The key of the ImageBox in the formula {formName.imageBoxName} like "form1.imagebox1".
+        ''' sVB can deal with this key as an object of type ImageBox, so, you can access the ImageBox methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.ImageBox)>
         <ExMethod>
         Public Shared Function AddImageBox(
@@ -265,7 +274,10 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="timerName">A unique name for the new Timer.</param>
         ''' <param name="interval">The delay time in milliseconds between ticks</param>
-        ''' <returns>The key of the Timer</returns>
+        ''' <returns>
+        ''' The key of the Timer in the formula {formName.timerName} like "form1.timer1".
+        ''' sVB can deal with this key as an object of type WinTimer, so, you can access the WinTimer methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.WinTimer)>
         <ExMethod>
         Public Shared Function AddTimer(
@@ -334,7 +346,10 @@ Namespace WinForms
         ''' Adds a main menu to the current form. If there is already a main menu, it will be replaced.
         ''' </summary>
         ''' <param name="menuName">The name of the main menu</param>
-        ''' <returns>The menu item that have been added.</returns>
+        ''' <returns>
+        ''' The key of the menu in the formula {formName.mainMenuName} like "form1.mainMenu1".
+        ''' sVB can deal with this key as an object of type MainMenu, so, you can access the MainMenu methods via it.
+        ''' </returns>
 
         <ExMethod>
         <ReturnValueType(VariableType.MainMenu)>
@@ -382,7 +397,10 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The key of the button in the formula {formName.buttonName} like "form1.button1".</returns>
+        ''' <returns>
+        ''' The key of the button in the formula {formName.buttonName} like "form1.button1".
+        ''' sVB can deal with this key as an object of type Button, so, you can access the Button methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.Button)>
         <ExMethod>
         Public Shared Function AddButton(
@@ -429,7 +447,10 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The key of the toggleButton</returns>
+        ''' <returns>
+        ''' The key of the ToggleButton in the formula {formName.toggleButtonName} like "form1.toggleButton1".
+        ''' sVB can deal with this key as an object of type ToggleButton, so, you can access the ToggleButton methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.ToggleButton)>
         <ExMethod>
         Public Shared Function AddToggleButton(
@@ -477,7 +498,10 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="text">the text to desply on the CheckBox</param>
         ''' <param name="checked">The value to set to the Checked property</param>
-        ''' <returns>The key of the CheckBox in the formula {formName.checkBoxName} like "form1.checkbox1".</returns>
+        ''' <returns>
+        ''' The key of the CheckBox in the formula {formName.checkBoxName} like "form1.checkbox1".
+        ''' sVB can deal with this key as an object of type CheckBox, so, you can access the CheckBox methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.CheckBox)>
         <ExMethod>
         Public Shared Function AddCheckBox(
@@ -531,7 +555,10 @@ Namespace WinForms
         ''' <param name="text">The text to desply on the RadioButton</param>
         ''' <param name="groupName">The name of the group to add the button to</param>
         ''' <param name="checked">The value to set to the Checked property</param>
-        ''' <returns>The key of the RadioButton in the formula {formName.radioButtonName} like "form1.radiobutton1".</returns>
+        ''' <returns>
+        ''' The key of the RadioButton in the formula {formName.radioButtonName} like "form1.radiobutton1".
+        ''' sVB can deal with this key as an object of type RadioButton, so, you can access the RadioButton methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.RadioButton)>
         <ExMethod>
         Public Shared Function AddRadioButton(
@@ -581,7 +608,10 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="height">The height of the control.</param>
-        ''' <returns>The key of the listBox</returns>
+        ''' <returns>
+        ''' The key of the listBox in the formula {formName.listBoxName} like "form1.listbox1".
+        ''' sVB can deal with this key as an object of type ListBox, so, you can access the ListBox methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.ListBox)>
         <ExMethod>
         Public Shared Function AddListBox(formName As Primitive,
@@ -619,6 +649,57 @@ Namespace WinForms
             Return key
         End Function
 
+
+        ''' <summary>
+        ''' Adds a new ComboBox control to the form
+        ''' </summary>
+        ''' <param name="comboBoxName">A unique name for the new ComboBox.</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control.</param>
+        ''' <param name="height">The height of the control.</param>
+        ''' <returns>
+        ''' The key of the comboBox in the formula {formName.comboBoxName} like "form1.combobox1".
+        ''' sVB can deal with this key as an object of type ComboBox, so, you can use the ComboBox methods via it.
+        ''' </returns>
+        <ReturnValueType(VariableType.ComboBox)>
+        <ExMethod>
+        Public Shared Function AddComboBox(
+                         formName As Primitive,
+                         comboBoxName As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive
+                  ) As Primitive
+
+            Dim key = ValidateArgs(formName, comboBoxName)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+
+                          Dim comboBox1 As New Wpf.ComboBox With {
+                                 .Name = comboBoxName,
+                                 .Width = width,
+                                 .Height = height
+                          }
+
+                          Wpf.Canvas.SetLeft(comboBox1, left)
+                          Wpf.Canvas.SetTop(comboBox1, top)
+
+                          Dim cnv = GetCanvas(frm)
+                          cnv.Children.Add(comboBox1)
+                          Forms._controls(key) = comboBox1
+
+                      Catch ex As Exception
+                          ReportSubError(formName, "AddComboBox", ex)
+                      End Try
+                  End Sub)
+
+            Return key
+        End Function
+
         ''' <summary>
         ''' Adds a new DatePicker control to the form
         ''' </summary>
@@ -627,7 +708,10 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control.</param>
         ''' <param name="selectedDate">the date that will be selected in the control</param>
-        ''' <returns>The key of the DatePicker in the formula {formName.datePikkerName} like "form1.datepicker1".</returns>
+        ''' <returns>
+        ''' The key of the DatePicker in the formula {formName.datePikkerName} like "form1.datepicker1".
+        ''' sVB can deal with this key as an object of type DatePicker, so, you can access the DatePicker methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.DatePicker)>
         <ExMethod>
         Public Shared Function AddDatePiker(
@@ -676,7 +760,10 @@ Namespace WinForms
         ''' <param name="height">The height of the control.</param>
         ''' <param name="minimum">The progress minimum value</param>
         ''' <param name="maximum">The progress maximum value. Use 0 if the max value is indeterminate.</param>
-        ''' <returns>The key of the ProgressBar</returns>
+        ''' <returns>
+        ''' The key of the ProgressBar in the formula {formName.progressBar} like "form1.progressBar1".
+        ''' sVB can deal with this key as an object of type ProgressBar, so, you can access the ProgressBar methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.ProgressBar)>
         <ExMethod>
         Public Shared Function AddProgressBar(
@@ -731,7 +818,10 @@ Namespace WinForms
         ''' <param name="maximum">The slider maximum value.</param>
         ''' <param name="value">The slider current value</param>
         ''' <param name="tickFrequency">The distance between slide ticks</param>
-        ''' <returns>The key of the Slider in the formula {formName.sliderName} like "form1.slider1".</returns>
+        ''' <returns>
+        ''' The key of the Slider in the formula {formName.sliderName} like "form1.slider1".
+        ''' sVB can deal with this key as an object of type Slider, so, you can access the Slider methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.Slider)>
         <ExMethod>
         Public Shared Function AddSlider(
@@ -789,7 +879,10 @@ Namespace WinForms
         ''' <param name="minimum">The scrollbar minimum value</param>
         ''' <param name="maximum">The scrollbar maximum value.</param>
         ''' <param name="value">The scrollbar current value</param>
-        ''' <returns>The key of the scrollbar in the formula {formName.scrollbarName} like "form1.scrollbar1".</returns>
+        ''' <returns>
+        ''' The key of the Scrollbar in the formula {formName.scrollbarName} like "form1.scrollbar1".
+        ''' sVB can deal with this key as an object of type Scrollbar, so, you can access the Scrollbar methods via it.
+        ''' </returns>
         <ReturnValueType(VariableType.ScrollBar)>
         <ExMethod>
         Public Shared Function AddScrollBar(

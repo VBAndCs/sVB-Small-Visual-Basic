@@ -15,7 +15,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Date)>
         Public Shared ReadOnly Property Now As Primitive
             Get
-                Return New Primitive(DateTime.Now.Ticks(), NumberType.Date)
+                Return New Primitive(Date.Now.Ticks(), NumberType.Date)
             End Get
         End Property
 
@@ -154,7 +154,7 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Gets the full time part (including seconds and milliseconds) of the given date.
+        ''' Gets the full time part (including seconds and AM/PM) of the given date. It will be in the user local culture.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
         ''' <returns>a string representing the long time</returns>
@@ -166,10 +166,10 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the short time part of the given date. The time will incude hours and minutes and AM or PM, but not seconds and milliseconds.
+        ''' Gets the short time part of the given date. The time will incude hours and minutes and AM or PM in the user local culture, but not seconds and milliseconds.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a string representing the short time</returns>
+        ''' <returns>a string representing the short time in the user local culture</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetShortTime([date] As Primitive) As Primitive
             Dim d = [date].AsDate()
@@ -178,10 +178,10 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the long form of the given date. The long date contains the month name instead of its number.
+        ''' Gets the long form of the given date. The long date contains the month name in the user local culture, instead of its number.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a string representing the long date</returns>
+        ''' <returns>a string representing the long date in the user local culture.</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetLongDate([date] As Primitive) As Primitive
             Dim d = [date].AsDate()
@@ -190,10 +190,10 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the short form of the given date, like 1/1/2020
+        ''' Gets the short form of the given date in the user local culture, like 1/1/2020.
         ''' </summary>
-        ''' <param name="date">the input date \ time</param>
-        ''' <returns>a string representing the short date</returns>
+        ''' <param name="date">The input date \ time</param>
+        ''' <returns>a string representing the short date in the user local culture.</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetShortDate([date] As Primitive) As Primitive
             Dim d = [date].AsDate()
@@ -214,10 +214,10 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the long date and time representaion
+        ''' Gets the short date and long time representaion in the user local culture.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a string representing the long date and time</returns>
+        ''' <returns>a string representing the short date and long time in the user local culture.</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetDateAndTime([date] As Primitive) As Primitive
             Dim d = [date].AsDate()

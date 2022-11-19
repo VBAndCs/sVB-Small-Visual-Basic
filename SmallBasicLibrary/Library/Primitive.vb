@@ -100,19 +100,22 @@ Namespace Library
             End Set
         End Property
 
+        Private Shared enUs As New CultureInfo("en-Us")
+
         Friend Function AsString() As String
             If _decimalValue.HasValue Then
                 Select Case numberType
                     Case NumberType.Date
                         Dim d = New Date(_decimalValue.Value)
                         If d.Day = 1 AndAlso d.Month = 1 AndAlso d.Year = 1 Then
-                            _stringValue = d.ToLongTimeString()
+                            _stringValue = d.ToString("T", enUs)
                         Else
-                            _stringValue = d.ToString()
+                            _stringValue = d.ToString(enUs)
                         End If
 
                     Case NumberType.TimeSpan
                         _stringValue = New TimeSpan(_decimalValue.Value).ToString()
+
                     Case Else
                         _stringValue = _decimalValue.Value.ToString()
                 End Select
@@ -209,7 +212,7 @@ Namespace Library
 
             For i = 0 To arr.Count - 1
                 Dim item = arr(i)
-                If Not removeEmpty OrElse item <> "" Then _arrayMap(i) = item
+                If Not removeEmpty OrElse item <> "" Then _arrayMap(i + 1) = item
             Next
         End Sub
 
@@ -400,22 +403,66 @@ Namespace Library
             Dim source = AsString().ToCharArray()
 
             Dim index As Integer = 0
+            FillSubArray(_arrayMap, source, index)
+        End Sub
+
+        Private Sub FillSubArray(
+                           map As Dictionary(Of Primitive, Primitive),
+                           source() As Char,
+                           ByRef index As Integer
+                     )
+
             Dim L = source.Length
             Do
                 Dim key = Unescape(source, index)
-                If key = "" OrElse index = L Then
-                    _arrayMap.Clear()
+                If key = "" Then Return
+
+                If IsValidKey(key) Then
+                    If index = L Then Return
+                Else
+                    map.Clear()
                     Return
                 End If
 
                 Dim value = Unescape(source, index)
                 If value Is Nothing Then
-                    _arrayMap.Clear()
+                    map.Clear()
                     Return
                 End If
-                _arrayMap(key) = value
+
+                If source(index - 1) = "="c Then
+                    index -= 2
+                    Dim arr As New Primitive
+                    Dim map2 As New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
+                    FillSubArray(map2, source, index)
+                    If map2.Count = 0 Then
+                        map.Clear()
+                        Return
+                    End If
+                    arr._arrayMap = map2
+                    map(key) = arr
+                Else
+                    map(key) = value
+                End If
+
             Loop While index < L
+
         End Sub
+
+        Private Function IsValidKey(key As String) As Boolean
+            For Each c In key
+                Select Case c
+                    Case " ", ".", "_"
+
+                    Case Else
+                        If Not (Char.IsDigit(c) OrElse Char.IsLetter(c)) Then
+                            Return False
+                        End If
+                End Select
+            Next
+
+            Return True
+        End Function
 
         Friend Function TryGetAsDecimal() As Decimal?
             If _decimalValue.HasValue Then Return _decimalValue
@@ -727,6 +774,9 @@ Namespace Library
                     ElseIf c = ";"c Then
                         Return sb.ToString()
                     End If
+
+                ElseIf c = ";"c Then
+                    Return sb.ToString()
                 Else
                     flag = False
                 End If
