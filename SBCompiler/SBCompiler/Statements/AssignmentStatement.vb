@@ -66,6 +66,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 End If
             End If
 
+            If EqualsToken.IsIllegal Then Return
+
             If TypeOf LeftValue Is IdentifierExpression Then
                 Dim identifierExp = TryCast(LeftValue, IdentifierExpression)
                 Dim key = symbolTable.AddVariable(identifierExp, Me.GetSummery(), IsLocalVariable)

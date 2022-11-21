@@ -118,6 +118,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Private Sub FilterItems()
+            If CompletionPopup.IsOpen AndAlso _Adornment.AdornmentProvider.adornment Is Nothing Then
+                ' Sometimes, the adornmentProvider sets is adornment to nothing, but the adornment still open,
+                ' So, we must set the AdornmentProvider.adornment again.
+                _Adornment.AdornmentProvider.adornment = _Adornment
+            End If
+
             Dim inputText = GetInputText()
             BuildFilteredCompletionList(inputText, _Adornment.CompletionBag)
 
@@ -303,21 +309,22 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Private Function GetSelectedItemIndex(text As String) As Integer
             Dim textLength = text.Length
+            Dim originalText = text
+            Dim key = ""
 
             If textLength < 2 Then
                 Dim firstItem = filteredCompletionItems(0).CompletionItem
-                Dim key = firstItem.HistoryKey
+                key = firstItem.GetHistoryKey(text)
                 If key <> "" Then
                     Dim properties = textView.TextBuffer.Properties
                     Dim controls = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
-                    If controls?.ContainsKey(key) Then key = controls(key)
+                    If controls?.ContainsKey(key) Then key = controls(key).ToLower()
 
-                    If CompletionProvider.CompHistory.ContainsKey(key) Then
-                        Dim word = CompletionProvider.CompHistory(key).ToLower()
-                        If text = "" OrElse word.StartsWith(text) Then
-                            text = word
-                            textLength = text.Length
-                        End If
+LineRetry:
+                    Dim word = GetWord(key)
+                    If text = "" OrElse word.StartsWith(text) Then
+                        text = word
+                        textLength = text.Length
                     End If
                 End If
             End If
@@ -354,7 +361,29 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Next
             Next
 
-            Return 0
+            If originalText = text Then Return 0
+            text = originalText
+            textLength = text.Length
+            If textLength < 2 Then
+                key = "__" & text(0)
+            End If
+            GoTo LineRetry
+
+        End Function
+
+        Private Function GetWord(key As String) As String
+            If CompletionHelper.History.ContainsKey(key) Then
+                Return CompletionHelper.History(key).ToLower()
+            End If
+
+            If Not key.StartsWith("_") OrElse key.StartsWith("_t_") Then Return ""
+
+            key = "_t" & key
+            If CompletionHelper.History.ContainsKey(key) Then
+                Return CompletionHelper.History(key).ToLower()
+            End If
+
+            Return ""
         End Function
 
         Private Function GetSubWords(text As String) As List(Of String)

@@ -1,4 +1,4 @@
-﻿Imports Microsoft.Nautilus.Text.Editor
+﻿
 Imports Microsoft.SmallVisualBasic.Documents
 Imports System.Windows
 Imports System.Windows.Controls

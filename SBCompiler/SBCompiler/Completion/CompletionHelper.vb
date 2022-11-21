@@ -7,6 +7,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
     Public Class CompletionHelper
         Private _compiler As Compiler
         Public Shared DoNotAddGlobals As Boolean
+        Public Shared History As Dictionary(Of String, String) = WinForms.PreCompiler.FillControlDefaultProperties()
 
         Public Sub New()
             _compiler = New Compiler()

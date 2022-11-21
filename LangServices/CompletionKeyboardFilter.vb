@@ -121,7 +121,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         textView As IAvalonTextView,
                         completionSurface As CompletionSurface,
                         Optional extraText As String = "",
-                        Optional showCompletionAdornmentAgain As Boolean = False
+                        Optional showAgain As Boolean = False
                      ) As Boolean
 
             If Not completionSurface.IsFaded AndAlso completionSurface.CompletionListBox.SelectedItem IsNot Nothing Then
@@ -133,12 +133,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim provider = textView.Properties.GetProperty(Of CompletionProvider)()
                 Dim replaceSpan = provider.GetReplacementSpane()
 
-                Dim key = item.HistoryKey
+                Dim key = item.GetHistoryKey()
                 If key <> "" Then
                     Dim properties = textView.TextBuffer.Properties
                     Dim controls = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
                     If controls?.ContainsKey(key) Then key = controls(key)
-                    CompletionProvider.CompHistory(key) = item.DisplayName
+                    Completion.CompletionHelper.History(key) = item.DisplayName
                 End If
 
                 Dim pos = textView.Caret.Position.TextInsertionIndex
@@ -159,7 +159,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 If repWith.EndsWith("(") OrElse repWith.EndsWith(")") Then
                     If extraText.EndsWith("( ") Then extraText = ""
-                    Dim txt = Line.GetText().Substring(pos - Line.Start)
+                    Dim txt = line.GetText().Substring(pos - line.Start)
                     If LineScanner.GetFirstToken(txt, 0).Type = TokenType.LeftParens Then
                         repWith = repWith.TrimEnd("("c, ")"c)
                     End If
@@ -194,7 +194,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     provider.ShowHelp(", ")
                 ElseIf repWith.EndsWith("(") Then
                     provider.ShowHelp(True)
-                ElseIf showCompletionAdornmentAgain Then
+                ElseIf showAgain Then
                     provider.ShowCompletionAdornment(
                         textView.TextSnapshot,
                         textView.Caret.Position.TextInsertionIndex,

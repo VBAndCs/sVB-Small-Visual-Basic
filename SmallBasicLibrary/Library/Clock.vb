@@ -15,7 +15,7 @@ Namespace Library
         Public Shared ReadOnly Property Time As Primitive
             Get
                 Dim instance As DateTimeFormatInfo = DateTimeFormatInfo.GetInstance(CultureInfo.CurrentCulture)
-                Return DateTime.Now.ToString(instance.LongTimePattern, CultureInfo.CurrentUICulture)
+                Return Date.Now.ToString(instance.LongTimePattern, CultureInfo.CurrentUICulture)
             End Get
         End Property
 
@@ -76,7 +76,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared ReadOnly Property Hour As Primitive
             Get
-                Return DateTime.Now.Hour
+                Return Date.Now.Hour
             End Get
         End Property
 

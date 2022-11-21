@@ -43,7 +43,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Public Sub Dismiss(force As Boolean)
-            AdornmentProvider.DismissAdornment(force)
+            _AdornmentProvider.DismissAdornment(force)
+            _AdornmentSurface = _AdornmentProvider.textView.Properties.GetProperty(Of CompletionSurface)()
+            If _AdornmentSurface IsNot Nothing Then
+                _AdornmentSurface.CompletionPopup.IsOpen = False
+            End If
         End Sub
     End Class
 End Namespace

@@ -27,30 +27,38 @@ Namespace Microsoft.SmallVisualBasic.Completion
             End Set
         End Property
 
-        Public ReadOnly Property HistoryKey() As String
-            Get
-                Select Case ItemType
-                    Case CompletionItemType.EventName,
-                             CompletionItemType.MethodName,
-                             CompletionItemType.PropertyName,
-                             CompletionItemType.DynamicPropertyName
+        Public Function GetHistoryKey(Optional prefix As String = "") As String
+            Select Case ItemType
+                Case CompletionItemType.EventName,
+                         CompletionItemType.MethodName,
+                         CompletionItemType.PropertyName,
+                         CompletionItemType.DynamicPropertyName
 
-                        If ObjectName <> "" Then
-                            Return ObjectName.ToLower()
-                        Else
-                            Return MemberInfo?.DeclaringType?.Name.ToLower()
+                    Dim k As String = ""
+                    If MemberInfo?.DeclaringType IsNot Nothing Then
+                        k = MemberInfo.DeclaringType.Name.ToLower()
+                        If k = "control" Then
+                            k = WinForms.PreCompiler.GetModuleFromVarName(ObjectName)
                         End If
+                    End If
 
-                    Case CompletionItemType.GlobalVariable,
-                              CompletionItemType.LocalVariable,
-                              CompletionItemType.SubroutineName
-                        Return "_" & DisplayName.ToLower()(0)
+                    If k = "" Then k = ObjectName
+                    Return k?.ToLower()
 
-                    Case Else
-                        Return ""
-                End Select
-            End Get
-        End Property
+                Case CompletionItemType.GlobalVariable,
+                          CompletionItemType.LocalVariable,
+                          CompletionItemType.SubroutineName
+                    Return "_" & DisplayName.ToLower()(0)
+
+                Case Else
+                    If prefix <> "" Then Return "_" & prefix.ToLower()(0)
+                    If DisplayName = "" Then Return ""
+
+                    Dim x = DisplayName.ToLower()
+                    If x = "me" Then Return "_m"
+                    Return "_t_" & x(0)
+            End Select
+        End Function
 
         Public Overrides Function ToString() As String
             Return DisplayName

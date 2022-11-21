@@ -27,13 +27,24 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)
             MyBase.AddSymbols(symbolTable)
             _Literal.Parent = Me.Parent
-            If Literal.Type = TokenType.DateLiteral Then
-                Dim result = Parser.ParseDateLiteral(Literal.Text)
-                If Not result.Ticks.HasValue Then
-                    Dim kind = If(result.IsDate, "date", "time span")
-                    symbolTable.Errors.Add(New [Error](Literal, $"Invalid {kind} format!"))
-                End If
-            End If
+
+            Select Case Literal.Type
+                Case TokenType.StringLiteral
+                    If Not Literal.Text.EndsWith("""") Then
+                        symbolTable.Errors.Add(New [Error](Literal, "A string literal must end with a quote."))
+                    End If
+
+                Case TokenType.DateLiteral
+                    If Not Literal.Text.EndsWith("#") Then
+                        symbolTable.Errors.Add(New [Error](Literal, "Date and duration literals must end with #."))
+                    End If
+
+                    Dim result = Parser.ParseDateLiteral(Literal.Text)
+                    If Not result.Ticks.HasValue Then
+                        Dim kind = If(result.IsDate, "date", "time span")
+                        symbolTable.Errors.Add(New [Error](Literal, $"Invalid {kind} format!"))
+                    End If
+            End Select
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)

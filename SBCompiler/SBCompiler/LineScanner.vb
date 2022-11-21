@@ -366,7 +366,7 @@ Namespace Microsoft.SmallVisualBasic
             Return stringBuilder.ToString()
         End Function
 
-        Private Shared Function ReadLiteral(enclosingChar As Char) As String
+        Private Shared Function ReadLiteral(closingChar As Char) As String
             Dim stringBuilder As New StringBuilder()
             Dim currentChar = GetNextChar()
             stringBuilder.Append(currentChar)
@@ -376,10 +376,10 @@ Namespace Microsoft.SmallVisualBasic
             While AscW(currentChar) <> 0
                 stringBuilder.Append(currentChar)
 
-                If currentChar = enclosingChar Then
+                If currentChar = closingChar Then
                     currentChar = GetNextChar()
 
-                    If currentChar <> enclosingChar Then
+                    If currentChar <> closingChar Then
                         flag = True
                         Exit While
                     End If
@@ -392,7 +392,6 @@ Namespace Microsoft.SmallVisualBasic
 
             If flag Then
                 _currentIndex -= 1
-                Return stringBuilder.ToString()
             End If
 
             Return stringBuilder.ToString()

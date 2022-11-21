@@ -1334,7 +1334,7 @@ Namespace Microsoft.SmallVisualBasic
             If tabDesigner.IsSelected Then
                 StkToolbar.Visibility = Visibility.Visible
                 grdNameText.Visibility = Visibility.Visible
-                txtTitle.Text = "Form Designer - "
+                txtTitle.Text = "Design - "
                 txtForm.Text = If(formDesigner.XamlFile = "",
                         formDesigner.Name & " *",
                         Path.GetFileName(formDesigner.XamlFile)
@@ -1343,7 +1343,7 @@ Namespace Microsoft.SmallVisualBasic
             Else
                 StkToolbar.Visibility = Visibility.Collapsed
                 grdNameText.Visibility = Visibility.Collapsed
-                txtTitle.Text = "Code Editor - "
+                txtTitle.Text = "Code - "
                 txtForm.Text = If(formDesigner.CodeFile = "",
                         $"{formDesigner.Name}.sb",
                         Path.GetFileName(formDesigner.CodeFile)

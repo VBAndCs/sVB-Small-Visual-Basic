@@ -16,7 +16,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private _document As Object
         Friend textView As ITextView
         Private compHelper As CompletionHelper
-        Private adornment As CompletionAdornment
+        Friend adornment As CompletionAdornment
         Private dismissedSpan As ITextSpan
         Private helpUpdateTimer As DispatcherTimer
         Private editorOperations As IEditorOperations
@@ -49,8 +49,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 textBuffer.Properties.AddProperty(GetType(CompletionHelper), compHelper)
             End If
         End Sub
-
-        Public Shared CompHistory As Dictionary(Of String, String) = WinForms.PreCompiler.FillControlDefaultProperties()
 
         Private Shared _fontNames As New List(Of CompletionItem)
         ReadOnly Property FontNames As List(Of CompletionItem)
@@ -121,12 +119,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Public Sub CommitItem(itemWrapper As CompletionItemWrapper)
             Dim item = itemWrapper.CompletionItem
             If adornment IsNot Nothing Then
-                Dim key = item.HistoryKey
+                Dim key = item.GetHistoryKey()
                 If key <> "" Then
                     Dim properties = textBuffer.Properties
                     Dim controls = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
                     If controls?.ContainsKey(key) Then key = controls(key)
-                    CompHistory(key) = item.DisplayName
+                    CompletionHelper.History(key) = item.DisplayName
                 End If
 
                 Dim repWith = itemWrapper.ReplacementText
@@ -159,7 +157,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Friend Function GetReplacementSpane() As SnapshotSpan
-            If adornment Is Nothing Then Return Nothing
+            If adornment Is Nothing Then Return New SnapshotSpan(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex, 0)
 
             Dim replaceSpan = adornment.ReplaceSpan
             Dim snapshot = textView.TextSnapshot
@@ -824,7 +822,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 If span.IsEmpty OrElse newEnd < span.Start OrElse
                             textChange.NewText.IndexOfAny({vbCr, vbLf}) > -1 Then
                     DismissAdornment(force:=False)
-
                 Else
                     Dim snapshot = e.After
                     Dim line = snapshot.GetLineFromPosition(newEnd)
@@ -865,7 +862,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             popHelp.IsOpen = False
                             ShowCompletionAdornment(e.After, newEnd)
 
-                        Case "="c, ">"c, "<"c
+                        Case "="c
+                            ShowCompletionAdornment(e.After, newEnd, True)
+                            Dim line = e.After.GetLineFromPosition(newEnd)
+                            Dim compiler = compHelper.Compile(New IO.StringReader(line.GetText()), Nothing, Nothing, Nothing)
+                            Dim vars = compiler.Parser.SymbolTable.GlobalVariables
+                            If vars.Count > 0 Then
+                                Dim varName = vars.Values(0).LCaseText
+                                CompletionHelper.History("_" & varName(0)) = varName
+                            End If
+                        Case ">"c, "<"c
                             ShowCompletionAdornment(e.After, newEnd, True)
 
                         Case "("c

@@ -121,17 +121,18 @@
                                         </Border>
                                     </Border>
                                     <Grid DockPanel.Dock="Left">
-                                        <TextBlock Margin="0,4,4,4" VerticalAlignment="Center" 
-                                                HorizontalAlignment="Center" Width="120"
+                                        <TextBlock Margin="0,6,4,4"
+                                                Width="200"
                                                 Foreground="#FF808080" TextTrimming="CharacterEllipsis" 
                                                 Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        <TextBlock Margin="0.5,4.5,4,4" 
-                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" 
-                                                   Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
+                                        <TextBlock Margin="1.5,4.5,4,4" 
+                                                Width="200"
+                                                TextTrimming="CharacterEllipsis" 
+                                                Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
                                     </Grid>
                                     <Grid Margin="10,0" HorizontalAlignment="Stretch">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180"/>
+                                            <ColumnDefinition MaxWidth="250"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
