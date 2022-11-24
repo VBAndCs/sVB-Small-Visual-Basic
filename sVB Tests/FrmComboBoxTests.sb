@@ -1,0 +1,582 @@
+
+'------------------------------------------------
+Function Test_AddItem()
+   ComboBox1.RemoveAllItems()
+   ids[1] = ComboBox1.AddItem("item 1")
+   ids[2] = ComboBox1.AddItem("item 2")
+   ids[3] = ComboBox1.AddItem(3)
+   ids[4] = ComboBox1.AddItem(#10/10/2022#)
+   ids[5] = ComboBox1.AddItem(#+10.10:00#)
+   ids[6] = ComboBox1.AddItem("")
+   ids[7] = ComboBox1.AddItem({1, "test", {10, 20, 30}})
+   
+   Return UnitTest.AssertEqual(
+      Array.AddItems(ComboBox1.Items, ids),
+      {
+         "item 1",
+         "item 2",
+         3,
+         "10/10/2022 12:00:00 AM",
+         "10.10:00:00",
+         "",
+         1,
+         "test",
+         {10, 20, 30},
+         1, 2, 3, 4, 5, 6, 9
+      },
+      "ComboBox_AddItem"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddItmes()
+   ComboBox1.RemoveAllItems()
+   ids[1] = ComboBox1.AddItem({
+         "item 1",
+         "item 2",
+         3,
+         #10/10/2022#,
+         #+10.10:00#,
+         "",
+         {1, "test", {10, 20, 30}}
+      })
+   
+   ids[2] = ComboBox1.AddItem({})
+   
+   Return UnitTest.AssertEqual(
+      Array.AddItems(ComboBox1.Items, ids),
+      {
+         "item 1",
+         "item 2",
+         3,
+         "10/10/2022 12:00:00 AM",
+         "10.10:00:00",
+         "",
+         {1, "test", {10, 20, 30}},
+         7, 0
+      },
+      "ComboBox_AddItem(array)"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddItemAt()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({1, 2, 3})
+   
+   results[1] = ComboBox1.AddItemAt(4, -1)
+   results[2] = ComboBox1.AddItemAt(5, 0)
+   results[3] = ComboBox1.AddItemAt(6, 1)
+   results[4] = ComboBox1.AddItemAt(7, 3)
+   results[5] = ComboBox1.AddItemAt(8, 5)
+   results[6] = ComboBox1.AddItemAt(9, 7)
+   results[7] = ComboBox1.AddItemAt(10, 9)
+   
+   
+   Return UnitTest.AssertEqual(
+      {ComboBox1.Items, results},
+      {
+         {6, 1, 7, 2, 8, 3, 9},
+         {False, False, True, True, True, True, False}
+      },
+      "ComboBox_AddItemAt"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddItemsAt()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({1, 2, 3})
+   
+   results[1] = ComboBox1.AddItemAt({4, 40}, -1)
+   results[2] = ComboBox1.AddItemAt({5, 50, 500}, 0)
+   results[3] = ComboBox1.AddItemAt({6}, 1)
+   results[4] = ComboBox1.AddItemAt({}, 3)
+   results[5] = ComboBox1.AddItemAt({8, 80}, 5)
+   results[6] = ComboBox1.AddItemAt({9, 90, 900}, 7)
+   results[7] = ComboBox1.AddItemAt({10, 100}, 9)
+   results[7] = ComboBox1.AddItemAt({11, 110, 1100}, 13)
+   
+   
+   Return UnitTest.AssertEqual(
+      {ComboBox1.Items, results},
+      {
+         {6, 1, 2, 3, 8, 80, 9, 90, 10, 100, 900},
+         {False, False, True, False, True, True, False}
+      },
+      "ComboBox_AddItemAt(array)"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AllowEdit()
+   ComboBox1.AllowEdit = False
+   x = ComboBox1.AllowEdit
+   ComboBox1.AllowEdit = True
+   y = ComboBox1.AllowEdit
+   
+   Return UnitTest.AssertEqual(
+      {x, y},
+      {False, True},
+      "ComboBox.AllowEdit"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ContainsItem()
+   ComboBox1.RemoveAllItems()
+   
+   ComboBox1.AddItem({
+         "item 1",
+         "item 2",
+         3,
+         #10/10/2022#,
+         #+10.10:00#,
+         "",
+         {1, "test", {10, 20, 30}}
+      })
+   
+   Return UnitTest.AssertEqual(
+      {
+         ComboBox1.ContainsItem("item 1"),
+         ComboBox1.ContainsItem("item 5"),
+         ComboBox1.ContainsItem(3),
+         ComboBox1.ContainsItem(33),
+         ComboBox1.ContainsItem(#10/10/2022#),
+         ComboBox1.ContainsItem(Date.Now),
+         ComboBox1.ContainsItem(#+10.10:00#),
+         ComboBox1.ContainsItem(#+10.10:00:00#),
+         ComboBox1.ContainsItem(#+10.10:00:00.1#),
+         ComboBox1.ContainsItem(#-10.10:00#),
+         ComboBox1.ContainsItem(""),
+         ComboBox1.ContainsItem({1, "test", {10, 20, 30}}),
+         ComboBox1.ContainsItem({{10, 20, 30}}),
+         ComboBox1.ContainsItem("test")
+      },
+      {True, False, True, False, True, False, True, True, False, False, True, True, False, False},
+      "ComboBox.ContainsItem"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FindItem()
+   ComboBox1.RemoveAllItems()
+   
+   ComboBox1.AddItem({
+         "item 1",
+         "item 2",
+         3,
+         #10/10/2022#,
+         #+10.10:00#,
+         "",
+         {1, "test", {10, 20, 30}}
+      })
+   
+   Return UnitTest.AssertEqual(
+      {
+         ComboBox1.FindItem("item 1"),
+         ComboBox1.FindItem("item 5"),
+         ComboBox1.FindItem(3),
+         ComboBox1.FindItem(33),
+         ComboBox1.FindItem(#10/10/2022#),
+         ComboBox1.FindItem(Date.Now),
+         ComboBox1.FindItem(#+10.10:00#),
+         ComboBox1.FindItem(#+10.10:00:00#),
+         ComboBox1.FindItem(#+10.10:00:00.1#),
+         ComboBox1.FindItem(#-10.10:00#),
+         ComboBox1.FindItem(""),
+         ComboBox1.FindItem({1, "test", {10, 20, 30}}),
+         ComboBox1.FindItem({{10, 20, 30}}),
+         ComboBox1.FindItem("test")
+      },
+      {1, 0, 3, 0, 4, 0, 5, 5, 0, 0, 6, 7, 0, 0},
+      "ComboBox.FindItem"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_FindItemAt()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({1, 2, 3, 2, 4, 5})
+   
+   Return UnitTest.AssertEqual(
+      {
+         ComboBox1.FindItemAt(2, 1, 4),
+         ComboBox1.FindItemAt(2, 3, 5),
+         ComboBox1.FindItemAt(2, 5, 6),
+         ComboBox1.FindItemAt(2, 6, 1)
+      },
+      {2, 4, 0, 4},
+      "ComboBox.FindItemAt"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetItemAt()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({1, 2, 3, 2, 4, 5})
+   
+   Return UnitTest.AssertEqual(
+      {
+         ComboBox1.GetItemAt(-1),
+         ComboBox1.GetItemAt(0),
+         ComboBox1.GetItemAt(2),
+         ComboBox1.GetItemAt(5),
+         ComboBox1.GetItemAt(6),
+         ComboBox1.GetItemAt(7)
+      },
+      {"", "", 2, 4, 5, ""},
+      "ComboBox.GetItemAt"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Items()
+   ComboBox1.RemoveAllItems()
+   items[1] = ComboBox1.Items
+   
+   ComboBox1.AddItem({1, 20, 3})
+   items[2] = ComboBox1.Items
+   
+   ComboBox1.RemoveItem(20)
+   items[3] = ComboBox1.Items
+   
+   ComboBox1.RemoveItemAt(2)
+   items[4] = ComboBox1.Items
+   
+   ComboBox1.RemoveAllItems()
+   items[5] = ComboBox1.Items
+   
+   Return UnitTest.AssertEqual(
+      items,
+      {
+         {},
+         {1, 20, 3},
+         {1, 3},
+         {1},
+         {}
+      },
+      "ComboBox.Items"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ItemsCount()
+   ComboBox1.RemoveAllItems()
+   itemsCount[1] = ComboBox1.ItemsCount
+   
+   ComboBox1.AddItem({1, 20, 3})
+   itemsCount[2] = ComboBox1.ItemsCount
+   
+   ComboBox1.RemoveItem(20)
+   itemsCount[3] = ComboBox1.ItemsCount
+   
+   ComboBox1.RemoveItemAt(2)
+   itemsCount[4] = ComboBox1.ItemsCount
+   
+   ComboBox1.RemoveAllItems()
+   itemsCount[5] = ComboBox1.ItemsCount
+   
+   Return UnitTest.AssertEqual(
+      itemsCount,
+      {0, 3, 2, 1, 0},
+      "ComboBox.ItemsCount"
+   )
+EndFunction
+
+
+SelectionLogs = {}
+
+'------------------------------------------------
+Sub ComboBox2_OnSelection()
+   SelectionLogs = SelectionLogs.AddItem("ComboBox2.Index = " + ComboBox2.SelectedIndex)
+EndSub
+
+
+'------------------------------------------------
+Sub ComboBox3_OnSelection()
+   SelectionLogs = SelectionLogs.AddItem("ComboBox3.Index = " + ComboBox3.SelectedIndex)
+EndSub
+
+
+'------------------------------------------------
+Function Test_OnSelection()
+   items = {"a", "b", "c"}
+   ComboBox2.AddItem(items)
+   ComboBox3.AddItem(items)
+   
+   ComboBox2.SelectedIndex = 1
+   ComboBox3.SelectedIndex = 2
+   ComboBox2.Text = "test"
+   ComboBox3.SelectedIndex = 0
+   
+   Return UnitTest.AssertEqual(
+      SelectionLogs,
+      {
+         "ComboBox2.Index = 1",
+         "ComboBox3.Index = 2",
+         "ComboBox2.Index = 0",
+         "ComboBox3.Index = 0"
+      },
+      "ComboBox.OnSelection"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_RemoveItem()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({
+         "item 1",
+         "item 2",
+         3,
+         #10/10/2022#,
+         #+10.10:00#,
+         #10/10/2022#,
+         "",
+         {1, "test", {10, 20, 30}}
+      })
+   
+   
+   ComboBox1.RemoveItem(#10/10/2022#)
+   items[1] = ComboBox1.Items
+   
+   ComboBox1.RemoveItem(#10/10/2022#)
+   items[2] = ComboBox1.Items
+   
+   ComboBox1.RemoveItem({
+         3, "", {1, "test", {10, 20, 30}}
+      })
+   items[3] = ComboBox1.Items
+   
+   ComboBox1.RemoveItem("item 2")
+   items[4] = ComboBox1.Items
+   
+   ComboBox1.RemoveItem({"item 1", #+10.10:00#})
+   items[5] = ComboBox1.Items
+   
+   Return UnitTest.AssertEqual(
+      items,
+      {
+         {
+            "item 1",
+            "item 2",
+            3,
+            #+10.10:00#,
+            #10/10/2022#,
+            "",
+            {1, "test", {10, 20, 30}}
+         },
+         {
+            "item 1",
+            "item 2",
+            3,
+            #+10.10:00#,
+            "",
+            {1, "test", {10, 20, 30}}
+         },
+         {
+            "item 1",
+            "item 2",
+            #+10.10:00#
+         },
+         {"item 1", #+10.10:00#},
+         {}
+      },
+      "ComboBox.RemoveItem #1"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_RemoveItem2()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({2, 1, 2, 2, 2, 2, 3, 4, 2, 5, 2})
+   While ComboBox1.RemoveItem(2)
+   Wend
+   
+   Return UnitTest.AssertEqual(
+      ComboBox1.Items,
+      {1, 3, 4, 5},
+      "ComboBox.RemoveItem #2"
+   )
+   
+EndFunction
+
+'------------------------------------------------
+Function Test_RemoveItemAt()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({2, 1, 2, 2, 2, 2, 3, 4, 2, 5, 2})
+   results[1] = ComboBox1.RemoveItemAt(12)
+   results[2] = ComboBox1.RemoveItemAt(10)
+   results[3] = ComboBox1.RemoveItemAt(8)
+   results[4] = ComboBox1.RemoveItemAt(7)
+   results[5] = ComboBox1.RemoveItemAt(2)
+   results[6] = ComboBox1.RemoveItemAt(0)
+   
+   Return UnitTest.AssertEqual(
+      {ComboBox1.Items, results},
+      {
+         {2, 2, 2, 2, 2, 2, 2},
+         {False, True, True, True, True, False}
+      },
+      "ComboBox.RemoveItemAt #1"
+   )
+   
+EndFunction
+
+'------------------------------------------------
+Function Test_RemoveItemAt2()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({2, 1, 2, 2, 2, 2, 3, 4, 2, 5, 2})
+   
+   Return UnitTest.AssertEqual(
+      {
+         ComboBox1.RemoveItemAt({12, 10, 8, 7, 2, 0}),
+         ComboBox1.Items
+      },
+      {
+         True,
+         {2, 2, 2, 2, 2, 2, 2}
+      },
+      "ComboBox.RemoveItemAt #2"
+   )
+   
+EndFunction
+
+'------------------------------------------------
+Function Test_SelectedIndex()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({10, 20, 30, 40, 50})
+   
+   ComboBox1.SelectedIndex = -1
+   results[1] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedIndex = 0
+   results[2] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedIndex = 1
+   results[3] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedIndex = 3
+   results[4] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedIndex = 5
+   results[5] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedIndex = 6
+   results[6] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         {0, ""},
+         {0, ""},
+         {1, 10},
+         {3, 30},
+         {5, 50},
+         {0, ""}
+      },
+      "ComboBox.SelectedIndex"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_SelectedItem()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({10, 20, 30, 40, 50, "Adam"})
+   
+   ComboBox1.SelectedItem = "adam"
+   results[1] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedItem = "Adam"
+   results[2] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedItem = 20
+   results[3] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedItem = 60
+   results[4] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedItem = 50
+   results[5] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   ComboBox1.SelectedItem = 1
+   results[6] = {ComboBox1.SelectedIndex, ComboBox1.SelectedItem}
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         {0, ""},
+         {6, "Adam"},
+         {2, 20},
+         {2, 20},
+         {5, 50},
+         {5, 50}
+      },
+      "ComboBox.SelectedItem"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_SetItemAt()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({1, 2, 3, 2, 4, 5})
+   
+   Return UnitTest.AssertEqual(
+      {
+         ComboBox1.SetItemAt(-1, ""),
+         ComboBox1.SetItemAt(0, 11),
+         ComboBox1.SetItemAt(2, 20),
+         ComboBox1.SetItemAt(5, "Four"),
+         ComboBox1.SetItemAt(6, 50),
+         ComboBox1.SetItemAt(7, 70),
+         ComboBox1.Items
+      },
+      {
+         False, False, True, True, True, False,
+         {1, 20, 3, 2, "Four", 50}
+      },
+      "ComboBox.SetItemAt"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Text()
+   ComboBox1.RemoveAllItems()
+   ComboBox1.AddItem({1, 2, 3, "test"})
+   
+   ComboBox1.AllowEdit = False
+   ComboBox1.Text = 2
+   results[1] = {ComboBox1.Text, ComboBox1.SelectedIndex}
+   ComboBox1.Text = "test"
+   results[2] = {ComboBox1.Text, ComboBox1.SelectedIndex}
+   ComboBox1.Text = "Test"
+   results[3] = {ComboBox1.Text, ComboBox1.SelectedIndex}
+   ComboBox1.Text = "t"
+   results[4] = {ComboBox1.Text, ComboBox1.SelectedIndex}
+   
+   ComboBox1.AllowEdit = True
+   ComboBox1.Text = 2
+   results[5] = {ComboBox1.Text, ComboBox1.SelectedIndex}
+   ComboBox1.Text = "test"
+   results[6] = {ComboBox1.Text, ComboBox1.SelectedIndex}
+   ComboBox1.Text = "Test"
+   results[7] = {ComboBox1.Text, ComboBox1.SelectedIndex}
+   ComboBox1.Text = "t"
+   results[8] = {ComboBox1.Text, ComboBox1.SelectedIndex}
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         {2, 2},
+         {"test", 4},
+         {"Test", 0},
+         {"t", 0},
+         {2, 2},
+         {"test", 4},
+         {"Test", 0},
+         {"t", 0}
+      },
+      "ComboBox.Text"
+   )
+EndFunction

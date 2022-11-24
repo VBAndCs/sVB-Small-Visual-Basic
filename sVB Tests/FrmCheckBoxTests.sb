@@ -1,0 +1,144 @@
+
+'------------------------------------------------
+Function Test_AllowThreeState()
+   CheckBox1.AllowThreeState = True
+   CheckBox1.AllowThreeState = False
+   CheckBox2.AllowThreeState = True
+   CheckBox3.AllowThreeState = ""
+   
+   Return UnitTest.AssertEqual(
+      {
+         CheckBox1.AllowThreeState,
+         CheckBox2.AllowThreeState,
+         CheckBox3.AllowThreeState
+      },
+      {False, True, False},
+      "CheckBox.AllowThreeState")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Checked()
+   CheckBox1.Checked = True
+   CheckBox1.Checked = False
+   CheckBox2.Checked = True
+   CheckBox3.Checked = ""
+   
+   Return UnitTest.AssertEqual(
+      {
+         CheckBox1.Checked,
+         CheckBox2.Checked,
+         CheckBox3.Checked
+      },
+      {False, True, ""},
+      "CheckBox.Checked")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_OnCheck()
+   CheckBox1.OnCheck = CheckBox_OnCheck
+   CheckBox2.OnCheck = CheckBox_OnCheck
+   CheckBox3.OnCheck = CheckBox_OnCheck
+   
+   CheckBox1.Checked = True
+   CheckBox1.Checked = False
+   
+   CheckBox2.Checked = False
+   CheckBox2.Checked = True
+   
+   CheckBox3.Checked = False
+   CheckBox3.Checked = True
+   CheckBox3.Checked = ""
+   
+   CheckBox4.Checked = False
+   CheckBox4.Checked = True
+   CheckBox4.Checked = ""
+   CheckBox4.Checked = False
+   
+   Return UnitTest.AssertEqual(
+      CheckedStates,
+      {
+         "CheckBox1.Checked = True",
+         "CheckBox1.Checked = False",
+         "CheckBox2.Checked = False",
+         "CheckBox2.Checked = True",
+         "CheckBox3.Checked = False",
+         "CheckBox3.Checked = True",
+         "CheckBox3.Checked = ",
+         "CheckBox4.Checked = True",
+         "CheckBox4.Checked = ",
+         "CheckBox4.Checked = False"
+      },
+      "CheckBox.Checked")
+EndFunction
+
+
+' -----------------------------------------------
+CheckedStates = {}
+
+Sub CheckBox_OnCheck()
+   senderCheckBox = Event.SenderControl
+   CheckedStates = CheckedStates.AddItem(
+      Text.Append(
+         senderCheckBox.Name,
+         {".Checked = ", senderCheckBox.Checked}
+      )
+   )
+EndSub
+
+
+'------------------------------------------------
+Sub CheckBox4_OnCheck()
+   CheckedStates = CheckedStates.AddItem(
+      "CheckBox4.Checked = " + CheckBox4.Checked
+   )
+EndSub
+
+'------------------------------------------------
+Function Test_Text()
+   CheckBox1.Text = "abc"
+   CheckBox2.Text = ""
+   
+   Return UnitTest.AssertEqual(
+      {CheckBox1.Text, CheckBox2.Text},
+      {"abc", ""},
+      "CheckBox.Text")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Underlined()
+   CheckBox1.Underlined = True
+   CheckBox1.Underlined = False
+   CheckBox2.Underlined = True
+   CheckBox3.Underlined = 0
+   
+   Return UnitTest.AssertEqual(
+      {
+         CheckBox1.Underlined,
+         CheckBox2.Underlined,
+         CheckBox3.Underlined
+      },
+      {False, True, False},
+      "CheckBox.Underlined")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_WordWrap()
+   CheckBox2.WordWrap = False
+   CheckBox2.WordWrap = True
+   CheckBox3.WordWrap = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         CheckBox1.WordWrap,
+         CheckBox2.WordWrap,
+         CheckBox3.WordWrap
+      },
+      {True, True, False},
+      "CheckBox.WordWrap")
+EndFunction
+
+

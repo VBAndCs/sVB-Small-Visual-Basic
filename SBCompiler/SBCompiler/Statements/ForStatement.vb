@@ -303,11 +303,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
             ElseIf Not EndLoopToken.IsIllegal AndAlso line = EndLoopToken.Line Then
                 completionBag.CompletionItems.Clear()
-                CompletionHelper.FillKeywords(completionBag, {EndLoopToken.Type})
 
             Else
                 Dim statement = GetStatementContaining(Body, line)
-                CompletionHelper.FillKeywords(completionBag, {TokenType.EndFor, TokenType.Next})
+                If EndLoopToken.IsIllegal Then CompletionHelper.FillKeywords(completionBag, {TokenType.Next})
                 statement?.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
             End If
         End Sub

@@ -26,18 +26,25 @@ Sub RunAllTests(
       resultsTextBox '  The textbox that will deisplay the test results.
    )
    
+   startTime = Date.Now
    resultsTextBox.Text = ""
    _HasErrors = False
    resultsForm = resultsTextBox.ParentForm
    
+   testsCount = 0
    ForEach frm In Forms.GetForms(False)
-      _TestForm(frm, resultsForm, resultsTextBox)
+      testsCount = testsCount + _TestForm(frm, resultsForm, resultsTextBox)
    Next
    
-   
+   t = Date.GetTotalSeconds(Date.Now - startTime)
    If _HasErrors = False Then
       resultsTextBox.AppendLine("")
-      resultsTextBox.AppendLine("All tests passed successfully.")
+      resultsTextBox.AppendLine(
+         "All " + testsCount
+         + " tests passed successfully. "
+         + "Total time: "
+         + t.Round(3) + " seconds."
+      )
    EndIf
    
 EndSub
@@ -88,19 +95,28 @@ EndFunction
 
 
 '------------------------------------------------
-Sub _TestForm(testForm, resultsForm, resultsTextBox)
+Function _TestForm(testForm, resultsForm, resultsTextBox)
    Forms.ShowForm(testForm, "")
    Errors = {}
-   testForm.RunTests()
+   testsCount = testForm.RunTests()
    
    If resultsForm = "" Then
-      Return
+      Return 0
    EndIf
+   
+   testName = testForm.Text
+   spaces = _Repeat(" ", 53 - Text.GetLength(testName)) + Chars.Tab
    
    If Errors.Count > 0 Then
       resultsTextBox.AppendLine("")
       resultsTextBox.AppendLine("--------------------------------")
-      resultsTextBox.AppendLine(testForm.Text + " Errors:")
+      resultsTextBox.AppendLine(
+         testForm.Text + ": "
+         + spaces
+         + (testsCount - Errors.Count)
+            + " tests passed."
+      )
+      resultsTextBox.AppendLine("Errors:")
       n = 1
       ForEach error In Errors
          id = Text.Append(" ", {n, ". ", error})
@@ -110,12 +126,18 @@ Sub _TestForm(testForm, resultsForm, resultsTextBox)
       resultsTextBox.AppendLine("--------------------------------")
       resultsTextBox.AppendLine("")
       
-   Else
-      resultsTextBox.AppendLine(testForm.Text + " OK.")
+   ElseIf testsCount > 0 Then
+      resultsTextBox.AppendLine(
+         testName + ": "
+         + spaces
+         + testsCount + " tests passed."
+      )
    EndIf
    
    
    If testForm <> resultsForm Then
       testForm.Close()
    EndIf
-EndSub
+   
+   Return testsCount
+EndFunction

@@ -1,0 +1,9 @@
+'@Form Hints:
+'#FrmClockTests{
+'}
+
+Me = "FrmClockTests"
+_path = Program.Directory + "\FrmClockTests.xaml"
+FrmClockTests = Forms.LoadForm("FrmClockTests", _path)
+Form.SetArgsArr(frmclocktests, Stack.PopValue("_frmclocktests_argsArr"))
+Form.Show(FrmClockTests)

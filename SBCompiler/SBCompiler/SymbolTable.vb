@@ -361,14 +361,6 @@ Namespace Microsoft.SmallVisualBasic
             Return ""
         End Function
 
-        Private Sub AddCompletionHistory(variableName As String)
-            Dim key = "_" & variableName(0)
-            If Completion.CompletionHelper.History.ContainsKey(key) Then
-                Return
-            End If
-            Completion.CompletionHelper.History(key) = variableName
-        End Sub
-
         Private Sub ValidateVariableName(name As Token)
             Dim msg = $"{name.Text} is not a valid identifier name"
             Dim variableName = name.LCaseText
@@ -485,7 +477,6 @@ Namespace Microsoft.SmallVisualBasic
                 Errors.Add(New [Error](subroutine, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("AnotherSubroutineExists"), New Object(0) {subroutine.Text})))
             Else
                 Subroutines.Add(name, subroutine)
-                AddCompletionHistory(name)
             End If
 
         End Sub

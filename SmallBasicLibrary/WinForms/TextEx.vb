@@ -247,5 +247,18 @@ Namespace WinForms
             Return Library.Text.Split(text, separator, trim, removeEmpty)
         End Function
 
+        ''' <summary>
+        ''' Checks if the current text is a letter in any language.
+        ''' </summary>
+        ''' <returns>
+        ''' True in the text consists of one character and it is a letter in any language, itherwise False.
+        ''' Note that this property is meant to b used with a single character. It the text length is > 1, this method will always return false. In such case, you should use a for loop to get each charcter in the text and check it individually, if thi is what you need.
+        ''' </returns>
+        <ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetIsLetter(text As Primitive) As Primitive
+            Return Chars.IsLetter(text)
+        End Function
+
     End Class
 End Namespace

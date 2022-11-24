@@ -1,20 +1,20 @@
-btnAdd.Enabled = false
-btnRemove.Enabled = false
+btnAdd.Enabled = False
+btnRemove.Enabled = False
 
 '----------------------------
-Sub btnFind_OnClick
+Sub BtnFind_OnClick
    srch = txtFind.Text
    index = ListBox1.FindItem(srch)
-   if index = 0 Then
+   If index = 0 Then
       FindPartial(srch, 1, ListBox1.ItemsCount)
-   else
+   Else
       ListBox1.SelectedIndex = index
-   endif
+   EndIf
    
 EndSub
 
 '------------------------------------------------
-Sub btnFindNext_OnClick
+Sub BtnFindNext_OnClick
    srch = txtFind.Text
    start = ListBox1.SelectedIndex
    
@@ -30,16 +30,16 @@ Sub btnFindNext_OnClick
    
    index = ListBox1.FindItemAt(srch, start, ListBox1.ItemsCount)
    
-   if index = 0 Then
-      FindPartial(srch, start, ListBox1.ItemsCount )
-   else
+   If index = 0 Then
+      FindPartial(srch, start, ListBox1.ItemsCount)
+   Else
       ListBox1.SelectedIndex = index
-   endif
+   EndIf
 EndSub
 
 
 '------------------------------------------------
-Sub btnFindPrev_OnClick
+Sub BtnFindPrev_OnClick
    srch = txtFind.Text
    start = ListBox1.SelectedIndex
    
@@ -53,11 +53,11 @@ Sub btnFindPrev_OnClick
    
    index = ListBox1.FindItemAt(srch, start, 1)
    
-   if index = 0 Then
+   If index = 0 Then
       FindPartial(srch, start, 1)
-   else
+   Else
       ListBox1.SelectedIndex = index
-   endif
+   EndIf
 EndSub
 
 '-----------------------------------------
@@ -81,52 +81,51 @@ Sub FindPartial(srch, start, end)
 EndSub
 
 '---------------------------------------
-Sub btnAdd_OnClick
-  item = txtAdd.Text
-  ListBox1.AddItem(item)
-  ListBox1.SelectedItem = item
-  txtAdd.SelectAll()
-  txtAdd.Focus()
+Sub BtnAdd_OnClick
+   item = txtAdd.Text
+   ListBox1.SelectedIndex = ListBox1.AddItem(item)
+   txtAdd.SelectAll()
+   txtAdd.Focus()
 EndSub
-  
+
 
 '----------------------------
 Sub ListBox1_OnSelection
-   lblSelection.Text = "Selected item: " + ListBox1.SelectedItem   
+   lblSelection.Text = "Selected item: " + ListBox1.SelectedItem
    btnRemove.Enabled = (ListBox1.SelectedIndex > 0)
 EndSub
 
 
 '----------------------------
-Sub btnRemove_OnClick
+Sub BtnRemove_OnClick
    index = ListBox1.SelectedIndex
    ListBox1.RemoveItemAt(index)
    
-  
+   
    If index < ListBox1.ItemsCount Then
       ListBox1.SelectedIndex = index
-   elseIf ListBox1.ItemsCount > 0 Then
+   ElseIf ListBox1.ItemsCount > 0 Then
       ListBox1.SelectedIndex = ListBox1.ItemsCount
-   endif
-   
-EndSub
-
-
-'----------------------------
-Sub txtAdd_OnTextChanged
-   If txtAdd.Text = "" Then
-      btnAdd.Enabled = False
-   else
-      btnAdd.Enabled = true
    EndIf
    
 EndSub
 
 
 '----------------------------
-Sub txtAdd_OnKeyDown
+Sub TxtAdd_OnTextChanged
+   If txtAdd.Text = "" Then
+      btnAdd.Enabled = False
+   Else
+      btnAdd.Enabled = True
+   EndIf
+   
+EndSub
+
+
+'----------------------------
+Sub TxtAdd_OnKeyDown
    If Event.LastKey = Keys.Enter Then
-      btnAdd_OnClick()
+      BtnAdd_OnClick()
    EndIf
    
 EndSub

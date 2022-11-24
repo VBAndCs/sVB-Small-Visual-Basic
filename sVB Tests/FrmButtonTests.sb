@@ -1,0 +1,61 @@
+
+'------------------------------------------------
+Function Test_IsFlat()
+   Button1.IsFlat = True
+   Button1.IsFlat = False
+   Button2.IsFlat = True
+   Button3.IsFlat = ""
+   
+   Return UnitTest.AssertEqual(
+      {Button1.IsFlat, Button2.IsFlat, Button3.IsFlat},
+      {False, True, False},
+      "Button.IsFlat")
+EndFunction
+
+'------------------------------------------------
+Function Test_Text()
+   Button1.Text = "abc"
+   Button2.Text = ""
+   
+   Return UnitTest.AssertEqual(
+      {Button1.Text, Button2.Text},
+      {"abc", ""},
+      "Button.Text")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Underlined()
+   Button1.Underlined = True
+   Button1.Underlined = False
+   Button2.Underlined = True
+   Button3.Underlined = 0
+   
+   Return UnitTest.AssertEqual(
+      {
+         Button1.Underlined,
+         Button2.Underlined,
+         Button3.Underlined
+      },
+      {False, True, False},
+      "Button.Underlined")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_WordWrap()
+   Button2.WordWrap = False
+   Button2.WordWrap = True
+   Button3.WordWrap = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         Button1.WordWrap,
+         Button2.WordWrap,
+         Button3.WordWrap
+      },
+      {True, True, False},
+      "Button.WordWrap")
+EndFunction
+
+

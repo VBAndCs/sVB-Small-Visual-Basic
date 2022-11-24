@@ -1,0 +1,96 @@
+' Note:
+' One or more of these tests can fail, because we capture the system clock time twice, and two a fraction of a millisecond can make date and time parts change bewteen the two values.
+' So, yo may need to run these tests again to make sure that failed tests will pass.
+
+
+'------------------------------------------------
+Function Test_Date()
+   t = Date.Now
+   d = Clock.Date
+   Return UnitTest.AssertEqual(t.ShortDate, d, "Clock.Date")
+EndFunction
+
+'------------------------------------------------
+Function Test_Day()
+   t = Date.Now
+   d = Clock.Day
+   Return UnitTest.AssertEqual(t.Day, d, "Clock.Day")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ElapsedMilliseconds()
+   t = Date.Now
+   d = Clock.ElapsedMilliseconds
+   Return UnitTest.AssertEqual(t.ElapsedMilliseconds, d, "Clock.ElapsedMilliseconds")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Hour()
+   t = Date.Now
+   d = Clock.Hour
+   Return UnitTest.AssertEqual(t.Hour, d, "Clock.Hour")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Millisecond()
+   t = Date.Now
+   d = Clock.Millisecond
+   Return UnitTest.AssertEqual(d - t.Millisecond <= 1, True, "Clock.Millisecond")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Minute()
+   t = Date.Now
+   d = Clock.Minute
+   Return UnitTest.AssertEqual(t.Minute, d, "Clock.Minute")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Month()
+   t = Date.Now
+   d = Clock.Month
+   Return UnitTest.AssertEqual(t.Month, d, "Clock.Month")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Second()
+   t = Date.Now
+   d = Clock.Second
+   Return UnitTest.AssertEqual(t.Second, d, "Clock.Second")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Time()
+   t = Date.Now
+   d = Clock.Time
+   Return UnitTest.AssertEqual(
+      Date.GetTicks(t.LongTime),
+      d.Ticks,
+      "Clock.Time"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_WeekDay()
+   t = Date.Now
+   d = Clock.WeekDay
+   Return UnitTest.AssertEqual(
+      t.EnglishDayName, d, "Clock.WeekDay"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Year()
+   t = Date.Now
+   d = Clock.Year
+   Return UnitTest.AssertEqual(t.Year, d, "Clock.Year")
+EndFunction
+

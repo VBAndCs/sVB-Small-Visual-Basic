@@ -9,7 +9,7 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     ''' <summary>
-    ''' This is the parent control of other controls like Form, Label, and Button controls. All control inherits the properties, methods and events defined in the control type.
+    ''' This is the parent control of other controls like Form, Label, and Button controls. All controls inherit the properties, methods and events defined in this type.
     ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>

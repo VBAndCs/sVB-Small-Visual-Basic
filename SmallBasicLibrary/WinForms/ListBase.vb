@@ -1,7 +1,6 @@
 ﻿Imports Microsoft.SmallVisualBasic.Library
 Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
-Imports System.Windows
 
 Namespace WinForms
 
@@ -126,7 +125,12 @@ Namespace WinForms
                 End Sub)
         End Function
 
-        Friend Shared Function SetItemAt(listName As Primitive, index As Primitive, value As Primitive) As Boolean
+        Friend Shared Function SetItemAt(
+                          listName As Primitive,
+                          index As Primitive,
+                          value As Primitive
+                   ) As Boolean
+
             App.Invoke(
                 Sub()
                     Try
@@ -139,7 +143,7 @@ Namespace WinForms
                         Dim i As Integer = index
 
                         If i > 0 AndAlso i <= lst.Items.Count Then
-                            lst.Items(i - 1) = value
+                            lst.Items(i - 1) = CStr(value)
                             SetItemAt = True
                         Else
                             SetItemAt = False
@@ -259,29 +263,53 @@ Namespace WinForms
             End If
         End Function
 
-        Friend Shared Function RemoveItemAt(listName As Primitive, index As Primitive) As Boolean
+        Friend Shared Function RemoveItemAt(
+                         listName As Primitive,
+                         index As Primitive
+                   ) As Boolean
+
             App.Invoke(
                 Sub()
-                    Try
-                        If Not index.IsNumber Then
-                            RemoveItemAt = False
-                            Return
-                        End If
+                    Dim list = GetSelector(listName)
 
-                        Dim lst = GetSelector(listName)
-                        Dim i As Integer = index
-                        If i > 0 AndAlso i <= lst.Items.Count Then
-                            lst.Items.RemoveAt(i - 1)
-                            RemoveItemAt = True
-                        Else
-                            RemoveItemAt = False
-                        End If
-
-                    Catch ex As Exception
+                    If index.IsArray Then
                         RemoveItemAt = False
-                        Control.ReportSubError(listName, "RenoveItemAt", ex)
-                    End Try
+                        Dim map = index._arrayMap
+                        If map Is Nothing OrElse map.Count = 0 Then Return
+
+                        For Each id In map.Values
+                            If DoRemove(list, id) Then
+                                RemoveItemAt = True
+                            End If
+                        Next
+
+                    Else
+                        RemoveItemAt = DoRemove(list, index)
+                    End If
                 End Sub)
+        End Function
+
+        Private Shared Function DoRemove(
+                           list As Wpf.Primitives.Selector,
+                           index As Primitive
+                    ) As Boolean
+
+            Try
+                If Not index.IsNumber Then Return False
+
+                Dim i As Integer = index
+                If i > 0 AndAlso i <= list.Items.Count Then
+                    list.Items.RemoveAt(i - 1)
+                    Return True
+                Else
+                    Return False
+                End If
+
+            Catch ex As Exception
+                Control.ReportSubError(list.Name, "RenoveItemAt", ex)
+            End Try
+
+            Return False
         End Function
 
         Friend Shared Function ContainsItem(listName As Primitive, value As Primitive) As Primitive

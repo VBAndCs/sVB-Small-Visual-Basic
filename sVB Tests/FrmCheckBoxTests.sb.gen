@@ -1,0 +1,26 @@
+'@Form Hints:
+'#FrmCheckBoxTests{
+'    CheckBox1: CheckBox
+'    CheckBox2: CheckBox
+'    CheckBox3: CheckBox
+'    CheckBox4: CheckBox
+'}
+
+Me = "FrmCheckBoxTests"
+CheckBox1 = "frmcheckboxtests.checkbox1"
+CheckBox2 = "frmcheckboxtests.checkbox2"
+CheckBox3 = "frmcheckboxtests.checkbox3"
+CheckBox4 = "frmcheckboxtests.checkbox4"
+_path = Program.Directory + "\FrmCheckBoxTests.xaml"
+FrmCheckBoxTests = Forms.LoadForm("FrmCheckBoxTests", _path)
+Form.SetArgsArr(frmcheckboxtests, Stack.PopValue("_frmcheckboxtests_argsArr"))
+Form.Show(FrmCheckBoxTests)
+'#Events{
+'    CheckBox4: OnCheck
+'}
+
+' CheckBox4 Events:
+Control.HandleEvents(CheckBox4)
+CheckBox.OnCheck = CheckBox4_OnCheck
+
+

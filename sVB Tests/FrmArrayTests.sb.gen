@@ -1,0 +1,9 @@
+'@Form Hints:
+'#FrmArrayTests{
+'}
+
+Me = "FrmArrayTests"
+_path = Program.Directory + "\FrmArrayTests.xaml"
+FrmArrayTests = Forms.LoadForm("FrmArrayTests", _path)
+Form.SetArgsArr(frmarraytests, Stack.PopValue("_frmarraytests_argsArr"))
+Form.Show(FrmArrayTests)

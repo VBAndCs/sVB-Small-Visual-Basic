@@ -314,12 +314,13 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 CompletionHelper.FillLocals(bag, Name.LCaseText)
                 Dim statement = GetStatementContaining(Body, line)
                 If statement IsNot Nothing Then
-                    If StartToken.Type = TokenType.Sub Then
-                        CompletionHelper.FillKeywords(bag, {TokenType.EndSub})
-                    Else
-                        CompletionHelper.FillKeywords(bag, {TokenType.EndFunction})
+                    If EndSubToken.IsIllegal Then
+                        If StartToken.Type = TokenType.Sub Then
+                            CompletionHelper.FillKeywords(bag, {TokenType.EndSub})
+                        Else
+                            CompletionHelper.FillKeywords(bag, {TokenType.EndFunction})
+                        End If
                     End If
-
                     statement.PopulateCompletionItems(bag, line, column, globalScope:=False)
                 End If
 

@@ -94,12 +94,17 @@ Namespace WinForms
         ''' <summary>
         ''' Sets the value of the item that exists in the given index in the list.
         ''' </summary>
-        ''' <param name="value">the value to set to the item</param>
         ''' <param name="index">The index of the item. It should be greater than zero and not exceed the count of the items.</param>
+        ''' <param name="value">the value to set to the item</param>
         ''' <returns>True if the item is modified, otherwise False.</returns>
         <ExMethod>
         <ReturnValueType(VariableType.Boolean)>
-        Public Shared Function SetItemAt(listBoxName As Primitive, value As Primitive, index As Primitive) As Boolean
+        Public Shared Function SetItemAt(
+                        listBoxName As Primitive,
+                        index As Primitive,
+                        value As Primitive
+                   ) As Primitive
+
             Return ListBase.SetItemAt(listBoxName, index, value)
         End Function
 

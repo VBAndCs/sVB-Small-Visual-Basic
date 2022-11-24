@@ -1,8 +1,4 @@
-﻿Imports System.Windows.Controls.Primitives
-Imports System.ComponentModel
-Imports System.Windows.Threading
-
-Public MustInherit Class Explorer
+﻿Public MustInherit Class Explorer
     Inherits Control
 
     Public Sub New()
@@ -24,6 +20,8 @@ Public MustInherit Class Explorer
 
     Public Event ItemDoubleClick(sender As Object, e As MouseButtonEventArgs)
 
+    Dim ensureVisible As New RunAction(10, Sub() FilesList.ScrollIntoView(FilesList.SelectedItem))
+
     Private Sub Explorer_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         If firstTime Then
             firstTime = False
@@ -31,8 +29,10 @@ Public MustInherit Class Explorer
             FilesList = TryCast(Template.FindName("PART_ListBox", Me), ListBox)
             FilesList.ItemContainerStyle = FindResource("listBoxItemStyle")
             FilesList.ItemsSource = ItemsSource
+            AddHandler ItemsSource.CollectionChanged, Sub() ensureVisible.Start()
             If FilesList.Items.Count > 0 Then FilesList.SelectedIndex = 0
         End If
+        FilesList.ScrollIntoView(FilesList.SelectedItem)
     End Sub
 
     Public FreezListFiles As Boolean
@@ -61,6 +61,7 @@ Public MustInherit Class Explorer
         If i = -1 Then Return
         selectedAt = Now
         OnSelectionChanged()
+        FilesList.ScrollIntoView(FilesList.SelectedItem)
     End Sub
 
     Private Sub FilesList_KeyDown(sender As Object, e As KeyEventArgs) Handles FilesList.KeyDown

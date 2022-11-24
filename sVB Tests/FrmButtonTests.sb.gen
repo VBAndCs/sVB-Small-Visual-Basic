@@ -1,0 +1,15 @@
+'@Form Hints:
+'#FrmButtonTests{
+'    Button1: Button
+'    Button2: Button
+'    Button3: Button
+'}
+
+Me = "FrmButtonTests"
+Button1 = "frmbuttontests.button1"
+Button2 = "frmbuttontests.button2"
+Button3 = "frmbuttontests.button3"
+_path = Program.Directory + "\FrmButtonTests.xaml"
+FrmButtonTests = Forms.LoadForm("FrmButtonTests", _path)
+Form.SetArgsArr(frmbuttontests, Stack.PopValue("_frmbuttontests_argsArr"))
+Form.Show(FrmButtonTests)

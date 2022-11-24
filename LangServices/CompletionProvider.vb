@@ -871,6 +871,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 Dim varName = vars.Values(0).LCaseText
                                 CompletionHelper.History("_" & varName(0)) = varName
                             End If
+
                         Case ">"c, "<"c
                             ShowCompletionAdornment(e.After, newEnd, True)
 
@@ -980,10 +981,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 ElseIf controlsInfo IsNot Nothing Then
                     Dim txt = currentToken.LCaseText
                     If txt <> "" AndAlso controlNames IsNot Nothing Then
+                        Dim x = currentToken.Text
+                        Dim txt2 = UCase(x(0)) & If(x.Length > 1, x.Substring(0), "")
                         Dim controls = From name In controlNames
                                        Where name(0) <> "("c AndAlso (
                                            (forHelp AndAlso name.ToLower() = txt) OrElse
-                                           (Not forHelp AndAlso name.ToLower().StartsWith(txt))
+                                           (Not forHelp AndAlso (name.ToLower().StartsWith(txt) OrElse name.Contains(txt2)))
                                        )
 
                         If controls.Count = 0 Then
@@ -1184,10 +1187,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim line = snapshot.GetLineFromPosition(caretPosition)
             If checkEspecialItem Then
                 Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
-                If tokens.Count < 2 Then Return
+                If tokens.Count < 2 Then
+                    If ctrlSpace Then GoTo LineShow
+                    Return
+                End If
 
                 Dim n = GetLastTokenIndex(line, caretPosition, tokens)
-                If n = 0 Then Return
+                If n = 0 Then
+                    If ctrlSpace Then GoTo LineShow
+                    Return
+                End If
 
                 Select Case tokens(n).Type
                     Case TokenType.Equals, TokenType.NotEqualTo,
@@ -1209,7 +1218,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End Select
             End If
 
-            If especialItem = "" Then
+LineShow:
+                If especialItem = "" Then
                 bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
                 canGetOriginalBag = False
             Else

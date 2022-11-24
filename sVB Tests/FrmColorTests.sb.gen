@@ -1,0 +1,9 @@
+'@Form Hints:
+'#FrmColorTests{
+'}
+
+Me = "FrmColorTests"
+_path = Program.Directory + "\FrmColorTests.xaml"
+FrmColorTests = Forms.LoadForm("FrmColorTests", _path)
+Form.SetArgsArr(frmcolortests, Stack.PopValue("_frmcolortests_argsArr"))
+Form.Show(FrmColorTests)

@@ -1,0 +1,11 @@
+'@Form Hints:
+'#FrmTestResults{
+'    TextBox1: TextBox
+'}
+
+Me = "FrmTestResults"
+TextBox1 = "frmtestresults.textbox1"
+_path = Program.Directory + "\FrmTestResults.xaml"
+FrmTestResults = Forms.LoadForm("FrmTestResults", _path)
+Form.SetArgsArr(frmtestresults, Stack.PopValue("_frmtestresults_argsArr"))
+Form.Show(FrmTestResults)

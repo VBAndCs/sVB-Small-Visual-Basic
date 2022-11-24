@@ -118,7 +118,11 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Function
 
         Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
-            Return VariableType.Array
+            If LeftHand.InferType(symbolTable) = VariableType.String Then
+                Return VariableType.String
+            Else
+                Return VariableType.Any
+            End If
         End Function
     End Class
 End Namespace

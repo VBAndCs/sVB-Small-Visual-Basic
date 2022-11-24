@@ -48,6 +48,8 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 Case CompletionItemType.GlobalVariable,
                           CompletionItemType.LocalVariable,
                           CompletionItemType.SubroutineName
+
+                    If prefix <> "" Then Return "_" & prefix.ToLower()(0)
                     Return "_" & DisplayName.ToLower()(0)
 
                 Case Else

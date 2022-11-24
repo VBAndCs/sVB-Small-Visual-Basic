@@ -383,6 +383,69 @@ LineRetry:
                 Return CompletionHelper.History(key).ToLower()
             End If
 
+            Return GetBestItem(key.Last)
+
+        End Function
+
+        Private Function GetBestItem(key As String) As String
+
+            For Each item In filteredCompletionItems
+                Dim name = item.Display.ToLower()
+                If item.SymbolType = SymbolType.Control AndAlso
+                   name.StartsWith(key) Then Return name
+            Next
+
+            For Each item In filteredCompletionItems
+                Dim name = item.Display.ToLower()
+                If item.SymbolType = SymbolType.GlobalVariable AndAlso
+                   name.StartsWith(key) Then Return name
+            Next
+
+            For Each item In filteredCompletionItems
+                Dim name = item.Display.ToLower()
+                If item.SymbolType = SymbolType.LocalVariable AndAlso
+                   name.StartsWith(key) Then Return name
+            Next
+
+            For Each item In filteredCompletionItems
+                Dim name = item.Display.ToLower()
+                If item.SymbolType = SymbolType.Subroutine AndAlso
+                   name.StartsWith(key) Then Return name
+            Next
+
+            key = UCase(key(0)) & If(key.Length > 1, key.Substring(1), "")
+
+            For Each item In filteredCompletionItems
+                Dim name = item.Display
+                If item.SymbolType = SymbolType.Control AndAlso
+                   name.Contains(key) Then Return name
+            Next
+
+            For Each item In filteredCompletionItems
+                Dim name = item.Display
+                If item.SymbolType = SymbolType.GlobalVariable AndAlso
+                   name.Contains(key) Then Return name
+            Next
+
+            For Each item In filteredCompletionItems
+                Dim name = item.Display
+                If item.SymbolType = SymbolType.LocalVariable AndAlso
+                   name.Contains(key) Then Return name
+            Next
+
+            For Each item In filteredCompletionItems
+                Dim name = item.Display
+                If item.SymbolType = SymbolType.Subroutine AndAlso
+                   name.Contains(key) Then Return name
+            Next
+
+            key = key.ToLower()
+
+            For Each item In filteredCompletionItems
+                Dim name = item.Display.ToLower()
+                If name.StartsWith(key) Then Return name
+            Next
+
             Return ""
         End Function
 

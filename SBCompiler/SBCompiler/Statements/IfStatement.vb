@@ -140,7 +140,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Sub PopulateCompletionItems(
-                          completionBag As CompletionBag,
+                          bag As CompletionBag,
                           line As Integer,
                           column As Integer,
                           globalScope As Boolean
@@ -148,30 +148,32 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
             If ThenToken.IsIllegal OrElse line <= ThenToken.Line Then
                 If column < IfToken.EndColumn Then
-                    CompletionHelper.FillAllGlobalItems(completionBag, globalScope)
+                    CompletionHelper.FillAllGlobalItems(bag, globalScope)
                 Else
-                    CompletionHelper.FillSubroutines(completionBag, True)
-                    CompletionHelper.FillLogicalExpressionItems(completionBag)
-                    CompletionHelper.FillKeywords(completionBag, {TokenType.Then})
+                    CompletionHelper.FillSubroutines(bag, True)
+                    CompletionHelper.FillLogicalExpressionItems(bag)
+                    CompletionHelper.FillKeywords(bag, {TokenType.Then})
                 End If
 
             ElseIf (From statement In ElseIfStatements
                     Where line >= statement.ElseIfToken.Line AndAlso
                         (statement.ThenToken.IsIllegal OrElse line <= statement.ThenToken.Line)
                      ).Any Then
-                CompletionHelper.FillSubroutines(completionBag, True)
-                CompletionHelper.FillLogicalExpressionItems(completionBag)
-                CompletionHelper.FillKeywords(completionBag, {TokenType.Then})
+                CompletionHelper.FillSubroutines(bag, True)
+                CompletionHelper.FillLogicalExpressionItems(bag)
+                CompletionHelper.FillKeywords(bag, {TokenType.Then})
 
             ElseIf Not ElseToken.IsIllegal AndAlso line = ElseToken.Line Then
-                completionBag.CompletionItems.Clear()
-                CompletionHelper.FillKeywords(completionBag, {TokenType.ElseIf, TokenType.EndIf})
+                bag.CompletionItems.Clear()
+                CompletionHelper.FillKeywords(bag, {TokenType.ElseIf})
+                If EndIfToken.IsIllegal Then CompletionHelper.FillKeywords(bag, {TokenType.EndIf})
 
             ElseIf Not EndIfToken.IsIllegal AndAlso line = EndIfToken.Line Then
-                completionBag.CompletionItems.Clear()
-                CompletionHelper.FillKeywords(completionBag, {TokenType.EndIf})
+                bag.CompletionItems.Clear()
+
             Else
-                CompletionHelper.FillKeywords(completionBag, {TokenType.EndIf, TokenType.Else, TokenType.ElseIf})
+                CompletionHelper.FillKeywords(bag, {TokenType.Else, TokenType.ElseIf})
+                If EndIfToken.IsIllegal Then CompletionHelper.FillKeywords(bag, {TokenType.EndIf})
                 Dim statement = GetStatementContaining(ElseStatements, line)
 
                 If statement Is Nothing Then
@@ -180,7 +182,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         statement = GetStatementContaining(ThenStatements, line)
                     End If
                 End If
-                statement?.PopulateCompletionItems(completionBag, line, column, globalScope:=False)
+                statement?.PopulateCompletionItems(bag, line, column, globalScope:=False)
             End If
         End Sub
 

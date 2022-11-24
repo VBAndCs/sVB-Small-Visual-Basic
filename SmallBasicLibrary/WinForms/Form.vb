@@ -34,9 +34,12 @@ Namespace WinForms
         ''' 3. The function return value should be a string containing the test result like passed or failed. 
         ''' For an example, see the tests written in the UnitTest Sample` project in the samples folder.
         ''' </summary>
+        ''' <returns>the number of tests that have been run.</returns>
         <ExMethod>
-        Public Shared Sub RunTests(formName As Primitive)
+        Public Shared Function RunTests(formName As Primitive) As Primitive
             Dim asm = System.Reflection.Assembly.GetEntryAssembly()
+            RunTests = 0
+
             App.Invoke(
                 Sub()
                     Try
@@ -69,6 +72,7 @@ Namespace WinForms
 
                         Dim txtTest = CType(Forms._controls(key), Wpf.TextBox)
                         Dim errMsg = " doesn't return a value. Use a test function and return a text showing the result of the test."
+                        Dim n = 0
                         txtTest.IsReadOnly = True
 
                         For Each m In testMethods
@@ -81,6 +85,7 @@ Namespace WinForms
                                     txtTest.AppendText(errMsg)
                                 Else
                                     txtTest.AppendText(msg.ToString())
+                                    n += 1
                                 End If
 
                             Catch ex As Exception
@@ -89,11 +94,13 @@ Namespace WinForms
                             txtTest.AppendText(vbCrLf)
                         Next
 
+                        RunTests = n
+
                     Catch ex As Exception
                         ReportSubError(formName, "RunTests", ex)
                     End Try
                 End Sub)
-        End Sub
+        End Function
 
         Public Shared Sub Initialize(formName As String, asm As System.Reflection.Assembly)
             App.Invoke(

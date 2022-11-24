@@ -1,0 +1,29 @@
+'@Form Hints:
+'#FrmListBoxTests{
+'    ListBox1: ListBox
+'    ListBox2: ListBox
+'    ListBox3: ListBox
+'}
+
+Me = "FrmListBoxTests"
+ListBox1 = "frmlistboxtests.listbox1"
+ListBox2 = "frmlistboxtests.listbox2"
+ListBox3 = "frmlistboxtests.listbox3"
+_path = Program.Directory + "\FrmListBoxTests.xaml"
+FrmListBoxTests = Forms.LoadForm("FrmListBoxTests", _path)
+Form.SetArgsArr(frmlistboxtests, Stack.PopValue("_frmlistboxtests_argsArr"))
+Form.Show(FrmListBoxTests)
+'#Events{
+'    ListBox2: OnSelection
+'    ListBox3: OnSelection
+'}
+
+' ListBox2 Events:
+Control.HandleEvents(ListBox2)
+ListBox.OnSelection = ListBox2_OnSelection
+
+' ListBox3 Events:
+Control.HandleEvents(ListBox3)
+ListBox.OnSelection = ListBox3_OnSelection
+
+

@@ -1,0 +1,534 @@
+
+'------------------------------------------------
+Function Test_AddItm()
+   ListBox1.RemoveAllItems()
+   
+   ids[1] = ListBox1.AddItem("item 1")
+   ids[2] = ListBox1.AddItem("item 2")
+   ids[3] = ListBox1.AddItem(3)
+   ids[4] = ListBox1.AddItem(#10/10/2022#)
+   ids[5] = ListBox1.AddItem(#+10.10:00#)
+   ids[6] = ListBox1.AddItem("")
+   ids[7] = ListBox1.AddItem({1, "test", {10, 20, 30}})
+   
+   Return UnitTest.AssertEqual(
+      Array.AddItems(ListBox1.Items, ids),
+      {
+         "item 1",
+         "item 2",
+         3,
+         "10/10/2022 12:00:00 AM",
+         "10.10:00:00",
+         "",
+         1,
+         "test",
+         {10, 20, 30},
+         1, 2, 3, 4, 5, 6, 9
+      },
+      "ListBox_AddItm"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddItms()
+   ListBox1.RemoveAllItems()
+   
+   ids[1] = ListBox1.AddItem({
+         "item 1",
+         "item 2",
+         3,
+         #10/10/2022#,
+         #+10.10:00#,
+         "",
+         {1, "test", {10, 20, 30}}
+      })
+   
+   ids[2] = ListBox1.AddItem({})
+   
+   Return UnitTest.AssertEqual(
+      Array.AddItems(ListBox1.Items, ids),
+      {
+         "item 1",
+         "item 2",
+         3,
+         "10/10/2022 12:00:00 AM",
+         "10.10:00:00",
+         "",
+         {1, "test", {10, 20, 30}},
+         7, 0
+      },
+      "ListBox_AddItm(array)"
+   )
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_AddItemAt()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({1, 2, 3})
+   
+   results[1] = ListBox1.AddItemAt(4, -1)
+   results[2] = ListBox1.AddItemAt(5, 0)
+   results[3] = ListBox1.AddItemAt(6, 1)
+   results[4] = ListBox1.AddItemAt(7, 3)
+   results[5] = ListBox1.AddItemAt(8, 5)
+   results[6] = ListBox1.AddItemAt(9, 7)
+   results[7] = ListBox1.AddItemAt(10, 9)
+   
+   
+   Return UnitTest.AssertEqual(
+      {ListBox1.Items, results},
+      {
+         {6, 1, 7, 2, 8, 3, 9},
+         {False, False, True, True, True, True, False}
+      },
+      "Listbox_AddItemAt"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddItemsAt()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({1, 2, 3})
+   
+   results[1] = ListBox1.AddItemAt({4, 40}, -1)
+   results[2] = ListBox1.AddItemAt({5, 50, 500}, 0)
+   results[3] = ListBox1.AddItemAt({6}, 1)
+   results[4] = ListBox1.AddItemAt({}, 3)
+   results[5] = ListBox1.AddItemAt({8, 80}, 5)
+   results[6] = ListBox1.AddItemAt({9, 90, 900}, 7)
+   results[7] = ListBox1.AddItemAt({10, 100}, 9)
+   results[7] = ListBox1.AddItemAt({11, 110, 1100}, 13)
+   
+   
+   Return UnitTest.AssertEqual(
+      {ListBox1.Items, results},
+      {
+         {6, 1, 2, 3, 8, 80, 9, 90, 10, 100, 900},
+         {False, False, True, False, True, True, False}
+      },
+      "Listbox_AddItemAt(array)"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_ContainsItem()
+   ListBox1.RemoveAllItems()
+   
+   ListBox1.AddItem({
+         "item 1",
+         "item 2",
+         3,
+         #10/10/2022#,
+         #+10.10:00#,
+         "",
+         {1, "test", {10, 20, 30}}
+      })
+   
+   Return UnitTest.AssertEqual(
+      {
+         ListBox1.ContainsItem("item 1"),
+         ListBox1.ContainsItem("item 5"),
+         ListBox1.ContainsItem(3),
+         ListBox1.ContainsItem(33),
+         ListBox1.ContainsItem(#10/10/2022#),
+         ListBox1.ContainsItem(Date.Now),
+         ListBox1.ContainsItem(#+10.10:00#),
+         ListBox1.ContainsItem(#+10.10:00:00#),
+         ListBox1.ContainsItem(#+10.10:00:00.1#),
+         ListBox1.ContainsItem(#-10.10:00#),
+         ListBox1.ContainsItem(""),
+         ListBox1.ContainsItem({1, "test", {10, 20, 30}}),
+         ListBox1.ContainsItem({{10, 20, 30}}),
+         ListBox1.ContainsItem("test")
+      },
+      {True, False, True, False, True, False, True, True, False, False, True, True, False, False},
+      "ListBox.ContainsItem"
+   )
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_FindItem()
+   ListBox1.RemoveAllItems()
+   
+   ListBox1.AddItem({
+         "item 1",
+         "item 2",
+         3,
+         #10/10/2022#,
+         #+10.10:00#,
+         "",
+         {1, "test", {10, 20, 30}}
+      })
+   
+   Return UnitTest.AssertEqual(
+      {
+         ListBox1.FindItem("item 1"),
+         ListBox1.FindItem("item 5"),
+         ListBox1.FindItem(3),
+         ListBox1.FindItem(33),
+         ListBox1.FindItem(#10/10/2022#),
+         ListBox1.FindItem(Date.Now),
+         ListBox1.FindItem(#+10.10:00#),
+         ListBox1.FindItem(#+10.10:00:00#),
+         ListBox1.FindItem(#+10.10:00:00.1#),
+         ListBox1.FindItem(#-10.10:00#),
+         ListBox1.FindItem(""),
+         ListBox1.FindItem({1, "test", {10, 20, 30}}),
+         ListBox1.FindItem({{10, 20, 30}}),
+         ListBox1.FindItem("test")
+      },
+      {1, 0, 3, 0, 4, 0, 5, 5, 0, 0, 6, 7, 0, 0},
+      "Listbox.FindItem"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_FindItemAt()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({1, 2, 3, 2, 4, 5})
+   
+   Return UnitTest.AssertEqual(
+      {
+         ListBox1.FindItemAt(2, 1, 4),
+         ListBox1.FindItemAt(2, 3, 5),
+         ListBox1.FindItemAt(2, 5, 6),
+         ListBox1.FindItemAt(2, 6, 1)
+      },
+      {2, 4, 0, 4},
+      "ListBox.FindItemAt"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetItemAt()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({1, 2, 3, 2, 4, 5})
+   
+   Return UnitTest.AssertEqual(
+      {
+         ListBox1.GetItemAt(-1),
+         ListBox1.GetItemAt(0),
+         ListBox1.GetItemAt(2),
+         ListBox1.GetItemAt(5),
+         ListBox1.GetItemAt(6),
+         ListBox1.GetItemAt(7)
+      },
+      {"", "", 2, 4, 5, ""},
+      "ListBox.GetItemAt"
+   )
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_Items()
+   ListBox1.RemoveAllItems()
+   items[1] = ListBox1.Items
+   
+   ListBox1.AddItem({1, 20, 3})
+   items[2] = ListBox1.Items
+   
+   ListBox1.RemoveItem(20)
+   items[3] = ListBox1.Items
+   
+   ListBox1.RemoveItemAt(2)
+   items[4] = ListBox1.Items
+   
+   ListBox1.RemoveAllItems()
+   items[5] = ListBox1.Items
+   
+   Return UnitTest.AssertEqual(
+      items,
+      {
+         {},
+         {1, 20, 3},
+         {1, 3},
+         {1},
+         {}
+      },
+      "ListBox.Items"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ItemsCount()
+   ListBox1.RemoveAllItems()
+   itemsCount[1] = ListBox1.ItemsCount
+   
+   ListBox1.AddItem({1, 20, 3})
+   itemsCount[2] = ListBox1.ItemsCount
+   
+   ListBox1.RemoveItem(20)
+   itemsCount[3] = ListBox1.ItemsCount
+   
+   ListBox1.RemoveItemAt(2)
+   itemsCount[4] = ListBox1.ItemsCount
+   
+   ListBox1.RemoveAllItems()
+   itemsCount[5] = ListBox1.ItemsCount
+   
+   Return UnitTest.AssertEqual(
+      itemsCount,
+      {0, 3, 2, 1, 0},
+      "ListBox.ItemsCount"
+   )
+EndFunction
+
+
+
+SelectionLogs = {}
+
+'------------------------------------------------
+Sub ListBox2_OnSelection()
+   SelectionLogs = SelectionLogs.AddItem("ListBox2.Index = " + ListBox2.SelectedIndex)
+EndSub
+
+
+'------------------------------------------------
+Sub ListBox3_OnSelection()
+   SelectionLogs = SelectionLogs.AddItem("ListBox3.Index = " + ListBox3.SelectedIndex)
+EndSub
+
+
+'------------------------------------------------
+Function Test_OnSelection()
+   items = {"a", "b", "c"}
+   ListBox2.AddItem(items)
+   ListBox3.AddItem(items)
+   
+   ListBox2.SelectedIndex = 1
+   ListBox3.SelectedIndex = 2
+   ListBox2.SelectedIndex = 0
+   ListBox3.SelectedIndex = 0
+   
+   Return UnitTest.AssertEqual(
+      SelectionLogs,
+      {
+         "ListBox2.Index = 1",
+         "ListBox3.Index = 2",
+         "ListBox2.Index = 0",
+         "ListBox3.Index = 0"
+      },
+      "ListBox.OnSelection"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_RemoveItem()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({
+         "item 1",
+         "item 2",
+         3,
+         #10/10/2022#,
+         #+10.10:00#,
+         #10/10/2022#,
+         "",
+         {1, "test", {10, 20, 30}}
+      })
+   
+   
+   ListBox1.RemoveItem(#10/10/2022#)
+   items[1] = ListBox1.Items
+   
+   ListBox1.RemoveItem(#10/10/2022#)
+   items[2] = ListBox1.Items
+   
+   ListBox1.RemoveItem({
+         3, "", {1, "test", {10, 20, 30}}
+      })
+   items[3] = ListBox1.Items
+   
+   ListBox1.RemoveItem("item 2")
+   items[4] = ListBox1.Items
+   
+   ListBox1.RemoveItem({"item 1", #+10.10:00#})
+   items[5] = ListBox1.Items
+   
+   Return UnitTest.AssertEqual(
+      items,
+      {
+         {
+            "item 1",
+            "item 2",
+            3,
+            #+10.10:00#,
+            #10/10/2022#,
+            "",
+            {1, "test", {10, 20, 30}}
+         },
+         {
+            "item 1",
+            "item 2",
+            3,
+            #+10.10:00#,
+            "",
+            {1, "test", {10, 20, 30}}
+         },
+         {
+            "item 1",
+            "item 2",
+            #+10.10:00#
+         },
+         {"item 1", #+10.10:00#},
+         {}
+      },
+      "ListBox.RemoveItem #1"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_RemoveItem2()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({2, 1, 2, 2, 2, 2, 3, 4, 2, 5, 2})
+   
+   While ListBox1.RemoveItem(2)
+   Wend
+   
+   Return UnitTest.AssertEqual(
+      ListBox1.Items,
+      {1, 3, 4, 5},
+      "ListBox.RemoveItem #2"
+   )
+   
+EndFunction
+
+'------------------------------------------------
+Function Test_RemoveItemAt()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({2, 1, 2, 2, 2, 2, 3, 4, 2, 5, 2})
+   results[1] = ListBox1.RemoveItemAt(12)
+   results[2] = ListBox1.RemoveItemAt(10)
+   results[3] = ListBox1.RemoveItemAt(8)
+   results[4] = ListBox1.RemoveItemAt(7)
+   results[5] = ListBox1.RemoveItemAt(2)
+   results[6] = ListBox1.RemoveItemAt(0)
+   
+   Return UnitTest.AssertEqual(
+      {ListBox1.Items, results},
+      {
+         {2, 2, 2, 2, 2, 2, 2},
+         {False, True, True, True, True, False}
+      },
+      "ListBox.RemoveItemAt #1"
+   )
+   
+EndFunction
+
+
+'------------------------------------------------
+Function Test_RemoveItemAt2()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({2, 1, 2, 2, 2, 2, 3, 4, 2, 5, 2})
+   
+   Return UnitTest.AssertEqual(
+      {
+         ListBox1.RemoveItemAt({12, 10, 8, 7, 2, 0}),
+         ListBox1.Items
+      },
+      {
+         True,
+         {2, 2, 2, 2, 2, 2, 2}
+      },
+      "ListBox.RemoveItemAt #2"
+   )
+   
+EndFunction
+
+
+'------------------------------------------------
+Function Test_SelectedIndex()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({10, 20, 30, 40, 50})
+   
+   ListBox1.SelectedIndex = -1
+   results[1] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedIndex = 0
+   results[2] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedIndex = 1
+   results[3] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedIndex = 3
+   results[4] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedIndex = 5
+   results[5] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedIndex = 6
+   results[6] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         {0, ""},
+         {0, ""},
+         {1, 10},
+         {3, 30},
+         {5, 50},
+         {0, ""}
+      },
+      "Listbox.SelectedIndex"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_SelectedItem()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({10, 20, 30, 40, 50, "Adam"})
+   
+   ListBox1.SelectedItem = "adam"
+   results[1] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedItem = "Adam"
+   results[2] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedItem = 20
+   results[3] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedItem = 60
+   results[4] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedItem = 50
+   results[5] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   ListBox1.SelectedItem = 1
+   results[6] = {ListBox1.SelectedIndex, ListBox1.SelectedItem}
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         {0, ""},
+         {6, "Adam"},
+         {2, 20},
+         {2, 20},
+         {5, 50},
+         {5, 50}
+      },
+      "Listbox.SelectedItem"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_SetItemAt()
+   ListBox1.RemoveAllItems()
+   ListBox1.AddItem({1, 2, 3, 2, 4, 5})
+   
+   Return UnitTest.AssertEqual(
+      {
+         ListBox1.SetItemAt(-1, ""),
+         ListBox1.SetItemAt(0, 11),
+         ListBox1.SetItemAt(2, 20),
+         ListBox1.SetItemAt(5, "Four"),
+         ListBox1.SetItemAt(6, 50),
+         ListBox1.SetItemAt(7, 70),
+         ListBox1.Items
+      },
+      {
+         False, False, True, True, True, False,
+         {1, 20, 3, 2, "Four", 50}
+      },
+      "ListBox1.SetItemAt"
+   )
+EndFunction
+

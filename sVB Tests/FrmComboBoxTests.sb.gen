@@ -1,0 +1,29 @@
+'@Form Hints:
+'#FrmComboBoxTests{
+'    ComboBox1: ComboBox
+'    ComboBox2: ComboBox
+'    ComboBox3: ComboBox
+'}
+
+Me = "FrmComboBoxTests"
+ComboBox1 = "frmcomboboxtests.combobox1"
+ComboBox2 = "frmcomboboxtests.combobox2"
+ComboBox3 = "frmcomboboxtests.combobox3"
+_path = Program.Directory + "\FrmComboBoxTests.xaml"
+FrmComboBoxTests = Forms.LoadForm("FrmComboBoxTests", _path)
+Form.SetArgsArr(frmcomboboxtests, Stack.PopValue("_frmcomboboxtests_argsArr"))
+Form.Show(FrmComboBoxTests)
+'#Events{
+'    ComboBox2: OnSelection
+'    ComboBox3: OnSelection
+'}
+
+' ComboBox2 Events:
+Control.HandleEvents(ComboBox2)
+ComboBox.OnSelection = ComboBox2_OnSelection
+
+' ComboBox3 Events:
+Control.HandleEvents(ComboBox3)
+ComboBox.OnSelection = ComboBox3_OnSelection
+
+

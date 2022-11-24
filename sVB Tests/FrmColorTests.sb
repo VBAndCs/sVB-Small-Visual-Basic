@@ -1,0 +1,303 @@
+Me.RunTests()
+
+'------------------------------------------------
+Function Test_AllColors()
+   clrs = Color.AllColors
+   firstColor = clrs[1]
+   lastColor = clrs[clrs.Count]
+   
+   Return UnitTest.AssertEqual(
+      {
+         clrs.Count,
+         firstColor, firstColor.Name,
+         lastColor, lastColor.Name
+      },
+      {
+         139,
+         "#FFF0F8FF", "AliceBlue",
+         "#FF9ACD32", "YellowGreen"
+      },
+      "Color_AllColors"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ChangeAlpha()
+   c1 = Color.ChangeAlpha(Colors.AliceBlue, 204)
+   c2 = c1.ChangeAlpha(102)
+   
+   Return UnitTest.AssertEqual(
+      {c1, c2},
+      {
+         Color.FromARGB(204, 240, 248, 255),
+         Color.FromARGB(102, 240, 248, 255)
+      },
+      "Color.ChangeAlpha"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_ChangeBlueRatio()
+   c1 = Color.ChangeBlueRatio(Colors.AliceBlue, 100)
+   c2 = c1.ChangeBlueRatio(200)
+   
+   Return UnitTest.AssertEqual(
+      {c1, c2},
+      {
+         Color.FromARGB(255, 240, 248, 100),
+         Color.FromARGB(255, 240, 248, 200)
+      },
+      "Color.ChangeBlueRatio"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_ChangeGreenRatio()
+   c1 = Color.ChangeGreenRatio(Colors.AliceBlue, 100)
+   c2 = c1.ChangeGreenRatio(200)
+   
+   Return UnitTest.AssertEqual(
+      {c1, c2},
+      {
+         Color.FromARGB(255, 240, 100, 255),
+         Color.FromARGB(255, 240, 200, 255)
+      },
+      "Color.ChangeGreenRatio"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_ChangeRedRatio()
+   c1 = Color.ChangeRedRatio(Colors.AliceBlue, 100)
+   c2 = c1.ChangeRedRatio(200)
+   
+   Return UnitTest.AssertEqual(
+      {c1, c2},
+      {
+         Color.FromARGB(255, 100, 248, 255),
+         Color.FromARGB(255, 200, 248, 255)
+      },
+      "Color.ChangeRedRatio"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ChangeTransparency()
+   c1 = Color.ChangeTransparency(Colors.AliceBlue, 20)
+   c2 = c1.ChangeTransparency(60)
+   
+   Return UnitTest.AssertEqual(
+      {c1, c2},
+      {
+         Color.FromARGB(204, 240, 248, 255),
+         Color.FromARGB(102, 240, 248, 255)
+      },
+      "Color.ChangeTransparency"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_FromARGB()
+   
+   Return UnitTest.AssertEqual(
+      {
+         Color.FromARGB(255, 255, 0, 0),
+         Color.GetNameAndTransparency(Color.FromARGB(128, 255, 0, 0)),
+         Color.FromARGB(255, 0, 255, 0),
+         Color.GetNameAndTransparency(Color.FromARGB(128, 0, 255, 0)),
+         Color.FromARGB(255, 0, 0, 255),
+         Color.GetNameAndTransparency(Color.FromARGB(128, 0, 0, 255))
+      },
+      {
+         Colors.Red,
+         Color.GetNameAndTransparency(Color.ChangeTransparency(Colors.Red, 50)),
+         Colors.Lime,
+         "Lime (50%)",
+         Colors.Blue,
+         "Blue (50%)"
+      },
+      "Color.FromARGB"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_FromRGB()
+   
+   Return UnitTest.AssertEqual(
+      {
+         Color.FromRGB(255, 0, 0),
+         Color.FromRGB(0, 128, 0),
+         Color.FromRGB(0, 255, 0),
+         Color.FromRGB(0, 0, 255)
+      },
+      {
+         Colors.Red,
+         Colors.Green,
+         Colors.Lime,
+         Colors.Blue
+      },
+      "Color.FromRGB"
+   )
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_GetAlpha()
+   c1 = Color.FromARGB(127, 35, 135, 235)
+   c2 = c1.ChangeTransparency(0)
+   c3 = c1.ChangeTransparency(10)
+   c4 = c1.ChangeTransparency(25)
+   c5 = c1.ChangeTransparency(50)
+   c6 = c1.ChangeTransparency(100)
+   
+   Return UnitTest.AssertEqual(
+      {
+         Color.GetAlpha(Colors.AliceBlue),
+         c1.Alpha,
+         c2.Alpha,
+         c3.Alpha,
+         c4.Alpha,
+         c5.Alpha,
+         c6.Alpha
+      },
+      {255, 127, 255, 229, 191, 127, 0},
+      "Color.GetAlpha"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_GetBlueRatio()
+   c = Color.FromRGB(120, 30, 100)
+   Return UnitTest.AssertEqual(
+      {
+         Color.GetBlueRatio(Colors.Blue),
+         Color.GetBlueRatio(Colors.Green),
+         Color.GetBlueRatio(Colors.AliceBlue),
+         Color.GetBlueRatio(Colors.Red),
+         Color.GetBlueRatio(Colors.Yellow),
+         Color.GetBlueRatio(Colors.CadetBlue),
+         Color.GetBlueRatio(Colors.BlueViolet),
+         c.BlueRatio
+      },
+      {255, 0, 255, 0, 0, 160, 226, 100},
+      "Color.GetBlueRatio"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetGreenRatio()
+   c = Color.FromRGB(120, 30, 100)
+   Return UnitTest.AssertEqual(
+      {
+         Color.GetGreenRatio(Colors.Blue),
+         Color.GetGreenRatio(Colors.Green),
+         Color.GetGreenRatio(Colors.AliceBlue),
+         Color.GetGreenRatio(Colors.Red),
+         Color.GetGreenRatio(Colors.Yellow),
+         Color.GetGreenRatio(Colors.CadetBlue),
+         Color.GetGreenRatio(Colors.BlueViolet),
+         c.GreenRatio
+      },
+      {0, 128, 248, 0, 255, 158, 43, 30},
+      "Color.GetGreenRatio"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_GetName()
+   c1 = Color.FromRGB(111, 222, 255)
+   c2 = Color.FromARGB(127, 0, 0, 255)
+   c3 = c1.ChangeTransparency(50)
+   
+   Return UnitTest.AssertEqual(
+      {
+         Color.GetName(Colors.Blue),
+         c1.Name,
+         c2.Name,
+         c3.Name
+      },
+      {"Blue", "#FF6FDEFF", "Blue", "#7F6FDEFF"},
+      "Color.GetName"
+   )
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_GetNameAndTransparency()
+   c1 = Color.FromRGB(111, 222, 255)
+   c2 = Color.FromARGB(127, 0, 0, 255)
+   c3 = c1.ChangeTransparency(50)
+   
+   Return UnitTest.AssertEqual(
+      {
+         Color.GetNameAndTransparency(Colors.Blue),
+         c1.NameAndTransparency,
+         c2.NameAndTransparency,
+         c3.NameAndTransparency
+      },
+      {"Blue", "#FF6FDEFF", "Blue (50%)", "#7F6FDEFF (50%)"},
+      "Color.GetNameAndTransparency"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_GetRedRatio()
+   c = Color.FromRGB(120, 30, 100)
+   Return UnitTest.AssertEqual(
+      {
+         Color.GetRedRatio(Colors.Blue),
+         Color.GetRedRatio(Colors.Green),
+         Color.GetRedRatio(Colors.AliceBlue),
+         Color.GetRedRatio(Colors.Red),
+         Color.GetRedRatio(Colors.Yellow),
+         Color.GetRedRatio(Colors.CadetBlue),
+         Color.GetRedRatio(Colors.BlueViolet),
+         c.RedRatio
+      },
+      {0, 0, 240, 255, 255, 95, 138, 120},
+      "Color.GetGreenRatio"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetTransparency()
+   c1 = Color.FromARGB(127, 35, 135, 235)
+   c2 = Color.FromARGB(128, 35, 135, 235)
+   c3 = Color.FromARGB(129, 35, 135, 235)
+   c4 = Color.FromARGB(130, 35, 135, 235)
+   c5 = Color.FromARGB(131, 35, 135, 235)
+   c6 = Color.FromARGB(132, 35, 135, 235)
+   
+   For i = 0 To 100
+      c = c1.ChangeTransparency(i)
+      result = UnitTest.AssertEqual(
+         c.Transparency,
+         i,
+         "Color.GetTransparency"
+      )
+      
+      If result.EndsWith("Passed") = False Then
+         Return result
+      EndIf
+   Next
+   
+   Return UnitTest.AssertEqual(
+      {
+         Color.GetTransparency(Colors.AliceBlue),
+         c1.Transparency,
+         c2.Transparency,
+         c3.Transparency,
+         c4.Transparency,
+         c5.Transparency,
+         c6.Transparency
+      },
+      {0, 50, 50, 49, 49, 49, 48},
+      "Color.GetTransparency"
+   )
+EndFunction

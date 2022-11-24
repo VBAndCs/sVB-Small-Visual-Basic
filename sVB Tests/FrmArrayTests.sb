@@ -1,0 +1,456 @@
+
+
+'------------------------------------------------
+Function Test_AddItem()
+   a = {}
+   a = Array.AddItem(a, "First item")
+   a = Array.AddItem(a, "Second item")
+   a = Array.AddItem(a, "Third item")
+   
+   Return UnitTest.AssertEqual(
+      a,
+      {"First item", "Second item", "Third item"},
+      "Array.AddItem"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddItemArray()
+   a = {1, 2, 3}
+   a = a.AddItem(
+      {"First item", "Second item", "Third item"}
+   )
+   
+   Return UnitTest.AssertEqual(
+      a,
+      {
+         1, 2, 3,
+         {"First item", "Second item", "Third item"}
+      },
+      "Array.AddItem_Array"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Indexer()
+   a[1] = "First item"
+   a[2] = "Second item"
+   a[3] = "Third item"
+   n = 3
+   a[n + 1] = {10, 20, 30}
+   a["Name"] = "Adam"
+   x = "Age"
+   a[x] = 15
+   
+   Return UnitTest.AssertEqual(
+      {a[1], a[2], a[3], a[n + 1], a["Name"], a[x]},
+      {"First item", "Second item", "Third item", {10, 20, 30}, "Adam", 15},
+      "Array.Indexer"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Initializer()
+   a = {"First item", "Second item", "Third item"}
+   
+   b = {
+      {4, 5},
+      {6, 7},
+      Array.AddItems({}, {500, 600})
+   }
+   
+   c = {
+      100,
+      a,
+      {1, 2, 3, Text.ToStr({})},
+      b,
+      200
+   }
+   
+   Return UnitTest.AssertEqual(
+      c,
+      {
+         100,
+         {"First item", "Second item", "Third item"},
+         {1, 2, 3, "{}"},
+         {
+            {4, 5},
+            {6, 7},
+            {500, 600}
+         },
+         200
+      },
+      "Array.Initializer"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddItems()
+   a = {1, 2, 3}
+   a = Array.AddItems(a, {4, 5})
+   b = a.AddItems({100, 200, {300, 400}, 500})
+   
+   Return UnitTest.AssertEqual(
+      b,
+      {1, 2, 3, 4, 5, 100, 200, {300, 400}, 500},
+      "Array.AddItems"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddKeyValue()
+   a = {}
+   a = Array.AddKeyValue(a, "name", "Adam")
+   a = a.AddKeyValue("grades", {75, 60, 82, 99})
+   
+   b["Name"] = "Adam"
+   b["Grades"] = {75, 60, 82, 99}
+   
+   
+   Return UnitTest.AssertEqual(
+      a,
+      b,
+      "Array.AddKeyValue"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Dynamic()
+   a!Name = "Adam"
+   a!Grades = {75, 60, 82, 99}
+   
+   b["name"] = "Adam"
+   b["grades"] = {75, 60, 82, 99}
+   
+   Return UnitTest.AssertEqual(
+      a,
+      b,
+      "Array.Dynamic"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ContainsIndex()
+   a[1] = 10
+   a[7] = 9
+   a["test"] = "OK"
+   a[-1] = "It is possible!"
+   
+   Return UnitTest.AssertEqual(
+      {
+         a.ContainsIndex(1),
+         a.ContainsIndex(-1),
+         a.ContainsIndex(3),
+         a.ContainsIndex("Test"),
+         a.ContainsIndex("test"),
+         a.ContainsIndex("Adam")
+      },
+      {True, True, False, True, True, False},
+      "Array.ContainsIndex"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ContainsValue()
+   x = Array.ContainsValue({1, 2, 3}, 2)
+   a = {1, 2, 3}
+   y = a.ContainsValue(4)
+   a["test"] = "Hi"
+   z = a.ContainsValue("Hi")
+   w = a.ContainsValue("hi")
+   
+   Return UnitTest.AssertEqual(
+      {x, y, z, w},
+      {True, False, True, False},
+      "Array.ContainsValue"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_EmptyArray()
+   Return UnitTest.AssertEqual(
+      Array.EmptyArray,
+      {},
+      "Array.EmptyArray"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Find()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "Adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertEqual(
+      {
+         a.Find(3, 1, True),
+         a.Find(3, 4, True),
+         a.Find("adam", 2, True),
+         a.Find("adam", 3, False),
+         a.Find("adam", 5, True),
+         a.Find("10", 1, True),
+         a.Find(15, 1, True)
+      },
+      {3, "", 4, "", "Name", "", "Age"},
+      "Array.Find"
+   )
+   
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Indices()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "Adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertEqual(
+      a.Indices,
+      {1, 2, 3, 4, "Name", "Age"},
+      "Array.Indices"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_GetAllIndices()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "Adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertEqual(
+      Array.GetAllIndices(a.Indices),
+      {1, 2, 3, 4, 5, 6},
+      "Array.GetAllIndices"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetItemAt()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "Adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertEqual(
+      {
+         a.GetItemAt(-1),
+         a.GetItemAt(0),
+         a.GetItemAt(1),
+         a.GetItemAt(2),
+         a.GetItemAt(3),
+         a.GetItemAt(4),
+         a.GetItemAt(5),
+         a.GetItemAt(6),
+         a.GetItemAt(7)
+      },
+      {"", "", 1, 2, 3, "Adam", "Adam", 15, ""},
+      "Array.GetItemAt"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetItemCount()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "Adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertEqual(
+      Array.GetItemCount(a),
+      6,
+      "Array.GetItemCount"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Count()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "Adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertEqual(
+      a.Count,
+      6,
+      "Array.Count"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_GetKeyAt()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "Adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertEqual(
+      {
+         a.GetKeyAt(-1),
+         a.GetKeyAt(0),
+         a.GetKeyAt(2),
+         a.GetKeyAt(4),
+         a.GetKeyAt(5),
+         a.GetKeyAt(6),
+         a.GetKeyAt(7)
+      },
+      {"", "", 2, 4, "Name", "Age", ""},
+      "Array.GetKeyAt"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_IsArray()
+   a!Name = "Adam"
+   a!Age = 10
+   
+   Return UnitTest.AssertEqual(
+      {
+         Array.IsArray({}),
+         Array.IsArray({1, 2, 3}),
+         Array.IsArray(Text.Split("1, 2", ",", False, False)),
+         Array.IsArray(10),
+         Array.IsArray(#1/2/2022#),
+         Array.IsArray("Test"),
+         Array.IsArray(""),
+         Array.IsArray(a)
+      },
+      {True, True, True, False, False, False, False, True},
+      "Array.IsArray"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Join()
+   a = {1, 2, 3}
+   b = {10, 20, 30}
+   c = Array.RemoveItem({"a", "b", "c", "d"}, 2)
+   
+   Return UnitTest.AssertEqual(
+      {
+         a.Join(","),
+         Array.Join(b, ", "),
+         c.Join("")
+      },
+      {
+         "1,2,3",
+         "10, 20, 30",
+         "acd"
+      },
+      "Array.Join"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_RemoveItem()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "Adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertEqual(
+      {
+         Text.ToStr(a.RemoveItem(2)),
+         Text.ToStr(a.RemoveItem("name")),
+         Text.ToStr(a.RemoveItem(1)),
+         Text.ToStr(a.RemoveItem(-1)),
+         Text.ToStr(a.RemoveItem(5)),
+         Text.ToStr(a.RemoveItem("Age")),
+         Text.ToStr(Array.RemoveItem({}, 1))
+      },
+      {
+         "{[1]=1, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
+         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Age]=15}",
+         "{[2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
+         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
+         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
+         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam}",
+         "{}"
+      },
+      "Array.RemoveItem"
+   )
+EndFunction
+
+
+
+
+'------------------------------------------------
+Function Test_SetItemAt()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "Adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertEqual(
+      {
+         Text.ToStr(a.SetItemAt(2, 20)),
+         Text.ToStr(a.SetItemAt(4, "Ali")),
+         Text.ToStr(a.SetItemAt(1, 10)),
+         Text.ToStr(a.SetItemAt(-1, 0)),
+         Text.ToStr(a.SetItemAt(7, 12)),
+         Text.ToStr(a.SetItemAt(6, 20)),
+         Text.ToStr(Array.SetItemAt({}, 1, 10))
+      },
+      {
+         "{[1]=1, [2]=20, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
+         "{[1]=1, [2]=2, [3]=3, [4]=Ali, [Name]=Adam, [Age]=15}",
+         "{[1]=10, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
+         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
+         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
+         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=20}",
+         "{}"
+      },
+      "Array.SetItemAt"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ToStr()
+   a = {1, 2, 3, "Adam"}
+   x = a.ToStr()
+   a["Name"] = "Adam"
+   a!Age = 15
+   y = a.ToStr()
+   Return UnitTest.AssertEqual(
+      {x, y},
+      {
+         "{1, 2, 3, Adam}",
+         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}"
+      },
+      "Array.ToStr"
+   )
+   
+   
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_ToStr_Nested()
+   address!City = "Cairo"
+   address!Street = "Al Tahreer"
+   address!Number = 25
+   
+   std!Name = "Adam"
+   std!Age = 20
+   std!Address = address
+   std!Class = 3
+   
+   a = {
+      1, 2, 3,
+      {10, 20, 30, {100, 200, {}, 300}, 40, {{}, {}}},
+      std,
+      2022
+   }
+   Return UnitTest.AssertEqual(
+      a.ToStr(),
+      "{1, 2, 3, {10, 20, 30, {100, 200, {}, 300}, 40, {{}, {}}}, {[Name]=Adam, [Age]=20, [Address]={[City]=Cairo, [Street]=Al Tahreer, [Number]=25}, [Class]=3}, 2022}",
+      "Array.ToStr_Nested"
+   )
+   
+   
+EndFunction

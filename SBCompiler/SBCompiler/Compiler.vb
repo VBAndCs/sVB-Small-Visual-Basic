@@ -212,12 +212,13 @@ Namespace Microsoft.SmallVisualBasic
                             Exit For
                         End If
                     Next
+
                     If Not found Then Continue For
 
                     fileName = Path.GetFileName(libraryFile)
                     If fileName.ToLower().EndsWith(".exe") Then
                         Dim dllName = fileName.Substring(0, fileName.Length - 3) & "dll"
-                        IO.File.Copy(libraryFile, Path.Combine(directory, dllName))
+                        IO.File.Copy(libraryFile, Path.Combine(directory, dllName), overwrite:=True)
 
                         Dim dir = IO.Path.GetDirectoryName(libraryFile)
                         For Each file In IO.Directory.GetFiles(dir)

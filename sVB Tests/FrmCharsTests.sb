@@ -1,0 +1,105 @@
+
+
+'------------------------------------------------
+Function Test_GetCharacter()
+   For code = 32 To 41
+      results[code - 31] = Chars.GetCharacter(code)
+   Next
+   
+   results[11] = "a" + Chars.GetCharacter(772)
+   results[12] = Chars.GetCharacter(776) + "b"
+   results[13] = "c" + Chars.GetCharacter(807)
+   results[14] = Chars.GetCharacter(100000)
+   results[15] = Text.GetLength(results[14])
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         " ", "!", """", "#", "$", "%", "&", "'", "(", ")",
+         "ā", "̈b", "ç", results[14][1] + results[14][2], 2
+      },
+      "Chars.GetCharacter"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetCharacterCode()
+   characters = {
+      " ", "!", """", "#", "$", "%", "&", "'", "(", ")",
+      Text.GetCharacterAt("ā", 2),
+      Text.GetCharacterAt("̈b", 1),
+      Text.GetCharacterAt("ç", 2),
+      Chars.GetCharacter(100000)
+   }
+   
+   codes = {}
+   ForEach c In characters
+      codes = codes.AddItem(Chars.GetCharacterCode(c))
+   Next
+   
+   
+   Return UnitTest.AssertEqual(
+      codes,
+      {
+         32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+         772, 776, 807, 100000
+      },
+      "Chars.GetCharacterCode"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_IsDigit()
+   Return UnitTest.AssertEqual(
+      {
+         Chars.IsDigit("12"),
+         Chars.IsDigit(3),
+         Chars.IsDigit("3"),
+         Chars.IsDigit(-3),
+         Chars.IsDigit("a")
+      },
+      {False, True, True, False, False},
+      "Chars.IsDigit"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_IsLetter()
+   Return UnitTest.AssertEqual(
+      {
+         Chars.IsLetter("ab"),
+         Chars.IsLetter(3),
+         Chars.IsLetter("3"),
+         Chars.IsLetter(-3),
+         Chars.IsLetter("a"),
+         Chars.IsLetter("A"),
+         Chars.IsLetter("(")
+      },
+      {False, False, False, False, True, True, False},
+      "Chars.IsLetter"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Characters()
+   Return UnitTest.AssertEqual(
+      {
+         Chars.GetCharacterCode(Chars.Back),
+         Chars.GetCharacterCode(Chars.Cr),
+         Chars.GetCharacterCode(Text.GetCharacterAt(Chars.CrLf, 1)),
+         Chars.GetCharacterCode(Text.GetCharacterAt(Chars.CrLf, 2)),
+         Chars.GetCharacterCode(Chars.FormFeed),
+         Chars.GetCharacterCode(Chars.Lf),
+         Chars.GetCharacterCode(Chars.Null),
+         Chars.GetCharacterCode(Chars.Quote),
+         Chars.GetCharacterCode(Chars.Tab),
+         Chars.GetCharacterCode(Chars.VerticalTab)
+      },
+      {8, 13, 13, 10, 12, 10, 0, 34, 9, 11},
+      "Chars.Character properties"
+   )
+EndFunction

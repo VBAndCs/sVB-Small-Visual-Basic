@@ -43,7 +43,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets or sets the item that is curruntly selected in the ComboBox
+        ''' Gets or sets the item that is currently selected in the ComboBox
         ''' </summary>
         ''' <remarks>This property returns empty string if there is no item selected.
         ''' But there can ba a selected item that displays an empty string!
@@ -126,7 +126,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetComboBox(textBoxName).Text = value
+                        GetComboBox(textBoxName).Text = value.AsString()
                     Catch ex As Exception
                         Control.ReportPropertyError(textBoxName, "Text", value, ex)
                     End Try
@@ -150,12 +150,12 @@ Namespace WinForms
         ''' <summary>
         ''' Sets the value of the item that exists in the given index in the list.
         ''' </summary>
-        ''' <param name="value">the value to set to the item</param>
         ''' <param name="index">The index of the item. It should be greater than zero and not exceed the count of the items</param>
+        ''' <param name="value">the value to set to the item</param>
         ''' <returns>True if the item is modified, otherwise False.</returns>
         <ExMethod>
         <ReturnValueType(VariableType.Boolean)>
-        Public Shared Function SetItemAt(comboBoxName As Primitive, value As Primitive, index As Primitive) As Primitive
+        Public Shared Function SetItemAt(comboBoxName As Primitive, index As Primitive, value As Primitive) As Primitive
             Return ListBase.SetItemAt(comboBoxName, index, value)
         End Function
 
