@@ -981,6 +981,7 @@ Public Class Designer
                 NewPageOpened = True
             End If
 
+            xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{IO.Path.GetDirectoryName(fileName)}\")
             CurrentPage.XamlToPage(xaml)
             CurrentPage.ShowGrid = True
             CurrentPage._xamlFile = IO.Path.GetFullPath(fileName)

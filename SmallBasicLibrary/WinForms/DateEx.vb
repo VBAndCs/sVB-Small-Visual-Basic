@@ -14,7 +14,6 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the full time part in the user local culture (including seconds, AM/PM and milliseconds) of the current date.
         ''' </summary>
-        ''' <returns>a string representing the long time in the user local culture</returns>
         <ReturnValueType(VariableType.Date)>
         <ExProperty>
         Public Shared Function GetLongTime([date] As Primitive) As Primitive
@@ -24,7 +23,6 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the short time part of the current date in the user local culture. The time will incude hours and minutes and AM or PM, but not seconds and milliseconds.
         ''' </summary>
-        ''' <returns>a string representing the short time in the user local culture</returns>
         <ReturnValueType(VariableType.Date)>
         <ExProperty>
         Public Shared Function GetShortTime([date] As Primitive) As Primitive
@@ -60,8 +58,6 @@ Namespace WinForms
         Public Shared Function GetDateAndTime([date] As Primitive) As Primitive
             Return WinForms.Date.GetDateAndTime([date])
         End Function
-
-
 
         ''' <summary>
         ''' Gets the year or the current date.
@@ -385,13 +381,12 @@ Namespace WinForms
         ''' <summary>
         ''' Creates a new date by subtracting the given duration from the given date.
         ''' </summary>
-        ''' <param name="date1">the input date \ time</param>
-        ''' <param name="date2">the date\time you want to subtract</param>
+        ''' <param name="value">the date\time or duration you want to subtract</param>
         ''' <returns>a duration representing the difference between the two dates. The input date will not Add</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
-        Public Shared Function Subtract(date1 As Primitive, date2 As Primitive) As Primitive
-            Return WinForms.Date.Subtract(date1, date2)
+        Public Shared Function Subtract(date1 As Primitive, value As Primitive) As Primitive
+            Return WinForms.Date.Subtract(date1, value)
         End Function
 
         ''' <summary>

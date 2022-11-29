@@ -34,7 +34,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Creats a new date from the given text if its format is a valid date format for the given culture.
+        ''' Creates a new date from the given text if its format is a valid date format for the given culture.
         ''' </summary>
         ''' <param name="dateText">the text that represents the date</param>
         ''' <param name="cultureName">the culture name used to format the date, like "en-us" for English United States culture, "ar-eg" for Arabic Egypt culture, and "ar-sa" for Arabic Saudi Arabia culture</param>
@@ -74,10 +74,10 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Creats a new date from the given ticks value. Note that the second contains 10 milion ticks.
+        ''' Creates a new date from the given ticks value. Note that the second contains 10 milion ticks.
         ''' </summary>
         ''' <param name="ticks">the total ticks of the date</param>
-        ''' <returns>a new date</returns>
+        ''' <returns>a new date.</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function TicksToDate(ticks As Primitive) As Primitive
             If Not ticks.IsNumber Then Return ""
@@ -85,10 +85,10 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Creats a new TimeSpan from the given ticks value. Note that the second contains 10 milion ticks.
+        ''' Creates a new TimeSpan from the given ticks value. Note that the second contains 10 milion ticks.
         ''' </summary>
         ''' <param name="ticks">the total ticks of the date</param>
-        ''' <returns>a new duration</returns>
+        ''' <returns>a new duration.</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function TicksToDuration(ticks As Primitive) As Primitive
             If Not ticks.IsNumber Then Return ""
@@ -97,7 +97,7 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Creats a new date from the given year, month and day values.
+        ''' Creates a new date from the given year, month and day values.
         ''' </summary>
         ''' <param name="year">the year number</param>
         ''' <param name="month">a number between 1 and 12 representing the month</param>
@@ -114,7 +114,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Creats a new date from the given time values.
+        ''' Creates a new date from the given time values.
         ''' </summary>
         ''' <param name="hour">a number between 0 and 23 representing the hour</param>
         ''' <param name="minute">a number between 0 and 59 representing the minute</param>
@@ -132,7 +132,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Creats a new date from the given date and time values.
+        ''' Creates a new date from the given date and time values.
         ''' </summary>
         ''' <param name="year">the year number</param>
         ''' <param name="month">a number between 1 and 12 representing the month</param>
@@ -721,12 +721,12 @@ Namespace WinForms
         ''' <summary>
         ''' Creates a new date by subtracting the given duration from the given date.
         ''' </summary>
-        ''' <param name="date1">the input date \ time</param>
-        ''' <param name="date2">the date\time you want to subtract</param>
+        ''' <param name="[date]">the input date \ time</param>
+        ''' <param name="value">the date\time or duration you want to subtract</param>
         ''' <returns>a duration representing the difference between the two dates. The input date will not Add</returns>
         <ReturnValueType(VariableType.Date)>
-        Public Shared Function Subtract(date1 As Primitive, date2 As Primitive) As Primitive
-            Return date1 - date2
+        Public Shared Function Subtract([date] As Primitive, value As Primitive) As Primitive
+            Return [date] - value
         End Function
 
         Private Shared Function GetTimeSpan(duration As Primitive) As TimeSpan?

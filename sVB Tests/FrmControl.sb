@@ -1,0 +1,84 @@
+
+
+
+'------------------------------------------------
+Function Test_Angle()
+   angles[1] = Button1.Angle
+   Button1.Angle = 45
+   angles[2] = Button1.Angle
+   Button1.Angle = -45
+   angles[3] = Button1.Angle
+   Button1.Angle = 400
+   angles[4] = Button1.Angle
+   
+   angles[5] = CheckBox1.Angle + 10
+   ComboBox1.Angle = ComboBox1.Angle - 121
+   angles[6] = ComboBox1.Angle
+   
+   
+   Return UnitTest.AssertEqual(
+      angles,
+      {0, 45, 315, 40, 344, 260},
+      "Control.Angle"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_BackColor()
+   ListBox1.BackColor = Colors.Yellow
+   results[1] = ListBox1.BackColor
+   ListBox1.BackColor = "red"
+   results[2] = ListBox1.BackColor
+   ListBox1.BackColor = Color.FromARGB(128, 0, 255, 0)
+   results[3] = ListBox1.BackColor
+   ListBox1.BackColor = "#0000ff"
+   results[4] = ListBox1.BackColor
+   ListBox1.BackColor = Colors.None
+   results[5] = ListBox1.BackColor
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {"#FFFFFF00", "#FFFF0000", "#8000FF00", "#FF0000FF", "None"},
+      "Control.BackColor"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Enabled()
+   Me.Enabled = False
+   x = Me.Enabled
+   Me.Enabled = True
+   
+   Return UnitTest.AssertEqual(
+      {x, Me.Enabled},
+      {False, True},
+      "Control.Enabled"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Error()
+   ComboBox1.Error = "test"
+   results[1] = {ComboBox1.Error, ComboBox1.ToolTip}
+   ComboBox1.ToolTip = "Hi"
+   results[2] = {ComboBox1.Error, ComboBox1.ToolTip}
+   ComboBox1.Error = ""
+   results[3] = {ComboBox1.Error, ComboBox1.ToolTip}
+   ComboBox1.ToolTip = ""
+   results[4] = {ComboBox1.Error, ComboBox1.ToolTip}
+   
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         {"test", ""},
+         {"test", "Hi"},
+         {"", "Hi"},
+         {"", ""}
+      },
+      "Control.Error"
+   )
+EndFunction

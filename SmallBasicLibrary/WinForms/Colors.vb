@@ -1144,23 +1144,13 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property YellowGreen As Primitive = "#FF9ACD32"
 
-        Public Shared Function GetHexaName(brush As System.Windows.Media.SolidColorBrush) As String
-            Dim color = brush.Color
-            Return $"#{Color.A:X2}{Color.R:X2}{Color.G:X2}{Color.B:X2}"
-        End Function
-
-        Public Shared Function GetHexaName(color As System.Windows.Media.Color) As String
-            Return $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}"
-        End Function
-
-
         ''' <summary>
         ''' Gets the color of active window's border as defined on the user system.
         ''' </summary>
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemActiveBorder As Primitive
             Get
-                Return GetHexaName(SysColors.ActiveBorderBrush)
+                Return Color.GetHexaName(SysColors.ActiveBorderBrush)
             End Get
         End Property
 
@@ -1170,7 +1160,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemInactiveSelectionHighlight As Primitive
             Get
-                Return GetHexaName(SysColors.InactiveSelectionHighlightBrush)
+                Return Color.GetHexaName(SysColors.InactiveSelectionHighlightBrush)
             End Get
         End Property
 
@@ -1180,7 +1170,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemInactiveSelectionHighlightText As Primitive
             Get
-                Return GetHexaName(SysColors.InactiveSelectionHighlightTextBrush)
+                Return Color.GetHexaName(SysColors.InactiveSelectionHighlightTextBrush)
             End Get
         End Property
 
@@ -1190,7 +1180,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemWindow As Primitive
             Get
-                Return GetHexaName(SysColors.WindowColor)
+                Return Color.GetHexaName(SysColors.WindowColor)
             End Get
         End Property
 
@@ -1200,7 +1190,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemScrollBar As Primitive
             Get
-                Return GetHexaName(SysColors.ScrollBarColor)
+                Return Color.GetHexaName(SysColors.ScrollBarColor)
             End Get
         End Property
 
@@ -1210,7 +1200,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemMenuText As Primitive
             Get
-                Return GetHexaName(SysColors.MenuTextColor)
+                Return Color.GetHexaName(SysColors.MenuTextColor)
             End Get
         End Property
 
@@ -1220,7 +1210,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemMenuHighlight As Primitive
             Get
-                Return GetHexaName(SysColors.MenuHighlightColor)
+                Return Color.GetHexaName(SysColors.MenuHighlightColor)
             End Get
         End Property
 
@@ -1231,7 +1221,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemMenuBar As Primitive
             Get
-                Return GetHexaName(SysColors.MenuBarColor)
+                Return Color.GetHexaName(SysColors.MenuBarColor)
             End Get
         End Property
 
@@ -1241,7 +1231,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemMenu As Primitive
             Get
-                Return GetHexaName(SysColors.MenuColor)
+                Return Color.GetHexaName(SysColors.MenuColor)
             End Get
         End Property
 
@@ -1251,7 +1241,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemInfoText As Primitive
             Get
-                Return GetHexaName(SysColors.InfoTextColor)
+                Return Color.GetHexaName(SysColors.InfoTextColor)
             End Get
         End Property
 
@@ -1261,7 +1251,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemInfo As Primitive
             Get
-                Return GetHexaName(SysColors.InfoColor)
+                Return Color.GetHexaName(SysColors.InfoColor)
             End Get
         End Property
 
@@ -1271,7 +1261,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemInactiveCaptionText As Primitive
             Get
-                Return GetHexaName(SysColors.InactiveCaptionTextColor)
+                Return Color.GetHexaName(SysColors.InactiveCaptionTextColor)
             End Get
         End Property
 
@@ -1281,7 +1271,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemInactiveCaption As Primitive
             Get
-                Return GetHexaName(SysColors.InactiveCaptionColor)
+                Return Color.GetHexaName(SysColors.InactiveCaptionColor)
             End Get
         End Property
 
@@ -1291,7 +1281,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemInactiveBorder As Primitive
             Get
-                Return GetHexaName(SysColors.InactiveBorderColor)
+                Return Color.GetHexaName(SysColors.InactiveBorderColor)
             End Get
         End Property
 
@@ -1301,7 +1291,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemHotTrack As Primitive
             Get
-                Return GetHexaName(SysColors.HotTrackColor)
+                Return Color.GetHexaName(SysColors.HotTrackColor)
             End Get
         End Property
 
@@ -1311,7 +1301,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemHighlightText As Primitive
             Get
-                Return GetHexaName(SysColors.HighlightTextColor)
+                Return Color.GetHexaName(SysColors.HighlightTextColor)
             End Get
         End Property
 
@@ -1321,7 +1311,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemHighlight As Primitive
             Get
-                Return GetHexaName(SysColors.HighlightColor)
+                Return Color.GetHexaName(SysColors.HighlightColor)
             End Get
         End Property
 
@@ -1331,7 +1321,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemGrayText As Primitive
             Get
-                Return GetHexaName(SysColors.GrayTextColor)
+                Return Color.GetHexaName(SysColors.GrayTextColor)
             End Get
         End Property
 
@@ -1341,7 +1331,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemGradientInactiveCaption As Primitive
             Get
-                Return GetHexaName(SysColors.GradientInactiveCaptionColor)
+                Return Color.GetHexaName(SysColors.GradientInactiveCaptionColor)
             End Get
         End Property
 
@@ -1351,7 +1341,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemGradientActiveCaption As Primitive
             Get
-                Return GetHexaName(SysColors.GradientActiveCaptionColor)
+                Return Color.GetHexaName(SysColors.GradientActiveCaptionColor)
             End Get
         End Property
 
@@ -1361,7 +1351,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemDesktop As Primitive
             Get
-                Return GetHexaName(SysColors.DesktopColor)
+                Return Color.GetHexaName(SysColors.DesktopColor)
             End Get
         End Property
 
@@ -1371,7 +1361,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemControlText As Primitive
             Get
-                Return GetHexaName(SysColors.ControlTextColor)
+                Return Color.GetHexaName(SysColors.ControlTextColor)
             End Get
         End Property
 
@@ -1381,7 +1371,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemControlHighlight As Primitive
             Get
-                Return GetHexaName(SysColors.ControlLightLightColor)
+                Return Color.GetHexaName(SysColors.ControlLightLightColor)
             End Get
         End Property
 
@@ -1391,7 +1381,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemControlLight As Primitive
             Get
-                Return GetHexaName(SysColors.ControlLightColor)
+                Return Color.GetHexaName(SysColors.ControlLightColor)
             End Get
         End Property
 
@@ -1401,7 +1391,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemControlDarkShadow As Primitive
             Get
-                Return GetHexaName(SysColors.ControlDarkDarkColor)
+                Return Color.GetHexaName(SysColors.ControlDarkDarkColor)
             End Get
         End Property
 
@@ -1411,7 +1401,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemControlShadow As Primitive
             Get
-                Return GetHexaName(SysColors.ControlDarkColor)
+                Return Color.GetHexaName(SysColors.ControlDarkColor)
             End Get
         End Property
 
@@ -1421,7 +1411,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemControl As Primitive
             Get
-                Return GetHexaName(SysColors.ControlColor)
+                Return Color.GetHexaName(SysColors.ControlColor)
             End Get
         End Property
 
@@ -1431,7 +1421,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemAppWorkspace As Primitive
             Get
-                Return GetHexaName(SysColors.AppWorkspaceColor)
+                Return Color.GetHexaName(SysColors.AppWorkspaceColor)
             End Get
         End Property
 
@@ -1441,7 +1431,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemActiveCaptionText As Primitive
             Get
-                Return GetHexaName(SysColors.ActiveCaptionTextColor)
+                Return Color.GetHexaName(SysColors.ActiveCaptionTextColor)
             End Get
         End Property
 
@@ -1451,7 +1441,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemActiveCaption As Primitive
             Get
-                Return GetHexaName(SysColors.ActiveCaptionColor)
+                Return Color.GetHexaName(SysColors.ActiveCaptionColor)
             End Get
         End Property
 
@@ -1461,7 +1451,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemWindowFrame As Primitive
             Get
-                Return GetHexaName(SysColors.WindowFrameColor)
+                Return Color.GetHexaName(SysColors.WindowFrameColor)
             End Get
         End Property
 
@@ -1471,7 +1461,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemWindowText As Primitive
             Get
-                Return GetHexaName(SysColors.WindowTextColor)
+                Return Color.GetHexaName(SysColors.WindowTextColor)
             End Get
         End Property
 

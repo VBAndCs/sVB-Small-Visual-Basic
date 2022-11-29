@@ -105,7 +105,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                         Return VariableType.Double
                     End If
 
-                Case TokenType.Sub
+                Case TokenType.Subtraction
                     If leftType = VariableType.Date Then
                         Return VariableType.Date
                     Else

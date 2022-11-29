@@ -1156,13 +1156,16 @@ Namespace Library
         End Sub
 
         Friend Shared Sub DoubleAnimateProperty(obj As IAnimatable, [property] As DependencyProperty, [end] As Double, duration As Double)
-            Dim start = CDbl(CType(obj, DependencyObject).GetValue([property]))
+            Dim dpo = CType(obj, DependencyObject)
+            Dim start = CDbl(dpo.GetValue([property]))
             If Double.IsNaN(start) Then start = 0.0
+
             Dim animation As New DoubleAnimation(
-                    start,
-                    [end],
-                    TimeSpan.FromMilliseconds(duration)
-                )
+                start,
+                [end],
+                TimeSpan.FromMilliseconds(duration)
+            )
+
             animation.FillBehavior = FillBehavior.HoldEnd
             animation.DecelerationRatio = 0.2
             obj.BeginAnimation([property], animation)

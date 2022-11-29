@@ -13,7 +13,8 @@ TextBox2 = "form1.textbox2"
 Button1 = "form1.button1"
 ComboBox1 = "form1.combobox1"
 Button2 = "form1.button2"
-Form1 = Forms.LoadForm("Form1", "Form1.xaml")
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 Form.Show(Form1)
 '#Events{

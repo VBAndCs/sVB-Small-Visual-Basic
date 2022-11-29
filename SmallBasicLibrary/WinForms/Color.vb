@@ -360,6 +360,17 @@ Namespace WinForms
             End Get
         End Property
 
+        Public Shared Function GetHexaName(color As System.Windows.Media.Color?) As String
+            If color Is Nothing Then Return "None"
+            Dim c = color.Value
+            Return $"#{c.A:X2}{c.R:X2}{c.G:X2}{c.B:X2}"
+        End Function
+
+        Public Shared Function GetHexaName(brush As SolidColorBrush) As String
+            If brush Is Nothing Then Return "None"
+            Dim color = brush.Color
+            Return $"#{color.A:X2}{color.R:X2}{color.G:X2}{color.B:X2}"
+        End Function
 
         Friend Shared _colorNames As New Dictionary(Of String, String) From {
                 {"0", "None"},
@@ -504,6 +515,7 @@ Namespace WinForms
                 {"#FFFFFF00", "Yellow"},
                 {"#FF9ACD32", "YellowGreen"}
         }
+
 
     End Class
 End Namespace

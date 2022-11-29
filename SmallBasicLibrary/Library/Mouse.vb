@@ -12,6 +12,7 @@ Namespace Library
         ''' Gets or sets the mouse cursor's x co-ordinate.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>
+        <HideFromIntellisense>
         Public Shared Property MouseX As Primitive
             Get
                 Return New Primitive(Cursor.Position.X)
@@ -41,6 +42,7 @@ Namespace Library
         ''' Gets or sets the mouse cursor's y co-ordinate.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>
+        <HideFromIntellisense>
         Public Shared Property MouseY As Primitive
             Get
                 Return New Primitive(Cursor.Position.Y)

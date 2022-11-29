@@ -156,7 +156,8 @@ Function Test_ContainsItem()
          ComboBox1.ContainsItem({{10, 20, 30}}),
          ComboBox1.ContainsItem("test")
       },
-      {True, False, True, False, True, False, True, True, False, False, True, True, False, False},
+      {True, False, True, False, True, False, True,
+         True, False, False, True, True, False, False},
       "ComboBox.ContainsItem"
    )
 EndFunction

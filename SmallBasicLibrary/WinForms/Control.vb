@@ -1,6 +1,5 @@
 ﻿Option Explicit On
 
-
 Imports Wpf = System.Windows.Controls
 Imports Microsoft.SmallVisualBasic.Library
 Imports System.Windows
@@ -637,13 +636,22 @@ Namespace WinForms
         Public Shared ReadOnly TipProperty As _
                    DependencyProperty = DependencyProperty.RegisterAttached("Tip",
                    GetType(String), GetType(UIElement),
-                   New PropertyMetadata(""))
+                   New PropertyMetadata(Nothing))
 
+        Public Shared ReadOnly BorderThicknessProperty As _
+                   DependencyProperty = DependencyProperty.RegisterAttached("BorderThickness",
+                   GetType(Thickness), GetType(UIElement),
+                   New PropertyMetadata(Nothing))
+
+        Public Shared ReadOnly BorderBrushProperty As _
+                   DependencyProperty = DependencyProperty.RegisterAttached("BorderBrush",
+                   GetType(Brush), GetType(UIElement),
+                   New PropertyMetadata(Nothing))
 
         ''' <summary>
-        ''' Gets or sets the error message to display with this control. 
-        ''' When you set the error message, it will display a red border, and the error message will shown as a tooltip when you hover over the control.
-        ''' to reset the error, jsut set it to an empty string.
+        ''' Gets or sets the error message for this control. 
+        ''' When you set the error message, the control will display a red border, And the error message will shown as a tooltip when the mouse hovers over the control.
+        ''' To reset the error, jsut set this property to an empty string.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
@@ -652,7 +660,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        GetError = New Primitive(c.GetValue(ErrorProperty))
+                        GetError = New Primitive(CStr(c.GetValue(ErrorProperty)))
                     Catch ex As Exception
                         ReportError(controlName, "Error", ex)
                     End Try
@@ -669,8 +677,8 @@ Namespace WinForms
                         c.SetValue(ErrorProperty, errMsg)
 
                         If errMsg = "" Then
-                            c.ClearValue(Wpf.Border.BorderThicknessProperty)
-                            c.ClearValue(Wpf.Control.BorderBrushProperty)
+                            c.BorderThickness = c.GetValue(BorderThicknessProperty)
+                            c.BorderBrush = c.GetValue(BorderBrushProperty)
                             c.ToolTip = c.GetValue(TipProperty)
                         Else
                             c.BorderThickness = New Thickness(2)
@@ -694,7 +702,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        GetToolTip = c.GetValue(TipProperty)
+                        GetToolTip = If(c.GetValue(TipProperty), "").ToString()
                     Catch ex As Exception
                         ReportError(controlName, "ToolTip", ex)
                     End Try
@@ -706,8 +714,10 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        c.SetValue(TipProperty, value.AsString())
-                        c.ToolTip = value.AsString()
+                        Dim x = If(value.IsEmpty, Nothing, value.AsString())
+                        c.SetValue(TipProperty, x)
+                        c.ToolTip = x
+
                     Catch ex As Exception
                         ReportPropertyError(controlName, "ToolTip", value, ex)
                     End Try
@@ -767,7 +777,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Raises the OnLostFocus event to apply any validation logic supplied by you in the OnLostFocuse handler, then checks the Error property to see if the control has errors or not.
+        ''' Raises the OnLostFocus event to apply any validation logic supplied by you in the OnLostFocus handler, then checks the Error property to see if the control has errors or not.
         ''' </summary>
         ''' <returns>True if the current control has no errors, or False otherwise.</returns>
         <ExMethod>
@@ -799,7 +809,7 @@ Namespace WinForms
 
         Private Shared ReadOnly BackColorProperty As _
                            DependencyProperty = DependencyProperty.RegisterAttached("BackColor",
-                           GetType(Media.Color), GetType(Wpf.Control),
+                           GetType(Media.Color?), GetType(Wpf.Control),
                            New PropertyMetadata(SystemColors.ControlColor, AddressOf BackColor_Changed))
 
         Private Shared Sub BackColor_Changed(c As DependencyObject, e As DependencyPropertyChangedEventArgs)
@@ -827,7 +837,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' The backgeound color of the control.
-        ''' Use values from the Color object, such as Color.Yellow
+        ''' Use values from the Colors object, such as Colors.Yellow
         ''' </summary>
         <ReturnValueType(VariableType.Color)>
         <ExProperty>
@@ -836,14 +846,14 @@ Namespace WinForms
                  Sub()
                      Try
                          Dim c = GetControl(controlName)
-                         GetBackColor = GetBackColor(c).ToString()
+                         GetBackColor = Color.GetHexaName(GetBackColor(c))
                      Catch ex As Exception
                          ReportError(controlName, "BackColor", ex)
                      End Try
                  End Sub)
         End Function
 
-        Public Shared Function GetBackColor(control As Wpf.Control) As Media.Color
+        Public Shared Function GetBackColor(control As Wpf.Control) As Media.Color?
             Dim brush As SolidColorBrush
             If TypeOf control Is Window Then
                 Dim canvas = Form.GetCanvas(control)
@@ -873,7 +883,11 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim _color? As Media.Color = If(Color.IsNone(value), Nothing, Color.FromString(value))
+                        Dim _color = If(
+                            Color.IsNone(value),
+                            CType(Nothing, Media.Color?),
+                            Color.FromString(value)
+                        )
                         Dim obj = GetControl(controlName)
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(BackColorProperty, Nothing)
@@ -891,7 +905,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' The foregeound color used to draw the text of the control.
-        ''' Use values from the Color object, such as Color.Red
+        ''' Use values from the Colors object, such as Colors.Red
         ''' </summary>
         <ReturnValueType(VariableType.Color)>
         <ExProperty>
@@ -902,9 +916,9 @@ Namespace WinForms
                           Dim c = GetControl(controlName)
                           Dim brush = TryCast(c.Foreground, SolidColorBrush)
                           If brush IsNot Nothing Then
-                              GetForeColor = brush.Color.ToString()
+                              GetForeColor = Color.GetHexaName(brush)
                           Else
-                              GetForeColor = CStr(c.GetValue(ForeColorProperty))
+                              GetForeColor = Color.GetHexaName(c.GetValue(ForeColorProperty))
                           End If
                       Catch ex As Exception
                           ReportError(controlName, "ForeColor", ex)
@@ -1186,7 +1200,7 @@ Namespace WinForms
                 Throw New ArgumentNullException("element")
             End If
 
-            Return CDbl(element.GetValue(AngleProperty))
+            Return NormalizeAngle(element.GetValue(AngleProperty))
         End Function
 
 
@@ -1202,17 +1216,25 @@ Namespace WinForms
                 End Sub)
         End Sub
 
-        Private Shared Sub SetAngle(element As DependencyObject, value As Double)
+        Friend Shared Sub SetAngle(element As DependencyObject, value As Double)
             If element Is Nothing Then
                 Throw New ArgumentNullException("element")
             End If
 
             CType(element, Wpf.Control).BeginAnimation(AngleProperty, Nothing)
-            element.SetValue(AngleProperty, value)
+            element.SetValue(AngleProperty, NormalizeAngle(value))
         End Sub
 
-
-        Private Shared _rotateTransformMap As New Dictionary(Of Wpf.Control, RotateTransform)
+        Private Shared Function NormalizeAngle(value As Double) As Double
+            If value >= 360 Then
+                Return value Mod 360
+            ElseIf value < 0 Then
+                Dim v = (value Mod 360)
+                Return If(v < 0, 360 + v, 0)
+            Else
+                Return value
+            End If
+        End Function
 
         Public Shared ReadOnly AngleProperty As _
                                DependencyProperty = DependencyProperty.RegisterAttached("Angle",
@@ -1222,21 +1244,16 @@ Namespace WinForms
         Private Shared Sub AngleChanged(d As DependencyObject, e As DependencyPropertyChangedEventArgs)
             Dim obj = CType(d, Wpf.Control)
             App.BeginInvoke(
-                     Sub()
-                         If Not (TypeOf obj.RenderTransform Is TransformGroup) Then
-                             obj.RenderTransform = New TransformGroup
-                         End If
-
-                         Dim rotation As System.Windows.Media.RotateTransform = Nothing
-                         If Not _rotateTransformMap.TryGetValue(obj, rotation) Then
-                             rotation = New RotateTransform
-                             _rotateTransformMap(obj) = rotation
-                             rotation.CenterX = obj.ActualWidth / 2.0
-                             rotation.CenterY = obj.ActualHeight / 2.0
-                             CType(obj.RenderTransform, TransformGroup).Children.Add(rotation)
-                         End If
-                         rotation.Angle = CDbl(e.NewValue)
-                     End Sub)
+                 Sub()
+                     Dim rotation = TryCast(obj.RenderTransform, RotateTransform)
+                     If rotation Is Nothing Then
+                         rotation = New RotateTransform
+                         rotation.CenterX = obj.ActualWidth / 2.0
+                         rotation.CenterY = obj.ActualHeight / 2.0
+                         obj.RenderTransform = rotation
+                     End If
+                     rotation.Angle = CDbl(e.NewValue)
+                 End Sub)
         End Sub
 
 
@@ -1378,8 +1395,14 @@ Namespace WinForms
                 Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
-                        GraphicsWindow.DoubleAnimateProperty(obj, AngleProperty, CDbl(angle), CDbl(duration))
+                        GraphicsWindow.DoubleAnimateProperty(
+                            obj,
+                            AngleProperty,
+                            CDbl(angle),
+                            CDbl(duration)
+                        )
                     End Sub)
+
             Catch ex As Exception
                 ReportSubError(controlName, "AnimateAngle", ex)
             End Try
@@ -1389,7 +1412,7 @@ Namespace WinForms
 
 #Region "Events"
 
-        <ExMethod>
+        <HideFromIntellisense>
         Public Shared Sub HandleEvents(ControlName As Primitive)
             [Event].SenderControl = ControlName
         End Sub
@@ -1688,7 +1711,7 @@ Namespace WinForms
         End Event
 
         ''' <summary>
-        ''' Fired when the control gets the focus.
+        ''' Fired when the control looses the focus.
         ''' </summary>
         Public Shared Custom Event OnLostFocus As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)

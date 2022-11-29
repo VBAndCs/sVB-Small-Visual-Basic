@@ -83,7 +83,7 @@ Namespace WinForms
             If _forms.ContainsKey(form_Name) Then Return form_Name
 
             SyncLock _syncLock
-                SmallBasicApplication.Invoke(
+                App.Invoke(
                     Sub()
                         Try
                             Dim canvas As Canvas
@@ -123,13 +123,31 @@ Namespace WinForms
                                     If controlName = "" Then Continue For
                                 End If
 
+                                Dim angle = 0.0
+                                Dim rotation As Media.RotateTransform
+                                If ui.RenderTransform IsNot Nothing Then
+                                    rotation = TryCast(ui.RenderTransform, Media.RotateTransform)
+                                    If rotation IsNot Nothing Then angle = rotation.Angle
+                                End If
+
                                 If TypeOf ui Is Wpf.Control Then
                                     _controls(form_Name & "." & controlName.ToLower()) = ui
                                     CType(ui, Wpf.Control).Name = controlName
+                                    Control.SetAngle(ui, angle)
+
+                                    Dim c = CType(ui, Wpf.Control)
+                                    c.SetValue(Control.BorderThicknessProperty, c.BorderThickness)
+                                    c.SetValue(Control.BorderBrushProperty, c.BorderBrush)
+                                    c.SetValue(Control.TipProperty, c.ToolTip)
                                 Else
                                     Dim left = Canvas.GetLeft(ui)
                                     Dim top = Canvas.GetTop(ui)
                                     canvas.Children.Remove(ui)
+
+                                    Dim LayoutTransform = fw.LayoutTransform
+                                    fw.LayoutTransform = Nothing
+                                    ui.RenderTransform = Nothing
+
                                     Dim lb As New Wpf.Label() With {
                                             .Name = controlName,
                                             .Width = fw.Width,
@@ -137,18 +155,22 @@ Namespace WinForms
                                             .HorizontalContentAlignment = HorizontalAlignment.Stretch,
                                             .VerticalContentAlignment = VerticalAlignment.Stretch,
                                             .Content = ui,
-                                            .Background = Nothing
-                                    }
+                                           .Background = Nothing,
+                                           .LayoutTransform = LayoutTransform,
+                                           .RenderTransform = Nothing
+                                     }
+
+                                    Control.SetAngle(lb, angle)
                                     fw.ClearValue(FrameworkElement.WidthProperty)
                                     fw.ClearValue(FrameworkElement.HeightProperty)
 
-                                    canvas.Children.Add(lb)
-                                    Canvas.SetLeft(lb, left)
-                                    Canvas.SetTop(lb, top)
-                                    _controls(form_Name & "." & controlName.ToLower()) = lb
-                                End If
+                                        canvas.Children.Add(lb)
+                                        Canvas.SetLeft(lb, left)
+                                        Canvas.SetTop(lb, top)
+                                        _controls(form_Name & "." & controlName.ToLower()) = lb
+                                    End If
 
-                                SetControlText(ui, GetControlText(ui))
+                                    SetControlText(ui, GetControlText(ui))
                             Next
 
                         Catch ex As Exception
@@ -198,7 +220,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Creats a new form with the given name, and adds it to the forms collection.
+        ''' Creates a new form with the given name, and adds it to the forms collection.
         ''' </summary>
         ''' <param name="formName">the name of the form</param>
         ''' <returns>the name of the form</returns>
@@ -243,6 +265,8 @@ Namespace WinForms
             If xaml.Contains("wpf/xaml/WpfDialogs") Then
                 xaml = "<Canvas " & "xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006"" mc:Ignorable=""c""" & xaml.Substring(7)
             End If
+
+            xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{IO.Path.GetDirectoryName(xamlPath)}\")
 
             Try
                 Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))

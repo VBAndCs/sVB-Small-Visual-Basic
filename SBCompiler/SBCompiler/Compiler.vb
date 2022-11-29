@@ -225,12 +225,12 @@ Namespace Microsoft.SmallVisualBasic
                             Select Case IO.Path.GetExtension(file).ToLower().TrimStart("."c)
                                 Case "bmp", "jpg", "jpeg", "png", "gif", "txt", "xaml", "style"
                                     fileName = Path.GetFileName(file)
-                                    IO.File.Copy(file, Path.Combine(directory, fileName))
+                                    IO.File.Copy(file, Path.Combine(directory, fileName), overwrite:=False)
                             End Select
                         Next
 
                     Else
-                        IO.File.Copy(libraryFile, Path.Combine(directory, fileName))
+                        IO.File.Copy(libraryFile, Path.Combine(directory, fileName), overwrite:=True)
                         copySBLib = True
                     End If
 

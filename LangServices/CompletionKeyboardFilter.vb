@@ -63,8 +63,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     End If
                     args.Handled = True
 
-                    ElseIf args.Key = Key.F1 Then
-                        provider.ShowHelp(True)
+                ElseIf args.Key = Key.F1 Then
+                    provider.ShowHelp(True)
                 End If
             End If
         End Sub

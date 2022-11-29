@@ -296,7 +296,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             If TypeOf sender Is Boolean Then
                 force = CType(sender, Boolean)
-            ElseIf TypeOf sender Is String Then
+            ElseIf TypeOf sender Is String OrElse TypeOf sender Is Char Then
                 symbol = CType(sender, String)
             ElseIf TypeOf sender Is (String, Boolean) Then
                 Dim info = CType(sender, (Symbol As String, Force As Boolean))
@@ -854,10 +854,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             ElseIf newText <> "" Then
                 Dim c = newText.Last
-                If Char.IsLetter(c) Then
+                If Char.IsLetter(c) OrElse c = "_" Then
                     ShowCompletionAdornment(e.After, newEnd)
-                Else
-                    Select Case c
+                Else Select Case c
                         Case "."c, "!"c
                             popHelp.IsOpen = False
                             ShowCompletionAdornment(e.After, newEnd)
@@ -867,6 +866,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             Dim line = e.After.GetLineFromPosition(newEnd)
                             Dim compiler = compHelper.Compile(New IO.StringReader(line.GetText()), Nothing, Nothing, Nothing)
                             Dim vars = compiler.Parser.SymbolTable.GlobalVariables
+
                             If vars.Count > 0 Then
                                 Dim varName = vars.Values(0).LCaseText
                                 CompletionHelper.History("_" & varName(0)) = varName
@@ -875,12 +875,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         Case ">"c, "<"c
                             ShowCompletionAdornment(e.After, newEnd, True)
 
-                        Case "("c
-                            OnHelpUpdate("(", Nothing)
-                        Case ")"c
-                            OnHelpUpdate(")", Nothing)
-                        Case ","c
-                            OnHelpUpdate(",", Nothing)
+                        Case "("c, ")"c, ","c
+                            OnHelpUpdate(c, Nothing)
                     End Select
                 End If
             End If

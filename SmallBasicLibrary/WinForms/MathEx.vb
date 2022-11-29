@@ -244,5 +244,24 @@ Namespace WinForms
         End Function
 
 
+        ''' <summary>
+        ''' Creates a new date from the current ticks value. Note that the second contains 10 milion ticks.
+        ''' </summary>
+        ''' <returns>a new date.</returns>
+        <ReturnValueType(VariableType.Date)>
+        <ExMethod>
+        Public Shared Function ToDate(ticks As Primitive) As Primitive
+            Return New Primitive(ticks.AsDecimal(), NumberType.Date)
+        End Function
+
+        ''' <summary>
+        ''' Creates a new TimeSpan from the current ticks value. Note that the second contains 10 milion ticks.
+        ''' </summary>
+        ''' <returns>a new duration</returns>
+        <ReturnValueType(VariableType.Date)>
+        <ExMethod>
+        Public Shared Function ToDuration(ticks As Primitive) As Primitive
+            Return New Primitive(ticks.AsDecimal, NumberType.TimeSpan)
+        End Function
     End Class
 End Namespace

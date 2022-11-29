@@ -1,0 +1,38 @@
+Start = 0
+Duration = 3000
+ToColor = Colors.SystemControl
+BtnCancel.Enabled = False
+
+T1 = Me.AddTimer("t1", 100)
+T1.Pause()
+T1.OnTick = T1_OnClick
+
+'------------------------------------------------
+Sub T1_OnClick()
+   Me.Text = Me.BackColor
+   If Date.GetTotalMilliseconds(Date.Now - Start) >= Duration Then
+      T1.Pause()
+      BtnAnimate.Enabled = True
+      BtnCancel.Enabled = False
+   EndIf
+EndSub
+
+
+'------------------------------------------------
+Sub BtnCancel_OnClick()
+   BtnAnimate.Enabled = True
+   BtnCancel.Enabled = False
+   Me.BackColor = ToColor
+   T1.Pause()
+EndSub
+
+
+'------------------------------------------------
+Sub BtnAnimate_OnClick()
+   BtnAnimate.Enabled = False
+   BtnCancel.Enabled = True
+   ToColor = Color.GetRandomColor()
+   Form1.AnimateColor(ToColor, Duration)
+   Start = Date.Now
+   T1.Resume()
+EndSub

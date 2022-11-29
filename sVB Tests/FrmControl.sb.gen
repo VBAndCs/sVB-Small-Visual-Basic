@@ -1,0 +1,33 @@
+'@Form Hints:
+'#FrmControl{
+'    Button1: Button
+'    CheckBox1: CheckBox
+'    ComboBox1: ComboBox
+'    DatePicker1: DatePicker
+'    Label1: Label
+'    ProgressBar1: ProgressBar
+'    ListBox1: ListBox
+'    ScrollBar1: ScrollBar
+'    Slider1: Slider
+'    TextBox1: TextBox
+'    ToggleButton1: ToggleButton
+'    RadioButton1: RadioButton
+'}
+
+Me = "FrmControl"
+Button1 = "frmcontrol.button1"
+CheckBox1 = "frmcontrol.checkbox1"
+ComboBox1 = "frmcontrol.combobox1"
+DatePicker1 = "frmcontrol.datepicker1"
+Label1 = "frmcontrol.label1"
+ProgressBar1 = "frmcontrol.progressbar1"
+ListBox1 = "frmcontrol.listbox1"
+ScrollBar1 = "frmcontrol.scrollbar1"
+Slider1 = "frmcontrol.slider1"
+TextBox1 = "frmcontrol.textbox1"
+ToggleButton1 = "frmcontrol.togglebutton1"
+RadioButton1 = "frmcontrol.radiobutton1"
+_path = Program.Directory + "\FrmControl.xaml"
+FrmControl = Forms.LoadForm("FrmControl", _path)
+Form.SetArgsArr(frmcontrol, Stack.PopValue("_frmcontrol_argsArr"))
+Form.Show(FrmControl)
