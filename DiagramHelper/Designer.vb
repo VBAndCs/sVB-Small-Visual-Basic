@@ -912,13 +912,24 @@ Public Class Designer
     Public Delegate Function SavePageDelegate(oldPath As String, saveAs As Boolean) As Boolean
     Public SavePage As SavePageDelegate = AddressOf DoSave
 
-    Public Function DoSave(Optional tmpPath As String = Nothing, Optional saveAs As Boolean = False) As Boolean
+    Public Function DoSave(
+                     Optional newPath As String = Nothing,
+                     Optional saveAs As Boolean = False
+                ) As Boolean
+
         Try
-            Dim xmal = PageToXaml()
-            Dim saveTo = If(tmpPath = "", _xamlFile, tmpPath)
-            IO.File.WriteAllText(saveTo, xmal, System.Text.Encoding.UTF8)
+            Dim xaml = PageToXaml()
+            Dim saveTo = If(newPath = "", _xamlFile, newPath)
+            Dim dir = "file:///" & IO.Path.GetDirectoryName(saveTo).Replace("\", "/").TrimEnd("/"c).ToLower()
+            xaml = xaml.Replace($"ImageSource=""{dir}/", "ImageSource=""\")
+            xaml = xaml.Replace($"ImageFileName=""{dir}/", "ImageFileName=""\")
+            dir = dir.Replace("/", "\")
+            xaml = xaml.Replace($"ImageSource=""{dir}\", "ImageSource=""\")
+            xaml = xaml.Replace($"ImageFileName=""{dir}\", "ImageFileName=""\")
+
+            IO.File.WriteAllText(saveTo, xaml, System.Text.Encoding.UTF8)
             _codeFile = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
-            If tmpPath = "" Then
+            If newPath = "" Then
                 UpdateFormInfo()
                 Me.HasChanges = False
             End If
@@ -982,6 +993,8 @@ Public Class Designer
             End If
 
             xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{IO.Path.GetDirectoryName(fileName)}\")
+            xaml = xaml.Replace("ImageFileName=""\", $"ImageFileName=""{IO.Path.GetDirectoryName(fileName)}\")
+
             CurrentPage.XamlToPage(xaml)
             CurrentPage.ShowGrid = True
             CurrentPage._xamlFile = IO.Path.GetFullPath(fileName)

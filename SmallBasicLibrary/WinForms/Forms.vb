@@ -267,6 +267,7 @@ Namespace WinForms
             End If
 
             xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{IO.Path.GetDirectoryName(xamlPath)}\")
+            xaml = xaml.Replace("ImageFileName=""\", $"ImageFileName=""{IO.Path.GetDirectoryName(xamlPath)}\")
 
             Try
                 Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))

@@ -10,18 +10,18 @@
 
     Shared Function ChangeBorderBrush(Element As FrameworkElement) As Brush
         Dim Shape As Shape = TryCast(Element, Shape)
-        Dim B As Brush
+        Dim brush As Brush
         If Shape IsNot Nothing Then
-            B = ChangeBrush(Element, Shape.StrokeProperty)
+            brush = ChangeBrush(Element, Shape.StrokeProperty)
             If Shape.Stroke IsNot Nothing AndAlso (Double.IsNaN(Shape.StrokeThickness) OrElse Shape.StrokeThickness = 0) Then Shape.StrokeThickness = 1
         Else
             Dim Control = TryCast(Element, Control)
             If Control IsNot Nothing Then
-                B = ChangeBrush(Element, Control.BorderBrushProperty)
+                brush = ChangeBrush(Element, Control.BorderBrushProperty)
                 If Control.BorderBrush IsNot Nothing AndAlso (Double.IsNaN(Control.BorderThickness.Left) OrElse Control.BorderThickness.Left = 0) Then Control.BorderThickness = New Thickness(1)
             End If
         End If
-        Return B
+        Return FixImageBrush(brush)
     End Function
 
     Shared Sub IncreaseBorderThickness(Element As FrameworkElement, Value As Double)
@@ -45,14 +45,18 @@
         End If
     End Sub
 
-    Shared Function ChangeBrush(Element As DependencyObject, Prop As DependencyProperty) As Brush
-
+    Shared Function ChangeBrush(
+                      Element As DependencyObject,
+                      Prop As DependencyProperty
+                ) As Brush
 
         If WpfDialogs.ColorDialog.Show(Element.GetValue(Prop)) Then
             Dim A As Action = Nothing
-            If TypeOf Element Is FrameworkElement AndAlso DiagramObject.Diagrams.ContainsKey(Element) Then
+            If TypeOf Element Is FrameworkElement AndAlso
+                    DiagramObject.Diagrams.ContainsKey(Element) Then
                 A = AddressOf DiagramObject.Diagrams(Element).AfterRestoreAction
             End If
+
             Dim OldState As New PropertyState(A, Element, Prop)
             Element.SetValue(Prop, WpfDialogs.ColorDialog.Brush)
             If TypeOf Element Is FrameworkElement Then
@@ -61,9 +65,38 @@
                     Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
                 End If
             End If
-            Return WpfDialogs.ColorDialog.Brush
+            Return FixImageBrush(WpfDialogs.ColorDialog.Brush)
         End If
         Return Nothing
+    End Function
+
+    Private Shared Function FixImageBrush(brush As Brush) As Brush
+        If brush Is Nothing Then Return Nothing
+
+        Dim imgBrush = TryCast(brush, ImageBrush)
+        If imgBrush IsNot Nothing Then
+            Dim pageFile = Designer.CurrentPage.XamlFile
+            If pageFile = "" Then
+                pageFile = Designer.CurrentPage.CodeFile
+                If pageFile = "" Then Return brush
+            End If
+
+            Dim dir = IO.Path.GetDirectoryName(pageFile)
+            Dim bmp = TryCast(imgBrush.ImageSource, BitmapImage)
+
+            If bmp IsNot Nothing Then
+                Dim imgFile = bmp.UriSource.LocalPath
+                Dim imgFile2 = IO.Path.Combine(dir, IO.Path.GetFileName(imgFile)).Replace("\", "/")
+                Try
+                    IO.File.Copy(imgFile, imgFile2, False)
+                Catch ex As Exception
+                End Try
+                Dim imgUri As New Uri(imgFile2.ToLower())
+                imgBrush.ImageSource = New BitmapImage(imgUri)
+                imgBrush.SetValue(WpfDialogs.ImageBrushes.ImageFileNameProperty, imgUri.AbsoluteUri)
+            End If
+        End If
+        Return brush
     End Function
 
     Shared Sub IncreaseRotationAngle(Element As FrameworkElement, Value As Double)

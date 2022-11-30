@@ -399,7 +399,7 @@ Namespace WinForms
         ''' <summary>
         ''' Changes the witdth of the control to fit its content width.
         ''' This is a one time change, and will not make the control width auto-szied.
-        ''' If you want to make the width auto-size, set the Width properties to -1.
+        ''' If you want to make the width auto-sized, set the Width property to -1.
         ''' </summary>
         <ExMethod>
         Public Shared Sub FitContentWidth(controlName As Primitive)
@@ -420,7 +420,7 @@ Namespace WinForms
         ''' <summary>
         ''' Changes the height of the control to fit its content height. This may be useful when you set WordWrap = True in labels and buttons.
         ''' This is a one time change, and will not make the control height auto-szied.
-        ''' If you want to make the height auto-size, set the Height properties to -1.
+        ''' If you want to make the height auto-sized, set the Height property to -1.
         ''' </summary>
         <ExMethod>
         Public Shared Sub FitContentHeight(controlName As Primitive)
@@ -441,8 +441,8 @@ Namespace WinForms
 
         ''' <summary>
         ''' Changes the witdth and height of the control to fit its content size.
-        ''' This is a one time change, and will not make the control width and height auto-szie.
-        ''' If you want to make them auto-size, set the Width or Height properties or both  to -1.
+        ''' This is a one time change, and will not make the control width and height auto-szied.
+        ''' If you want to make them auto-sized, set the Width or Height properties or both  to -1.
         ''' </summary>
         <ExMethod>
         Public Shared Sub FitContentSize(controlName As Primitive)

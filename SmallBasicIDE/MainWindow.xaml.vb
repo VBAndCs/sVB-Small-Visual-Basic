@@ -602,11 +602,12 @@ Namespace Microsoft.SmallVisualBasic
 
                         fileName = newFilePath & ".xaml"
                         If File.Exists(fileName) Then File.Delete(fileName)
-
+                        Dim oldDir = IO.Path.GetDirectoryName(formDesigner.CodeFile)
                         formDesigner.XamlFile = fileName
                         formDesigner.CodeFile = saveFileDialog.FileName
                         formDesigner.HasChanges = True ' Force saving
                         SaveDesignInfo(document)
+                        CopyImages(oldDir, newDir)
                     End If
 
                     Return True
@@ -1197,32 +1198,53 @@ Namespace Microsoft.SmallVisualBasic
 
             If saveAs Then
                 Dim doc = GetDocIfOpened()
+                Try
+                    If oldCodeFile?.ToLower() = fileName.ToLower() Then
+                        doc?.Save()
+                    Else
 
-                If oldCodeFile?.ToLower() = fileName.ToLower() Then
-                    doc?.Save()
-                Else
-                    If oldCodeFile <> "" AndAlso File.Exists(fileName) Then
-                        If MsgBox(
-                                $"There is a file with the same name `{fileName}`. Do you want to overwrite if? ",
-                                MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
-                            File.Delete(fileName)
+                        If oldCodeFile <> "" AndAlso File.Exists(fileName) Then
+                            If IO.File.ReadAllText(fileName) = "" OrElse MsgBox(
+                                    $"There is a file with the same name `{fileName}`. Do you want to overwrite if? ",
+                                    MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
+                                File.Delete(fileName)
+                            End If
                         End If
+
+                        If doc IsNot Nothing Then
+                            doc.SaveAs(fileName)
+                        ElseIf File.Exists(oldCodeFile) Then
+                            File.Copy(oldCodeFile, fileName, True)
+                        End If
+
+                        formDesigner.CodeFile = fileName
                     End If
 
-                    If doc IsNot Nothing Then
-                        doc.SaveAs(fileName)
-                    ElseIf File.Exists(oldCodeFile) Then
-                        File.Copy(oldCodeFile, fileName)
-                    End If
+                Catch ex As Exception
+                    MsgBox(ex.Message)
+                    Return False
+                End Try
 
-                    formDesigner.CodeFile = fileName
-                End If
+                CopyImages(IO.Path.GetDirectoryName(oldPath), newDir)
             End If
 
             ProjExplorer.ProjectDirectory = formDesigner.XamlFile
             Return True
         End Function
 
+        Private Sub CopyImages(oldDir As String, newDir As String)
+
+            For Each f In IO.Directory.EnumerateFiles(oldDir)
+                Select Case IO.Path.GetExtension(f).ToLower().TrimStart("."c)
+                    Case "bmp", "jpg", "jpeg", "png", "gif"
+                        Dim f2 = IO.Path.Combine(newDir, IO.Path.GetFileName(f))
+                        Try
+                            IO.File.Copy(f, f2, True)
+                        Catch
+                        End Try
+                End Select
+            Next
+        End Sub
 
         Private Sub FormDesigner_CurrentPageChanged(index As Integer)
             If index < 0 AndAlso index > DiagramHelper.Designer.GlobalFileIndex Then
