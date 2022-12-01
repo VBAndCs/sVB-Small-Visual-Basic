@@ -1086,7 +1086,7 @@ Namespace WinForms
         ''' ● The Transparent color keeps the surfuce of the graphic but you can see through it, while it Is still responding to  mouse And keyboard events.
         ''' </summary>
         <ReturnValueType(VariableType.Color)>
-        Public Shared ReadOnly Property Transparent As Primitive = "#FF00FFFFFF"
+        Public Shared ReadOnly Property Transparent As Primitive = "#00FFFFFF"
 
         ''' <summary>
         ''' Turquoise Color:

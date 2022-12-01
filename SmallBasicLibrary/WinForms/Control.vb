@@ -167,7 +167,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetLeft = Wpf.Canvas.GetLeft(GetControl(controlName))
+                        GetLeft = System.Math.Round(Wpf.Canvas.GetLeft(GetControl(controlName)), 2)
                     Catch ex As Exception
                         ReportError(controlName, "Left", ex)
                     End Try
@@ -198,7 +198,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetTop = Wpf.Canvas.GetTop(GetControl(controlName))
+                        GetTop = System.Math.Round(Wpf.Canvas.GetTop(GetControl(controlName)), 2)
                     Catch ex As Exception
                         ReportError(controlName, "Top", ex)
                     End Try
@@ -233,9 +233,9 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetWidth = Form.GetCanvas(obj).ActualWidth
+                            GetWidth = System.Math.Round(Form.GetCanvas(obj).ActualWidth, 2)
                         Else
-                            GetWidth = obj.ActualWidth
+                            GetWidth = System.Math.Round(obj.ActualWidth, 2)
                         End If
                     Catch ex As Exception
                         ReportError(controlName, "Width", ex)
@@ -280,10 +280,11 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetHeight = Form.GetCanvas(obj).ActualHeight
+                            GetHeight = System.Math.Round(Form.GetCanvas(obj).ActualHeight, 2)
                         Else
-                            GetHeight = obj.ActualHeight
+                            GetHeight = System.Math.Round(obj.ActualHeight, 2)
                         End If
+
                     Catch ex As Exception
                         ReportError(controlName, "Height", ex)
                     End Try
@@ -326,10 +327,11 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetMaxWidth = Form.GetCanvas(obj).MaxWidth
+                            GetMaxWidth = System.Math.Round(Form.GetCanvas(obj).MaxWidth, 2)
                         Else
-                            GetMaxWidth = obj.MaxWidth
+                            GetMaxWidth = System.Math.Round(obj.MaxWidth, 2)
                         End If
+
                     Catch ex As Exception
                         ReportError(controlName, "MaxWidth", ex)
                     End Try
@@ -366,9 +368,9 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetMaxHeight = Form.GetCanvas(obj).MaxHeight
+                            GetMaxHeight = System.Math.Round(Form.GetCanvas(obj).MaxHeight, 2)
                         Else
-                            GetMaxHeight = obj.MaxHeight
+                            GetMaxHeight = System.Math.Round(obj.MaxHeight, 2)
                         End If
                     Catch ex As Exception
                         ReportError(controlName, "MaxHeight", ex)
@@ -442,7 +444,7 @@ Namespace WinForms
         ''' <summary>
         ''' Changes the witdth and height of the control to fit its content size.
         ''' This is a one time change, and will not make the control width and height auto-szied.
-        ''' If you want to make them auto-sized, set the Width or Height properties or both  to -1.
+        ''' If you want to make them auto-sized, set both Width and Height properties to -1.
         ''' </summary>
         <ExMethod>
         Public Shared Sub FitContentSize(controlName As Primitive)
@@ -1002,10 +1004,9 @@ Namespace WinForms
                         Dim font As New Primitive
                         Dim c = GetControl(controlName)
                         font.Items("Name") = c.FontFamily.Source
-                        font.Items("Size") = c.FontSize
+                        font.Items("Size") = System.Math.Round(c.FontSize * 0.75, 1)
                         font.Items("Bold") = (c.FontWeight = FontWeights.Bold)
                         font.Items("Italic") = (c.FontStyle = FontStyles.Italic)
-                        font.Items("Color") = GetForeColor(controlName)
 
                         Dim cc = TryCast(c, Wpf.ContentControl)
                         If cc Is Nothing Then
@@ -1024,6 +1025,8 @@ Namespace WinForms
                             End If
                         End If
 
+                        font.Items("Color") = GetForeColor(controlName)
+
                         GetFont = font
                     Catch ex As Exception
                         ReportError(controlName, "Font", ex)
@@ -1038,11 +1041,27 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        c.FontFamily = New FontFamily(font.Items("Name"))
-                        c.FontSize = font.Items("Size")
-                        c.FontWeight = If(font.Items("Bold"), FontWeights.Bold, FontWeights.Normal)
-                        c.FontStyle = If(font.Items("Italic"), FontStyles.Italic, FontStyles.Normal)
-                        SetForeColor(controlName, font.Items("Color"))
+                        If font.ContainsKey("Name") Then
+                            c.FontFamily = New FontFamily(font.Items("Name"))
+                        End If
+
+                        If font.ContainsKey("Size") Then
+                            c.FontSize = font.Items("Size") * 4 / 3
+                        End If
+
+                        If font.ContainsKey("Bold") Then
+                            c.FontWeight = If(font.Items("Bold"), FontWeights.Bold, FontWeights.Normal)
+                        End If
+
+                        If font.ContainsKey("Italic") Then
+                            c.FontStyle = If(font.Items("Italic"), FontStyles.Italic, FontStyles.Normal)
+                        End If
+
+                        If font.ContainsKey("Color") Then
+                            SetForeColor(controlName, font.Items("Color"))
+                        End If
+
+                        If Not CBool(font.ContainsKey("Underlined")) Then Return
 
                         Dim cc = TryCast(c, Wpf.ContentControl)
                         If cc Is Nothing Then
@@ -1056,6 +1075,7 @@ Namespace WinForms
                                 tb.TextDecorations = If(font.Items("Underlined"), TextDecorations.Underline, Nothing)
                             End If
                         End If
+
                     Catch ex As Exception
                         ReportPropertyError(controlName, "FontName", font, ex)
                     End Try
@@ -1101,7 +1121,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetFontSize = GetControl(controlName).FontSize
+                        GetFontSize = System.Math.Round(GetControl(controlName).FontSize * 0.75, 1)
                     Catch ex As Exception
                         ReportError(controlName, "FontSize", ex)
                     End Try
@@ -1112,7 +1132,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetControl(controlName).FontSize = value
+                        GetControl(controlName).FontSize = value * 4 / 3
                     Catch ex As Exception
                         ReportPropertyError(controlName, "FontSize", value, ex)
                     End Try

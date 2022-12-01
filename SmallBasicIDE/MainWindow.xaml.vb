@@ -1225,10 +1225,12 @@ Namespace Microsoft.SmallVisualBasic
                     Return False
                 End Try
 
-                CopyImages(IO.Path.GetDirectoryName(oldPath), newDir)
+                If oldCodeFile <> "" Then
+                    CopyImages(IO.Path.GetDirectoryName(oldCodeFile), newDir)
+                End If
             End If
 
-            ProjExplorer.ProjectDirectory = formDesigner.XamlFile
+                ProjExplorer.ProjectDirectory = formDesigner.XamlFile
             Return True
         End Function
 

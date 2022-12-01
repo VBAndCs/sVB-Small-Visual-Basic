@@ -1,4 +1,4 @@
-
+'Me.RunTests()
 
 
 '------------------------------------------------
@@ -80,5 +80,69 @@ Function Test_Error()
          {"", ""}
       },
       "Control.Error"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FitContent()
+   Label1.FitContentSize()
+   w = Label1.Width
+   h = Label1.Height
+   
+   Label1.Text = "This is a test"
+   results[1] = Label1.Width = w And Label1.Height = h
+   
+   Label1.FitContentHeight()
+   results[2] = Label1.Width = w And Label1.Height > h
+   
+   Label1.FitContentWidth()
+   results[3] = Label1.Width > w And Label1.Height > h
+   
+   Label1.FitContentSize()
+   results[4] = {Label1.Width > w, Label1.Height = h}
+   
+   Label1.Text = "test"
+   results[5] = {Label1.Width > w, Label1.Height = h}
+   
+   Label1.FitContentSize()
+   results[6] = {Label1.Width < w, Label1.Height = h}
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         True, True, True,
+         {True, True},
+         {True, True},
+         {True, True}
+      },
+      "Control.FitContent"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Font()
+   font!Name = Me.FontName
+   font!Size = 20
+   font!Bold = True
+   
+   Label1.Underlined = True
+   Label1.Font = font
+   
+   font2!Name = Me.FontName
+   font2!Size = 20
+   font2!Bold = True
+   font2!Italic = False
+   font2!Underlined = True
+   font2!Color = Colors.Black
+   
+   font = Label1.Font
+   Label1.Font = {}
+   
+   Return UnitTest.AssertEqual(
+      {font, Label1.Font},
+      {font2, font2},
+      "Control.Font"
    )
 EndFunction
