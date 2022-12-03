@@ -1297,9 +1297,9 @@ Namespace WinForms
 
         Friend Shared Function GetCanvas(frm As Window) As Wpf.Canvas
             Dim content = frm.Content
-            If TypeOf content Is Wpf.Canvas Then Return content
+            If TypeOf content Is Wpf.Canvas Then Return CType(content, Wpf.Canvas)
             Dim sp = CType(content, Wpf.StackPanel)
-            Return sp.Children(1)
+            Return CType(sp.Children(1), Wpf.Canvas)
         End Function
 
         ''' <summary>

@@ -837,7 +837,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the days part of the given duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationDays(duration As Primitive)
+        Public Shared Function GetDurationDays(duration As Primitive) As Primitive
             Dim ts = GetTimeSpan(duration)
             If ts Is Nothing Then Return 0
             Return New Primitive(ts.Value.Days)
@@ -849,7 +849,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the hours part of the given duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationHours(duration As Primitive)
+        Public Shared Function GetDurationHours(duration As Primitive) As Primitive
             Dim ts = GetTimeSpan(duration)
             If ts Is Nothing Then Return 0
             Return New Primitive(ts.Value.Hours)
@@ -861,7 +861,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the minutes part of the given duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationMinutes(duration As Primitive)
+        Public Shared Function GetDurationMinutes(duration As Primitive) As Primitive
             Dim ts = GetTimeSpan(duration)
             If ts Is Nothing Then Return 0
             Return New Primitive(ts.Value.Minutes)
@@ -873,7 +873,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the seconds part of the given duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationSeconds(duration As Primitive)
+        Public Shared Function GetDurationSeconds(duration As Primitive) As Primitive
             Dim ts = GetTimeSpan(duration)
             If ts Is Nothing Then Return 0
             Return New Primitive(ts.Value.Seconds)
@@ -885,7 +885,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the milliseconds part of the given duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationMilliseconds(duration As Primitive)
+        Public Shared Function GetDurationMilliseconds(duration As Primitive) As Primitive
             Dim ts = GetTimeSpan(duration)
             If ts Is Nothing Then Return 0
             Return New Primitive(ts.Value.Milliseconds)

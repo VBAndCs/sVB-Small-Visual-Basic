@@ -920,13 +920,7 @@ Public Class Designer
         Try
             Dim xaml = PageToXaml()
             Dim saveTo = If(newPath = "", _xamlFile, newPath)
-            Dim dir = "file:///" & IO.Path.GetDirectoryName(saveTo).Replace("\", "/").TrimEnd("/"c).ToLower()
-            xaml = xaml.Replace($"ImageSource=""{dir}/", "ImageSource=""\")
-            xaml = xaml.Replace($"ImageFileName=""{dir}/", "ImageFileName=""\")
-            dir = dir.Replace("/", "\")
-            xaml = xaml.Replace($"ImageSource=""{dir}\", "ImageSource=""\")
-            xaml = xaml.Replace($"ImageFileName=""{dir}\", "ImageFileName=""\")
-
+            xaml = FixImageFiles(xaml, saveTo)
             IO.File.WriteAllText(saveTo, xaml, System.Text.Encoding.UTF8)
             _codeFile = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
             If newPath = "" Then
@@ -939,6 +933,24 @@ Public Class Designer
             Return False
         End Try
         Return True
+    End Function
+
+    Private Shared Function FixImageFiles(xaml As String, saveTo As String) As String
+        Dim dir = "file:///" & IO.Path.GetDirectoryName(saveTo).Replace("\", "/").TrimEnd("/"c).ToLower()
+        xaml = xaml.Replace($"ImageSource=""{dir}/", "ImageSource=""\")
+        xaml = xaml.Replace($"ImageFileName=""{dir}/", "ImageFileName=""\")
+        dir = dir.Replace("/", "\")
+        xaml = xaml.Replace($"ImageSource=""{dir}\", "ImageSource=""\")
+        xaml = xaml.Replace($"ImageFileName=""{dir}\", "ImageFileName=""\")
+
+        dir = IO.Path.GetDirectoryName(saveTo).Replace("\", "/").TrimEnd("/"c).ToLower()
+        xaml = xaml.Replace($"ImageSource=""{dir}/", "ImageSource=""\")
+        xaml = xaml.Replace($"ImageFileName=""{dir}/", "ImageFileName=""\")
+        dir = dir.Replace("/", "\")
+        xaml = xaml.Replace($"ImageSource=""{dir}\", "ImageSource=""\")
+        xaml = xaml.Replace($"ImageFileName=""{dir}\", "ImageFileName=""\")
+
+        Return xaml
     End Function
 
     Public Sub SaveToImage()
@@ -992,8 +1004,7 @@ Public Class Designer
                 NewPageOpened = True
             End If
 
-            xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{IO.Path.GetDirectoryName(fileName)}\")
-            xaml = xaml.Replace("ImageFileName=""\", $"ImageFileName=""{IO.Path.GetDirectoryName(fileName)}\")
+            xaml = ExpandRelativeImageFiles(xaml, fileName)
 
             CurrentPage.XamlToPage(xaml)
             CurrentPage.ShowGrid = True
@@ -1009,6 +1020,14 @@ Public Class Designer
         End Try
     End Sub
 
+    Public Shared Function ExpandRelativeImageFiles(xaml As String, fileName As String) As String
+        Dim d = IO.Path.GetDirectoryName(fileName).ToLower() & IO.Path.DirectorySeparatorChar
+        xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{d}")
+        xaml = xaml.Replace("ImageFileName=""\", $"ImageFileName=""{d}")
+        xaml = xaml.Replace("ImageSource=""/", $"ImageSource=""{d}")
+        xaml = xaml.Replace("ImageFileName=""/", $"ImageFileName=""{d}")
+        Return xaml
+    End Function
 
     Private Function AskToSave() As Boolean
         Select Case MessageBox.Show($"'{Me.Name}' has changed. Do you want to save changes?", "Save Changes", MessageBoxButton.YesNoCancel)

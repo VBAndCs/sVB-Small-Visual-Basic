@@ -15,22 +15,22 @@ Namespace WinForms
                 Sub() EventManager.RegisterClassHandler(
                         GetType(Window),
                         UIElement.PreviewKeyDownEvent,
-                        New RoutedEventHandler(AddressOf KeyDown))
+                        New KeyEventHandler(AddressOf KeyDown))
             )
 
             App.Invoke(
                 Sub() EventManager.RegisterClassHandler(
                         GetType(Window),
                         UIElement.PreviewTextInputEvent,
-                        New RoutedEventHandler(AddressOf TextInput))
+                        New TextCompositionEventHandler(AddressOf TextInput))
             )
         End Sub
 
-        Private Shared Sub TextInput(sender As Object, e As System.Windows.Input.TextCompositionEventArgs)
+        Private Shared Sub TextInput(sender As Object, e As TextCompositionEventArgs)
             _lastTextInput = e.Text
         End Sub
 
-        Private Shared Sub KeyDown(sender As Object, e As System.Windows.Input.KeyEventArgs)
+        Private Shared Sub KeyDown(sender As Object, e As KeyEventArgs)
             _LastKey = e.Key
         End Sub
 

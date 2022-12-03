@@ -158,11 +158,11 @@ Namespace Library
         Public Shared Property PenColor As Primitive
             Get
                 VerifyAccess()
-                Return CStr(InvokeWithReturn(
+                Return New Primitive(InvokeWithReturn(
                     Function() If(
                         _pen IsNot Nothing,
                         GetStringFromColor(CType(_pen.Brush, SolidColorBrush).Color),
-                        WinForms.Colors.None)
+                        WinForms.Colors.None.AsString())
                     ))
             End Get
 

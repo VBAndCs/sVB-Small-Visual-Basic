@@ -32,7 +32,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim d = GetDatePicker(datePickerName).SelectedDate
-                        GetSelectedDate = If(d.HasValue, New Primitive(d.Value.Ticks, NumberType.Date), "")
+                        GetSelectedDate = If(d.HasValue, New Primitive(d.Value.Ticks, NumberType.Date), New Primitive(""))
                     Catch ex As Exception
                         Control.ReportError(datePickerName, "SelectedDate", ex)
                     End Try
@@ -53,7 +53,7 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Fired when the text is changed.
+        ''' Fired when the selected date is changed.
         ''' </summary>
         Public Shared Custom Event OnSelection As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)

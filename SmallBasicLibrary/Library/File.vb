@@ -548,12 +548,12 @@ Namespace Library
                 .Title = "Open File",
                 .RestoreDirectory = False,
                 .InitialDirectory = GetSetting("sVB", "OpenFile", key, ""),
-                .FilterIndex = GetSetting("sVB", "OpenFile", key & "_FilterIndex", 1)
+                .FilterIndex = CInt(GetSetting("sVB", "OpenFile", key & "_FilterIndex", "1"))
             }
 
             If dlg.ShowDialog() = True Then
                 SaveSetting("sVB", "OpenFile", key, IO.Path.GetDirectoryName(dlg.FileName))
-                SaveSetting("sVB", "OpenFile", key & "_FilterIndex", dlg.FilterIndex)
+                SaveSetting("sVB", "OpenFile", key & "_FilterIndex", dlg.FilterIndex.ToString())
                 Return dlg.FileName
             Else
                 Return ""
@@ -641,7 +641,7 @@ Namespace Library
                                  Replace(".", "_")
         End Function
 
-        Private Shared Function GetFilter(fileType As String)
+        Private Shared Function GetFilter(fileType As String) As String
             If fileType.Contains("|") OrElse fileType.Contains(";") Then
                 Return fileType
             Else

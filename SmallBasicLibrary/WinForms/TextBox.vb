@@ -496,7 +496,7 @@ Namespace WinForms
         ''' <summary>
         ''' Fired when the selected text is changed in TextBox.
         ''' </summary>
-        Public Shared Custom Event OnSelect As SmallVisualBasicCallback
+        Public Shared Custom Event OnSelection As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetTextBox([Event].SenderControl)
@@ -513,7 +513,7 @@ Namespace WinForms
 
                     AddHandler _sender.SelectionChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
                 Catch ex As Exception
-                    [Event].ShowErrorMessage(NameOf(OnSelect), ex)
+                    [Event].ShowErrorMessage(NameOf(OnSelection), ex)
                 End Try
             End AddHandler
 

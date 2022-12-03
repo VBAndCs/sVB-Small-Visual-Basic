@@ -266,8 +266,7 @@ Namespace WinForms
                 xaml = "<Canvas " & "xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006"" mc:Ignorable=""c""" & xaml.Substring(7)
             End If
 
-            xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{IO.Path.GetDirectoryName(xamlPath)}\")
-            xaml = xaml.Replace("ImageFileName=""\", $"ImageFileName=""{IO.Path.GetDirectoryName(xamlPath)}\")
+            xaml = ExpandRelativeImageFiles(xaml, xamlPath)
 
             Try
                 Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))
@@ -279,6 +278,14 @@ Namespace WinForms
             Return Nothing
         End Function
 
+        Private Shared Function ExpandRelativeImageFiles(xaml As String, fileName As String) As String
+            Dim d = IO.Path.GetDirectoryName(fileName).ToLower() & IO.Path.DirectorySeparatorChar
+            xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{d}")
+            xaml = xaml.Replace("ImageFileName=""\", $"ImageFileName=""{d}")
+            xaml = xaml.Replace("ImageSource=""/", $"ImageSource=""{d}")
+            xaml = xaml.Replace("ImageFileName=""/", $"ImageFileName=""{d}")
+            Return xaml
+        End Function
 
         ''' <summary>
         ''' Shows a message box dialog.

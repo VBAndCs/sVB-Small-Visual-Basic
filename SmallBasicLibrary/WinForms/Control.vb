@@ -1,5 +1,4 @@
-﻿Option Explicit On
-
+﻿
 Imports Wpf = System.Windows.Controls
 Imports Microsoft.SmallVisualBasic.Library
 Imports System.Windows
@@ -16,7 +15,7 @@ Namespace WinForms
 
         Shared Sub ReportSubError(key As String, memberName As String, ex As Exception)
             Dim names = If(key.Contains("."),
-                key.Split("."),
+                key.Split("."c),
                 {key, key}
             )
 
@@ -34,7 +33,7 @@ Namespace WinForms
 
         Shared Sub ReportError(key As String, memberName As String, ex As Exception)
             Dim names = If(key.Contains("."),
-                key.Split("."),
+                key.Split("."c),
                 {key, key}
             )
             ReportError(names(0), names(1), memberName, ex)
@@ -50,7 +49,7 @@ Namespace WinForms
 
         Shared Sub ReportPropertyError(key As String, memberName As String, value As String, ex As Exception)
             Dim names = If(key.Contains("."),
-                key.Split("."),
+                key.Split("."c),
                 {key, key}
             )
             ReportyPropertyError(names(0), names(1), memberName, value, ex)
@@ -233,10 +232,12 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetWidth = System.Math.Round(Form.GetCanvas(obj).ActualWidth, 2)
+                            Dim canvas = Form.GetCanvas(CType(obj, Window))
+                            GetWidth = System.Math.Round(canvas.ActualWidth, 2)
                         Else
                             GetWidth = System.Math.Round(obj.ActualWidth, 2)
                         End If
+
                     Catch ex As Exception
                         ReportError(controlName, "Width", ex)
                     End Try
@@ -738,7 +739,7 @@ Namespace WinForms
                     Try
                         Dim file = If(
                              IO.Path.IsPathRooted(fileName),
-                             fileName,
+                             fileName.AsString(),
                              IO.Path.Combine(Program.Directory, fileName)
                          )
 
@@ -765,12 +766,12 @@ Namespace WinForms
                     Try
                         Dim file = If(
                              IO.Path.IsPathRooted(fileName),
-                             fileName,
+                             fileName.AsString(),
                              IO.Path.Combine(Program.Directory, fileName)
                          )
                         Dim stream = IO.File.OpenRead(file)
                         Dim resDic = CType(Markup.XamlReader.Load(stream), ResourceDictionary)
-                        GetControl(controlName).Style = resDic(styleKey.AsString)
+                        GetControl(controlName).Style = CType(resDic(styleKey.AsString()), Style)
 
                     Catch ex As Exception
                         ReportSubError(controlName, "SetStyle", styleKey, ex)
@@ -903,7 +904,7 @@ Namespace WinForms
 
         Private Shared ReadOnly ForeColorProperty As _
                            DependencyProperty = DependencyProperty.RegisterAttached("ForeColor",
-                           GetType(String), GetType(Wpf.Control))
+                           GetType(Media.Color?), GetType(Wpf.Control))
 
         ''' <summary>
         ''' The foregeound color used to draw the text of the control.
@@ -917,11 +918,13 @@ Namespace WinForms
                       Try
                           Dim c = GetControl(controlName)
                           Dim brush = TryCast(c.Foreground, SolidColorBrush)
+
                           If brush IsNot Nothing Then
                               GetForeColor = Color.GetHexaName(brush)
                           Else
-                              GetForeColor = Color.GetHexaName(c.GetValue(ForeColorProperty))
+                              GetForeColor = Color.GetHexaName(CType(c.GetValue(ForeColorProperty), Media.Color?))
                           End If
+
                       Catch ex As Exception
                           ReportError(controlName, "ForeColor", ex)
                       End Try
@@ -936,11 +939,12 @@ Namespace WinForms
                            Dim c = GetControl(controlName)
                            If Color.IsNone(value) Then
                                c.Foreground = Nothing
+                               c.SetValue(ForeColorProperty, Nothing)
                            Else
                                Dim _color = Color.FromString(value)
                                c.Foreground = New SolidColorBrush(_color)
+                               c.SetValue(ForeColorProperty, _color)
                            End If
-                           c.SetValue(ForeColorProperty, value.ToString())
 
                        Catch ex As Exception
                            ReportPropertyError(controlName, "ForeColor", value, ex)
@@ -1093,7 +1097,8 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim _fontFamily = GetControl(controlName).FontFamily
-                        GetFontName = If((_fontFamily IsNot Nothing), _fontFamily.Source, "Tahoma")
+                        GetFontName = If(_fontFamily IsNot Nothing, _fontFamily.Source, "Tahoma")
+
                     Catch ex As Exception
                         ReportError(controlName, "FontName", ex)
                     End Try

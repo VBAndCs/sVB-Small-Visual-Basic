@@ -19,7 +19,8 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the transparency percentage of the color
+        ''' Gets the transparency percentage of the color.
+        ''' Note that this property is read only, and you must use the ChangeTransparency method to change the color transparency percentage.
         ''' </summary>
         ''' <returns>a 0 to 100 value represents the transparency percentage of the color</returns>
         <ReturnValueType(VariableType.Double)>
@@ -50,6 +51,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Gets the red component of the color, which is a number between 0 and 255.
+        ''' Note that this property is read only, and you must use the ChangeRedRatio method to change the color red component.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -59,6 +61,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Gets the green component of the color, which is a number between 0 and 255.
+        ''' Note that this property is read only, and you must use the ChangeGreenRatio method to change the color green component.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -68,6 +71,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Gets the blue component of the color, which is a number between 0 and 255.
+        ''' Note that this property is read only, and you must use the ChangeBlueRatio method to change the color blue component.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -127,6 +131,7 @@ Namespace WinForms
         ''' Gets the alpha component of the color, which is a number betwwn 0 and 255, that indicats the color opacity, where:
         '''   • 0 means a fully transparent color.
         '''   • 255 means a fully opaque solid color.
+        ''' Note that this property is read only, and you must use the ChangeAlpha method to change the color alpha component.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>

@@ -8,12 +8,17 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <RootNamespace>Microsoft.SmallVisualBasic</RootNamespace>
+    <OptionStrict>Off</OptionStrict>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>SmallVisualBasicLibrary.xml</DocumentationFile>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</NoWarn>
+    <WarningsAsErrors></WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>SmallVisualBasicLibrary.xml</DocumentationFile>
+    <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</NoWarn>
+    <WarningsAsErrors></WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="resources\error.png" />

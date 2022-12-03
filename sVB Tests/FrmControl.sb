@@ -146,3 +146,100 @@ Function Test_Font()
       "Control.Font"
    )
 EndFunction
+
+
+'------------------------------------------------
+Function Test_FontName()
+   TextBox1.FontName = ""
+   results[1] = TextBox1.FontName
+   TextBox1.FontName = "test"
+   results[2] = TextBox1.FontName
+   TextBox1.FontName = "Times New Roman"
+   results[3] = TextBox1.FontName
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {"", "test", "Times New Roman"},
+      "Control.FontName"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_FontSize()
+   fontSize = TextBox1.FontSize
+   TextBox1.FontSize = -1
+   results[1] = TextBox1.FontSize
+   TextBox1.FontSize = 0
+   results[2] = TextBox1.FontSize
+   TextBox1.FontSize = 0.5
+   results[3] = TextBox1.FontSize
+   TextBox1.FontSize = 1
+   results[4] = TextBox1.FontSize
+   TextBox1.FontSize = 15
+   results[5] = TextBox1.FontSize
+   TextBox1.FontSize = 20.5
+   results[6] = TextBox1.FontSize
+   TextBox1.FontSize = 100
+   results[7] = TextBox1.FontSize
+   TextBox1.FontSize = 150
+   results[8] = TextBox1.FontSize
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {fontSize, fontSize, 0.5, 1, 15, 20.5, 100, 150},
+      "Control.FontName"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FontBold()
+   Button1.FontBold = False
+   results[1] = Button1.FontBold
+   Button1.FontBold = True
+   results[2] = Button1.FontBold
+   
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {False, True},
+      "Control.FontBold"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FontItalic()
+   Button1.FontItalic = False
+   results[1] = Button1.FontItalic
+   Button1.FontItalic = True
+   results[2] = Button1.FontItalic
+   
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {False, True},
+      "Control.FontItalic"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ForeColor()
+   RadioButton1.ForeColor = Colors.Yellow
+   results[1] = RadioButton1.ForeColor
+   RadioButton1.ForeColor = "red"
+   results[2] = RadioButton1.ForeColor
+   RadioButton1.ForeColor = Color.FromARGB(128, 0, 255, 0)
+   results[3] = RadioButton1.ForeColor
+   RadioButton1.ForeColor = "#0000ff"
+   results[4] = RadioButton1.ForeColor
+   RadioButton1.ForeColor = Colors.None
+   results[5] = RadioButton1.ForeColor
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {"#FFFFFF00", "#FFFF0000", "#8000FF00", "#FF0000FF", "None"},
+      "Control.ForeColor"
+   )
+EndFunction

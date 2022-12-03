@@ -460,7 +460,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the days part of the current duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationDays(duration As Primitive)
+        Public Shared Function GetDurationDays(duration As Primitive) As Primitive
             Return WinForms.Date.GetDurationDays(duration)
         End Function
 
@@ -470,7 +470,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the hours part of the current duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationHours(duration As Primitive)
+        Public Shared Function GetDurationHours(duration As Primitive) As Primitive
             Return WinForms.Date.GetDurationHours(duration)
         End Function
 
@@ -480,7 +480,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the minutes part of the current duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationMinutes(duration As Primitive)
+        Public Shared Function GetDurationMinutes(duration As Primitive) As Primitive
             Return WinForms.Date.GetDurationMinutes(duration)
         End Function
 
@@ -490,7 +490,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the seconds part of the current duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationSeconds(duration As Primitive)
+        Public Shared Function GetDurationSeconds(duration As Primitive) As Primitive
             Return WinForms.Date.GetDurationSeconds(duration)
         End Function
 
@@ -500,7 +500,7 @@ Namespace WinForms
         ''' <param name="duration">the input timespan</param>
         ''' <returns>an integer number representing the milliseconds part of the current duration</returns>
         <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationMilliseconds(duration As Primitive)
+        Public Shared Function GetDurationMilliseconds(duration As Primitive) As Primitive
             Return WinForms.Date.GetDurationMilliseconds(duration)
         End Function
 
