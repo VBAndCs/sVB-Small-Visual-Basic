@@ -302,6 +302,13 @@ Namespace Microsoft.SmallVisualBasic
             End Select
 
             token.ParseType = GetParseType(token.Type)
+            Dim x = token.Text
+
+            token.Hidden = x.StartsWith("_") AndAlso (
+                                      x.StartsWith("__foreach__") OrElse
+                                      x.StartsWith("__tmpArray__") OrElse
+                                      x.StartsWith("_sVB_dynamic_Data_")
+                                   )
             Return True
         End Function
 

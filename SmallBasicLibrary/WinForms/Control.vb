@@ -1,9 +1,9 @@
 ﻿
-Imports Wpf = System.Windows.Controls
-Imports Microsoft.SmallVisualBasic.Library
 Imports System.Windows
 Imports System.Windows.Media
+Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
+Imports Wpf = System.Windows.Controls
 
 Namespace WinForms
     ''' <summary>
@@ -133,12 +133,11 @@ Namespace WinForms
         ''' An extra property to store any value you want that is related to the control. you can store multiple values as by putting them in an array or a dynamic object
         ''' </summary>
         <ExProperty>
-        <ReturnValueType(VariableType.String)>
         Public Shared Function GetTag(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetTag = GetControl(controlName).Tag.ToString()
+                        GetTag = CStr(GetControl(controlName).Tag)
                     Catch ex As Exception
                         ReportError(controlName, "Tag", ex)
                     End Try
@@ -158,7 +157,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' The x-pos of the control on its parent control.
+        ''' Gets or sets the x-pos of the control on its parent control.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -189,7 +188,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' The y-pos of the control on its parent control.
+        ''' Gets or sets the y-pos of the control on its parent control.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -220,7 +219,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' The width of the control.
+        ''' Gets or sets the width of the control.
         ''' If you want an auto-width to fit the control's content width, set this property to -1. 
         ''' You can also limit the auto width by setting the MaxWidth property.
         ''' </summary>
@@ -269,7 +268,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' The height of the control. 
+        ''' Gets or sets the height of the control. 
         ''' If you want an auto-heigh to fit the control's content heigh, set this property to -1. 
         ''' You can also limit the auto height by setting the MaxHeigh property.
         ''' </summary>
@@ -318,7 +317,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' The max width of the control. It is useful when you set the control's width to auto (Width = -1), to force the auto witdth not to exceed a max length. 
+        ''' The max width of the control. It is useful especially when you set the control's width to auto (Width = -1), to force the auto witdth not to exceed a max length.
+        ''' Setting this property to 0 or a negative value will reset it (no max width).
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -327,10 +327,18 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim obj = GetControl(controlName)
+                        Dim value As Double
+
                         If TypeOf obj Is Window Then
-                            GetMaxWidth = System.Math.Round(Form.GetCanvas(obj).MaxWidth, 2)
+                            value = Form.GetCanvas(obj).MaxWidth
                         Else
-                            GetMaxWidth = System.Math.Round(obj.MaxWidth, 2)
+                            value = obj.MaxWidth
+                        End If
+
+                        If Double.IsPositiveInfinity(value) Then
+                            GetMaxWidth = 0
+                        Else
+                            GetMaxWidth = System.Math.Round(value, 2)
                         End If
 
                     Catch ex As Exception
@@ -344,7 +352,8 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim w = System.Math.Max(CDbl(value), 0)
+                        Dim w = CDbl(value)
+                        If w <= 0 Then w = Double.PositiveInfinity
                         Dim obj = GetControl(controlName)
 
                         If TypeOf obj Is Window Then
@@ -352,6 +361,7 @@ Namespace WinForms
                         Else
                             obj.MaxWidth = w
                         End If
+
                     Catch ex As Exception
                         ReportPropertyError(controlName, "MaxWidth", value, ex)
                     End Try
@@ -359,7 +369,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' The max height of the control. It is useful when you set the control's height to auto (Height = -1), to force the auto height not to exceed a max length.
+        ''' The max height of the control. It is useful especially when you set the control's height to auto (Height = -1), to force the auto height not to exceed a max length.
+        ''' Setting this property to 0 or a negative value will reset it (no max height).
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -368,11 +379,20 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim obj = GetControl(controlName)
+                        Dim value As Double
+
                         If TypeOf obj Is Window Then
-                            GetMaxHeight = System.Math.Round(Form.GetCanvas(obj).MaxHeight, 2)
+                            value = Form.GetCanvas(obj).MaxHeight
                         Else
-                            GetMaxHeight = System.Math.Round(obj.MaxHeight, 2)
+                            value = obj.MaxHeight
                         End If
+
+                        If Double.IsPositiveInfinity(value) Then
+                            GetMaxHeight = 0
+                        Else
+                            GetMaxHeight = System.Math.Round(value, 2)
+                        End If
+
                     Catch ex As Exception
                         ReportError(controlName, "MaxHeight", ex)
                     End Try
@@ -384,7 +404,8 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim h = System.Math.Max(CDbl(value), 0)
+                        Dim h = CDbl(value)
+                        If h <= 0 Then h = Double.PositiveInfinity
                         Dim obj = GetControl(controlName)
 
                         If TypeOf obj Is Window Then
@@ -558,31 +579,31 @@ Namespace WinForms
         <ExProperty>
         Public Shared Function GetMouseX(controlName As Primitive) As Primitive
             App.Invoke(
-                   Sub()
-                       Try
-                           Dim c = GetControl(controlName)
-                           GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X)
-                       Catch ex As Exception
-                           ReportError(controlName, "MouseX", ex)
-                       End Try
-                   End Sub)
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X)
+                    Catch ex As Exception
+                        ReportError(controlName, "MouseX", ex)
+                    End Try
+                End Sub)
         End Function
 
         ''' <summary>
-        ''' The mouse y-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's.height.
+        ''' The mouse y-pos relative to the control. When mouse is over the control, this value lies between 0 and the control's height.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetMouseY(controlName As Primitive) As Primitive
             App.Invoke(
-                    Sub()
-                        Try
-                            Dim c = GetControl(controlName)
-                            GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y)
-                        Catch ex As Exception
-                            ReportError(controlName, "MouseY", ex)
-                        End Try
-                    End Sub)
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y)
+                    Catch ex As Exception
+                        ReportError(controlName, "MouseY", ex)
+                    End Try
+                End Sub)
         End Function
 
         ''' <summary>
@@ -594,7 +615,8 @@ Namespace WinForms
                  Sub()
                      Try
                          Dim c = GetControl(controlName)
-                         c.Focus()
+                         If Not c.IsFocused Then c.Focus()
+
                      Catch ex As Exception
                          ReportSubError(controlName, "Focus", ex)
                      End Try
@@ -728,50 +750,65 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Sets the resource dictionary of the control, that contains its controls styles.
-        ''' This allows you to design advanced styles in with other tools like VS.NET, save then as a resource dictionary in a file, then use this method to load it.
+        ''' Sets the resource dictionary of the control from the given file. The resource dictionary contains styles for the control and its child controls. This allows you to design advanced styles with other tools like VS.NET, save them to a file as a resource dictionary, then use this method to load it.
         ''' </summary>
         ''' <param name="fileName">The xaml file that contains the resource dictionary.</param>
         <ExMethod>
-        Public Shared Sub SetRecourceDictionary(controlName As Primitive, fileName As Primitive)
+        Public Shared Sub SetResourceDictionary(controlName As Primitive, fileName As Primitive)
             App.Invoke(
                 Sub()
                     Try
+                        Dim ctrl = GetControl(controlName)
+                        If fileName.IsEmpty Then
+                            ctrl.Resources.Clear()
+                            Return
+                        End If
+
                         Dim file = If(
                              IO.Path.IsPathRooted(fileName),
                              fileName.AsString(),
                              IO.Path.Combine(Program.Directory, fileName)
-                         )
+                        )
 
-                        Dim stream = IO.File.OpenRead(file)
+                        Dim xaml = IO.File.ReadAllText(file, System.Text.Encoding.UTF8)
+                        xaml = Forms.ExpandRelativeImageFiles(xaml, file)
+                        Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))
                         Dim resDic = CType(Markup.XamlReader.Load(stream), ResourceDictionary)
-                        GetControl(controlName).Resources = resDic
+                        ctrl.Resources = resDic
 
                     Catch ex As Exception
-                        ReportSubError(controlName, "SetRecourceDictionary", ex)
+                        ReportSubError(controlName, "SetResourceDictionary", ex)
                     End Try
                 End Sub)
         End Sub
 
         ''' <summary>
-        ''' Sets the style of the control.
-        ''' This allows you to design advanced styles in with other tools like VS.NET, save then as a resource dictionary in a file, then use this method to load it.
+        ''' Sets the style of the control by loading it from the given file.
+        ''' This allows you To design advanced styles With other tools Like VS.NET, save them To a file As a resource dictionary, Then use this method To load it.
         ''' </summary>
         ''' <param name="fileName">The xaml file that contains the resource dictionary.</param>
-        ''' <param name="styleKey">The key of style. The resource dictionary can contain many styles targetting the same control. This method will search for the style that have a key</param>
+        ''' <param name="styleKey">The key of style. The resource dictionary can contain many styles targetting the same control. This method will search for the style that have this key.</param>
         <ExMethod>
         Public Shared Sub SetStyle(controlName As Primitive, fileName As Primitive, styleKey As Primitive)
             App.Invoke(
                 Sub()
                     Try
+                        Dim ctrl = GetControl(controlName)
+                        If fileName.IsEmpty Then
+                            ctrl.Style = Nothing
+                            Return
+                        End If
+
                         Dim file = If(
                              IO.Path.IsPathRooted(fileName),
                              fileName.AsString(),
                              IO.Path.Combine(Program.Directory, fileName)
                          )
-                        Dim stream = IO.File.OpenRead(file)
+                        Dim xaml = IO.File.ReadAllText(file, System.Text.Encoding.UTF8)
+                        xaml = Forms.ExpandRelativeImageFiles(xaml, file)
+                        Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))
                         Dim resDic = CType(Markup.XamlReader.Load(stream), ResourceDictionary)
-                        GetControl(controlName).Style = CType(resDic(styleKey.AsString()), Style)
+                        ctrl.Style = CType(resDic(styleKey.AsString()), Style)
 
                     Catch ex As Exception
                         ReportSubError(controlName, "SetStyle", styleKey, ex)
@@ -895,6 +932,7 @@ Namespace WinForms
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(BackColorProperty, Nothing)
                         obj.SetValue(BackColorProperty, _color)
+
                     Catch ex As Exception
                         ReportPropertyError(controlName, "BackColor", value, ex)
                     End Try
@@ -1643,7 +1681,7 @@ Namespace WinForms
         End Event
 
         ''' <summary>
-        ''' Fired when the user presses a keyboard-ky down
+        ''' Fired when the user presses a keyboard key down
         ''' </summary>
         Public Shared Custom Event OnKeyDown As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
@@ -1667,7 +1705,7 @@ Namespace WinForms
         End Event
 
         ''' <summary>
-        ''' Fired when the user presses a keyboard-ky down on a control or any of its cjild controls.
+        ''' Fired when the user presses a keyboard key down on a control or any of its cjild controls.
         ''' </summary>
         Public Shared Custom Event OnPreviewKeyDown As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
@@ -1684,7 +1722,7 @@ Namespace WinForms
         End Event
 
         ''' <summary>
-        ''' Fired when the user releases a keyboard-ky.
+        ''' Fired when the user releases a keyboard key.
         ''' </summary>
         Public Shared Custom Event OnKeyUp As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
@@ -1704,7 +1742,7 @@ Namespace WinForms
         End Event
 
         ''' <summary>
-        ''' Fired when the user releases a keyboard-ky on the control or any of its child controls.
+        ''' Fired when the user releases a keyboard key on the control or any of its child controls.
         ''' </summary>
         Public Shared Custom Event OnPreviewKeyUp As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
@@ -1719,13 +1757,19 @@ Namespace WinForms
             End RaiseEvent
         End Event
 
+        Private Shared focusTime As Date = Now
+
         ''' <summary>
         ''' Fired when the control gets the focus.
         ''' </summary>
         Public Shared Custom Event OnGotFocus As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Dim _sender = GetSender(NameOf(OnGotFocus))
-                AddHandler _sender.GotFocus, Sub(Sender As Object, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+
+                AddHandler _sender.GotKeyboardFocus,
+                    Sub(Sender As Object, e As RoutedEventArgs)
+                        [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    End Sub
             End AddHandler
 
             RemoveHandler(handler As SmallVisualBasicCallback)

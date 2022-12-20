@@ -5,7 +5,7 @@
 '    ListBox3: ListBox
 '}
 
-Me = "FrmListBoxTests"
+Me = "frmlistboxtests"
 ListBox1 = "frmlistboxtests.listbox1"
 ListBox2 = "frmlistboxtests.listbox2"
 ListBox3 = "frmlistboxtests.listbox3"

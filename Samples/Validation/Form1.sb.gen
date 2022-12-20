@@ -7,7 +7,7 @@
 '    Button2: Button
 '}
 
-Me = "Form1"
+Me = "form1"
 TextBox1 = "form1.textbox1"
 TextBox2 = "form1.textbox2"
 Button1 = "form1.button1"
@@ -18,7 +18,7 @@ Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 Form.Show(Form1)
 '#Events{
-'    TextBox1: OnLostFocus
+'    TextBox1: OnLostFocus OnGotFocus
 '    Button1: OnClick
 '    TextBox2: OnLostFocus
 '    ComboBox1: OnLostFocus OnSelection
@@ -28,6 +28,7 @@ Form.Show(Form1)
 ' TextBox1 Events:
 Control.HandleEvents(TextBox1)
 Control.OnLostFocus = TextBox1_OnLostFocus
+Control.OnGotFocus = TextBox1_OnGotFocus
 
 ' Button1 Events:
 Control.HandleEvents(Button1)

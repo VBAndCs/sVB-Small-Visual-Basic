@@ -35,7 +35,7 @@ Namespace WinForms
         ''' <summary>
         ''' Returns the last Key pressed on the keyboard. 
         ''' Use The Keys enum members to check they key.
-        ''' Examle: If Event.LastKey = Keys.A Then
+        ''' Example: If Event.LastKey = Keys.A Then
         ''' </summary>
         <ReturnValueType(VariableType.Key)>
         Public Shared ReadOnly Property LastKey As Primitive
@@ -73,14 +73,19 @@ Namespace WinForms
             _SenderControl = ControlName
         End Sub
 
-        Shared Sub EventsHandler(Sender As FrameworkElement, e As RoutedEventArgs, userEventHandler As SmallVisualBasicCallback, Optional allowTunneling As Boolean = False)
-            Try
-                If e.Source IsNot Sender Then
-                    If TypeOf Sender IsNot Wpf.Label AndAlso
-                        Not allowTunneling Then Return
-                End If
+        Shared Sub EventsHandler(
+                            sender As FrameworkElement,
+                            e As RoutedEventArgs,
+                            userEventHandler As SmallVisualBasicCallback,
+                            Optional allowTunneling As Boolean = False
+                    )
 
-                _SenderControl = GetControlName(Sender)
+            Try
+                If e.Source IsNot sender AndAlso
+                    TypeOf sender IsNot Wpf.Label AndAlso
+                    Not allowTunneling Then Return
+
+                _SenderControl = GetControlName(sender)
 
                 Call userEventHandler()
 
@@ -93,10 +98,10 @@ Namespace WinForms
             End Try
         End Sub
 
-        Private Shared Function GetControlName(sender As FrameworkElement) As Primitive
+        Friend Shared Function GetControlName(sender As FrameworkElement) As Primitive
             If TypeOf sender Is Window Then
                 Return sender.Name.ToLower
-            ElseIf TypeOf sender Is wpf.Canvas Then
+            ElseIf TypeOf sender Is Wpf.Canvas Then
                 Return CType(sender.Parent, Window).Name.ToLower
             Else
                 Dim parent As FrameworkElement = sender.Parent

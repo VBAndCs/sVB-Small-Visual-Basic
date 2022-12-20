@@ -831,7 +831,7 @@ Namespace Microsoft.SmallVisualBasic
             Do
                 Dim current = tokenEnum.Current
                 If current.Type = closeToken Then
-                    If current.Line = commaLine AndAlso current.Column = commaColumn Then
+                    If current.Line = commaLine AndAlso (current.Column = commaColumn OrElse current.EndColumn = commaColumn) Then
                         If caller.HasValue Then
                             callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count - 1)
                             commaLine = -2
@@ -867,7 +867,7 @@ Namespace Microsoft.SmallVisualBasic
                 Dim comma = tokenEnum.Current
                 If EatOptionalToken(tokenEnum, TokenType.Comma) Then
                     ExprExpected = True
-                    If comma.Line = commaLine AndAlso comma.Column = commaColumn Then
+                    If comma.Line = commaLine AndAlso (comma.Column = commaColumn OrElse comma.EndColumn = commaColumn) Then
                         If caller.HasValue Then
                             callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count)
                             commaLine = -2

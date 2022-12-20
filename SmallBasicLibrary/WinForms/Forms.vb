@@ -92,7 +92,9 @@ Namespace WinForms
                             If xaml = "" Then
                                 canvas = LoadContent(form_Name & ".xaml")
                             ElseIf xaml.StartsWith("<") Then
-                                canvas = XamlReader.Load(Xml.XmlReader.Create(New IO.StringReader(xaml)))
+                                xaml = ExpandRelativeImageFiles(xaml, "")
+                                Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))
+                                canvas = XamlReader.Load(stream)
                             Else
                                 canvas = LoadContent(xamlPath)
                             End If
@@ -102,10 +104,11 @@ Namespace WinForms
                             Dim wnd As New Window() With {
                                    .SizeToContent = SizeToContent.WidthAndHeight,
                                    .WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                                   .Name = form_Name,
+                                   .Name = formName,
                                    .Title = Automation.AutomationProperties.GetHelpText(canvas),
                                    .Content = canvas,
-                                   .ResizeMode = ResizeMode.CanMinimize
+                                   .ResizeMode = ResizeMode.CanMinimize,
+                                   .Background = canvas.Background
                             }
 
                             AddHandler wnd.Closed, AddressOf Form_Closed
@@ -187,6 +190,19 @@ Namespace WinForms
             Return form_Name
         End Function
 
+        Public Shared Function ExpandRelativeImageFiles(xaml As String, fileName As String) As String
+            Dim d = If(fileName = "",
+                Program.Directory,
+                IO.Path.GetDirectoryName(fileName)
+            ).ToLower() & IO.Path.DirectorySeparatorChar
+            xaml = xaml.Replace("Source=""\", $"Source=""{d}")
+            xaml = xaml.Replace("FileName=""\", $"FileName=""{d}")
+            xaml = xaml.Replace("Source=""/", $"Source=""{d}")
+            xaml = xaml.Replace("FileName=""/", $"FileName=""{d}")
+            Return xaml
+        End Function
+
+
         Private Shared Sub SetControlText(control As UIElement, value As String)
             Try
                 CObj(control).Text = value
@@ -241,8 +257,19 @@ Namespace WinForms
 
         Private Shared Sub Form_Closed(sender As Object, e As EventArgs)
             Dim win = CType(sender, Window)
-            Dim formName = win.Name
+            RemoveFormAndControls(win.Name.ToLower())
+        End Sub
+
+        Friend Shared Sub RemoveFormAndControls(formName As String)
             _forms.Remove(formName)
+            formName &= "."
+            Dim keys = _controls.Keys
+
+            For i = keys.Count - 1 To 0 Step -1
+                If keys(i).StartsWith(formName) Then
+                    _controls.Remove(keys(i))
+                End If
+            Next
         End Sub
 
         Private Shared Function LoadContent(xamlPath As String) As Canvas
@@ -266,9 +293,8 @@ Namespace WinForms
                 xaml = "<Canvas " & "xmlns:mc=""http://schemas.openxmlformats.org/markup-compatibility/2006"" mc:Ignorable=""c""" & xaml.Substring(7)
             End If
 
-            xaml = ExpandRelativeImageFiles(xaml, xamlPath)
-
             Try
+                xaml = ExpandRelativeImageFiles(xaml, xamlPath)
                 Dim stream = New IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(xaml))
                 Dim canvas = CType(XamlReader.Load(stream), Canvas)
                 Return canvas
@@ -276,15 +302,6 @@ Namespace WinForms
             End Try
 
             Return Nothing
-        End Function
-
-        Private Shared Function ExpandRelativeImageFiles(xaml As String, fileName As String) As String
-            Dim d = IO.Path.GetDirectoryName(fileName).ToLower() & IO.Path.DirectorySeparatorChar
-            xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{d}")
-            xaml = xaml.Replace("ImageFileName=""\", $"ImageFileName=""{d}")
-            xaml = xaml.Replace("ImageSource=""/", $"ImageSource=""{d}")
-            xaml = xaml.Replace("ImageFileName=""/", $"ImageFileName=""{d}")
-            Return xaml
         End Function
 
         ''' <summary>

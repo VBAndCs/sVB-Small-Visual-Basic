@@ -4,15 +4,22 @@ Label1.OnMouseMove = OnMouseMove
 Me.OnMouseMove = OnMouseMove
 
 '----------------------------
-Sub OnMouseMove
-   msg = "Pos relative to TextBox1: ("
-   TextBox1.Text = msg + TextBox1.MouseX + "," + TextBox1.MouseY + ")"
+Sub OnMouseMove()
+   TextBox1.Text = Text.Format(
+      "Pos relative to TextBox1: ([1], [2])",
+      {TextBox1.MouseX, TextBox1.MouseY}
+   )
    
-   msg = "Pos relative to TextBox2: ("
-   TextBox2.Text = msg + TextBox2.MouseX + "," + TextBox2.MouseY + ")"
    
-   msg = "Pos relative to Form1: ("
-   Form1.Text = msg + Form1.MouseX + "," + Form1.MouseY + ")"
+   TextBox2.Text = Text.Format(
+      "Pos relative to TextBox2: ([1], [2])",
+      {TextBox2.MouseX, TextBox2.MouseY}
+   )
+   
+   Form1.Text = Text.Format(
+      "Pos relative to Form: ([1], [2])",
+      {Me.MouseX, Me.MouseY}
+   )
    
    msg = "Pos relative to Screen: ("
    Label1.Text = msg + Mouse.X + "," + Mouse.Y + ")"

@@ -174,7 +174,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
         Public Shared Sub FillExpressionItems(bag As CompletionBag)
             If DoNotAddGlobals Then Return
 
-            FillVariables(bag)
+            FillGlobalVariables(bag)
             FillTypeNames(bag)
             If Not bag.IsFirstToken Then FillBooleanLitrals(bag)
         End Sub
@@ -243,7 +243,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
         Public Shared Sub FillBooleanLitrals(bag As CompletionBag)
             If DoNotAddGlobals Then Return
 
-            bag.CompletionItems.Add(BooleanLitrals(0)) ' True
+            bag.CompletionItems.Add(booleanLitrals(0)) ' True
             bag.CompletionItems.Add(booleanLitrals(1)) ' False
 
             If Not bag.NextToOperator Then
@@ -256,11 +256,12 @@ Namespace Microsoft.SmallVisualBasic.Completion
         Public Shared CurrentLine As Integer
         Public Shared CurrentColumn As Integer
 
-        Public Shared Sub FillVariables(bag As CompletionBag)
+        Public Shared Sub FillGlobalVariables(bag As CompletionBag)
             If DoNotAddGlobals Then Return
 
             For Each variable In bag.SymbolTable.GlobalVariables
                 Dim varName = variable.Value
+                If varName.Hidden Then Continue For
 
                 ' Prevent shwoing new var names while typing
                 If Not bag.ForHelp AndAlso varName.Line = CurrentLine AndAlso varName.EndColumn = CurrentColumn Then Continue For
@@ -286,7 +287,11 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 End If
 
                 Dim varName = variable.Value.Identifier
-                If Not bag.ForHelp AndAlso varName.Line = CurrentLine AndAlso varName.EndColumn = CurrentColumn Then Continue For
+                If varName.Hidden Then Continue For
+
+                If Not bag.ForHelp AndAlso
+                    varName.Line = CurrentLine AndAlso
+                    varName.EndColumn = CurrentColumn Then Continue For
 
                 bag.CompletionItems.Add(New CompletionItem() With {
                         .Key = variable.Key,

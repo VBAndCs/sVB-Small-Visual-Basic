@@ -3,7 +3,8 @@
 
 '------------------------------------------------
 Sub Button2_OnClick()
-   Me.SetRecourceDictionary("RoundCorner.style")
+   Me.SetResourceDictionary("RoundCorner.style")
+   Button1.BackColor = Colors.Red
 EndSub
 
 
@@ -18,5 +19,5 @@ EndSub
 
 '------------------------------------------------
 Sub Button3_OnClick()
-   Button3.SetRecourceDictionary("RoundCorner.style")
+   Button3.SetResourceDictionary("RoundCorner.style")
 EndSub

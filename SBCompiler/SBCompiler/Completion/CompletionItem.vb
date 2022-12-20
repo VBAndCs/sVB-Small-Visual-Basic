@@ -39,6 +39,8 @@ Namespace Microsoft.SmallVisualBasic.Completion
                         k = MemberInfo.DeclaringType.Name.ToLower()
                         If k = "control" Then
                             k = WinForms.PreCompiler.GetModuleFromVarName(ObjectName)
+                        ElseIf k = "global" Then
+                            k = ""
                         End If
                     End If
 

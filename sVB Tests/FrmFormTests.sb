@@ -1,0 +1,308 @@
+Me.RunTests()
+
+'------------------------------------------------
+Function Test_AddButton()
+   btn1 = Me.AddButton("Button1", 10, 20, 50, 30)
+   btn1.Text = "OK"
+   btn1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         btn1, btn1.Name,
+         btn1.Left, btn1.Top,
+         btn1.Width, btn1.Height,
+         btn1.Text, btn1.Visible
+      },
+      {
+         me + ".button1",
+         "Button1",
+         10, 20,
+         50, 30,
+         "OK", False
+      },
+      "Form.AddButton"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddCheckBox()
+   checkBox1 = Me.AddCheckBox("CheckBox1", 10, 20, "Show Label", True)
+   checkBox1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         checkBox1, checkBox1.Name,
+         checkBox1.Left, checkBox1.Top,
+         checkBox1.Text, checkBox1.Visible, checkBox1.Checked
+      },
+      {
+         me + ".checkbox1",
+         "CheckBox1",
+         10, 20,
+         "Show Label", False, True
+      },
+      "Form.AddCheckBox"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddComboBox()
+   comboBox1 = Me.AddComboBox("ComboBox1", 10, 20, 50, 30)
+   comboBox1.AddItem({"a", "b", "c"})
+   comboBox1.SelectedIndex = 3
+   comboBox1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         comboBox1, comboBox1.Name,
+         comboBox1.Left, comboBox1.Top,
+         comboBox1.Width, comboBox1.Height,
+         comboBox1.Text, comboBox1.Visible
+      },
+      {
+         me + ".combobox1",
+         "ComboBox1",
+         10, 20,
+         50, 30,
+         "c", False
+      },
+      "Form.AddComboBox"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddDatePicker()
+   datePicker1 = Me.AddDatePicker(
+      "DatePicker1", 10, 20, 100, #12/18/2022#)
+   datePicker1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         datePicker1, datePicker1.Name,
+         datePicker1.Left, datePicker1.Top, datePicker1.Width,
+         datePicker1.Visible, datePicker1.SelectedDate
+      },
+      {
+         me + ".datepicker1",
+         "DatePicker1",
+         10, 20, 100,
+         False, #12/18/2022#
+      },
+      "Form.AddDatePicker"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddLabel()
+   label1 = Me.AddLabel("Label1", 10, 20, 50, 30)
+   label1.Text = "Hi there"
+   label1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         label1, label1.Name,
+         label1.Left, label1.Top,
+         label1.Width, label1.Height,
+         label1.Text, label1.Visible
+      },
+      {
+         me + ".label1",
+         "Label1",
+         10, 20,
+         50, 30,
+         "Hi there", False
+      },
+      "Form.AddLabel"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddListBox()
+   listBox1 = Me.AddListBox("ListBox1", 10, 20, 50, 30)
+   listBox1.AddItem({"a", "b", "c"})
+   listBox1.SelectedIndex = 3
+   listBox1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         listBox1, listBox1.Name,
+         listBox1.Left, listBox1.Top,
+         listBox1.Width, listBox1.Height,
+         listBox1.SelectedItem, listBox1.Visible
+      },
+      {
+         me + ".listbox1",
+         "ListBox1",
+         10, 20,
+         50, 30,
+         "c", False
+      },
+      "Form.AddListBox"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddProgressBar()
+   progressBar1 = Me.AddProgressBar(
+      "ProgressBar1",
+      10, 20, 250, 30,
+      0, 0
+   )
+   progressBar1.Value = 50
+   progressBar1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         progressBar1, progressBar1.Name,
+         progressBar1.Left, progressBar1.Top,
+         progressBar1.Width, progressBar1.Height,
+         progressBar1.Value, progressBar1.Maximum
+      },
+      {
+         me + ".progressbar1",
+         "ProgressBar1",
+         10, 20,
+         250, 30,
+         50, 0
+      },
+      "Form.AddProgressBar"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddRadioButton()
+   radioButton1 = Me.AddRadioButton(
+      "RadioButton1", 10, 20, "option 1", "group1", False
+   )
+   radioButton2 = Me.AddRadioButton(
+      "RadioButton2", 100, 20, "option 2", "group1", True
+   )
+   
+   radioButton3 = Me.AddRadioButton(
+      "RadioButton3", 10, 100, "option 3", "group2", True
+   )
+   radioButton4 = Me.AddRadioButton(
+      "RadioButton4", 100, 100, "option 4", "group2", False
+   )
+   
+   
+   radioButton1.Visible = False
+   radioButton2.Visible = False
+   radioButton3.Visible = False
+   radioButton4.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         {
+            radioButton1, radioButton1.Name,
+            radioButton1.Left, radioButton1.Top,
+            radioButton1.Text, radioButton1.GroupName,
+            radioButton1.Checked
+         },
+         {
+            radioButton2, radioButton2.Name,
+            radioButton2.Left, radioButton2.Top,
+            radioButton2.Text, radioButton2.GroupName,
+            radioButton2.Checked
+         },
+         {
+            radioButton3, radioButton3.Name,
+            radioButton3.Left, radioButton3.Top,
+            radioButton3.Text, radioButton3.GroupName,
+            radioButton3.Checked
+         },
+         {
+            radioButton4, radioButton4.Name,
+            radioButton4.Left, radioButton4.Top,
+            radioButton4.Text, radioButton4.GroupName,
+            radioButton4.Checked
+         }
+      },
+      {
+         {
+            me + ".radiobutton1", "RadioButton1",
+            10, 20,
+            "option 1", "group1",
+            False
+         },
+         {
+            me + ".radiobutton2", "RadioButton2",
+            100, 20,
+            "option 2", "group1",
+            True
+         },
+         {
+            me + ".radiobutton3", "RadioButton3",
+            10, 100,
+            "option 3", "group2",
+            True
+         },
+         {
+            me + ".radiobutton4", "RadioButton4",
+            100, 100,
+            "option 4", "group2",
+            False
+         }
+      },
+      "Form.AddRadioButton"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddScrollBar()
+   scrollBar1 = Me.AddScrollBar(
+      "ScrollBar1",
+      10, 20, 250, 30,
+      0, 200, 50
+   )
+   scrollBar1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         scrollBar1, scrollBar1.Name,
+         scrollBar1.Left, scrollBar1.Top,
+         scrollBar1.Width, scrollBar1.Height,
+         scrollBar1.Value, scrollBar1.Maximum
+      },
+      {
+         me + ".scrollbar1",
+         "ScrollBar1",
+         10, 20,
+         250, 30,
+         50, 200
+      },
+      "Form.AddScrollBar"
+   )
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_AddSlider()
+   slider1 = Me.AddSlider(
+      "Slider1",
+      10, 20, 250, 30,
+      0, 100, 50, 10
+   )
+   slider1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         slider1, slider1.Name,
+         slider1.Left, slider1.Top,
+         slider1.Width, slider1.Height,
+         slider1.Value, slider1.Maximum
+      },
+      {
+         me + ".slider1",
+         "Slider1",
+         10, 20,
+         250, 30,
+         50, 100
+      },
+      "Form.AddSlider"
+   )
+EndFunction
+

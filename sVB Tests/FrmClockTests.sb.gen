@@ -2,7 +2,7 @@
 '#FrmClockTests{
 '}
 
-Me = "FrmClockTests"
+Me = "frmclocktests"
 _path = Program.Directory + "\FrmClockTests.xaml"
 FrmClockTests = Forms.LoadForm("FrmClockTests", _path)
 Form.SetArgsArr(frmclocktests, Stack.PopValue("_frmclocktests_argsArr"))

@@ -141,7 +141,7 @@ Namespace WinForms
         ''' <summary>
         ''' Returns the last Key pressed on the keyboard. 
         ''' Use The Keys enum members to check they key.
-        ''' Examle: If Keyboard.LastKey = Keys.A Then
+        ''' Example: If Keyboard.LastKey = Keys.A Then
         ''' </summary>
         <ReturnValueType(VariableType.Key)>
         Public Shared ReadOnly Property LastKey As Primitive

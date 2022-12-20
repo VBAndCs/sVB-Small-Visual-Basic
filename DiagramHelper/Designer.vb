@@ -864,6 +864,8 @@ Public Class Designer
 
     Public Shared RecentDirectory As String
 
+    Private Shared oldPath As String
+
     Public Function SaveAs() As Boolean
         ' Configure open file dialog box 
         Dim dlg As New Microsoft.Win32.SaveFileDialog With {
@@ -883,11 +885,16 @@ Public Class Designer
         dlg.FileName = saveName
 
         If dlg.ShowDialog() = True Then
-            Dim oldPath = _xamlFile
+            oldPath = _xamlFile
             _xamlFile = dlg.FileName ' don't use FileName property to keep the old code file path
-            If Not SavePage(oldPath, True) Then Return False
-            XamlFile = _xamlFile ' Update the old code file path
-            Return True
+            If SavePage(oldPath, True) Then
+                XamlFile = _xamlFile ' Update the old code file path
+                oldPath = ""
+                Return True
+            Else
+                oldPath = ""
+                Return False
+            End If
         End If
         Return False
     End Function
@@ -920,7 +927,19 @@ Public Class Designer
         Try
             Dim xaml = PageToXaml()
             Dim saveTo = If(newPath = "", _xamlFile, newPath)
-            xaml = FixImageFiles(xaml, saveTo)
+
+            Dim dir1 = ""
+            If oldPath = "" Then oldPath = _codeFile
+
+            If oldPath <> "" Then
+                dir1 = IO.Path.GetDirectoryName(oldPath).ToLower()
+                xaml = FixImageFiles(xaml, dir1)
+                oldPath = ""
+            End If
+
+            Dim dir2 = IO.Path.GetDirectoryName(saveTo).ToLower()
+            If dir2 <> dir1 Then xaml = FixImageFiles(xaml, dir2)
+
             IO.File.WriteAllText(saveTo, xaml, System.Text.Encoding.UTF8)
             _codeFile = saveTo.Substring(0, saveTo.Length - 5) & ".sb"
             If newPath = "" Then
@@ -935,20 +954,20 @@ Public Class Designer
         Return True
     End Function
 
-    Private Shared Function FixImageFiles(xaml As String, saveTo As String) As String
-        Dim dir = "file:///" & IO.Path.GetDirectoryName(saveTo).Replace("\", "/").TrimEnd("/"c).ToLower()
-        xaml = xaml.Replace($"ImageSource=""{dir}/", "ImageSource=""\")
-        xaml = xaml.Replace($"ImageFileName=""{dir}/", "ImageFileName=""\")
+    Private Shared Function FixImageFiles(xaml As String, dirPath As String) As String
+        Dim dir = "file:///" & dirPath.Replace("\", "/").TrimEnd("/"c)
+        xaml = xaml.Replace($"Source=""{dir}/", "Source=""\")
+        xaml = xaml.Replace($"FileName=""{dir}/", "FileName=""\")
         dir = dir.Replace("/", "\")
-        xaml = xaml.Replace($"ImageSource=""{dir}\", "ImageSource=""\")
-        xaml = xaml.Replace($"ImageFileName=""{dir}\", "ImageFileName=""\")
+        xaml = xaml.Replace($"Source=""{dir}\", "Source=""\")
+        xaml = xaml.Replace($"FileName=""{dir}\", "FileName=""\")
 
-        dir = IO.Path.GetDirectoryName(saveTo).Replace("\", "/").TrimEnd("/"c).ToLower()
-        xaml = xaml.Replace($"ImageSource=""{dir}/", "ImageSource=""\")
-        xaml = xaml.Replace($"ImageFileName=""{dir}/", "ImageFileName=""\")
+        dir = dirPath.Replace("\", "/").TrimEnd("/"c)
+        xaml = xaml.Replace($"Source=""{dir}/", "Source=""\")
+        xaml = xaml.Replace($"FileName=""{dir}/", "FileName=""\")
         dir = dir.Replace("/", "\")
-        xaml = xaml.Replace($"ImageSource=""{dir}\", "ImageSource=""\")
-        xaml = xaml.Replace($"ImageFileName=""{dir}\", "ImageFileName=""\")
+        xaml = xaml.Replace($"Source=""{dir}\", "Source=""\")
+        xaml = xaml.Replace($"FileName=""{dir}\", "FileName=""\")
 
         Return xaml
     End Function
@@ -1022,10 +1041,10 @@ Public Class Designer
 
     Public Shared Function ExpandRelativeImageFiles(xaml As String, fileName As String) As String
         Dim d = IO.Path.GetDirectoryName(fileName).ToLower() & IO.Path.DirectorySeparatorChar
-        xaml = xaml.Replace("ImageSource=""\", $"ImageSource=""{d}")
-        xaml = xaml.Replace("ImageFileName=""\", $"ImageFileName=""{d}")
-        xaml = xaml.Replace("ImageSource=""/", $"ImageSource=""{d}")
-        xaml = xaml.Replace("ImageFileName=""/", $"ImageFileName=""{d}")
+        xaml = xaml.Replace("Source=""\", $"Source=""{d}")
+        xaml = xaml.Replace("FileName=""\", $"FileName=""{d}")
+        xaml = xaml.Replace("Source=""/", $"Source=""{d}")
+        xaml = xaml.Replace("FileName=""/", $"FileName=""{d}")
         Return xaml
     End Function
 

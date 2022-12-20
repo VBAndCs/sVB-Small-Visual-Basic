@@ -547,12 +547,18 @@ Namespace Library
             End If
         End Sub
 
-        Friend Shared Function GenerateNewName(prefix As String) As String
+        Friend Shared Function GenerateNewName(prefix As String, Optional addGWName As Boolean = False) As String
             Dim value As Integer = 0
+            prefix = prefix.ToLower()
             _nameGenerationMap.TryGetValue(prefix, value)
             value += 1
             _nameGenerationMap(prefix) = value
-            Return prefix & value
+
+            If addGWName Then
+                Return $"{Controls.GW_NAME}.{prefix}{value}"
+            Else
+                Return prefix & value
+            End If
         End Function
     End Class
 End Namespace

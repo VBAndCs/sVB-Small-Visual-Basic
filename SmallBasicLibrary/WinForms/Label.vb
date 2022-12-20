@@ -21,11 +21,11 @@ Namespace WinForms
         ''' </summary>
         Private Shared Function GetLabel(labelName As String) As Wpf.Label
             Dim c = Control.GetControl(labelName)
-            Dim t = TryCast(c, Wpf.Label)
-            If t Is Nothing Then
+            Dim lbl = TryCast(c, Wpf.Label)
+            If lbl Is Nothing Then
                 Throw New Exception($"{labelName} is not a name of a Label.")
             End If
-            Return t
+            Return lbl
         End Function
 
         ''' <summary>
@@ -108,6 +108,8 @@ Namespace WinForms
                 tb.TextWrapping = TextWrapping.Wrap
             End If
 
+            tb.Background = cntrl.Background
+            tb.Foreground = cntrl.Foreground
             Return tb
         End Function
 

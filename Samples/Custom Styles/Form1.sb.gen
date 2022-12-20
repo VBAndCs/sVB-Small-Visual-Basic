@@ -6,7 +6,7 @@
 '    Button1: Button
 '}
 
-Me = "Form1"
+Me = "form1"
 Button2 = "form1.button2"
 Button3 = "form1.button3"
 Button4 = "form1.button4"

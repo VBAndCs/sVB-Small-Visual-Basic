@@ -1,13 +1,24 @@
 ComboBox1.AddItem({1, 2, 3})
 TextBox1.ToolTip = "This is a test"
 
+TextBox2.OnGotFocus = TextBox1_OnGotFocus
+ComboBox1.OnGotFocus = TextBox1_OnGotFocus
+
 '------------------------------------------------
-Sub TextBox1_OnLostFocus()
+Sub TextBox1_OnGotFocus()
+   senderControl = Event.SenderControl
+   senderControl.BackColor = Colors.AliceBlue
+EndSub
+
+'------------------------------------------------
+Sub TextBox1_OnLostFocus
    If TextBox1.Text = "" Then
       TextBox1.Error = "Don't keep me empty!"
    Else
       TextBox1.Error = ""
    EndIf
+   
+   TextBox1.BackColor = Colors.White
 EndSub
 
 
@@ -21,6 +32,8 @@ Sub TextBox2_OnLostFocus()
    Else
       TextBox2.Error = ""
    EndIf
+   
+   TextBox2.BackColor = Colors.White
 EndSub
 
 '------------------------------------------------
@@ -30,6 +43,8 @@ Sub ComboBox1_OnLostFocus()
    Else
       ComboBox1.Error = ""
    EndIf
+   
+   ComboBox1.BackColor = Colors.White
 EndSub
 
 
@@ -64,3 +79,5 @@ Sub Button2_OnClick()
       Me.ShowMessage("OK", "Validation")
    EndIf
 EndSub
+
+

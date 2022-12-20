@@ -979,7 +979,7 @@ Namespace Library
             SyncLock _syncLock
                 Invoke(
                     Sub()
-                        _window = New Window
+                        _window = New Window()
                         _windowCreated = True
                         _window.Title = "Small Visual Basic Graphics Window"
                         If _backgroundBrush Is Nothing Then _backgroundBrush = Media.Brushes.White
@@ -1012,6 +1012,7 @@ Namespace Library
                         SetWindowContent()
                         SignupForWindowEvents()
                         _window.UpdateLayout()
+                        WinForms.Forms._forms(Controls.GW_NAME) = _window
                     End Sub)
             End SyncLock
         End Sub
@@ -1069,9 +1070,12 @@ Namespace Library
         End Sub
 
         Private Shared Sub WindowClosing(sender As Object, e As CancelEventArgs)
-            If WinForms.Forms._forms.Count = 0 AndAlso Not TextWindow._windowVisible Then
+            If WinForms.Forms._forms.Count = 0 AndAlso
+                Not TextWindow._windowVisible Then
                 SmallBasicApplication.End()
             End If
+
+            WinForms.Forms.RemoveFormAndControls(Controls.GW_NAME)
         End Sub
 
         Private Shared Sub WindowSizeChanged(sender As Object, e As SizeChangedEventArgs)
@@ -1111,21 +1115,36 @@ Namespace Library
             Return SmallBasicApplication.InvokeWithReturn(invokeDelegate)
         End Function
 
-        Friend Shared Sub AddShape(name As String, shape As FrameworkElement)
+        Friend Shared Sub AddShape(
+                           name As String,
+                           shape As FrameworkElement,
+                           Optional addToCanvas As Boolean = True
+                    )
+
             VerifyAccess()
-            shape.Name = name
+            If name.StartsWith(Controls.GW_NAME) Then
+                shape.Name = name.Substring(Controls.GW_NAME.Length + 1)
+            Else
+                shape.Name = name
+            End If
             _objectsMap(name) = shape
-            _mainCanvas.Children.Add(shape)
+            If addToCanvas Then _mainCanvas.Children.Add(shape)
         End Sub
 
-        Friend Shared Sub AddControl(name As String, control1 As Control)
+        Friend Shared Sub AddControl(
+                          name As String,
+                          control As Control,
+                          Optional addToCanvas As Boolean = True
+                   )
+
             VerifyAccess()
-            control1.Foreground = _fillBrush
-            control1.FontFamily = _fontFamily
-            control1.FontStyle = _fontStyle
-            control1.FontSize = _fontSize
-            control1.FontWeight = _fontWeight
-            AddShape(name, control1)
+            control.Foreground = _fillBrush
+            control.FontFamily = _fontFamily
+            control.FontStyle = _fontStyle
+            control.FontSize = _fontSize
+            control.FontWeight = _fontWeight
+            AddShape(name, control, addToCanvas)
+            WinForms.Forms._controls(name) = control
         End Sub
 
         Friend Shared Sub RemoveShape(name As Primitive)

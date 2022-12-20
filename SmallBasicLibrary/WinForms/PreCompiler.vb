@@ -136,7 +136,6 @@ Namespace WinForms
                  New ShortcutInfo("Array", VariableType.Array),
                 New ShortcutInfo("Dbl", VariableType.Double),
                 New ShortcutInfo("Double", VariableType.Double),
-                New ShortcutInfo("Clr", VariableType.Color),
                 New ShortcutInfo("Color", VariableType.Color),
                 New ShortcutInfo("Key", VariableType.Key),
                 New ShortcutInfo("Dlg", VariableType.DialogResult),
@@ -254,6 +253,7 @@ Namespace WinForms
             defaultProperties(NameOf(ArrayEx).ToLower()) = "tostr"
             defaultProperties(NameOf(Mouse).ToLower()) = "x"
             defaultProperties(NameOf(Sound).ToLower()) = "playbellring"
+            defaultProperties("unittest") = "assertequal"
             defaultProperties("_m") = "me"
 
             Return defaultProperties

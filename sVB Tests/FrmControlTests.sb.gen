@@ -14,7 +14,7 @@
 '    RadioButton1: RadioButton
 '}
 
-Me = "FrmControl"
+Me = "frmcontrol"
 Button1 = "frmcontrol.button1"
 CheckBox1 = "frmcontrol.checkbox1"
 ComboBox1 = "frmcontrol.combobox1"
@@ -27,7 +27,7 @@ Slider1 = "frmcontrol.slider1"
 TextBox1 = "frmcontrol.textbox1"
 ToggleButton1 = "frmcontrol.togglebutton1"
 RadioButton1 = "frmcontrol.radiobutton1"
-_path = Program.Directory + "\FrmControl.xaml"
+_path = Program.Directory + "\FrmControlTests.xaml"
 FrmControl = Forms.LoadForm("FrmControl", _path)
 Form.SetArgsArr(frmcontrol, Stack.PopValue("_frmcontrol_argsArr"))
 Form.Show(FrmControl)

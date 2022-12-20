@@ -194,7 +194,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim token As New Token With {
                 .Text = $"__toValue__{loopNo}",
                 .Type = TokenType.Identifier,
-                .Parent = Me
+                .Parent = Me,
+                .Hidden = True
             }
 
             Dim toValue = scope.CreateLocalBuilder(Subroutine, token)
@@ -292,7 +293,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                             .DefinitionIdintifier = completionBag.SymbolTable.GlobalVariables(Iterator.LCaseText)
                          })
                     Else
-                        CompletionHelper.FillVariables(completionBag)
+                        CompletionHelper.FillGlobalVariables(completionBag)
                     End If
                 End If
 

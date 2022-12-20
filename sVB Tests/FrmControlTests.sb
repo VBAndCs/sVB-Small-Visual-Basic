@@ -1,0 +1,665 @@
+
+
+'------------------------------------------------
+Function Test_Angle()
+   angles[1] = Button1.Angle
+   Button1.Angle = 45
+   angles[2] = Button1.Angle
+   Button1.Angle = -45
+   angles[3] = Button1.Angle
+   Button1.Angle = 400
+   angles[4] = Button1.Angle
+   
+   angles[5] = CheckBox1.Angle + 10
+   ComboBox1.Angle = ComboBox1.Angle - 121
+   angles[6] = ComboBox1.Angle
+   
+   
+   Return UnitTest.AssertEqual(
+      angles,
+      {0, 45, 315, 40, 344, 260},
+      "Control.Angle"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_BackColor()
+   ListBox1.BackColor = Colors.Yellow
+   results[1] = ListBox1.BackColor
+   ListBox1.BackColor = "red"
+   results[2] = ListBox1.BackColor
+   ListBox1.BackColor = Color.FromARGB(128, 0, 255, 0)
+   results[3] = ListBox1.BackColor
+   ListBox1.BackColor = "#0000ff"
+   results[4] = ListBox1.BackColor
+   ListBox1.BackColor = Colors.None
+   results[5] = ListBox1.BackColor
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {"#FFFFFF00", "#FFFF0000", "#8000FF00", "#FF0000FF", "None"},
+      "Control.BackColor"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Enabled()
+   Me.Enabled = False
+   x = Me.Enabled
+   Me.Enabled = True
+   
+   Return UnitTest.AssertEqual(
+      {x, Me.Enabled},
+      {False, True},
+      "Control.Enabled"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Error()
+   ComboBox1.Error = "test"
+   results[1] = {ComboBox1.Error, ComboBox1.ToolTip}
+   ComboBox1.ToolTip = "Hi"
+   results[2] = {ComboBox1.Error, ComboBox1.ToolTip}
+   ComboBox1.Error = ""
+   results[3] = {ComboBox1.Error, ComboBox1.ToolTip}
+   ComboBox1.ToolTip = ""
+   results[4] = {ComboBox1.Error, ComboBox1.ToolTip}
+   
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         {"test", ""},
+         {"test", "Hi"},
+         {"", "Hi"},
+         {"", ""}
+      },
+      "Control.Error"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FitContent()
+   Label1.FitContentSize()
+   w = Label1.Width
+   h = Label1.Height
+   
+   Label1.Text = "This is a test"
+   results[1] = Label1.Width = w And Label1.Height = h
+   
+   Label1.FitContentHeight()
+   results[2] = Label1.Width = w And Label1.Height > h
+   
+   Label1.FitContentWidth()
+   results[3] = Label1.Width > w And Label1.Height > h
+   
+   Label1.FitContentSize()
+   results[4] = {Label1.Width > w, Label1.Height = h}
+   
+   Label1.Text = "test"
+   results[5] = {Label1.Width > w, Label1.Height = h}
+   
+   Label1.FitContentSize()
+   results[6] = {Label1.Width < w, Label1.Height = h}
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         True, True, True,
+         {True, True},
+         {True, True},
+         {True, True}
+      },
+      "Control.FitContent"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Font()
+   font!Name = Me.FontName
+   font!Size = 20
+   font!Bold = True
+   
+   Label1.Underlined = True
+   Label1.Font = font
+   
+   font2!Name = Me.FontName
+   font2!Size = 20
+   font2!Bold = True
+   font2!Italic = False
+   font2!Underlined = True
+   font2!Color = Colors.Black
+   
+   font = Label1.Font
+   Label1.Font = {}
+   
+   Return UnitTest.AssertEqual(
+      {font, Label1.Font},
+      {font2, font2},
+      "Control.Font"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FontName()
+   TextBox1.FontName = ""
+   results[1] = TextBox1.FontName
+   TextBox1.FontName = "test"
+   results[2] = TextBox1.FontName
+   TextBox1.FontName = "Times New Roman"
+   results[3] = TextBox1.FontName
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {"", "test", "Times New Roman"},
+      "Control.FontName"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_FontSize()
+   fontSize = TextBox1.FontSize
+   TextBox1.FontSize = -1
+   results[1] = TextBox1.FontSize
+   TextBox1.FontSize = 0
+   results[2] = TextBox1.FontSize
+   TextBox1.FontSize = 0.5
+   results[3] = TextBox1.FontSize
+   TextBox1.FontSize = 1
+   results[4] = TextBox1.FontSize
+   TextBox1.FontSize = 15
+   results[5] = TextBox1.FontSize
+   TextBox1.FontSize = 20.5
+   results[6] = TextBox1.FontSize
+   TextBox1.FontSize = 100
+   results[7] = TextBox1.FontSize
+   TextBox1.FontSize = 150
+   results[8] = TextBox1.FontSize
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {fontSize, fontSize, 0.5, 1, 15, 20.5, 100, 150},
+      "Control.FontName"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FontBold()
+   Button1.FontBold = False
+   results[1] = Button1.FontBold
+   Button1.FontBold = True
+   results[2] = Button1.FontBold
+   
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {False, True},
+      "Control.FontBold"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FontItalic()
+   Button1.FontItalic = False
+   results[1] = Button1.FontItalic
+   Button1.FontItalic = True
+   results[2] = Button1.FontItalic
+   
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {False, True},
+      "Control.FontItalic"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ForeColor()
+   RadioButton1.ForeColor = Colors.Yellow
+   results[1] = RadioButton1.ForeColor
+   RadioButton1.ForeColor = "red"
+   results[2] = RadioButton1.ForeColor
+   RadioButton1.ForeColor = Color.FromARGB(128, 0, 255, 0)
+   results[3] = RadioButton1.ForeColor
+   RadioButton1.ForeColor = "#0000ff"
+   results[4] = RadioButton1.ForeColor
+   RadioButton1.ForeColor = Colors.None
+   results[5] = RadioButton1.ForeColor
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {"#FFFFFF00", "#FFFF0000", "#8000FF00", "#FF0000FF", "None"},
+      "Control.ForeColor"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Height()
+   h = TextBox1.Height
+   TextBox1.Text = "line1" + Chars.CrLf + "line2"
+   results[1] = TextBox1.Height
+   TextBox1.Height = -1
+   results[2] = TextBox1.Height > h
+   TextBox1.MaxHeight = h
+   results[3] = TextBox1.Height
+   TextBox1.Height = 500
+   results[4] = TextBox1.Height
+   TextBox1.MaxHeight = 0
+   results[5] = TextBox1.Height
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {h, True, h, h, 500},
+      "Control.Height"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Left
+   l = ScrollBar1.Left
+   ScrollBar1.Left = -ScrollBar1.Width
+   results[1] = ScrollBar1.Left
+   ScrollBar1.Left = -10
+   results[2] = ScrollBar1.Left
+   ScrollBar1.Left = 0
+   results[3] = ScrollBar1.Left
+   ScrollBar1.Left = 100.4
+   results[4] = ScrollBar1.Left
+   ScrollBar1.Left = Me.Width
+   results[5] = ScrollBar1.Left
+   ScrollBar1.Left = l
+   results[6] = ScrollBar1.Left
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {-ScrollBar1.Width, -10, 0, 100.4, Me.Width, l},
+      "Control.Left"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_MaxHeight()
+   Button1.Height = 100
+   results[1] = {Button1.Height, Button1.MaxHeight}
+   
+   Button1.MaxHeight = 50
+   results[2] = {Button1.Height, Button1.MaxHeight}
+   
+   Button1.Height = 25
+   results[3] = {Button1.Height, Button1.MaxHeight}
+   
+   Button1.MaxHeight = 0
+   results[4] = {Button1.Height, Button1.MaxHeight}
+   
+   Button1.MaxHeight = 100
+   Button1.Height = 200
+   results[5] = {Button1.Height, Button1.MaxHeight}
+   
+   Button1.MaxHeight = 0
+   results[6] = {Button1.Height, Button1.MaxHeight}
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         {100, 0},
+         {50, 50},
+         {25, 50},
+         {25, 0},
+         {100, 100},
+         {200, 0}
+      },
+      "Control.MaxHeight"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_MaxWidth()
+   Button1.Width = 100
+   results[1] = {Button1.Width, Button1.MaxWidth}
+   
+   Button1.MaxWidth = 50
+   results[2] = {Button1.Width, Button1.MaxWidth}
+   
+   Button1.Width = 25
+   results[3] = {Button1.Width, Button1.MaxWidth}
+   
+   Button1.MaxWidth = 0
+   results[4] = {Button1.Width, Button1.MaxWidth}
+   
+   Button1.MaxWidth = 100
+   Button1.Width = 200
+   results[5] = {Button1.Width, Button1.MaxWidth}
+   
+   Button1.MaxWidth = 0
+   results[6] = {Button1.Width, Button1.MaxWidth}
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         {100, 0},
+         {50, 50},
+         {25, 50},
+         {25, 0},
+         {100, 100},
+         {200, 0}
+      },
+      "Control.MaxWidth"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Name()
+   
+   Return UnitTest.AssertEqual(
+      {
+         {Button1, Button1.Name},
+         {CheckBox1, CheckBox1.Name},
+         {DatePicker1, DatePicker1.Name},
+         {Me, Me.Name},
+         {FrmControl, FrmControl.Name},
+         {Label1, Label1.Name},
+         {ProgressBar1, ProgressBar1.Name},
+         {RadioButton1, RadioButton1.Name},
+         {ScrollBar1, ScrollBar1.Name},
+         {TextBox1, TextBox1.Name}
+      },
+      {
+         {"frmcontrol.button1", "Button1"},
+         {"frmcontrol.checkbox1", "CheckBox1"},
+         {"frmcontrol.datepicker1", "DatePicker1"},
+         {"frmcontrol", "FrmControl"},
+         {"frmcontrol", "FrmControl"},
+         {"frmcontrol.label1", "Label1"},
+         {"frmcontrol.progressbar1", "ProgressBar1"},
+         {"frmcontrol.radiobutton1", "RadioButton1"},
+         {"frmcontrol.scrollbar1", "ScrollBar1"},
+         {"frmcontrol.textbox1", "TextBox1"}
+      },
+      "Control.Name"
+   )
+EndFunction
+
+
+'------------------------------------------------
+FocusedControls = {}
+
+Function Test_OnGotFocus()
+   FocusedControls = {}
+   ForEach _control In Me.Controls
+      _control.OnGotFocus = GotFocus
+      _control.Focus()
+   Next
+   
+   Return UnitTest.AssertEqual(
+      FocusedControls,
+      {
+         "Button1",
+         "CheckBox1",
+         "ComboBox1", "ComboBox1",
+         "DatePicker1", "DatePicker1",
+         "ListBox1",
+         "Slider1",
+         "TextBox1",
+         "ToggleButton1",
+         "RadioButton1",
+         "txttest"
+      },
+      "Control.OnGotFocus"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Sub GotFocus()
+   senderControl = Event.SenderControl
+   FocusedControls = FocusedControls.AddItem(senderControl.Name)
+EndSub
+
+
+
+'------------------------------------------------
+UnFocusedControls = {}
+
+Function Test_OnLostFocus()
+   UnFocusedControls = {}
+   ForEach _control In Me.Controls
+      _control.OnLostFocus = LostFocus
+      _control.Focus()
+   Next
+   Button1.Focus()
+   
+   Return UnitTest.AssertEqual(
+      UnFocusedControls,
+      {
+         "Button1",
+         "CheckBox1",
+         "ComboBox1", "ComboBox1",
+         "DatePicker1", "DatePicker1",
+         "ListBox1",
+         "Slider1",
+         "TextBox1",
+         "ToggleButton1",
+         "RadioButton1",
+         "txttest"
+      },
+      "Control.OnLostFocus"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Sub LostFocus()
+   senderControl = Event.SenderControl
+   UnFocusedControls = UnFocusedControls.AddItem(senderControl.Name)
+   senderControl.Error = "Invalid"
+EndSub
+
+'------------------------------------------------
+Function Test_Rotate()
+   ProgressBar1.Rotate(130)
+   ProgressBar1.Rotate(-30)
+   Return UnitTest.AssertEqual(
+      ProgressBar1.Angle, 100, "Control.Rotate"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_SetResourceDictionary()
+   Me.SetResourceDictionary("rs.style")
+   Return UnitTest.AssertEqual(
+      {Button1.BackColor, TextBox1.BackColor},
+      {Colors.Red, Colors.Yellow},
+      "Control.setResDic #1"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_SetResourceDictionary2()
+   Button1.BackColor = Colors.SystemControl
+   TextBox1.BackColor = Colors.White
+   
+   Button1.SetResourceDictionary("rs.style")
+   Return UnitTest.AssertEqual(
+      {Button1.BackColor, TextBox1.BackColor},
+      {Colors.Red, Colors.White},
+      "Control.SetResDic #2"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_SetStyle()
+   txtTest = Me + ".txtTest"
+   Control.SetStyle(txtTest, "rs2.style", "BlueTextBox")
+   Button1.SetStyle("rs2.style", "BlueButton")
+   bc = Control.GetBackColor(txtTest)
+   Control.SetBackColor(txtTest, Colors.White)
+   
+   Return UnitTest.AssertEqual(
+      {Button1.BackColor, bc},
+      {Colors.Blue, Colors.Blue},
+      "Control.SetStyle"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Tag()
+   Me.Tag = me
+   results = {}
+   allControls = Me.Controls
+   
+   ForEach _control In allControls
+      _control.Tag = _control
+      results = results.AddItem(_control.Tag)
+   Next
+   
+   Return UnitTest.AssertEqual(
+      {Me.Tag, results},
+      {me, allControls},
+      "Control.Tag"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_ToolTip()
+   Me.ToolTip = me
+   results = {}
+   allControls = Me.Controls
+   
+   ForEach _control In allControls
+      _control.ToolTip = _control
+      ' Error will be shown as a toltip
+      ' but it shouldn't change the original toltip value.
+      _control.Error = "test"
+      results = results.AddItem(_control.ToolTip)
+      _control.Error = ""
+   Next
+   
+   Return UnitTest.AssertEqual(
+      {Me.ToolTip, results},
+      {me, allControls},
+      "Control.ToolTip"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Top
+   l = Slider1.Top
+   Slider1.Top = -Slider1.Height
+   results[1] = Slider1.Top
+   Slider1.Top = -10
+   results[2] = Slider1.Top
+   Slider1.Top = 0
+   results[3] = Slider1.Top
+   Slider1.Top = 100.4
+   results[4] = Slider1.Top
+   Slider1.Top = Me.Height
+   results[5] = Slider1.Top
+   Slider1.Top = l
+   results[6] = Slider1.Top
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {-Slider1.Height, -10, 0, 100.4, Me.Height, l},
+      "Control.Top"
+   )
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_TypeName()
+   results[1] = Me.TypeName
+   ForEach _control In Me.Controls
+      results = results.AddItem(_control.TypeName)
+   Next
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {
+         ControlTypes.Form,
+         ControlTypes.Button,
+         ControlTypes.CheckBox,
+         ControlTypes.ComboBox,
+         ControlTypes.DatePicker,
+         ControlTypes.Label,
+         ControlTypes.ProgressBar,
+         ControlTypes.ListBox,
+         ControlTypes.ScrollBar,
+         ControlTypes.Slider,
+         ControlTypes.TextBox,
+         ControlTypes.ToggleButton,
+         ControlTypes.RadioButton,
+         ControlTypes.TextBox
+      },
+      "Control.TypeName"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Validate()
+   results = {}
+   expected = {}
+   ForEach _control In Me.Controls
+      results = results.AddItem(_control.Validate())
+      expected = expected.AddItem(False)
+      _control.Error = ""
+   Next
+   
+   Return UnitTest.AssertEqual(results, expected, "Control.Validate")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Visible()
+   RadioButton1.Visible = False
+   x = RadioButton1.Visible
+   RadioButton1.Visible = True
+   
+   Return UnitTest.AssertEqual(
+      {x, RadioButton1.Visible},
+      {False, True},
+      "Control.Visible"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Width()
+   Label1.WordWrap = False
+   w = Label1.Width
+   Label1.Text = "This is a test for width property."
+   results[1] = Label1.Width
+   Label1.Width = -1
+   results[2] = Label1.Width > w
+   Label1.MaxWidth = w
+   results[3] = Label1.Width
+   Label1.Width = 500
+   results[4] = Label1.Width
+   Label1.MaxWidth = 0
+   results[5] = Label1.Width
+   
+   Return UnitTest.AssertEqual(
+      results,
+      {w, True, w, w, 500},
+      "Control.Width"
+   )
+EndFunction
+

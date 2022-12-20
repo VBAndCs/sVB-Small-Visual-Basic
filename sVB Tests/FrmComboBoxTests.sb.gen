@@ -5,7 +5,7 @@
 '    ComboBox3: ComboBox
 '}
 
-Me = "FrmComboBoxTests"
+Me = "frmcomboboxtests"
 ComboBox1 = "frmcomboboxtests.combobox1"
 ComboBox2 = "frmcomboboxtests.combobox2"
 ComboBox3 = "frmcomboboxtests.combobox3"

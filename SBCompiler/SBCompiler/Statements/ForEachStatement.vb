@@ -176,7 +176,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                             .DefinitionIdintifier = bag.SymbolTable.GlobalVariables(Iterator.LCaseText)
                          })
                     Else
-                        CompletionHelper.FillVariables(bag)
+                        CompletionHelper.FillGlobalVariables(bag)
                     End If
                 End If
 

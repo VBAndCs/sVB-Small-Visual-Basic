@@ -11,6 +11,7 @@ Namespace Library
         Private Shared _positionMap As New Dictionary(Of String, Point)
         Private Shared _lastClickedButton As Primitive
         Private Shared _lastTypedTextBox As Primitive
+        Friend Const GW_NAME As String = "graphicswindow"
 
         ''' <summary>
         ''' Gets the last Button that was clicked on the Graphics Window.
@@ -80,8 +81,9 @@ Namespace Library
         ''' <param name="left">The x co-ordinate of the button.</param>
         ''' <param name="top">The y co-ordinate of the button.</param>
         ''' <returns>
-        ''' The button that was just added to the Graphics Window.
+        ''' The key of the Button. sVB can deal with this key as an object of type Button, so, you can access the Button methods via it.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Button)>
         Public Shared Function AddButton(caption As Primitive, left As Primitive, top As Primitive) As Primitive
             Dim name As String = Shapes.GenerateNewName("Button")
             GraphicsWindow.Invoke(
@@ -146,10 +148,11 @@ Namespace Library
         ''' <param name="left">The x co-ordinate of the text box.</param>
         ''' <param name="top">The y co-ordinate of the text box.</param>
         ''' <returns>
-        ''' The text box that was just added to the Graphics Window.
+        ''' The key of the TextBox. sVB can deal with this key as an object of type TextBox, so, you can access the TextBox methods via it.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.TextBox)>
         Public Shared Function AddTextBox(left As Primitive, top As Primitive) As Primitive
-            Dim name As String = Shapes.GenerateNewName("TextBox")
+            Dim name = Shapes.GenerateNewName("TextBox")
             GraphicsWindow.Invoke(
                 Sub()
                     Dim textBox1 As New TextBox With {
@@ -165,13 +168,419 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Adds a new CheckBox control to the graphics window
+        ''' </summary>
+        ''' <param name="caption">the text to desply on the CheckBox</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="isChecked">The value to set to the Checked property</param>
+        ''' <returns>
+        ''' The key of the CheckBox. sVB can deal with this key as an object of type CheckBox, so, you can access the CheckBox methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.CheckBox)>
+        Public Shared Function AddCheckBox(
+                         caption As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         isChecked As Primitive
+                   ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("CheckBox", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddCheckBox(GW_NAME, name, left, top, caption, isChecked)
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddCheckBox = key
+                End Sub)
+        End Function
+
+
+        ''' <summary>
+        ''' Adds a new ComboBox control to the graphics window
+        ''' </summary>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
+        ''' <returns>
+        ''' The key of the comboBox. sVB can deal with this key as an object of type ComboBox, so, you can use the ComboBox methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.ComboBox)>
+        Public Shared Function AddComboBox(
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive
+                  ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("ComboBox", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddComboBox(
+                        GW_NAME, name, left, top, width, height
+                    )
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddComboBox = key
+                End Sub)
+        End Function
+
+
+        ''' <summary>
+        ''' Adds a new DatePicker control to the graphics window
+        ''' </summary>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="selectedDate">the date that will be selected in the control</param>
+        ''' <returns>
+        ''' The key of the DatePicker. sVB can deal with this key as an object of type DatePicker, so, you can access the DatePicker methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.DatePicker)>
+        Public Shared Function AddDatePicker(
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         selectedDate As Primitive
+                    ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("DatePicker", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddDatePicker(
+                        GW_NAME, name, left, top, width, selectedDate
+                    )
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddDatePicker = key
+                End Sub)
+        End Function
+
+        ''' <summary>
+        ''' Adds a new Label control to the graphics window
+        ''' </summary>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
+        ''' <returns>
+        ''' The key of the label. sVB can deal with this key as an object of type Label, so, you can access the Label methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Label)>
+        Public Shared Function AddLabel(
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive
+                   ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("Label", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddLabel(
+                        GW_NAME, name, left, top, width, height
+                    )
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddLabel = key
+                End Sub)
+        End Function
+
+
+        ''' <summary>
+        ''' Adds a new ListBox control to the graphics window
+        ''' </summary>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
+        ''' <returns>
+        ''' The key of the listBox. sVB can deal with this key as an object of type ListBox, so, you can access the ListBox methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.ListBox)>
+        Public Shared Function AddListBox(
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive
+                  ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("ListBox", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddListBox(
+                        GW_NAME, name, left, top, width, height
+                    )
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddListBox = key
+                End Sub)
+        End Function
+
+        ''' <summary>
+        ''' Adds a new ProgressBar control to the graphics window
+        ''' </summary>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
+        ''' <param name="minimum">The progress minimum value</param>
+        ''' <param name="maximum">The progress maximum value. Use 0 if the max value is indeterminate.</param>
+        ''' <returns>
+        ''' The key of the ProgressBar. sVB can deal with this key as an object of type ProgressBar, so, you can access the ProgressBar methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.ProgressBar)>
+        Public Shared Function AddProgressBar(
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive,
+                         minimum As Primitive,
+                         maximum As Primitive
+                   ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("ProgressBar", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddProgressBar(
+                        GW_NAME, name,
+                        left, top, width, height,
+                        minimum, maximum
+                    )
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddProgressBar = key
+                End Sub)
+        End Function
+
+        ''' <summary>
+        ''' Adds a new RadioButton control to the graphics window
+        ''' </summary>
+        ''' <param name="caption">The text to desply on the RadioButton</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="groupName">The name of the group to add the button to</param>
+        ''' <param name="isChecked">The value to set to the Checked property</param>
+        ''' <returns>
+        ''' The key of the RadioButton. sVB can deal with this key as an object of type RadioButton, so, you can access the RadioButton methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.RadioButton)>
+        Public Shared Function AddRadioButton(
+                         caption As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         groupName As Primitive,
+                         isChecked As Primitive
+                   ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("RadioButton", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddRadioButton(
+                        GW_NAME, name,
+                        left, top,
+                        caption, groupName, isChecked
+                    )
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddRadioButton = key
+                End Sub)
+        End Function
+
+
+        ''' <summary>
+        ''' Adds a new ScrollBar control to the graphics window
+        ''' </summary>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
+        ''' <param name="minimum">The scrollbar minimum value</param>
+        ''' <param name="maximum">The scrollbar maximum value.</param>
+        ''' <param name="value">The scrollbar current value</param>
+        ''' <returns>
+        ''' The key of the Scrollbar. sVB can deal with this key as an object of type Scrollbar, so, you can access the Scrollbar methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.ScrollBar)>
+        Public Shared Function AddScrollBar(
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive,
+                         minimum As Primitive,
+                         maximum As Primitive,
+                         value As Primitive
+                   ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("ScrollBar", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddScrollBar(
+                        GW_NAME, name,
+                        left, top, width, height,
+                        minimum, maximum, value
+                    )
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddScrollBar = key
+                End Sub)
+        End Function
+
+
+        ''' <summary>
+        ''' Adds a new Slider control to the graphics window
+        ''' </summary>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
+        ''' <param name="minimum">The slider minimum value</param>
+        ''' <param name="maximum">The slider maximum value.</param>
+        ''' <param name="value">The slider current value</param>
+        ''' <param name="tickFrequency">The distance between slide ticks</param>
+        ''' <returns>
+        ''' The key of the Slider. sVB can deal with this key as an object of type Slider, so, you can access the Slider methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Slider)>
+        Public Shared Function AddSlider(
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive,
+                         minimum As Primitive,
+                         maximum As Primitive,
+                         value As Primitive,
+                         tickFrequency As Primitive
+                    ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("Slider", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddSlider(
+                        GW_NAME, name,
+                        left, top, width, height,
+                        minimum, maximum, value, tickFrequency
+                    )
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddSlider = key
+                End Sub)
+        End Function
+
+
+        ''' <summary>
+        ''' Adds a new Timer control to the graphics window. This allows you to add many timers to do different tasks in different intervals.
+        ''' </summary>
+        ''' <param name="interval">The delay time in milliseconds between ticks</param>
+        ''' <returns>
+        ''' The key of the Timer. sVB can deal with this key as an object of type WinTimer, so, you can access the WinTimer methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.WinTimer)>
+        Public Shared Function AddTimer(
+                         interval As Primitive
+                   ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("Timer", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddTimer(
+                        GW_NAME, name, interval
+                    )
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddTimer = key
+                End Sub)
+        End Function
+
+
+        ''' <summary>
+        ''' Adds a new ToggleButton control to the graphics window
+        ''' </summary>
+        ''' <param name="caption">The text that will b displayed on the control</param>
+        ''' <param name="left">The X-pos of the control.</param>
+        ''' <param name="top">The Y-pos of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
+        ''' <returns>
+        ''' The key of the ToggleButton. sVB can deal with this key as an object of type ToggleButton, so, you can access the ToggleButton methods via it.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.ToggleButton)>
+        Public Shared Function AddToggleButton(
+                         caption As Primitive,
+                         left As Primitive,
+                         top As Primitive,
+                         width As Primitive,
+                         height As Primitive
+                    ) As Primitive
+
+            Dim name = Shapes.GenerateNewName("ToggleButton", False)
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim key = WinForms.Form.AddToggleButton(
+                        GW_NAME, name,
+                        left, top, width, height
+                    )
+                    WinForms.ToggleButton.SetText(key, caption)
+                    GraphicsWindow.AddControl(
+                        name,
+                        WinForms.Control.GetControl(key),
+                        False
+                    )
+                    AddToggleButton = key
+                End Sub)
+        End Function
+
+        ''' <summary>
         ''' Adds a multi-line text input box to the graphics window at the specified position.
         ''' </summary>
         ''' <param name="left">The x co-ordinate of the text box.</param>
         ''' <param name="top">The y co-ordinate of the text box.</param>
         ''' <returns>
-        ''' The text box that was just added to the Graphics Window.
+        ''' The key of the TextBox. sVB can deal with this key as an object of type TextBox, so, you can access the TextBox methods via it.
         ''' </returns>
+        <WinForms.ReturnValueType(VariableType.TextBox)>
         Public Shared Function AddMultiLineTextBox(left As Primitive, top As Primitive) As Primitive
             Dim name As String = Shapes.GenerateNewName("TextBox")
             GraphicsWindow.Invoke(
@@ -317,8 +726,8 @@ Namespace Library
         End Sub
 
         Private Shared Sub OnButtonClicked(sender As Object, e As RoutedEventArgs)
-            Dim button1 As Button = TryCast(sender, Button)
-            Dim name As String = button1.Name
+            Dim button1 = TryCast(sender, Button)
+            Dim name = button1.Name
             If GraphicsWindow._objectsMap.ContainsKey(name) Then
                 _lastClickedButton = name
                 RaiseEvent ButtonClicked()

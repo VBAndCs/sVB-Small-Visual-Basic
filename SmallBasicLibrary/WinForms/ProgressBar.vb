@@ -92,7 +92,8 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetMaximum = GetProgressBar(progressBarName).Maximum
+                        Dim pb = GetProgressBar(progressBarName)
+                        GetMaximum = If(pb.IsIndeterminate, 0, pb.Maximum)
                     Catch ex As Exception
                         Control.ReportError(progressBarName, "Maximum", ex)
                     End Try

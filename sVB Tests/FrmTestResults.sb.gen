@@ -3,7 +3,7 @@
 '    TextBox1: TextBox
 '}
 
-Me = "FrmTestResults"
+Me = "frmtestresults"
 TextBox1 = "frmtestresults.textbox1"
 _path = Program.Directory + "\FrmTestResults.xaml"
 FrmTestResults = Forms.LoadForm("FrmTestResults", _path)

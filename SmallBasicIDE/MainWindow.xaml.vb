@@ -1238,7 +1238,7 @@ Namespace Microsoft.SmallVisualBasic
 
             For Each f In IO.Directory.EnumerateFiles(oldDir)
                 Select Case IO.Path.GetExtension(f).ToLower().TrimStart("."c)
-                    Case "bmp", "jpg", "jpeg", "png", "gif"
+                    Case "bmp", "jpg", "jpeg", "png", "gif", "ico"
                         Dim f2 = IO.Path.Combine(newDir, IO.Path.GetFileName(f))
                         Try
                             IO.File.Copy(f, f2, True)

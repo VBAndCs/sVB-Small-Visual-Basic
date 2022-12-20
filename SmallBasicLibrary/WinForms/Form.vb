@@ -126,8 +126,8 @@ Namespace WinForms
         ''' <param name="textBoxName">A unique name for the new TextBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <returns>
         ''' The key of the TextBox in the formula {formName.textBoxName} like "form1.textbox1".
         ''' sVB can deal with this key as an object of type TextBox, so, you can access the TextBox methods via it.
@@ -149,8 +149,8 @@ Namespace WinForms
 
                          Dim textBox1 As New Wpf.TextBox With {
                            .Name = textBoxName,
-                           .Width = width,
-                           .Height = height,
+                           .Width = GetDouble(width),
+                           .Height = GetDouble(height),
                            .VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto,
                            .HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
                          }
@@ -176,8 +176,8 @@ Namespace WinForms
         ''' <param name="labelName">A unique name for the new Label.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <returns>
         ''' The key of the label in the formula {formName.labelName} like "form1.label1".
         ''' sVB can deal with this key as an object of type Label, so, you can access the Label methods via it.
@@ -199,8 +199,8 @@ Namespace WinForms
 
                       Dim label1 As New Wpf.Label With {
                           .Name = labelName,
-                          .Width = width,
-                          .Height = height
+                          .Width = GetDouble(width),
+                          .Height = GetDouble(height)
                       }
 
                       Wpf.Canvas.SetLeft(label1, left)
@@ -224,8 +224,8 @@ Namespace WinForms
         ''' <param name="imageBoxName">A unique name for the new ImageBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <param name="fileName">the path of the image file</param>
         ''' <returns>
         ''' The key of the ImageBox in the formula {formName.imageBoxName} like "form1.imagebox1".
@@ -233,7 +233,7 @@ Namespace WinForms
         ''' </returns>
         <ReturnValueType(VariableType.ImageBox)>
         <ExMethod>
-        Public Shared Function AddImageBox(
+        Private Shared Function AddImageBox(
                          formName As Primitive,
                          imageBoxName As Primitive,
                          left As Primitive,
@@ -250,8 +250,8 @@ Namespace WinForms
                             Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
                             Dim img As New Wpf.Image With {
                                 .Name = imageBoxName,
-                                .Width = width,
-                                .Height = height
+                                .Width = GetDouble(width),
+                                .Height = GetDouble(height)
                             }
 
                             If Not IO.Path.IsPathRooted(fileName) Then
@@ -402,8 +402,8 @@ Namespace WinForms
         ''' <param name="buttonName">A unique name for the new Button.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <returns>
         ''' The key of the button in the formula {formName.buttonName} like "form1.button1".
         ''' sVB can deal with this key as an object of type Button, so, you can access the Button methods via it.
@@ -427,8 +427,8 @@ Namespace WinForms
 
                           Dim button1 As New Wpf.Button With {
                                .Name = buttonName,
-                               .Width = width,
-                               .Height = height
+                               .Width = GetDouble(width),
+                               .Height = GetDouble(height)
                           }
 
                           Wpf.Canvas.SetLeft(button1, left)
@@ -452,8 +452,8 @@ Namespace WinForms
         ''' <param name="toggleButtonName">A unique name for the new ToggleButton.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <returns>
         ''' The key of the ToggleButton in the formula {formName.toggleButtonName} like "form1.toggleButton1".
         ''' sVB can deal with this key as an object of type ToggleButton, so, you can access the ToggleButton methods via it.
@@ -477,8 +477,8 @@ Namespace WinForms
 
                           Dim toggleButton1 As New Wpf.Primitives.ToggleButton With {
                                .Name = toggleButtonName,
-                               .Width = width,
-                               .Height = height
+                               .Width = GetDouble(width),
+                               .Height = GetDouble(height)
                           }
 
                           Wpf.Canvas.SetLeft(toggleButton1, left)
@@ -504,7 +504,7 @@ Namespace WinForms
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="text">the text to desply on the CheckBox</param>
-        ''' <param name="checked">The value to set to the Checked property</param>
+        ''' <param name="isChecked">The value to set to the Checked property</param>
         ''' <returns>
         ''' The key of the CheckBox in the formula {formName.checkBoxName} like "form1.checkbox1".
         ''' sVB can deal with this key as an object of type CheckBox, so, you can access the CheckBox methods via it.
@@ -517,7 +517,7 @@ Namespace WinForms
                          left As Primitive,
                          top As Primitive,
                          text As Primitive,
-                         checked As Primitive
+                         isChecked As Primitive
                    ) As Primitive
 
             Dim key = ValidateArgs(formName, checkBoxName)
@@ -532,10 +532,10 @@ Namespace WinForms
                           }
 
                           ' Don't use if() expression, because it will return a new primitive not Nothing
-                          If checked.AsString() = "" Then
+                          If isChecked.AsString() = "" Then
                               ch.IsChecked = Nothing
                           Else
-                              ch.IsChecked = checked
+                              ch.IsChecked = isChecked
                           End If
 
                           Wpf.Canvas.SetLeft(ch, left)
@@ -561,7 +561,7 @@ Namespace WinForms
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="text">The text to desply on the RadioButton</param>
         ''' <param name="groupName">The name of the group to add the button to</param>
-        ''' <param name="checked">The value to set to the Checked property</param>
+        ''' <param name="isChecked">The value to set to the Checked property</param>
         ''' <returns>
         ''' The key of the RadioButton in the formula {formName.radioButtonName} like "form1.radiobutton1".
         ''' sVB can deal with this key as an object of type RadioButton, so, you can access the RadioButton methods via it.
@@ -575,7 +575,7 @@ Namespace WinForms
                          top As Primitive,
                          text As Primitive,
                          groupName As Primitive,
-                         checked As Primitive
+                         isChecked As Primitive
                    ) As Primitive
 
             Dim key = ValidateArgs(formName, radioButtonName)
@@ -588,7 +588,7 @@ Namespace WinForms
                                .Name = radioButtonName,
                                .Content = text,
                                .GroupName = groupName,
-                               .IsChecked = checked
+                               .IsChecked = isChecked
                           }
 
                           Wpf.Canvas.SetLeft(rd, left)
@@ -613,15 +613,16 @@ Namespace WinForms
         ''' <param name="listBoxName">A unique name for the new ListBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <returns>
         ''' The key of the listBox in the formula {formName.listBoxName} like "form1.listbox1".
         ''' sVB can deal with this key as an object of type ListBox, so, you can access the ListBox methods via it.
         ''' </returns>
         <ReturnValueType(VariableType.ListBox)>
         <ExMethod>
-        Public Shared Function AddListBox(formName As Primitive,
+        Public Shared Function AddListBox(
+                         formName As Primitive,
                          listBoxName As Primitive,
                          left As Primitive,
                          top As Primitive,
@@ -637,8 +638,8 @@ Namespace WinForms
 
                           Dim listBox1 As New Wpf.ListBox With {
                                  .Name = listBoxName,
-                                 .Width = width,
-                                 .Height = height
+                                 .Width = GetDouble(width),
+                                 .Height = GetDouble(height)
                           }
 
                           Wpf.Canvas.SetLeft(listBox1, left)
@@ -663,8 +664,8 @@ Namespace WinForms
         ''' <param name="comboBoxName">A unique name for the new ComboBox.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <returns>
         ''' The key of the comboBox in the formula {formName.comboBoxName} like "form1.combobox1".
         ''' sVB can deal with this key as an object of type ComboBox, so, you can use the ComboBox methods via it.
@@ -688,8 +689,8 @@ Namespace WinForms
 
                           Dim comboBox1 As New Wpf.ComboBox With {
                                  .Name = comboBoxName,
-                                 .Width = width,
-                                 .Height = height
+                                 .Width = GetDouble(width),
+                                 .Height = GetDouble(height)
                           }
 
                           Wpf.Canvas.SetLeft(comboBox1, left)
@@ -707,13 +708,18 @@ Namespace WinForms
             Return key
         End Function
 
+        Private Shared Function GetDouble(value As Primitive) As Double
+            Dim v = CDbl(value)
+            Return If(v < 0, Double.NaN, v)
+        End Function
+
         ''' <summary>
         ''' Adds a new DatePicker control to the form
         ''' </summary>
         ''' <param name="datePickerName">A unique name for the new DatePicker.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
         ''' <param name="selectedDate">the date that will be selected in the control</param>
         ''' <returns>
         ''' The key of the DatePicker in the formula {formName.datePikkerName} like "form1.datepicker1".
@@ -721,7 +727,7 @@ Namespace WinForms
         ''' </returns>
         <ReturnValueType(VariableType.DatePicker)>
         <ExMethod>
-        Public Shared Function AddDatePiker(
+        Public Shared Function AddDatePicker(
                          formName As Primitive,
                          datePickerName As Primitive,
                          left As Primitive,
@@ -738,8 +744,8 @@ Namespace WinForms
 
                           Dim dp As New Wpf.DatePicker With {
                                .Name = datePickerName,
-                               .Width = width,
-                               .SelectedDate = selectedDate
+                               .Width = GetDouble(width),
+                               .SelectedDate = selectedDate.AsDate()
                           }
 
                           Wpf.Canvas.SetLeft(dp, left)
@@ -750,7 +756,7 @@ Namespace WinForms
                           Forms._controls(key) = dp
 
                       Catch ex As Exception
-                          ReportSubError(formName, "AddDatePiker", ex)
+                          ReportSubError(formName, "AddDatePicker", ex)
                       End Try
                   End Sub)
 
@@ -763,8 +769,8 @@ Namespace WinForms
         ''' <param name="progressBarName">A unique name for the new ProgressBar.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <param name="minimum">The progress minimum value</param>
         ''' <param name="maximum">The progress maximum value. Use 0 if the max value is indeterminate.</param>
         ''' <returns>
@@ -792,10 +798,10 @@ Namespace WinForms
 
                           Dim pb As New Wpf.ProgressBar With {
                                .Name = progressBarName,
-                               .Width = width,
-                               .Height = height,
+                               .Width = GetDouble(width),
+                               .Height = GetDouble(height),
                                .Minimum = minimum,
-                               .Maximum = maximum
+                               .Background = Brushes.White
                           }
 
                           Wpf.Canvas.SetLeft(pb, left)
@@ -804,6 +810,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(pb)
                           Forms._controls(key) = pb
+                          ProgressBar.SetMaximum(key, maximum)
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddProgressBar", ex)
@@ -819,8 +826,8 @@ Namespace WinForms
         ''' <param name="sliderName">A unique name for the new Slider.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <param name="minimum">The slider minimum value</param>
         ''' <param name="maximum">The slider maximum value.</param>
         ''' <param name="value">The slider current value</param>
@@ -852,10 +859,13 @@ Namespace WinForms
 
                           Dim s As New Wpf.Slider With {
                                .Name = sliderName,
-                               .Width = width,
-                               .Height = height,
+                               .Width = GetDouble(width),
+                               .Height = GetDouble(height),
                                .Minimum = minimum,
                                .Maximum = maximum,
+                               .AutoToolTipPlacement = Wpf.Primitives.AutoToolTipPlacement.TopLeft,
+                               .AutoToolTipPrecision = 1,
+                               .TickPlacement = Wpf.Primitives.TickPlacement.TopLeft,
                                .TickFrequency = tickFrequency,
                                .Value = value
                           }
@@ -881,8 +891,8 @@ Namespace WinForms
         ''' <param name="scrollBarName">A unique name for the new ScrollBar.</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control.</param>
-        ''' <param name="height">The height of the control.</param>
+        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
+        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <param name="minimum">The scrollbar minimum value</param>
         ''' <param name="maximum">The scrollbar maximum value.</param>
         ''' <param name="value">The scrollbar current value</param>
@@ -912,8 +922,8 @@ Namespace WinForms
 
                           Dim s As New Wpf.Primitives.ScrollBar With {
                                .Name = scrollBarName,
-                               .Width = width,
-                               .Height = height,
+                               .Width = GetDouble(width),
+                               .Height = GetDouble(height),
                                .Minimum = minimum,
                                .Maximum = maximum,
                                .Value = value
@@ -1017,14 +1027,13 @@ Namespace WinForms
 
             Dim map = New Dictionary(Of Primitive, Primitive)
             Dim prefix = frmName & "."
-            Dim suffex = "." & frmName
-            Dim num = 0
+            Dim num = 1
 
             For Each key In Forms._controls.Keys
                 If key.StartsWith(prefix) Then
                     map(num) = key
+                    num += 1
                 End If
-                num += 1
             Next
 
             Dim result As New Primitive
@@ -1296,10 +1305,11 @@ Namespace WinForms
         End Sub
 
         Friend Shared Function GetCanvas(frm As Window) As Wpf.Canvas
-            Dim content = frm.Content
+            Dim content = TryCast(frm.Content, UIElement)
+            If content Is Nothing Then Return Nothing
+
             If TypeOf content Is Wpf.Canvas Then Return CType(content, Wpf.Canvas)
-            Dim sp = CType(content, Wpf.StackPanel)
-            Return CType(sp.Children(1), Wpf.Canvas)
+            Return content.GetChild(Of Wpf.Canvas)(True)
         End Function
 
         ''' <summary>
@@ -1346,7 +1356,7 @@ Namespace WinForms
                         Dim canvas = GetCanvas(win)
                         IO.File.WriteAllText(
                             xamlPath,
-                            System.Windows.Markup.XamlWriter.Save(canvas)
+                            Markup.XamlWriter.Save(canvas)
                         )
                     Catch ex As Exception
                         ReportSubError(formName, "SaveDesign", ex)
@@ -1355,17 +1365,17 @@ Namespace WinForms
         End Sub
 
 #Region "Events"
-        Public Shared ReadOnly OnFormShownEvent As System.Windows.RoutedEvent =
-                   System.Windows.EventManager.RegisterRoutedEvent(
-                   "OnFormShown",
-                   System.Windows.RoutingStrategy.Bubble,
-                   GetType(System.Windows.RoutedEventHandler),
-                   GetType(System.Windows.Window)
-              )
+        Public Shared ReadOnly OnFormShownEvent As RoutedEvent =
+            EventManager.RegisterRoutedEvent(
+            "OnFormShown",
+            RoutingStrategy.Bubble,
+            GetType(RoutedEventHandler),
+            GetType(Window)
+        )
 
         Public Shared Sub AddAttachedActionHandler(
-                     Element As System.Windows.UIElement,
-                     Handler As System.Windows.RoutedEventHandler
+                     Element As UIElement,
+                     Handler As RoutedEventHandler
                 )
 
             If Element IsNot Nothing Then

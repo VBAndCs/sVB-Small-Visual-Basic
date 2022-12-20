@@ -18,7 +18,10 @@
             Dim Control = TryCast(Element, Control)
             If Control IsNot Nothing Then
                 brush = ChangeBrush(Element, Control.BorderBrushProperty)
-                If Control.BorderBrush IsNot Nothing AndAlso (Double.IsNaN(Control.BorderThickness.Left) OrElse Control.BorderThickness.Left = 0) Then Control.BorderThickness = New Thickness(1)
+                If Control.BorderBrush IsNot Nothing AndAlso (
+                        Double.IsNaN(Control.BorderThickness.Left) OrElse
+                        Control.BorderThickness.Left = 0
+                    ) Then Control.BorderThickness = New Thickness(1)
             End If
         End If
         Return FixImageBrush(brush)
@@ -91,9 +94,13 @@
                     IO.File.Copy(imgFile, imgFile2, False)
                 Catch ex As Exception
                 End Try
+
                 Dim imgUri As New Uri(imgFile2.ToLower())
                 imgBrush.ImageSource = New BitmapImage(imgUri)
-                imgBrush.SetValue(WpfDialogs.ImageBrushes.ImageFileNameProperty, imgUri.AbsoluteUri)
+                imgBrush.SetValue(
+                    WpfDialogs.ImageBrushes.ImageFileNameProperty,
+                    imgFile2.ToLower()
+                )
             End If
         End If
         Return brush

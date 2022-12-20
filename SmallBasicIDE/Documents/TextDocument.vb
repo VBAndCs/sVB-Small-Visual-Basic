@@ -891,7 +891,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             controlsInfoList(formName.ToLower()) = "Form"
             controlsInfoList("me") = "Form"
             controlNamesList.Add(formName)
-            declaration.AppendLine($"Me = ""{formName}""")
+            declaration.AppendLine($"Me = ""{formName.ToLower()}""")
 
             For Each c As UIElement In formDesigner.Items
                 Dim name = formDesigner.GetControlNameOrDefault(c)

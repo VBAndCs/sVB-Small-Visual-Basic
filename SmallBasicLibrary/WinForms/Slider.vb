@@ -137,6 +137,36 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Gets or sets whether or not the thumb movment snaps to tick marquees when the user slides it.
+        ''' Set this property to True and set the TickFrequency property to a proper value to show marquees on the slider, and force the user to slide only to marquees positions.
+        ''' The default value is False, which gives the user freedom to slide to positions between tha marquees.
+        ''' </summary>
+        <ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetSnapToTick(sliderName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetSnapToTick = GetSlider(sliderName).IsSnapToTickEnabled
+                    Catch ex As Exception
+                        Control.ReportError(sliderName, "SnapToTick", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetSnapToTick(sliderName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetSlider(sliderName).IsSnapToTickEnabled = CBool(value)
+                    Catch ex As Exception
+                        Control.ReportPropertyError(sliderName, "SnapToTick", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
         Public Shared ReadOnly TrackColorProperty As DependencyProperty =
                 DependencyProperty.RegisterAttached("TrackColor",
                 GetType(String), GetType(Slider),

@@ -88,7 +88,7 @@ Class sVB
 
         For Each f In IO.Directory.EnumerateFiles(docDirectory)
             Select Case IO.Path.GetExtension(f).ToLower().TrimStart("."c)
-                Case "bmp", "jpg", "jpeg", "png", "gif", "txt", "xaml", "style"
+                Case "bmp", "jpg", "jpeg", "png", "gif", "ico", "txt", "xaml", "style"
                     Dim f2 = IO.Path.Combine(binDirectory, IO.Path.GetFileName(f))
                     Try
                         IO.File.Copy(f, f2, True)
@@ -394,13 +394,18 @@ Class sVB
 
                     If ModuleName = "" Then
                         errors.Clear()
-                        errors.Add(New [Error](nameToken, $"Property `{propName}` doesn't exist."))
-                Exit Sub
+                        methodInfo = WinForms.PreCompiler.GetMethodInfo(controlName, varType, $"Get{propName}")
+                        If methodInfo.Module = "" Then
+                            errors.Add(New [Error](nameToken, $"The `{propName}` property doesn't exist."))
+                        Else
+                            errors.Add(New [Error](nameToken, $"The `{propName}` property is read-only, and you can't change its value."))
+                        End If
+                        Exit Sub
                     End If
 
                     If methodInfo.ParamsCount <> 2 Then
                         errors.Clear()
-                        errors.Add(New [Error](nameToken, $"`{method}` definition is not supported."))
+                        errors.Add(New [Error](nameToken, $"The `{method}` definition is not supported."))
                         Exit Sub
                     End If
 

@@ -13,7 +13,7 @@ Namespace WinForms
 
         ''' <summary>Form</summary>
         <ReturnValueType(VariableType.ControlType)>
-        Public Shared ReadOnly Property Form As Primitive = "Form"
+        Public Shared ReadOnly Property Form As Primitive = "Window"
 
         ''' <summary>TextBox</summary>
         <ReturnValueType(VariableType.ControlType)>

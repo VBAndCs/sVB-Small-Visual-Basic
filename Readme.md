@@ -806,12 +806,12 @@ Me.ShowChildForm("FrmFind", TxtEditor)
 
 The first argument is the name of the child form (and the auto completion list will offer the names of the forms for you), and the second param is an extra data that will be passed to the ArgsArr property in the child form.
 
-62. You can change the style of the form and controls by loading styles from a recource dictionary. This is an advanced topic, that needs knowledge about XAML and WPF, but it always you to make use of syles and thems defiend for WPF, UWP or WinUI3 to make a beautiful design, and change how controls look and even work!
-All you need is to have a Resource dictonary in a Xaml file, then use these two methods to load it:
-* Control.SetRecourceDictionary: send the xaml file path to this method to load styles from it into the control and its child controls. This means that if you called it from a form. the styles will affect all target controls if exists on it. Note that this method needs that styles have no keys. Styles with names (keys) will not be applied to controls here.
-*  Control. SetStyle: it is similar to the previous method, but it has a second parameter that recives the name (key) of the style. It is useful when you want to apply a style on only one control.
-Note that if the style have no name, you can call SetRecourceDictionary from this control instead to apply the style on it, but this can also apply another styles on the controls if the resource dictionary has many styles targetting the same control type. 
-For mor info, see the `Custom Styles` app in the samples folder. the tow files `RoundCorner.style` and `RoundCorner2.style` are in fact XAML files, but I changed there extensions from `.xaml` to `.style` not to be cinfused with form design files. But if you used .xaml extension it will also work.
+62. You can change the style of the form and controls by loading styles from a resource dictionary. This is an advanced topic, that needs knowledge about XAML and WPF, but it allows you to make use of styles and themes defined for WPF, UWP or WinUI3 to make a beautiful design, and change how controls look and even work!
+All you need is to have a Resource dictionary in a Xaml file, then use these two methods to load it:
+* Control.SetResourceDictionary: send the xaml file path to this method to load styles from it into the control and its child controls. This means that if you called it from a form. the styles will affect all target controls if exists on it. Note that this method needs that styles have no keys. Styles with names (keys) will not be applied to controls here.
+* Control.SetStyle: it is similar to the previous method, but it has a second parameter that receives the name (key) of the style. It is useful when you want to apply a style on only one control.
+Note that if the style has no name, you can call SetResourceDictionary from this control instead to apply the style on it, but this can also apply another styles on the control if the resource dictionary has many styles targeting the same control type. 
+For mor info, see the `Custom Styles` app in the samples folder. the tow files `RoundCorner.style` and `RoundCorner2.style` are in fact XAML files, but I changed there extensions from `.xaml` to `.style` not to be confused with form design files. But if you used .xaml extension it will also work.
 
 63. If you want something easier, you can change the Button and ToggleButton appearenace by setting the Flat property to True. This will help you use theem as a toolbar buttons by butting a label under them, as you can see in the ` Toggle Buttons` app in the samples folder.
 

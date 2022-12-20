@@ -20,9 +20,10 @@ EndFunction
 
 '------------------------------------------------
 Function Test_ElapsedMilliseconds()
+   d1 = Clock.ElapsedMilliseconds
    t = Date.Now
-   d = Clock.ElapsedMilliseconds
-   Return UnitTest.AssertEqual(t.ElapsedMilliseconds, d, "Clock.ElapsedMilliseconds")
+   d2 = t.ElapsedMilliseconds
+   Return UnitTest.AssertEqual(d2, d1, "Clock.ElapsedMilliseconds")
 EndFunction
 
 
