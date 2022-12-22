@@ -263,5 +263,16 @@ Namespace WinForms
         Public Shared Function ToDuration(ticks As Primitive) As Primitive
             Return New Primitive(ticks.AsDecimal, NumberType.TimeSpan)
         End Function
+
+
+        ''' <summary>
+        ''' Converts the current decimal number to its hexadecimal representaion.
+        ''' </summary>
+        ''' <returns>the hexadecimal representaion of the number</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        <ExProperty>
+        Public Shared Function GetHex([decimal] As Primitive) As Primitive
+            Return Hex([decimal])
+        End Function
     End Class
 End Namespace

@@ -85,7 +85,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Button)>
         Public Shared Function AddButton(caption As Primitive, left As Primitive, top As Primitive) As Primitive
-            Dim name As String = Shapes.GenerateNewName("Button")
+            Dim name As String = Shapes.GenerateNewName("Button", True)
             GraphicsWindow.Invoke(
                 Sub()
                     Dim button1 As New Button With {
@@ -152,7 +152,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.TextBox)>
         Public Shared Function AddTextBox(left As Primitive, top As Primitive) As Primitive
-            Dim name = Shapes.GenerateNewName("TextBox")
+            Dim name = Shapes.GenerateNewName("TextBox", True)
             GraphicsWindow.Invoke(
                 Sub()
                     Dim textBox1 As New TextBox With {
@@ -272,6 +272,7 @@ Namespace Library
         ''' <summary>
         ''' Adds a new Label control to the graphics window
         ''' </summary>
+        ''' <param name="caption">The text to display on the label</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
         ''' <param name="width">The width of the control. Use -1 for auto-width</param>
@@ -281,10 +282,9 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Label)>
         Public Shared Function AddLabel(
+                         caption As Primitive,
                          left As Primitive,
-                         top As Primitive,
-                         width As Primitive,
-                         height As Primitive
+                         top As Primitive
                    ) As Primitive
 
             Dim name = Shapes.GenerateNewName("Label", False)
@@ -292,13 +292,14 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddLabel(
-                        GW_NAME, name, left, top, width, height
+                        GW_NAME, name, left, top, -1, -1
                     )
                     GraphicsWindow.AddControl(
                         name,
                         WinForms.Control.GetControl(key),
                         False
                     )
+                    WinForms.Label.SetText(key, caption)
                     AddLabel = key
                 End Sub)
         End Function
@@ -582,7 +583,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.TextBox)>
         Public Shared Function AddMultiLineTextBox(left As Primitive, top As Primitive) As Primitive
-            Dim name As String = Shapes.GenerateNewName("TextBox")
+            Dim name As String = Shapes.GenerateNewName("TextBox", True)
             GraphicsWindow.Invoke(
                 Sub()
                     Dim textBox1 As New TextBox With {

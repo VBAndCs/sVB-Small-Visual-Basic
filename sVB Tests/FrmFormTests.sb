@@ -1,4 +1,3 @@
-Me.RunTests()
 
 '------------------------------------------------
 Function Test_AddButton()
@@ -303,6 +302,70 @@ Function Test_AddSlider()
          50, 100
       },
       "Form.AddSlider"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddTextBox()
+   textBox1 = Me.AddTextBox("TextBox1", 10, 20, 50, 30)
+   textBox1.Text = "Hi there"
+   textBox1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         textBox1, textBox1.Name,
+         textBox1.Left, textBox1.Top,
+         textBox1.Width, textBox1.Height,
+         textBox1.Text, textBox1.Visible
+      },
+      {
+         me + ".textbox1",
+         "TextBox1",
+         10, 20,
+         50, 30,
+         "Hi there", False
+      },
+      "Form.AddTextBox"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddTimer()
+   timer1 = Me.AddTimer("Timer1", 300)
+   timer1.Pause()
+   
+   Return UnitTest.AssertEqual(
+      {timer1, timer1.Interval},
+      {me + ".timer1", 300},
+      "Form.AddTimer"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddToggleButton()
+   toggleButton1 = Me.AddToggleButton("ToggleButton1", 10, 20, 50, 30)
+   toggleButton1.Text = "OK"
+   toggleButton1.Checked = True
+   toggleButton1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         toggleButton1, toggleButton1.Name,
+         toggleButton1.Left, toggleButton1.Top,
+         toggleButton1.Width, toggleButton1.Height,
+         toggleButton1.Text, toggleButton1.Checked
+      },
+      {
+         me + ".togglebutton1",
+         "ToggleButton1",
+         10, 20,
+         50, 30,
+         "OK", True
+      },
+      "Form.AddToggleButton"
    )
 EndFunction
 

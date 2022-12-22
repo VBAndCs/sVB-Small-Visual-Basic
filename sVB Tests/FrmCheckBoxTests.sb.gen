@@ -6,7 +6,7 @@
 '    CheckBox4: CheckBox
 '}
 
-Me = "FrmCheckBoxTests"
+Me = "frmcheckboxtests"
 CheckBox1 = "frmcheckboxtests.checkbox1"
 CheckBox2 = "frmcheckboxtests.checkbox2"
 CheckBox3 = "frmcheckboxtests.checkbox3"

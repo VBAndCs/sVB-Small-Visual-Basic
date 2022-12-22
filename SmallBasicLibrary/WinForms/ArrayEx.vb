@@ -3,7 +3,6 @@ Option Compare Text
 Option Explicit On
 Option Infer On
 Option Strict On
-Imports System.Collections.Generic
 Imports Microsoft.SmallVisualBasic.Library
 
 Namespace WinForms
@@ -201,5 +200,16 @@ Namespace WinForms
         Public Shared Function ToStr(array As Primitive) As Primitive
             Return Text.ToStr(array)
         End Function
+
+
+        ''' <summary>
+        ''' Adds an item to the current array. This method is faster when you want to build a large array, hence sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
+        ''' </summary>
+        ''' <param name="value">The item you want to add after the last item in the array.</param>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        <ExMethod>
+        Public Shared Sub AddNextItem(array As Primitive, value As Primitive)
+            Library.Array.AddNextItem(array, value)
+        End Sub
     End Class
 End Namespace

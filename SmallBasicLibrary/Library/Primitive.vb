@@ -707,7 +707,6 @@ Namespace Library
             Return array
         End Function
 
-
         Public Shared Function SetArrayValue(
                         value As Primitive,
                         array As Primitive,

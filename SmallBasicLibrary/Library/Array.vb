@@ -39,6 +39,23 @@ Namespace Library
             Return Primitive.SetArrayValue(value, array, index)
         End Function
 
+
+        ''' <summary>
+        ''' Adds an item to the array. The input array will be changed directly, so this method is faster when you want to build a large array.
+        ''' sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
+        ''' </summary>
+        ''' <param name="array">The input array. The array must contain one or more items</param>
+        ''' <param name="value">The item you want to add after the last item in the array.</param>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        Public Shared Sub AddNextItem(array As Primitive, value As Primitive)
+            Dim map = array._arrayMap
+            If map Is Nothing Then
+                Throw New InvalidOperationException("Can't add items to an empty array.")
+            End If
+            Dim index = map.Count + 1
+            map(index) = value
+        End Sub
+
         ''' <summary>
         ''' Adds many items to the array.
         ''' </summary>

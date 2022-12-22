@@ -28,36 +28,51 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Private Shared counter = 0
 
-        Private Function Lower(leftValue As String) As String
+        Private Function Lower(leftValue As String, Optional ByRef tmpArr As String = Nothing) As String
             counter += 1
-            Dim tmpVar = "__tmpArray__" & counter
+            tmpArr = "__tmpArray__" & counter
 
             If Arguments.Count = 0 Then
-                If leftValue = "" Then leftValue = tmpVar
+                If leftValue = "" Then leftValue = tmpArr
                 Return $"{leftValue} = Array.EmptyArray"
             End If
 
-            Dim code As New StringBuilder($"{tmpVar} = """"")
+            Dim code As New StringBuilder($"{tmpArr} = """"")
             code.AppendLine()
 
-            For i = 0 To Arguments.Count - 1
+            If TypeOf Arguments(0) Is InitializerExpression Then
+                Dim initExpr = CType(Arguments(0), InitializerExpression)
+                code.AppendLine()
+                code.AppendLine(initExpr.Lower($"{tmpArr}[1]"))
+            Else
+                code.AppendLine($"{tmpArr}[{1}] = {Arguments(0)}")
+            End If
+
+            For i = 1 To Arguments.Count - 1
                 If TypeOf Arguments(i) Is InitializerExpression Then
                     Dim initExpr = CType(Arguments(i), InitializerExpression)
                     code.AppendLine()
-                    code.AppendLine(initExpr.Lower($"{tmpVar}[{i + 1}]"))
+                    Dim tmpArr2 As String
+                    code.AppendLine(initExpr.Lower("", tmpArr2))
+                    code.AppendLine($"Array.AddNextItem({tmpArr}, {tmpArr2})")
                 Else
-                    code.AppendLine($"{tmpVar}[{i + 1}] = {Arguments(i)}")
+                    code.AppendLine($"Array.AddNextItem({tmpArr}, {Arguments(i)})")
                 End If
             Next
 
             If leftValue <> "" Then
-                code.AppendLine($"{leftValue} = {tmpVar}")
+                code.AppendLine($"{leftValue} = {tmpArr}")
             End If
 
             Return code.ToString()
         End Function
 
-        Public Function LowerAndEmit(leftValue As String, scope As CodeGenScope, lineOffset As Integer) As Expression
+        Public Function LowerAndEmit(
+                        leftValue As String,
+                        scope As CodeGenScope,
+                        lineOffset As Integer
+                    ) As Expression
+
             Dim code = Me.Lower(leftValue)
             Dim subroutine = SubroutineStatement.GetSubroutine(Me)
             If subroutine Is Nothing Then subroutine = SubroutineStatement.Current

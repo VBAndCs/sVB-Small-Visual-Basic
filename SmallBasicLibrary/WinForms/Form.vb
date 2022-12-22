@@ -60,7 +60,7 @@ Namespace WinForms
                             Dim wind = CType(Forms._forms(frm), Window)
                             Dim canv = GetCanvas(wind)
 
-                            AddTexBox(
+                            AddTextBox(
                                     formName,
                                     "txttest",
                                     5,
@@ -134,7 +134,7 @@ Namespace WinForms
         ''' </returns>
         <ReturnValueType(VariableType.TextBox)>
         <ExMethod>
-        Public Shared Function AddTexBox(
+        Public Shared Function AddTextBox(
                          formName As Primitive,
                          textBoxName As Primitive,
                          left As Primitive, top As Primitive,
@@ -163,7 +163,7 @@ Namespace WinForms
                          Forms._controls(key) = textBox1
 
                      Catch ex As Exception
-                         ReportSubError(formName, "AddTexBox", ex)
+                         ReportSubError(formName, "AddTextBox", ex)
                      End Try
                  End Sub)
 

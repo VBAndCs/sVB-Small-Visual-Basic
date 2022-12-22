@@ -108,8 +108,6 @@ Namespace WinForms
                 tb.TextWrapping = TextWrapping.Wrap
             End If
 
-            tb.Background = cntrl.Background
-            tb.Foreground = cntrl.Foreground
             Return tb
         End Function
 

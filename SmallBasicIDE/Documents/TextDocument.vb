@@ -1446,6 +1446,8 @@ EndFunction
 
         Public Function GetFormNames(Optional normalize As Boolean = False) As List(Of String)
             Dim forms As New List(Of String)
+            If Not Me.IsTheGlobalFile AndAlso Me.Form = "" Then Return forms
+
             Dim inputDir = Me.File
             If inputDir = "" Then Return forms
 

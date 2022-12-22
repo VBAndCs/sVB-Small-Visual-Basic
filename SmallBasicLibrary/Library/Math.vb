@@ -355,5 +355,16 @@ Namespace Library
 
             Return New Primitive(number)
         End Function
+
+        ''' <summary>
+        ''' Converts the given decimal number to its hexadecimal representaion.
+        ''' </summary>
+        ''' <param name="decimal">The decimal number</param>
+        ''' <returns>the hexadecimal representaion of the number</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function Hex([decimal] As Primitive) As Primitive
+            Return Conversion.Hex([decimal])
+        End Function
+
     End Class
 End Namespace
