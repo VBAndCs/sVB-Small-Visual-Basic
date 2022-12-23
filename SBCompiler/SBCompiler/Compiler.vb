@@ -446,7 +446,7 @@ Namespace Microsoft.SmallVisualBasic
             _typeInfoBag.And = typeFromHandle.GetMethod("op_And", New Type(1) {GetType(Primitive), GetType(Primitive)})
             _typeInfoBag.Or = typeFromHandle.GetMethod("op_Or", New Type(1) {GetType(Primitive), GetType(Primitive)})
             _typeInfoBag.GetArrayValue = typeFromHandle.GetMethod("GetArrayValue")
-            _typeInfoBag.SetArrayValue = typeFromHandle.GetMethod("SetArrayValue")
+            _typeInfoBag.SetArrayValue = typeFromHandle.GetMethod("SetArrayIndexer")
         End Sub
     End Class
 

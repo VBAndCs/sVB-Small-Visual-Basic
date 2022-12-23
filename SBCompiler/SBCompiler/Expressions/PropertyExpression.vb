@@ -38,14 +38,16 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
             ' IsDynamic can change after calling AddDynamic
             If IsDynamic Then
-                _PropertyName.SymbolType = Completion.CompletionItemType.DynamicPropertyName
+                _PropertyName.SymbolType = CompletionItemType.DynamicPropertyName
             Else
-                _PropertyName.SymbolType = Completion.CompletionItemType.PropertyName
+                _PropertyName.SymbolType = CompletionItemType.PropertyName
                 symbolTable.FixNames(_TypeName, _PropertyName, False)
             End If
 
             symbolTable.AddIdentifier(_PropertyName)
         End Sub
+
+        Private Shared dynCounter As Integer = 0
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
             If scope.ForGlobalHelp Then
@@ -54,7 +56,8 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             End If
 
             If IsDynamic Then
-                Dim code = $"_sVB_dynamic_Data_ = {TypeName.Text}[""{PropertyName.Text}""]"
+                dynCounter += 1
+                Dim code = $"_sVB_dynamic_Data_{dynCounter}={TypeName.Text}[""{PropertyName.Text}""]"
                 Dim subroutine = SubroutineStatement.GetSubroutine(Me)
                 If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
                 ArrayExpression.ParseAndEmit(code, subroutine, scope, StartToken.Line).EmitIL(scope)

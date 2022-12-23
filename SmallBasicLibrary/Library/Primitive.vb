@@ -707,6 +707,35 @@ Namespace Library
             Return array
         End Function
 
+
+        Public Shared Function SetArrayIndexer(
+                        value As Primitive,
+                        array As Primitive,
+                        indexer As Primitive
+                   ) As Primitive
+
+            array.ConstructArrayMap()
+            Dim map = array._arrayMap
+            Dim itemCount = If(map Is Nothing, 0, map.Count)
+
+            If itemCount = 0 Then
+                If CStr(array) <> "" Then
+                    ' imdex the string
+                    array.Items(indexer) = value
+                    Return array
+                Else
+                    Dim map2 As New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
+                    map2(indexer) = value
+                    Return ConvertFromMap(map2)
+                End If
+
+            Else
+                map(indexer) = value
+                Return array
+            End If
+        End Function
+
+
         Public Shared Function SetArrayValue(
                         value As Primitive,
                         array As Primitive,
