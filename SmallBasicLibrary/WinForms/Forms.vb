@@ -192,7 +192,7 @@ Namespace WinForms
 
         Public Shared Function ExpandRelativeImageFiles(xaml As String, fileName As String) As String
             Dim d = If(fileName = "",
-                Program.Directory,
+                Program.Directory.AsString(),
                 IO.Path.GetDirectoryName(fileName)
             ).ToLower() & IO.Path.DirectorySeparatorChar
             xaml = xaml.Replace("Source=""\", $"Source=""{d}")

@@ -370,7 +370,7 @@ Function Test_Name()
          {CheckBox1, CheckBox1.Name},
          {DatePicker1, DatePicker1.Name},
          {Me, Me.Name},
-         {FrmControl, FrmControl.Name},
+         {FrmControlTests, FrmControlTests.Name},
          {Label1, Label1.Name},
          {ProgressBar1, ProgressBar1.Name},
          {RadioButton1, RadioButton1.Name},
@@ -378,16 +378,16 @@ Function Test_Name()
          {TextBox1, TextBox1.Name}
       },
       {
-         {"frmcontrol.button1", "Button1"},
-         {"frmcontrol.checkbox1", "CheckBox1"},
-         {"frmcontrol.datepicker1", "DatePicker1"},
-         {"frmcontrol", "FrmControl"},
-         {"frmcontrol", "FrmControl"},
-         {"frmcontrol.label1", "Label1"},
-         {"frmcontrol.progressbar1", "ProgressBar1"},
-         {"frmcontrol.radiobutton1", "RadioButton1"},
-         {"frmcontrol.scrollbar1", "ScrollBar1"},
-         {"frmcontrol.textbox1", "TextBox1"}
+         {Me + ".button1", "Button1"},
+         {Me + ".checkbox1", "CheckBox1"},
+         {Me + ".datepicker1", "DatePicker1"},
+         {"frmcontroltests", "FrmControlTests"},
+         {"frmcontroltests", "FrmControlTests"},
+         {Me + ".label1", "Label1"},
+         {Me + ".progressbar1", "ProgressBar1"},
+         {Me + ".radiobutton1", "RadioButton1"},
+         {Me + ".scrollbar1", "ScrollBar1"},
+         {Me + ".textbox1", "TextBox1"}
       },
       "Control.Name"
    )
@@ -408,15 +408,15 @@ Function Test_OnGotFocus()
       FocusedControls,
       {
          "Button1",
-         "CheckBox1",
-         "ComboBox1", "ComboBox1",
-         "DatePicker1", "DatePicker1",
-         "ListBox1",
-         "Slider1",
-         "TextBox1",
-         "ToggleButton1",
+         "txttest",
          "RadioButton1",
-         "txttest"
+         "ToggleButton1",
+         "TextBox1",
+         "Slider1",
+         "ListBox1",
+         "DatePicker1", "DatePicker1",
+         "ComboBox1", "ComboBox1",
+         "CheckBox1"
       },
       "Control.OnGotFocus"
    )
@@ -446,15 +446,15 @@ Function Test_OnLostFocus()
       UnFocusedControls,
       {
          "Button1",
-         "CheckBox1",
-         "ComboBox1", "ComboBox1",
-         "DatePicker1", "DatePicker1",
-         "ListBox1",
-         "Slider1",
-         "TextBox1",
-         "ToggleButton1",
+         "txttest",
          "RadioButton1",
-         "txttest"
+         "ToggleButton1",
+         "TextBox1",
+         "Slider1",
+         "ListBox1",
+         "DatePicker1", "DatePicker1",
+         "ComboBox1", "ComboBox1",
+         "CheckBox1"
       },
       "Control.OnLostFocus"
    )
@@ -596,18 +596,18 @@ Function Test_TypeName()
       {
          ControlTypes.Form,
          ControlTypes.Button,
-         ControlTypes.CheckBox,
-         ControlTypes.ComboBox,
-         ControlTypes.DatePicker,
-         ControlTypes.Label,
-         ControlTypes.ProgressBar,
-         ControlTypes.ListBox,
-         ControlTypes.ScrollBar,
-         ControlTypes.Slider,
          ControlTypes.TextBox,
-         ControlTypes.ToggleButton,
          ControlTypes.RadioButton,
-         ControlTypes.TextBox
+         ControlTypes.ToggleButton,
+         ControlTypes.TextBox,
+         ControlTypes.Slider,
+         ControlTypes.ScrollBar,
+         ControlTypes.ListBox,
+         ControlTypes.ProgressBar,
+         ControlTypes.Label,
+         ControlTypes.DatePicker,
+         ControlTypes.ComboBox,
+         ControlTypes.CheckBox
       },
       "Control.TypeName"
    )
@@ -662,4 +662,5 @@ Function Test_Width()
       "Control.Width"
    )
 EndFunction
+
 

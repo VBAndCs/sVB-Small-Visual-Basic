@@ -1,5 +1,5 @@
 '@Form Hints:
-'#FrmControl{
+'#FrmControlTests{
 '    Button1: Button
 '    CheckBox1: CheckBox
 '    ComboBox1: ComboBox
@@ -14,20 +14,20 @@
 '    RadioButton1: RadioButton
 '}
 
-Me = "frmcontrol"
-Button1 = "frmcontrol.button1"
-CheckBox1 = "frmcontrol.checkbox1"
-ComboBox1 = "frmcontrol.combobox1"
-DatePicker1 = "frmcontrol.datepicker1"
-Label1 = "frmcontrol.label1"
-ProgressBar1 = "frmcontrol.progressbar1"
-ListBox1 = "frmcontrol.listbox1"
-ScrollBar1 = "frmcontrol.scrollbar1"
-Slider1 = "frmcontrol.slider1"
-TextBox1 = "frmcontrol.textbox1"
-ToggleButton1 = "frmcontrol.togglebutton1"
-RadioButton1 = "frmcontrol.radiobutton1"
+Me = "frmcontroltests"
+Button1 = "frmcontroltests.button1"
+CheckBox1 = "frmcontroltests.checkbox1"
+ComboBox1 = "frmcontroltests.combobox1"
+DatePicker1 = "frmcontroltests.datepicker1"
+Label1 = "frmcontroltests.label1"
+ProgressBar1 = "frmcontroltests.progressbar1"
+ListBox1 = "frmcontroltests.listbox1"
+ScrollBar1 = "frmcontroltests.scrollbar1"
+Slider1 = "frmcontroltests.slider1"
+TextBox1 = "frmcontroltests.textbox1"
+ToggleButton1 = "frmcontroltests.togglebutton1"
+RadioButton1 = "frmcontroltests.radiobutton1"
 _path = Program.Directory + "\FrmControlTests.xaml"
-FrmControl = Forms.LoadForm("FrmControl", _path)
-Form.SetArgsArr(frmcontrol, Stack.PopValue("_frmcontrol_argsArr"))
-Form.Show(FrmControl)
+FrmControlTests = Forms.LoadForm("FrmControlTests", _path)
+Form.SetArgsArr(frmcontroltests, Stack.PopValue("_frmcontroltests_argsArr"))
+Form.Show(FrmControlTests)

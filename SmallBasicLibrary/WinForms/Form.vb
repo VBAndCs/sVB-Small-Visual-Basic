@@ -315,7 +315,7 @@ Namespace WinForms
         End Function
 
 
-        Friend Shared Function ValidateArgs(formName As String, controlName As String) As String
+        Friend Shared Function ValidateArgs(formName As String, ByRef controlName As String) As String
             If formName = "" Then
                 Dim msg = "`formName` can't be empty string"
                 Dim ex As New ArgumentException(msg)
@@ -330,7 +330,7 @@ Namespace WinForms
                 Throw ex
             End If
 
-            Dim frmName = formName.ToString().ToLower
+            Dim frmName = formName.ToLower()
             If Not Forms._forms.ContainsKey(frmName) Then
                 Dim msg = $"The Form `{formName}`doesn't exist"
                 Dim ex As New ArgumentException(msg)
@@ -338,7 +338,12 @@ Namespace WinForms
                 Throw ex
             End If
 
-            Dim key = frmName & "." & controlName.ToString().ToLower()
+            Dim dot = controlName.IndexOf(".")
+            If dot > -1 Then
+                controlName = controlName.Substring(dot + 1)
+            End If
+            Dim key = frmName & "." & controlName.ToLower()
+
             If Forms._controls.ContainsKey(key) Then
                 Dim msg = $"There is another control with the name '{controlName}' on the ''{formName} form"
                 Dim ex As New ArgumentException(msg)
@@ -473,7 +478,7 @@ Namespace WinForms
             App.Invoke(
                   Sub()
                       Try
-                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
+                          Dim frm = CType(Forms._forms(CStr(formName).ToLower), Window)
 
                           Dim toggleButton1 As New Wpf.Primitives.ToggleButton With {
                                .Name = toggleButtonName,
@@ -495,7 +500,6 @@ Namespace WinForms
 
             Return key
         End Function
-
 
         ''' <summary>
         ''' Adds a new CheckBox control to the form
@@ -943,6 +947,36 @@ Namespace WinForms
 
             Return key
         End Function
+
+        ''' <summary>
+        ''' Removes the given control from the current form.
+        ''' </summary>
+        ''' <param name="controlName">The name or key of the control that you want to remove.</param>
+        <ExMethod>
+        Public Shared Sub RemoveControl(formName As Primitive, controlName As Primitive)
+            Dim key = controlName.AsString().ToLower()
+            Dim frm = formName.AsString().ToLower()
+            If Not key.StartsWith(frm & ".") Then key = $"{frm}.{controlName}"
+
+            App.Invoke(
+                  Sub()
+                      If Forms._controls.ContainsKey(key) Then
+                          Dim form = CType(Forms._forms(formName), Window)
+                          Dim canv = GetCanvas(form)
+                          Dim c = Forms._controls(key)
+
+                          If TypeOf c Is Wpf.Menu Then
+                              Dim sp = CType(form.Content, Wpf.StackPanel)
+                              sp.Children.Clear()
+                              form.Content = canv
+                          Else
+                              canv.Children.Remove(c)
+                          End If
+
+                          Forms._controls.Remove(key)
+                      End If
+                  End Sub)
+        End Sub
 
         Private Shared ReadOnly ArgsArrProperty As DependencyProperty =
                 DependencyProperty.RegisterAttached("ArgsArr",

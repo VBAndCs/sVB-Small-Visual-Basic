@@ -1,0 +1,388 @@
+Gw = "graphicswindow"
+
+'------------------------------------------------
+Function Test_AddButton()
+   btn1 = Controls.AddButton("OK", 10, 20)
+   btn1.Width = 50
+   btn1.Height = 30
+   btn1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         btn1, btn1.Name,
+         btn1.Left, btn1.Top,
+         btn1.Width, btn1.Height,
+         btn1.Text, btn1.Visible
+      },
+      {
+         Gw + ".button1",
+         "button1",
+         10, 20,
+         50, 30,
+         "OK", False
+      },
+      "Controls.AddButton"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddCheckBox()
+   checkBox1 = Controls.AddCheckBox("Show Label", 10, 20, True)
+   CheckBox1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         checkBox1, CheckBox1.Name,
+         CheckBox1.Left, CheckBox1.Top,
+         CheckBox1.Text, CheckBox1.Visible, CheckBox1.Checked
+      },
+      {
+         Gw + ".checkbox1",
+         "checkbox1",
+         10, 20,
+         "Show Label", False, True
+      },
+      "Controls.AddCheckBox"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddComboBox()
+   comboBox1 = Controls.AddComboBox(10, 20, 50, 30)
+   ComboBox1.AddItem({"a", "b", "c"})
+   ComboBox1.SelectedIndex = 3
+   ComboBox1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         comboBox1, ComboBox1.Name,
+         ComboBox1.Left, ComboBox1.Top,
+         ComboBox1.Width, ComboBox1.Height,
+         ComboBox1.Text, ComboBox1.Visible
+      },
+      {
+         Gw + ".combobox1",
+         "combobox1",
+         10, 20,
+         50, 30,
+         "c", False
+      },
+      "Controls.AddComboBox"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddDatePicker()
+   datePicker1 = Controls.AddDatePicker(
+      10, 20, 100, #12/18/2022#)
+   DatePicker1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         datePicker1, DatePicker1.Name,
+         DatePicker1.Left, DatePicker1.Top, DatePicker1.Width,
+         DatePicker1.Visible, DatePicker1.SelectedDate
+      },
+      {
+         Gw + ".datepicker1",
+         "datepicker1",
+         10, 20, 100,
+         False, #12/18/2022#
+      },
+      "Controls.AddDatePicker"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddLabel()
+   label1 = Controls.AddLabel("Hi there", 10, 20)
+   Label1.Width = 50
+   Label1.Height = 30
+   Label1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         label1, Label1.Name,
+         Label1.Left, Label1.Top,
+         Label1.Width, Label1.Height,
+         Label1.Text, Label1.Visible
+      },
+      {
+         Gw + ".label1",
+         "label1",
+         10, 20,
+         50, 30,
+         "Hi there", False
+      },
+      "Controls.AddLabel"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddListBox()
+   listBox1 = Controls.AddListBox(10, 20, 50, 30)
+   ListBox1.AddItem({"a", "b", "c"})
+   ListBox1.SelectedIndex = 3
+   ListBox1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         listBox1, ListBox1.Name,
+         ListBox1.Left, ListBox1.Top,
+         ListBox1.Width, ListBox1.Height,
+         ListBox1.SelectedItem, ListBox1.Visible
+      },
+      {
+         Gw + ".listbox1",
+         "listbox1",
+         10, 20,
+         50, 30,
+         "c", False
+      },
+      "Controls.AddListBox"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddProgressBar()
+   progressBar1 = Controls.AddProgressBar(
+      10, 20, 250, 30,
+      0, 0
+   )
+   ProgressBar1.Value = 50
+   ProgressBar1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         progressBar1, ProgressBar1.Name,
+         ProgressBar1.Left, ProgressBar1.Top,
+         ProgressBar1.Width, ProgressBar1.Height,
+         ProgressBar1.Value, ProgressBar1.Maximum
+      },
+      {
+         Gw + ".progressbar1",
+         "progressbar1",
+         10, 20,
+         250, 30,
+         50, 0
+      },
+      "Controls.AddProgressBar"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddRadioButton()
+   radioButton1 = Controls.AddRadioButton(
+      "option 1", 10, 20, "group1", False
+   )
+   radioButton2 = Controls.AddRadioButton(
+      "option 2", 100, 20, "group1", True
+   )
+   
+   radioButton3 = Controls.AddRadioButton(
+      "option 3", 10, 100, "group2", True
+   )
+   radioButton4 = Controls.AddRadioButton(
+      "option 4", 100, 100, "group2", False
+   )
+   
+   
+   RadioButton1.Visible = False
+   radioButton2.Visible = False
+   radioButton3.Visible = False
+   radioButton4.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         {
+            radioButton1, RadioButton1.Name,
+            RadioButton1.Left, RadioButton1.Top,
+            RadioButton1.Text, RadioButton1.GroupName,
+            RadioButton1.Checked
+         },
+         {
+            radioButton2, radioButton2.Name,
+            radioButton2.Left, radioButton2.Top,
+            radioButton2.Text, radioButton2.GroupName,
+            radioButton2.Checked
+         },
+         {
+            radioButton3, radioButton3.Name,
+            radioButton3.Left, radioButton3.Top,
+            radioButton3.Text, radioButton3.GroupName,
+            radioButton3.Checked
+         },
+         {
+            radioButton4, radioButton4.Name,
+            radioButton4.Left, radioButton4.Top,
+            radioButton4.Text, radioButton4.GroupName,
+            radioButton4.Checked
+         }
+      },
+      {
+         {
+            Gw + ".radiobutton1", "radiobutton1",
+            10, 20,
+            "option 1", "group1",
+            False
+         },
+         {
+            Gw + ".radiobutton2", "radiobutton2",
+            100, 20,
+            "option 2", "group1",
+            True
+         },
+         {
+            Gw + ".radiobutton3", "radiobutton3",
+            10, 100,
+            "option 3", "group2",
+            True
+         },
+         {
+            Gw + ".radiobutton4", "radiobutton4",
+            100, 100,
+            "option 4", "group2",
+            False
+         }
+      },
+      "Controls.AddRadioButton"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_AddScrollBar()
+   scrollBar1 = Controls.AddScrollBar(
+      10, 20, 250, 30,
+      0, 200, 50
+   )
+   ScrollBar1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         scrollBar1, ScrollBar1.Name,
+         ScrollBar1.Left, ScrollBar1.Top,
+         ScrollBar1.Width, ScrollBar1.Height,
+         ScrollBar1.Value, ScrollBar1.Maximum
+      },
+      {
+         Gw + ".scrollbar1",
+         "scrollbar1",
+         10, 20,
+         250, 30,
+         50, 200
+      },
+      "Controls.AddScrollBar"
+   )
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_AddSlider()
+   slider1 = Controls.AddSlider(
+      10, 20, 250, 30,
+      0, 100, 50, 10
+   )
+   Slider1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         slider1, Slider1.Name,
+         Slider1.Left, Slider1.Top,
+         Slider1.Width, Slider1.Height,
+         Slider1.Value, Slider1.Maximum
+      },
+      {
+         Gw + ".slider1",
+         "slider1",
+         10, 20,
+         250, 30,
+         50, 100
+      },
+      "Controls.AddSlider"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddTextBox()
+   textBox1 = Controls.AddTextBox(10, 20)
+   TextBox1.Width = 50
+   TextBox1.Height = 30
+   TextBox1.Text = "Hi there"
+   TextBox1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         textBox1, TextBox1.Name,
+         TextBox1.Left, TextBox1.Top,
+         TextBox1.Width, TextBox1.Height,
+         TextBox1.Text, TextBox1.Visible
+      },
+      {
+         Gw + ".textbox1",
+         "textbox1",
+         10, 20,
+         50, 30,
+         "Hi there", False
+      },
+      "Controls.AddTextBox"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddTimer()
+   timer1 = Controls.AddTimer(300)
+   timer1.Pause()
+   
+   Return UnitTest.AssertEqual(
+      {timer1, timer1.Interval},
+      {Gw + ".timer1", 300},
+      "Controls.AddTimer"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_AddToggleButton()
+   toggleButton1 = Controls.AddToggleButton("ToggleButton1", 10, 20, 50, 30)
+   ToggleButton1.Text = "OK"
+   ToggleButton1.Checked = True
+   ToggleButton1.Visible = False
+   
+   Return UnitTest.AssertEqual(
+      {
+         toggleButton1, ToggleButton1.Name,
+         ToggleButton1.Left, ToggleButton1.Top,
+         ToggleButton1.Width, ToggleButton1.Height,
+         ToggleButton1.Text, ToggleButton1.Checked
+      },
+      {
+         Gw + ".togglebutton1",
+         "togglebutton1",
+         10, 20,
+         50, 30,
+         "OK", True
+      },
+      "Controls.AddToggleButton"
+   )
+EndFunction
+
+
+
+
+
+'------------------------------------------------
+Function Test_Remove()
+   gwForm = Gw
+   ForEach _control In gwForm.Controls
+      Controls.Remove(_control)
+   Next
+   
+   _controls = gwForm.Controls
+   gwForm.Close()
+   Return UnitTest.AssertEqual(_controls.Count, 0, "Controls.Remove")
+EndFunction

@@ -1151,9 +1151,7 @@ Namespace Library
             Dim shape As UIElement = Nothing
             If _objectsMap.TryGetValue(name, shape) Then
                 _objectsMap.Remove(name)
-                Invoke(Sub()
-                           _mainCanvas.Children.Remove(shape)
-                       End Sub)
+                Invoke(Sub() _mainCanvas.Children.Remove(shape))
             End If
         End Sub
 

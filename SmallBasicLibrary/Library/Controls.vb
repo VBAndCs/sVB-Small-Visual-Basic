@@ -185,7 +185,7 @@ Namespace Library
                          isChecked As Primitive
                    ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("CheckBox", False)
+            Dim name = Shapes.GenerateNewName("CheckBox", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -218,7 +218,7 @@ Namespace Library
                          height As Primitive
                   ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("ComboBox", False)
+            Dim name = Shapes.GenerateNewName("ComboBox", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -253,7 +253,7 @@ Namespace Library
                          selectedDate As Primitive
                     ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("DatePicker", False)
+            Dim name = Shapes.GenerateNewName("DatePicker", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -275,8 +275,6 @@ Namespace Library
         ''' <param name="caption">The text to display on the label</param>
         ''' <param name="left">The X-pos of the control.</param>
         ''' <param name="top">The Y-pos of the control.</param>
-        ''' <param name="width">The width of the control. Use -1 for auto-width</param>
-        ''' <param name="height">The height of the control. Use -1 for auto-height</param>
         ''' <returns>
         ''' The key of the label. sVB can deal with this key as an object of type Label, so, you can access the Label methods via it.
         ''' </returns>
@@ -287,7 +285,7 @@ Namespace Library
                          top As Primitive
                    ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("Label", False)
+            Dim name = Shapes.GenerateNewName("Label", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -323,7 +321,7 @@ Namespace Library
                          height As Primitive
                   ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("ListBox", False)
+            Dim name = Shapes.GenerateNewName("ListBox", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -361,7 +359,7 @@ Namespace Library
                          maximum As Primitive
                    ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("ProgressBar", False)
+            Dim name = Shapes.GenerateNewName("ProgressBar", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -399,7 +397,7 @@ Namespace Library
                          isChecked As Primitive
                    ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("RadioButton", False)
+            Dim name = Shapes.GenerateNewName("RadioButton", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -442,7 +440,7 @@ Namespace Library
                          value As Primitive
                    ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("ScrollBar", False)
+            Dim name = Shapes.GenerateNewName("ScrollBar", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -487,7 +485,7 @@ Namespace Library
                          tickFrequency As Primitive
                     ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("Slider", False)
+            Dim name = Shapes.GenerateNewName("Slider", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -525,11 +523,6 @@ Namespace Library
                     Dim key = WinForms.Form.AddTimer(
                         GW_NAME, name, interval
                     )
-                    GraphicsWindow.AddControl(
-                        name,
-                        WinForms.Control.GetControl(key),
-                        False
-                    )
                     AddTimer = key
                 End Sub)
         End Function
@@ -555,7 +548,7 @@ Namespace Library
                          height As Primitive
                     ) As Primitive
 
-            Dim name = Shapes.GenerateNewName("ToggleButton", False)
+            Dim name = Shapes.GenerateNewName("ToggleButton", True)
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
@@ -645,13 +638,16 @@ Namespace Library
         ''' </summary>
         ''' <param name="controlName">The name of the control that needs to be removed.</param>
         Public Shared Sub Remove(controlName As Primitive)
+            controlName = controlName.AsString().ToLower()
             Dim value As UIElement = Nothing
             If GraphicsWindow._objectsMap.TryGetValue(controlName, value) Then
                 Dim button1 As Button = TryCast(value, Button)
                 If button1 IsNot Nothing Then
                     RemoveHandler button1.Click, AddressOf OnButtonClicked
                 End If
+
                 GraphicsWindow.RemoveShape(controlName)
+                WinForms.Form.RemoveControl(GW_NAME, controlName)
             End If
         End Sub
 
