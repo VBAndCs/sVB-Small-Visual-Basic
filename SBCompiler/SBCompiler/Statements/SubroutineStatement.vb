@@ -137,7 +137,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
                     param.SymbolType = CompletionItemType.LocalVariable
                     Dim paramId As New Expressions.IdentifierExpression() With {
                         .Identifier = param,
-                        .Subroutine = Me
+                        .Subroutine = Me,
+                        .IsParam = True
                     }
                     Dim key = symbolTable.AddVariable(paramId, param.Comment, True)
                     symbolTable.InferedTypes(key) = WinForms.PreCompiler.GetVarType(param.Text)

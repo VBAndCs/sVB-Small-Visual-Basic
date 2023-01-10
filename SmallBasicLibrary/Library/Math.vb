@@ -244,7 +244,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Round(number As Primitive) As Primitive
-            Return System.Math.Round(number.AsDecimal)
+            Return System.Math.Round(number.AsDecimal, MidpointRounding.AwayFromZero)
         End Function
 
         ''' <summary>
@@ -257,7 +257,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Round2(number As Primitive, decimalPlaces As Primitive) As Primitive
-            Return System.Math.Round(number.AsDecimal, CInt(decimalPlaces.AsDecimal()))
+            Return System.Math.Round(number.AsDecimal, CInt(decimalPlaces.AsDecimal()), MidpointRounding.AwayFromZero)
         End Function
 
         ''' <summary>

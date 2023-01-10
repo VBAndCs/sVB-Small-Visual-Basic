@@ -90,7 +90,7 @@ Namespace WinForms
         Public Shared Function GetTransparency(color As Primitive) As Primitive
             If IsNone(color) Then Return 100
             Dim _color = FromString(color)
-            Return System.Math.Round(100 - _color.A * 100 / 255)
+            Return System.Math.Round(100 - _color.A * 100 / 255, MidpointRounding.AwayFromZero)
         End Function
 
         Friend Shared Function FromString(color As String) As System.Windows.Media.Color

@@ -19,3 +19,4 @@ EndFunction
 Function Test_2()
    Return Global.AssertEqual(5, 7, "Test")
 EndFunction
+

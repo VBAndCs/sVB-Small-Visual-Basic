@@ -212,9 +212,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             .Summary = If(Not result.Ticks.HasValue,
                                     $"Invalid {If(result.IsDate, "date", "time span")} format!",
                                     "Value = """ & If(result.IsDate,
-                                            New Date(result.Ticks.Value),
-                                            New TimeSpan(result.Ticks.Value)
-                                    ).ToString() & """"
+                                            New Date(result.Ticks.Value).ToString("MM/dd/yyyy hh:mm:ss.FFFFFFF tt"),
+                                            FormatTimeSpan(result.Ticks.Value)
+                                    ) & """"
                             )
                     }
 
@@ -315,6 +315,20 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
 
         End Sub
+
+        Private Function FormatTimeSpan(ticks As Long) As String
+            Dim ts = New TimeSpan(ticks).ToString()
+            Dim pos = ts.LastIndexOf(":")
+            If pos = -1 Then Return ts
+
+            pos = ts.IndexOf(".", pos)
+            If pos = -1 Then Return ts
+
+            ts = ts.TrimEnd("0"c)
+            If ts.EndsWith(".") Then ts = ts.Substring(0, ts.Length - 1)
+
+            Return ts
+        End Function
 
         Private Function InferType(memberInfo As MemberInfo) As String
             If memberInfo Is Nothing Then Return ""

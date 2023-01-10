@@ -294,7 +294,7 @@ Namespace WinForms
         ''' Creates a new date by adding the given years to the current date.
         ''' </summary>
         ''' <param name="value">the number of years you want to add. If the given date is a duration, the total days of the years will be calculated assuming that a year = 365.25 days.</param>
-        ''' <returns>a new date with the added years. The input date will not Add</returns>
+        ''' <returns>a new date with the added years. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
         Public Shared Function AddYears([date] As Primitive, value As Primitive) As Primitive
@@ -304,8 +304,8 @@ Namespace WinForms
         ''' <summary>
         ''' Creates a new date by adding the given months to the current date.
         ''' </summary>
-        ''' <param name="value">the number of months you want to add. If the given date is a duration, the total days of the months will be calculated assuming that a month = 30.44 days in avarage.</param>
-        ''' <returns>a new date with the added months. The input date will not Add</returns>
+        ''' <param name="value">the number of months you want to add. If the given date is a duration, the total days of the months will be calculated assuming that a month = 30.4375 days in avarage.</param>
+        ''' <returns>a new date with the added months. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
         Public Shared Function AddMonths([date] As Primitive, value As Primitive) As Primitive
@@ -316,7 +316,7 @@ Namespace WinForms
         ''' Creates a new date by adding the given days to the current date.
         ''' </summary>
         ''' <param name="value">the number of days you want to add</param>
-        ''' <returns>a new date with the added days. The input date will not Add</returns>
+        ''' <returns>a new date with the added days. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
         Public Shared Function AddDays([date] As Primitive, value As Primitive) As Primitive
@@ -327,7 +327,7 @@ Namespace WinForms
         ''' Creates a new date by adding the given hours to the current date.
         ''' </summary>
         ''' <param name="value">the number of hours you want to add</param>
-        ''' <returns>a new date with the added hours. The input date will not Add</returns>
+        ''' <returns>a new date with the added hours. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
         Public Shared Function AddHours([date] As Primitive, value As Primitive) As Primitive
@@ -338,7 +338,7 @@ Namespace WinForms
         ''' Creates a new date by adding the given minutes to the current date.
         ''' </summary>
         ''' <param name="value">the number of minutes you want to add</param>
-        ''' <returns>a new date with the added minutes. The input date will not Add</returns>
+        ''' <returns>a new date with the added minutes. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
         Public Shared Function AddMinutes([date] As Primitive, value As Primitive) As Primitive
@@ -349,7 +349,7 @@ Namespace WinForms
         ''' Creates a new date by adding the given seconds to the current date.
         ''' </summary>
         ''' <param name="value">the number of seconds you want to add</param>
-        ''' <returns>a new date with the added seconds. The input date will not Add</returns>
+        ''' <returns>a new date with the added seconds. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
         Public Shared Function AddSeconds([date] As Primitive, value As Primitive) As Primitive
@@ -360,7 +360,7 @@ Namespace WinForms
         ''' Creates a new date by adding the given milliseconds to the current date.
         ''' </summary>
         ''' <param name="value">the number of milliseconds to add</param>
-        ''' <returns>a new date with the added milliseconds. The input date will not Add</returns>
+        ''' <returns>a new date with the added milliseconds. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
         Public Shared Function AddMilliseconds([date] As Primitive, value As Primitive) As Primitive
@@ -371,7 +371,7 @@ Namespace WinForms
         ''' Creates a new date by adding the current duration to the current date.
         ''' </summary>
         ''' <param name="duration">a date representing the duration you want to add</param>
-        ''' <returns>a new date with the added duration. The input date will not Add</returns>
+        ''' <returns>a new date with the added duration. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
         Public Shared Function Add([date] As Primitive, duration As Primitive) As Primitive
@@ -382,7 +382,7 @@ Namespace WinForms
         ''' Creates a new date by subtracting the given duration from the given date.
         ''' </summary>
         ''' <param name="value">the date\time or duration you want to subtract</param>
-        ''' <returns>a duration representing the difference between the two dates. The input date will not Add</returns>
+        ''' <returns>a duration representing the difference between the two dates. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
         Public Shared Function Subtract(date1 As Primitive, value As Primitive) As Primitive
@@ -455,55 +455,17 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Get the integral days part of the current TimeSpan.
+        ''' Negatives the current duration.
         ''' </summary>
-        ''' <param name="duration">the input timespan</param>
-        ''' <returns>an integer number representing the days part of the current duration</returns>
-        <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationDays(duration As Primitive) As Primitive
-            Return WinForms.Date.GetDurationDays(duration)
+        ''' <returns>
+        ''' If the duration is positive, returns the negative value of it.
+        ''' If the duration is negative, returns the positive value of it.
+        ''' If this is a date, it returns it as it can't be negated.
+        ''' </returns>
+        <ExMethod>
+        <ReturnValueType(VariableType.Date)>
+        Public Shared Function Negate(duration As Primitive) As Primitive
+            Return [Date].Negate(duration)
         End Function
-
-        ''' <summary>
-        ''' Get the integral hours part of the gdiven TimeSpan.
-        ''' </summary>
-        ''' <param name="duration">the input timespan</param>
-        ''' <returns>an integer number representing the hours part of the current duration</returns>
-        <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationHours(duration As Primitive) As Primitive
-            Return WinForms.Date.GetDurationHours(duration)
-        End Function
-
-        ''' <summary>
-        ''' Get the integral minutes part of the current TimeSpan.
-        ''' </summary>
-        ''' <param name="duration">the input timespan</param>
-        ''' <returns>an integer number representing the minutes part of the current duration</returns>
-        <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationMinutes(duration As Primitive) As Primitive
-            Return WinForms.Date.GetDurationMinutes(duration)
-        End Function
-
-        ''' <summary>
-        ''' Get the integral seconds part of the current TimeSpan.
-        ''' </summary>
-        ''' <param name="duration">the input timespan</param>
-        ''' <returns>an integer number representing the seconds part of the current duration</returns>
-        <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationSeconds(duration As Primitive) As Primitive
-            Return WinForms.Date.GetDurationSeconds(duration)
-        End Function
-
-        ''' <summary>
-        ''' Get the integral milliseconds part of the current TimeSpan.
-        ''' </summary>
-        ''' <param name="duration">the input timespan</param>
-        ''' <returns>an integer number representing the milliseconds part of the current duration</returns>
-        <ReturnValueType(VariableType.Double)>
-        Public Shared Function GetDurationMilliseconds(duration As Primitive) As Primitive
-            Return WinForms.Date.GetDurationMilliseconds(duration)
-        End Function
-
-
     End Class
 End Namespace

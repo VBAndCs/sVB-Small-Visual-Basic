@@ -213,7 +213,7 @@ Namespace WinForms
         <WinForms.ReturnValueType(VariableType.Double)>
         <ExMethod>
         Public Shared Function Round(number As Primitive, decimalPlaces As Primitive) As Primitive
-            Return System.Math.Round(number.AsDecimal, CInt(decimalPlaces.AsDecimal()))
+            Return System.Math.Round(number.AsDecimal, CInt(decimalPlaces.AsDecimal()), MidpointRounding.AwayFromZero)
         End Function
 
         ''' <summary>

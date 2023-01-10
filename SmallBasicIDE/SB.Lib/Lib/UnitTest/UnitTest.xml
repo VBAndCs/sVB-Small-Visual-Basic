@@ -26,5 +26,17 @@
       <param name="testName">The name of the test, to be displyed in the result.</param>
       <returns>Returns a string message that displays the test result, saying whether it passed or failed and why.</returns>
     </member>
+    <member name="M:Global.AssertTrue(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>Checks if the test actual value is true</summary>
+      <param name="actualValue">The actual value of the test</param>
+      <param name="testName">The name of the test, to be displyed in the result.</param>
+      <returns>Returns a string message that displays the test result, saying whether it passed or failed and why.</returns>
+    </member>
+    <member name="M:Global.AssertFalse(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>Checks if the test actual value is false</summary>
+      <param name="actualValue">The actual value of the test</param>
+      <param name="testName">The name of the test, to be displyed in the result.</param>
+      <returns>Returns a string message that displays the test result, saying whether it passed or failed and why.</returns>
+    </member>
   </members>
 </doc>

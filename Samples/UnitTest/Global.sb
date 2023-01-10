@@ -78,6 +78,45 @@ EndFunction
 
 
 '------------------------------------------------
+' Checks if the test actual value is true
+Function AssertTrue(
+      actualValue, ' The actual value of the test
+      testName     ' The name of the test, to be displyed in the result.
+   ) ' Returns a string message that displays the test result, saying whether it passed or failed and why.
+   
+   
+   If Array.IsArray(actualValue) Then
+      expectedValue[1] = True
+      For i = 2 To Array.GetItemCount(actualValue)
+         Array.AddNextItem(expectedValue, True)
+      Next
+   Else
+      expectedValue = True
+   EndIf
+   
+   Return AssertEqual(actualValue, expectedValue, testName)
+EndFunction
+
+'------------------------------------------------
+' Checks if the test actual value is false
+Function AssertFalse(
+      actualValue, ' The actual value of the test
+      testName     ' The name of the test, to be displyed in the result.
+   ) ' Returns a string message that displays the test result, saying whether it passed or failed and why.
+   
+   If Array.IsArray(actualValue) Then
+      expectedValue[1] = False
+      For i = 2 To Array.GetItemCount(actualValue)
+         Array.AddNextItem(expectedValue, False)
+      Next
+   Else
+      expectedValue = False
+   EndIf
+   
+   Return AssertEqual(actualValue, expectedValue, testName)
+EndFunction
+
+'------------------------------------------------
 Function _Repeat(str, count)
    If count < 1 Then
       Return ""

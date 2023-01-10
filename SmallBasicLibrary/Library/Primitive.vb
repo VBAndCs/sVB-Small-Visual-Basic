@@ -39,7 +39,11 @@ Namespace Library
 
         Friend Function AsDate() As Date?
             If IsEmpty OrElse IsArray Then Return Nothing
-            If _decimalValue.HasValue Then Return New Date(CLng(_decimalValue.Value))
+            If _decimalValue.HasValue Then
+                Dim v = _decimalValue.Value
+                If v < 0 Then Return Nothing
+                Return New Date(v)
+            End If
 
             Dim d As Date
             If Date.TryParse(AsString(), d) Then
@@ -110,11 +114,29 @@ Namespace Library
                         If d.Day = 1 AndAlso d.Month = 1 AndAlso d.Year = 1 Then
                             _stringValue = d.ToString("T", enUs)
                         Else
-                            _stringValue = d.ToString(enUs)
+                            _stringValue = d.ToString(
+                                "MM/dd/yyyy hh:mm:ss.FFFFFFF tt",
+                                New CultureInfo("en-US")
+                            )
                         End If
 
                     Case NumberType.TimeSpan
-                        _stringValue = New TimeSpan(_decimalValue.Value).ToString()
+                        Dim ts = New TimeSpan(_decimalValue.Value).ToString()
+                        Dim pos = ts.LastIndexOf(":")
+                        If pos = -1 Then
+                            _stringValue = ts
+                            Exit Select
+                        End If
+
+                        pos = ts.IndexOf(".", pos)
+                        If pos = -1 Then
+                            _stringValue = ts
+                            Exit Select
+                        End If
+
+                        ts = ts.TrimEnd("0"c)
+                        If ts.EndsWith(".") Then ts = ts.Substring(0, ts.Length - 1)
+                        _stringValue = ts
 
                     Case Else
                         _stringValue = _decimalValue.Value.ToString()
@@ -503,7 +525,7 @@ Namespace Library
         End Operator
 
         Public Shared Widening Operator CType(primitive As Primitive) As Integer
-            Return CInt(primitive.AsDecimal())
+            Return System.Math.Round(primitive.AsDecimal(), MidpointRounding.AwayFromZero)
         End Operator
 
         Public Shared Widening Operator CType(primitive1 As Primitive) As Single

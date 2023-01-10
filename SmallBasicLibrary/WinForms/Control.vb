@@ -165,7 +165,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetLeft = System.Math.Round(Wpf.Canvas.GetLeft(GetControl(controlName)), 2)
+                        GetLeft = System.Math.Round(Wpf.Canvas.GetLeft(GetControl(controlName)), 2, MidpointRounding.AwayFromZero)
                     Catch ex As Exception
                         ReportError(controlName, "Left", ex)
                     End Try
@@ -196,7 +196,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetTop = System.Math.Round(Wpf.Canvas.GetTop(GetControl(controlName)), 2)
+                        GetTop = System.Math.Round(Wpf.Canvas.GetTop(GetControl(controlName)), 2, MidpointRounding.AwayFromZero)
                     Catch ex As Exception
                         ReportError(controlName, "Top", ex)
                     End Try
@@ -232,9 +232,9 @@ Namespace WinForms
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
                             Dim canvas = Form.GetCanvas(CType(obj, Window))
-                            GetWidth = System.Math.Round(canvas.ActualWidth, 2)
+                            GetWidth = System.Math.Round(canvas.ActualWidth, 2, MidpointRounding.AwayFromZero)
                         Else
-                            GetWidth = System.Math.Round(obj.ActualWidth, 2)
+                            GetWidth = System.Math.Round(obj.ActualWidth, 2, MidpointRounding.AwayFromZero)
                         End If
 
                     Catch ex As Exception
@@ -280,9 +280,9 @@ Namespace WinForms
                     Try
                         Dim obj = GetControl(controlName)
                         If TypeOf obj Is Window Then
-                            GetHeight = System.Math.Round(Form.GetCanvas(obj).ActualHeight, 2)
+                            GetHeight = System.Math.Round(Form.GetCanvas(obj).ActualHeight, 2, MidpointRounding.AwayFromZero)
                         Else
-                            GetHeight = System.Math.Round(obj.ActualHeight, 2)
+                            GetHeight = System.Math.Round(obj.ActualHeight, 2, MidpointRounding.AwayFromZero)
                         End If
 
                     Catch ex As Exception
@@ -338,7 +338,7 @@ Namespace WinForms
                         If Double.IsPositiveInfinity(value) Then
                             GetMaxWidth = 0
                         Else
-                            GetMaxWidth = System.Math.Round(value, 2)
+                            GetMaxWidth = System.Math.Round(value, 2, MidpointRounding.AwayFromZero)
                         End If
 
                     Catch ex As Exception
@@ -390,7 +390,7 @@ Namespace WinForms
                         If Double.IsPositiveInfinity(value) Then
                             GetMaxHeight = 0
                         Else
-                            GetMaxHeight = System.Math.Round(value, 2)
+                            GetMaxHeight = System.Math.Round(value, 2, MidpointRounding.AwayFromZero)
                         End If
 
                     Catch ex As Exception
@@ -582,7 +582,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X)
+                        GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X, MidpointRounding.AwayFromZero)
                     Catch ex As Exception
                         ReportError(controlName, "MouseX", ex)
                     End Try
@@ -599,7 +599,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y)
+                        GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y, MidpointRounding.AwayFromZero)
                     Catch ex As Exception
                         ReportError(controlName, "MouseY", ex)
                     End Try
@@ -1046,7 +1046,7 @@ Namespace WinForms
                         Dim font As New Primitive
                         Dim c = GetControl(controlName)
                         font.Items("Name") = c.FontFamily.Source
-                        font.Items("Size") = System.Math.Round(c.FontSize * 0.75, 1)
+                        font.Items("Size") = System.Math.Round(c.FontSize * 0.75, 1, MidpointRounding.AwayFromZero)
                         font.Items("Bold") = (c.FontWeight = FontWeights.Bold)
                         font.Items("Italic") = (c.FontStyle = FontStyles.Italic)
 
@@ -1164,7 +1164,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetFontSize = System.Math.Round(GetControl(controlName).FontSize * 0.75, 1)
+                        GetFontSize = System.Math.Round(GetControl(controlName).FontSize * 0.75, 1, MidpointRounding.AwayFromZero)
                     Catch ex As Exception
                         ReportError(controlName, "FontSize", ex)
                     End Try
