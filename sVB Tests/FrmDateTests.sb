@@ -7,10 +7,6 @@ D6 = #+1.5:15#
 D7 = #-5:10:30#
 
 
-Me.RunTests()
-
-
-
 '------------------------------------------------
 Function Test_Add()
    Return UnitTest.AssertEqual(
@@ -53,18 +49,8 @@ Function Test_AddDays()
       {
          #1/14/2023#,
          #10 Jun 2022 12:00:00 PM#,
-         Date.FromDateTime(
-            Clock.Year,
-            Clock.Month,
-            Clock.Day + 10,
-            15, 0, 0, 0
-         ),
-         Date.FromDateTime(
-            Clock.Year,
-            Clock.Month,
-            Clock.Day + 1,
-            18, 12, 0, 0
-         ),
+         #15:0:0# + #+10.0:0#,
+         #6:12:00 AM# + #+1.12:00#,
          #12-12-2022 12:20:15 PM#,
          #+31.5:15#,
          #+99.18:49:30#
@@ -90,18 +76,8 @@ Function Test_AddHours()
       {
          #1/13/2023 01:00:00#,
          #10 Jun 2022 12:30:00 AM#,
-         Date.FromDateTime(
-            Clock.Year,
-            Clock.Month,
-            Clock.Day + 1,
-            1, 0, 0, 0
-         ),
-         Date.FromDateTime(
-            Clock.Year,
-            Clock.Month,
-            Clock.Day,
-            7, 42, 0, 0
-         ),
+         #15:0:0# + #+10:0#,
+         #6:12:00 AM# + #+1:30:00#,
          #12-31-2022 16:20:15#,
          #+2.11:15#,
          #+3.22:49:30#
@@ -118,19 +94,9 @@ Function Test_AddMilliseconds()
    Return UnitTest.AssertTrue(
       {
          Date.AddMilliseconds(D1, 1) = #1/13/2023 12:00:00.001 AM#,
-         D2.AddMilliseconds(0.5) = #10 Jun 2022 12:00:00.001 AM#,
-         Date.AddMilliseconds(D3, 10) = Date.FromDateTime(
-            Clock.Year,
-            Clock.Month,
-            Clock.Day,
-            15, 0, 0, 10
-         ),
-         D4.AddMilliseconds(1.5) = Date.FromDateTime(
-            Clock.Year,
-            Clock.Month,
-            Clock.Day,
-            6, 12, 00, 1.5
-         ),
+         D2.AddMilliseconds(0.5) = #10 Jun 2022 12:00:00.0005 AM#,
+         Date.AddMilliseconds(D3, 10) = #15:0:0# + #+0:0:0.010#,
+         D4.AddMilliseconds(1.5) = #6:12:00 AM# + #+0:0:0.0015#,
          Date.AddMilliseconds(D5, -20) = #1-1-2023 12:20:14.980 PM#,
          Date.AddMilliseconds(D6, 30) = #+1.5:15:0.03#,
          D7.AddMilliseconds(100) = #-5:10:29.900#
@@ -155,18 +121,8 @@ Function Test_AddMinutes()
       {
          #1/13/2023 12:01:00 AM#,
          #10 Jun 2022 12:00:30 AM#,
-         Date.FromDateTime(
-            Clock.Year,
-            Clock.Month,
-            Clock.Day,
-            15, 10, 0, 0
-         ),
-         Date.FromDateTime(
-            Clock.Year,
-            Clock.Month,
-            Clock.Day,
-            6, 13, 30, 0
-         ),
+         #15:0:0# + #+0:10#,
+         #6:12:00 AM# + #+0:1:30#,
          #1-1-2023 12:00:15 PM#,
          #+1.5:45#,
          #-3:30:30#
@@ -178,7 +134,7 @@ EndFunction
 
 '------------------------------------------------
 Function Test_AddMonths()
-   
+   d = Date.FromDate(Clock.Year, Clock.Month, Clock.Day)
    Return UnitTest.AssertEqual(
       {
          Date.AddMonths(D1, 1),
@@ -192,21 +148,11 @@ Function Test_AddMonths()
       {
          #2/13/2023#,
          #10 Jul 2022#,
-         Date.FromDateTime(
-            Clock.Year,
-            Clock.Month + 10,
-            Clock.Day,
-            15, 0, 0, 0
-         ),
-         Date.FromDateTime(
-            Clock.Year,
-            Clock.Month + 2,
-            Clock.Day,
-            6, 12, 0, 0
-         ),
+         d.AddMonths(10) + #+15:0:0#,
+         d.AddMonths(2) + #+6:12:00#,
          #5-1-2021 12:20:15 PM#,
-         #+914.8:15#,
-         #+3043.12:49:30#
+         D6.AddDays(365.2425 * 30 / 12),
+         D7.AddDays(365.2425 * 100 / 12)
       },
       "Date.AddMonths"
    )
@@ -278,8 +224,8 @@ Function Test_AddYears()
             6, 12, 0, 0
          ),
          #1-1-2003 12:20:15 PM#,
-         #+10958.17:15#,
-         #+36524.18:49:30#
+         D6.AddDays(365.2425 * 30),
+         D7.AddDays(365.2425 * 100)
       },
       "Date.AddYears"
    )
@@ -488,12 +434,12 @@ Function Test_ChangeSecond()
          Date.ChangeSecond(D5, -20),
          Date.ChangeSecond(D6, 30),
          Date.ChangeSecond(D6, -30),
-         D7.ChangeSecond(100),
+         D7.ChangeSecond(0),
          D7.ChangeSecond(-100)
       },
       {
          #1/13/2023 12:00:01 AM#,
-         #10 Jun 2022 12:00:00.5 AM#,
+         #10 Jun 2022 12:00:01 AM#,
          Date.FromDateTime(
             Clock.Year,
             Clock.Month,
@@ -504,11 +450,13 @@ Function Test_ChangeSecond()
             Clock.Year,
             Clock.Month,
             Clock.Day,
-            6, 12, 1, 500
+            6, 12, 2, 0
          ),
-         #1-1-2023 12:19:55 PM#,
+         #1-1-2023 12:20:20 PM#,
          #+1.5:15:30#,
-         #-5:8:50#
+         #+1.5:15:30#,
+         #-5:10:00#,
+         #-5:10:30#
       },
       "Date.ChangeSecond"
    )
@@ -524,31 +472,623 @@ Function Test_ChangeYear()
          D2.ChangeYear(0.5),
          Date.ChangeYear(D3, 10),
          D4.ChangeYear(1.5),
-         Date.ChangeYear(D5, -20),
+         Date.ChangeYear(D5, -2000),
          Date.ChangeYear(D6, 30),
          D7.ChangeYear(100)
       },
       {
-         #1/13/2024#,
-         #10 Jun 2023#,
+         #1/13/0001#,
+         #10 Jun 0001#,
          Date.FromDateTime(
-            Clock.Year + 10,
+            10,
             Clock.Month,
             Clock.Day,
             15, 0, 0, 0
          ),
          Date.FromDateTime(
-            Clock.Year + 2,
+            2,
             Clock.Month,
             Clock.Day,
             6, 12, 0, 0
          ),
-         #1-1-2003 12:20:15 PM#,
-         #+10958.17:15#,
-         #+36524.18:49:30#
+         #1-1-2000 12:20:15 PM#,
+         #+1.5:15#,
+         #-5:10:30#
       },
       "Date.ChangeYear"
    )
 EndFunction
 
+
+
+
+'------------------------------------------------
+Function Test_CreateDuration()
+   
+   Return UnitTest.AssertTrue(
+      {
+         Date.CreateDuration(10, 12, 15, 0, 0) = #+10.12:15:0#,
+         Date.CreateDuration(0, 100, 15, 0, 0) = #+4.4:15:0#,
+         Date.CreateDuration(0, -12, 15, 0, 0) = #-11:45#,
+         Date.CreateDuration(-10, -12, -15.4, -30, -100) = #-10.12:15:30.100#
+      },
+      "Date.CreateDuration"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FromCulture()
+   Return UnitTest.AssertTrue(
+      {
+         Date.FromCulture("1 يناير 2023", "ar-EG") = #1/1/2023#,
+         Date.FromCulture("1 رمضان 1444", "ar-SA") = #3/23/2023#,
+         Date.FromCulture("15 Janvier 2023", "fr-Fr") = #1/15/2023#,
+         Date.FromCulture("1 يناير 2023", "en-US") = "",
+         Date.FromCulture("1 رمضان 1444", "en-US") = "",
+         Date.FromCulture("15 Janvier 2023", "en-US") = ""
+      },
+      "Date.FromCulture"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FromDate()
+   
+   Return UnitTest.AssertTrue(
+      {
+         Date.FromDate(2023, 1, 16) = #1/16/2023#,
+         Date.FromDate(0, 0, 0) = "",
+         Date.FromDate(1, 1, 1) = #1/1/0001#,
+         Date.FromDate(2020, 13, 16) = "",
+         Date.FromDate(2023, 2, 29) = ""
+      },
+      "Date.FromDate")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FromDateTime()
+   
+   Return UnitTest.AssertTrue(
+      {
+         Date.FromDateTime(2023, 1, 16, 0, 0, 0, 0) =
+            #1/16/2023#,
+         Date.FromDateTime(2023, 1, 16, 24, 0, 0, 0) = "",
+         Date.FromDateTime(1, 1, 1, 13, 30, 11, 100) =
+            #1/1/0001 1:30:11.1 PM#,
+         Date.FromDateTime(2020, 12, 16, 12, 60, 0, 100) = "",
+         Date.FromDateTime(2023, 2, 1, 14, 0, -1, 100) = ""
+      },
+      "Date.FromDateTime")
+EndFunction
+
+
+'------------------------------------------------
+Function Test_FromTime()
+   
+   Return UnitTest.AssertTrue(
+      {
+         Date.FromTime(0, 0, 0, 0) = #1/1/0001 12:0:0 AM#,
+         Date.FromTime(24, 0, 0, 0) = "",
+         Date.FromTime(13, 30, 11, 100) = #1/1/0001 1:30:11.1 PM#,
+         Date.FromTime(12, 6, 0, 1000) = "",
+         Date.FromTime(14, 0, 1, -100) = ""
+      },
+      "Date.FromTime")
+EndFunction
+
+
+
+'------------------------------------------------
+Function Test_GetDateAndTime()
+   _d1 = Date.Now
+   expr = Date.GetDateAndTime(_d1)
+   _d2 = Date.FromCulture(expr, "")
+   
+   _d3 = #10/31/2022#
+   expr = Date.GetDateAndTime(_d3)
+   _d4 = Date.FromCulture(expr, "")
+   
+   Return UnitTest.AssertTrue(
+      {
+         _d1.ChangeMillisecond(0) = _d2,
+         _d3 = _d4
+      },
+      "Date.GetDateAndTime"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_GetDay()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetDay(D1) = 13,
+         D2.Day = 10,
+         Date.GetDay(D3) = Clock.Day,
+         D4.Day = Clock.Day,
+         Date.GetDay(D5) = 1,
+         Date.GetDay(D6) = 1,
+         D7.Day = 0
+      },
+      "Date.GetDay"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_GetDayOfWeek()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetDayOfWeek(D1) = 6,
+         D2.DayOfWeek = 6,
+         Date.GetDayOfWeek(D5) = 1,
+         Date.GetDayOfWeek(D6) = "",
+         D7.DayOfWeek = ""
+      },
+      "Date.GetDayOfWeek"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_GetDayOfYear()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetDayOfYear(D1) = 13,
+         D2.DayOfYear = 161,
+         Date.GetDayOfYear(D5) = 1,
+         Date.GetDayOfYear(D6) = 0,
+         D7.DayOfYear = 0
+      },
+      "Date.GetDayOfYear"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetElapsedMilliseconds()
+   y1900 = #1/1/1900#
+   Return UnitTest.AssertEqual(
+      {
+         Date.GetElapsedMilliseconds(D1),
+         D2.ElapsedMilliseconds,
+         D3.ElapsedMilliseconds,
+         D4.ElapsedMilliseconds,
+         Date.GetElapsedMilliseconds(D5),
+         Date.GetElapsedMilliseconds(D6),
+         D7.ElapsedMilliseconds
+      },
+      {
+         Date.GetTotalMilliseconds(D1 - y1900),
+         Date.GetTotalMilliseconds(D2 - y1900),
+         Date.GetTotalMilliseconds(D3 - y1900),
+         Date.GetTotalMilliseconds(D4 - y1900),
+         Date.GetTotalMilliseconds(D5 - y1900),
+         "",
+         ""
+      },
+      "Date.GetElapsedMilliseconds"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetEnglishDayName()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetEnglishDayName(D1) = "Friday",
+         D2.EnglishDayName = "Friday",
+         Date.GetEnglishDayName(D3) = Clock.WeekDay,
+         D4.EnglishDayName = Clock.WeekDay,
+         Date.GetEnglishDayName(D5) = "Sunday",
+         Date.GetEnglishDayName(D6) = "",
+         D7.EnglishDayName = ""
+      },
+      "Date.GetEnglishDayName"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetEnglishMonthName()
+   months = {"January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"}
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetEnglishMonthName(D1) = months[D1.Month],
+         D2.EnglishMonthName = months[D2.Month],
+         Date.GetEnglishMonthName(D3) = months[Clock.Month],
+         D4.EnglishMonthName = months[D4.Month],
+         Date.GetEnglishMonthName(D5) = months[D5.Month],
+         Date.GetEnglishMonthName(D6) = "",
+         D7.EnglishMonthName = ""
+      },
+      "Date.GetEnglishMonthName"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_GetHour()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetHour(D1) = 0,
+         D2.Hour = 0,
+         Date.GetHour(D3) = 15,
+         D4.Hour = 6,
+         Date.GetHour(D5) = 12,
+         Date.GetHour(D6) = 5,
+         D7.Hour = -5
+      },
+      "Date.GetHour"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetLongDate()
+   _d1 = Date.Now
+   expr = Date.GetLongDate(_d1)
+   _d2 = Date.FromCulture(expr, "")
+   
+   _d3 = #10/31/2022#
+   expr = Date.GetLongDate(_d3)
+   _d4 = Date.FromCulture(expr, "")
+   
+   Return UnitTest.AssertTrue(
+      {
+         Date.FromDate(_d1.Year, _d1.Month, _d1.Day) = _d2,
+         _d3 = _d4
+      },
+      "Date.GetLongDate"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetLongTime()
+   _d1 = Date.Now
+   expr = Date.GetLongTime(_d1)
+   _d2 = Date.FromCulture(expr, "")
+   
+   _d3 = #10/31/2022 07:12:10#
+   expr = Date.GetLongTime(_d3)
+   _d4 = Date.FromCulture(expr, "")
+   
+   Return UnitTest.AssertTrue(
+      {
+         _d1.ChangeMillisecond(0) = _d2,
+         Date.FromTime(_d3.Hour, _d3.Minute, _d3.Second, 0) =
+            Date.FromTime(_d4.Hour, _d4.Minute, _d4.Second, 0)
+      },
+      "Date.GetLongTime"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetMillisecond()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetMillisecond(D1) = 0,
+         D2.Millisecond = 0,
+         Date.GetMillisecond(D3) = 0,
+         D4.Millisecond = 0,
+         Date.GetMillisecond(D5) = 0,
+         Date.GetMillisecond(D6) = 0,
+         D7.Millisecond = 0,
+         Date.GetMillisecond(#12:00:1.3339#) = 333,
+         Date.GetMillisecond(#+12:00:1.3339#) = 333,
+         Date.GetMillisecond(#-12:00:1.3339#) = -333
+      },
+      "Date.GetMillisecond"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetMinute()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetMinute(D1) = 0,
+         D2.Minute = 0,
+         Date.GetMinute(D3) = 0,
+         D4.Minute = 12,
+         Date.GetMinute(D5) = 20,
+         Date.GetMinute(D6) = 15,
+         D7.Minute = -10
+      },
+      "Date.GetMinute"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetMonth()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetMonth(D1) = 1,
+         D2.Month = 6,
+         Date.GetMonth(D3) = Clock.Month,
+         D4.Month = Clock.Month,
+         Date.GetMonth(D5) = 1,
+         Date.GetMonth(D6) = 0,
+         D7.Month = 0
+      },
+      "Date.GetMonth"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetSecond()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetSecond(D1) = 0,
+         D2.Second = 0,
+         Date.GetSecond(D3) = 0,
+         D4.Second = 0,
+         Date.GetSecond(D5) = 15,
+         Date.GetSecond(D6) = 0,
+         D7.Second = -30
+      },
+      "Date.GetSecond"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetShortDate()
+   _d1 = Date.Now
+   expr = Date.GetShortDate(_d1)
+   _d2 = Date.FromCulture(expr, "")
+   
+   _d3 = #10/31/2022#
+   expr = Date.GetShortDate(_d3)
+   _d4 = Date.FromCulture(expr, "")
+   
+   Return UnitTest.AssertTrue(
+      {
+         Date.FromDate(_d1.Year, _d1.Month, _d1.Day) = _d2,
+         _d3 = _d4
+      },
+      "Date.GetShortDate"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetShortTime()
+   _d1 = Date.Now
+   expr = Date.GetShortTime(_d1)
+   _d2 = Date.FromCulture(expr, "")
+   
+   _d3 = #10/31/2022#
+   expr = Date.GetShortTime(_d3)
+   _d4 = Date.FromCulture(expr, "")
+   
+   Return UnitTest.AssertTrue(
+      {
+         Date.FromTime(_d1.Hour, _d1.Minute, 0, 0) =
+            Date.FromTime(_d2.Hour, _d2.Minute, 0, 0),
+         Date.FromTime(_d3.Hour, _d3.Minute, 0, 0) =
+            Date.FromTime(_d4.Hour, _d4.Minute, 0, 0)
+      },
+      "Date.GetShortTime"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetTicks()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetTicks(D1) = D1,
+         D2.Ticks = D2,
+         Date.GetTicks(D3) = D3,
+         Date.GetTicks(D6) = D6,
+         D7.Ticks = D7
+      },
+      "Date.GetTicks"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetTotalDays()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetTotalDays(D1) = 738532,
+         D2.TotalDays = 738315,
+         Date.GetTotalDays(D5) = 738520.5140625,
+         Date.GetTotalDays(D6) = 1.21875,
+         D7.TotalDays = -0.215625
+      },
+      "Date.GetTotalDays"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetTotalHours()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetTotalHours(D1) = 738532 * 24,
+         D2.TotalHours = 738315 * 24,
+         Date.GetTotalHours(D5) = 738520.5140625 * 24,
+         Date.GetTotalHours(D6) = 1.21875 * 24,
+         D7.TotalHours = -0.215625 * 24
+      },
+      "Date.GetTotalHours"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetTotalMilliseconds()
+   f = 24 * 3600 * 1000
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetTotalMilliseconds(D1) = 738532 * f,
+         D2.TotalMilliseconds = 738315 * f,
+         Date.GetTotalMilliseconds(D5) = 738520.5140625 * f,
+         Date.GetTotalMilliseconds(D6) = 1.21875 * f,
+         D7.TotalMilliseconds = -0.215625 * f
+      },
+      "Date.GetTotalMilliseconds"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetTotalMinutes()
+   f = 24 * 60
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetTotalMinutes(D1) = 738532 * f,
+         D2.TotalMinutes = 738315 * f,
+         Date.GetTotalMinutes(D5) = 738520.5140625 * f,
+         Date.GetTotalMinutes(D6) = 1.21875 * f,
+         D7.TotalMinutes = -0.215625 * f
+      },
+      "Date.GetTotalMinutes"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetTotalMonths()
+   f = 12 / 365.2425
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetTotalMonths(D1) -D1.TotalDays * f < 0.0000000001,
+         D2.TotalMonths - D2.TotalDays * f < 0.0000000001,
+         Date.GetTotalMonths(D5) -D5.TotalDays * f < 0.0000000001,
+         Date.GetTotalMonths(D6) -D6.TotalDays * f < 0.0000000001,
+         D7.TotalMonths - D7.TotalDays * f < 0.0000000001
+      },
+      "Date.GetTotalMonths"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetTotalSeconds()
+   f = 24 * 3600
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetTotalSeconds(D1) = 738532 * f,
+         D2.TotalSeconds = 738315 * f,
+         Date.GetTotalSeconds(D5) = 738520.5140625 * f,
+         Date.GetTotalSeconds(D6) = 1.21875 * f,
+         D7.TotalSeconds = -0.215625 * f
+      },
+      "Date.GetTotalSeconds"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetTotalYears()
+   f = 0.0000000001
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetTotalYears(D1) -(D1.TotalDays / 365.2425) < f,
+         D2.TotalYears - D2.TotalDays / 365.2425 < f,
+         Date.GetTotalYears(D5) -D5.TotalDays / 365.2425 < f,
+         Date.GetTotalYears(D6) -D6.TotalDays / 365.2425 < f,
+         D7.TotalYears - D7.TotalDays / 365.2425 < f
+      },
+      "Date.GetTotalYears"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_GetYear()
+   Return UnitTest.AssertTrue(
+      {
+         Date.GetYear(D1) = 2023,
+         D2.Year = 2022,
+         Date.GetYear(D3) = Clock.Year,
+         D4.Year = Clock.Year,
+         Date.GetYear(D5) = 2023,
+         Date.GetYear(D6) = 0,
+         D7.Year = 0
+      },
+      "Date.GetYear"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Negate()
+   Return UnitTest.AssertTrue(
+      {
+         Date.Negate(D1) = "",
+         D2.Negate() = "",
+         Date.Negate(D3) = "",
+         D4.Negate() = "",
+         Date.Negate(D5) = "",
+         Date.Negate(D6) = #+0:0# - D6,
+         D7.Negate() = #+0:0# - D7
+      },
+      "Date.Negate"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Subtract()
+   Return UnitTest.AssertEqual(
+      {
+         Date.Subtract(D1, D2),
+         Date.Subtract(D3, D4),
+         Date.Subtract(D5, D6),
+         Date.Subtract(D6, D7),
+         D2.Subtract(D6),
+         D4.Subtract(D7),
+         D7.Subtract(D5)
+      },
+      {
+         D1 - D2,
+         D3 - D4,
+         D5 - D6,
+         D6 - D7,
+         D2 - D6,
+         D4 - D7,
+         D7 - D5
+      },
+      "Date.Subtract"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_TicksToDate()
+   
+   Return UnitTest.AssertTrue(
+      {
+         Date.TicksToDate(10000000) = #1/1/0001 0:0:01#,
+         Date.TicksToDate(10000000000) = #1/1/0001 0:16:40#,
+         Date.TicksToDate(#10 Oct 2020#) = #10/10/2020#,
+         Date.TicksToDate(#10 Oct 2020# + 50000) = #10/10/2020 0:0:0.005#
+      },
+      "Date.TicksToDate"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_TicksToDuration()
+   
+   Return UnitTest.AssertTrue(
+      {
+         Date.TicksToDuration(-10000000) = #-0:0:01#,
+         Date.TicksToDuration(10000000000) = #+0:16:40#,
+         Date.TicksToDuration(#+1.12:45#) = #+1.12:45#,
+         Date.TicksToDuration(#+1.12:45# + 50000) = #+1.12:45:0.005#
+      },
+      "Date.TicksToDuration"
+   )
+EndFunction
 

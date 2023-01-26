@@ -107,7 +107,7 @@ And that's it. Fast, clean, easy and  short code, that made us love programming!
 It is unbelievable that SB complicated such an easy task, in the name of being simple and easy to learn for kids!
 
 I looked at some SB alternative IDEs but they are either:
-- more complex (too advanced to do nothing important with a language meant to be a leering toy),
+- more complex (too advanced to do nothing important with a language meant to be a learning toy),
 - or simple enough to draw the controls and generate some code for them, but still can't overcome the SB syntax limitations when dealing with objects.
 
 This is when I decided to do something, and here we are.
@@ -192,7 +192,7 @@ So, as a good practice:
 10. The editor has a perfect auto-indentation.
 
 11. Using naming convention to give sVB some info about the var type to make using them easier. 
-- The first naming convention: Any var ends with or starts with a control name (like Form1 or myLabel) will be treated as a Label, so you can use the short syntax Control.Property and the auto completion list will appear to help you complete method and properties names.
+- The first naming convention: Any var ends with or starts with a control name (like Form1 or myLabel) will be treated as an object of this control type, so you can use the short syntax Control.Property and the auto completion list will appear to help you complete method and properties names.
 
 - The second naming convention: Any var ends with or starts with the word Data is treated as a dynamic object, and you can add properties to it, and get auto completion support when you use them.
 ```
@@ -208,8 +208,8 @@ CarData["Speed"] = 100
 x = CarData["Speed"]
 ```
 
-Note that this naming convention rule ignores var domain rules, to allow you reuse the properties across subs and functions. This is totally safe as it only affects the property list that will appear in the auto completion list, but it has no effect on the variable domain rules when you run the program. You may see properties names from a data object from another function, but you still can't read these properties values in code. It is just a way to make coding faster and easier.
-- The third naming convention: Any Data var that contains the name of another data var (after trimming the `Data` part of them bath) will show the union of their properties in the auto completion list. This allows you to `inherit` other data properties. As an example, of you use the names Car2Data, or myCarData in the above example, they will show the Color and Speed properties (coming from CarData) in the completion list"
+Note that this naming convention rule ignores var domain rules, to allow you reuse the properties across subs and functions. This is totally safe as it only affects the property names that will appear in the auto completion list, but it has no effect on the variable domain rules when you run the program. You may see properties names from a data object from another function, but you still can't read these properties values in code. It is just a way to make coding faster and easier.
+- The third naming convention: Any Data var that contains the name of another data var (after trimming the `Data` part of them both) will show the union of their properties in the auto completion list. This allows you to `inherit` other data properties. As an example, of you use the names Car2Data, or myCarData in the above example, they will show the Color and Speed properties (coming from CarData) in the completion list"
 ```
 Car2Data.Speed = 200
 Car2Data.Acceleration = 10
@@ -217,7 +217,7 @@ Car2Data.Acceleration = 10
 
 And if you use `MyCar2Data` you will inherit all properties from `MyCarData`, `Car2Data` and `CarData`!
 
-12. Use the vb lookup operator to crate dynamic properties:
+12. Use the vb lookup operator to create dynamic properties:
 
 ```VB
 Student!ID = 1
@@ -285,7 +285,7 @@ You can also press such shortcuts keys on any line even there is no highlighted 
 This will highlight the nearest block that contains the statement, and move to the nearest  
 keyword up or down according to the shortcut keys you are using.
 
-21. Make it easy to crate a new form and show it from code:
+21. Make it easy to create a new form and show it from code:
 ```vb
 form2 = Forms.AddForm("form2")
 form2.Text = "Form2"
@@ -394,7 +394,7 @@ In such cases, you can initialize the var with `""` for strings, `0` for numeric
 The same for the word key, which is considered to be a `Key`, and auto completion offers the Keys class to choose from its members. This makes it easy to deal with the pressed key in Keyboard events, such as using the `Event.LastKey` property.
 
 # What's new in sVB v1.8
-31. sVB made some breaking changes to fix some SB issues: 
+31. sVB made some breaking changes to fix some SB issues:
  a) this  funny code compiles in SB:
 ```VB
 x = y
@@ -638,7 +638,7 @@ GraphicsWindow.BrushColor = Colors.AliceBlue
 GraphicsWindow.PenColor = Colors.Red
 GraphicsWindow.PenWidth = 3
 
-' Crate a figure to draw a new custom shape
+' Create a figure to draw a new custom shape
 GeometricPath.CreateFigure(100, 100, True)
 GeometricPath.AddLineSegment(50, 150, True)
 GeometricPath.AddLineSegment(100, 200, True)
@@ -789,12 +789,12 @@ And to make this even easier, each control has a `ChooseFont` methods that shows
 Me.ChooseFont()
 ```
 
-58. If you want to crate a custom font dialog, you will need to know the font names defined on the user's system. In such case, use the `Desktop.FontNames` property to get an array containing these font names.
+58. If you want to create a custom font dialog, you will need to know the font names defined on the user's system. In such case, use the `Desktop.FontNames` property to get an array containing these font names.
 For a sample on how to create a custom font dialog, see the `FrmOps` in the `sVB notepad` app in the samples folder.
 
 59. You can show the color dialog to allow the user to choose a color, by calling the `Color.ShowDialog` method. And for simplicity, each control has the `ChooseForeColor` and `ChooseBackColor` methods to show the dialog and change the control fore and back colors directly.
 
-60. You can now crate a main menu for the form by using the `Form.AddMainMenu` method, that returns the main menu object, which you can use it's `AddItem` method to add menu items.
+60. You can now create a main menu for the form by using the `Form.AddMainMenu` method, that returns the main menu object, which you can use it's `AddItem` method to add menu items.
 For more info, see how the menus are defined in the `formMain` in the `sVB notepad` in the samples folder.
 
 61. You can show a child form that it owened by a parent form by calling the `Form.ShowChildForm` method. 

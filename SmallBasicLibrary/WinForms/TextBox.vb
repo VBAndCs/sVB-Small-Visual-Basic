@@ -277,6 +277,31 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Appends the items of the given array as new lines in the textbox, just after the last character of the textbox
+        ''' </summary>
+        ''' <param name="lines">An array containing the lines to add to the textbox.</param>
+        <ExMethod>
+        Public Shared Sub AppendLines(textBoxName As Primitive, lines As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        If lines.IsEmpty Then Return
+
+                        Dim t = GetTextBox(textBoxName)
+                        If lines.IsArray Then
+                            For Each lineText In lines._arrayMap.Values
+                                t.AppendText(lineText.AsString() & vbCrLf)
+                            Next
+                        Else
+                            t.AppendText(lines.AsString() & vbCrLf)
+                        End If
+
+                    Catch ex As Exception
+                        Control.ReportSubError(textBoxName, "AppendLines", ex)
+                    End Try
+                End Sub)
+        End Sub
 
         ''' <summary>
         ''' Gets or sets whether or not to wrap words to the next line if they exceed the textbox width.

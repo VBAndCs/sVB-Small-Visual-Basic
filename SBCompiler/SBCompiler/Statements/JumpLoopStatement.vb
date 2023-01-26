@@ -36,7 +36,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim loops As New List(Of LoopStatement)
 
             Dim parentStatement As Statement = Me
-            Dim level = UpLevel + 1
+            Dim level = If(UpLevel = -1, 1000, UpLevel + 1)
 
             Do
                 If parentStatement.Parent Is Nothing OrElse level = 0 Then
@@ -86,7 +86,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function ToString() As String
-            Return StartToken.Text & New String("-"c, UpLevel) & vbCrLf
+            Return StartToken.Text & If(UpLevel = -1, " *", New String("-"c, UpLevel)) & vbCrLf
         End Function
     End Class
 End Namespace

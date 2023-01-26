@@ -1305,15 +1305,15 @@ Namespace Microsoft.SmallVisualBasic
             Dim upLevel = 0
             Do Until tokenEnum.IsEnd
                 If tokenEnum.Current.Type = TokenType.Subtraction Then
-                    If upLevel < 1000 Then
-                        upLevel += 1
-                    Else
+                    If upLevel = -1 OrElse upLevel >= 1000 Then
                         AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnum.Current.Text))
                         Exit Do
+                    ElseIf upLevel < 1000 Then
+                        upLevel += 1
                     End If
                 ElseIf tokenEnum.Current.Type = TokenType.Multiplication Then
                     If upLevel = 0 Then
-                        upLevel = 1000
+                        upLevel = -1
                     Else
                         AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnum.Current.Text))
                         Exit Do

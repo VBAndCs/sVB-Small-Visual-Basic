@@ -506,9 +506,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     Case TokenType.Subtraction
                         If notLastToken Then
-                            Dim prevType = tokens(i - 1).ParseType
-                            If i = 0 OrElse
-                                        prevType = ParseType.Operator OrElse
+                            Dim prevType = If(i = 0, ParseType.Illegal, tokens(i - 1).ParseType)
+                            If i = 0 OrElse prevType = ParseType.Operator OrElse
                                         prevType = ParseType.Keyword Then
                                 FixSpaces(textEdit, line, token, nextToken, 0)
                             Else

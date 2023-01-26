@@ -36,17 +36,25 @@ Namespace WinForms
         ''' <summary>
         ''' Creates a new date from the given text if its format is a valid date format for the given culture.
         ''' </summary>
-        ''' <param name="dateText">the text that represents the date</param>
-        ''' <param name="cultureName">the culture name used to format the date, like "en-us" for English United States culture, "ar-eg" for Arabic Egypt culture, and "ar-sa" for Arabic Saudi Arabia culture</param>
+        ''' <param name="dateText">The text that represents the date</param>
+        ''' <param name="cultureName">
+        ''' The culture name used to format the date, like "en-US" for English (United States) culture, "ar-EG" for Arabic (Egypt) culture, and "ar-SA" for Arabic (Saudi Arabia) culture.
+        ''' ''' Send empty string "" to use the local culture of the user's system.
+        ''' </param>
         ''' <returns>a new date or empty string</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function FromCulture(dateText As Primitive, cultureName As Primitive) As Primitive
             Dim d As Date
+            Dim cult = cultureName.AsString()
             Dim c As CultureInfo
             Try
-                c = New CultureInfo(cultureName.AsString())
+                If cult = "" Then
+                    c = CultureInfo.CurrentCulture
+                Else
+                    c = New CultureInfo(cultureName.AsString())
+                End If
             Catch
-                c = CultureInfo.CurrentUICulture
+                c = CultureInfo.CurrentCulture
             End Try
 
             If Date.TryParse(dateText, c, DateTimeStyles.None, d) Then
@@ -56,18 +64,27 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the string representaion on the given date formatted with the given culture.
+        ''' Gets the short date and short time string representaion of the given date formatted with the given culture.
         ''' </summary>
-        ''' <param name="date">the input date</param>
-        ''' <param name="cultureName">the culture name used to format the date, like "en-us" for English United States culture, "ar-eg" for Arabic Egypt culture, and "ar-sa" for Arabic Saudi Arabia culture</param>
+        ''' <param name="date">The input date</param>
+        ''' <param name="cultureName">
+        ''' The culture name used to format the date, like "en-US" for English (United States) culture, "ar-EG" for Arabic (Egypt) culture, and "ar-SA" for Arabic (Saudi Arabia) culture.
+        ''' Send empty string "" to use the local culture of the user's system.
+        ''' </param>
         ''' <returns>a string represent the date in the given culture</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function ToCulture([date] As Primitive, cultureName As Primitive) As Primitive
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
+
             Try
-                Return d.Value.ToString(New CultureInfo(cultureName.AsString()))
-            Catch
+                Dim cult = cultureName.AsString()
+                If cult = "" Then
+                    Return d.Value.ToString(CultureInfo.CurrentCulture)
+                Else
+                    Return d.Value.ToString(New CultureInfo(cult))
+                End If
+            Catch ex As Exception
             End Try
             Return d.Value.ToString()
         End Function
@@ -87,7 +104,7 @@ Namespace WinForms
         ''' <summary>
         ''' Creates a new TimeSpan from the given ticks value. Note that the second contains 10 milion ticks.
         ''' </summary>
-        ''' <param name="ticks">the total ticks of the date</param>
+        ''' <param name="ticks">The total ticks of the duration</param>
         ''' <returns>a new duration.</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function TicksToDuration(ticks As Primitive) As Primitive
@@ -116,10 +133,10 @@ Namespace WinForms
         ''' <summary>
         ''' Creates a new date from the given time values.
         ''' </summary>
-        ''' <param name="hour">a number between 0 and 23 representing the hour</param>
-        ''' <param name="minute">a number between 0 and 59 representing the minute</param>
-        ''' <param name="second">a number between 0 and 59 representing the second</param>
-        ''' <param name="millisecond">a number between 0 and 999 representing the millisecond</param>
+        ''' <param name="hour">A number between 0 and 23 representing the hour</param>
+        ''' <param name="minute">A number between 0 and 59 representing the minute</param>
+        ''' <param name="second">A number between 0 and 59 representing the second</param>
+        ''' <param name="millisecond">A number between 0 and 999 representing the millisecond</param>
         ''' <returns>a new date</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function FromTime(hour As Primitive, minute As Primitive, second As Primitive, millisecond As Primitive) As Primitive
@@ -154,12 +171,14 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Gets the full time part (including seconds and AM/PM) of the given date. It will be in the user local culture.
+        ''' Gets the time part for the given date, which will include the seconds part and the day time part like AM/PM but in the user's local culture.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
         ''' <returns>a string representing the long time</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetLongTime([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.ToLongTimeString())
@@ -172,6 +191,8 @@ Namespace WinForms
         ''' <returns>a string representing the short time in the user local culture</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetShortTime([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.ToShortTimeString())
@@ -184,6 +205,8 @@ Namespace WinForms
         ''' <returns>a string representing the long date in the user local culture.</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetLongDate([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.ToLongDateString())
@@ -196,44 +219,38 @@ Namespace WinForms
         ''' <returns>a string representing the short date in the user local culture.</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetShortDate([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.ToShortDateString())
         End Function
 
         ''' <summary>
-        ''' Gets the short date and time representaion
-        ''' </summary>
-        ''' <param name="date">the input date \ time</param>
-        ''' <returns>a string representing the full date and time</returns>
-        <ReturnValueType(VariableType.String)>
-        Public Shared Function GetLongDateAndTime([date] As Primitive) As Primitive
-            Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
-            Return New Primitive(d.Value.ToString())
-        End Function
-
-        ''' <summary>
-        ''' Gets the short date and long time representaion in the user local culture.
+        ''' Gets the date and time representaion in the user local culture.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
         ''' <returns>a string representing the short date and long time in the user local culture.</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetDateAndTime([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.ToLongDateString() & " " & d.Value.ToLongTimeString())
         End Function
 
         ''' <summary>
-        ''' Gets the year or the given date.
+        ''' Gets the year of the given date.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
         ''' <returns>a number representing the year</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetYear([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return 0
+
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return 0
             Return New Primitive(d.Value.Year)
         End Function
 
@@ -244,8 +261,10 @@ Namespace WinForms
         ''' <returns>a number between 1 and 12 that represents the month</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetMonth([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return 0
+
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return 0
             Return New Primitive(d.Value.Month)
         End Function
 
@@ -256,6 +275,8 @@ Namespace WinForms
         ''' <returns>the name of the month in English</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetEnglishMonthName([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.ToString("MMMM", CultureInfo.InvariantCulture))
@@ -268,6 +289,8 @@ Namespace WinForms
         ''' <returns>the name of the month in the local language defined on the user system</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetMonthName([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.ToString("MMMM"))
@@ -277,34 +300,45 @@ Namespace WinForms
         ''' Gets the day of the given date.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a nimber between 1 and 31 that represents the day</returns>
+        ''' <returns>a number between 1 and 31 that represents the day</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetDay([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then
+                Dim ts = GetTimeSpan([date])
+                If ts Is Nothing Then Return ""
+                Return ts.Value.Days
+            End If
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.Day)
         End Function
 
         ''' <summary>
-        ''' Gets the day number in the year of the given date. 
+        ''' Gets the day number in the year for the given date. 
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a number between 1 and 366 that Represents the date in the week</returns>
+        ''' <returns>a number between 1 and 366 that Represents the day in the year</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetDayOfYear([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return 0
+
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return 0
             Return New Primitive(d.Value.DayOfYear)
         End Function
 
 
         ''' <summary>
-        ''' Gets the day of the week of the given date. Note that Sunday is the first day of the week. 
+        ''' Gets the day number in the week for the given date. 
+        ''' Note that Sunday is the first day of the week. 
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a number between 1 and 7 that Represents the date in the week</returns>
+        ''' <returns>a number between 1 and 7 that Represents the day in the week</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetDayOfWeek([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(1 + d.Value.DayOfWeek)
@@ -312,12 +346,14 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Gets the English name of the week day of the given date.
+        ''' Gets the English name of the week day for the given date.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
         ''' <returns>the name of the week day in English</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetEnglishDayName([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.DayOfWeek.ToString())
@@ -330,6 +366,8 @@ Namespace WinForms
         ''' <returns>the name of the week day in the local language defined on the user system</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetDayName([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return ""
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.ToString("dddd"))
@@ -342,6 +380,12 @@ Namespace WinForms
         ''' <returns>a number between 0 and 23 that represents the hour</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetHour([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then
+                Dim ts = GetTimeSpan([date])
+                If ts Is Nothing Then Return ""
+                Return ts.Value.Hours
+            End If
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.Hour)
@@ -355,6 +399,12 @@ Namespace WinForms
         ''' <returns>a number between 0 and 59 that represents the minute</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetMinute([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then
+                Dim ts = GetTimeSpan([date])
+                If ts Is Nothing Then Return ""
+                Return ts.Value.Minutes
+            End If
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.Minute)
@@ -368,6 +418,12 @@ Namespace WinForms
         ''' <returns>a number between 0 and 59 that represents the second</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetSecond([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then
+                Dim ts = GetTimeSpan([date])
+                If ts Is Nothing Then Return ""
+                Return ts.Value.Seconds
+            End If
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.Second)
@@ -380,6 +436,12 @@ Namespace WinForms
         ''' <returns>a number between 0 and 999 that represents the millisecond</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetMillisecond([date] As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then
+                Dim ts = GetTimeSpan([date])
+                If ts Is Nothing Then Return ""
+                Return ts.Value.Milliseconds
+            End If
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
             Return New Primitive(d.Value.Millisecond)
@@ -392,19 +454,7 @@ Namespace WinForms
         ''' <returns>the total ticks</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetTicks([date] As Primitive) As Primitive
-            If [date].IsTimeSpan Then
-                Dim ts = [date].AsTimeSpan()
-                If ts Is Nothing Then Return ""
-                Return New Primitive(ts.Value.Ticks)
-            Else
-                Dim d = [date].AsDate()
-                If d Is Nothing Then
-                    Dim ts = [date].AsTimeSpan()
-                    If ts Is Nothing Then Return ""
-                    Return New Primitive(ts.Value.Ticks)
-                End If
-                Return New Primitive(d.Value.Ticks)
-            End If
+            Return New Primitive([date].AsDecimal(), NumberType.Decimal)
         End Function
 
         ''' <summary>
@@ -414,9 +464,7 @@ Namespace WinForms
         ''' <returns>the number of milliseconds that have elapsed since 1900 until the given date</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetElapsedMilliseconds([date] As Primitive) As Primitive
-            If [date].IsTimeSpan Then
-                Return [date].AsDecimal \ 10000
-            End If
+            If [date].IsTimeSpan Then Return ""
 
             Dim d = [date].AsDate()
             If d Is Nothing Then
@@ -436,7 +484,9 @@ Namespace WinForms
         ''' <returns>a new date with the new year value. The input date will not change</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function ChangeYear([date] As Primitive, value As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return [date]
             If Not value.IsNumber Then Return [date]
+
             Dim v As Integer = System.Math.Round(System.Math.Abs(value), MidpointRounding.AwayFromZero)
             If v < 1 OrElse v > 9999 Then Return [date]
 
@@ -461,7 +511,9 @@ Namespace WinForms
         ''' <returns>a new date with the new month value. The input date will not change</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function ChangeMonth([date] As Primitive, value As Primitive) As Primitive
+            If [date].numberType = NumberType.TimeSpan Then Return [date]
             If Not value.IsNumber Then Return [date]
+
             Dim v As Integer = System.Math.Round(System.Math.Abs(value), MidpointRounding.AwayFromZero)
             If v < 1 OrElse v > 12 Then Return [date]
 
@@ -487,6 +539,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Date)>
         Public Shared Function ChangeDay([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
+
             Dim v As Integer = System.Math.Round(
                 System.Math.Abs(value),
                 MidpointRounding.AwayFromZero
@@ -658,20 +711,20 @@ Namespace WinForms
         ''' Creates a new date by adding the given years to the given date.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <param name="value">the number of years you want to add. If the given date is a duration, the total days of the years will be calculated assuming that a year = 365.25 days.</param>
+        ''' <param name="value">the number of years you want to add. If the given date is a duration, the total days of the years will be calculated assuming that a year = 365.2425 days.</param>
         ''' <returns>a new date with the added years. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function AddYears([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
             If [date].IsTimeSpan Then
-                Return [date] + New Primitive(TimeSpan.FromDays(value * 365.25).Ticks, NumberType.TimeSpan)
+                Return [date] + New Primitive(TimeSpan.FromDays(value * 365.2425).Ticks, NumberType.TimeSpan)
             End If
 
             Dim d = [date].AsDate()
             If d Is Nothing Then
                 Dim ts = [date].AsTimeSpan()
                 If ts Is Nothing Then Return [date]
-                Return New Primitive(ts.Value.Ticks + TimeSpan.FromDays(value * 365.25).Ticks, NumberType.TimeSpan)
+                Return New Primitive(ts.Value.Ticks + TimeSpan.FromDays(value * 365.2425).Ticks, NumberType.TimeSpan)
             End If
 
             Try
@@ -693,14 +746,14 @@ Namespace WinForms
         Public Shared Function AddMonths([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
             If [date].IsTimeSpan Then
-                Return [date] + New Primitive(TimeSpan.FromDays(value * 365.25 / 12).Ticks, NumberType.TimeSpan)
+                Return [date] + New Primitive(TimeSpan.FromDays(value * 365.2425 / 12).Ticks, NumberType.TimeSpan)
             End If
 
             Dim d = [date].AsDate()
             If d Is Nothing Then
                 Dim ts = [date].AsTimeSpan()
                 If ts Is Nothing Then Return [date]
-                Return New Primitive(ts.Value.Ticks + TimeSpan.FromDays(value * 365.25 / 12).Ticks, NumberType.TimeSpan)
+                Return New Primitive(ts.Value.Ticks + TimeSpan.FromDays(value * 365.2425 / 12).Ticks, NumberType.TimeSpan)
             End If
 
             Try
@@ -769,7 +822,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Date)>
         Public Shared Function AddMilliseconds([date] As Primitive, value As Primitive) As Primitive
             If Not value.IsNumber Then Return [date]
-            Return [date] + New Primitive(TimeSpan.FromMilliseconds(value).Ticks, NumberType.TimeSpan)
+            Return [date] + (value * 10000)
         End Function
 
         ''' <summary>
@@ -784,10 +837,10 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Creates a new date by subtracting the given duration from the given date.
+        ''' Creates a new date by subtracting the given value from the given date.
         ''' </summary>
         ''' <param name="[date]">the input date \ time</param>
-        ''' <param name="value">the date\time or duration you want to subtract</param>
+        ''' <param name="value">The date or duration you want to subtract.</param>
         ''' <returns>a duration representing the difference between the two dates. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function Subtract([date] As Primitive, value As Primitive) As Primitive
@@ -809,28 +862,27 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the approximate total years in the given duration, assuming that each year contains 365.25 days.
+        ''' Gets the approximate total years in the given duration, assuming that each year contains 365.2425 days.
         ''' </summary>
         ''' <param name="duration">the input duration</param>
         ''' <returns>the approximate total years</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetTotalYears(duration As Primitive) As Primitive
-            Dim ts = GetTimeSpan(duration)
-            If ts Is Nothing Then Return 0
-            Return New Primitive(ts.Value.TotalDays / 365.25)
+            If Not duration.IsNumber Then Return 0
+            Return New Primitive(duration.AsDecimal / 10 ^ 7 / 3600 / 24 / 365.2425)
         End Function
 
 
         ''' <summary>
-        ''' Gets the approximate total months in the given duration, assuming that theere is 12 months in the year, and each year contains 365.25 days.
+        ''' Gets the approximate total months in the given duration, assuming that theere are 12 months in the year, and each year contains 365.2425 days.
         ''' </summary>
         ''' <param name="duration">the input duration</param>
         ''' <returns>the approximate total months</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetTotalMonths(duration As Primitive) As Primitive
-            Dim ts = GetTimeSpan(duration)
-            If ts Is Nothing Then Return 0
-            Return New Primitive(ts.Value.TotalDays * 12 / 365.25)
+            If Not duration.IsNumber Then Return 0
+            Return New Primitive(duration.AsDecimal / 10 ^ 7 / 3600 / 2 / 365.2425)
+
         End Function
 
         ''' <summary>
@@ -907,8 +959,10 @@ Namespace WinForms
         ''' </returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function Negate(duration As Primitive) As Primitive
+            If duration.numberType = NumberType.Date Then Return ""
+
             Dim ts = GetTimeSpan(duration)
-            If ts Is Nothing Then Return duration
+            If ts Is Nothing Then Return ""
             Return New Primitive(ts.Value.Negate().Ticks, NumberType.TimeSpan)
         End Function
     End Class

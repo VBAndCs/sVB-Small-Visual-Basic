@@ -60,7 +60,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the year or the current date.
+        ''' Gets the year of the current date.
         ''' </summary>
         ''' <returns>a number representing the year</returns>
         <ReturnValueType(VariableType.Double)>
@@ -101,7 +101,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the day of the current date.
         ''' </summary>
-        ''' <returns>a nimber between 1 and 31 that represents the day</returns>
+        ''' <returns>a number between 1 and 31 that represents the day</returns>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetDay([date] As Primitive) As Primitive
@@ -293,7 +293,7 @@ Namespace WinForms
         ''' <summary>
         ''' Creates a new date by adding the given years to the current date.
         ''' </summary>
-        ''' <param name="value">the number of years you want to add. If the given date is a duration, the total days of the years will be calculated assuming that a year = 365.25 days.</param>
+        ''' <param name="value">the number of years you want to add. If the given date is a duration, the total days of the years will be calculated assuming that a year = 365.2425 days.</param>
         ''' <returns>a new date with the added years. The input date will not be affected</returns>
         <ReturnValueType(VariableType.Date)>
         <ExMethod>
@@ -433,6 +433,25 @@ Namespace WinForms
 
 
         ''' <summary>
+        ''' Gets the approximate total months in the current duration, assuming that theere are 12 months in the year, and each year contains 365.2425 days.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetTotalMonths(duration As Primitive) As Primitive
+            Return [Date].GetTotalMonths(duration)
+        End Function
+
+        ''' <summary>
+        ''' Gets the approximate total years in the given duration, assuming that each year contains 365.2425 days.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetTotalYears(duration As Primitive) As Primitive
+            Return [Date].GetTotalYears(duration)
+        End Function
+
+
+        ''' <summary>
         ''' Gets the total milliseconds in the current duration.
         ''' </summary>
         ''' <returns>the total milliseconds</returns>
@@ -443,9 +462,9 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets the string representaion on the current date formatted with the given culture.
+        ''' Gets the short date and short time string representaion of the given date formatted with the given culture.
         ''' </summary>
-        ''' <param name="cultureName">the culture name used to format the date, like "en-us" for English United States culture, "ar-eg" for Arabic Egypt culture, and "ar-sa" for Arabic Saudi Arabia culture</param>
+        ''' <param name="cultureName">the culture name used to format the date, like "en-US" for English (United States) culture, "ar-EG" for Arabic (Egypt) culture, and "ar-SA" for Arabic (Saudi Arabia) culture</param>
         ''' <returns>a string represent the date in the given culture</returns>
         <ReturnValueType(VariableType.String)>
         <ExMethod>
