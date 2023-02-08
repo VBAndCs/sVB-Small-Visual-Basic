@@ -1,0 +1,42 @@
+'@Form Hints:
+'#Form1{
+'    TxtWord: TextBox
+'    BtnDefinition: Button
+'    TxtDefinition: TextBox
+'    ChkFrom: ComboBox
+'    Label1: Label
+'    Label2: Label
+'    ChkTo: ComboBox
+'}
+
+Me = "form1"
+TxtWord = "form1.txtword"
+BtnDefinition = "form1.btndefinition"
+TxtDefinition = "form1.txtdefinition"
+ChkFrom = "form1.chkfrom"
+Label1 = "form1.label1"
+Label2 = "form1.label2"
+ChkTo = "form1.chkto"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    ChkFrom: OnSelection
+'    BtnDefinition: OnClick
+'    TxtWord: OnTextChanged
+'}
+
+' ChkFrom Events:
+Control.HandleEvents(ChkFrom)
+ComboBox.OnSelection = ChkFrom_OnSelection
+
+' BtnDefinition Events:
+Control.HandleEvents(BtnDefinition)
+Control.OnClick = BtnDefinition_OnClick
+
+' TxtWord Events:
+Control.HandleEvents(TxtWord)
+TextBox.OnTextChanged = TxtWord_OnTextChanged
+
+

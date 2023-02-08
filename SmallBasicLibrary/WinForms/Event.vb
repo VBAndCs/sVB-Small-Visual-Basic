@@ -25,8 +25,8 @@ Namespace WinForms
         Public Shared Property SenderControl As Primitive
 
         ''' <summary>
-        ''' If you set this property to true inside an event handler sub, the event will be considered handled and will not be processed bey windows anymore.
-        ''' For exanple, if you want to cancel writrting a key to the textbox, use `Event.Handled = True` inside OnKeyDown handler 
+        ''' If you set this property to true inside an event handler sub, the event will be considered handled and will not be processed by windows anymore.
+        ''' For example, if you want to cancel writrting a key to the textbox, use `Event.Handled = True` inside the OnKeyDown event handler.
         ''' </summary>
         ''' <returns></returns>
         <ReturnValueType(VariableType.Boolean)>
@@ -68,7 +68,8 @@ Namespace WinForms
         ''' Set the Evemt.SenderForm and Event.SenderControl. 
         ''' You must call this method before adding event handlers for contrl events.
         ''' </summary>
-        ''' <param name="ControlName"></param>
+        ''' <param name="ControlName">The cntrl you will handle its events.</param>
+        <HideFromIntellisense>
         Public Shared Sub HandleEventsOf(ControlName As Primitive)
             _SenderControl = ControlName
         End Sub

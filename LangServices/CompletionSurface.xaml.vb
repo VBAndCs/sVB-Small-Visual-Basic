@@ -361,7 +361,7 @@ LineRetry:
                 Next
             Next
 
-            If originalText = text Then Return 0
+            If originalText = "" OrElse originalText = text Then Return 0
             text = originalText
             textLength = text.Length
             If textLength < 2 Then
