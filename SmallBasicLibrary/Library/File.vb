@@ -572,36 +572,28 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function OpenFolderDialog(initialFolder As Primitive) As Primitive
-            SmallBasicApplication.Invoke(
-                Sub()
-                    Dim folder = GeIinitialFolder(initialFolder.AsString())
-                    If folder = "" Then folder = GeIinitialFolder(System.Windows.Clipboard.GetText())
-                    If folder = "" Then folder = GetSetting("sVB", "OpenFolder", "LastFolder", "")
+            Dim folder = GeIinitialFolder(initialFolder.AsString())
+            If folder = "" Then folder = GeIinitialFolder(System.Windows.Clipboard.GetText())
+            If folder = "" Then folder = GeIinitialFolder(GetSetting("sVB", "OpenFolder", "LastFolder", ""))
 
-                    Dim th As New Threading.Thread(
-                        Sub()
-                            Threading.Thread.Sleep(300)
-                            System.Windows.Forms.SendKeys.SendWait("{TAB}{TAB}{RIGHT}")
-                        End Sub)
-                    th.Start()
+            Dim th As New Threading.Thread(
+                 Sub()
+                     Threading.Thread.Sleep(300)
+                     System.Windows.Forms.SendKeys.SendWait("{TAB}{TAB}{TAB}{TAB}{RIGHT}")
+                 End Sub)
+            th.Start()
 
+            Dim dlg As New System.Windows.Forms.FolderBrowserDialog With {
+                  .Description = "Select a folder:",
+                  .SelectedPath = folder
+             }
 
-                    Try
-                        Dim dlg As New System.Windows.Forms.FolderBrowserDialog With {
-                            .Description = "Select a folder:",
-                            .SelectedPath = folder
-                        }
+            If dlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+                SaveSetting("sVB", "OpenFolder", "LastFolder", dlg.SelectedPath)
+                Return dlg.SelectedPath
+            End If
 
-                        If dlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-                            SaveSetting("sVB", "OpenFolder", "LastFolder", dlg.SelectedPath)
-                            OpenFolderDialog = dlg.SelectedPath
-                        End If
-
-                    Catch ex As Exception
-                        MsgBox(ex.Message)
-                    End Try
-                End Sub)
-
+            Return ""
         End Function
 
         Private Shared Function GeIinitialFolder(folder As String) As String
