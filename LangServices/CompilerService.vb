@@ -270,7 +270,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Using
         End Sub
 
-        Private Sub FixIdentifiers(textBuffer As ITextBuffer, start As Integer, [end] As Integer)
+        Private Sub FixIdentifiers(
+                            textBuffer As ITextBuffer,
+                            start As Integer,
+                            [end] As Integer
+                     )
+
             Dim snapshot = textBuffer.CurrentSnapshot
             Dim symbolTable = GetsymbolTable(textBuffer)
 
@@ -321,6 +326,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     ToUpper(start, [end], snapshot, dynObj.Value, textEdit)
                 Next
 
+                Dim controlNames = symbolTable.ControlNames
+
                 ' fix vars usage
                 For Each id In symbolTable.AllIdentifiers
                     Dim line = snapshot.GetLineFromLineNumber(id.Line)
@@ -339,6 +346,17 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     If id.SymbolType = CompletionItemType.GlobalVariable Then
                         If FixToken(id, line.Start, symbolTable.GlobalVariables, textEdit) Then
                             Continue For
+                        End If
+
+                        If ControlNames IsNot Nothing Then
+                            ' fix control names usage
+                            Dim controlId = id.LCaseText
+                            For Each controlName In ControlNames
+                                If controlName.ToLower() = controlId Then
+                                    If id.Text <> controlName Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, controlName)
+                                    Continue For
+                                End If
+                            Next
                         End If
                     End If
 
@@ -384,7 +402,13 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Using
         End Sub
 
-        Private Function FixToken(token As Token, lineStart As Integer, dictionary As Dictionary(Of String, Token), textEdit As ITextEdit)
+        Private Function FixToken(
+                            token As Token,
+                            lineStart As Integer,
+                            dictionary As Dictionary(Of String, Token),
+                            textEdit As ITextEdit
+                     )
+
             Dim key = token.LCaseText
             If key.StartsWith("__foreach__") Then Return True
 

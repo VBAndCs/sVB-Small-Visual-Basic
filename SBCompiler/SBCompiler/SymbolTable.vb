@@ -336,14 +336,14 @@ Namespace Microsoft.SmallVisualBasic
                          Optional isLocal As Boolean = False
                    ) As String
 
+            Dim variableName = variable.Identifier.LCaseText
+            Dim newGlobal = Not _GlobalVariables.ContainsKey(variableName)
+
             ' if var is invalid, we will still add it to the dictionary not to break intellisense
             ValidateVariableName(variable.Identifier)
 
-            Dim variableName = variable.Identifier.LCaseText
             Dim Subroutine = variable.Subroutine
             If comment <> "" Then variable.Identifier.Comment = comment
-
-            Dim newGlobal = Not _GlobalVariables.ContainsKey(variableName)
 
             If isLocal Then   ' There can be a local var and a global var with the same name. 
                 Return AddLocalVar(variable)
@@ -355,10 +355,22 @@ Namespace Microsoft.SmallVisualBasic
                 End If
 
             ElseIf newGlobal Then
-                Return AddLocalVar(variable)
-            End If
+                If _ControlNames IsNot Nothing Then
+                    ' In design time, generated code is not added to the code file,
+                    ' hence control names are not declared as variabls yet!
+                    ' so, we need to add them here to make intellisense work correctly.
+                    For Each controlName In _ControlNames
+                        If variableName = controlName.ToLower Then
+                            _GlobalVariables.Add(variableName, variable.Identifier)
+                            Return variableName
+                        End If
+                    Next
+                End If
 
-            Return ""
+                Return AddLocalVar(variable)
+                End If
+
+                Return ""
         End Function
 
         Private Sub ValidateVariableName(name As Token)

@@ -561,6 +561,72 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Shows the open folder dialog, to allow the user to select a folder from his PC file system.
+        ''' </summary>
+        ''' <param name="initialFolder">
+        ''' The folder path to be initialy selected when the dialog is shown.
+        ''' Use an empty string to let the dialog show the last folder that was previously selected by the user.
+        ''' </param>
+        ''' <returns>
+        ''' The folder name that the user selected, or an empty string "" if he canceled the operation.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function OpenFolderDialog(initialFolder As Primitive) As Primitive
+            SmallBasicApplication.Invoke(
+                Sub()
+                    Dim folder = GeIinitialFolder(initialFolder.AsString())
+                    If folder = "" Then folder = GeIinitialFolder(System.Windows.Clipboard.GetText())
+                    If folder = "" Then folder = GetSetting("sVB", "OpenFolder", "LastFolder", "")
+
+                    Dim th As New Threading.Thread(
+                        Sub()
+                            Threading.Thread.Sleep(300)
+                            System.Windows.Forms.SendKeys.SendWait("{TAB}{TAB}{RIGHT}")
+                        End Sub)
+                    th.Start()
+
+
+                    Try
+                        Dim dlg As New System.Windows.Forms.FolderBrowserDialog With {
+                            .Description = "Select a folder:",
+                            .SelectedPath = folder
+                        }
+
+                        If dlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+                            SaveSetting("sVB", "OpenFolder", "LastFolder", dlg.SelectedPath)
+                            OpenFolderDialog = dlg.SelectedPath
+                        End If
+
+                    Catch ex As Exception
+                        MsgBox(ex.Message)
+                    End Try
+                End Sub)
+
+        End Function
+
+        Private Shared Function GeIinitialFolder(folder As String) As String
+            Try
+                If folder <> "" Then
+                    If IO.File.Exists(folder) Then
+                        folder = Path.GetDirectoryName(folder)
+                    Else
+                        Do
+                            If Directory.GetDirectoryRoot(folder) = folder OrElse Directory.Exists(folder) Then
+                                Exit Do
+                            End If
+                            folder = Path.GetDirectoryName(folder)
+                        Loop
+                    End If
+                End If
+
+            Catch
+                folder = ""
+            End Try
+
+            Return folder
+        End Function
+
+        ''' <summary>
         ''' Shows the save file dialog, to allow the user to choose a folder from his PC file system to save the file to.
         ''' </summary>
         ''' <param name="fileName">The name to save the file with. User can change this name in the dialog. You can use the full path of the file, to suggest the initial directory in the dialog, otherwise, the initial directory will be the last opened one</param>
