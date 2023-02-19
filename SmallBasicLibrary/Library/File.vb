@@ -79,8 +79,8 @@ Namespace Library
 
         ''' <summary>
         ''' Opens the specified file and reads the contents at the specified line number.
-        ''' Don't use this method in a loop to read many lines from the same file, because it aleays starts reading from the first line of the file until it reaches the rewuired line, which will have a very bad impact in loops.
-        ''' In such case, you can use the ReadLines method to read all the file lines then walk through it using the loop as you want.
+        ''' Don't use this method in a loop to read many lines from the same file, because it always starts reading from the first line of the file until it reaches the required line, which will have a very bad impact in loops.
+        ''' Instead, you can use the ReadLines method to read all the file lines then walk through it using the loop as you want.
         ''' </summary>
         ''' <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
         ''' <param name="lineNumber">The line number of the text to be read.</param>
@@ -147,14 +147,15 @@ Namespace Library
         ''' <summary>
         ''' Opens the specified file and writes the contents at the specified line number.
         ''' This operation will overwrite any existing content at the specified line.
-        ''' Don't use this method to write many lines in the same file using a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to insert the the given content at the given line number, which will be repeated for every line you write using the loop!
-        ''' In such case, use the AppendContents method insread, to add accumulated content to the end of the file, or add all the lines to one variable and use the InsertLine method to insert it for once.
+        ''' Don't use this method to write many lines in the same file using a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to write the given content at the given line number, which will be repeated for every line you write using the loop!
+        ''' Instead, add all lines to an array and use the WriteLines method to write it at once.
         ''' </summary>
         ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
         ''' <param name="lineNumber">The line number of the text to write.</param>
         ''' <param name="contents">The contents to write at the specified line of the specified file.</param>
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
+        <HideFromIntellisense>
         Public Shared Function WriteLine(
                          filePath As Primitive,
                          lineNumber As Primitive,
@@ -207,47 +208,57 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' Opens the specified file and inserts the contents at the specified line number.
-        ''' This operation will not overwrite any existing content at the specified line.
-        ''' Don't use this method to write many lines in the same file using a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to insert the the given content at the given line number, which will be reoeated for every line you write using the loop!
-        ''' In such case, use the AppendContents method insread, to add accumulated content to the end of the file, or add all the lines to one variable and use the InsertLine method to insert it for once.
+        ''' Opens the specified file and writes the given lines starting from the specified line number.
+        ''' This operation will overwrite any existing content at the corresponding file lines.
+        ''' Don't use this method in a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to write the the given content at the given line number, which will be repeated for every line you write using the loop!
+        ''' Instead, add all lines to an array and use the WriteLines method to insert it at once.
         ''' </summary>
-        ''' <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
-        ''' <param name="lineNumber">The line number of the text to insert.</param>
-        ''' <param name="contents">The contents to insert into the file.</param>
+        ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
+        ''' <param name="lineNumber">The line number of the text to write.</param>
+        ''' <param name="lines">The contents to write at the specified line of the specified file.</param>
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
-        Public Shared Function InsertLine(filePath As Primitive, lineNumber As Primitive, contents As Primitive) As Primitive
+        <HideFromIntellisense>
+        Public Shared Function WriteLines(
+                         filePath As Primitive,
+                         lineNumber As Primitive,
+                         lines As Primitive
+                   ) As Primitive
+
             LastError = ""
             Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
             Dim tempFileName = Path.GetTempFileName()
 
             Try
                 If Not IO.File.Exists(path1) Then
-                    Using writer1 As New StreamWriter(path1, False, Encoding.Default)
-                        writer1.WriteLine(CStr(contents))
+                    Using writer As New StreamWriter(path1, False, Encoding.Default)
+                        WriteLines(writer, lines)
                     End Using
 
                     Return True
                 End If
 
-                Using writer2 As New StreamWriter(tempFileName, False, Encoding.Default)
+                Using writer As New StreamWriter(tempFileName, False, Encoding.Default)
                     Using reader As New StreamReader(path1, Encoding.Default)
                         Dim num As Integer = 1
                         While True
-                            Dim text As String = reader.ReadLine()
+                            Dim text = reader.ReadLine()
                             If text Is Nothing Then Exit While
 
                             If num = lineNumber Then
-                                writer2.WriteLine(CStr(contents))
+                                WriteLines(writer, lines)
+                                For i = 1 To lines._arrayMap.Count - 1
+                                    ' overwrite lines
+                                    If reader.ReadLine() Is Nothing Then Exit While
+                                Next
+                            Else
+                                writer.WriteLine(text)
                             End If
-
-                            writer2.WriteLine(text)
                             num += 1
                         End While
 
                         If num <= lineNumber Then
-                            writer2.WriteLine(CStr(contents))
+                            WriteLines(writer, lines)
                         End If
                     End Using
                 End Using
@@ -263,38 +274,109 @@ Namespace Library
             Return False
         End Function
 
+
         ''' <summary>
-        ''' Opens the specified file and appends the contents to the end of the file then adds a new line.
+        ''' Opens the specified file and inserts the contents at the specified line number.
+        ''' This operation will not overwrite any existing content at the specified line.
+        ''' Don't use this method to write many lines in the same file using a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to insert the the given content at the given line number, which will be reoeated for every line you write using the loop!
+        ''' Instead, add all lines to one array and use the InsertLines method to insert it at once.
         ''' </summary>
-        ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
-        ''' <param name="contents">The contents to append to the end of the file.</param>
+        ''' <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
+        ''' <param name="lineNumber">The line number of the text to insert.</param>
+        ''' <param name="contents">The contents to insert into the file.</param>
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         <HideFromIntellisense>
-        Public Shared Function AppendContents(filePath As Primitive, contents As Primitive) As Primitive
-            Return AppendLine(filePath, contents)
+        Public Shared Function InsertLine(filePath As Primitive, lineNumber As Primitive, contents As Primitive) As Primitive
+            Return InsertLines(filePath, lineNumber, contents)
         End Function
+
+        ''' <summary>
+        ''' Opens the specified file and inserts the contents at the specified line number.
+        ''' This operation will not overwrite any existing content at the specified line.
+        ''' Don't use this method in a loop, as it will have a bad impact on performance, because it involves copying all file lines to a temp file to insert the the given content at the given line number, which will be reoeated for every line you write using the loop!
+        ''' Instead, add all lines to one array and send it to this method to insert all the lines in one call.
+        ''' </summary>
+        ''' <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
+        ''' <param name="lineNumber">The line number of the text to insert.</param>
+        ''' <param name="lines">An arry to insert its items into the file, each in a new line.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Function InsertLines(filePath As Primitive, lineNumber As Primitive, lines As Primitive) As Primitive
+            LastError = ""
+            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+            Dim tempFileName = Path.GetTempFileName()
+
+            Try
+                If Not IO.File.Exists(path1) Then
+                    Using writer As New StreamWriter(path1, False, Encoding.Default)
+                        WriteLines(writer, lines)
+                    End Using
+                    Return True
+                End If
+
+                Using writer As New StreamWriter(tempFileName, False, Encoding.Default)
+                    Using reader As New StreamReader(path1, Encoding.Default)
+                        Dim num As Integer = 1
+                        While True
+                            Dim text As String = reader.ReadLine()
+                            If text Is Nothing Then Exit While
+
+                            If num = lineNumber Then
+                                WriteLines(writer, lines)
+                            End If
+
+                            writer.WriteLine(text)
+                            num += 1
+                        End While
+
+                        If num <= lineNumber Then
+                            WriteLines(writer, lines)
+                        End If
+                    End Using
+                End Using
+
+                IO.File.Copy(tempFileName, filePath, overwrite:=True)
+                IO.File.Delete(tempFileName)
+                Return True
+
+            Catch ex As Exception
+                LastError = ex.Message
+            End Try
+
+            Return False
+        End Function
+
+        Private Shared Sub WriteLines(writer As StreamWriter, lines As Primitive)
+            If lines.IsEmpty Then Return
+            If lines.IsArray Then
+                For Each line In lines._arrayMap.Values
+                    writer.WriteLine(line.AsString())
+                Next
+            Else
+                writer.WriteLine(lines.AsString())
+            End If
+        End Sub
 
         ''' <summary>
         ''' Opens the specified file and appends the contents to the end of the file then adds a new line.
         ''' </summary>
         ''' <param name="filePath">The full path of the file to write to.  An example of a full path will be c:\temp\settings.data.</param>
-        ''' <param name="contents">The contents to append to the end of the file. You can send an array to append its elements to the file, each element in a line.</param>
+        ''' <param name="lines">The contents to append to the end of the file. You can send an array to append its elements to the file, each element in a line.</param>
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
-        <HideFromIntellisense>
-        Public Shared Function AppendLine(filePath As Primitive, contents As Primitive) As Primitive
+        Public Shared Function AppendLines(filePath As Primitive, lines As Primitive) As Primitive
             LastError = ""
             Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
 
             Try
                 Using writer As New StreamWriter(path1, append:=True, Encoding.Default)
-                    If contents.IsArray Then
-                        For Each line In contents._arrayMap.Values
+                    If lines.IsArray Then
+                        For Each line In lines._arrayMap.Values
                             writer.WriteLine(line.AsString())
                         Next
                     Else
-                        writer.WriteLine(contents.AsString())
+                        writer.WriteLine(lines.AsString())
                     End If
                 End Using
 
@@ -311,11 +393,10 @@ Namespace Library
         ''' Opens the specified file and appends the contents to the end of the file.
         ''' </summary>
         ''' <param name="filePath">The full path of the file to read from.  An example of a full path will be c:\temp\settings.data.</param>
-        ''' <param name="contents">The contents to append to the end of the file.</param>
+        ''' <param name="contents">The contents to append to the end of the file. If you send an array, its string representation wil be written as a single string, without adding any new lines betwee elements</param>
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
-        <HideFromIntellisense>
-        Public Shared Function Append(filePath As Primitive, contents As Primitive) As Primitive
+        Public Shared Function AppendContents(filePath As Primitive, contents As Primitive) As Primitive
             LastError = ""
             Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
 
