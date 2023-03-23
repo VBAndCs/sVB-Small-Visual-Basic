@@ -18,10 +18,10 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         Public Shared Function GetRandomColor() As Primitive
             If _random Is Nothing Then
-                _random = New Random(Now.Ticks Mod Integer.MaxValue)
+                _random = New Random()
             End If
 
-            Return $"#{_random.Next(256):X2}{_random.Next(256):X2}{_random.Next(256):X2}"
+            Return _colorNames.Keys(_random.Next(_colorNames.Count - 3) + 2)
         End Function
 
         Private Shared Function InRange(value As Integer, min As Integer, max As Integer) As Integer

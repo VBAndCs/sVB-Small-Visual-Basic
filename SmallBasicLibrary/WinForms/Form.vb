@@ -31,11 +31,12 @@ Namespace WinForms
         ''' The test function must follow these rules:
         ''' 1. Its name must start with `Test_`, like `Test_FindNames`.
         ''' 2. It must be a function not a sub, and it can't have any parameters.
-        ''' 3. The function return value should be a string containing the test result like passed or failed. 
-        ''' For an example, see the tests written in the UnitTest Sample` project in the samples folder.
+        ''' 3. The function return value should be a string containing the test result like "passed" or "failed". 
+        ''' See the tests written in the "UnitTest Sample" project in the samples folder.
         ''' </summary>
         ''' <returns>the number of tests that have been run.</returns>
         <ExMethod>
+        <ReturnValueType(VariableType.Double)>
         Public Shared Function RunTests(formName As Primitive) As Primitive
             Dim asm = System.Reflection.Assembly.GetEntryAssembly()
             RunTests = 0
@@ -1016,24 +1017,21 @@ Namespace WinForms
         ''' <summary>
         ''' Returns True if the form dsiplays a control with the given name.
         ''' </summary>
+        ''' <param name="controlName">The name of the control to search for. It is case-insensitive.</param>
         ''' <returns>True or False</returns>
         <ReturnValueType(VariableType.Boolean)>
         <ExMethod>
         Public Shared Function ContainsControl(formName As Primitive, controlName As Primitive) As Primitive
             Dim frmName = CStr(formName).ToLower()
+
             If frmName = "" Then
                 Dim msg = "Form name can't be an empty string."
                 Dim ex As New ArgumentException(msg)
                 Helper.ReportError(msg, ex)
-                Throw ex
+                Return False
             End If
 
-            If CStr(controlName) = "" Then
-                Dim msg = "Control name can't be an empty string."
-                Dim ex As New ArgumentException(msg)
-                Helper.ReportError(msg, ex)
-                Throw ex
-            End If
+            If CStr(controlName) = "" Then Return False
 
             Dim key = frmName & "." & controlName.ToString().ToLower()
 
@@ -1041,9 +1039,9 @@ Namespace WinForms
                 Return Forms._controls.ContainsKey(key)
             Catch ex As Exception
                 Helper.ReportError(ex.Message, ex)
-                Throw ex
             End Try
 
+            Return False
         End Function
 
 
@@ -1106,7 +1104,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Displayes the form on the screen.
+        ''' Displays the form on the screen, if it is loaded but not shown yet, or if it is hidden.
         ''' </summary>
         <ExMethod>
         Public Shared Sub Show(formName As Primitive)
@@ -1126,7 +1124,7 @@ Namespace WinForms
         Private Shared _dialogResult As String
 
         ''' <summary>
-        ''' Displayes the form on the screen as a modal dialog, so the user must close it first to ba able to accees other forms of your app.
+        ''' Displays the form on the screen as a modal dialog, so the user must close it first to ba able to accees other forms of your app.
         ''' </summary>
         ''' <returns>the dialog result that Represents the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
         <ReturnValueType(VariableType.DialogResult)>
@@ -1161,8 +1159,8 @@ Namespace WinForms
         ''' <summary>
         ''' Shows the form that has the given name as a child form of the current form.
         ''' </summary>
-        ''' <param name="childFormName">the name of the form.</param>
-        ''' <param name="argsArr">any additional data, array, or a dynamic object you want to pass to the form. It will be stored in the ArgsArr property of the form, so you can use it as you want</param>
+        ''' <param name="childFormName">The name of the child form.</param>
+        ''' <param name="argsArr">Any additional data, an array, or a dynamic object you want to pass to the form. It will be stored in the Form.ArgsArr property of the child form, so you can use it as you want.</param>
         ''' <returns>the child form name</returns>
         <ReturnValueType(VariableType.Form)>
         <ExMethod>
@@ -1257,7 +1255,8 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Closes the form. You can't show the form after it is closed.
+        ''' Closes the form. This will clear any data displayed by its controls, as in fact the form will be totally disposed. You can't call the Form.Show method to show  the form after it is closed, unless you re-created a new instance of it first. If you want to keep the form alive but just hide it, you can just set its Visible property to False to hide it, so you can still be able to show it.
+        ''' Note that closing the main form of the project will close the whole application. You can choose the main form by just open any form of the project in sVB and press F5 to run the project, so that form will be the first form displayed when the application starts up.
         ''' </summary>
         <ExMethod>
         Public Shared Sub Close(formName As Primitive)

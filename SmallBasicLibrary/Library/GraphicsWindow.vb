@@ -35,7 +35,7 @@ Namespace Library
         Friend Shared _windowCreated As Boolean = False
         Friend Shared _window As Window
         Friend Shared _pen As Media.Pen
-        Friend Shared _fillBrush As SolidColorBrush = System.Windows.Media.Brushes.SlateBlue
+        Friend Shared _fillBrush As SolidColorBrush = Media.Brushes.SlateBlue
         Friend Shared _fontFamily As Media.FontFamily
         Friend Shared _fontSize As Double = 12.0
         Friend Shared _fontStyle As System.Windows.FontStyle = FontStyles.Normal

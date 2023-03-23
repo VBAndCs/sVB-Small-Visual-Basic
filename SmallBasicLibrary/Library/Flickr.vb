@@ -8,6 +8,7 @@ Namespace Library
     ''' This class provides access to Flickr photo services.
     ''' </summary>
     <SmallVisualBasicType>
+    <HideFromIntellisense>
     Public NotInheritable Class Flickr
         Private Const _apiKey As String = "MWY5ZmI5ODE4Mjk2NzAwNTgwYmYzMzQwMjc5MzQ2YjY="
 

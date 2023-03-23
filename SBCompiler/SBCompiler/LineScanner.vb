@@ -169,7 +169,7 @@ Namespace Microsoft.SmallVisualBasic
             token.Column = _currentIndex
             Dim currentChar As Char = GetNextChar()
 
-            If currentChar = VisualBasic.Strings.ChrW(0) Then
+            If currentChar = ChrW(0) Then
                 Return False
             End If
 
@@ -323,8 +323,8 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Private Shared Function ReadUntilNextSpace() As String
-            Dim stringBuilder As StringBuilder = New StringBuilder()
-            Dim nextChar As Char = GetNextChar()
+            Dim stringBuilder As New StringBuilder()
+            Dim nextChar = GetNextChar()
 
             While Not IsWhiteSpace(nextChar) AndAlso AscW(nextChar) <> 0
                 stringBuilder.Append(nextChar)

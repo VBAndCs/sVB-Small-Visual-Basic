@@ -1,4 +1,5 @@
 ﻿Imports System
+Imports System.Collections.Generic
 Imports System.Collections.Specialized
 Imports System.Linq
 Imports System.Windows
@@ -81,10 +82,10 @@ Namespace Microsoft.SmallVisualBasic.Shell
             Dim top = lastYOffset
 
             If lastXOffset > ActualWidth OrElse lastYOffset > ActualHeight Then
-                    lastOffsetForXOffset += 10.0
-                    lastXOffset = lastOffsetForXOffset
-                    lastYOffset = 0.0
-                End If
+                lastOffsetForXOffset += 10.0
+                lastXOffset = lastOffsetForXOffset
+                lastYOffset = 0.0
+            End If
 
             Canvas.SetLeft(mdiView, left)
             Canvas.SetTop(mdiView, top)
@@ -492,16 +493,32 @@ Namespace Microsoft.SmallVisualBasic.Shell
                 If selectedView.CmbEventNames.SelectedIndex = -1 Then
                     Dim h = controlName & "_" & e
                     If selectedView.Document.FindEventHandler(h) = -1 Then
-                        selectedView.Document.EventHandlers.Remove(h)
-                        SelectHandlers(selectedView, controlName, eventName)
+                        If RemoveEventHandler(selectedView.Document.EventHandlers, h.ToLower()) Then
+                            SelectHandlers(selectedView, controlName, eventName)
+                        End If
                         Return
-                    Else
-                        selectedView.CmbEventNames.SelectedItem = e
+                        Else
+                            selectedView.CmbEventNames.SelectedItem = e
                     End If
                 End If
                 SetItemsBold(selectedView.CmbEventNames, eventNames.ToArray())
             End If
         End Sub
+
+        Private Function RemoveEventHandler(eventHandlers As Dictionary(Of String, WinForms.EventInformation), handler As String) As Boolean
+            Dim key = ""
+            For Each h In eventHandlers.Keys
+                If h.ToLower = h Then
+                    key = h
+                    Exit For
+                End If
+            Next
+
+            If key = "" Then Return False
+
+            eventHandlers.Remove(key)
+            Return True
+        End Function
 
         Friend Function SaveDocIfDirty(sbCodeFile As String) As String
             sbCodeFile = sbCodeFile.ToLower()

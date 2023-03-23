@@ -318,7 +318,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Shows the form that has the given name if it exists.
+        ''' Shows the form that has the given name if exists in the project.
         ''' </summary>
         ''' <param name="formName">the name of the form.</param>
         ''' <param name="argsArr">any additional data, array, or a dynamic object you want to pass to the form. It will be stored in the ArgsArr property of the form, so you can use it as you want</param>
@@ -349,7 +349,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Shows the form that has the given name if it exists.
+        ''' Loads the form that has the given name if exists in the project, and shows it as a modal dialog.
         ''' </summary>
         ''' <param name="formName">the name of the form.</param>
         ''' <param name="argsArr">any additional data, array, or a dynamic object you want to pass to the form. It will be stored in the Form.ArgsArr property, so you can use it as you want</param>

@@ -6,7 +6,9 @@ Imports Microsoft.SmallVisualBasic.Library
 Namespace WinForms
 
     ''' <summary>
-    ''' Allows you to combine shapes into one path, and create new geometric figures from line and arc segments, so you can create new complex custom shapes. You can add the geometric path to the shapes collection by calling the Shapes.AddGeometricPath() method, then you can apply any rotation or animation on it as you do with any other normal shape.
+    ''' Allows you to combine shapes into one path, and create new geometric figures from line and arc segments, so you can create new complex custom shapes.
+    ''' You can add the geometric path to the shapes collection by calling the Shapes.AddGeometricPath() method, then you can apply any rotation or animation on it as you do with any other normal shape.
+    ''' You can also add the the geometric path to any label on any form by calling the Label.AddGeometricPath method, so you can move, rotate or animate it using the label methods.
     ''' </summary>
     <SmallVisualBasicType>
     Public Class GeometricPath
@@ -207,7 +209,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Adds a cubic Bezier curve segment to the current figure in the geometric path, starting from the last point in the figure to the given end point, passing throw the two given control points.
+        ''' Adds a cubic Bezier curve segment to the current figure in the geometric path, starting from the last point in the figure, passing throw the two given, and ending at the given end point control points.
         ''' </summary>
         ''' <param name="x1">The x co-ordinate of the first control point.</param>
         ''' <param name="y1">The y co-ordinate of the first control point.</param>
@@ -236,7 +238,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Adds a cubic quadratic Bezier curve segment to the current figure in the geometric path, starting from the last point in the figure to the given end point, passing throw the given control point.
+        ''' Adds a cubic quadratic Bezier curve segment to the current figure in the geometric path, starting from the last point in the figure, passing throw the given control point and ending at the given end point.
         ''' </summary>
         ''' <param name="x1">The x co-ordinate of the control point.</param>
         ''' <param name="y1">The y co-ordinate of the control point.</param>

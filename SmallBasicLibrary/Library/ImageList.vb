@@ -21,9 +21,8 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function LoadImage(fileNameOrUrl As Primitive) As Primitive
-            If fileNameOrUrl.IsEmpty Then
-                Return ""
-            End If
+            If fileNameOrUrl.IsEmpty Then Return ""
+
             Dim imageName = Shapes.GenerateNewName("ImageList")
             _savedImages(imageName) = LoadImageFromFile(fileNameOrUrl)
             Return imageName
@@ -82,7 +81,8 @@ Namespace Library
         End Function
 
         Friend Shared Function LoadImageFromFile(fileNameOrUrl As Primitive) As BitmapImage
-            Dim localFileName As Primitive = Network.GetLocalFile(fileNameOrUrl)
+            fileNameOrUrl = Environment.ExpandEnvironmentVariables(fileNameOrUrl)
+            Dim localFileName = Network.GetLocalFile(fileNameOrUrl)
             Return CType(SmallBasicApplication.InvokeWithReturn(
                 Function() As BitmapImage
                     Try

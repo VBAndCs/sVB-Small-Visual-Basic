@@ -505,7 +505,8 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Draws a rectangle shape with the specified width and height on the current array..
+        ''' Draws a rectangle shape with the specified width and height on the current label..
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="width">The width of the rectangle shape.</param>
         ''' <param name="height">The height of the rectangle shape.</param>
@@ -546,7 +547,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Draws an ellipse shape with the specified width and height on the currentLabel.
-        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="width">The width of the ellipse shape.</param>
         ''' <param name="height">The height of the ellipse shape.</param>
@@ -586,7 +587,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Draws a triangle shape represented by the specified points on the current label.
-        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="x1">The x co-ordinate of the first point.</param>
         ''' <param name="y1">The y co-ordinate of the first point.</param>
@@ -634,7 +635,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Draws a polygon shape represented by the given points array on the current label.       
-        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
         ''' <param name="penColor">The color used to draw the shape outline</param>
@@ -678,7 +679,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Draws a line between the specified two points on the current label.
-        ''' The label can contain only one shape, but if you can add many shapes to the GeometricPath the use the AddGeometricPath to add them as a combined shape to  the label
+        ''' Note that the label can contain only one shape, but you can add many shapes to the GeometricPath then use the Label.AddGeometricPath to add them as a combined shape to the label.
         ''' </summary>
         ''' <param name="x1">The x co-ordinate of the first point.</param>
         ''' <param name="y1">The y co-ordinate of the first point.''' </param>
