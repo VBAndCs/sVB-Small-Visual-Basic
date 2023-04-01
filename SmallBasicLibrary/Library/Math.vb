@@ -8,14 +8,10 @@ Namespace Library
         Private Shared _random As Random
 
         ''' <summary>
-        ''' Gets the value of Pi
+        ''' Gets the value of Pi, which equals 3.1415926535897931
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>
-        Public Shared ReadOnly Property Pi As Primitive
-            Get
-                Return System.Math.PI
-            End Get
-        End Property
+        Public Shared ReadOnly Property Pi As Primitive = System.Math.PI
 
         ''' <summary>
         ''' Gets the absolute value of the given number.  For example, -32.233 will return 32.233.
@@ -64,9 +60,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the natural logarithm value of the given number.
         ''' </summary>
-        ''' <param name="number">
-        ''' The number whose natural logarithm value is required.
-        ''' </param>
+        ''' <param name="number">The number whose natural logarithm value is required.</param>
         ''' <returns>
         ''' The natural log value of the given number.
         ''' </returns>
@@ -74,6 +68,12 @@ Namespace Library
         Public Shared Function NaturalLog(number As Primitive) As Primitive
             Return DoubleToDecimal(System.Math.Log(number))
         End Function
+
+        ''' <summary>
+        ''' Gets the natural logarithmic base, which equals 2.7182818284590451
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared ReadOnly Property E As Primitive = System.Math.E
 
         ''' <summary>
         ''' Gets the logarithm (base 10) value of the given number.
@@ -132,7 +132,7 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' Gets the angle in radians, given the sin value.
+        ''' Gets the angle in radians, given the sine value.
         ''' </summary>
         ''' <param name="sinValue">
         ''' The sine value whose angle is needed.
@@ -184,7 +184,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetDegrees(angle As Primitive) As Primitive
-            Return DoubleToDecimal((180.0 * angle.AsDecimal / System.Math.PI) Mod 360.0)
+            Return System.Math.Round(180.0 * angle.AsDecimal / System.Math.PI, 5) Mod 360.0
         End Function
 
         ''' <summary>
@@ -250,8 +250,8 @@ Namespace Library
         ''' <summary>
         ''' Rounds a given number to the given decimal places.
         ''' </summary>
-        ''' <param name="number">The number whose approximation is required.''' </param>
-        ''' <paramref name="decimalPlaces">the number of decimal places to keep in the number</paramref>
+        ''' <param name="number">The number whose approximation is required.</param>
+        ''' <paramref name="decimalPlaces">The number of decimal places to keep in the number.</paramref>
         ''' <returns>
         ''' The rounded value of the given number.
         ''' </returns>

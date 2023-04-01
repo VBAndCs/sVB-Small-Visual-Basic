@@ -13,6 +13,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Private textView As IAvalonTextView
         Private filteredCompletionItems As List(Of CompletionItemWrapper)
+        Friend IsCommitting As Boolean
         Public ReadOnly Property Adornment As CompletionAdornment
         Public ReadOnly Property CanNegotiateSurfaceSpace As Boolean = False Implements IAdornmentSurface.CanNegotiateSurfaceSpace
         Public ReadOnly Property SurfacePosition As SurfacePosition = SurfacePosition.AboveText Implements IAdornmentSurface.SurfacePosition
@@ -20,7 +21,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Public ReadOnly Property IsAdornmentVisible As Boolean
             Get
-                Return CompletionPopup.IsOpen
+                Return CompletionPopup.IsOpen AndAlso Not IsCommitting
             End Get
         End Property
 
@@ -187,16 +188,17 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             If items.Count = 1 Then
                 If bag.CtrlSpace Then
+                    bag.CtrlSpace = False
                     _Adornment.AdornmentProvider.CommitItem(items(0))
                     filteredCompletionItems.Clear()
                     Return
-                ElseIf bag.IsBackSpace Then
+
+                ElseIf bag.IsBackSpace OrElse items(0).Display.ToLower() = inputText Then
                     filteredCompletionItems.Clear()
                     _Adornment?.Dismiss(True)
                     Return
                 End If
             End If
-
             ' Completion list must contain 7 items at least
             ' Otherwise repeat the items to fill the gaps
             Do

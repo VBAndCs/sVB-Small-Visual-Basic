@@ -1342,10 +1342,10 @@ Namespace WinForms
 #Region "Animation"
 
         ''' <summary>
-        ''' Animates the control's backcolor to a new color.
+        ''' Animates the control's backColor to a new color.
         ''' </summary>
         ''' <param name="newColor">
-        ''' The new color to animate the control's backcolor to.
+        ''' The new color to animate the control's backColor to.
         ''' </param>
         ''' <param name="duration">
         ''' The time for the animation, in milliseconds.
@@ -1370,10 +1370,10 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Animates the control's backcolor to a new transparency.
+        ''' Animates the control's backColor to a new transparency.
         ''' </summary>
         ''' <param name="transparency">
-        ''' The new transparency to animate the backcolor to. Use a value between 0 and 100.
+        ''' The new transparency to animate the backColor to. Use a value between 0 and 100.
         ''' </param>
         ''' <param name="duration">
         ''' The time for the animation, in milliseconds.

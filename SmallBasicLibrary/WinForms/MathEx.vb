@@ -52,7 +52,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetNaturalLog(number As Primitive) As Primitive
-            Return Math.Log(number)
+            Return Math.NaturalLog(number)
         End Function
 
         ''' <summary>

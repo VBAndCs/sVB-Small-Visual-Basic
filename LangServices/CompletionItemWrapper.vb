@@ -154,7 +154,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Get
         End Property
 
-
         Public Sub New(item As CompletionItem, bag As CompletionBag)
             _item = item
             Dim enumName = bag.SelectEspecialItem

@@ -7,7 +7,7 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     ''' <summary>
-    ''' Represents the Menu control, which shows menu items on a bar, so the user can click amy of them to drop down down a list of sub menu items.
+    ''' Represents the Menu control, which shows menu items on a bar, so the user can click any of them to drop down a list of sub menu items.
     ''' The form designer doesn't supoport adding a main menu at design time, but you can use the Form.AddMainMenu method to add it in runtime.
     ''' </summary>
     <SmallVisualBasicType>
@@ -62,7 +62,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Returns as array containing the child menu items of the current menu.
+        ''' Returns an array containing the child menu items of the current menu.
         ''' </summary>
         ''' <returns>an array of menu items</returns>
         <ReturnValueType(VariableType.Array)>

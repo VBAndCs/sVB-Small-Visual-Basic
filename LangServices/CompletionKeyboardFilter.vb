@@ -178,12 +178,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     extraText = ""
                 End If
 
+                completionSurface.IsCommitting = True
                 editorOperations.ReplaceText(
                     replaceSpan,
                     leadingSpace & repWith & extraText,
                     UndoHistoryRegistry.GetHistory(textView.TextBuffer)
                 )
 
+                completionSurface.IsCommitting = False
                 If completionSurface.Adornment IsNot Nothing Then
                     completionSurface.Adornment.Dismiss(force:=False)
                 End If

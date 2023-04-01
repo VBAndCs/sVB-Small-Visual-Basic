@@ -65,6 +65,24 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Get
         End Property
 
+        Private Shared _colorNames As New List(Of CompletionItem)
+        ReadOnly Property ColorNames As List(Of CompletionItem)
+            Get
+                If _colorNames.Count = 0 Then
+                    Dim typeInfo As TypeInfo = Nothing
+
+                    If Compiler.TypeInfoBag.Types.TryGetValue("colors", typeInfo) Then
+                        For Each item In typeInfo.Properties
+                            _fontNames.Add(New CompletionItem() With {
+                                .DisplayName = item.Value.Name,
+                                .ReplacementText = $"""{item.Value.Name}"""
+                            })
+                        Next
+                    End If
+                End If
+                Return _fontNames
+            End Get
+        End Property
 
         ReadOnly Property FormNames As List(Of CompletionItem)
             Get
@@ -973,6 +991,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                    method.Contains("showchildform") OrElse
                                    method.Contains("runformtests") Then
                             newBag.CompletionItems.AddRange(FormNames)
+                        ElseIf method.Contains("color") Then
+                            newBag.CompletionItems.AddRange(ColorNames)
                         End If
                     End If
                     Return newBag

@@ -39,7 +39,7 @@ Namespace WinForms
         ''' <param name="dateText">The text that represents the date</param>
         ''' <param name="cultureName">
         ''' The culture name used to format the date, like "en-US" for English (United States) culture, "ar-EG" for Arabic (Egypt) culture, and "ar-SA" for Arabic (Saudi Arabia) culture.
-        ''' ''' Send empty string "" to use the local culture of the user's system.
+        ''' ''' Send an empty string "" to use the local culture of the user's system.
         ''' </param>
         ''' <returns>a new date or empty string</returns>
         <ReturnValueType(VariableType.Date)>
@@ -69,7 +69,7 @@ Namespace WinForms
         ''' <param name="date">The input date</param>
         ''' <param name="cultureName">
         ''' The culture name used to format the date, like "en-US" for English (United States) culture, "ar-EG" for Arabic (Egypt) culture, and "ar-SA" for Arabic (Saudi Arabia) culture.
-        ''' Send empty string "" to use the local culture of the user's system.
+        ''' Send an empty string "" to use the local culture of the user's system.
         ''' </param>
         ''' <returns>a string represent the date in the given culture</returns>
         <ReturnValueType(VariableType.String)>
