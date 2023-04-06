@@ -13,7 +13,7 @@
 '    LblResult: Label
 '}
 
-Me = "Form1"
+Me = "form1"
 Label1 = "form1.label1"
 RdoNoFruit = "form1.rdonofruit"
 RdoBanana = "form1.rdobanana"

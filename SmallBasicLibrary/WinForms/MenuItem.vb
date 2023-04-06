@@ -6,11 +6,11 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Namespace WinForms
     ''' <summary>
-    ''' Represents the MenuItem control, which shows menuItem on the main menu bar or on a the dropdown list of a parent manuItem.
-    ''' The user can click the menu item to perform the task you programmed in the OnClick handler.
-    ''' The can also set the Checkable property to True to allow the user to check or unchick the menu item, hense you can use the Checked property and the OnCheck event to respond the user choices.
+    ''' Represents the MenuItem control, which shows a menuItem on the main menu bar or on the dropdown list of a parent manuItem.
+    ''' The user can click the menu item to perform the task you programmed in the OnClick event handler.
+    ''' You can also set the Checkable property to True to allow the user to check or uncheck the menu item, hence you can use the Checked property and the OnCheck event to respond the user choices.
     ''' The form designer doesn't supoport adding menu items at design time, but you can use the MainMenu.AddItem method to add an item to the main menu, or use the MenuItem.AddItem to add an item to a pearent menu item.
-    ''' You can also use the MenuItem.AddSeparator to add a separator line to the parent menu item.
+    ''' You can also use the MenuItem.AddSeparator to add a separator line to the menu item.
     ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>
@@ -115,7 +115,7 @@ Namespace WinForms
         ''' <summary>
         ''' When True, the menu item is checked.
         ''' When False, the menu item is unchecked.
-        ''' Set the Chickable property to True, to allow the user to check the menu item.
+        ''' Set the Checkable property to True, to allow the user to check the menu item.
         ''' </summary>
         <ReturnValueType(VariableType.Boolean)>
         <ExProperty>

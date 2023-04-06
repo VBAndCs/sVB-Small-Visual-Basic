@@ -6,84 +6,28 @@ Sub BtnFind_OnClick
    srch = txtFind.Text
    index = ListBox1.FindItem(srch)
    If index = 0 Then
-      FindPartial(srch, 1, ListBox1.ItemsCount)
+      For i = 1 To ListBox1.ItemsCount
+         item = ListBox1.GetItemAt(i)
+         If Text.StartsWith(item, srch) Then
+            ListBox1.SelectedIndex = i
+            Return
+         EndIf
+      Next
+      
+      Sound.PlayBellRing()
+      ListBox1.SelectedIndex = 0
    Else
       ListBox1.SelectedIndex = index
    EndIf
    
 EndSub
 
-'------------------------------------------------
-Sub BtnFindNext_OnClick
-   srch = txtFind.Text
-   start = ListBox1.SelectedIndex
-   
-   If start = 0 Then
-      start = 1
-   ElseIf Text.StartsWith(ListBox1.SelectedItem, srch) Then
-      start = start + 1
-   EndIf
-   
-   If start > ListBox1.ItemsCount Then
-      Return
-   EndIf
-   
-   index = ListBox1.FindItemAt(srch, start, ListBox1.ItemsCount)
-   
-   If index = 0 Then
-      FindPartial(srch, start, ListBox1.ItemsCount)
-   Else
-      ListBox1.SelectedIndex = index
-   EndIf
-EndSub
 
-
-'------------------------------------------------
-Sub BtnFindPrev_OnClick
-   srch = txtFind.Text
-   start = ListBox1.SelectedIndex
-   
-   If Text.StartsWith(ListBox1.SelectedItem, srch) Then
-      start = start - 1
-   EndIf
-   
-   If start < 1 Then
-      Return
-   EndIf
-   
-   index = ListBox1.FindItemAt(srch, start, 1)
-   
-   If index = 0 Then
-      FindPartial(srch, start, 1)
-   Else
-      ListBox1.SelectedIndex = index
-   EndIf
-EndSub
-
-'-----------------------------------------
-Sub FindPartial(srch, start, end)
-   If start > end Then
-      s = -1
-   Else
-      s = 1
-   EndIf
-   
-   For i = start To end Step s
-      item = ListBox1.GetItemAt(i)
-      If Text.StartsWith(item, srch) Then
-         ListBox1.SelectedIndex = i
-         Return
-      EndIf
-   Next
-   
-   Sound.PlayBellRing()
-   ListBox1.SelectedIndex = 0
-EndSub
-
-'---------------------------------------
+'----------------------------
 Sub BtnAdd_OnClick
    item = txtAdd.Text
-   ListBox1.SelectedIndex = ListBox1.AddItem(item)
+   ListBox1.AddItem(item)
+   ListBox1.SelectedItem = item
    txtAdd.SelectAll()
    txtAdd.Focus()
 EndSub
@@ -101,11 +45,11 @@ Sub BtnRemove_OnClick
    index = ListBox1.SelectedIndex
    ListBox1.RemoveItemAt(index)
    
-   
-   If index < ListBox1.ItemsCount Then
+   count = ListBox1.ItemsCount
+   If index < count Then
       ListBox1.SelectedIndex = index
-   ElseIf ListBox1.ItemsCount > 0 Then
-      ListBox1.SelectedIndex = ListBox1.ItemsCount
+   Else
+      ListBox1.SelectedIndex = count
    EndIf
    
 EndSub

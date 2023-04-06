@@ -1,0 +1,66 @@
+'@Form Hints:
+'#Form1{
+'    TxtR7: TextBox
+'    TxtR6: TextBox
+'    TxtR5: TextBox
+'    TxtR4: TextBox
+'    TxtR3: TextBox
+'    TxtR2: TextBox
+'    Label1: Label
+'    Label2: Label
+'    Label3: Label
+'    Label4: Label
+'    Label5: Label
+'    Label6: Label
+'    Label7: Label
+'    BtnCreate: Button
+'    TxtPuzzle: TextBox
+'    BtnSolve: Button
+'    ProgressBar1: ProgressBar
+'    LblResult: Label
+'    BtnCancel: Button
+'}
+
+Me = "form1"
+TxtR7 = "form1.txtr7"
+TxtR6 = "form1.txtr6"
+TxtR5 = "form1.txtr5"
+TxtR4 = "form1.txtr4"
+TxtR3 = "form1.txtr3"
+TxtR2 = "form1.txtr2"
+Label1 = "form1.label1"
+Label2 = "form1.label2"
+Label3 = "form1.label3"
+Label4 = "form1.label4"
+Label5 = "form1.label5"
+Label6 = "form1.label6"
+Label7 = "form1.label7"
+BtnCreate = "form1.btncreate"
+TxtPuzzle = "form1.txtpuzzle"
+BtnSolve = "form1.btnsolve"
+ProgressBar1 = "form1.progressbar1"
+LblResult = "form1.lblresult"
+BtnCancel = "form1.btncancel"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    BtnCreate: OnClick
+'    BtnSolve: OnClick
+'    BtnCancel: OnClick
+'}
+
+' BtnCreate Events:
+Control.HandleEvents(BtnCreate)
+Control.OnClick = BtnCreate_OnClick
+
+' BtnSolve Events:
+Control.HandleEvents(BtnSolve)
+Control.OnClick = BtnSolve_OnClick
+
+' BtnCancel Events:
+Control.HandleEvents(BtnCancel)
+Control.OnClick = BtnCancel_OnClick
+
+

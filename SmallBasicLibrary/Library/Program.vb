@@ -86,10 +86,10 @@ Namespace Library
         ''' <summary>
         ''' Gets a value from the regestry.
         ''' </summary>
-        ''' <param name="section">The regetry section name, which refers to the category that the data lies under. For example, you may use "Form1" as a section name when you save values of  controls of this form.</param>
-        ''' <param name="name">The regestry key where the data is saved in</param>
-        ''' <param name="defaultValue">The value to return in the data is not found in the regestry.</param>
-        ''' <returns>A string holding the required setting.</returns>
+        ''' <param name="section">The regetry section name that you used when saving the setting.</param>
+        ''' <param name="name">The regestry key that you used when saving the setting.</param>
+        ''' <param name="defaultValue">The value to return if the data is not found in the regestry.</param>
+        ''' <returns>A string that contains the required setting.</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetSetting(section As Primitive, name As Primitive, defaultValue As Primitive) As Primitive
             Dim appName = "sVB_" & IO.Path.GetDirectoryName(Directory).Replace(" ", "_")
@@ -99,8 +99,8 @@ Namespace Library
         ''' <summary>
         ''' Saves a value in the regestry.
         ''' </summary>
-        ''' <param name="section">The regetry section name, which refers to the category that the data lies under. For example, you may use "Form1" as a section name when you save values of  controls of this form.</param>
-        ''' <param name="name">The regestry key where the data is saved in</param>
+        ''' <param name="section">The regetry section name, which refers to the category that the data lies under. For example, you may use "Form1" as a section name when you save property values of this form.</param>
+        ''' <param name="name">The regestry key where the data is saved in. Shows a key name that refers to the meaning of the date, like "Width" and "Height" if you are saving the width and the height of the form.</param>
         ''' <param name="value">The value to save in the regestry.</param>
         Public Shared Sub SaveSetting(section As Primitive, name As Primitive, value As Primitive)
             Dim appName = "sVB_" & IO.Path.GetDirectoryName(Directory).Replace(" ", "_")

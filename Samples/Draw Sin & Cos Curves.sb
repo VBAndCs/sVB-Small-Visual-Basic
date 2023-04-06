@@ -1,0 +1,17 @@
+GraphicsWindow.Width = 900
+GraphicsWindow.Height = 300
+GraphicsWindow.DrawLine(0, 150, 900, 150)
+H = Math.Round(GraphicsWindow.Width / 2)
+GraphicsWindow.DrawLine(H, 0, H, 300)
+R = Math.Pi / 180
+
+For X = -H To H
+   GraphicsWindow.SetPixel(
+      X + H,
+      150 - 50 * Math.Sin(X * R),
+      Colors.Red)
+   GraphicsWindow.SetPixel(
+      X + H,
+      150 - 50 * Math.Cos(X * R),
+      Colors.Blue)
+Next

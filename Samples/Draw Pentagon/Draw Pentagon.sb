@@ -1,7 +1,7 @@
 GraphicsWindow.PenColor = Colors.Black
 GraphicsWindow.PenWidth = 3
 GraphicsWindow.BrushColor = Colors.Red
-X = Shapes.AddPolygon(
+Star = Shapes.AddPolygon(
    {
       {0, 100},
       {76.5, 100},
@@ -16,3 +16,4 @@ X = Shapes.AddPolygon(
    }
 )
 
+Shapes.Move(Star, 200, 20)

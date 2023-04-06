@@ -6,8 +6,8 @@ Imports System.Windows
 Namespace WinForms
     ''' Represents a RadioButton control, that the user can check or uncheck.
     ''' You can use the Checked property and OnCheck event to respond to the user choices.
-    ''' You can use the form designer to add a check box to the form by dragging it from the toolbox.
-    ''' It is also possible to use the Form.AddCheckBox method to create a new check box and add it to the form at runtime.
+    ''' You can use the form designer to add a radio button to the form by dragging it from the toolbox.
+    ''' It is also possible to use the Form.AddRadioButton method to create a new radio button and add it to the form at runtime.
     ''' Radio buttons work togethor as a group, where each group can contain only one checked radio button. 
     ''' By default, all radio buttons you add to the form will be grouped together, but if you want to create more than one goup, you can group some radio buttons together by setting the GroupNmae property in each of them to the same group name.
     ''' You can also use the form designer to group radiobuttons by selecting them, right-clicking one of the selected radio buttons, and clicking the Group command from the context menu.

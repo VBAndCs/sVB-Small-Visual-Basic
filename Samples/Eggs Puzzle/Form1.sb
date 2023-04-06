@@ -1,0 +1,134 @@
+ProgressBar1.Maximum = 0
+TxtPuzzle.WordWrap = True
+ProgressBar1.Visible = False
+BtnCancel.Visible = False
+LblResult.Visible = False
+
+TxtR2.OnTextInput = TxtRemainders_OnTextInput
+TxtR3.OnTextInput = TxtRemainders_OnTextInput
+TxtR4.OnTextInput = TxtRemainders_OnTextInput
+TxtR5.OnTextInput = TxtRemainders_OnTextInput
+TxtR6.OnTextInput = TxtRemainders_OnTextInput
+TxtR7.OnTextInput = TxtRemainders_OnTextInput
+
+TxtR2.OnLostFocus = TxtRemainders_Validate
+TxtR3.OnLostFocus = TxtRemainders_Validate
+TxtR4.OnLostFocus = TxtRemainders_Validate
+TxtR5.OnLostFocus = TxtRemainders_Validate
+TxtR6.OnLostFocus = TxtRemainders_Validate
+TxtR7.OnLostFocus = TxtRemainders_Validate
+
+R2 = 1
+R3 = 1
+R4 = 1
+R5 = 1
+R6 = 1
+R7 = 0
+Eggs = 0
+
+Timer.Interval = 1
+Timer.Pause()
+Timer.Tick = CheckEggs
+
+'------------------------------------------------
+Sub BtnCreate_OnClick()
+   If Me.Validate() Then
+      TxtPuzzle.Text = ""
+      TxtPuzzle.AppendLine("In the Egyptian village of Burma, a young man with a bike hit a woman carrying a basket of eggs, and all the eggs were broken. The young man asked her how many eggs to pay for, and she said:")
+      TxtPuzzle.AppendLine("I don't know the exact number, but here's what I know is that When I divided the eggs evenly:")
+      AddEggsNum(2, TxtR2.Text)
+      AddEggsNum(3, TxtR3.Text)
+      AddEggsNum(4, TxtR4.Text)
+      AddEggsNum(5, TxtR5.Text)
+      AddEggsNum(6, TxtR6.Text)
+      AddEggsNum(7, TxtR7.Text)
+      TxtPuzzle.AppendLine("So, how many eggs did she lose?")
+   EndIf
+EndSub
+
+Sub AddEggsNum(baskets, eggs)
+   TxtPuzzle.Append("  * on ")
+   TxtPuzzle.Append(baskets)
+   If eggs = 0 Then
+      TxtPuzzle.AppendLine(" baskets, nothing left out.")
+   ElseIf eggs = 1 Then
+      TxtPuzzle.AppendLine(" baskets, 1 egg left out.")
+   Else
+      TxtPuzzle.Append(" baskets, " + eggs)
+      TxtPuzzle.AppendLine(" eggs left out.")
+   EndIf
+EndSub
+
+'------------------------------------------------
+Sub BtnSolve_OnClick()
+   If Me.Validate() Then
+      R2 = TxtR2.Text
+      R3 = TxtR3.Text
+      R4 = TxtR4.Text
+      R5 = TxtR5.Text
+      R6 = TxtR6.Text
+      R7 = TxtR7.Text
+      Eggs = 7
+      
+      ProgressBar1.Visible = True
+      BtnCancel.Visible = True
+      LblResult.Visible = True
+      BtnSolve.Enabled = False
+      Timer.Resume()
+   EndIf
+EndSub
+
+
+'------------------------------------------------
+Sub CheckEggs()
+   Eggs = Eggs + 1
+   LblResult.Text = Eggs
+   If Eggs.Remainder(2) = R2 And
+         Eggs.Remainder(3) = R3 And
+         Eggs.Remainder(4) = R4 And
+         Eggs.Remainder(5) = R5 And
+         Eggs.Remainder(6) = R6 And
+         Eggs.Remainder(7) = R7 Then
+      
+      Timer.Pause()
+      ProgressBar1.Visible = False
+      BtnCancel.Visible = False
+      LblResult.Text = "No. of eggs = " + Eggs
+      BtnSolve.Enabled = True
+   EndIf
+   
+EndSub
+
+
+'------------------------------------------------
+Sub BtnCancel_OnClick()
+   Timer.Pause()
+   ProgressBar1.Visible = False
+   BtnCancel.Visible = False
+   LblResult.Visible = False
+EndSub
+
+
+'------------------------------------------------
+Sub TxtRemainders_OnTextInput()
+   If Text.IsNumeric(Event.LastTextInput) = False Then
+      Event.Handled = True
+      Sound.PlayBellRing()
+   EndIf
+EndSub
+
+Sub TxtRemainders_Validate()
+   txtRemainder = Event.SenderControl
+   r = txtRemainder.Name
+   n = r[r.Length]
+   value = txtRemainder.Text
+   If value.IsNumeric = False Then
+      txtRemainder.Error = "Please enter a valid number."
+   ElseIf value < 0 Then
+      txtRemainder.Error = "Please enter a positive number."
+   ElseIf value >= n Then
+      txtRemainder.Error = "Remainder must be less than " + n
+   Else
+      txtRemainder.Error = ""
+   EndIf
+EndSub

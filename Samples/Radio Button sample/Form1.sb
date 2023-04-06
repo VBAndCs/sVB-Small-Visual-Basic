@@ -1,7 +1,5 @@
 FavFruit = ""
 FavColor = ""
-RdoNoFruit.Checked = True
-RdoNoColor.Checked = True
 
 RdoNoFruit.OnCheck = Fruits_OnCheck
 RdoBanana.OnCheck = Fruits_OnCheck
@@ -13,6 +11,8 @@ RdoYellow.OnCheck = Colors_OnCheck
 RdoOrangColor.OnCheck = Colors_OnCheck
 RdoRed.OnCheck = Colors_OnCheck
 
+RdoNoFruit.Checked = True
+RdoNoColor.Checked = True
 
 '------------------------------------------------
 Sub Fruits_OnCheck()
@@ -36,7 +36,7 @@ Sub Print()
    
    If FavFruit <> "" Then
       LblResult.Text = "Your favorit fruit is: "
-      LblResult.AppendWithForecolor(FavFruit, Colors.Red)
+      LblResult.AppendWithForeColor(FavFruit, Colors.Red)
       LblResult.AppendLine("")
    Else
       LblResult.Text = ""
@@ -44,7 +44,7 @@ Sub Print()
    
    If FavColor <> "" Then
       LblResult.Append("Your favorit color is: ")
-      LblResult.AppendWithForecolor(FavColor, Colors.Blue)
+      LblResult.AppendWithForeColor(FavColor, Colors.Blue)
    EndIf
    
 EndSub

@@ -7,6 +7,8 @@
 '    btnFind: Button
 '    txtFind: TextBox
 '    lblSelection: Label
+'    btnFindNext: Button
+'    btnFindPrev: Button
 '}
 
 Me = "form1"
@@ -17,37 +19,49 @@ txtAdd = "form1.txtadd"
 btnFind = "form1.btnfind"
 txtFind = "form1.txtfind"
 lblSelection = "form1.lblselection"
+btnFindNext = "form1.btnfindnext"
+btnFindPrev = "form1.btnfindprev"
 _path = Program.Directory + "\Form1.xaml"
 form1 = Forms.LoadForm("form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 Form.Show(form1)
 '#Events{
-'    btnFind: OnClick
-'    btnAdd: OnClick
 '    ListBox1: OnSelection
-'    txtAdd: OnTextChanged OnKeyDown
+'    btnFind: OnClick
+'    btnFindNext: OnClick
+'    btnFindPrev: OnClick
+'    btnAdd: OnClick
 '    btnRemove: OnClick
+'    txtAdd: OnTextChanged OnKeyDown
 '}
-
-' btnFind Events:
-Control.HandleEvents(btnFind)
-Control.OnClick = BtnFind_OnClick
-
-' btnAdd Events:
-Control.HandleEvents(btnAdd)
-Control.OnClick = BtnAdd_OnClick
 
 ' ListBox1 Events:
 Control.HandleEvents(ListBox1)
 ListBox.OnSelection = ListBox1_OnSelection
 
-' txtAdd Events:
-Control.HandleEvents(txtAdd)
-TextBox.OnTextChanged = TxtAdd_OnTextChanged
-Control.OnKeyDown = TxtAdd_OnKeyDown
+' btnFind Events:
+Control.HandleEvents(btnFind)
+Control.OnClick = BtnFind_OnClick
+
+' btnFindNext Events:
+Control.HandleEvents(btnFindNext)
+Control.OnClick = BtnFindNext_OnClick
+
+' btnFindPrev Events:
+Control.HandleEvents(btnFindPrev)
+Control.OnClick = BtnFindPrev_OnClick
+
+' btnAdd Events:
+Control.HandleEvents(btnAdd)
+Control.OnClick = BtnAdd_OnClick
 
 ' btnRemove Events:
 Control.HandleEvents(btnRemove)
 Control.OnClick = BtnRemove_OnClick
+
+' txtAdd Events:
+Control.HandleEvents(txtAdd)
+TextBox.OnTextChanged = TxtAdd_OnTextChanged
+Control.OnKeyDown = TxtAdd_OnKeyDown
 
 
