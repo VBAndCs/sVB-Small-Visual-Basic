@@ -146,7 +146,7 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' Gets whether or not a given text starts with the specified subText.
+        ''' Gets whether or not a given text contains the specified subText.
         ''' </summary>
         ''' <param name="text">
         ''' The larger text to search within.
@@ -155,7 +155,7 @@ Namespace Library
         ''' The sub-text to search for.
         ''' </param>
         ''' <returns>
-        ''' True if the subtext was found at any posision in the given text.
+        ''' True if the subtext was found at any posision in the given text, or False otherwise.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function Contains(text As Primitive, subText As Primitive) As Primitive
@@ -405,10 +405,10 @@ Namespace Library
         End Function
 
         ''' <summary>
-        '''Converts the given value to a string
+        '''Converts the given value or array to a string.
         ''' </summary>
         ''' <param name="value">the input value</param>
-        ''' <returns>the string representaion of the value. For example, the array string can be of the form {1, 2, 3}</returns>
+        ''' <returns>The string representaion of the value. For example, the array string can be of the form {1, 2, 3}</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ToStr(value As Primitive) As Primitive
             If value.IsArray Then

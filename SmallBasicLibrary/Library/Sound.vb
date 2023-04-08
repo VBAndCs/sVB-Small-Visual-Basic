@@ -41,59 +41,80 @@ Namespace Library
         }
 
         ''' <summary>
+        ''' Plays the ding sound.
+        ''' </summary>
+        Public Shared Sub PlayDing()
+            PlayStockSound(Nothing, sync:=False)
+        End Sub
+
+        ''' <summary>
+        ''' Plays the beep beep sound.
+        ''' </summary>
+        Public Shared Sub PlayBeep()
+            PlayStockSound(My.Resources.BeepBeep, sync:=False)
+        End Sub
+
+        ''' <summary>
+        ''' Plays the beep beep sound and waits for it to finish.
+        ''' </summary>
+        Public Shared Sub PlayBeepAndWait()
+            PlayStockSound(My.Resources.BeepBeep, sync:=True)
+        End Sub
+
+        ''' <summary>
         ''' Plays the Click Sound.
         ''' </summary>
         Public Shared Sub PlayClick()
-            PlayStockSound("Click.wav", sync:=False)
+            PlayStockSound(My.Resources.Click, sync:=False)
         End Sub
 
         ''' <summary>
         ''' Plays the Click Sound and waits for it to finish.
         ''' </summary>
         Public Shared Sub PlayClickAndWait()
-            PlayStockSound("Click.wav", sync:=True)
+            PlayStockSound(My.Resources.Click, sync:=True)
         End Sub
 
         ''' <summary>
         ''' Plays the Chime Sound.
         ''' </summary>
         Public Shared Sub PlayChime()
-            PlayStockSound("Chime.wav", sync:=False)
+            PlayStockSound(My.Resources.Chime, sync:=False)
         End Sub
 
         ''' <summary>
         ''' Plays the Chime Sound and waits for it to finish.
         ''' </summary>
         Public Shared Sub PlayChimeAndWait()
-            PlayStockSound("Chime.wav", sync:=True)
+            PlayStockSound(My.Resources.Chime, sync:=True)
         End Sub
 
         ''' <summary>
         ''' Plays the Chimes Sound.
         ''' </summary>
         Public Shared Sub PlayChimes()
-            PlayStockSound("Pause.wav", sync:=False)
+            PlayStockSound(My.Resources.Pause, sync:=False)
         End Sub
 
         ''' <summary>
         ''' Plays the Chimes Sound and waits for it to finish.
         ''' </summary>
         Public Shared Sub PlayChimesAndWait()
-            PlayStockSound("Pause.wav", sync:=True)
+            PlayStockSound(My.Resources.Pause, sync:=True)
         End Sub
 
         ''' <summary>
         ''' Plays the Bell Ring Sound.
         ''' </summary>
         Public Shared Sub PlayBellRing()
-            PlayStockSound("BellRing.wav", sync:=False)
+            PlayStockSound(My.Resources.BellRing, sync:=False)
         End Sub
 
         ''' <summary>
         ''' Plays the Bell Ring Sound and waits for it to finish.
         ''' </summary>
         Public Shared Sub PlayBellRingAndWait()
-            PlayStockSound("BellRing.wav", sync:=True)
+            PlayStockSound(My.Resources.BellRing, sync:=True)
         End Sub
 
         ''' <summary>
@@ -109,7 +130,13 @@ Namespace Library
         ''' </example>
         Public Shared Sub PlayMusic(notes As Primitive)
             EnsureDeviceInit()
-            PlayNotes(notes)
+            If notes.IsArray Then
+                For Each note In notes._arrayMap.Values
+                    PlayNotes(note)
+                Next
+            Else
+                PlayNotes(notes)
+            End If
         End Sub
 
         ''' <summary>
@@ -178,28 +205,21 @@ Namespace Library
             GetMediaPlayer(filePath)?.Stop()
         End Sub
 
-        Private Shared Sub PlayStockSound(name As String, sync As Boolean)
-            Dim soundPlayer1 As New SoundPlayer(GetSoundStream(name))
+        Private Shared Sub PlayStockSound(soundStream As Stream, sync As Boolean)
+            Dim soundPlayer As New SoundPlayer(soundStream)
             If sync Then
-                soundPlayer1.PlaySync()
+                soundPlayer.PlaySync()
             Else
-                soundPlayer1.Play()
+                soundPlayer.Play()
             End If
         End Sub
 
-        Private Shared Function GetSoundStream(fileName As String) As Stream
-            Dim executingAssembly As Assembly = Assembly.GetExecutingAssembly()
-            Dim name As String = $"Sounds.{fileName}"
-            Return executingAssembly.GetManifestResourceStream(GetType(Sound), name)
-        End Function
-
         Private Shared Function GetMediaPlayer(filePath As Primitive) As MediaPlayer
-            If filePath.IsEmpty Then
-                Return Nothing
-            End If
+            If filePath.IsEmpty Then Return Nothing
+
             Try
                 Dim uri1 As New Uri(filePath)
-                Dim value As System.Windows.Media.MediaPlayer = Nothing
+                Dim value As MediaPlayer = Nothing
                 If Not _mediaPlayerMap.TryGetValue(uri1, value) Then
                     value = New MediaPlayer
                     _mediaPlayerMap(uri1) = value
@@ -207,8 +227,7 @@ Namespace Library
                 End If
 
                 Return value
-            Catch __unusedException1__ As Exception
-
+            Catch
             End Try
 
             Return Nothing

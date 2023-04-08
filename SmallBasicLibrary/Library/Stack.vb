@@ -10,54 +10,48 @@ Namespace Library
         ''' <summary>
         ''' Pushes a value to the specified stack.
         ''' </summary>
-        ''' <param name="stackName">
-        ''' The name of the stack.
-        ''' </param>
-        ''' <param name="value">
-        ''' The value to push.
-        ''' </param>
+        ''' <param name="stackName">The name of the stack.</param>
+        ''' <param name="value">The value to push.</param>
         Public Shared Sub PushValue(stackName As Primitive, value As Primitive)
-            Dim value2 As Stack(Of Primitive) = Nothing
-            If Not _stackMap.TryGetValue(stackName, value2) Then
-                value2 = New Stack(Of Primitive)
-                _stackMap(stackName) = value2
+            Dim stack As Stack(Of Primitive) = Nothing
+            stackName = stackName.ToString().ToLower()
+            If Not _stackMap.TryGetValue(stackName, stack) Then
+                stack = New Stack(Of Primitive)
+                _stackMap(stackName) = stack
             End If
-            value2.Push(value)
+            stack.Push(value)
         End Sub
 
         ''' <summary>
         ''' Gets the count of items in the specified stack.
         ''' </summary>
-        ''' <param name="stackName">
-        ''' The name of the stack.
-        ''' </param>
+        ''' <param name="stackName">The name of the stack.</param>
         ''' <returns>
         ''' The number of items in the specified stack.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetCount(stackName As Primitive) As Primitive
-            Dim value As Collections.Generic.Stack(Of Primitive) = Nothing
-            If Not _stackMap.TryGetValue(stackName, value) Then
-                value = New Stack(Of Primitive)
-                _stackMap(stackName) = value
+            Dim stack As Stack(Of Primitive) = Nothing
+            stackName = stackName.ToString().ToLower()
+            If Not _stackMap.TryGetValue(stackName, stack) Then
+                stack = New Stack(Of Primitive)
+                _stackMap(stackName) = stack
             End If
 
-            Return value.Count
+            Return stack.Count
         End Function
 
         ''' <summary>
         ''' Pops the value from the specified stack.
         ''' </summary>
-        ''' <param name="stackName">
-        ''' The name of the stack.
-        ''' </param>
+        ''' <param name="stackName">The name of the stack.</param>
         ''' <returns>
         ''' The value from the stack.
         ''' </returns>
         Public Shared Function PopValue(stackName As Primitive) As Primitive
-            Dim value As Collections.Generic.Stack(Of Primitive) = Nothing
-            If _stackMap.TryGetValue(stackName, value) Then
-                Return value.Pop()
+            Dim stack As Stack(Of Primitive) = Nothing
+            If _stackMap.TryGetValue(stackName.ToString().ToLower(), stack) Then
+                Return stack.Pop()
             End If
 
             Return ""

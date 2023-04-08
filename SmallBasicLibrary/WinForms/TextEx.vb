@@ -87,13 +87,13 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Gets whether or not a given text starts with the specified subText.
+        ''' Gets whether or not a given text contains the specified subText.
         ''' </summary>
         ''' <param name="subText">
         ''' The sub-text to search for.
         ''' </param>
         ''' <returns>
-        ''' True if the subtext was found at any posision in the given text.
+        ''' True if the subtext was found at any posision in the given text, or False otherwise.
         ''' </returns>
         <ReturnValueType(VariableType.Boolean)>
         <ExMethod>
@@ -180,10 +180,10 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' returns the char existing in the given posision in the text
+        ''' Gets the character existing in the given posision in the text
         ''' </summary>
-        ''' <param name="pos">The posision of the char</param>
-        ''' <returns>The char exusted in the given position</returns>
+        ''' <param name="pos">The posision of the character</param>
+        ''' <returns>The character existed in the given position</returns>
         <ReturnValueType(VariableType.String)>
         <ExMethod>
         Public Shared Function GetCharacterAt(text As Primitive, pos As Primitive) As Primitive
@@ -191,7 +191,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' changes the char existing in the given posision to the givin value
+        ''' Changes the char existing in the given posision to the givin value
         ''' </summary>
         ''' <param name="pos">The posision of the char</param>
         ''' <returns>a new text with the char changed to the given value. The current text will not change</returns>

@@ -1,0 +1,17 @@
+Me.RunTests()
+
+'------------------------------------------------
+Function Test_Append()
+   x = "."
+   y = "test"
+   Return UnitTest.AssertTrue(
+      {
+         y.Append(x) = "test.",
+         Text.Append(y, x) = "test.",
+         "." + "1" + 4 = 4.1,
+         Text.Append(".", {"1", "4"}) = ".14",
+         x.Append({"1", "4"}) = ".14"
+      },
+      "Text.Append"
+   )
+EndFunction

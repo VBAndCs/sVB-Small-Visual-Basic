@@ -1,0 +1,1 @@
+﻿<Canvas Background="#FFF0F0F0" Name="FrmTextTests" Width="700" Height="500" AutomationProperties.HelpText="Text Tests" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:s="clr-namespace:System;assembly=mscorlib"><Canvas.Tag><s:Boolean>False</s:Boolean></Canvas.Tag></Canvas>
