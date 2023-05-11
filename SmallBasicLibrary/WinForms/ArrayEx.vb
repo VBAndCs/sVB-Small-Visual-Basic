@@ -133,19 +133,18 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Sets the value of the array item that exists at the given numeric position.
+        ''' Sets the value of the array item that exists at the given numeric position. The current array will be changed directly, so this method is faster then the array indexer [] when dealing with a large array, but be careful because it will affect the reference array that the current array is copied from!
         ''' </summary>
-        ''' <param name="position">A number that represents the position of the item in the array, which not always be the same as its index (key). Note that position must be > 0.</param>
+        ''' <param name="position">A number that represents the position of the item in the array, which is not always the same as its index (key). Note that position must be > 0.</param>
         ''' <param name="value">The item value.</param>
-        ''' <returns>a new array with the item set to the new value. The original array will not change.</returns>
-        <WinForms.ReturnValueType(VariableType.Array)>
+        ''' <returns>the item key if found at the given position, otherwise an empty string "".</returns>
         <ExMethod>
+        <ReturnValueType(VariableType.String)>
         Public Shared Function SetItemAt(
                           array As Primitive,
                           position As Primitive,
                           value As Primitive
                    ) As Primitive
-
             Return Library.Array.SetItemAt(array, position, value)
         End Function
 
@@ -203,7 +202,8 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Adds an item to the current array. This method is faster when you want to build a large array, hence sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
+        ''' Adds an item to the array. The current array will be changed directly, so this method is faster when you want to build a large array, but be careful because it will affect the reference array that the current array is copied from!
+        ''' sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
         ''' </summary>
         ''' <param name="value">The item you want to add after the last item in the array.</param>
         <WinForms.ReturnValueType(VariableType.Array)>

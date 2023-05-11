@@ -270,6 +270,10 @@ Namespace WinForms
                     _controls.Remove(keys(i))
                 End If
             Next
+
+            If _forms.Count = 0 Then
+                Program.End()
+            End If
         End Sub
 
         Private Shared Function LoadContent(xamlPath As String) As Canvas

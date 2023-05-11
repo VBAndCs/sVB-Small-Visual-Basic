@@ -1,0 +1,218 @@
+﻿<UserControl x:Class="FontChooser"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:WpfDialogs"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="600">
+
+    <Grid Margin="12" PreviewMouseLeftButtonDown="Cmb_PreviewMouseLeftButtonDown">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Row 0: Selection controls -->
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="5"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="5"/>
+            </Grid.RowDefinitions>
+
+            <!-- Families -->
+            <Label Content="_Font: "/>
+            <ComboBox Name="fontFamilyList" Grid.Column="1"
+                          Style="{DynamicResource {x:Static ToolBar.ComboBoxStyleKey}}"
+                          HorizontalAlignment="Stretch"                      
+                          IsEditable="True" StaysOpenOnEdit="True" 
+                          GotFocus="Cmb_GotFocus"
+                          TextBoxBase.SelectionChanged="fontFamilyTextBox_SelectionChanged"
+                          TextBoxBase.TextChanged="fontFamilyTextBox_TextChanged"
+                          PreviewKeyDown="ComboxTextBox_PreviewKeyDown" 
+                          TextBoxBase.PreviewMouseWheel="ComboBoxText_MouseWheel"
+                          SelectionChanged="fontFamilyList_SelectionChanged"/>
+
+            <!-- Family Typefaces (weight, style, stretch) -->
+            <Label Grid.Row="2" Content="_Typeface:" />
+            <ComboBox Name="typefaceList" Grid.Row="2" Grid.Column="1" 
+                      Style="{DynamicResource {x:Static ToolBar.ComboBoxStyleKey}}"
+                      HorizontalAlignment="Stretch" IsEditable="True" Loaded="typefaceList_Loaded"
+                      GotFocus ="Cmb_GotFocus" 
+                      SelectionChanged ="typefaceList_SelectionChanged"/>
+
+            <!-- Font sizes -->
+            <Label Grid.Row="4" Content="_Size:"/>
+            <ComboBox Name="sizeList" Grid.Row="4" Grid.Column="1"
+                      Style="{DynamicResource {x:Static ToolBar.ComboBoxStyleKey}}"
+                      HorizontalAlignment="Stretch"
+                      IsEditable="True" StaysOpenOnEdit="True" 
+                      GotFocus="Cmb_GotFocus"
+                      TextBoxBase.TextChanged="sizeList_TextChanged"
+                      PreviewKeyDown="ComboxTextBox_PreviewKeyDown"
+                      TextBoxBase.PreviewMouseWheel="ComboBoxText_MouseWheel"
+                      TextBoxBase.PreviewTextInput="FontSizeBoxText_PreviewTextInput" 
+                      SelectionChanged= "sizeList_SelectionChanged"/>
+
+            <!-- Text decorations -->
+            <DockPanel Grid.Column="4" Grid.RowSpan="5">
+                <CheckBox DockPanel.Dock="Top" Content="Underline" Name="underlineCheckBox"
+                           Checked = "textDecorationCheckStateChanged"
+                           Unchecked = "textDecorationCheckStateChanged"/>
+                <CheckBox DockPanel.Dock="Top" Content="Baseline" Name="baselineCheckBox"
+                           Checked = "textDecorationCheckStateChanged"
+                           Unchecked = "textDecorationCheckStateChanged"/>
+                <CheckBox DockPanel.Dock="Top" Content="Strikethrough" Name="strikethroughCheckBox"
+                           Checked = "textDecorationCheckStateChanged"
+                           Unchecked = "textDecorationCheckStateChanged"/>
+                <CheckBox Content="Overline" Name="overlineCheckBox"
+                           Checked = "textDecorationCheckStateChanged"
+                           Unchecked = "textDecorationCheckStateChanged"/>
+            </DockPanel>
+        </Grid>
+
+        <!-- Row 1: Tab control with family typeface samples, etc. -->
+        <TabControl Grid.Column="0" Grid.Row="1" Margin="0,12,0,0" Name="tabControl">
+            <TabItem Header="Typographic Features" Name="typographyTab">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Feature list of left-hand side of typography tab -->
+                    <Label Grid.Column="0" Grid.Row="0" Content="Feature"/>
+                    <ListBox Grid.Column="0" Grid.Row="1" Name="featureList" Width="230"/>
+
+                    <!-- Column headers on right-hand side of typography tab -->
+                    <Grid Grid.Column="2" Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1"/>
+                            <ColumnDefinition Width="96"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="1" Content="Selection"/>
+                        <Label Grid.Column="2" Content="Sample"/>
+                    </Grid>
+
+                    <!-- Feature page -->
+                    <Border x:Name="TypographyBorder" Grid.Column="2" Grid.Row="1" BorderThickness="1" BorderBrush="{x:Static SystemColors.ControlDarkDarkBrush}">
+                        <Grid ClipToBounds="True" >
+                            <ScrollViewer x:Name="ScvFeature" VerticalScrollBarVisibility="Auto"
+                                      ScrollChanged="ScvFeature_ScrollChanged">
+                                <Grid Name="TypographyFeatureGrid">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition/>
+                                        <!-- The grid contents for each feature are filled in programmatically -->
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </ScrollViewer>
+                            <Border x:Name="SelectionBoreder" Grid.Column="2" Grid.Row="1" BorderThickness="1" BorderBrush="Black"  VerticalAlignment="Top" HorizontalAlignment="Left" IsHitTestVisible="False" Background="Cyan" Opacity="0.1" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Family and typeface samples" Name="samplesTab">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="0" Grid.Row="0">
+                        <Run>FontFamily: </Run>
+                        <Run Name="fontFamilyNameRun"/>
+                    </TextBlock>
+                    <RichTextBox 
+                        Grid.Column="0" Grid.Row="1" 
+                        IsReadOnly="True" 
+                        VerticalScrollBarVisibility="Auto"
+                        Name="fontFamilySamples"
+                        />
+                    <TextBlock Grid.Column="2" Grid.Row="0">
+                        <Run>Typeface: </Run>
+                        <Run Name="typefaceNameRun">Points</Run>
+                    </TextBlock>
+                    <RichTextBox 
+                        Grid.Column="2" Grid.Row="1" 
+                        IsReadOnly="True" 
+                        VerticalScrollBarVisibility="Auto"
+                        Name="typefaceSamples"
+                        />
+                </Grid>
+            </TabItem>
+            <TabItem Header="DescriptiveText" Name="descriptiveTextTab">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Column="0" Grid.Row="0" Content="Font description:"/>
+                    <RichTextBox 
+                        Grid.Column="0" Grid.Row="1" 
+                        IsReadOnly="True" 
+                        VerticalScrollBarVisibility="Auto"
+                        Name="fontDescriptionBox"
+                        />
+
+                    <Label Grid.Column="2" Grid.Row="0" Content="License:"/>
+                    <TextBox 
+                        Grid.Column="2" Grid.Row="1" 
+                        IsReadOnly="True" 
+                        TextWrapping="WrapWithOverflow" 
+                        VerticalScrollBarVisibility="Auto" 
+                        Name="fontLicenseBox"
+                        />
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- Row 2: Preview text -->
+        <DockPanel Grid.Column="0" Grid.Row="2" Margin="0,12,0,0">
+            <TextBox
+                FontSize="16" AcceptsReturn="True" 
+                TextAlignment="Center" 
+                TextWrapping="Wrap"
+                VerticalScrollBarVisibility="Auto"
+                Name="previewTextBox"/>
+        </DockPanel>
+
+        <!-- Row 3: OK and Cancel buttons -->
+        <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="OK" Width="86" IsDefault="True" Click="OnOKButtonClicked"/>
+            <Button Content="Cancel" Width="86" Click="OnCancelButtonClicked"/>
+        </StackPanel>
+
+    </Grid>
+</UserControl>

@@ -13,7 +13,7 @@
             If Fw.ToolTip = "" Then
                 Fw.ToolTip = Me.Name
             Else
-                Me.Name = Fw.ToolTip
+                Me.Name = Fw.ToolTip.ToString().Replace(" ", "_")
             End If
         Else
             Me.Width = 34

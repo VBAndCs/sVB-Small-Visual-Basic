@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v2.7.7" Loaded="Window_Loaded"
+        Title="Small Visual Basic v2.8" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -410,6 +410,7 @@
                         PreviewKeyDown="TxtControlName_PreviewKeyDown"
                         PreviewTextInput="TxtControlName_PreviewTextInput"
                         GotFocus="TxtControl_GotFocus"
+                        TextChanged="TxtControl_GotFocus"
                         LostFocus="TxtControlName_LostFocus"/>
 
                 <TextBlock VerticalAlignment="Center" FontWeight="Bold" FontSize="14"
@@ -418,6 +419,7 @@
                         Width="100" MaxHeight="30" Background="AliceBlue" Margin="0,1,15,1" Padding="0"
                         PreviewKeyDown="TxtControlText_PreviewKeyDown"
                         GotFocus="TxtControl_GotFocus"
+                        TextChanged="TxtControl_GotFocus"
                         LostFocus="TxtControlText_LostFocus"/>
 
             </Grid>

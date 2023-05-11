@@ -1,5 +1,4 @@
 M = Me.AddMainMenu("mainmenu")
-
 MenuFile = M.AddItem("menuFile", "File", "")
 MenuNew = MenuFile.AddItem("menuNew", "New", "Ctrl+N")
 MenuNew.OnClick = MenuNew_OnClick
@@ -72,7 +71,6 @@ MenuView.AddSeparator()
 MenuOptions = MenuView.AddItem("MenuOptions", "Options", "")
 MenuOptions.OnClick = MenuOptions_OnClick
 MenuView.OnOpen = MenuView_OnOpen
-
 SavedFile = ""
 IsModified = False
 SetProperties(Global.Ops)
@@ -427,10 +425,7 @@ Sub FrmMain_OnPreviewKeyDown()
       
    ElseIf key = Keys.U Then
       MenuUnderline.Checked = (MenuUnderline.Checked = False)
-      
    EndIf
-   
-   
 EndSub
 
 

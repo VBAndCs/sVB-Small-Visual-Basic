@@ -29,8 +29,8 @@ Friend Class RotateThumb
         End Set
     End Property
 
-    Public Shared ReadOnly RotateAngleProperty As DependencyProperty = _
-                           DependencyProperty.Register("RotateAngle", _
+    Public Shared ReadOnly RotateAngleProperty As DependencyProperty =
+                           DependencyProperty.Register("RotateAngle",
                            GetType(Double), GetType(RotateThumb), New PropertyMetadata(AddressOf RotateAngleChanged))
 
     Shared Sub RotateAngleChanged(rt As RotateThumb, e As DependencyPropertyChangedEventArgs)
@@ -47,9 +47,9 @@ Friend Class RotateThumb
         End Set
     End Property
 
-    Public Shared ReadOnly CounterRotateAngleProperty As DependencyProperty = _
-                           DependencyProperty.Register("CounterRotateAngle", _
-                           GetType(Double), GetType(RotateThumb), _
+    Public Shared ReadOnly CounterRotateAngleProperty As DependencyProperty =
+                           DependencyProperty.Register("CounterRotateAngle",
+                           GetType(Double), GetType(RotateThumb),
                            New PropertyMetadata(0.0))
 
 
@@ -64,9 +64,9 @@ Friend Class RotateThumb
     End Property
 
 
-    Public Shared ReadOnly AngleVisibiltyProperty As DependencyProperty = _
-                           DependencyProperty.Register("AngleVisibilty", _
-                           GetType(Visibility), GetType(RotateThumb), _
+    Public Shared ReadOnly AngleVisibiltyProperty As DependencyProperty =
+                           DependencyProperty.Register("AngleVisibilty",
+                           GetType(Visibility), GetType(RotateThumb),
                            New PropertyMetadata(Visibility.Collapsed))
 
     Public Sub New()
@@ -115,6 +115,7 @@ Friend Class RotateThumb
 
     Private Sub RotateThumb_DragCompleted(sender As Object, e As DragCompletedEventArgs) Handles Me.DragCompleted
         AngleVisibilty = Visibility.Collapsed
+        Dsn.LocationVisibility = Visibility.Collapsed
         ReportChanges()
     End Sub
 
@@ -125,6 +126,7 @@ Friend Class RotateThumb
         Pnl.DiagramGroup?.UpdateSelection()
         Pnl.UpdateLocationBorder()
         e.Handled = True
+        ReportChanges()
     End Sub
 
     Private Sub ReportChanges()

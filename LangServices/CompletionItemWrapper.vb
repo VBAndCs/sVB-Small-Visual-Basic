@@ -211,7 +211,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             .Summary = If(Not result.Ticks.HasValue,
                                     $"Invalid {If(result.IsDate, "date", "time span")} format!",
                                     "Value = """ & If(result.IsDate,
-                                            New Date(result.Ticks.Value).ToString("MM/dd/yyyy hh:mm:ss.FFFFFFF tt"),
+                                            New Date(result.Ticks.Value).ToString(),
                                             FormatTimeSpan(result.Ticks.Value)
                                     ) & """"
                             )

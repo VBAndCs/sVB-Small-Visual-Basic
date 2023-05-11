@@ -22,6 +22,7 @@ Namespace Library
             Get
                 Dim arr As Primitive = ""
                 arr._isArray = True
+                arr._arrayMap = New Dictionary(Of Primitive, Primitive)(Primitive.PrimitiveComparer.Instance)
                 Return arr
             End Get
         End Property
@@ -39,12 +40,11 @@ Namespace Library
             Return Primitive.SetArrayValue(value, array, index)
         End Function
 
-
         ''' <summary>
-        ''' Adds an item to the array. The input array will be changed directly, so this method is faster when you want to build a large array.
+        ''' Adds an item to the array. The input array will be changed directly, so this method is faster when you want to build a large array, but be careful because it will affect the reference array that the current array is copied from!
         ''' sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
         ''' </summary>
-        ''' <param name="array">The input array. The array must contain one or more items</param>
+        ''' <param name="array">The input array. The array must be intialized first, even with an empty array {}.</param>
         ''' <param name="value">The item you want to add after the last item in the array.</param>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Sub AddNextItem(array As Primitive, value As Primitive)
@@ -122,35 +122,31 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' Sets the value of the array item that exists at the given numeric position.
+        ''' Sets the value of the array item that exists at the given numeric position. The input array will be changed directly, so this method is faster then the array indexer [] when dealing with a large array, but be careful because it will affect the reference array that the current array is copied from!
         ''' </summary>
         ''' <param name="array">The given array.</param>
-        ''' <param name="position">A number that represents the position of the item in the array, which not always be the same as its index (key). Note that position must be > 0.</param>
+        ''' <param name="position">A number that represents the position of the item in the array, which is not always the same as its index (key). Note that position must be > 0.</param>
         ''' <param name="value">The item value.</param>
-        ''' <returns>a new array with the item set to the new value. The original array will not change.</returns>
-        <WinForms.ReturnValueType(VariableType.Array)>
+        ''' <returns>the item key if found at the given position, otherwise an empty string "".</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function SetItemAt(
                           array As Primitive,
                           position As Primitive,
                           value As Primitive
                    ) As Primitive
 
-            If position < 1 Then Return array
+            If position < 1 Then Return ""
 
             Dim map = array._arrayMap
-            If map Is Nothing Then Return array
+            If map Is Nothing OrElse map.Count = 0 Then Return ""
 
             Dim keys = map.Keys
-            If position > keys.Count Then Return array
+            If position > keys.Count Then Return ""
 
             Dim key = keys(position - 1)
-            Dim map2 As New Dictionary(Of Primitive, Primitive)(array._arrayMap, Primitive.PrimitiveComparer.Instance)
-            map2(key) = value
+            map(key) = value
 
-            Return New Primitive With {
-                ._isArray = True,
-                ._arrayMap = map2
-            }
+            Return key
         End Function
 
         ''' <summary>

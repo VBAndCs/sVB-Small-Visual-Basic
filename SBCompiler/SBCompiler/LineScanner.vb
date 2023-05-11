@@ -131,24 +131,25 @@ Namespace Microsoft.SmallVisualBasic
                         comment -= 1
                     End If
 
-                Case "-"
-                    If tokens(0).Type = TokenType.ContinueLoop OrElse tokens(0).Type = TokenType.ExitLoop Then
+                Case "-", "*"
+                    If tokens(0).Type = TokenType.ContinueLoop OrElse
+                            tokens(0).Type = TokenType.ExitLoop OrElse
+                            IsABlockToken(nextLineFirstToken.Type) Then
                         Return False
                     End If
 
-                Case ",", "{", "(", "[", "+", "*", "\", "/", "=", "or", "and"
-                    Select Case nextLineFirstToken.Type
-                        Case TokenType.If, TokenType.Else, TokenType.ElseIf, TokenType.EndIf,
-                                 TokenType.Goto, TokenType.ExitLoop, TokenType.ContinueLoop, TokenType.Return,
-                                 TokenType.While, TokenType.EndWhile, TokenType.Wend,
-                                 TokenType.For, TokenType.ForEach, TokenType.Next, TokenType.EndFor,
-                                 TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
-                            Return False ' a start or end of a block can't be a line continuty
-                    End Select
+                Case ",", "{", "(", "[",
+                     "+", "-", "\", "/",
+                     "=", "<>", ">", ">=", "<", "<=",
+                     "or", "and"
+                    If IsABlockToken(nextLineFirstToken.Type) Then Return False
 
                 Case Else
                     Select Case nextLineFirstTokenText
-                        Case ")", "]", "}", "+", "-", "*", "\", "/", "or", "and"
+                        Case ")", "]", "}",
+                             "+", "-", "*", "\", "/",
+                             "=", "<>", ">", ">=", "<", "<=",
+                             "or", "and"
 
                         Case Else
                             Return False
@@ -161,6 +162,20 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             Return True
+        End Function
+
+        Private Shared Function IsABlockToken(nextTokenType) As Boolean
+            Select Case nextTokenType
+                Case TokenType.If, TokenType.Else, TokenType.ElseIf, TokenType.EndIf,
+                         TokenType.Goto, TokenType.ExitLoop, TokenType.ContinueLoop, TokenType.Return,
+                         TokenType.While, TokenType.EndWhile, TokenType.Wend,
+                         TokenType.For, TokenType.ForEach, TokenType.Next, TokenType.EndFor,
+                         TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
+                    Return True ' a start or end of a block can't be a line continuty
+
+                Case Else
+                    Return False
+            End Select
         End Function
 
         Private Shared Function ScanNextToken(<Out> ByRef token As Token) As Boolean

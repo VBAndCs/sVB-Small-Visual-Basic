@@ -25,7 +25,7 @@
 '    ChkRtl: CheckBox
 '}
 
-Me = "FrmOps"
+Me = "frmops"
 Label1 = "frmops.label1"
 ChkWrap = "frmops.chkwrap"
 ChkMulti = "frmops.chkmulti"

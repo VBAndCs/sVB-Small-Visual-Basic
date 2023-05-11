@@ -972,7 +972,13 @@ Namespace Microsoft.SmallVisualBasic
                     Me.ActiveDocument?.Focus()
                 End Sub)
 
+
         Private Sub TabCode_Selected(sender As Object, e As RoutedEventArgs)
+            If CStr(txtControlName.Tag) <> "" Then
+                Dim controlIndex = CInt(txtControlName.Tag)
+                If txtControlName.Text <> formDesigner.GetControlName(controlIndex) Then Return
+            End If
+
             If formDesigner.Name = "global" Then
                 Dim globFile = formDesigner.CodeFile
                 If Not File.Exists(globFile) Then
@@ -983,7 +989,7 @@ Namespace Microsoft.SmallVisualBasic
                 doc?.Focus()
 
             ElseIf DiagramHelper.Designer.CurrentPage IsNot Nothing Then
-                saveInfo.After(10)
+                saveInfo.After(20)
             End If
 
             ' Note this prop isn't changed yet
@@ -993,6 +999,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub TabDesigner_Selected(sender As Object, e As RoutedEventArgs)
             UpdateTitle()
+            formDesigner.IsReloading = True
         End Sub
 
         Dim tempProjectPath As String
@@ -1195,7 +1202,9 @@ Namespace Microsoft.SmallVisualBasic
         Dim formNameChanged As Boolean
 
         Function SavePage(oldPath As String, saveAs As Boolean) As Boolean
-            If DiagramHelper.Helper.FormNameExists(formDesigner) Then
+            Dim msg = DiagramHelper.Helper.FormNameExists(formDesigner)
+            If msg <> "" Then
+                MsgBox(msg)
                 If saveAs Then formDesigner.XamlFile = oldPath
                 Return False
             End If
@@ -1243,7 +1252,7 @@ Namespace Microsoft.SmallVisualBasic
                 End If
             End If
 
-                ProjExplorer.ProjectDirectory = formDesigner.XamlFile
+            ProjExplorer.ProjectDirectory = formDesigner.XamlFile
             Return True
         End Function
 
@@ -1262,7 +1271,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub FormDesigner_CurrentPageChanged(index As Integer)
-            If index < 0 AndAlso index > DiagramHelper.Designer.GlobalFileIndex Then
+            If index <0 AndAlso index > DiagramHelper.Designer.GlobalFileIndex Then
                 UpdateTitle()
                 UpdateTextBoxes()
                 txtControlName.IsEnabled = True
@@ -1321,12 +1330,12 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub FormDesigner_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             If ExitSelectionChanged Then Return
 
-            Dim i = formDesigner.SelectedIndex
             Dim controlIndex As Integer
 
             If CStr(txtControlName.Tag) <> "" Then
                 controlIndex = CInt(txtControlName.Tag)
-                If txtControlName.Text <> formDesigner.GetControlName(controlIndex) Then
+
+                If formDesigner.Items.Count > controlIndex AndAlso txtControlName.Text <> formDesigner.GetControlName(controlIndex) Then
                     If Not CommitName() Then
                         ' Re-select the control. this event can fire b4 lostfocus event of the textbox
                         ExitSelectionChanged = True
@@ -1450,7 +1459,14 @@ Namespace Microsoft.SmallVisualBasic
 
             Dim controlIndex = CInt(txtControlName.Tag)
             Dim newName = txtControlName.Text.Trim()
-            If newName = "" Then Return False
+            If newName = "" Then
+                Beep()
+                ExitSelectionChanged = True
+                tabCode.IsSelected = False
+                tabDesigner.IsSelected = True
+                ExitSelectionChanged = False
+                Return False
+            End If
 
             Dim oldName = formDesigner.GetControlName(controlIndex)
             If oldName = newName Then Return True
@@ -1458,15 +1474,27 @@ Namespace Microsoft.SmallVisualBasic
             newName = newName(0).ToString().ToUpper & If(newName.Length > 1, newName.Substring(1), "")
             txtControlName.Text = newName
 
-            If IsKeyword(newName) Then Return False
-
-            If controlIndex < 0 AndAlso DiagramHelper.Helper.FormNameExists(formDesigner, newName) Then
-                Beep()
+            If IsKeyword(newName) Then
                 Return False
             End If
 
+            If controlIndex < 0 Then
+                Dim msg = DiagramHelper.Helper.FormNameExists(formDesigner, newName)
+                If msg <> "" Then
+                    ExitSelectionChanged = True
+                    tabCode.IsSelected = False
+                    tabDesigner.IsSelected = True
+                    MsgBox(msg)
+                    ExitSelectionChanged = False
+                    Return False
+                End If
+            End If
+
             If Not formDesigner.SetControlName(controlIndex, newName) Then
-                Beep()
+                ExitSelectionChanged=True
+                tabCode.IsSelected = False
+                tabDesigner.IsSelected = True
+                ExitSelectionChanged = False
                 Return False
             End If
 
@@ -1475,7 +1503,6 @@ Namespace Microsoft.SmallVisualBasic
                 doc.FixEventHandlers(oldName, newName)
                 SaveDesignInfo(doc)
             End If
-            tabDesigner.IsSelected = True
 
             Return True
         End Function
@@ -1485,19 +1512,31 @@ Namespace Microsoft.SmallVisualBasic
             Dim msg = $"'{newName}' is an sVB keyword and can't be used as a name. you can add a control prefix to the name, such as `Frm{newName}` or `Txt{newName}`."
 
             If name = "me" OrElse name = "global" Then
+                ExitSelectionChanged = True
+                tabCode.IsSelected = False
+                tabDesigner.IsSelected = True
                 MsgBox(msg)
+                ExitSelectionChanged = False
                 Return True
             End If
 
             Dim tokens = LineScanner.GetTokens(name, 0)
             If tokens.Count > 1 Then
+                ExitSelectionChanged = True
+                tabCode.IsSelected = False
+                tabDesigner.IsSelected = True
                 MsgBox("Form and control names can't start with a ni,ber nor contain spaces or any symbols. Use `_` instead.")
+                ExitSelectionChanged = False
                 Return True
             End If
 
             Select Case tokens(0).ParseType
                 Case ParseType.Keyword, ParseType.Operator
+                    ExitSelectionChanged = True
+                    tabCode.IsSelected = False
+                    tabDesigner.IsSelected = True
                     MsgBox(msg)
+                    ExitSelectionChanged = False
                     Return True
                 Case Else
                     Return False
@@ -1751,6 +1790,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub BtnRun_Click(sender As Object, e As RoutedEventArgs)
             RunProgram()
         End Sub
+
     End Class
 
 

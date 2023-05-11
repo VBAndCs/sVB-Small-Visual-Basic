@@ -296,7 +296,7 @@ Namespace Library
         End Sub
 
         ''' <summary>
-        ''' Writes the given array items to the TextWindw, and appends a new line after each of them.
+        ''' Writes the items of the given array to the TextWindow, and appends a new line after each of them.
         ''' </summary>
         ''' <param name="lines">An array of text lines</param>
         Public Shared Sub WriteLines(lines As Primitive)

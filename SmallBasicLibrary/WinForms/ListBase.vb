@@ -164,12 +164,13 @@ Namespace WinForms
                         Dim id As Integer
 
                         If value.IsArray Then
-                            If value._arrayMap Is Nothing Then
+                            Dim items = value._arrayMap
+                            If items Is Nothing OrElse items.Count = 0 Then
                                 AddItem = 0
                                 Return
                             End If
 
-                            For Each item In value._arrayMap.Values
+                            For Each item In items.Values
                                 id = lst.Items.Add(CStr(item))
                             Next
                         Else
@@ -190,6 +191,7 @@ Namespace WinForms
                 Sub()
                     Try
                         If Not index.IsNumber Then Return
+
                         Dim i As Integer = CInt(index) - 1
                         Dim lst = GetSelector(listName)
                         If i < 0 OrElse i > lst.Items.Count Then
@@ -198,12 +200,12 @@ Namespace WinForms
                         End If
 
                         If value.IsArray Then
-                            If value._arrayMap Is Nothing Then
+                            Dim items = value._arrayMap.Values
+                            If items Is Nothing OrElse items.Count = 0 Then
                                 AddItemAt = False
                                 Return
                             End If
 
-                            Dim items = value._arrayMap.Values
                             For n = items.Count - 1 To 0 Step -1
                                 lst.Items.Insert(i, CStr(items(n)))
                             Next

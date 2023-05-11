@@ -527,6 +527,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             _undoHistory.ReplaceMarkerOnTop(saveMarker, True)
             IsNew = False
             IsDirty = False
+            NotifyProperty("Title")
         End Sub
 
         Public Sub SaveAs(filePath As String)

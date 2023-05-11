@@ -260,5 +260,15 @@ Namespace WinForms
             Return Chars.IsLetter(text)
         End Function
 
+        ''' <summary>
+        ''' Converts the current hexadecimal string to a decimal number. 
+        ''' You can use the Math.Hex method to convert a decimal number to a hexadecimal number.
+        ''' </summary>
+        ''' <returns>The decimal value the hexa number if it is valid, or an empty string otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        <ExMethod>
+        Public Shared Function ToDecimal(hex As Primitive) As Primitive
+            Return Convert.ToInt32(hex, 16)
+        End Function
     End Class
 End Namespace

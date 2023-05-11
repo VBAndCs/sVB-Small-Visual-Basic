@@ -169,7 +169,8 @@ Friend Class ResizeThumb
     End Sub
 
     Private Sub ResizeThumb_DragCompleted(sender As Object, e As DragCompletedEventArgs)
-        ResizeThumb.MeasurementsVisibilty = Visibility.Collapsed
+        MeasurementsVisibilty = Visibility.Collapsed
+        Dsn.LocationVisibility = Visibility.Collapsed
         ReportChanges()
     End Sub
 

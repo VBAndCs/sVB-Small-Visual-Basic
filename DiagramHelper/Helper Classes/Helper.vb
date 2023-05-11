@@ -21,8 +21,8 @@ Public Class Helper
         Return ""
     End Function
 
-    Public Shared Function FormNameExists(designer As Designer, Optional newFormName As String = "") As Boolean
-        If designer.XamlFile = "" Then Return False
+    Public Shared Function FormNameExists(designer As Designer, Optional newFormName As String = "") As String
+        If designer.XamlFile = "" Then Return ""
 
         Dim formName = If(newFormName = "",
                 designer.Name.ToLower(),
@@ -35,12 +35,11 @@ Public Class Helper
             If xamlFile.ToLower() = fileName Then Continue For
 
             If formName = GetFormNameFromXaml(xamlFile).ToLower() Then
-                MsgBox($"There is already a form named `{formName}` in the project. Change the form name and try again.")
-                Return True
+                Return $"There is already a form named `{formName}` in the project. Change the form name and try again."
             End If
         Next
 
-        Return False
+        Return ""
     End Function
 
     Shared Function GetDiagramPanel(element As DependencyObject) As DiagramPanel

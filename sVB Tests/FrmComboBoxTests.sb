@@ -1,3 +1,4 @@
+
 '------------------------------------------------
 Function Test_AddItem()
    ComboBox1.RemoveAllItems()
@@ -7,7 +8,11 @@ Function Test_AddItem()
    ids[4] = ComboBox1.AddItem(#10/10/2022#)
    ids[5] = ComboBox1.AddItem(#+10.10:00#)
    ids[6] = ComboBox1.AddItem("")
-   ids[7] = ComboBox1.AddItem({1, "test", {10, 20, 30}})
+   ids[7] = ComboBox1.AddItem({
+         1,
+         "test",
+         {10, 20, 30}
+      })
    
    Return UnitTest.AssertEqual(
       Array.AddItems(ComboBox1.Items, ids),

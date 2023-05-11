@@ -975,6 +975,18 @@ Namespace Library
                    End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Show the graphics window and gets the form object that repreesents it.
+        ''' </summary>
+        ''' <returns>The graphics window name which is "graphicswindow".
+        ''' Note that sVB can deal with this name as a form object, so, you can use it to access the properties and methods of the form that repreesents the graphics window.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Form)>
+        Public Shared Function AsForm() As Primitive
+            VerifyAccess()
+            Return Controls.GW_NAME
+        End Function
+
         Private Shared Sub CreateWindow()
             SyncLock _syncLock
                 Invoke(

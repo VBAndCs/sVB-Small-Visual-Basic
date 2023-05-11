@@ -184,16 +184,24 @@ Namespace Library
                        start As Primitive,
                        length As Primitive
                    ) As Primitive
-            If text.IsEmpty OrElse start.IsEmpty OrElse length.IsEmpty Then Return ""
+
+            If text.IsEmpty OrElse length.IsEmpty Then Return ""
 
             Dim strText = text.AsString()
             Dim textLength = strText.Length
+
+            If start.IsEmpty Then
+                start = 0
+            ElseIf start > textLength Then
+                Return ""
+            End If
 
             Dim intStart = System.Math.Max(CInt(start), 1)
             intStart = System.Math.Min(intStart, textLength)
 
             Dim intLength = System.Math.Min(CInt(length), textLength)
             intLength = System.Math.Max(0, intLength)
+            If intLength = 0 Then Return ""
 
             If intStart + intLength <= textLength Then
                 Return strText.Substring(intStart - 1, intLength)
@@ -205,24 +213,14 @@ Namespace Library
         ''' <summary>
         ''' Gets a sub-text from the given text from a specified position to the end.
         ''' </summary>
-        ''' <param name="text">
-        ''' The text to derive the sub-text from.
-        ''' </param>
-        ''' <param name="start">
-        ''' Specifies where to start from.
-        ''' </param>
+        ''' <param name="text">The text to derive the sub-text from.</param>
+        ''' <param name="start">Specifies where to start from.</param>
         ''' <returns>
         ''' The requested sub-text.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetSubTextToEnd(text As Primitive, start As Primitive) As Primitive
-            If text.IsEmpty OrElse start.IsEmpty Then Return ""
-
-            Dim strText = text.AsString()
-            Dim intStart = System.Math.Max(CInt(start), 1)
-            intStart = System.Math.Min(intStart, strText.Length)
-
-            Return strText.Substring(intStart - 1)
+            Return GetSubText(text, start, text.AsString.Length - start + 1)
         End Function
 
         ''' <summary>
@@ -295,8 +293,8 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetCharacter(characterCode As Primitive) As Primitive
-            Dim num As Integer = characterCode
-            Return ChrW(num).ToString()
+            Dim code As Integer = characterCode
+            Return Char.ConvertFromUtf32(code)
         End Function
 
         ''' <summary>
@@ -311,7 +309,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetCharacterCode(character As Primitive) As Primitive
             If character.IsEmpty Then Return 0
-            Return AscW(character)
+            Return Char.ConvertToUtf32(character.AsString(), 0)
         End Function
 
         ''' <summary>
@@ -339,20 +337,20 @@ Namespace Library
 
 
         ''' <summary>
-        ''' changes the char existing in the given posision to the givin value
+        ''' Changes the character existing at the given posision to the givin new text.
         ''' </summary>
         ''' <param name="text">the input text</param>
-        ''' <param name="pos">The posision of the char</param>
-        ''' <returns>a new text with the char changed to the given value. The input text will not change</returns>
+        ''' <param name="pos">The posision of the character</param>
+        ''' <param name="newText">The new text to set at the given position. Send an empty string "" to remove the current character form the text, or send one or more characters to replace it.</param>
+        ''' <returns>a new text with the character in the given position changed to the given newText. The input text will not be changed</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function SetCharacterAt(
                    text As Primitive,
                    pos As Primitive,
-                   value As Primitive
+                   newText As Primitive
             ) As Primitive
 
-            Primitive.SetArrayValue(value, text, pos)
-            Return text
+            Return Primitive.SetArrayValue(newText, text, pos)
         End Function
 
         ''' <summary>

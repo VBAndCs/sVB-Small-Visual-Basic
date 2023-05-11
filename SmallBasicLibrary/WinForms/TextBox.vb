@@ -142,7 +142,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets or sets the current caret pos in the TextBox.
         ''' </summary>
-        <ReturnValueType(VariableType.String)>
+        <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetCaretIndex(textBoxName As Primitive) As Primitive
             App.Invoke(
@@ -160,12 +160,34 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetTextBox(textBoxName).CaretIndex = value - 1
+                        Dim pos As Integer = value - 1
+                        If pos < 0 Then pos = 0
+                        Dim txt = GetTextBox(textBoxName)
+                        txt.CaretIndex = Math.Min(pos, txt.Text.Length)
+
                     Catch ex As Exception
                         Control.ReportPropertyError(textBoxName, "CaretIndex", value, ex)
                     End Try
                 End Sub)
         End Sub
+
+
+        ''' <summary>
+        ''' Gets the length of the text written in the TextBox.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetLength(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetLength = GetTextBox(textBoxName).Text.Length
+                    Catch ex As Exception
+                        Control.ReportError(textBoxName, "GetLength", ex)
+                    End Try
+                End Sub)
+        End Function
+
 
         ''' <summary>
         ''' Set this property to True  to allow the user to write more than one line in the TextBox
@@ -196,7 +218,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Selscts a part ot the text deisplayed in the TextBox.
+        ''' Selects a part ot the text displayed in the textbox.
         ''' </summary>
         ''' <param name="startPos">the pos of the first character you want to select</param>
         ''' <param name="length">the number of characters you want to select</param>
@@ -270,7 +292,7 @@ Namespace WinForms
                     Try
                         Dim t = GetTextBox(textBoxName)
                         t.AppendText(lineText.AsString() & vbCrLf)
-
+                        t.ScrollToEnd()
                     Catch ex As Exception
                         Control.ReportSubError(textBoxName, "AppendLine", ex)
                     End Try
@@ -296,6 +318,7 @@ Namespace WinForms
                         Else
                             t.AppendText(lines.AsString() & vbCrLf)
                         End If
+                        t.ScrollToEnd()
 
                     Catch ex As Exception
                         Control.ReportSubError(textBoxName, "AppendLines", ex)

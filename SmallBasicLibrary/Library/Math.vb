@@ -212,6 +212,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function SquareRoot(number As Primitive) As Primitive
+            If Not number.IsNumber OrElse number < 0 Then Return ""
             Return DoubleToDecimal(System.Math.Sqrt(number))
         End Function
 
@@ -359,11 +360,22 @@ Namespace Library
         ''' <summary>
         ''' Converts the given decimal number to its hexadecimal representaion.
         ''' </summary>
-        ''' <param name="decimal">The decimal number</param>
-        ''' <returns>the hexadecimal representaion of the number</returns>
+        ''' <param name="decimal">The decimal number whose hexadecimal value is required.</param>
+        ''' <returns>A string that represnts the hexadecimal value the number.</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Hex([decimal] As Primitive) As Primitive
             Return Conversion.Hex([decimal])
+        End Function
+
+        ''' <summary>
+        ''' Converts the given hexadecimal number to a decimal number. 
+        ''' You can use the Math.Hex method to convert a decimal number to a hexadecimal number.
+        ''' </summary>
+        ''' <param name="hex">The hexadecimal number whose decimal value is required. This argument can be omitted if you call this method as an extension method (with the name ToDeciaml) of a numeric or string variables, because hexa numbrs can be a pure digital numbers like 10 which is the hexa represntaion of 16 in the decimal system, or it can contain letters from A to F which makes it a string.</param>
+        ''' <returns>The decimal value the hexa number if it is valid, or an empty string otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function [Decimal](hex As Primitive) As Primitive
+            Return Convert.ToInt32(hex, 16)
         End Function
 
     End Class

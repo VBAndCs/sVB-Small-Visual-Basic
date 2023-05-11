@@ -61,7 +61,6 @@ Friend Class DsnResizeThumb
             End If
         End If
 
-
         Select Case VerticalAlignment
             Case VerticalAlignment.Bottom
                 deltaVertical = Math.Min(-e.VerticalChange, Dsn.DesignerCanvas.ActualHeight - 150)

@@ -143,7 +143,12 @@ Namespace Microsoft.SmallVisualBasic
             End If
         End Sub
 
-        Private Sub AnalyzeMethodCallExpression(methodCall As MethodCallExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
+        Private Sub AnalyzeMethodCallExpression(
+                    methodCall As MethodCallExpression,
+                    leaveValueInStack As Boolean,
+                    mustBeAssignable As Boolean
+            )
+
             NoteMethodCallReference(methodCall, leaveValueInStack, mustBeAssignable)
 
             If methodCall.TypeName.Type = TokenType.Illegal Then ' Function Call
@@ -159,7 +164,7 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             For Each argument In methodCall.Arguments
-                AnalyzeExpression(argument, leaveValueInStack, mustBeAssignable)
+                AnalyzeExpression(argument, True, mustBeAssignable)
             Next
         End Sub
 
@@ -450,15 +455,28 @@ Namespace Microsoft.SmallVisualBasic
                     End Try
 
                     If paramCount <> methodExpression.Arguments.Count Then
-                        _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("ArgumentNumberMismatch"), typeNameInfo.Text, methodName.Text, methodExpression.Arguments.Count, paramCount))
+                        _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture,
+                                 ResourceHelper.GetString("ArgumentNumberMismatch"),
+                                 typeNameInfo.Text,
+                                 methodName.Text,
+                                 methodExpression.Arguments.Count,
+                                 paramCount)
+                        )
                     End If
 
                     If leaveValueInStack AndAlso methodInfo.ReturnType Is GetType(Void) Then
-                        Me._parser.AddError(methodName, String.Format(System.Globalization.CultureInfo.CurrentUICulture, ResourceHelper.GetString("ReturnValueExpectedFromVoidMethod"),
-                                New Object() {typeNameInfo.Text, methodName.Text}))
+                        _parser.AddError(methodName, String.Format(
+                                CultureInfo.CurrentUICulture,
+                                ResourceHelper.GetString("ReturnValueExpectedFromVoidMethod"),
+                                New Object() {typeNameInfo.Text, methodName.Text})
+                        )
                     End If
                 Else
-                    _parser.AddError(methodName, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("MethodNotFound"), New Object(1) {methodName.Text, typeNameInfo.Text}))
+                    _parser.AddError(methodName, String.Format(
+                            CultureInfo.CurrentUICulture,
+                            ResourceHelper.GetString("MethodNotFound"),
+                            New Object(1) {methodName.Text, typeNameInfo.Text})
+                    )
                 End If
             Else
                 _parser.AddError(typeNameInfo, String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("TypeNotFound"), New Object(0) {typeNameInfo.Text}))

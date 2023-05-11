@@ -22,7 +22,9 @@ Public Class OpenedPagesExplorer
     End Sub
 
     Protected Overrides Function OnCommit(newName As String) As Boolean
-        If Helper.FormNameExists(Designer, newName) Then
+        Dim msg = Helper.FormNameExists(Designer, newName)
+        If msg <> "" Then
+            MsgBox(msg)
             Return False
         End If
 

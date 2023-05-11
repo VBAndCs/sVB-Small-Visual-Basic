@@ -78,7 +78,7 @@
             <MenuItem Header="Diagram Appearance">
                 <MenuItem Header="Diagram Background" InputGestureText="F9" Click="DiagramBackgroundMenuItem_Click"  />
                 <MenuItem Header="Border Brush" InputGestureText="F3" Click="DiagramBorderBrushMenuItem_Click"  />
-                <MenuItem Header="Decrease Border Thickness" InputGestureText="F5" Click="DecreaseBorderThicknessMenuItem_Click"  />
+                <MenuItem Header="Decrease Border Thickness" InputGestureText="Shift+F6" Click="DecreaseBorderThicknessMenuItem_Click"  />
                 <MenuItem Header="Increase Border Thickness" InputGestureText="F6" Click="IicreaseBorderThicknessMenuItem_Click"  />
             </MenuItem>
             <MenuItem Header="Rotation &amp; Skew">

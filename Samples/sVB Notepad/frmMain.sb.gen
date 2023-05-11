@@ -3,7 +3,7 @@
 '    TxtEditor: TextBox
 '}
 
-Me = "FrmMain"
+Me = "frmmain"
 TxtEditor = "frmmain.txteditor"
 _path = Program.Directory + "\frmMain.xaml"
 FrmMain = Forms.LoadForm("FrmMain", _path)

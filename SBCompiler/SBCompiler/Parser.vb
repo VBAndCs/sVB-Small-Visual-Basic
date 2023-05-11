@@ -860,13 +860,13 @@ Namespace Microsoft.SmallVisualBasic
                 End If
 
                 items.Add(expression)
-                ExprExpected = False
+                exprExpected = False
 
                 If tokenEnum.IsEndOrComment Then Exit Do
 
                 Dim comma = tokenEnum.Current
                 If EatOptionalToken(tokenEnum, TokenType.Comma) Then
-                    ExprExpected = True
+                    exprExpected = True
                     If comma.Line = commaLine AndAlso (comma.Column = commaColumn OrElse comma.EndColumn = commaColumn) Then
                         If caller.HasValue Then
                             callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count)
@@ -1095,14 +1095,37 @@ Namespace Microsoft.SmallVisualBasic
                 If _SymbolTable.Subroutines.ContainsKey(funcName) Then
                     Dim subInfo = _SymbolTable.Subroutines(funcName)
                     If subInfo.Type = TokenType.Sub Then
-                        AddError(
-                            funcCall.MethodName,
-                            String.Format(
-                                    CultureInfo.CurrentUICulture,
-                                    ResourceHelper.GetString("SubroutineEventAssignment"),
-                                    funcCall.MethodName.Text
-                           ) & vbCrLf & "       Don't add `( )` after the sub name when used as an event handler"
-                       )
+                        Dim assignSt = TryCast(funcCall.Parent, AssignmentStatement)
+                        If assignSt IsNot Nothing Then
+                            Dim prop = TryCast(assignSt.LeftValue, PropertyExpression)
+                            If prop IsNot Nothing Then
+                                If prop.IsEvent Then
+                                    If assignSt.RightValue Is funcCall Then
+                                        AddError(
+                                            funcCall.MethodName,
+                                            "Don't add `( )` after the sub name when used as an event handler"
+                                        )
+                                    Else
+                                        AddError(
+                                            funcCall.MethodName,
+                                            "You can't use an expression as an event handler. Just use the sub name alone."
+                                        )
+                                    End If
+                                    Continue For
+                                End If
+                            ElseIf assignSt.RightValue Is funcCall Then
+                                AddError(funcCall.MethodName,
+                                     subInfo.Text & " is a subroutine and doesn't return any value." & vbCrLf &
+                                     String.Format(
+                                          CultureInfo.CurrentUICulture,
+                                          ResourceHelper.GetString("SubroutineEventAssignment"),
+                                          funcCall.MethodName.Text
+                                     )
+                                )
+                                Continue For
+                            End If
+                        End If
+                        AddError(funcCall.MethodName, subInfo.Text & " is a subroutine and doesn't return any value")
                     End If
                 End If
             Next
@@ -1377,9 +1400,9 @@ Namespace Microsoft.SmallVisualBasic
                         Case TokenType.Equals
                             Return primitive.EqualTo(primitive2)
                         Case TokenType.And
-                            Return Primitive.op_And(primitive, primitive2)
+                            Return primitive.op_And(primitive, primitive2)
                         Case TokenType.Or
-                            Return Primitive.op_Or(primitive, primitive2)
+                            Return primitive.op_Or(primitive, primitive2)
                         Case TokenType.LessThan
                             Return primitive.LessThan(primitive2)
                         Case TokenType.LessThanEqualTo

@@ -110,7 +110,6 @@ Public Class DiagramObject
         ReportMoveUndo()
     End Sub
 
-
     Private Sub DoMoveDiagram(HorizontalChange As Double, VerticalChange As Double, Optional IgnoreRotation As Boolean = False)
 
         Dim dragDelta As New Point(HorizontalChange, VerticalChange)

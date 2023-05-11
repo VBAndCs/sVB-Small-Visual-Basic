@@ -39,7 +39,7 @@
         Else
             Dim Control = TryCast(Element, Control)
             If Control IsNot Nothing Then
-                Dim t = Control.BorderThickness.Left
+                Dim t = Math.Round(Control.BorderThickness.Left, 1)
                 If Value < 0 AndAlso t = 0 Then Return
                 Dim OldState As New PropertyState(AddressOf DiagramObject.Diagrams(Element).AfterRestoreAction, Element, Control.BorderThicknessProperty)
                 Control.BorderThickness = New Thickness(t + Value)
@@ -70,6 +70,8 @@
             End If
             Return FixImageBrush(WpfDialogs.ColorDialog.Brush)
         End If
+
+        Cancelled = True
         Return Nothing
     End Function
 
@@ -121,7 +123,10 @@
 
         Dim OldState As New PropertyState(AddressOf DiagramObject.Diagrams(Element).AfterRestoreAction, Element, PropState.Keys.ToArray)
         For Each Pair In PropState
-            Element.SetValue(Pair.Key, Helper.Clone(Pair.Value.NewValue))
+            Dim oldValue = Pair.Value.OldValue
+            Dim newValue = Pair.Value.NewValue
+            If oldValue Is newValue OrElse oldValue.Equals(newValue) Then Continue For
+            Element.SetValue(Pair.Key, Helper.Clone(newValue))
         Next
 
         Dim Pnl = Helper.GetDiagramPanel(Element)
@@ -131,6 +136,8 @@
             Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue), False)
         End If
     End Sub
+
+    Friend Shared Cancelled As Boolean = False
 
     Shared Sub Skew(Element As FrameworkElement)
         Dim WndSkew As New WndSkew
@@ -152,6 +159,8 @@
             If OldState.HasChanges Then
                 Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
             End If
+        Else
+            Cancelled = True
         End If
     End Sub
 
@@ -178,6 +187,8 @@
             If OldState.HasChanges Then
                 Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
             End If
+        Else
+            Cancelled = True
         End If
     End Sub
 

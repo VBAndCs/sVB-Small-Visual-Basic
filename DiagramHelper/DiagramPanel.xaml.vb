@@ -150,6 +150,11 @@ Public Class DiagramPanel
     End Sub
 
     Sub ApplyLastChangeToSelected()
+        If Commands.Cancelled Then
+            Commands.Cancelled = False
+            Return
+        End If
+
         Dim Unit = Dsn.UndoStack.Peek
         If Unit Is Nothing Then Return
         Dim PropState = TryCast(Unit(0), PropertyState)
@@ -158,10 +163,17 @@ Public Class DiagramPanel
         For Each obj As FrameworkElement In Dsn.SelectedItems
             If obj Is Diagram Then Continue For
 
-            Dim NewPropState As New PropertyState(obj, PropState.Keys.ToArray)
+            Dim NewPropState As New PropertyState(
+                    obj, PropState.Keys.ToArray)
+
             For Each pair In PropState
-                obj.SetValue(pair.Key, Helper.Clone(pair.Value.NewValue))
+                Dim oldValue = pair.Value.OldValue
+                Dim newValue = pair.Value.NewValue
+                If oldValue IsNot newValue AndAlso Not oldValue.Equals(newValue) Then
+                    obj.SetValue(pair.Key, Helper.Clone(pair.Value.NewValue))
+                End If
             Next
+
             If NewPropState.HasChanges Then Unit.Add(NewPropState.SetNewValue())
         Next
     End Sub
@@ -173,7 +185,12 @@ Public Class DiagramPanel
         If Dsn.SelectionBorder?.Visibility = Windows.Visibility.Visible Then Return
 
         FocusRectangle.StrokeThickness = 2
-        Me.IsSelected = True
+        If Dsn.IsReloading Then
+            Dsn.IsReloading = False
+        Else
+            Me.IsSelected = True
+        End If
+
         Dsn.ScrollIntoView(Diagram)
     End Sub
 
@@ -222,12 +239,13 @@ Public Class DiagramPanel
                 Commands.ApplyLastChangeTo(Diagram)
                 ApplyLastChangeToSelected()
                 e.Handled = True
-            Case Key.F5
-                Commands.IncreaseBorderThickness(Diagram, -0.1)
-                ApplyLastChangeToSelected()
-                e.Handled = True
             Case Key.F6
-                Commands.IncreaseBorderThickness(Diagram, 0.1)
+                If Keyboard.Modifiers = ModifierKeys.Shift Then
+                    Commands.IncreaseBorderThickness(Diagram, -0.1)
+                Else
+                    Commands.IncreaseBorderThickness(Diagram, 0.1)
+                End If
+
                 ApplyLastChangeToSelected()
                 e.Handled = True
             Case Key.F7

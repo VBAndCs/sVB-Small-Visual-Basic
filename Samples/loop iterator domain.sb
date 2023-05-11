@@ -4,24 +4,24 @@ X = {
    "3. Third item"
 }
 
-' I is global
+' I is a global variable
 For I = 1 To 3
    TextWindow.WriteLine(X[I])
-   Test()
+   WriteSubItems()
 Next
 
 
 '------------------------------------------------
-Sub Test()
+Sub WriteSubItems()
    y = {
       "a) First subItem",
       "b) second subItem",
       "c) third subItem"
    }
    
-   ' i is local
+   ' i is a local variable
+   ' and it hides the global variable with the sam name (I)
    For i = 1 To 3
       TextWindow.WriteLine("   " + y[i])
    Next
-   
 EndSub

@@ -2,12 +2,12 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:c="http://schemas.ncore.com/wpf/xaml/WpfDialogs" 
-    Title="Skew Trnasform" Width="500" x:Name="Page"
+    Title="Page Size" Width="500" x:Name="Page"
         SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
 
     <StackPanel Margin="5">
         <TextBlock TextWrapping="Wrap" >
-            Note: Width and Hieght are in Cm.
+            Note that width and hieght are in centimeters.
         </TextBlock>        
         <Border BorderBrush="Black" BorderThickness="1" Margin="5,15,5,5">
             <Grid Margin="0,10" >

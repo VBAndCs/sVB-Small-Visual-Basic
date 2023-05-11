@@ -563,35 +563,21 @@ Namespace Library
             End If
 
             If p1.IsArray Then
-                If p2.IsArray Then
-                    Dim map1 = p1._arrayMap
-                    Dim map2 = p2._arrayMap
-                    Dim n = map1.Count
+                If Not p2.IsArray Then Return False
+                Dim map1 = p1._arrayMap
+                Dim map2 = p2._arrayMap
+                Dim n = map1.Count
+                If n <> map2.Count Then Return False
 
-                    If n = map2.Count Then
-                        Dim ids1 = map1.Keys
-                        Dim ids2 = map2.Keys
+                Dim ids1 = map1.Keys
+                Dim ids2 = map2.Keys
 
-                        For i = 0 To n - 1
-                            Dim id1 = ids1(i).ToString().ToLower()
-                            Dim id2 = ids2(i).ToString().ToLower()
-
-                            If id1 = id2 Then
-                                Dim v1 = map1(ids1(i))
-                                Dim v2 = map2(ids2(i))
-                                If Not AreEqual(v1, v2) Then Return False
-                            Else
-                                Return False
-                            End If
-                        Next
-                        Return True
-                    Else
-                        Return False
-                    End If
-
-                Else
-                    Return False
-                End If
+                For i = 0 To n - 1
+                    Dim key = ids1(i)
+                    If Not ids2.Contains(key) Then Return False
+                    If Not AreEqual(map1(key), map2(key)) Then Return False
+                Next
+                Return True
 
             ElseIf Array.IsArray(p2) Then
                 Return False

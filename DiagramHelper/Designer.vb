@@ -188,6 +188,7 @@ Public Class Designer
 
     Public Function ChangeFormName(name As String) As Boolean
         If name = "" Then Return False
+        If CurrentPage Is Nothing OrElse Not Pages.ContainsKey(CurrentPage.PageKey) Then Return False
 
         Dim newName = name.ToLower()
         If Me.Name.ToLower() <> newName Then
@@ -1303,6 +1304,7 @@ Public Class Designer
                 )
             Else
                 DarwDiagram(SelectedToolBoxItem, R.TopLeft, R.Width, R.Height)
+                SelectedToolBoxItem.IsSelected = False
             End If
         End If
 
@@ -1372,6 +1374,17 @@ Public Class Designer
     Public Function GetControlText(Optional control As UIElement = Nothing) As String
         If control Is Nothing Then control = Me.SelectedItem
 
+        Dim listControl = TryCast(control, ItemsControl)
+        If listControl IsNot Nothing Then
+            If listControl.Items.Count = 0 Then Return ""
+
+            Dim text = ""
+            For Each item In listControl.Items
+                text += item + vbCrLf
+            Next
+            Return text.TrimEnd({ChrW(10), ChrW(13)})
+        End If
+
         Try
             Return CObj(control).Text
         Catch
@@ -1410,12 +1423,18 @@ Public Class Designer
             Automation.AutomationProperties.SetHelpText(Me, value)
             UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue()))
 
-        Else
+        ElseIf Me.Items.Count > controlIndex Then
             SetControlText(Me.Items(controlIndex), value, True, True)
         End If
     End Sub
 
-    Friend Sub SetControlText(control As UIElement, value As String, Optional trySetText As Boolean = True, Optional reportChanges As Boolean = False)
+    Friend Sub SetControlText(
+                      control As UIElement,
+                      value As String,
+                      Optional trySetText As Boolean = True,
+                      Optional reportChanges As Boolean = False
+               )
+
         If control Is Nothing Then control = Me.SelectedItem
 
         Dim txt = GetControlText(control)
@@ -1436,11 +1455,19 @@ Public Class Designer
         End If
 
         Dim contentControl = TryCast(control, ContentControl)
+        Dim listControl = TryCast(control, ItemsControl)
+
         If contentControl IsNot Nothing Then
             contentControl.Content = New TextBlock() With {
                 .Text = value,
                 .TextWrapping = TextWrapping.Wrap
             }
+
+        ElseIf listControl IsNot Nothing Then
+            listControl.Items.Clear()
+            For Each item In value.Split({ChrW(10), ChrW(13)}, StringSplitOptions.RemoveEmptyEntries)
+                listControl.Items.Add(item)
+            Next
 
         ElseIf trySetText Then
             Try
@@ -1468,6 +1495,7 @@ Public Class Designer
 
     Dim ExitChange As Boolean = False
     Friend MinZIndex As Integer
+    Public IsReloading As Boolean = False
 
 #Region "Left Attached Property"
     <TypeConverter(GetType(LengthConverter))>

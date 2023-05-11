@@ -384,25 +384,16 @@ Function Test_SetItemAt()
    a["Name"] = "Adam"
    a!Age = 15
    
+   a.SetItemAt(2, 20)
+   a.SetItemAt(4, "Ali")
+   a.SetItemAt(1, 10)
+   a.SetItemAt(-1, 0)
+   a.SetItemAt(7, 12)
+   a.SetItemAt(6, 10)
+   
    Return UnitTest.AssertEqual(
-      {
-         Text.ToStr(a.SetItemAt(2, 20)),
-         Text.ToStr(a.SetItemAt(4, "Ali")),
-         Text.ToStr(a.SetItemAt(1, 10)),
-         Text.ToStr(a.SetItemAt(-1, 0)),
-         Text.ToStr(a.SetItemAt(7, 12)),
-         Text.ToStr(a.SetItemAt(6, 20)),
-         Text.ToStr(Array.SetItemAt({}, 1, 10))
-      },
-      {
-         "{[1]=1, [2]=20, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
-         "{[1]=1, [2]=2, [3]=3, [4]=Ali, [Name]=Adam, [Age]=15}",
-         "{[1]=10, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
-         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
-         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=15}",
-         "{[1]=1, [2]=2, [3]=3, [4]=Adam, [Name]=Adam, [Age]=20}",
-         "{}"
-      },
+      a.ToStr(),
+      "{[1]=10, [2]=20, [3]=3, [4]=Ali, [Name]=Adam, [Age]=10}",
       "Array.SetItemAt"
    )
 EndFunction

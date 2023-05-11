@@ -266,6 +266,16 @@ Namespace WinForms
 
 
         ''' <summary>
+        ''' Gets the character that crossponds to the current Unicode value.
+        ''' </summary>
+        ''' <returns>the character of the current Unicode value</returns>
+        <ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function ToChar(unicode As Primitive) As Primitive
+            Return Chars.GetCharacter(unicode)
+        End Function
+
+        ''' <summary>
         ''' Converts the current decimal number to its hexadecimal representaion.
         ''' </summary>
         ''' <returns>the hexadecimal representaion of the number</returns>
@@ -273,6 +283,17 @@ Namespace WinForms
         <ExProperty>
         Public Shared Function GetHex([decimal] As Primitive) As Primitive
             Return Hex([decimal])
+        End Function
+
+        ''' <summary>
+        ''' Converts the current hexadecimal number to a decimal number. 
+        ''' You can use the Math.Hex method to convert a decimal number to a hexadecimal number.
+        ''' </summary>
+        ''' <returns>The decimal value the hexa number if it is valid, or an empty string otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        <ExMethod>
+        Public Shared Function ToDecimal(hex As Primitive) As Primitive
+            Return Convert.ToInt32(hex, 16)
         End Function
     End Class
 End Namespace

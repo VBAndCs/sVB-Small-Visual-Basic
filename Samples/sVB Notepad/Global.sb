@@ -1,37 +1,32 @@
 
 FontNames = Desktop.FontNames
 
-Ops!FontName = "Segoe UI"
-Ops!FontSize = 20
-Ops!Bold = False
-Ops!Italic = False
-Ops!Underlined = False
-Ops!ForeColor = Colors.Black
-Ops!BackColor = Colors.White
-Ops!FrameColor = Colors.SystemControl
-Ops!RightToLeft = False
-Ops!MultiLine = True
-Ops!WordWrap = True
 
-LoadSettings()
+_File = File.GetSettingsFilePath()
+_Settings = File.ReadLines(_File)
+If _Settings = "" Then
+   Ops!FontName = "Segoe UI"
+   Ops!FontSize = 20
+   Ops!Bold = False
+   Ops!Italic = False
+   Ops!Underlined = False
+   Ops!ForeColor = Colors.Black
+   Ops!BackColor = Colors.White
+   Ops!FrameColor = Colors.SystemControl
+   Ops!RightToLeft = False
+   Ops!MultiLine = True
+   Ops!WordWrap = True
+Else
+   Ops!FontName = _Settings[1]
+   Ops!FontSize = _Settings[2]
+   Ops!Bold = _Settings[3]
+   Ops!Italic = _Settings[4]
+   Ops!Underlined = _Settings[5]
+   Ops!ForeColor = _Settings[6]
+   Ops!BackColor = _Settings[7]
+   Ops!FrameColor = _Settings[8]
+   Ops!RightToLeft = _Settings[9]
+   Ops!MultiLine = _Settings[10]
+   Ops!WordWrap = _Settings[11]
+EndIf
 
-
-'------------------------------------------------
-Sub LoadSettings()
-   _file = File.GetSettingsFilePath()
-   settings = File.ReadLines(_file)
-   If settings <> "" Then
-      Ops!FontName = settings[1]
-      Ops!FontSize = settings[2]
-      Ops!Bold = settings[3]
-      Ops!Italic = settings[4]
-      Ops!Underlined = settings[5]
-      Ops!ForeColor = settings[6]
-      Ops!BackColor = settings[7]
-      Ops!FrameColor = settings[8]
-      Ops!RightToLeft = settings[9]
-      Ops!MultiLine = settings[10]
-      Ops!WordWrap = settings[11]
-   EndIf
-   
-EndSub
