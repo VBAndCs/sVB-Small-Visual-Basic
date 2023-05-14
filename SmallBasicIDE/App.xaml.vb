@@ -12,6 +12,9 @@ Namespace Microsoft.SmallVisualBasic
         Inherits Application
 
         Public Shared GlobalDomain As ComponentDomain
+        Public Shared ReadOnly SvbDataFolder As String = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) & "\SmallVisualBasic"
+        Public Shared ReadOnly SvbTempFolder As String = Path.Combine(SvbDataFolder, "Temp")
+        Public Shared ReadOnly SvbUnsavedFolder As String = Path.Combine(SvbDataFolder, "Unsaved")
 
         Public Shared Property FlowDirection As FlowDirection
 
@@ -62,6 +65,7 @@ Namespace Microsoft.SmallVisualBasic
             AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf CatchAppExceptions
 
             Me.MainWindow = GetMainWindow()
+            Splash.ShowSplash()
             Me.MainWindow.Show()
             MyBase.OnStartup(e)
         End Sub
@@ -77,22 +81,28 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub CreateComponentDomain()
             LoaderXamlServices.EnsureActivatorsInitialized()
-            Dim svbDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) & "\SmallVisualBasic"
+            If Not Directory.Exists(svbDataFolder) Then
+                Directory.CreateDirectory(svbDataFolder)
+            End If
 
-            If Not Directory.Exists(svbDir) Then
-                Directory.CreateDirectory(svbDir)
+            If Not Directory.Exists(SvbTempFolder) Then
+                Directory.CreateDirectory(SvbTempFolder)
+            End If
+
+            If Not Directory.Exists(SvbUnsavedFolder) Then
+                Directory.CreateDirectory(SvbUnsavedFolder)
             End If
 
             Dim catalogSourcesAggregator As New CatalogSourcesAggregator()
             catalogSourcesAggregator.CatalogSources = New List(Of CatalogSource) From {
                     New DirectoryCatalogSource With {
                     .DirectoryPath = ".",
-                    .CacheFilePath = Path.Combine(svbDir, "sVB.exe.application.catalog"),
+                    .CacheFilePath = Path.Combine(svbDataFolder, "sVB.exe.application.catalog"),
                     .IsDynamic = False
                 },
                 New DirectoryCatalogSource With {
                     .DirectoryPath = "Settings",
-                    .CacheFilePath = Path.Combine(svbDir, "sVB.exe.settings.catalog"),
+                    .CacheFilePath = Path.Combine(svbDataFolder, "sVB.exe.settings.catalog"),
                     .IsDynamic = True
                 }
             }

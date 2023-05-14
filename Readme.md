@@ -1,28 +1,30 @@
-![sVB](https://github.com/VBAndCs/sVB-Small-Visual-Basic/assets/48354902/9e1ebcbf-212f-4578-8b67-b57551b80270)
+<p align="center">
+  <img src="https://github.com/VBAndCs/sVB-Small-Visual-Basic/assets/48354902/9e1ebcbf-212f-4578-8b67-b57551b80270"/>
+</p>
 
 # Contents
-* What is Small Visual Basic?
-* Download the language
-* sVB full refrence PDF book
-Try the samples
-* Using the sVB source code
-* Why do we need sVB?
-* It is also a Small Visual Basic .NET!
-* sVB for kids
-* Conclusions
+* [What is Small Visual Basic?](https://github.com/VBAndCs/sVB-Small-Visual-Basic#what-is-small-visual-basic)
+* [Download the language](https://github.com/VBAndCs/sVB-Small-Visual-Basic#download-the-language)
+* [sVB full reference PDF book](https://github.com/VBAndCs/sVB-Small-Visual-Basic#svb-full-reference-pdf-book)
+* [Try the samples](https://github.com/VBAndCs/sVB-Small-Visual-Basic#try-the-samples)
+* [Using the sVB source code](https://github.com/VBAndCs/sVB-Small-Visual-Basic#using-the-svb-source-code)
+* [Why do we need sVB?](https://github.com/VBAndCs/sVB-Small-Visual-Basic#why-do-we-need-svb)
+* [It is also a Small Visual Basic .NET!](https://github.com/VBAndCs/sVB-Small-Visual-Basic#it-is-also-a-small-visual-basic-net)
+* [sVB for kids](https://github.com/VBAndCs/sVB-Small-Visual-Basic#svb-for-kids)
+* [Conclusions](https://github.com/VBAndCs/sVB-Small-Visual-Basic#conclusions)
 
 
 # What is Small Visual Basic?
 Small Visual Basic (sVB) is an educational programming language, created by Eng. Mohammad Hamdy as an evolved version of Microsoft Small Basic (SB). It is meant to be easier and more powerful at the same time, to introduce programming basics to kids and beginners of any age, provided that they can use the English keyboard on the Windows operating system.
 
 # Download the language:
-Go to the [Releases page](https://github.com/VBAndCs/sVB-Small-Visual-Basic/releases/tag/v2.7), navigate to the latest version of sVB, expand the Assets list at the bottom of the page, and download the ZIP file.
+Go to the [Releases page](https://github.com/VBAndCs/sVB-Small-Visual-Basic/releases), navigate to the latest version of sVB, expand the Assets list at the bottom of the page, and download the ZIP file.
 Follow these instructions:
 1.	sVB needs [.NET framework 4.8](https://go.microsoft.com/fwlink/?LinkId=2085155). If you don't have it on your PC, download and install it.
 2.	Unzip the "sVB.zip" file. You will have a folder with the same name where you unzipped the file. Open the folder and double-click "sVB.exe".
 
-# sVB full refrence PDF book
-When you download sVB, you will find a `sVB docs.pdf`file in its directory. You can this file also in the root folder of the sVB repo.
+# sVB full reference PDF book
+When you download sVB, you will find a `sVB docs.pdf`file in its directory. You can [read this file also in the root folder of the sVB repo](https://github.com/VBAndCs/sVB-Small-Visual-Basic/blob/master/sVB%20Docs.pdf).
 This is a 750 pages books, that contains the full details about the sVB IDE, syntax, and class library with full examples and helpful notes about the projects you can find in the sVB samples folder.
 
 # Try the samples:
@@ -97,7 +99,7 @@ I tried some SB alternative IDEs, but they are either:
 This is why I asked my self: Why does SB have only two windows?
 Can't SB have a form designer and a simple syntax to program the controls?
 I actually asked for this on the SB repo on GitHub, but got no attention from the team, so, I decided to prove the concept myself.  
-I added a form designer to SB, which I built using a tool called "Diagram Helper" I created back in 2014 to design flow charts, but found it can be easily modified to work as a form designer. I also added a small WinForms library to SB and wrote a pre-compiler to lower the object syntax to the normal syntax that the SB compiler understands. Uisng this simple trick, I allowed using control names as objects to make the code shorter and easier.
+I added a form designer to SB, which I built using a tool called "Diagram Helper" I created back in 2014 to design flow charts, but found it can be easily modified to work as a form designer. I also added a small WinForms library to SB and wrote a pre-compiler to lower the object syntax to the normal syntax that the SB compiler understands. Using this simple trick, I allowed using control names as objects to make the code shorter and easier.
 So, I ended up with a Visual Small Basic which was too close to Visual Basic or in fact a small version of it, hence I decided to name it Small Visual Basic. 
  
 ![image](https://github.com/VBAndCs/sVB-Small-Visual-Basic/assets/48354902/8e3975ee-a5b3-4a4f-8cce-eb013fa2f5d6)
@@ -119,27 +121,24 @@ It is also as easy as Windows Forms, but also has some advanced WPF graphical fe
 Let's look a little deeper into that:
 
 # sVB and Small Basic:
-sVB is built on top Small Basic IDE, compiler and library. This means that sVB is a dynamic language, that uses the same syntax rules of Small Basic, which is mainly a Visual Basic syntax with Option Strict Off and Option Explicit Off.
+sVB is built on top Small Basic IDE, compiler and library.
 
 ![image](https://github.com/VBAndCs/sVB-Small-Visual-Basic/assets/48354902/830ea85b-adbc-4f12-b1c3-c4e9b3367937)
 
-There are only a few differences between SB and VB, such as:
-1.	sVB uses array[i] to index the array instead of array(i) in VB.
-2.	sVB array is actually a dictionary, so you can use string keys instead of numeric indexes, and this is why array indexes don't need to be continuous nor ordered, and can even be negative such as array[-1], because the compiler actually treats that as array["-1"].
-3.	The two keyword statements in VB (like For Each, End If, End While and End Sub) are combined into one word in sVB: (ForEach, EndIf, EndWhile and EndSub).
-4.	SB uses the EndFor and EndWhile keywords. They are still valid in sVB but it allows (and recommends) you to use the Next and Wend keywords instead, to be more consistent with VB.
-5.	sVB added the TextWindow.WriteLines method to allow you to directly output an array of items each at a line, which becomes very handy when used with the sVB array initializer:
-```VB
+In most cases, SB code works in sVB, but there are a few breaking changes that we will explain in the next paragraphs.
+sVB also introduces some enhancements in to SB, such as:
+1.	SB uses the EndFor and EndWhile keywords. They are still valid in sVB but it allows (and recommends) you to use the Next and Wend keywords instead, to be more consistent with VB.
+2.	sVB added many methods to the SB types like Array, Text and File, and made changes to a few of the old methods like making the file methods return True or False instead of "SUCCESS" or "FAILED". You can learn about this in the sVB Library part of this book.
+3.	sVB added the TextWindow.WriteLines method to allow you to directly output an array of items each at a line, which becomes very handy when used with the sVB array initializer:
 TextWindow.WriteLines({
    "Line1",
    "Line2",
    "Line3"
 })
-```
-
-6.	sVB adds many enhancements to the Graphics Window. For example, in SB you can add only a Button and a TextBox on the graphics window, but in sVB you can add all the controls you see in the sVB toolbox by the using the Controls.AddX methods like Controls.AddCheckBox, Controls.AddComboBox, Controls.AddDatePicker, … etc. These methods return the keys of the added controls, where sVB can deal with them as objects of these controls types, so it is easy to access their properties and methods and add handlers for their various events (See examples provided with each method).
-You can also create a composite shape using the geometric path and draw it on the graphics window by calling the Shapes.AddGeometricPath method.
-And since the graphics window is in fact a normal form like any other form you add to your sVB project, you can use the GraphicsWindow.AsForm method to get the form object that represents it, so you can access more of its properties and methods.
+4.	sVB adds many enhancements to the Graphics Window. For example:
+a.	In SB you can add only a Button and a TextBox on the graphics window, but in sVB you can add all the controls you see in the sVB toolbox by the using the Controls.AddX methods like Controls.AddCheckBox, Controls.AddComboBox, Controls.AddDatePicker, … etc. These methods return the keys of the added controls, where sVB can deal with them as objects of these controls types, so it is easy to access their properties and methods and add handlers for their various events (See examples provided with each method).
+b.	You can create a composite shape using the geometric path and draw it on the graphics window by calling the Shapes.AddGeometricPath method.
+c.	Since the graphics window is in fact a normal form like any other form you add to your sVB project, you can use the GraphicsWindow.AsForm method to get the form object that represents it, so you can access more of its properties and methods.
 
 # sVB and Visual Basic:
 sVB has many enhancements over SB to make writing apps fast and easy with little code. It brings back the joy and excitement of using vb6 to write RAD applications.
@@ -158,7 +157,13 @@ Sub Button1_OnClick()
 EndSub
 ```
 
-sVB also has some VB syntax features like:
+Like SB, sVB is a dynamic language, that uses the same syntax rules of Visual Basic syntax when you use these two statements at the top of the VB code file:
+```VB
+Option Strict Off 
+Option Explicit Off
+```
+
+sVB also has some other VB syntax features that are not supported by SB, like:
 1.	sVB uses control names as objects to access their properties and methods directly using the dot, like:
 TextBox1.Text = "Hello sVB!"
 TextBox1 is still a dynamic variable that contains the string key of the control (which is "Form1.TextBox1"), and you can read it, or change it to any value at any time (which of course is not recommended), but the editor auto-completion and intellisense make you feel it is an object, and the sVB compiler translates this object-like syntax to the normal SB syntax like:
@@ -167,17 +172,22 @@ TextBox.SetText(TextBox1, "Hello sVB!")
 ```
 
 2.	sVB allows you to use Me to refer the current form.
-3.	sVB allowsypu to use the line continuity symbol _ to split a long command line at any position you want (except arrount the dot). For example:
+3.	sVB allows you to use the line continuity symbol _ to split a long command line at any position you want (except around the dot). For example:
 ```VB
 TextBox1.Text = "Hello sVB! " + _
     "This is my first program."
 ```
 
-4.	In SB, all variables are global, which means that the whole file has only one variable scope. sVB acts like VB, where variables defined in a subroutine are local to it, while variables defined at the file level (outside subroutines and fuunctions) are global to the whole file.
+4.	In SB, all variables are global, which means that the whole file has only one variable scope. sVB acts like VB, where variables defined in a subroutine are local to it, while variables defined at the file level (outside subroutines and functions) are global to the whole file.
 5.	sVB allows you to declare Functions that return values.
 6.	sVB allows subroutines and functions to declare parameters.
 7.	sVB has a ForEach statement to loop through arrays. It is similar to VB For Each.
 8.	sVB uses ExitLoop to exit For and While loops, similar to Exit For and Exit While in VB.
+
+But note that there are a few syntax differences between SB/sVB and VB, such as:
+1.	sVB uses array[i] to index the array instead of array(i) in VB.
+2.	sVB array is actually a dictionary, so you can use string keys instead of numeric indexes, and this is why array indexes don't need to be continuous nor ordered, and can even be negative such as array[-1], because the compiler actually treats that as array["-1"].
+3.	The two keyword statements in VB (like For Each, End If, End While and End Sub) are combined into one word in sVB: (ForEach, EndIf, EndWhile and EndSub).
 
 # sVB and Visual Basic .NET:
 sVB in fact can be called sVB.NET, because it supports some VB.NET syntax features like:
@@ -197,7 +207,7 @@ a = {1, 2, 3, 4}
 Note that the above literal uses the date format of the English culture.
 Date literals are more flexile in sVB than in VB.NET, since sVB supports any valid English culture date format that can be parsed with the .NET Framework DateTime.Parse method, like #31 Jan 2023#. 
 sVB even has a time span literal like #+3:15:00# which is not supported by VB.NET!
-4.	sVB uses some famouse .NET predefined enums like Colors and Keys with auto-completion support:
+4.	sVB uses some famous .NET predefined enums like Colors and Keys with auto-completion support:
 ```VB
 me.BackColor = Colors.AliceBlue
 ```
@@ -271,7 +281,7 @@ In fact sVB can be too easy for kids. All you need is to prepare some attractive
 
 You can start with codeless apps, use the form designer to display some shapes and images, use the color dialog to change their back colors. In the next step you can add some buttons to the app, each with a single code line that can animate the shape location, color or transparency.
 In the next step you can introduce variables, but avoid If statements and loops until the kid gets comfortable with the language.
-In fact I published a course to teach sVB for kids on YouTube, but it is in Arabic. It contains about 60 videos (10 minutes in average), and I think it is easy for developers and teachers to view them even they don't understand Arabic, as the visual design and the little sVB code used, with the aid of this book, will be easy to comprehend, so, you can get the idea and build upon. 
+In fact I published [a course to teach sVB for kids on YouTube](https://www.youtube.com/@smallvisualbasic), but it is in Arabic. It contains about 60 videos (10 minutes in average), and I think it is easy for developers and teachers to view them even they don't understand Arabic, as the visual design and the little sVB code used, with the aid of this book, will be easy to comprehend, so, you can get the idea and build upon. 
 I encourage youtubers to introduce such a course in English and other languages, and they are free to reuse any ideas from my course without worrying about copyrights.
 
 # Conclusions:

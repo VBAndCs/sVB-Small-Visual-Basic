@@ -78,6 +78,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Documents\OpenedDocsExplorer.vb" />
+    <Compile Include="Splash\Splash.xaml.vb">
+      <DependentUpon>Splash.xaml</DependentUpon>
+    </Compile>
     <Compile Include="sVB.vb" />
     <Compile Include="Common\GetCurrentVersionCompletedEventArgs.vb" />
     <Compile Include="Common\GetCurrentVersionCompletedEventHandler.vb" />
@@ -233,6 +236,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Splash\Splash.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Utility\HelpPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -302,6 +309,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\NewForm.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Splash\smallbasic.ico" />
+    <Resource Include="Splash\splash.png" />
+    <Resource Include="Splash\sVB.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

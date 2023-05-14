@@ -69,9 +69,12 @@ Class sVB
 
     Public Shared Function GetOutputFileName(filePath As String, isSingleCodeFile As Boolean) As String
         If filePath = "" Then
-            Dim tempFileName = IO.Path.GetTempFileName()
-            IO.File.Move(tempFileName, tempFileName & ".exe")
-            Return tempFileName & ".exe"
+            Dim tempFolder = Now.ToString("yy-MM-dd-HH-mm-ss", New Globalization.CultureInfo("en-US"))
+            tempFolder = IO.Path.Combine(App.SvbTempFolder, tempFolder)
+            If Not IO.Directory.Exists(tempFolder) Then
+                IO.Directory.CreateDirectory(tempFolder)
+            End If
+            Return IO.Path.Combine(tempFolder, "untitled.exe").ToLower()
         End If
 
         Dim docDirectory = IO.Path.GetDirectoryName(filePath)

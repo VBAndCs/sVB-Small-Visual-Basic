@@ -751,15 +751,15 @@ Namespace Microsoft.SmallVisualBasic
                             Else
                                 doc = OpenDocIfNot(sbCodeFile)
                                 Call New RunAction(
-                                Sub()
-                                    doc.ShowErrors(errors)
-                                    tabCode.IsSelected = True
-                                End Sub
-                            ).After(20)
+                                    Sub()
+                                        doc.ShowErrors(errors)
+                                        tabCode.IsSelected = True
+                                    End Sub
+                                ).After(20)
 
                                 Call New RunAction(
-                                Sub() doc.EditorControl.TextView.Caret.EnsureVisible()
-                            ).After(500)
+                                    Sub() doc.EditorControl.TextView.Caret.EnsureVisible()
+                                ).After(500)
 
                                 Mouse.OverrideCursor = Nothing
                                 Return
@@ -801,14 +801,6 @@ Namespace Microsoft.SmallVisualBasic
                              Function()
                                  Me.programRunningOverlay.Visibility = Visibility.Hidden
                                  currentProgramProcess = Nothing
-
-                                 If doc.File = "" Then
-                                     Try
-                                         File.Delete(outputFileName)
-                                     Catch
-                                     End Try
-                                 End If
-
                                  doc.Focus()
                                  Return True
                              End Function,
@@ -1007,12 +999,8 @@ Namespace Microsoft.SmallVisualBasic
         Private Function GetProjectPath() As String
             If tempProjectPath <> "" Then Return tempProjectPath
 
-            Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
-            Dim tmpPath = Path.Combine(appDir, "UnSaved")
-            If Not IO.Directory.Exists(tmpPath) Then IO.Directory.CreateDirectory(tmpPath)
-
-            Dim projectName = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss")
-            tempProjectPath = Path.Combine(tmpPath, projectName).ToLower()
+            Dim projectName = Now.ToString("yy-MM-dd-HH-mm-ss", New CultureInfo("en-US"))
+            tempProjectPath = Path.Combine(App.SvbUnsavedFolder, projectName).ToLower()
             DiagramHelper.Designer.TempProjectPath = tempProjectPath
             Return tempProjectPath
         End Function
@@ -1115,23 +1103,27 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
-            Dim appDir = Path.GetDirectoryName(Environment.GetCommandLineArgs()(0))
-            Dim UnSaved = Path.Combine(appDir, "UnSaved")
-            For Each directory In IO.Directory.GetDirectories(UnSaved)
+            DeleteTempProjects(App.SvbTempFolder)
+            DeleteTempProjects(App.SvbUnsavedFolder)
+        End Sub
+
+        Sub DeleteTempProjects(tempDir As String)
+            For Each directory In IO.Directory.GetDirectories(tempDir)
                 Try
                     Dim d = Date.ParseExact(
                             IO.Path.GetFileNameWithoutExtension(directory),
                             "yy-MM-dd-HH-mm-ss",
-                            New Globalization.CultureInfo("Ar-eg")
+                            New CultureInfo("en-US")
                     )
+
                     If (Date.Now - d).TotalDays > 10 Then
                         Global.My.Computer.FileSystem.DeleteDirectory(directory, FileIO.DeleteDirectoryOption.DeleteAllContents)
                     End If
+
                 Catch
                 End Try
             Next
         End Sub
-
 
         Private Sub AddEventDefaultHandler(controlName As String)
             tabCode.IsSelected = True
