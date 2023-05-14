@@ -18,13 +18,16 @@
 Small Visual Basic (sVB) is an educational programming language, created by Eng. Mohammad Hamdy as an evolved version of Microsoft Small Basic (SB). It is meant to be easier and more powerful at the same time, to introduce programming basics to kids and beginners of any age, provided that they can use the English keyboard on the Windows operating system.
 
 # Download the language:
-Go to the [Releases page](https://github.com/VBAndCs/sVB-Small-Visual-Basic/releases), navigate to the latest version of sVB, expand the Assets list at the bottom of the page, and download the ZIP file.
-Follow these instructions:
+Starting from v2.8.1, sVB has an installer, that creates a startup menu and desktop shortcuts for sVB and its book.
+You can download the installer from the [Releases page](https://github.com/VBAndCs/sVB-Small-Visual-Basic/releases) or from [visualstudio marketplace](https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller)
+To install sVB, Unzip the downlaoded file and run the setup.exe from the the sVB inataller folder. You can accept default options and click next in each setup page, and wait for the setup to finish. If your PC doesn't contain the .NET framework 4.8, thee estup will ask you to download it, so you should accept and install it.
+To get older versions, go to the [Releases page](https://github.com/VBAndCs/sVB-Small-Visual-Basic/releases), navigate to the version you want, expand the Assets list at the bottom of the page, and download the ZIP file, and follow these instructions:
 1.	sVB needs [.NET framework 4.8](https://go.microsoft.com/fwlink/?LinkId=2085155). If you don't have it on your PC, download and install it.
 2.	Unzip the "sVB.zip" file. You will have a folder with the same name where you unzipped the file. Open the folder and double-click "sVB.exe".
 
 # sVB full reference PDF book
-When you download sVB, you will find a `sVB docs.pdf`file in its directory. You can [read this file also in the root folder of the sVB repo](https://github.com/VBAndCs/sVB-Small-Visual-Basic/blob/master/sVB%20Docs.pdf).
+When you install sVB, you will find a `sVB docs.pdf`file in its directory, and you will find a shortcut for it in the Small Visual Basic folder in the start menu, and another one on the desktop.
+You can [read this file also in the root folder of the sVB repo](https://github.com/VBAndCs/sVB-Small-Visual-Basic/blob/master/sVB%20Docs.pdf).
 This is a 750 pages books, that contains the full details about the sVB IDE, syntax, and class library with full examples and helpful notes about the projects you can find in the sVB samples folder.
 
 # Try the samples:

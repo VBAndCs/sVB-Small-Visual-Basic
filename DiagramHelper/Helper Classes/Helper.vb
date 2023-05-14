@@ -156,7 +156,7 @@ Public Class Helper
     End Function
 
     Public Shared Function LoadXaml(xamlPath As String) As Object
-        Dim stream = IO.File.Open(xamlPath, IO.FileMode.Open)
+        Dim stream = IO.File.Open(xamlPath, IO.FileMode.Open, FileAccess.Read)
         Dim obj As Object = Nothing
         Try
             obj = XamlReader.Load(stream)
