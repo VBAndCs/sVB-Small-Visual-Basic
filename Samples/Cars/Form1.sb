@@ -25,7 +25,7 @@ A = 0.5
 
 MyCar = CreateCar(
    "MyCar",   		' name
-   255,        		' maxSpeed
+   300,        		' maxSpeed
    MyCarSpeed,          ' speed
    Me.Width / 2 - 25,  ' left
    Me.Height - 250,  ' top
@@ -48,13 +48,13 @@ Timer.Tick = Timer_Tick
 
 '---------------------------------------------------------------
 Function CreateCar(
-      name,  	' the name of the car
-      maxSpeed,
+      name,  	  ' #String: the name of the car
+      maxSpeed, '#double
       speed,
       left,	' x-pos of the car
       top,		' y-pos of the car
       image	' the path of the car image file
-   )
+   ) ' The car object
    
    car!MaxSpeed = maxSpeed
    car!Speed = speed
@@ -78,8 +78,7 @@ Sub CreateEnamyCars()
       maxSpeed = 120 + 10 * Math.GetRandomNumber(13)
       speed = Math.GetRandomNumber(maxSpeed)
       left = ScreenWidth / 13 * i
-      top = i * Math.GetRandomNumber(
-         ScreenHeight / 2)
+      top = i * Math.GetRandomNumber(ScreenHeight / 2)
       If Math.GetRandomNumber(2) = 1 Then
          top = -top
       EndIf
@@ -106,10 +105,10 @@ Sub MoveMyCar
    If StartMove Then
       myCarLabel = MyCar!Label
       If MoveDirection = Direction_Up Then
-         If MyCarSpeed < 256 - A Then
+         If MyCarSpeed < MyCar!MaxSpeed - A Then
             MyCarSpeed = MyCarSpeed + A
          Else
-            MyCarSpeed = 255
+            MyCarSpeed = MyCar!MaxSpeed
          EndIf
          Me.Text = MyCarSpeed
          
@@ -466,49 +465,41 @@ Function AvoidCollisions(n)
       car2Top = car2!Top
       car2Bottom = car2Top + car2Label.Height
       
+      car2Left = car2!Left
+      car2Right = car2Left + car2Label.Width
+      
+      If carLeft > car2Right Or carRight < car2Left Then
+         ContinueLoop
+      EndIf
+      
       If carTop >= car2Top And _
             carTop - car2Bottom <= rDisplacement Then
          ' SpeedUp collision
-         car2Left = car2!Left
-         car2Right = car2Left + car2Label.Width
          
-         colision = False
-         If carLeft <= car2Right Then
-            If carRight >= car2Left Or carLeft >= car2Left Then
-               colision = True
+         If carTop - car2Bottom < 5 Then
+            If oldSpeed = -1 Then
+               oldSpeed = carSpeed
             EndIf
             
+            carSpeed = Math.Max(0, car2Speed - 20)
          EndIf
          
-         If colision Then
-            If carTop - car2Bottom < 5 Then
-               If oldSpeed = -1 Then
-                  oldSpeed = carSpeed
-               EndIf
-               
-               carSpeed = Math.Max(0, car2Speed - 20)
-            EndIf
-            
-            l1 = carRight - car2Left + 10
-            l2 = car2Right - carLeft + 10
-            If (l1 < l2 And carLeft - l1 > 35) Or carRight + l2 >= ScreenWidth Then
-               car!XDisplacement = -l1
-            Else
-               car!XDisplacement = l2
-            EndIf
-            
-            car!OldSpeed = oldSpeed
-            car!Speed = carSpeed
-            Cars[n] = car
-            
-            Return True
+         l1 = carRight - car2Left + 10
+         l2 = car2Right - carLeft + 10
+         If (l1 < l2 And carLeft - l1 > 35) Or carRight + l2 >= ScreenWidth Then
+            car!XDisplacement = -l1
+         Else
+            car!XDisplacement = l2
          EndIf
          
+         car!OldSpeed = oldSpeed
+         car!Speed = carSpeed
+         Cars[n] = car
+         
+         Return True
       EndIf
       
-      'EndIf
    Next
-   
    
    
    x = Math.GetRandomNumber(100)

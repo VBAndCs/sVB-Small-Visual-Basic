@@ -445,3 +445,30 @@ Function Test_ToStr_Nested()
    
    
 EndFunction
+
+
+'------------------------------------------------
+Function Test_ArrayParsing()
+   x["names"] = "Adam;Yasser"
+   x["ages"] = "12;10"
+   result1 = "names=Adam\;Yasser;ages=12\;10;" = x
+   
+   y = {1, {"2;", "3\4"}, {";;", "\\"}, 5}
+   result2 = "1=1;2=1\=2\\\;\;2\=3\\\\4\;;3=1\=\\\;\\\;\;2\=\\\\\\\\\;;4=5;" = y
+   
+   Return UnitTest.AssertEqual(
+      {
+         x.ToStr(),
+         result1,
+         y.ToStr(),
+         result2
+      },
+      {
+         "{[names]=Adam;Yasser, [ages]=12;10}",
+         True,
+         "{1, {2;, 3\4}, {;;, \\}, 5}",
+         True
+      },
+      "ArrayParsing"
+   )
+EndFunction

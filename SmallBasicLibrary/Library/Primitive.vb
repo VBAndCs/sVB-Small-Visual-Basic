@@ -234,7 +234,9 @@ Namespace Library
 
             For i = 0 To arr.Count - 1
                 Dim item = arr(i)
-                If Not removeEmpty OrElse item <> "" Then _arrayMap(i + 1) = item
+                If Not removeEmpty OrElse item <> "" Then
+                    _arrayMap(i + 1) = item
+                End If
             Next
         End Sub
 
@@ -419,11 +421,9 @@ Namespace Library
             If _arrayMap?.Count > 0 Then Return
 
             _arrayMap = New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
-
             If IsEmpty Then Return
 
             Dim source = AsString().ToCharArray()
-
             Dim index As Integer = 0
             FillSubArray(_arrayMap, source, index)
         End Sub
@@ -776,11 +776,11 @@ Namespace Library
             For Each c As Char In value
                 Select Case c
                     Case "="c
-                        stringBuilder1.Append("=")
+                        stringBuilder1.Append("\=")
                     Case ";"c
                         stringBuilder1.Append("\;")
                     Case "\"c
-                        stringBuilder1.Append("\")
+                        stringBuilder1.Append("\\")
                     Case Else
                         stringBuilder1.Append(c)
                 End Select
@@ -790,34 +790,34 @@ Namespace Library
         End Function
 
         Private Shared Function Unescape(source As Char(), ByRef index As Integer) As String
-            Dim flag = False
-            Dim empty = True
             Dim length = source.Length
             Dim sb As New StringBuilder
 
             While index < length
                 Dim c As Char = source(index)
                 index += 1
-                If Not flag Then
-                    If c = "\"c Then
-                        flag = True
-                        Continue While
+                If c = "\"c Then
+                    If index < length Then
+                        Dim c2 = source(index)
+                        Select Case c2
+                            Case "\"c, "="c, ";"c
+                                sb.Append(c2)
+                                index += 1
+                                Continue While
+                        End Select
                     End If
 
-                    If c = "="c Then
-                        If empty Then Return Nothing
-                        Return sb.ToString()
-                    ElseIf c = ";"c Then
-                        Return sb.ToString()
-                    End If
-
-                ElseIf c = ";"c Then
-                    Return sb.ToString()
-                Else
-                    flag = False
+                    sb.Append(c)
+                    Continue While
                 End If
 
-                empty = False
+                If c = "="c Then
+                    If sb.Length = 0 Then Return Nothing
+                    Return sb.ToString()
+                ElseIf c = ";"c Then
+                    Return sb.ToString()
+                End If
+
                 sb.Append(c)
             End While
 
