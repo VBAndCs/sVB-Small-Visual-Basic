@@ -1306,7 +1306,7 @@ Namespace WinForms
 
         Private Shared Sub AngleChanged(d As DependencyObject, e As DependencyPropertyChangedEventArgs)
             Dim obj = CType(d, Wpf.Control)
-            App.BeginInvoke(
+            App.Invoke(
                  Sub()
                      Dim rotation = TryCast(obj.RenderTransform, RotateTransform)
                      If rotation Is Nothing Then
@@ -1330,7 +1330,7 @@ Namespace WinForms
         Public Shared Sub Rotate(controlName As Primitive, angle As Primitive)
             Try
                 Dim obj = GetControl(controlName)
-                App.BeginInvoke(Sub() SetAngle(obj, GetAngle(obj) + CDbl(angle)))
+                App.Invoke(Sub() SetAngle(obj, GetAngle(obj) + CDbl(angle)))
             Catch ex As Exception
                 ReportSubError(controlName, "Rotate", ex)
             End Try

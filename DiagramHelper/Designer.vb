@@ -1410,21 +1410,26 @@ Public Class Designer
 
     Public Sub SetControlText(controlIndex As Integer, value As String)
         If controlIndex = -1 Then
+            If value = _Text Then Return
+
             Automation.AutomationProperties.SetHelpText(Me, _Text)
             Dim OldState As New PropertyState(
-                    Sub()
-                        Me.SelectedIndex = -1
-                        _Text = Automation.AutomationProperties.GetHelpText(Me)
-                        RaiseEvent PageShown(UpdateControlNameAndText)
-                    End Sub,
-                    Me, Automation.AutomationProperties.HelpTextProperty)
+                        Sub()
+                            Me.SelectedIndex = -1
+                            _Text = Automation.AutomationProperties.GetHelpText(Me)
+                            RaiseEvent PageShown(UpdateControlNameAndText)
+                        End Sub,
+                        Me, Automation.AutomationProperties.HelpTextProperty)
 
             _Text = value
             Automation.AutomationProperties.SetHelpText(Me, value)
             UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue()))
 
         ElseIf Me.Items.Count > controlIndex Then
-            SetControlText(Me.Items(controlIndex), value, True, True)
+            Dim c = Me.Items(controlIndex)
+            If value <> GetControlText(c) Then
+                SetControlText(c, value, True, True)
+            End If
         End If
     End Sub
 

@@ -20,14 +20,17 @@ Namespace Library
         Private Shared _currentX As Double = 320.0
         Private Shared _currentY As Double = 240.0
         Private Shared _turtle As FrameworkElement
-        Private Shared _speed As Integer = 5
+        Private Shared _speed As Integer = 15
         Private Shared _angle As Double = 0.0
         Private Shared _rotateTransform As RotateTransform
         Private Shared _penDown As Boolean = True
         Private Shared _toShow As Boolean = False
 
+
         ''' <summary>
-        ''' Specifies how fast the turtle should move.  Valid values are 1 to 10.  If Speed is set to 10, the turtle moves and rotates instantly.
+        ''' Specifies how fast the turtle should move. 
+        ''' Valid values are 1 to 50.
+        ''' The default value is 15.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Speed As Primitive
@@ -39,8 +42,8 @@ Namespace Library
                 _speed = Value
                 If _speed < 1 Then
                     _speed = 1
-                ElseIf _speed > 10 Then
-                    _speed = 10
+                ElseIf _speed > 50 Then
+                    _speed = 50
                 End If
             End Set
         End Property
@@ -134,8 +137,55 @@ Namespace Library
             _penDown = False
         End Sub
 
+        Friend Shared _path As Path = Nothing
+        Private Shared _group As GeometryGroup
+        Private Shared _geometry As PathGeometry
+        Private Shared _figure As PathFigure
+
         ''' <summary>
-        ''' Moves the turtle to a specified distance.  If the pen is down, it will draw a line as it moves.
+        ''' Uses the next turtle movements to create a closed figure, so that you can fill it by calling the FillFigure method.
+        ''' </summary>
+        Public Shared Sub CreateFigure()
+            GraphicsWindow.Invoke(
+                Sub()
+                    _group = New GeometryGroup()
+                    _geometry = New PathGeometry()
+                    _geometry.Figures = New PathFigureCollection()
+                    _group.Children.Add(_geometry)
+                    _path = New Path
+                    _path.Data = _group
+                    _figure = New PathFigure With {
+                        .IsClosed = False,
+                        .StartPoint = New Point(_currentX, _currentY)
+                    }
+                    _geometry.Figures.Add(_figure)
+                End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Closes the figure the Turtle created after calling the CreateFigure method, and filsl it with the GraphicsWindow.BrushColor.
+        ''' After calling this method, the figure Is completed, And you need To create a New figure If you want To fill a New area.
+        ''' If there Is no figure, calling this method will Do Nothing.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Sub FillFigure()
+            If _path Is Nothing Then Return
+
+            Dim name = Shapes.GenerateNewName("GeoPath")
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    _path.Fill = WinForms.Color.GetBrush(GraphicsWindow.BrushColor)
+                    _path.Stroke = WinForms.Color.GetBrush(GraphicsWindow.PenColor)
+                    _path.StrokeThickness = GraphicsWindow.PenWidth
+                    GraphicsWindow.AddShape(name, _path)
+                    _path = Nothing
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Moves the turtle to a specified distance. If the pen is down, it will draw a line as it moves.
         ''' </summary>
         ''' <param name="distance">
         ''' The distance to move the turtle.
@@ -143,13 +193,28 @@ Namespace Library
         Public Shared Sub Move(distance As Primitive)
             VerifyAccess()
             Dim d = CDbl(distance)
-            Dim animateTime = If(_speed = 10, 1.0, System.Math.Abs(d * 320.0 / (_speed ^ 2)))
+            Dim animateTime = 1
+            If _speed < 50 Then
+                animateTime = Math.Max(1, System.Math.Abs(d * 320.0 / (_speed ^ 2)))
+            End If
+
             Dim angle = _angle / 180.0 * System.Math.PI
             Dim newY = _currentY - d * System.Math.Cos(angle)
             Dim newX = _currentX + d * System.Math.Sin(angle)
             Shapes.Animate("_turtle", newX, newY, animateTime)
+
+            GraphicsWindow.Invoke(
+                Sub()
+                    If _path IsNot Nothing Then
+                        _figure.Segments.Add(New LineSegment(
+                                New Point(newX, newY), _penDown
+                            )
+                        )
+                    End If
+                End Sub)
+
             If _penDown Then
-                GraphicsWindow.Invoke(
+                        GraphicsWindow.Invoke(
                     Sub()
                         Dim name As String = Shapes.GenerateNewName("_turtleLine")
                         Dim line1 As New Line With {
@@ -173,11 +238,12 @@ Namespace Library
                         line1.BeginAnimation(Line.X2Property, animation)
                         line1.BeginAnimation(Line.Y2Property, animation2)
                     End Sub)
-            End If
-            _currentX = newX
-            _currentY = newY
-            WaitForReturn(animateTime)
-        End Sub
+                    End If
+
+                    _currentX = newX
+                    _currentY = newY
+                    WaitForReturn(animateTime)
+                End Sub
 
         ''' <summary>
         ''' Turns and moves the turtle to the specified location.  If the pen is down, it will draw a line as it moves.

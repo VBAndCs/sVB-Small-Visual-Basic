@@ -13,7 +13,6 @@ Namespace WinForms
     <SmallVisualBasicType>
     Public Class GeometricPath
         Friend Shared _path As Path
-
         Private Shared _group As GeometryGroup
         Private Shared _geometry As PathGeometry
         Private Shared _figure As PathFigure

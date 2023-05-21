@@ -688,7 +688,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function OpenFolderDialog(initialFolder As Primitive) As Primitive
-            SmallBasicApplication.BeginInvoke(
+            SmallBasicApplication.Invoke(
                 Sub()
                     Dim folder = GeIinitialFolder(initialFolder.AsString())
                     If folder = "" Then folder = GeIinitialFolder(System.Windows.Clipboard.GetText())
@@ -711,8 +711,6 @@ Namespace Library
                         OpenFolderDialog = dlg.SelectedPath
                     End If
                 End Sub)
-
-            Return ""
         End Function
 
         Private Shared Function GeIinitialFolder(folder As String) As String
