@@ -1185,11 +1185,17 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                            Optional ctrlSpace As Boolean = False
                     )
 
-            ' Wait until code editor respond to changes, to avoid any conflicts
+            ' Wait until code editor respond To changes, to avoid any conflicts
             ShowCompletion.After(
                   20,
                   Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem, ctrlSpace)
             )
+
+            'Application.Current.Dispatcher.BeginInvoke(
+            '    DispatcherPriority.Background,
+            '    Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem, ctrlSpace)
+            ')
+
         End Sub
 
         Private Sub DoShowCompletion(
@@ -1199,58 +1205,62 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                            ctrlSpace As Boolean
                     )
 
-            Dim bag As CompletionBag
-            Dim especialItem = ""
-            Dim curToken As Token
+            Try
+                Dim bag As CompletionBag
+                Dim especialItem = ""
+                Dim curToken As Token
 
-            Dim line = snapshot.GetLineFromPosition(caretPosition)
-            If checkEspecialItem Then
-                Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
-                If tokens.Count < 2 Then
-                    If ctrlSpace Then GoTo LineShow
-                    Return
-                End If
+                Dim line = snapshot.GetLineFromPosition(caretPosition)
+                If checkEspecialItem Then
+                    Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
+                    If tokens.Count < 2 Then
+                        If ctrlSpace Then GoTo LineShow
+                        Return
+                    End If
 
-                Dim n = GetLastTokenIndex(line, caretPosition, tokens)
-                If n = 0 Then
-                    If ctrlSpace Then GoTo LineShow
-                    Return
-                End If
+                    Dim n = GetLastTokenIndex(line, caretPosition, tokens)
+                    If n = 0 Then
+                        If ctrlSpace Then GoTo LineShow
+                        Return
+                    End If
 
-                Select Case tokens(n).Type
-                    Case TokenType.Equals, TokenType.NotEqualTo,
+                    Select Case tokens(n).Type
+                        Case TokenType.Equals, TokenType.NotEqualTo,
                              TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
                              TokenType.LessThan, TokenType.LessThanEqualTo
 
-                        Dim index = n - 1
-                        curToken = tokens(n)
-                        Dim token = GetIdentifier(tokens, index, line)
-                        Dim name = tokens(index).LCaseText.Trim("_")
-                        especialItem = GetEspecialItem(name)
+                            Dim index = n - 1
+                            curToken = tokens(n)
+                            Dim token = GetIdentifier(tokens, index, line)
+                            Dim name = tokens(index).LCaseText.Trim("_")
+                            especialItem = GetEspecialItem(name)
 
-                        If especialItem = "" Then
-                            especialItem = InferEspType(token, line)
-                            If especialItem = "" AndAlso Not ctrlSpace Then
-                                Return
+                            If especialItem = "" Then
+                                especialItem = InferEspType(token, line)
+                                If especialItem = "" AndAlso Not ctrlSpace Then
+                                    Return
+                                End If
                             End If
-                        End If
-                End Select
-            End If
+                    End Select
+                End If
 
 LineShow:
                 If especialItem = "" Then
-                bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
-                canGetOriginalBag = False
-            Else
-                bag = GetCompletionBag(especialItem)
-                canGetOriginalBag = True
-            End If
+                    bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
+                    canGetOriginalBag = False
+                Else
+                    bag = GetCompletionBag(especialItem)
+                    canGetOriginalBag = True
+                End If
 
-            If bag IsNot Nothing AndAlso bag.CompletionItems.Count > 0 Then
-                bag.CtrlSpace = ctrlSpace
-                ShowCompletionAdornment(snapshot, bag, curToken, line)
-            End If
+                If bag IsNot Nothing AndAlso bag.CompletionItems.Count > 0 Then
+                    bag.CtrlSpace = ctrlSpace
+                    ShowCompletionAdornment(snapshot, bag, curToken, line)
+                End If
 
+            Catch ex As Exception
+
+            End Try
         End Sub
 
         Private Function InferEspType(token As Token, line As ITextSnapshotLine) As String

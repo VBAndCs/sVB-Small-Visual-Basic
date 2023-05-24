@@ -359,95 +359,129 @@ Namespace Microsoft.Nautilus.Text.Operations
             editorOperations.MakeUppercase(undoHistory1)
         End Sub
 
+
+        Dim CopyFailed As Boolean
+
         <ExportProperty("CommandName", "Common.Edit.Cut")>
         <Export(GetType(CommandHandler))>
         Public Sub CutHandler(textView As IAvalonTextView)
+            CopyFailed = False
             CopyHandler(textView)
-            DeleteNextCharacterHandler(textView)
+            If Not CopyFailed Then
+                DeleteNextCharacterHandler(textView)
+            End If
         End Sub
 
         <Export(GetType(CommandHandler))>
         <ExportProperty("CommandName", "Common.Edit.Paste")>
         Public Sub PasteHandler(textView As IAvalonTextView)
             Dim editorOperations As IEditorOperations = _editorOperationsProvider.GetEditorOperations(textView)
-            Dim undoHistory1 As UndoHistory = GetUndoHistory(textView.TextBuffer)
+            Dim undoHistory1 = GetUndoHistory(textView.TextBuffer)
             editorOperations.Paste(undoHistory1)
         End Sub
 
         <ExportProperty("CommandName", "Common.Edit.Copy")>
         <Export(GetType(CommandHandler))>
         Public Sub CopyHandler(textView As IAvalonTextView)
-            Dim snapshot = textView.TextSnapshot
-            Dim activeSnapshotSpan = textView.Selection.ActiveSnapshotSpan
-            Dim classifier = ClassifierAggregatorProvider.GetClassifier(textView.TextBuffer)
-            Dim classificationSpans = classifier.GetClassificationSpans(activeSnapshotSpan)
-            Dim classificationTypes As New List(Of IClassificationType)
-            Dim sbText As New StringBuilder("{\rtf1\ansi\ansicpg\lang1024\noproof65001\uc1 \deff0{\fonttbl{\f0\fnil\fcharset0\fprq1 Consolas;}}")
-            Dim sbClassification As New StringBuilder("\fs24 ")
-            Dim num = activeSnapshotSpan.Span.Start
+            Dim dataObj As DataObject = Nothing
 
-            For Each classiSpan In classificationSpans
-                Dim snapshotSpan = classiSpan.GetSpan(snapshot)
-                If num < snapshotSpan.Start Then
-                    Dim span As New Span(num, Math.Min(snapshotSpan.Start, snapshotSpan.End) - num)
-                    Dim text = snapshot.GetText(span)
-                    sbClassification.AppendFormat("\cf0 {0}", text.Replace("\", "\\").Replace("{", "\{").Replace("}", "\}"))
-                    num = span.End
-                End If
+            Try
+                Dim snapshot = textView.TextSnapshot
+                Dim activeSnapshotSpan = textView.Selection.ActiveSnapshotSpan
+                Dim classifier = ClassifierAggregatorProvider.GetClassifier(textView.TextBuffer)
+                Dim classificationSpans = classifier.GetClassificationSpans(activeSnapshotSpan)
+                Dim classificationTypes As New List(Of IClassificationType)
+                Dim sbText As New StringBuilder("{\rtf1\ansi\ansicpg\lang1024\noproof65001\uc1 \deff0{\fonttbl{\f0\fnil\fcharset0\fprq1 Consolas;}}")
+                Dim sbClassification As New StringBuilder("\fs24 ")
+                Dim num = activeSnapshotSpan.Span.Start
 
-                Dim span3 = snapshotSpan.Overlap(activeSnapshotSpan)
-                If span3.HasValue Then
-                    Dim text2 As String = snapshot.GetText(span3.Value)
-                    If Not classificationTypes.Contains(classiSpan.ClassificationType) Then
-                        classificationTypes.Add(classiSpan.ClassificationType)
+                For Each classiSpan In classificationSpans
+                    Dim snapshotSpan = classiSpan.GetSpan(snapshot)
+                    If num < snapshotSpan.Start Then
+                        Dim span As New Span(num, Math.Min(snapshotSpan.Start, snapshotSpan.End) - num)
+                        Dim text = snapshot.GetText(span)
+                        sbClassification.AppendFormat("\cf0 {0}", text.Replace("\", "\\").Replace("{", "\{").Replace("}", "\}"))
+                        num = span.End
                     End If
 
-                    Dim textProperties = ClassificationFormatMap.GetTextProperties(classiSpan.ClassificationType)
-                    text2 = text2.Replace("\", "\\").Replace("{", "\{").Replace("}", "\}")
-                    Dim num2 = classificationTypes.IndexOf(classiSpan.ClassificationType)
-                    Dim text3 = ""
-                    Dim text4 = ""
+                    Dim span3 = snapshotSpan.Overlap(activeSnapshotSpan)
+                    If span3.HasValue Then
+                        Dim text2 As String = snapshot.GetText(span3.Value)
+                        If Not classificationTypes.Contains(classiSpan.ClassificationType) Then
+                            classificationTypes.Add(classiSpan.ClassificationType)
+                        End If
 
-                    If textProperties.Typeface.Weight = FontWeights.Bold Then
-                        text3 = "{\b "
-                        text4 = "}"
+                        Dim textProperties = ClassificationFormatMap.GetTextProperties(classiSpan.ClassificationType)
+                        text2 = text2.Replace("\", "\\").Replace("{", "\{").Replace("}", "\}")
+                        Dim num2 = classificationTypes.IndexOf(classiSpan.ClassificationType)
+                        Dim text3 = ""
+                        Dim text4 = ""
+
+                        If textProperties.Typeface.Weight = FontWeights.Bold Then
+                            text3 = "{\b "
+                            text4 = "}"
+                        End If
+
+                        Dim text5 = ""
+                        Dim text6 = ""
+
+                        If textProperties.Typeface.Style = FontStyles.Italic Then
+                            text5 = "{\i "
+                            text6 = "}"
+                        End If
+
+                        sbClassification.AppendFormat("\cf{0} {1}{2}{3}{4}{5}", num2 + 1, text3, text5, text2, text6, text4)
+                        num = snapshotSpan.End
                     End If
 
-                    Dim text5 = ""
-                    Dim text6 = ""
-
-                    If textProperties.Typeface.Style = FontStyles.Italic Then
-                        text5 = "{\i "
-                        text6 = "}"
+                    If num < snapshotSpan.End Then
+                        Dim span4 As New Span(num, snapshotSpan.End - num)
+                        Dim text7 = snapshot.GetText(span4)
+                        sbClassification.AppendFormat("\cf0 {0}", text7.Replace("\", "\\").Replace("{", "\{").Replace("}", "\}"))
                     End If
+                Next
 
-                    sbClassification.AppendFormat("\cf{0} {1}{2}{3}{4}{5}", num2 + 1, text3, text5, text2, text6, text4)
-                    num = snapshotSpan.End
-                End If
+                sbClassification.Replace(vbNewLine, "\par ")
+                Dim sbFormat As New StringBuilder("{\colortbl;" & vbCrLf)
 
-                If num < snapshotSpan.End Then
-                    Dim span4 As New Span(num, snapshotSpan.End - num)
-                    Dim text7 = snapshot.GetText(span4)
-                    sbClassification.AppendFormat("\cf0 {0}", text7.Replace("\", "\\").Replace("{", "\{").Replace("}", "\}"))
-                End If
-            Next
+                For Each type In classificationTypes
+                    Dim props = ClassificationFormatMap.GetTextProperties(type)
+                    Dim color = CType(props.ForegroundBrush, SolidColorBrush).Color
+                    sbFormat.AppendFormat("\red{0}\green{1}\blue{2};", color.R, color.G, color.B)
+                Next
 
-            sbClassification.Replace(vbNewLine, "\par ")
-            Dim sbFormat As New StringBuilder("{\colortbl;" & vbCrLf)
+                sbText.Append(sbFormat.ToString() & "}" & vbCrLf)
+                sbText.Append(sbClassification.ToString())
+                sbText.Append("}")
 
-            For Each type In classificationTypes
-                Dim props = ClassificationFormatMap.GetTextProperties(type)
-                Dim color = CType(props.ForegroundBrush, SolidColorBrush).Color
-                sbFormat.AppendFormat("\red{0}\green{1}\blue{2};", color.R, color.G, color.B)
-            Next
+                dataObj = New DataObject()
+                dataObj.SetData(DataFormats.Rtf, sbText.ToString())
+                dataObj.SetData(DataFormats.Text, activeSnapshotSpan.GetText())
 
-            sbText.Append(sbFormat.ToString() & "}" & vbCrLf)
-            sbText.Append(sbClassification.ToString())
-            sbText.Append("}")
-            Dim dataObj As New DataObject
-            dataObj.SetData(DataFormats.Rtf, sbText.ToString())
-            dataObj.SetData(DataFormats.Text, activeSnapshotSpan.GetText())
-            Clipboard.SetDataObject(dataObj, True)
+
+            Catch ex As Exception
+                MsgBox("Operation has failed. Please try again.")
+                CopyFailed = True
+                Return
+            End Try
+
+            CopyFailed = Not SetData(dataObj)
         End Sub
+
+        Private Function SetData(dataObj As DataObject) As Boolean
+            For i = 1 To 5
+                Try
+                    Clipboard.SetDataObject(dataObj, True)
+                    Return True
+                Catch
+                    ' Try again after 20 ms
+                    System.Threading.Thread.Sleep(20)
+                End Try
+            Next
+
+            ' The 5 trials to write data faild
+            MsgBox("Operation has failed. Please try again.")
+            Return False
+        End Function
     End Class
 End Namespace

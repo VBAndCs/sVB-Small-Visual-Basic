@@ -39,9 +39,9 @@ Namespace Library
         ''' </summary>
         ''' <param name="milliSeconds">The amount of delay.</param>
         Public Shared Sub Delay(milliSeconds As Primitive)
-            Dim t = CDbl(milliSeconds)
+            Dim t = CInt(milliSeconds)
             If t <= 0 Then Return
-            Thread.Sleep(TimeSpan.FromMilliseconds(t))
+            Thread.Sleep(t)
         End Sub
 
         ''' <summary>

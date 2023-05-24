@@ -900,7 +900,7 @@ Namespace Microsoft.Nautilus.Text.Operations
 
             Dim text As String = Nothing
             Try
-                Dim dataObject1 As IDataObject = Clipboard.GetDataObject()
+                Dim dataObject1 = Clipboard.GetDataObject()
                 If dataObject1 Is Nothing OrElse Not dataObject1.GetDataPresent(GetType(String)) Then
                     Return
                 End If
