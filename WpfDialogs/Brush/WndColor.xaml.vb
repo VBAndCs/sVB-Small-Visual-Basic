@@ -120,7 +120,9 @@ Friend Class WndColor
         End Try
     End Sub
 
-    Private Shared RecentBrushedPath As String = IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "RecentBrushes.xaml")
+    Private Shared RecentBrushedPath As String = Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData
+            ) & "\SmallVisualBasic\RecentBrushes.data"
 
     Private Sub AddToRecent()
         If Me.Brush Is Nothing Then Return

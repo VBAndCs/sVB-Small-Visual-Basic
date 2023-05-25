@@ -123,10 +123,10 @@
                                     <Grid DockPanel.Dock="Left">
                                         <TextBlock Margin="0,6,4,4"
                                                 Width="200"
-                                                Foreground="#FF808080" TextTrimming="CharacterEllipsis" 
+                                                Foreground="Black" TextTrimming="CharacterEllipsis" 
                                                 Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        <TextBlock Margin="1.5,4.5,4,4" 
-                                                Width="200"
+                                        <TextBlock Margin="1,5,4,4" 
+                                                Width="200" Foreground="Gray"
                                                 TextTrimming="CharacterEllipsis" 
                                                 Text="{Binding Path=Document.Title, RelativeSource={RelativeSource TemplatedParent}}" />
                                     </Grid>
