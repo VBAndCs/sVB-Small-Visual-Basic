@@ -734,20 +734,21 @@ Namespace Library
         Public Shared Sub DrawText(x As Primitive, y As Primitive, text As Primitive)
             If Not text.IsEmpty Then
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                Dim dc As DrawingContext = _mainDrawing.Append()
-                                Dim formattedText1 As New FormattedText(
-                                        text,
-                                        CultureInfo.CurrentUICulture,
-                                        FlowDirection.LeftToRight,
-                                        New Typeface(_fontFamily, _fontStyle, _fontWeight, FontStretches.Normal),
-                                        _fontSize,
-                                        _fillBrush
-                                 )
-                                dc.DrawText(formattedText1, New System.Windows.Point(x, y))
-                                dc.Close()
-                                AddRasterizeOperationToQueue()
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        Dim dc = _mainDrawing.Append()
+                        Dim formattedText1 As New FormattedText(
+                                text,
+                                CultureInfo.CurrentUICulture,
+                                FlowDirection.LeftToRight,
+                                New Typeface(_fontFamily, _fontStyle, _fontWeight, FontStretches.Normal),
+                                _fontSize,
+                                _fillBrush
+                        )
+                        dc.DrawText(formattedText1, New System.Windows.Point(x, y))
+                        dc.Close()
+                        AddRasterizeOperationToQueue()
+                    End Sub)
             End If
         End Sub
 

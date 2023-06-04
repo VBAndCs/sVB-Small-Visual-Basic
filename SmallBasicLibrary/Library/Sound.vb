@@ -1,6 +1,5 @@
 Imports System.IO
 Imports System.Media
-Imports System.Reflection
 Imports System.Threading
 Imports System.Windows.Media
 Imports Microsoft.SmallVisualBasic.Library.Internal
@@ -151,7 +150,10 @@ Namespace Library
         ''' The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
         ''' </param>
         Public Shared Sub Play(filePath As Primitive)
-            GetMediaPlayer(filePath)?.Play()
+            SmallBasicApplication.Invoke(
+                Sub()
+                    GetMediaPlayer(filePath)?.Play()
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -166,23 +168,27 @@ Namespace Library
         ''' The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
         ''' </param>
         Public Shared Sub PlayAndWait(filePath As Primitive)
-            Dim mediaPlayer1 As MediaPlayer = GetMediaPlayer(filePath)
-            If mediaPlayer1 Is Nothing Then
-                Return
-            End If
-            Dim autoResetEvent1 As New AutoResetEvent(initialState:=False)
-            mediaPlayer1.Play()
-            Dim num As Integer = 0
-            While Not autoResetEvent1.WaitOne(200, exitContext:=False)
-                If num > 30 AndAlso mediaPlayer1.Position = TimeSpan.Zero Then
-                    autoResetEvent1.Set()
-                End If
-                If mediaPlayer1.NaturalDuration.HasTimeSpan AndAlso mediaPlayer1.Position >= mediaPlayer1.NaturalDuration.TimeSpan Then
-                    autoResetEvent1.Set()
-                End If
-                num += 1
-            End While
-            mediaPlayer1.Stop()
+            SmallBasicApplication.Invoke(
+                Sub()
+                    Dim mediaPlayer = GetMediaPlayer(filePath)
+                    If mediaPlayer Is Nothing Then Return
+
+                    Dim autoResetEvent1 As New AutoResetEvent(initialState:=False)
+                    mediaPlayer.Play()
+                    Dim n As Integer = 0
+                    While Not autoResetEvent1.WaitOne(200, exitContext:=False)
+                        If n > 30 AndAlso mediaPlayer.Position = TimeSpan.Zero Then
+                            autoResetEvent1.Set()
+                        End If
+
+                        If mediaPlayer.NaturalDuration.HasTimeSpan AndAlso mediaPlayer.Position >= mediaPlayer.NaturalDuration.TimeSpan Then
+                            autoResetEvent1.Set()
+                        End If
+
+                        n += 1
+                    End While
+                    mediaPlayer.Stop()
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -192,7 +198,10 @@ Namespace Library
         ''' The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
         ''' </param>
         Public Shared Sub Pause(filePath As Primitive)
-            GetMediaPlayer(filePath)?.Pause()
+            SmallBasicApplication.Invoke(
+                Sub()
+                    GetMediaPlayer(filePath)?.Pause()
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -202,7 +211,10 @@ Namespace Library
         ''' The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
         ''' </param>
         Public Shared Sub [Stop](filePath As Primitive)
-            GetMediaPlayer(filePath)?.Stop()
+            SmallBasicApplication.Invoke(
+                Sub()
+                    GetMediaPlayer(filePath)?.Stop()
+                End Sub)
         End Sub
 
         Private Shared Sub PlayStockSound(soundStream As Stream, sync As Boolean)
@@ -216,21 +228,24 @@ Namespace Library
 
         Private Shared Function GetMediaPlayer(filePath As Primitive) As MediaPlayer
             If filePath.IsEmpty Then Return Nothing
+            SmallBasicApplication.Invoke(
+                Sub()
+                    Try
+                        Dim uri1 As New Uri(filePath)
+                        Dim value As MediaPlayer = Nothing
+                        If Not _mediaPlayerMap.TryGetValue(uri1, value) Then
+                            value = New MediaPlayer
+                            _mediaPlayerMap(uri1) = value
+                            value.Open(uri1)
+                        End If
 
-            Try
-                Dim uri1 As New Uri(filePath)
-                Dim value As MediaPlayer = Nothing
-                If Not _mediaPlayerMap.TryGetValue(uri1, value) Then
-                    value = New MediaPlayer
-                    _mediaPlayerMap(uri1) = value
-                    value.Open(uri1)
-                End If
+                        GetMediaPlayer = value
 
-                Return value
-            Catch
-            End Try
+                    Catch ex As Exception
+                        MsgBox(ex.Message)
+                    End Try
+                End Sub)
 
-            Return Nothing
         End Function
 
         Private Shared Sub EnsureDeviceInit()
