@@ -231,7 +231,7 @@ Namespace Library
             SmallBasicApplication.Invoke(
                 Sub()
                     Try
-                        Dim uri1 As New Uri(filePath)
+                        Dim uri1 As New Uri(filePath, UriKind.RelativeOrAbsolute)
                         Dim value As MediaPlayer = Nothing
                         If Not _mediaPlayerMap.TryGetValue(uri1, value) Then
                             value = New MediaPlayer

@@ -724,7 +724,7 @@ Namespace Library
 
         Private Shared Sub OnButtonClicked(sender As Object, e As RoutedEventArgs)
             Dim button1 = TryCast(sender, Button)
-            Dim name = button1.Name
+            Dim name = GW_NAME + "." + button1.Name
             If GraphicsWindow._objectsMap.ContainsKey(name) Then
                 _lastClickedButton = name
                 RaiseEvent ButtonClicked()
@@ -732,8 +732,8 @@ Namespace Library
         End Sub
 
         Private Shared Sub OnTextChanged(sender As Object, e As EventArgs)
-            Dim textBox1 As TextBox = TryCast(sender, TextBox)
-            Dim name As String = textBox1.Name
+            Dim textBox1 = TryCast(sender, TextBox)
+            Dim name = GW_NAME + "." + textBox1.Name
             If GraphicsWindow._objectsMap.ContainsKey(name) Then
                 _lastTypedTextBox = name
                 RaiseEvent TextTyped()

@@ -1,7 +1,17 @@
 ﻿Public Class DesignerDecorator
 
     Function GetDesigner(Mi As Control) As Designer
-        Dim Cntx As ContextMenu = Mi.Parent
+        Dim Cntx As ContextMenu
+        Dim p = TryCast(Mi.Parent, Control)
+
+        Do
+            If p Is Nothing Then Return Nothing
+            If TypeOf p Is ContextMenu Then
+                Cntx = p
+                Exit Do
+            End If
+            p = TryCast(p.Parent, Control)
+        Loop
         Return Helper.GetDesigner(Cntx.PlacementTarget)
     End Function
 

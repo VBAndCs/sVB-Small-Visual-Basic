@@ -86,7 +86,7 @@ Namespace Library
             Return CType(SmallBasicApplication.InvokeWithReturn(
                 Function() As BitmapImage
                     Try
-                        Return New BitmapImage(New Uri(localFileName))
+                        Return New BitmapImage(New Uri(localFileName, UriKind.RelativeOrAbsolute))
                     Catch
                     End Try
                     Return Nothing

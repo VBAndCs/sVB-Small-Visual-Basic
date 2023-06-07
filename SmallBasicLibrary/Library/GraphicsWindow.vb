@@ -337,11 +337,54 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                _window.Top = Value
-                            End Sub)
+                BeginInvoke(Sub() _window.Top = Value)
             End Set
         End Property
+
+        Private Shared windPosX As Double = 0
+        Private Shared windPosY As Double = 0
+        Private Shared windWidth As Double = 0
+        Private Shared windHeight As Double = 0
+
+        ''' <summary>
+        ''' Set this property to True to show the Graphics Window in the full screen mode, or set it to False to exit the full screen mode and restore its normal state.
+        ''' Note that the user can press F11 to toggle the value of this property.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property FullScreen As Primitive
+            Get
+                VerifyAccess()
+                Return CBool(InvokeWithReturn(Function() _window.WindowStyle = WindowStyle.None))
+            End Get
+
+            Set(value As Primitive)
+                VerifyAccess()
+                BeginInvoke(
+                    Sub()
+                        If CBool(value) Then
+                            windPosX = _window.Left
+                            windPosY = _window.Top
+                            windWidth = _window.Width
+                            windHeight = _window.Height
+                            _window.WindowStyle = WindowStyle.None
+                            _window.ResizeMode = ResizeMode.NoResize
+                            _window.Left = 0
+                            _window.Top = 0
+                            _window.Width = SystemParameters.WorkArea.Width
+                            _window.Height = SystemParameters.WorkArea.Height
+
+                        ElseIf _window.WindowStyle = WindowStyle.None Then
+                            _window.WindowStyle = WindowStyle.ThreeDBorderWindow
+                            _window.ResizeMode = ResizeMode.CanResize
+                            _window.Width = windWidth
+                            _window.Height = windHeight
+                            _window.Left = windPosX
+                            _window.Top = windPosY
+                        End If
+                    End Sub)
+            End Set
+        End Property
+
 
         ''' <summary>
         ''' Gets the last key that was pressed or released.
@@ -1047,6 +1090,9 @@ Namespace Library
             AddHandler _window.KeyDown,
                 Sub(sender As Object, e As KeyEventArgs)
                     _lastKey = e.Key
+                    If e.Key = Key.F11 Then
+                        FullScreen = Not CBool(FullScreen)
+                    End If
                     BeginInvoke(Sub() RaiseEvent KeyDown())
                 End Sub
 
