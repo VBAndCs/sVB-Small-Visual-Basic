@@ -1345,7 +1345,9 @@ Namespace Microsoft.SmallVisualBasic
                     End If
                 End If
 
-            ElseIf CStr(txtControlText.Tag) <> "" Then
+            End If
+
+            If CStr(txtControlText.Tag) <> "" Then
                 controlIndex = CInt(txtControlText.Tag)
                 formDesigner.SetControlText(controlIndex, txtControlText.Text)
             End If

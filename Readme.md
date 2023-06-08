@@ -19,8 +19,8 @@ Small Visual Basic (sVB) is an educational programming language, created by Eng.
 
 # Download the language:
 Starting from v2.8.1, sVB has an installer, that creates a startup menu and desktop shortcuts for sVB and its book.
-You can download the installer from the [Releases page](https://github.com/VBAndCs/sVB-Small-Visual-Basic/releases) or from [visualstudio marketplace](https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller)
-To install sVB, Unzip the downlaoded file and run the setup.exe from the the sVB inataller folder. You can accept default options and click next in each setup page, and wait for the setup to finish. If your PC doesn't contain the .NET framework 4.8, thee estup will ask you to download it, so you should accept and install it.
+You can download the installer from the [visualstudio marketplace](https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller)
+To install sVB, Unzip the downlaoded file and run the sVB_Installer.msi. You can accept default options and click next in each setup page, and wait for the setup to finish. If your PC doesn't contain the .NET framework 4.8, thee estup will ask you to download it, so you should accept and install it.
 To get older versions, go to the [Releases page](https://github.com/VBAndCs/sVB-Small-Visual-Basic/releases), navigate to the version you want, expand the Assets list at the bottom of the page, and download the ZIP file, and follow these instructions:
 1.	sVB needs [.NET framework 4.8](https://go.microsoft.com/fwlink/?LinkId=2085155). If you don't have it on your PC, download and install it.
 2.	Unzip the "sVB.zip" file. You will have a folder with the same name where you unzipped the file. Open the folder and double-click "sVB.exe".

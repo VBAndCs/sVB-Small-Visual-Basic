@@ -61,14 +61,16 @@
             End If
 
             Dim OldState As New PropertyState(A, Element, Prop)
-            Element.SetValue(Prop, WpfDialogs.ColorDialog.Brush)
+            Dim brush = FixImageBrush(WpfDialogs.ColorDialog.Brush)
+            Element.SetValue(Prop, brush)
+
             If TypeOf Element Is FrameworkElement Then
                 If OldState.HasChanges Then
                     Dim Dsn = Helper.GetDesigner(Element)
                     Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
                 End If
             End If
-            Return FixImageBrush(WpfDialogs.ColorDialog.Brush)
+            Return brush
         End If
 
         Cancelled = True
@@ -79,32 +81,37 @@
         If brush Is Nothing Then Return Nothing
 
         Dim imgBrush = TryCast(brush, ImageBrush)
-        If imgBrush IsNot Nothing Then
-            Dim pageFile = Designer.CurrentPage.XamlFile
-            If pageFile = "" Then
-                pageFile = Designer.CurrentPage.CodeFile
-                If pageFile = "" Then Return brush
-            End If
+        If imgBrush Is Nothing Then Return brush
 
-            Dim dir = IO.Path.GetDirectoryName(pageFile)
-            Dim bmp = TryCast(imgBrush.ImageSource, BitmapImage)
-
-            If bmp IsNot Nothing Then
-                Dim imgFile = bmp.UriSource.LocalPath
-                Dim imgFile2 = IO.Path.Combine(dir, IO.Path.GetFileName(imgFile)).Replace("\", "/")
-                Try
-                    IO.File.Copy(imgFile, imgFile2, False)
-                Catch ex As Exception
-                End Try
-
-                Dim imgUri As New Uri(imgFile2.ToLower())
-                imgBrush.ImageSource = New BitmapImage(imgUri)
-                imgBrush.SetValue(
-                    WpfDialogs.ImageBrushes.ImageFileNameProperty,
-                    imgFile2.ToLower()
-                )
-            End If
+        Dim pageFile = Designer.CurrentPage.XamlFile
+        If pageFile = "" Then
+            pageFile = Designer.CurrentPage.CodeFile
+            If pageFile = "" Then Return brush
         End If
+
+        Dim dir = IO.Path.GetDirectoryName(pageFile)
+        Dim bmp = TryCast(imgBrush.ImageSource, BitmapImage)
+        If bmp Is Nothing Then Return brush
+
+        Dim imgFile = bmp.UriSource.LocalPath
+        Dim imgFile2 = IO.Path.Combine(
+            dir,
+            IO.Path.GetFileName(imgFile)
+        ).Replace("\", "/")
+
+        Try
+            IO.File.Copy(imgFile, imgFile2, False)
+        Catch ex As Exception
+        End Try
+
+        imgFile2 = imgFile2.ToLower()
+        Dim imgUri As New Uri(imgFile2)
+        imgBrush.ImageSource = New BitmapImage(imgUri)
+        imgBrush.SetValue(
+            WpfDialogs.ImageBrushes.ImageFileNameProperty,
+            imgFile2
+        )
+
         Return brush
     End Function
 

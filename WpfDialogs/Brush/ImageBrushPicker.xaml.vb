@@ -1,5 +1,4 @@
-﻿Imports System.Windows.Markup
-
+﻿
 Friend Class ImageBrushPicker
 
     Private Property ImageBrush As ImageBrush
@@ -35,7 +34,7 @@ Friend Class ImageBrushPicker
             Return GetValue(PreviewBoxProperty)
         End Get
 
-        Set(ByVal value As ContentControl)
+        Set(value As ContentControl)
             SetValue(PreviewBoxProperty, value)
         End Set
     End Property
