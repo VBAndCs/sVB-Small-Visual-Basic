@@ -1,0 +1,657 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+WpfDialogs
+</name>
+</assembly>
+<members>
+<member name="T:WpfDialogs.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._0">
+<summary>
+  Looks up a localized string similar to 0.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._1">
+<summary>
+  Looks up a localized string similar to 1.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._2">
+<summary>
+  Looks up a localized string similar to 2.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._3">
+<summary>
+  Looks up a localized string similar to 3.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._4">
+<summary>
+  Looks up a localized string similar to 4.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._5">
+<summary>
+  Looks up a localized string similar to 5.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._6">
+<summary>
+  Looks up a localized string similar to 6.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._7">
+<summary>
+  Looks up a localized string similar to 7.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._8">
+<summary>
+  Looks up a localized string similar to 8.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources._9">
+<summary>
+  Looks up a localized string similar to 9.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.AllPetiteCaps">
+<summary>
+  Looks up a localized string similar to All petite caps.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.AllSmallCaps">
+<summary>
+  Looks up a localized string similar to All small caps.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.AnnotationAlternates">
+<summary>
+  Looks up a localized string similar to Annotation alternates.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Capitals">
+<summary>
+  Looks up a localized string similar to Capitals.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.CapitalSpacing">
+<summary>
+  Looks up a localized string similar to Capital spacing.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.CaseSensitiveForms">
+<summary>
+  Looks up a localized string similar to Case sensitive forms.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.ContextualAlternates">
+<summary>
+  Looks up a localized string similar to Contextual alternates.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.ContextualLigatures">
+<summary>
+  Looks up a localized string similar to Ligatures, contextual.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.ContextualSwashes">
+<summary>
+  Looks up a localized string similar to Swashes, contextual.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Digits">
+<summary>
+  Looks up a localized string similar to 1, 2, 3, 4, 5, 6, 7, 8 ,9, 0.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Disabled">
+<summary>
+  Looks up a localized string similar to Disabled.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.DiscretionaryLigatures">
+<summary>
+  Looks up a localized string similar to Ligatures, discretionary.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.EastAsianExpertForms">
+<summary>
+  Looks up a localized string similar to East Asian expert forms.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.EastAsianLanguage">
+<summary>
+  Looks up a localized string similar to East Asian language.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.EastAsianWidths">
+<summary>
+  Looks up a localized string similar to East Asian widths.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Enabled">
+<summary>
+  Looks up a localized string similar to Enabled.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Fraction">
+<summary>
+  Looks up a localized string similar to Fraction.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Full">
+<summary>
+  Looks up a localized string similar to Full.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Half">
+<summary>
+  Looks up a localized string similar to Half.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.HistoricalForms">
+<summary>
+  Looks up a localized string similar to Historical forms.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.HistoricalLigatures">
+<summary>
+  Looks up a localized string similar to Ligatures, historical.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.HojoKanji">
+<summary>
+  Looks up a localized string similar to Hojo Kanji.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Inferior">
+<summary>
+  Looks up a localized string similar to Inferior.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Jis04">
+<summary>
+  Looks up a localized string similar to JIS-04.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Jis78">
+<summary>
+  Looks up a localized string similar to JIS-78.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Jis83">
+<summary>
+  Looks up a localized string similar to JIS-83.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Jis90">
+<summary>
+  Looks up a localized string similar to JIS-90.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Kerning">
+<summary>
+  Looks up a localized string similar to Kerning.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Lining">
+<summary>
+  Looks up a localized string similar to Lining.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.MathematicalGreek">
+<summary>
+  Looks up a localized string similar to Mathematical Greek.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.NlcKanji">
+<summary>
+  Looks up a localized string similar to NLC Kanji.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Normal">
+<summary>
+  Looks up a localized string similar to Normal.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.NumeralAlignment">
+<summary>
+  Looks up a localized string similar to Numeral alignment.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.NumeralStyle">
+<summary>
+  Looks up a localized string similar to Numeral style.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.OldStyle">
+<summary>
+  Looks up a localized string similar to Old style.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.OneHalf">
+<summary>
+  Looks up a localized string similar to 1/2.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Ordinal">
+<summary>
+  Looks up a localized string similar to Ordinal.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.PetiteCaps">
+<summary>
+  Looks up a localized string similar to Petite caps.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Proportional">
+<summary>
+  Looks up a localized string similar to Proportional.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Quarter">
+<summary>
+  Looks up a localized string similar to Quarter.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Ruby">
+<summary>
+  Looks up a localized string similar to Ruby.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Simplified">
+<summary>
+  Looks up a localized string similar to Simplified.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.simulated">
+<summary>
+  Looks up a localized string similar to {0} (simulated).
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Slashed">
+<summary>
+  Looks up a localized string similar to Slashed.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.SlashedZero">
+<summary>
+  Looks up a localized string similar to Slashed zero.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.SmallCaps">
+<summary>
+  Looks up a localized string similar to Small caps.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Stacked">
+<summary>
+  Looks up a localized string similar to Stacked.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StandardLigatures">
+<summary>
+  Looks up a localized string similar to Ligatures, standard.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StandardSwashes">
+<summary>
+  Looks up a localized string similar to Swashes, standard.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticAlternates">
+<summary>
+  Looks up a localized string similar to Stylistic alternates.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet1">
+<summary>
+  Looks up a localized string similar to Stylistic set  1.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet10">
+<summary>
+  Looks up a localized string similar to Stylistic set 10.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet11">
+<summary>
+  Looks up a localized string similar to Stylistic set 11.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet12">
+<summary>
+  Looks up a localized string similar to Stylistic set 12.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet13">
+<summary>
+  Looks up a localized string similar to Stylistic set 13.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet14">
+<summary>
+  Looks up a localized string similar to Stylistic set 14.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet15">
+<summary>
+  Looks up a localized string similar to Stylistic set 15.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet16">
+<summary>
+  Looks up a localized string similar to Stylistic set 16.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet17">
+<summary>
+  Looks up a localized string similar to Stylistic set 17.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet18">
+<summary>
+  Looks up a localized string similar to Stylistic set 18.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet19">
+<summary>
+  Looks up a localized string similar to Stylistic set 19.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet2">
+<summary>
+  Looks up a localized string similar to Stylistic set  2.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet20">
+<summary>
+  Looks up a localized string similar to Stylistic set 20.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet3">
+<summary>
+  Looks up a localized string similar to Stylistic set  3.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet4">
+<summary>
+  Looks up a localized string similar to Stylistic set  4.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet5">
+<summary>
+  Looks up a localized string similar to Stylistic set  5.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet6">
+<summary>
+  Looks up a localized string similar to Stylistic set  6.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet7">
+<summary>
+  Looks up a localized string similar to Stylistic set  7.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet8">
+<summary>
+  Looks up a localized string similar to Stylistic set  8.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.StylisticSet9">
+<summary>
+  Looks up a localized string similar to Stylistic set  9.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Subscript">
+<summary>
+  Looks up a localized string similar to Subscript.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Superscript">
+<summary>
+  Looks up a localized string similar to Superscript.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Tabular">
+<summary>
+  Looks up a localized string similar to Tabular.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Third">
+<summary>
+  Looks up a localized string similar to Third.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Titling">
+<summary>
+  Looks up a localized string similar to Titling.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Traditional">
+<summary>
+  Looks up a localized string similar to Traditional.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.TraditionalNames">
+<summary>
+  Looks up a localized string similar to Traditional names.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Unicase">
+<summary>
+  Looks up a localized string similar to Unicase.
+</summary>
+</member>
+<member name="P:WpfDialogs.My.Resources.Resources.Variants">
+<summary>
+  Looks up a localized string similar to Variants.
+</summary>
+</member>
+<member name="M:WpfDialogs.ImageBrushPicker.InitializeComponent">
+<summary>
+InitializeComponent
+</summary>
+</member>
+<member name="T:WpfDialogs.FontChooser">
+<summary>
+FontChooser
+</summary>
+</member>
+<member name="P:WpfDialogs.FontChooser.FontFamilyCollection">
+ <summary>
+ Collection of font families to display in the font family list. By default this is Fonts.SystemFontFamilies,
+ but a client could set this to another collection returned by Fonts.GetFontFamilies, e.g., a collection of
+ application-defined fonts.
+ </summary>
+</member>
+<member name="M:WpfDialogs.FontChooser.SetPropertiesFromObject(System.Windows.DependencyObject)">
+ <summary>
+ Sets the font chooser selection properties to match the properites of the specified object.
+ </summary>
+</member>
+<member name="M:WpfDialogs.FontChooser.ApplyPropertiesToObject(System.Windows.DependencyObject)">
+ <summary>
+ Sets the properites of the specified object to match the font chooser selection properties.
+ </summary>
+</member>
+<member name="P:WpfDialogs.FontChooser.PreviewSampleText">
+ <summary>
+ Sample text used in the preview box and family and typeface samples tab.
+ </summary>
+</member>
+<member name="M:WpfDialogs.FontChooser.InitializeComponent">
+<summary>
+InitializeComponent
+</summary>
+</member>
+<member name="M:WpfDialogs.WndFont.InitializeComponent">
+<summary>
+InitializeComponent
+</summary>
+</member>
+<member name="M:WpfDialogs.TileBrushPicker.InitializeComponent">
+<summary>
+InitializeComponent
+</summary>
+</member>
+<member name="T:WpfDialogs.TransformPicker">
+<summary>
+TransformPicker
+</summary>
+</member>
+<member name="M:WpfDialogs.TransformPicker.InitializeComponent">
+<summary>
+InitializeComponent
+</summary>
+</member>
+<member name="M:WpfDialogs.WndColor.InitializeComponent">
+<summary>
+InitializeComponent
+</summary>
+</member>
+<member name="T:WpfDialogs.AlphaSelector">
+***************   NCore Softwares Pvt. Ltd., India   **************************
+
+   ColorPicker
+
+   Copyright (C) 2013 NCore Softwares Pvt. Ltd.
+
+   This program is provided to you under the terms of the Microsoft Public
+   License (Ms-PL) as published at http://ColorPicker.codeplex.com/license
+
+**********************************************************************************
+</member>
+<member name="T:WpfDialogs.BaseSelector">
+***************   NCore Softwares Pvt. Ltd., India   **************************
+
+   ColorPicker
+
+   Copyright (C) 2013 NCore Softwares Pvt. Ltd.
+
+   This program is provided to you under the terms of the Microsoft Public
+   License (Ms-PL) as published at http://ColorPicker.codeplex.com/license
+
+**********************************************************************************
+</member>
+<member name="T:WpfDialogs.ColorChangedEventArgs">
+***************   NCore Softwares Pvt. Ltd., India   **************************
+
+   ColorPicker
+
+   Copyright (C) 2013 NCore Softwares Pvt. Ltd.
+
+   This program is provided to you under the terms of the Microsoft Public
+   License (Ms-PL) as published at http://ColorPicker.codeplex.com/license
+
+**********************************************************************************
+</member>
+<member name="M:WpfDialogs.ColorPicker.UpdateColorHSB(System.Object,System.Windows.DependencyPropertyChangedEventArgs)">
+ <summary>
+ Shared property changed callback to update the Color property
+ </summary>
+</member>
+<member name="M:WpfDialogs.ColorPicker.UpdateColorRGB(System.Object,System.Windows.DependencyPropertyChangedEventArgs)">
+ <summary>
+ Shared property changed callback to update the Color property
+ </summary>
+</member>
+<member name="T:WpfDialogs.SpinDirection">
+***************   NCore Softwares Pvt. Ltd., India   **************************
+
+   ColorPicker
+
+   Copyright (C) 2013 NCore Softwares Pvt. Ltd.
+
+   This program is provided to you under the terms of the Microsoft Public
+   License (Ms-PL) as published at http://ColorPicker.codeplex.com/license
+
+**********************************************************************************
+</member>
+<member name="T:WpfDialogs.GradientStopSlider">
+***************   NCore Softwares Pvt. Ltd., India   **************************
+
+   ColorPicker
+
+   Copyright (C) 2013 NCore Softwares Pvt. Ltd.
+
+   This program is provided to you under the terms of the Microsoft Public
+   License (Ms-PL) as published at http://ColorPicker.codeplex.com/license
+
+**********************************************************************************
+</member>
+<member name="T:WpfDialogs.HueSelector">
+***************   NCore Softwares Pvt. Ltd., India   **************************
+
+   ColorPicker
+
+   Copyright (C) 2013 NCore Softwares Pvt. Ltd.
+
+   This program is provided to you under the terms of the Microsoft Public
+   License (Ms-PL) as published at http://ColorPicker.codeplex.com/license
+
+**********************************************************************************
+</member>
+<member name="T:WpfDialogs.SpinEventArgs">
+***************   NCore Softwares Pvt. Ltd., India   **************************
+
+   ColorPicker
+
+   Copyright (C) 2013 NCore Softwares Pvt. Ltd.
+
+   This program is provided to you under the terms of the Microsoft Public
+   License (Ms-PL) as published at http://ColorPicker.codeplex.com/license
+
+**********************************************************************************
+</member>
+<member name="T:WpfDialogs.XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+<summary>
+GeneratedInternalTypeHelper
+</summary>
+</member>
+<member name="M:WpfDialogs.XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+<summary>
+CreateInstance
+</summary>
+</member>
+<member name="M:WpfDialogs.XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+<summary>
+GetPropertyValue
+</summary>
+</member>
+<member name="M:WpfDialogs.XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+<summary>
+SetPropertyValue
+</summary>
+</member>
+<member name="M:WpfDialogs.XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+<summary>
+CreateDelegate
+</summary>
+</member>
+<member name="M:WpfDialogs.XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+<summary>
+AddEventHandler
+</summary>
+</member>
+</members>
+</doc>

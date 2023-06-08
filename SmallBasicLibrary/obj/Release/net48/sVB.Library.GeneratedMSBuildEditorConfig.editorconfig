@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = Microsoft.SmallVisualBasic
+build_property.ProjectDir = F:\_VS.NET\Small Basic IDE\sVB\1\SmallBasicLibrary\

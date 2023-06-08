@@ -1,0 +1,105 @@
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\bin\Release\DiagramHelper.dll
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\bin\Release\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\bin\Release\DiagramHelper.xml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\bin\Release\WpfDialogs.dll
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Arrow.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Resources\Brushes.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Resources\ExpanderStyle.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\ToolBox.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\WndPageSetup.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\WndSkew.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Arrow.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramPanel.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Resources\DesignerDecorator.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\ToolBox.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\WndPageSetup.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\WndSkew.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\GeneratedInternalTypeHelper.g.vb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper_MarkupCompile.cache
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper_MarkupCompile.lref
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramPanel.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Resources\ConnectDecorator.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Resources\DesignerDecorator.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Resources\ResizeDecorator.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Resources\RotateDecorator.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Resources\ProjectExplorerDecorator.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\Resources\ZoomBoxDecorator.baml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.g.resources
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.Resources.resources
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.GenerateResource.cache
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.CoreCompileInputs.cache
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.CopyComplete
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.dll
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.xml
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\VB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.AssemblyReference.cache
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\bin\Release\DiagramHelper.dll
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\bin\Release\DiagramHelper.pdb
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\bin\Release\DiagramHelper.xml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\bin\Release\WpfDialogs.dll
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper.vbproj.AssemblyReference.cache
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Arrow.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Resources\Brushes.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Resources\ExpanderStyle.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\ToolBox.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\WndPageSetup.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\WndSkew.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Arrow.g.vb
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramPanel.g.vb
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Resources\DesignerDecorator.g.vb
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\ToolBox.g.vb
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\WndPageSetup.g.vb
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\WndSkew.g.vb
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\GeneratedInternalTypeHelper.g.vb
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper_MarkupCompile.cache
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper_MarkupCompile.lref
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramPanel.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Resources\DesignerDecorator.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Resources\ResizeDecorator.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Resources\RotateDecorator.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Resources\ProjectExplorerDecorator.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\Resources\ZoomBoxDecorator.baml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper.g.resources
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper.Resources.resources
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper.vbproj.GenerateResource.cache
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper.vbproj.CoreCompileInputs.cache
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper.vbproj.CopyComplete
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper.dll
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper.xml
+F:\_VS.NET\sVB-Small-Visual-Basic-master\DiagramHelper\obj\Release\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\bin\Release\DiagramHelper.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\bin\Release\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\bin\Release\DiagramHelper.xml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\bin\Release\WpfDialogs.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\bin\Release\WpfDialogs.xml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Arrow.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\Brushes.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\ExpanderStyle.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\ToolBox.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndPageSetup.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndSkew.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Arrow.g.vb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramPanel.g.vb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\DesignerDecorator.g.vb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\ToolBox.g.vb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndPageSetup.g.vb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndSkew.g.vb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\GeneratedInternalTypeHelper.g.vb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper_MarkupCompile.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper_MarkupCompile.lref
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramPanel.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\DesignerDecorator.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\ResizeDecorator.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\RotateDecorator.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\ExplorerDecorator.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\ZoomBoxDecorator.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.g.resources
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.Resources.resources
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.GenerateResource.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.CoreCompileInputs.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.CopyComplete
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.xml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\bin\Release\WpfDialogs.pdb

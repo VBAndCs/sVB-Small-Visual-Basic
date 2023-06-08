@@ -228,10 +228,20 @@ Namespace Library
 
         Private Shared Function GetMediaPlayer(filePath As Primitive) As MediaPlayer
             If filePath.IsEmpty Then Return Nothing
+
             SmallBasicApplication.Invoke(
                 Sub()
                     Try
-                        Dim uri1 As New Uri(filePath, UriKind.RelativeOrAbsolute)
+                        Dim localFileName = CStr(filePath)
+                        If IO.Path.IsPathRooted(localFileName) Then
+                            If localFileName.StartsWith("\") OrElse localFileName.StartsWith("/") Then
+                                localFileName = IO.Path.Combine(Program.Directory, localFileName.TrimStart({"\"c, "/"c}))
+                            End If
+                        Else
+                            localFileName = IO.Path.Combine(Program.Directory, localFileName)
+                        End If
+
+                        Dim uri1 As New Uri(localFileName, UriKind.RelativeOrAbsolute)
                         Dim value As MediaPlayer = Nothing
                         If Not _mediaPlayerMap.TryGetValue(uri1, value) Then
                             value = New MediaPlayer
@@ -256,42 +266,47 @@ Namespace Library
         End Sub
 
         Private Shared Sub PlayNotes(song As String)
-            Dim num As Integer = 0
+            Dim i As Integer = 0
             song = song.ToUpperInvariant()
-            Dim length1 As Integer = song.Length
-            While num < song.Length
-                Dim num2 As Integer = _defaultLength
-                Dim c As Char = song(num)
-                num += 1
+            Dim songLength As Integer = song.Length
+
+            While i < songLength
+                Dim length = _defaultLength
+                Dim c As Char = song(i)
+                i += 1
 
                 If Char.IsLetter(c) Then
                     Dim text As New String(c, 1)
-                    If num < length1 Then
-                        c = song(num)
+                    If i < songLength Then
+                        c = song(i)
                         If c = "#"c OrElse c = "+"c OrElse c = "-"c Then
                             text += New String(c, 1)
-                            num += 1
+                            i += 1
                         End If
-                        If num < length1 Then
-                            c = song(num)
+
+                        If i < songLength Then
+                            c = song(i)
                             If Char.IsDigit(c) Then
-                                num2 = AscW(c) - 48
-                                num += 1
+                                length = AscW(c) - 48
+                                i += 1
                             End If
-                            If num < length1 Then
-                                c = song(num)
+
+                            If i < songLength Then
+                                c = song(i)
                                 If Char.IsDigit(c) Then
-                                    num2 = num2 * 10 + (AscW(c) - 48)
-                                    num += 1
+                                    length = length * 10 + (AscW(c) - 48)
+                                    i += 1
                                 End If
                             End If
                         End If
                     End If
+
                     If text(0) = "O"c Then
-                        _octave = num2
+                        _octave = length
                     Else
-                        PlayNote(_octave, text, num2)
+                        PlayNote(_octave, text, length)
                     End If
+
                 Else
                     Select Case c
                         Case ">"c

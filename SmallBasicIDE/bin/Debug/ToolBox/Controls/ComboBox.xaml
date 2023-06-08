@@ -1,0 +1,13 @@
+﻿<d:SBControl xmlns:d="clr-namespace:DiagramHelper;assembly=DiagramHelper"
+ 
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ 
+     DisplayImage="ComboBox.png">
+
+         <d:SBControl.Control>
+
+            <ComboBox d:Designer.FrameWidth="150" d:Designer.FrameHeight="30" IsEditable = "True"/>
+
+         </d:SBControl.Control>
+
+</d:SBControl>

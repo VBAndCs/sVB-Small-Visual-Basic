@@ -1,0 +1,17 @@
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\bin\Debug\sVBCompiler.exe.config
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\bin\Debug\sVBCompiler.exe
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\bin\Debug\sVBCompiler.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\bin\Debug\sVBCompiler.xml
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\bin\Debug\SmallBasicLibrary.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\bin\Debug\SmallVisualBasicLibrary.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\bin\Debug\StringResources.dll
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\bin\Debug\SmallVisualBasicLibrary.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\bin\Debug\SmallVisualBasicLibrary.xml
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\obj\Debug\svB.Compiler.vbproj.AssemblyReference.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\obj\Debug\Resources.resources
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\obj\Debug\svB.Compiler.vbproj.GenerateResource.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\obj\Debug\svB.Compiler.vbproj.CoreCompileInputs.cache
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\obj\Debug\svB.Compiler.vbproj.CopyComplete
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\obj\Debug\sVBCompiler.exe
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\obj\Debug\sVBCompiler.xml
+F:\_VS.NET\Small Basic IDE\sVB\1\SBCompiler\SBCompiler\obj\Debug\sVBCompiler.pdb

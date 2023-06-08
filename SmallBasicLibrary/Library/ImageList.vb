@@ -24,7 +24,11 @@ Namespace Library
             If fileNameOrUrl.IsEmpty Then Return ""
 
             Dim imageName = Shapes.GenerateNewName("ImageList")
-            _savedImages(imageName) = LoadImageFromFile(fileNameOrUrl)
+            SmallBasicApplication.Invoke(
+                Sub()
+                    _savedImages(imageName) = LoadImageFromFile(fileNameOrUrl)
+                End Sub)
+
             Return imageName
         End Function
 
@@ -39,12 +43,20 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetWidthOfImage(imageName As Primitive) As Primitive
-            Dim image As BitmapSource = GetBitmap(imageName)
-            If image Is Nothing Then
-                Return 0
-            End If
+            Return CType(GraphicsWindow.InvokeWithReturn(
+                Function()
+                    Try
+                        Dim image = GetBitmap(imageName)
+                        If image Is Nothing Then Return 0
+                        Return CType(image.PixelWidth, Primitive)
+                    Catch ex As Exception
+                    End Try
 
-            Return CType(GraphicsWindow.InvokeWithReturn(Function() CType(image.PixelWidth, Primitive)), Primitive)
+                    Return 0
+                End Function
+             ), Primitive)
+
+            Return 0
         End Function
 
         ''' <summary>
@@ -58,35 +70,52 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetHeightOfImage(imageName As Primitive) As Primitive
-            Dim image As BitmapSource = GetBitmap(imageName)
-            If image Is Nothing Then
-                Return 0
-            End If
 
             Return CType(GraphicsWindow.InvokeWithReturn(
-                        Function() CType(image.PixelHeight, Primitive)
+                        Function()
+                            Try
+                                Dim image = GetBitmap(imageName)
+                                If image Is Nothing Then Return 0
+                                Return CType(image.PixelHeight, Primitive)
+                            Catch ex As Exception
+                            End Try
+                            Return 0
+                        End Function
                 ), Primitive)
+            Return 0
         End Function
 
         Friend Shared Function GetBitmap(imageName As Primitive) As BitmapSource
             Dim value As BitmapSource = Nothing
-            If Not imageName.IsEmpty Then
-                _savedImages.TryGetValue(imageName, value)
-            End If
-            If value Is Nothing Then
-                value = LoadImageFromFile(imageName)
-            End If
+
+            GraphicsWindow.Invoke(
+                Sub()
+                    If Not imageName.IsEmpty Then
+                        _savedImages.TryGetValue(imageName, value)
+                    End If
+                    If value Is Nothing Then
+                        value = LoadImageFromFile(imageName)
+                    End If
+                End Sub)
 
             Return value
         End Function
 
         Friend Shared Function LoadImageFromFile(fileNameOrUrl As Primitive) As BitmapImage
-            fileNameOrUrl = Environment.ExpandEnvironmentVariables(fileNameOrUrl)
-            Dim localFileName = Network.GetLocalFile(fileNameOrUrl)
             Return CType(SmallBasicApplication.InvokeWithReturn(
                 Function() As BitmapImage
                     Try
+                        fileNameOrUrl = Environment.ExpandEnvironmentVariables(fileNameOrUrl)
+                        Dim localFileName As String = Network.GetLocalFile(fileNameOrUrl)
+                        If IO.Path.IsPathRooted(localFileName) Then
+                            If localFileName.StartsWith("\") OrElse localFileName.StartsWith("/") Then
+                                localFileName = IO.Path.Combine(Program.Directory, localFileName.TrimStart({"\"c, "/"c}))
+                            End If
+                        Else
+                            localFileName = IO.Path.Combine(Program.Directory, localFileName)
+                        End If
                         Return New BitmapImage(New Uri(localFileName, UriKind.RelativeOrAbsolute))
+
                     Catch
                     End Try
                     Return Nothing

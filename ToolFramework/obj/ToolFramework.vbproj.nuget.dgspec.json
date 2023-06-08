@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "restore": {
+    "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\ToolFramework\\ToolFramework.vbproj": {}
+  },
+  "projects": {
+    "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\ToolFramework\\ToolFramework.vbproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\ToolFramework\\ToolFramework.vbproj",
+        "projectName": "ToolFramework",
+        "projectPath": "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\ToolFramework\\ToolFramework.vbproj",
+        "packagesPath": "C:\\Users\\Mhmd\\.nuget\\packages\\",
+        "outputPath": "F:\\_VS.NET\\Small Basic IDE\\sVB\\1\\ToolFramework\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Mhmd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net48"
+        ],
+        "sources": {
+          "C:\\Program Files\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net48": {
+            "targetAlias": "net48",
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net48": {
+          "targetAlias": "net48",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

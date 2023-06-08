@@ -1,0 +1,20 @@
+﻿WpfColorPicker
+
+
+library
+VB
+.vb
+B:\_VS.NET\Wpf Samples\WpfColorPicker\WpfColorPicker\obj\Debug\
+WpfColorPicker
+none
+false
+
+
+6824173289
+
+331972996768
+111453928139
+Implementation\ImageBrushPicker.xaml;Implementation\ExpanderStyle.xaml;Implementation\TileBrushPicker.xaml;Implementation\TransformPicker.xaml;Implementation\WndColor.xaml;Themes\Generic.xaml;
+
+False
+
