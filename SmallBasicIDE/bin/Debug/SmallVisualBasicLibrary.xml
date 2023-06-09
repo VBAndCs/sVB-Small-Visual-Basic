@@ -368,9 +368,7 @@ Converts the given array to a string
  <summary>
  Gets the current caption of the specified button.
  </summary>
- <param name="buttonName">
- The Button whose caption is requested.
- </param>
+ <param name="buttonName">The Button whose caption is requested.</param>
  <returns>
  The current caption of the button.
  </returns>
@@ -2282,9 +2280,7 @@ Converts the given array to a string
  <summary>
  Gets the opacity of a shape.
  </summary>
- <param name="shapeName">
- The name of the shape.
- </param>
+ <param name="shapeName">The name of the shape.</param>
  <returns>
  The opacity of the object as a value between 0 and 100.  0 is completely transparent and 100 is completely opaque.
  </returns>

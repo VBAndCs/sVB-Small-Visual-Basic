@@ -43,18 +43,17 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetWidthOfImage(imageName As Primitive) As Primitive
-            Return CType(GraphicsWindow.InvokeWithReturn(
-                Function()
+            Return GraphicsWindow.InvokeWithReturn(
+                Function() As Primitive
                     Try
                         Dim image = GetBitmap(imageName)
-                        If image Is Nothing Then Return 0
-                        Return CType(image.PixelWidth, Primitive)
+                        If image Is Nothing Then Return New Primitive(0)
+                        Return New Primitive(image.PixelWidth)
                     Catch ex As Exception
                     End Try
 
-                    Return 0
-                End Function
-             ), Primitive)
+                    Return New Primitive(0)
+                End Function)
 
             Return 0
         End Function
@@ -70,18 +69,17 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetHeightOfImage(imageName As Primitive) As Primitive
+            Return GraphicsWindow.InvokeWithReturn(
+                 Function() As Primitive
+                     Try
+                         Dim image = GetBitmap(imageName)
+                         If image Is Nothing Then Return New Primitive(0)
+                         Return New Primitive(image.PixelHeight)
+                     Catch ex As Exception
+                     End Try
 
-            Return CType(GraphicsWindow.InvokeWithReturn(
-                        Function()
-                            Try
-                                Dim image = GetBitmap(imageName)
-                                If image Is Nothing Then Return 0
-                                Return CType(image.PixelHeight, Primitive)
-                            Catch ex As Exception
-                            End Try
-                            Return 0
-                        End Function
-                ), Primitive)
+                     Return New Primitive(0)
+                 End Function)
             Return 0
         End Function
 

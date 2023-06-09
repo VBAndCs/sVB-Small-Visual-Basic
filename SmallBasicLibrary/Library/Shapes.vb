@@ -489,20 +489,20 @@ Namespace Library
         ''' <summary>
         ''' Gets the opacity of a shape.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape.</param>
         ''' <returns>
         ''' The opacity of the object as a value between 0 and 100.  0 is completely transparent and 100 is completely opaque.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetOpacity(shapeName As Primitive) As Primitive
-            Dim obj As UIElement = Nothing
-            If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
-                Return 0
-            End If
-
-            Return CType(GraphicsWindow.InvokeWithReturn(Function() CType(obj.Opacity, Primitive) * CType(100, Primitive)), Primitive)
+            Return GraphicsWindow.InvokeWithReturn(
+                Function() As Primitive
+                    Dim obj As UIElement = Nothing
+                    If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
+                        Return New Primitive(0)
+                    End If
+                    Return New Primitive(obj.Opacity * 100.0)
+                End Function)
         End Function
 
         ''' <summary>

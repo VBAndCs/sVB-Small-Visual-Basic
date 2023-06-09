@@ -64,7 +64,10 @@ Namespace Library
         Public Shared Property BackgroundColor As Primitive
             Get
                 VerifyAccess()
-                Return CStr(InvokeWithReturn(Function() GetStringFromColor(_backgroundBrush.Color)))
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(GetStringFromColor(_backgroundBrush.Color))
+                    End Function)
             End Get
 
             Set(Value As Primitive)
@@ -88,9 +91,10 @@ Namespace Library
                     Return WinForms.Colors.None
                 End If
 
-                Return CStr(InvokeWithReturn(
-                    Function() GetStringFromColor(_fillBrush.Color))
-                )
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(GetStringFromColor(_fillBrush.Color))
+                    End Function)
             End Get
 
             Set(Value As Primitive)
@@ -114,7 +118,10 @@ Namespace Library
         Public Shared Property CanResize As Primitive
             Get
                 VerifyAccess()
-                Return CBool(InvokeWithReturn(Function() _window.ResizeMode = ResizeMode.CanResize))
+                Return InvokeWithReturn(
+                     Function() As Primitive
+                         Return New Primitive(_window.ResizeMode = ResizeMode.CanResize)
+                     End Function)
             End Get
 
             Set(Value As Primitive)
@@ -137,9 +144,10 @@ Namespace Library
         Public Shared Property PenWidth As Primitive
             Get
                 VerifyAccess()
-                Return CDbl(InvokeWithReturn(
-                        Function() If(_pen IsNot Nothing, _pen.Thickness, 2.0)
-                ))
+                Return InvokeWithReturn(
+                     Function() As Primitive
+                         Return New Primitive(If(_pen IsNot Nothing, _pen.Thickness, 2.0))
+                     End Function)
             End Get
 
             Set(Value As Primitive)
@@ -158,12 +166,14 @@ Namespace Library
         Public Shared Property PenColor As Primitive
             Get
                 VerifyAccess()
-                Return New Primitive(InvokeWithReturn(
-                    Function() If(
-                        _pen IsNot Nothing,
-                        GetStringFromColor(CType(_pen.Brush, SolidColorBrush).Color),
-                        WinForms.Colors.None.AsString())
-                    ))
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(
+                            If(_pen IsNot Nothing,
+                                GetStringFromColor(CType(_pen.Brush, SolidColorBrush).Color),
+                                WinForms.Colors.None.AsString())
+                        )
+                    End Function)
             End Get
 
             Set(Value As Primitive)
@@ -187,7 +197,10 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Property FontName As Primitive
             Get
-                Return CStr(InvokeWithReturn(Function() If((_fontFamily IsNot Nothing), _fontFamily.Source, "Tahoma")))
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(If(_fontFamily IsNot Nothing, _fontFamily.Source, "Tahoma"))
+                    End Function)
             End Get
 
             Set(Value As Primitive)
@@ -260,7 +273,10 @@ Namespace Library
         Public Shared Property Title As Primitive
             Get
                 VerifyAccess()
-                Return CStr(InvokeWithReturn(Function() _window.Title))
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(_window.Title)
+                    End Function)
             End Get
 
             Set(Value As Primitive)
@@ -278,7 +294,10 @@ Namespace Library
         Public Shared Property Height As Primitive
             Get
                 VerifyAccess()
-                Return CDbl(InvokeWithReturn(Function() _mainCanvas.ActualHeight))
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(_mainCanvas.ActualHeight)
+                    End Function)
             End Get
 
             Set(Value As Primitive)
@@ -296,7 +315,10 @@ Namespace Library
         Public Shared Property Width As Primitive
             Get
                 VerifyAccess()
-                Return CDbl(InvokeWithReturn(Function() _mainCanvas.ActualWidth))
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(_mainCanvas.ActualWidth)
+                    End Function)
             End Get
 
             Set(Value As Primitive)
@@ -314,7 +336,10 @@ Namespace Library
         Public Shared Property Left As Primitive
             Get
                 VerifyAccess()
-                Return CDbl(InvokeWithReturn(Function() _window.Left))
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(_window.Left)
+                    End Function)
             End Get
 
             Set(Value As Primitive)
@@ -332,7 +357,10 @@ Namespace Library
         Public Shared Property Top As Primitive
             Get
                 VerifyAccess()
-                Return CDbl(InvokeWithReturn(Function() _window.Top))
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(_window.Top)
+                    End Function)
             End Get
 
             Set(Value As Primitive)
@@ -354,7 +382,10 @@ Namespace Library
         Public Shared Property FullScreen As Primitive
             Get
                 VerifyAccess()
-                Return CBool(InvokeWithReturn(Function() _window.WindowStyle = WindowStyle.None))
+                Return InvokeWithReturn(
+                    Function() As Primitive
+                        Return New Primitive(_window.WindowStyle = WindowStyle.None)
+                    End Function)
             End Get
 
             Set(value As Primitive)
@@ -942,14 +973,14 @@ Namespace Library
             If x > Width Then x = Width
             If y > Height Then y = Height
 
-            Return CType(InvokeWithReturn(
+            Return InvokeWithReturn(
                 Function() As Primitive
                     Rasterize()
                     Dim colorBGR As Byte() = New Byte(3) {}
                     Dim stride = CInt(_renderBitmap.Width * (_renderBitmap.Format.BitsPerPixel + 7) / 8)
                     _renderBitmap.CopyPixels(New Int32Rect(x, y, 1, 1), colorBGR, stride, 0)
-                    Return CType($"#{colorBGR(2):X2}{colorBGR(1):X2}{colorBGR(0):X2}", Primitive)
-                End Function), Primitive)
+                    Return New Primitive($"#{colorBGR(2):X2}{colorBGR(1):X2}{colorBGR(0):X2}")
+                End Function)
         End Function
 
         ''' <summary>
@@ -1170,7 +1201,7 @@ Namespace Library
             SmallBasicApplication.Invoke(invokeDelegate)
         End Sub
 
-        Friend Shared Function InvokeWithReturn(invokeDelegate As InvokeHelperWithReturn) As Object
+        Friend Shared Function InvokeWithReturn(invokeDelegate As InvokeHelperWithReturn) As Primitive
             Return SmallBasicApplication.InvokeWithReturn(invokeDelegate)
         End Function
 

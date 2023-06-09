@@ -103,26 +103,24 @@ Namespace Library
         ''' <summary>
         ''' Gets the current caption of the specified button.
         ''' </summary>
-        ''' <param name="buttonName">
-        ''' The Button whose caption is requested.
-        ''' </param>
+        ''' <param name="buttonName">The Button whose caption is requested.</param>
         ''' <returns>
         ''' The current caption of the button.
         ''' </returns>
         Public Shared Function GetButtonCaption(buttonName As Primitive) As Primitive
-            Dim value As UIElement = Nothing
-            If Not GraphicsWindow._objectsMap.TryGetValue(buttonName, value) Then
-                Return ""
-            End If
+            Return GraphicsWindow.InvokeWithReturn(
+                    Function() As Primitive
+                        Dim value As UIElement = Nothing
+                        If Not GraphicsWindow._objectsMap.TryGetValue(buttonName, value) Then
+                            Return New Primitive("")
+                        End If
 
-            Dim button1 = TryCast(value, Button)
-            If button1 Is Nothing Then
-                Return ""
-            End If
-
-            Return CType(GraphicsWindow.InvokeWithReturn(
-                    Function() CType(button1.Content.ToString(), Primitive)
-                ), Primitive)
+                        Dim button1 = TryCast(value, Button)
+                        If button1 Is Nothing Then
+                            Return New Primitive("")
+                        End If
+                        Return New Primitive(button1.Content.ToString())
+                    End Function)
         End Function
 
         ''' <summary>
@@ -605,16 +603,20 @@ Namespace Library
         ''' The text in the TextBox
         ''' </returns>
         Public Shared Function GetTextBoxText(textBoxName As Primitive) As Primitive
-            Dim value As UIElement = Nothing
-            If Not GraphicsWindow._objectsMap.TryGetValue(textBoxName, value) Then
-                Return ""
-            End If
-            Dim textBox1 As TextBox = TryCast(value, TextBox)
-            If textBox1 Is Nothing Then
-                Return ""
-            End If
+            Return GraphicsWindow.InvokeWithReturn(
+                Function() As Primitive
+                    Dim value As UIElement = Nothing
+                    If Not GraphicsWindow._objectsMap.TryGetValue(textBoxName, value) Then
+                        Return New Primitive("")
+                    End If
 
-            Return CType(GraphicsWindow.InvokeWithReturn(Function() CType(textBox1.Text, Primitive)), Primitive)
+                    Dim textBox1 As TextBox = TryCast(value, TextBox)
+                    If textBox1 Is Nothing Then
+                        Return New Primitive("")
+                    End If
+
+                    Return New Primitive(textBox1.Text)
+                End Function)
         End Function
 
         ''' <summary>

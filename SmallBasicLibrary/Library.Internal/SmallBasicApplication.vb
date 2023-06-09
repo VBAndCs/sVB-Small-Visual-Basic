@@ -65,9 +65,10 @@ Namespace Library.Internal
                 height = original.PixelHeight - top
             End If
 
-            Return CType(InvokeWithReturn(Function() As System.Windows.Media.Imaging.CroppedBitmap
-                                              Return New CroppedBitmap(original, New Int32Rect(left, top, width, height))
-                                          End Function), BitmapSource)
+            Return CType(InvokeWithReturn(
+                    Function() As CroppedBitmap
+                        Return New CroppedBitmap(original, New Int32Rect(left, top, width, height))
+                    End Function), BitmapSource)
         End Function
 
         Friend Shared Sub [End]()
