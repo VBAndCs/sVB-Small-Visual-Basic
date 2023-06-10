@@ -15,17 +15,28 @@ Namespace Library
     <SmallVisualBasicType>
     Public NotInheritable Class Turtle
         Private Const _turtleName As String = "_turtle"
-        Private Shared _initialized As Boolean = False
-        Private Shared _isVisible As Boolean = True
-        Private Shared _currentX As Double = 320.0
-        Private Shared _currentY As Double = 240.0
+        Friend Shared _initialized As Boolean
+        Private Shared _isVisible As Boolean
+        Private Shared _currentX As Double
+        Private Shared _currentY As Double
         Private Shared _turtle As FrameworkElement
-        Private Shared _speed As Integer = 15
-        Private Shared _angle As Double = 0.0
+        Private Shared _speed As Integer
+        Private Shared _angle As Double
         Private Shared _rotateTransform As RotateTransform
-        Private Shared _penDown As Boolean = True
-        Private Shared _toShow As Boolean = False
+        Private Shared _penDown As Boolean
+        Private Shared _toShow As Boolean
 
+        Friend Shared Sub Initialize()
+            _initialized = False
+            _isVisible = True
+            _currentX = 320.0
+            _currentY = 240.0
+            _speed = 15
+            _angle = 0.0
+            _penDown = True
+            _toShow = False
+            _turtle = Nothing
+        End Sub
 
         ''' <summary>
         ''' Specifies how fast the turtle should move. 
@@ -83,7 +94,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 _currentX = Value
-                Shapes.Move("_turtle", _currentX, _currentY)
+                Shapes.Move(_turtleName, _currentX, _currentY)
             End Set
         End Property
 
@@ -98,7 +109,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 _currentY = Value
-                Shapes.Move("_turtle", _currentX, _currentY)
+                Shapes.Move(_turtleName, _currentX, _currentY)
             End Set
         End Property
 
@@ -118,7 +129,7 @@ Namespace Library
         Public Shared Sub Hide()
             If _isVisible Then
                 GraphicsWindow.VerifyAccess()
-                GraphicsWindow.Invoke(Sub() Shapes.Remove("_turtle"))
+                GraphicsWindow.Invoke(Sub() Shapes.Remove(_turtleName))
                 _isVisible = False
             End If
         End Sub
@@ -141,6 +152,10 @@ Namespace Library
         Private Shared _group As GeometryGroup
         Private Shared _geometry As PathGeometry
         Private Shared _figure As PathFigure
+
+        Shared Sub New()
+            Initialize()
+        End Sub
 
         ''' <summary>
         ''' Uses the next turtle movements to create a closed figure, so that you can fill it by calling the FillFigure method.
@@ -201,7 +216,7 @@ Namespace Library
             Dim angle = _angle / 180.0 * System.Math.PI
             Dim newY = _currentY - d * System.Math.Cos(angle)
             Dim newX = _currentX + d * System.Math.Sin(angle)
-            Shapes.Animate("_turtle", newX, newY, animateTime)
+            Shapes.Animate(_turtleName, newX, newY, animateTime)
 
             GraphicsWindow.Invoke(
                 Sub()
@@ -345,9 +360,10 @@ Namespace Library
                         _turtle.Width = 16.0
                         _turtle.Height = 16.0
                     End If
+
                     Canvas.SetLeft(_turtle, _currentX)
                     Canvas.SetTop(_turtle, _currentY)
-                    GraphicsWindow.AddShape("_turtle", _turtle)
+                    GraphicsWindow.AddShape(_turtleName, _turtle)
                 End Sub)
         End Sub
 

@@ -1166,6 +1166,10 @@ Namespace Library
             End If
 
             WinForms.Forms.RemoveFormAndControls(Controls.GW_NAME)
+            _windowCreated = False
+            Turtle.Initialize()
+            _mainCanvas.Children.Clear()
+            _objectsMap.Clear()
         End Sub
 
         Private Shared Sub WindowSizeChanged(sender As Object, e As SizeChangedEventArgs)

@@ -104,8 +104,6 @@ Class sVB
         Return newFile & ".exe"
     End Function
 
-
-
     Public Shared Function CompileGlobalModule(
                    inputDir As String,
                    outputFileName As String,
@@ -339,13 +337,24 @@ Class sVB
             Dim nameToken = tokens(objId + 2)
             Dim prevText = If(charNum = 0, "", line.Substring(0, charNum))
             Dim methodPos = charNum + obj.Length + 1
-            Dim nextText = line.Substring(methodPos)
+            Dim lastToken = tokens.Last
+            Dim commentPos = If(
+                lastToken.Line = lineNum AndAlso lastToken.Type = TokenType.Comment,
+                lastToken.Column,
+                -1
+            )
+
+            Dim nextText = line.Substring(
+                methodPos,
+                If(commentPos = -1, line.Length, commentPos) - methodPos
+            )
 
             If objId + 3 < tokens.Count AndAlso nameToken.Type = TokenType.Identifier AndAlso tokens(objId + 3).Type = TokenType.LeftParens Then
                 ' Method Call
                 Dim method = nameToken.Text
                 Dim restText = line.Substring(tokens(objId + 3).Column + 1)
                 Dim argsExprList = Parser.ParseArgumentList(restText, lineNum, lines, TokenType.LeftParens)
+
                 If argsExprList Is Nothing Then
                     errors.Clear()
                     errors.Add(New [Error](nameToken, "Wrong brackets pairs"))
@@ -417,12 +426,20 @@ Class sVB
                     pos = tokens(objId + 3).Column
                     lines(lineNum) = prevText &
                             $"{ModuleName}.{method}({obj}, {line.Substring(pos + 1).Trim}"
-                    lines(lineNum + tokens.Last.subLine) += ")"
-                    errors.RemoveAt(i)
-                    ReRun = True
 
-                Else ' Event
-                    Dim ModuleName = propInfo.Module
+                    Dim lastLineNum = lineNum + lastToken.subLine
+                    If commentPos = -1 AndAlso lastToken.Type <> TokenType.Comment Then
+                        lines(lastLineNum) += ")"
+                    Else
+                        Dim x = lines(lastLineNum)
+                        lines(lastLineNum) = x.Substring(0, x.Length - lastToken.EndColumn + lastToken.Column) & ")" & lastToken.Text
+                    End If
+
+                    errors.RemoveAt(i)
+                        ReRun = True
+
+                    Else ' Event
+                        Dim ModuleName = propInfo.Module
                     lines(lineNum) = $"Control.HandleEvents({obj})" & vbLf &
                                                 prevText & $"{ModuleName}.{nextText}"
                     errors.RemoveAt(i)
@@ -451,7 +468,8 @@ Class sVB
                     lines(lineNum) =
                        prevText &
                        $"{ModuleName}.{method}({obj})" &
-                       nextText.Substring(propName.Length)
+                       nextText.Substring(propName.Length) &
+                       If(commentPos > -1, lastToken.Text, "")
                 Else
                     errors.Clear()
                     errors.Add(New [Error](nameToken, $"`{method}` definition is not supported."))
