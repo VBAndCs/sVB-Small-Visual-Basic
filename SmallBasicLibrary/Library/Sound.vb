@@ -7,6 +7,7 @@ Imports Microsoft.SmallVisualBasic.Library.Internal
 Namespace Library
     ''' <summary>
     ''' The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
+    ''' The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
     ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class Sound
@@ -152,7 +153,12 @@ Namespace Library
         Public Shared Sub Play(filePath As Primitive)
             SmallBasicApplication.Invoke(
                 Sub()
-                    GetMediaPlayer(filePath)?.Play()
+                    Dim mp = GetMediaPlayer(filePath)
+                    If mp IsNot Nothing Then
+                        mp.Stop()
+                        mp.Play()
+                    End If
+
                 End Sub)
         End Sub
 
@@ -319,10 +325,10 @@ Namespace Library
         End Sub
 
         Private Shared Sub PlayNote(octave As Integer, note As String, length As Integer)
-            Dim num As Double = 1600.0 / CDbl(length)
+            Dim delay As Double = 1600 / length
             Select Case note
                 Case "P", "R"
-                    Thread.Sleep(num)
+                    Thread.Sleep(delay)
                     Return
                 Case "L"
                     _defaultLength = length
@@ -336,7 +342,7 @@ Namespace Library
             octave = System.Math.Min(System.Math.Max(0, octave), 8)
             Dim number As Integer = octave * 12 + value
             PlayNote(number)
-            Thread.Sleep(num)
+            Thread.Sleep(delay)
         End Sub
 
         Private Shared Sub PlayNote(number As Integer)

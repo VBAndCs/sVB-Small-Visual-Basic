@@ -25,6 +25,57 @@ Namespace Library
         Private Shared _rotateTransform As RotateTransform
         Private Shared _penDown As Boolean
         Private Shared _toShow As Boolean
+        Private Shared _width As Double = 16
+        Private Shared _height As Double = 16
+
+        ''' <summary>
+        ''' Gets or sets the turtle width. The default value is 16, and the minimum value is 4.
+        ''' Note that changeing the turtle width will also set its height to the same value.
+        ''' </summary>     
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Property Width As Primitive
+            Get
+                Return _Width
+            End Get
+
+            Set(value As Primitive)
+                ChangeSize(value)
+            End Set
+        End Property
+
+        ''' <summary>
+        ''' Gets or sets the turtle height. The default value is 16, and the minimum value is 4.
+        ''' Note that changeing the turtle height will also set its width to the same value.
+        ''' </summary>     
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Property Height As Primitive
+            Get
+                Return _height
+            End Get
+
+            Set(value As Primitive)
+                ChangeSize(value)
+            End Set
+        End Property
+
+        Private Shared Sub ChangeSize(value As Primitive)
+            If Not value.IsNumber Then Return
+            Dim v = System.Math.Abs(value.AsDecimal)
+            If v < 4 Then v = 4
+            _width = v
+            _height = v
+            VerifyAccess()
+
+            SmallBasicApplication.Invoke(
+                Sub()
+                    _turtle.Width = v
+                    _turtle.Height = v
+                    v /= 2
+                    _turtle.Margin = New Thickness(-v, -v, 0.0, 0.0)
+                    _rotateTransform.CenterX = v
+                    _rotateTransform.CenterY = v
+                End Sub)
+        End Sub
 
         Friend Shared Sub Initialize()
             _initialized = False
@@ -33,6 +84,8 @@ Namespace Library
             _currentY = 240.0
             _speed = 15
             _angle = 0.0
+            _width = 16.0
+            _height = 16.0
             _penDown = True
             _toShow = False
             _turtle = Nothing
@@ -337,28 +390,27 @@ Namespace Library
             _initialized = True
             If Not _isVisible Then Return
 
-            GraphicsWindow.Invoke(
+            SmallBasicApplication.Invoke(
                 Sub()
                     If _turtle Is Nothing Then
                         Dim source As ImageSource = New BitmapImage(
                             SmallBasicApplication.GetResourceUri("Turtle.png")
                         )
+
                         _turtle = New Image With {
                               .Source = source,
-                              .Margin = New Thickness(-8.0, -8.0, 0.0, 0.0),
-                              .Height = 16.0,
-                              .Width = 16.0
+                              .Margin = New Thickness(-_width / 2, -_height / 2, 0.0, 0.0),
+                              .Height = _height,
+                              .Width = _width
                         }
 
                         Panel.SetZIndex(_turtle, 1000000)
                         _rotateTransform = New RotateTransform With {
                                  .Angle = _angle,
-                                 .CenterX = 8.0,
-                                 .CenterY = 8.0
+                                 .CenterX = _width / 2,
+                                 .CenterY = _height / 2
                           }
                         _turtle.RenderTransform = _rotateTransform
-                        _turtle.Width = 16.0
-                        _turtle.Height = 16.0
                     End If
 
                     Canvas.SetLeft(_turtle, _currentX)
