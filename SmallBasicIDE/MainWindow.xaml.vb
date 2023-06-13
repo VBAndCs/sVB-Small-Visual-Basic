@@ -1323,7 +1323,7 @@ Namespace Microsoft.SmallVisualBasic
             If ExitSelectionChanged Then Return
 
             Dim controlIndex As Integer
-            If e.RemovedItems.Count = 0 Then
+            If Not formDesigner.ItemDeleted Then
                 If CStr(txtControlName.Tag) <> "" Then
                     controlIndex = CInt(txtControlName.Tag)
                     If formDesigner.Items.Count > controlIndex AndAlso txtControlName.Text <> formDesigner.GetControlName(controlIndex) Then

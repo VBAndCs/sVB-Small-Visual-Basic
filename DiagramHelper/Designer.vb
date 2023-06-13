@@ -726,7 +726,9 @@ Public Class Designer
     Sub RemoveDiagram(Diagram As UIElement)
         Dim Pnl = Helper.GetDiagramPanel(Diagram)
         DiagramGroup.RemovePanelOnly(Pnl)
+        Me.ItemDeleted = True
         Me.Items.Remove(Diagram)
+        Me.ItemDeleted = False
     End Sub
 
     Sub RemoveSelectedDiagrams()
@@ -1501,6 +1503,7 @@ Public Class Designer
     Dim ExitChange As Boolean = False
     Friend MinZIndex As Integer
     Public IsReloading As Boolean = False
+    Public ItemDeleted As Boolean
 
 #Region "Left Attached Property"
     <TypeConverter(GetType(LengthConverter))>
