@@ -1,6 +1,6 @@
-17/05/2023 07:32:53 Õ
+10/06/2023 02:46:56 ã
 Sending `-1` to frmcontroltests.textbox1.FontSize caused an error: 
 '-1.33333333333333' is not a valid value for property 'FontSize'.
-17/05/2023 07:32:53 Õ
+10/06/2023 02:46:56 ã
 Sending `0` to frmcontroltests.textbox1.FontSize caused an error: 
 '0' is not a valid value for property 'FontSize'.

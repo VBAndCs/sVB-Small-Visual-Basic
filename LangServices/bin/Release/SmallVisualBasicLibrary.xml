@@ -368,9 +368,7 @@ Converts the given array to a string
  <summary>
  Gets the current caption of the specified button.
  </summary>
- <param name="buttonName">
- The Button whose caption is requested.
- </param>
+ <param name="buttonName">The Button whose caption is requested.</param>
  <returns>
  The current caption of the button.
  </returns>
@@ -2282,9 +2280,7 @@ Converts the given array to a string
  <summary>
  Gets the opacity of a shape.
  </summary>
- <param name="shapeName">
- The name of the shape.
- </param>
+ <param name="shapeName">The name of the shape.</param>
  <returns>
  The opacity of the object as a value between 0 and 100.  0 is completely transparent and 100 is completely opaque.
  </returns>
@@ -2323,6 +2319,7 @@ Converts the given array to a string
 </member>
 <member name="T:Microsoft.SmallVisualBasic.Library.Sound">
  <summary>
+ The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
  The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
  </summary>
 </member>
@@ -2874,6 +2871,18 @@ Returns true if the given text is empty, or returns false otherwise.
  <summary>
  The Turtle provides Logo-like functionality to draw shapes by manipulating the properties of a pen and drawing primitives.
  </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Library.Turtle.Width">
+ <summary>
+ Gets or sets the turtle width. The default value is 16, and the minimum value is 4.
+ Note that changeing the turtle width will also set its height to the same value.
+ </summary>     
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Library.Turtle.Height">
+ <summary>
+ Gets or sets the turtle height. The default value is 16, and the minimum value is 4.
+ Note that changeing the turtle height will also set its width to the same value.
+ </summary>     
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.Turtle.Speed">
  <summary>

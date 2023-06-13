@@ -1323,33 +1323,32 @@ Namespace Microsoft.SmallVisualBasic
             If ExitSelectionChanged Then Return
 
             Dim controlIndex As Integer
+            If e.RemovedItems.Count = 0 Then
+                If CStr(txtControlName.Tag) <> "" Then
+                    controlIndex = CInt(txtControlName.Tag)
+                    If formDesigner.Items.Count > controlIndex AndAlso txtControlName.Text <> formDesigner.GetControlName(controlIndex) Then
+                        If Not CommitName() Then
+                            ' Re-select the control. this event can fire b4 lostfocus event of the textbox
+                            ExitSelectionChanged = True
+                            If controlIndex = -1 Then
+                                formDesigner.SelectedItem = Nothing
+                            Else
+                                ' Note: setting selectedIndex doesn't work!!
+                                formDesigner.SelectedItem = formDesigner.Items(controlIndex)
+                            End If
+                            ExitSelectionChanged = False
 
-            If CStr(txtControlName.Tag) <> "" Then
-                controlIndex = CInt(txtControlName.Tag)
-
-                If formDesigner.Items.Count > controlIndex AndAlso txtControlName.Text <> formDesigner.GetControlName(controlIndex) Then
-                    If Not CommitName() Then
-                        ' Re-select the control. this event can fire b4 lostfocus event of the textbox
-                        ExitSelectionChanged = True
-                        If controlIndex = -1 Then
-                            formDesigner.SelectedItem = Nothing
-                        Else
-                            ' Note: setting selectedIndex doesn't work!!
-                            formDesigner.SelectedItem = formDesigner.Items(controlIndex)
+                            ' goback to the textbox
+                            FocusTxtName.Start()
+                            Return
                         End If
-                        ExitSelectionChanged = False
-
-                        ' goback to the textbox
-                        FocusTxtName.Start()
-                        Return
                     End If
                 End If
 
-            End If
-
-            If CStr(txtControlText.Tag) <> "" Then
-                controlIndex = CInt(txtControlText.Tag)
-                formDesigner.SetControlText(controlIndex, txtControlText.Text)
+                If CStr(txtControlText.Tag) <> "" Then
+                    controlIndex = CInt(txtControlText.Tag)
+                    formDesigner.SetControlText(controlIndex, txtControlText.Text)
+                End If
             End If
 
             UpdateTextBoxes()
