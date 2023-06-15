@@ -499,8 +499,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Return spans.ToArray()
         End Function
 
-
         Sub UpdateCombos(eventInfo As EventInformation)
+            If _MdiView.CmbControlNames Is Nothing Then Return
+
             If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
                 _MdiView.CmbControlNames.SelectedItem = eventInfo.ControlName
             End If

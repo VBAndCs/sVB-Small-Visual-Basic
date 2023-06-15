@@ -1214,7 +1214,11 @@ Namespace Microsoft.SmallVisualBasic
             Else
                 loweredIndex = -1
                 _currentLine += 1
-                If _currentLine >= codeLines.Count Then Return Nothing
+                If _currentLine >= codeLines.Count Then
+                    _currentLine = codeLines.Count - 1
+                    Return Nothing
+                End If
+
                 line = codeLines(_currentLine)
 
                 If line.Contains(vbLf) Then

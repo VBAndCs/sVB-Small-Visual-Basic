@@ -1026,12 +1026,14 @@ Namespace Library
         ''' </summary>
         Public Shared Sub Clear()
             VerifyAccess()
-            Invoke(Sub()
-                       _mainCanvas.Children.Clear()
-                       _renderBitmap.Clear()
-                       _mainDrawing.Children.Clear()
-                       _objectsMap.Clear()
-                   End Sub)
+            Invoke(
+                Sub()
+                    If Turtle.IsVisible Then Turtle.Initialize()
+                    _mainCanvas.Children.Clear()
+                    _renderBitmap.Clear()
+                    _mainDrawing.Children.Clear()
+                    _objectsMap.Clear()
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -1169,6 +1171,8 @@ Namespace Library
             _windowCreated = False
             Turtle.Initialize()
             _mainCanvas.Children.Clear()
+            _renderBitmap.Clear()
+            _mainDrawing.Children.Clear()
             _objectsMap.Clear()
         End Sub
 

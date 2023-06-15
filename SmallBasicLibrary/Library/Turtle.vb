@@ -15,8 +15,8 @@ Namespace Library
     <SmallVisualBasicType>
     Public NotInheritable Class Turtle
         Private Const _turtleName As String = "_turtle"
-        Friend Shared _initialized As Boolean
-        Private Shared _isVisible As Boolean
+        Private Shared _initialized As Boolean
+        Friend Shared IsVisible As Boolean
         Private Shared _currentX As Double
         Private Shared _currentY As Double
         Private Shared _turtle As FrameworkElement
@@ -35,7 +35,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Width As Primitive
             Get
-                Return _Width
+                Return _width
             End Get
 
             Set(value As Primitive)
@@ -79,7 +79,7 @@ Namespace Library
 
         Friend Shared Sub Initialize()
             _initialized = False
-            _isVisible = True
+            IsVisible = True
             _currentX = 320.0
             _currentY = 240.0
             _speed = 15
@@ -170,7 +170,7 @@ Namespace Library
         ''' Shows the Turtle to enable interactions with it.
         ''' </summary>
         Public Shared Sub Show()
-            _isVisible = True
+            IsVisible = True
             _toShow = True
             VerifyAccess()
             _toShow = False
@@ -180,10 +180,10 @@ Namespace Library
         ''' Hides the Turtle and disables interactions with it.
         ''' </summary>
         Public Shared Sub Hide()
-            If _isVisible Then
+            If IsVisible Then
                 GraphicsWindow.VerifyAccess()
                 GraphicsWindow.Invoke(Sub() Shapes.Remove(_turtleName))
-                _isVisible = False
+                IsVisible = False
             End If
         End Sub
 
@@ -282,7 +282,7 @@ Namespace Library
                 End Sub)
 
             If _penDown Then
-                        GraphicsWindow.Invoke(
+                GraphicsWindow.Invoke(
                     Sub()
                         Dim name As String = Shapes.GenerateNewName("_turtleLine")
                         Dim line1 As New Line With {
@@ -306,12 +306,12 @@ Namespace Library
                         line1.BeginAnimation(Line.X2Property, animation)
                         line1.BeginAnimation(Line.Y2Property, animation2)
                     End Sub)
-                    End If
+            End If
 
-                    _currentX = newX
-                    _currentY = newY
-                    WaitForReturn(animateTime)
-                End Sub
+            _currentX = newX
+            _currentY = newY
+            WaitForReturn(animateTime)
+        End Sub
 
         ''' <summary>
         ''' Turns and moves the turtle to the specified location.  If the pen is down, it will draw a line as it moves.
@@ -388,7 +388,7 @@ Namespace Library
             GraphicsWindow.VerifyAccess()
             If _initialized AndAlso Not _toShow Then Return
             _initialized = True
-            If Not _isVisible Then Return
+            If Not IsVisible Then Return
 
             SmallBasicApplication.Invoke(
                 Sub()

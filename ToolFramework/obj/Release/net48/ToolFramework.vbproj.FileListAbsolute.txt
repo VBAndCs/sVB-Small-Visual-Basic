@@ -16,4 +16,3 @@ F:\_VS.NET\Small Basic IDE\sVB\1\ToolFramework\obj\Release\net48\ToolFramework.v
 F:\_VS.NET\Small Basic IDE\sVB\1\ToolFramework\obj\Release\net48\ToolFramework.vbproj.CopyComplete
 F:\_VS.NET\Small Basic IDE\sVB\1\ToolFramework\obj\Release\net48\ToolFramework.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\ToolFramework\obj\Release\net48\ToolFramework.pdb
-F:\_VS.NET\Small Basic IDE\sVB\1\ToolFramework\obj\Release\net48\ToolFramework.vbproj.AssemblyReference.cache
