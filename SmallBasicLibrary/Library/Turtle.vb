@@ -236,7 +236,6 @@ Namespace Library
         ''' After calling this method, the figure Is completed, And you need To create a New figure If you want To fill a New area.
         ''' If there Is no figure, calling this method will Do Nothing.
         ''' </summary>
-        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Sub FillFigure()
             If _path Is Nothing Then Return
 

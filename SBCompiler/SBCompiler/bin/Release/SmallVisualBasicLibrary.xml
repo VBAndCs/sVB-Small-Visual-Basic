@@ -2391,14 +2391,20 @@ Converts the given array to a string
  </code>
  </example>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Sound.Load(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Loads an audio file, so you can call the Play method to play it later without suffering from any initial delay.
+ </summary>
+ <param name="filePath">
+ The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
+ You can load mp3, wav and wma files. Other file formats may or may not be valid depending on the audio codecs installed on the user's computer.
+ </param>
+ <returns>If the audio file is loaded correctly, this method will return the file path, so you can send it to the Play, Pause and Stop methods, otherwise this method will return an empty string.</returns>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Sound.Play(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
- <para>
  Plays an audio file.  This could be an mp3 or wav or wma file.  Other file formats may or may not play depending on the audio codecs installed on the user's computer.
- </para>
- <para>
  If the file was already paused, this operation will resume from the position where the playback was paused.
- </para>
  </summary>
  <param name="filePath">
  The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).

@@ -105,13 +105,6 @@ Namespace Library
                     Try
                         fileNameOrUrl = Environment.ExpandEnvironmentVariables(fileNameOrUrl)
                         Dim localFileName As String = Network.GetLocalFile(fileNameOrUrl)
-                        If IO.Path.IsPathRooted(localFileName) Then
-                            If localFileName.StartsWith("\") OrElse localFileName.StartsWith("/") Then
-                                localFileName = IO.Path.Combine(Program.Directory, localFileName.TrimStart({"\"c, "/"c}))
-                            End If
-                        Else
-                            localFileName = IO.Path.Combine(Program.Directory, localFileName)
-                        End If
                         Return New BitmapImage(New Uri(localFileName, UriKind.RelativeOrAbsolute))
 
                     Catch

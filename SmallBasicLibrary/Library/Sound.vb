@@ -140,12 +140,26 @@ Namespace Library
         End Sub
 
         ''' <summary>
-        ''' <para>
+        ''' Loads an audio file, so you can call the Play method to play it later without suffering from any initial delay.
+        ''' </summary>
+        ''' <param name="filePath">
+        ''' The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
+        ''' You can load mp3, wav and wma files. Other file formats may or may not be valid depending on the audio codecs installed on the user's computer.
+        ''' </param>
+        ''' <returns>If the audio file is loaded correctly, this method will return the file path, so you can send it to the Play, Pause and Stop methods, otherwise this method will return an empty string.</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function Load(filePath As Primitive) As Primitive
+            SmallBasicApplication.Invoke(
+                Sub()
+                    Dim mp = GetMediaPlayer(filePath)
+                    Load = New Primitive(If(mp Is Nothing, "", filePath))
+                End Sub)
+        End Function
+
+
+        ''' <summary>
         ''' Plays an audio file.  This could be an mp3 or wav or wma file.  Other file formats may or may not play depending on the audio codecs installed on the user's computer.
-        ''' </para>
-        ''' <para>
         ''' If the file was already paused, this operation will resume from the position where the playback was paused.
-        ''' </para>
         ''' </summary>
         ''' <param name="filePath">
         ''' The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
@@ -238,24 +252,17 @@ Namespace Library
             SmallBasicApplication.Invoke(
                 Sub()
                     Try
-                        Dim localFileName = CStr(filePath)
-                        If IO.Path.IsPathRooted(localFileName) Then
-                            If localFileName.StartsWith("\") OrElse localFileName.StartsWith("/") Then
-                                localFileName = IO.Path.Combine(Program.Directory, localFileName.TrimStart({"\"c, "/"c}))
-                            End If
-                        Else
-                            localFileName = IO.Path.Combine(Program.Directory, localFileName)
-                        End If
-
+                        Dim localFileName As String = Network.GetLocalFile(filePath)
                         Dim uri1 As New Uri(localFileName, UriKind.RelativeOrAbsolute)
-                        Dim value As MediaPlayer = Nothing
-                        If Not _mediaPlayerMap.TryGetValue(uri1, value) Then
-                            value = New MediaPlayer
-                            _mediaPlayerMap(uri1) = value
-                            value.Open(uri1)
+                        Dim mp As MediaPlayer = Nothing
+
+                        If Not _mediaPlayerMap.TryGetValue(uri1, mp) Then
+                            mp = New MediaPlayer
+                            _mediaPlayerMap(uri1) = mp
+                            mp.Open(uri1)
                         End If
 
-                        GetMediaPlayer = value
+                        GetMediaPlayer = mp
 
                     Catch ex As Exception
                         MsgBox(ex.Message)

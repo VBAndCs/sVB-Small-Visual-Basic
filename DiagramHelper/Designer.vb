@@ -972,8 +972,24 @@ Public Class Designer
         xaml = xaml.Replace($"Source=""{dir}\", "Source=""\")
         xaml = xaml.Replace($"FileName=""{dir}\", "FileName=""\")
 
+        FixPath(xaml, "c:ImageBrushes.ImageFileName=")
+        FixPath(xaml, "ImageSource=")
         Return xaml
     End Function
+
+    Private Shared Sub FixPath(ByRef xaml As String, fixAttr As String)
+        Dim st = 0
+        Dim en = 0
+        Do
+            st = xaml.IndexOf(fixAttr, st)
+            If st = -1 Then Exit Do
+            st += fixAttr.Length + 1
+            en = xaml.IndexOf("""", st)
+            Dim img = "\" & IO.Path.GetFileName(xaml.Substring(st, en - st))
+            xaml = xaml.Substring(0, st) & img & xaml.Substring(en)
+            st += img.Length + 1
+        Loop
+    End Sub
 
     Public Sub SaveToImage()
         Dim Sc = Me.Scale

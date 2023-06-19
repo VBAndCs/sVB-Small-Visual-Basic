@@ -20,13 +20,24 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function DownloadFile(url As Primitive) As Primitive
-            If url.IsEmpty Then
-                Return url
+            If url.IsEmpty Then Return url
+
+            Dim tempFileName = Path.GetTempFileName()
+            Dim name = CStr(url).ToLower
+            If name.EndsWith(".wav") Then
+                tempFileName = tempFileName.Replace(".tmp", ".wav")
+            ElseIf name.EndsWith(".mp3") Then
+                tempFileName = tempFileName.Replace(".tmp", ".mp3")
+            ElseIf name.EndsWith(".mpa") Then
+                tempFileName = tempFileName.Replace(".tmp", ".mpa")
+            ElseIf name.EndsWith(".wma") Then
+                tempFileName = tempFileName.Replace(".tmp", ".wma")
             End If
-            Dim tempFileName As String = Path.GetTempFileName()
+
             Dim stream1 As Stream = Nothing
             Dim stream2 As Stream = Nothing
             Dim webResponse1 As WebResponse = Nothing
+
             Try
                 Dim webRequest1 As WebRequest = WebRequest.Create(url)
                 webResponse1 = webRequest1.GetResponse()
@@ -69,20 +80,30 @@ Namespace Library
         End Function
 
         Friend Shared Function GetLocalFile(fileNameOrUrl As Primitive) As Primitive
-            If fileNameOrUrl.IsEmpty Then
-                Return fileNameOrUrl
-            End If
+            If fileNameOrUrl.IsEmpty Then Return fileNameOrUrl
 
             Dim result As Uri = Nothing
             If Uri.TryCreate(fileNameOrUrl, UriKind.RelativeOrAbsolute, result) AndAlso result.IsAbsoluteUri Then
                 If result.Scheme.ToLower(CultureInfo.InvariantCulture) = "file" Then
-                    Return fileNameOrUrl
+                    Return GetFullPath(fileNameOrUrl)
                 End If
 
                 Return DownloadFile(fileNameOrUrl)
             End If
 
-            Return fileNameOrUrl
+            Return GetFullPath(fileNameOrUrl)
+        End Function
+
+        Shared Function GetFullPath(localFileName As String) As String
+            If IO.Path.IsPathRooted(localFileName) Then
+                If localFileName.StartsWith("\") OrElse localFileName.StartsWith("/") Then
+                    localFileName = IO.Path.Combine(Program.Directory, localFileName.TrimStart({"\"c, "/"c}))
+                End If
+            Else
+                localFileName = IO.Path.Combine(Program.Directory, localFileName)
+            End If
+
+            Return localFileName
         End Function
 
         Friend Shared Function GetWebPageContents(url As String) As String
