@@ -374,9 +374,26 @@ Namespace Microsoft.SmallVisualBasic
             Next
 
             If typeInfo.Events.Count > 0 OrElse typeInfo.Methods.Count > 0 OrElse typeInfo.Properties.Count > 0 Then
+                If typeInfo.Key = "graphicswindow" Then
+                    _typeInfoBag.Types("gw") = GetAlias(typeInfo, "GW")
+                ElseIf typeInfo.Key = "textwindow" Then
+                    _typeInfoBag.Types("tw") = GetAlias(typeInfo, "TW")
+                End If
+
                 _typeInfoBag.Types(typeInfo.Key) = typeInfo
             End If
         End Sub
+
+        Private Shared Function GetAlias(typeInfo As TypeInfo, aliasName As String) As TypeInfo
+            Return New TypeInfo With {
+                        .Type = typeInfo.Type,
+                        .Name = aliasName,
+                        .HideFromIntellisense = False,
+                        .Methods = typeInfo.Methods,
+                        .Properties = typeInfo.Properties,
+                        .Events = typeInfo.Events
+                    }
+        End Function
 
         Private Shared Function HideType(type As Type) As Boolean
             Return type.GetCustomAttributes(GetType(HideFromIntellisenseAttribute), inherit:=False).Length > 0 OrElse

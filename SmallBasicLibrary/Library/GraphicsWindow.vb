@@ -302,9 +302,11 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                _window.Height = Value + (_window.ActualHeight - _mainCanvas.ActualHeight)
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        _window.WindowState = WindowState.Normal
+                        _window.Height = Value + (_window.ActualHeight - _mainCanvas.ActualHeight)
+                    End Sub)
             End Set
         End Property
 
@@ -323,9 +325,11 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                _window.Width = Value + (_window.ActualWidth - _mainCanvas.ActualWidth)
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        _window.WindowState = WindowState.Normal
+                        _window.Width = Value + (_window.ActualWidth - _mainCanvas.ActualWidth)
+                    End Sub)
             End Set
         End Property
 
@@ -1068,16 +1072,19 @@ Namespace Library
             SyncLock _syncLock
                 Invoke(
                     Sub()
-                        _window = New Window()
-                        _windowCreated = True
-                        _window.Title = "Small Visual Basic Graphics Window"
                         If _backgroundBrush Is Nothing Then _backgroundBrush = Media.Brushes.White
-                        _window.Background = _backgroundBrush
                         If _fillBrush Is Nothing Then _fillBrush = Media.Brushes.CornflowerBlue
                         If _pen Is Nothing Then _pen = New Media.Pen(System.Windows.Media.Brushes.Black, 2.0)
                         If _fontFamily Is Nothing Then _fontFamily = New Media.FontFamily("Tahoma")
-                        _window.Height = 480.0
-                        _window.Width = 640.0
+                        _windowCreated = True
+                        _window = New Window() With {
+                            .Title = "sVB Graphics Window",
+                            .Background = _backgroundBrush,
+                            .Height = 480.0,
+                            .Width = 640.0,
+                            .WindowState = WindowState.Maximized
+                        }
+
                         If Not _isHidden Then _window.Show()
 
                         AddHandler _window.SourceInitialized,
@@ -1086,12 +1093,12 @@ Namespace Library
                                  Dim windowLong As UInteger = NativeHelper.GetWindowLong(handle1, -16)
                                  windowLong = (windowLong And &HFFFEFFFFUI) Or &H20000UI
                                  NativeHelper.SetWindowLong(handle1, -16, windowLong)
-                                 Dim rect2 As Internal.RECT = Nothing
-                                 rect2.Left = 0
-                                 rect2.Top = 0
-                                 rect2.Right = _window.Width
-                                 rect2.Bottom = _window.Height
-                                 Dim lpRect As Internal.RECT = rect2
+                                 Dim lpRect As New Internal.RECT With {
+                                     .Left = 0,
+                                     .Top = 0,
+                                     .Right = _window.Width,
+                                     .Bottom = _window.Height
+                                 }
                                  NativeHelper.AdjustWindowRect(lpRect, windowLong, bMenu:=False)
                                  _window.Width = lpRect.Right - lpRect.Left
                                  _window.Height = lpRect.Bottom - lpRect.Top
