@@ -1581,6 +1581,7 @@ LineShow:
                          NameOf(WinForms.ArrayEx),
                          NameOf(WinForms.MathEx),
                          NameOf(WinForms.DateEx),
+                         NameOf(WinForms.SoundEx),
                          NameOf(WinForms.WinTimer)
 
                 Case Else

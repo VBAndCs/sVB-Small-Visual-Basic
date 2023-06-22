@@ -35,6 +35,7 @@ Namespace WinForms
             FillModuleMembers(GetType(ArrayEx))
             FillModuleMembers(GetType(ColorEx))
             FillModuleMembers(GetType(DateEx))
+            FillModuleMembers(GetType(SoundEx))
 
             deafaultControlEvents(NameOf(Form).ToLower()) = "OnShown"
             deafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
@@ -66,6 +67,9 @@ Namespace WinForms
                 Case VariableType.Date
                     Return NameOf(DateEx)
 
+                Case VariableType.Sound
+                    Return NameOf(SoundEx)
+
                 Case VariableType.Any, VariableType.Boolean,
                          VariableType.Key, VariableType.DialogResult,
                          VariableType.ControlType
@@ -96,6 +100,10 @@ Namespace WinForms
 
                 Case NameOf(DateEx)
                     Return NameOf([Date])
+
+                Case NameOf(SoundEx)
+                    Return NameOf(Sound)
+
                 Case Else
                     Return type.Name
             End Select
@@ -251,7 +259,8 @@ Namespace WinForms
             defaultProperties(NameOf(Array).ToLower()) = "tostr"
             defaultProperties(NameOf(ArrayEx).ToLower()) = "tostr"
             defaultProperties(NameOf(Mouse).ToLower()) = "x"
-            defaultProperties(NameOf(Sound).ToLower()) = "playbellring"
+            defaultProperties(NameOf(Sound).ToLower()) = "load"
+            defaultProperties(NameOf(SoundEx).ToLower()) = "play"
             defaultProperties("unittest") = "assertequal"
             defaultProperties("_m") = "me"
 

@@ -5,6 +5,7 @@
     Array
     [Date]
     [Boolean]
+    Sound
     Color
     Key
     DialogResult

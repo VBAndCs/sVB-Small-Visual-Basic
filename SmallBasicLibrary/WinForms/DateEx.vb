@@ -9,8 +9,6 @@ Namespace WinForms
     <HideFromIntellisense>
     Public NotInheritable Class DateEx
 
-
-
         ''' <summary>
         ''' Gets the full time part in the user local culture (including seconds, AM/PM and milliseconds) of the current date.
         ''' </summary>

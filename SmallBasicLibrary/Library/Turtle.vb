@@ -251,6 +251,8 @@ Namespace Library
                 End Sub)
         End Sub
 
+        Private Shared animationX, animationY As DoubleAnimation
+
         ''' <summary>
         ''' Moves the turtle to a specified distance. If the pen is down, it will draw a line as it moves.
         ''' </summary>
@@ -271,46 +273,91 @@ Namespace Library
             Shapes.Animate(_turtleName, newX, newY, animateTime)
 
             GraphicsWindow.Invoke(
-                Sub()
-                    If _path IsNot Nothing Then
-                        _figure.Segments.Add(New LineSegment(
-                                New Point(newX, newY), _penDown
-                            )
-                        )
-                    End If
-                End Sub)
-
-            If _penDown Then
-                GraphicsWindow.Invoke(
                     Sub()
-                        Dim name As String = Shapes.GenerateNewName("_turtleLine")
-                        Dim line1 As New Line With {
-                              .Name = name,
-                              .X1 = _currentX,
-                              .Y1 = _currentY,
-                              .Stroke = GraphicsWindow._pen.Brush,
-                              .StrokeThickness = GraphicsWindow._pen.Thickness
-                        }
-                        GraphicsWindow.AddShape(name, line1)
-                        Dim animation As New DoubleAnimation With {
-                               .From = _currentX,
-                               .To = newX,
-                               .Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
-                        }
-                        Dim animation2 As New DoubleAnimation With {
-                               .From = _currentY,
-                               .To = newY,
-                               .Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
-                        }
-                        line1.BeginAnimation(Line.X2Property, animation)
-                        line1.BeginAnimation(Line.Y2Property, animation2)
+                        If _penDown Then
+                            Dim name As String = Shapes.GenerateNewName("_turtleLine")
+                            Dim line1 As New Line With {
+                                  .Name = name,
+                                  .X1 = _currentX,
+                                  .Y1 = _currentY,
+                                  .Stroke = GraphicsWindow._pen.Brush,
+                                  .StrokeThickness = GraphicsWindow._pen.Thickness
+                            }
+                            GraphicsWindow.AddShape(name, line1)
+
+                            If animationX Is Nothing Then
+                                animationX = New DoubleAnimation()
+                                animationY = New DoubleAnimation()
+                            End If
+
+                            animationX.From = _currentX
+                            animationX.To = newX
+                            animationX.Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
+
+                            animationY.From = _currentY
+                            animationY.To = newY
+                            animationY.Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
+
+                            line1.BeginAnimation(Line.X2Property, animationX)
+                            line1.BeginAnimation(Line.Y2Property, animationY)
+                        End If
+
+                        If _path IsNot Nothing Then
+                            _figure.Segments.Add(New LineSegment(
+                                    New Point(newX, newY), _penDown
+                                )
+                            )
+                        End If
                     End Sub)
-            End If
 
             _currentX = newX
             _currentY = newY
             WaitForReturn(animateTime)
         End Sub
+
+        ''' <summary>
+        ''' Moves the turtle to a specified distance directly without animation. If the pen is down, it will draw a line as it moves.
+        ''' </summary>
+        ''' <param name="distance">
+        ''' The distance to move the turtle.
+        ''' </param>
+        Public Shared Sub DirectMove(distance As Primitive)
+            VerifyAccess()
+            Dim d = CDbl(distance)
+            Dim angle = _angle / 180.0 * System.Math.PI
+            Dim newY = _currentY - d * System.Math.Cos(angle)
+            Dim newX = _currentX + d * System.Math.Sin(angle)
+
+            GraphicsWindow.Invoke(
+                Sub()
+                    If _penDown Then
+                        Dim name = Shapes.GenerateNewName("_turtleLine")
+                        Dim line1 As New Line With {
+                              .Name = name,
+                              .X1 = _currentX,
+                              .X2 = newX,
+                              .Y1 = _currentY,
+                              .Y2 = newY,
+                              .Stroke = GraphicsWindow._pen.Brush,
+                              .StrokeThickness = GraphicsWindow._pen.Thickness
+                        }
+
+                        Shapes.Move(_turtleName, newX, newY)
+                        GraphicsWindow.AddShape(name, line1)
+                    End If
+
+                    If _path IsNot Nothing Then
+                        _figure.Segments.Add(New LineSegment(
+                                New Point(newX, newX), _penDown
+                            )
+                        )
+                    End If
+                End Sub)
+
+            _currentX = newX
+            _currentY = newY
+        End Sub
+
 
         ''' <summary>
         ''' Turns and moves the turtle to the specified location.  If the pen is down, it will draw a line as it moves.
@@ -322,6 +369,36 @@ Namespace Library
         ''' The y co-ordinate of the destination point.
         ''' </param>
         Public Shared Sub MoveTo(newX As Primitive, newY As Primitive)
+            Dim deltaAngle As Double
+            Dim distance As Double
+            GetAngleAndDistance(newX, newY, deltaAngle, distance)
+            Turn(deltaAngle)
+            Move(distance)
+        End Sub
+
+        ''' <summary>
+        ''' Turns and moves the turtle to the specified location directly without any animation.  If the pen is down, it will draw a line as it moves.
+        ''' </summary>
+        ''' <param name="newX">
+        ''' The x co-ordinate of the destination point.
+        ''' </param>
+        ''' <param name="newY">
+        ''' The y co-ordinate of the destination point.
+        ''' </param>
+        Public Shared Sub DirectMoveTo(newX As Primitive, newY As Primitive)
+            Dim deltaAngle As Double
+            Dim distance As Double
+            GetAngleAndDistance(newX, newY, deltaAngle, distance)
+            DirectTurn(deltaAngle)
+            DirectMove(distance)
+        End Sub
+
+        Private Shared Sub GetAngleAndDistance(
+                    newX As Primitive,
+                    newY As Primitive,
+                    ByRef deltaAngle As Double,
+                    ByRef distance As Double)
+
             Dim x1 = CDbl(_currentX)
             Dim x2 = CDbl(newX)
             Dim y1 = CDbl(_currentY)
@@ -329,28 +406,29 @@ Namespace Library
 
             Dim d = (x2 - x1) ^ 2 + (y2 - y1) ^ 2
             If d <> 0.0 Then
-                Dim distance = System.Math.Sqrt(d)
+                distance = System.Math.Sqrt(d)
                 Dim delta = y1 - y2
                 Dim angle = System.Math.Acos(delta / distance) * 180.0 / System.Math.PI
                 If x2 < x1 Then
                     angle = 360.0 - angle
                 End If
 
-                Dim deltaAngle = angle - CDbl(Turtle.Angle) Mod 360
+                deltaAngle = angle - CDbl(Turtle.Angle) Mod 360
                 If deltaAngle > 180.0 Then
                     deltaAngle -= 360.0
                 End If
-
-                Turn(deltaAngle)
-                Move(distance)
             End If
         End Sub
 
+        Private Shared animationA As DoubleAnimation
+
         ''' <summary>
-        ''' Turns the turtle by the specified angle.  Angle is in degrees and can be either positive or negative.  If the angle is positive, the turtle turns to its right.  If it is negative, the turtle turns to its left.
+        ''' Turns the turtle by the specified angle.
         ''' </summary>
         ''' <param name="angle">
-        ''' The angle to turn the turtle.
+        ''' The angle in degrees to turn the turtle. It can be either positive or negative:
+        ''' If the angle is positive, the turtle turns to its right.
+        ''' If it is negative, the turtle turns to its left.
         ''' </param>
         Public Shared Sub Turn(angle As Primitive)
             VerifyAccess()
@@ -360,14 +438,31 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    Dim animation As New DoubleAnimation With {
-                           .To = _angle,
-                           .Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
-                    }
-                    _rotateTransform.BeginAnimation(RotateTransform.AngleProperty, animation)
+                    If animationA Is Nothing Then animationA = New DoubleAnimation
+                    animationA.To = _angle
+                    animationA.Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
+                    _rotateTransform.BeginAnimation(RotateTransform.AngleProperty, animationA)
                 End Sub)
             WaitForReturn(animateTime)
         End Sub
+
+        ''' <summary>
+        ''' Turns the turtle by the specified angle directly without any animation.        
+        ''' </summary>
+        ''' <param name="angle">
+        ''' The angle in degrees to turn the turtle. It can be either positive or negative:
+        ''' If the angle is positive, the turtle turns to its right.
+        ''' If it is negative, the turtle turns to its left.
+        ''' </param>
+        Public Shared Sub DirectTurn(angle As Primitive)
+            VerifyAccess()
+            _angle += CDbl(angle)
+
+            GraphicsWindow.Invoke(
+                Sub() _rotateTransform.Angle = _angle
+            )
+        End Sub
+
 
         ''' <summary>
         ''' Turns the turtle 90 degrees to the right.

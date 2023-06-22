@@ -147,7 +147,7 @@ Namespace Library
         ''' You can load mp3, wav and wma files. Other file formats may or may not be valid depending on the audio codecs installed on the user's computer.
         ''' </param>
         ''' <returns>If the audio file is loaded correctly, this method will return the file path, so you can send it to the Play, Pause and Stop methods, otherwise this method will return an empty string.</returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        <WinForms.ReturnValueType(VariableType.Sound)>
         Public Shared Function Load(filePath As Primitive) As Primitive
             SmallBasicApplication.Invoke(
                 Sub()

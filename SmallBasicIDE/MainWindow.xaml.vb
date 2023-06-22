@@ -589,6 +589,20 @@ Namespace Microsoft.SmallVisualBasic
             If saveFileDialog.ShowDialog() Then
                 Try
                     Dim fileName = saveFileDialog.FileName
+                    If document.PageKey <> "" Then
+                        Dim formName = document.Form.ToLower()
+                        Dim projectDir = IO.Path.GetDirectoryName(fileName)
+                        Dim newXamlfile = fileName.Replace(".sb", ".xaml")
+
+                        For Each xamlFile In Directory.GetFiles(projectDir, "*.xaml")
+                            If xamlFile.ToLower() = newXamlfile Then Continue For
+                            If formName = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile).ToLower() Then
+                                MsgBox($"There is already a form named `{formName}` in this folder. Change the form name and try again, or save this file to another directory.")
+                                Return False
+                            End If
+                        Next
+                    End If
+
                     If File.Exists(fileName) Then File.Delete(fileName)
                     document.SaveAs(fileName)
 

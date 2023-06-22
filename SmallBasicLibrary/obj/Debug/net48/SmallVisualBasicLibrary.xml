@@ -2952,6 +2952,14 @@ Returns true if the given text is empty, or returns false otherwise.
  The distance to move the turtle.
  </param>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Turtle.DirectMove(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Moves the turtle to a specified distance directly without animation. If the pen is down, it will draw a line as it moves.
+ </summary>
+ <param name="distance">
+ The distance to move the turtle.
+ </param>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Turtle.MoveTo(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Turns and moves the turtle to the specified location.  If the pen is down, it will draw a line as it moves.
@@ -2963,12 +2971,35 @@ Returns true if the given text is empty, or returns false otherwise.
  The y co-ordinate of the destination point.
  </param>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Turtle.DirectMoveTo(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Turns and moves the turtle to the specified location directly without any animation.  If the pen is down, it will draw a line as it moves.
+ </summary>
+ <param name="newX">
+ The x co-ordinate of the destination point.
+ </param>
+ <param name="newY">
+ The y co-ordinate of the destination point.
+ </param>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Turtle.Turn(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
- Turns the turtle by the specified angle.  Angle is in degrees and can be either positive or negative.  If the angle is positive, the turtle turns to its right.  If it is negative, the turtle turns to its left.
+ Turns the turtle by the specified angle.
  </summary>
  <param name="angle">
- The angle to turn the turtle.
+ The angle in degrees to turn the turtle. It can be either positive or negative:
+ If the angle is positive, the turtle turns to its right.
+ If it is negative, the turtle turns to its left.
+ </param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Turtle.DirectTurn(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Turns the turtle by the specified angle directly without any animation.        
+ </summary>
+ <param name="angle">
+ The angle in degrees to turn the turtle. It can be either positive or negative:
+ If the angle is positive, the turtle turns to its right.
+ If it is negative, the turtle turns to its left.
  </param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Turtle.TurnRight">
@@ -7976,6 +8007,31 @@ Creates a color from its alpha, red, green, and blue components.
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Slider.OnSlide">
  <summary>
  Fired when the slider value changes.
+ </summary>
+</member>
+<member name="T:Microsoft.SmallVisualBasic.WinForms.SoundEx">
+ <summary>
+ The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
+ The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.SoundEx.Play(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>Plays the current audio.</summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.SoundEx.PlayAndWait(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Plays the current audio and waits until it is finished playing.
+ If the file was already paused, this operation will resume from the position where the playback was paused.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.SoundEx.Pause(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Pauses playback of the current audio.  If the file was not already playing, this operation will not do anything.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.SoundEx.Stop(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Stops playback of the current audio.  If the file was not already playing, this operation will not do anything.
  </summary>
 </member>
 <member name="T:Microsoft.SmallVisualBasic.WinForms.TextBox">
