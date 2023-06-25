@@ -112,6 +112,27 @@ Namespace Library
             End Set
         End Property
 
+
+        Private Shared _useAnimation As Boolean = True
+
+        ''' <summary>
+        ''' Indicates whether or not the turtle moves and turns are animated.
+        ''' The default value is True, which is OK in most cases, and you can increase the Turtle.Speed up to 50 to make it faster.
+        ''' But you may need to set this property fo false while you are drawing curves, which require many turns and succissive short movements, which make the turtle too slow because of the animations overhead. 
+        ''' Setting this property to False, will make the Move, MoveTo and Turn methods call the DirectMove, DirectMoveTo and DirectTurn Methods to avoid using animation, which will make thee turtle super fast.
+        ''' You can also call the three `Direct` methods manually even when this property is set to True, which allows you to mix animated and non-animated moves.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property UseAnimation As Primitive
+            Get
+                Return New Primitive(_useAnimation)
+            End Get
+
+            Set(value As Primitive)
+                _useAnimation = CBool(value)
+            End Set
+        End Property
+
         ''' <summary>
         ''' Gets or sets the current angle of the turtle.  While setting, this will turn the turtle instantly to the new angle.
         ''' </summary>
@@ -260,6 +281,11 @@ Namespace Library
         ''' The distance to move the turtle.
         ''' </param>
         Public Shared Sub Move(distance As Primitive)
+            If Not _UseAnimation Then
+                DirectMove(distance)
+                Return
+            End If
+
             VerifyAccess()
             Dim d = CDbl(distance)
             Dim animateTime = 1
@@ -369,6 +395,11 @@ Namespace Library
         ''' The y co-ordinate of the destination point.
         ''' </param>
         Public Shared Sub MoveTo(newX As Primitive, newY As Primitive)
+            If Not _UseAnimation Then
+                DirectMoveTo(newX, newY)
+                Return
+            End If
+
             Dim deltaAngle As Double
             Dim distance As Double
             GetAngleAndDistance(newX, newY, deltaAngle, distance)
@@ -431,6 +462,11 @@ Namespace Library
         ''' If it is negative, the turtle turns to its left.
         ''' </param>
         Public Shared Sub Turn(angle As Primitive)
+            If Not _UseAnimation Then
+                DirectTurn(angle)
+                Return
+            End If
+
             VerifyAccess()
             Dim a = CDbl(angle)
             Dim animateTime = If(_speed = 10, 1.0, System.Math.Abs(a * 200.0 / (_speed ^ 2)))

@@ -589,9 +589,10 @@ Namespace Microsoft.SmallVisualBasic
             If saveFileDialog.ShowDialog() Then
                 Try
                     Dim fileName = saveFileDialog.FileName
+                    Dim projectDir = IO.Path.GetDirectoryName(fileName)
+
                     If document.PageKey <> "" Then
                         Dim formName = document.Form.ToLower()
-                        Dim projectDir = IO.Path.GetDirectoryName(fileName)
                         Dim newXamlfile = fileName.Replace(".sb", ".xaml")
 
                         For Each xamlFile In Directory.GetFiles(projectDir, "*.xaml")
@@ -624,6 +625,7 @@ Namespace Microsoft.SmallVisualBasic
                         CopyImages(oldDir, newDir)
                     End If
 
+                    ProjExplorer.ProjectDirectory = projectDir
                     Return True
 
                 Catch ex As Exception
@@ -657,7 +659,7 @@ Namespace Microsoft.SmallVisualBasic
             Return True
         End Function
 
-        Private Sub RunProgram()
+        Private Sub RunProgram(Optional buildOnly As Boolean = False)
             Mouse.OverrideCursor = Cursors.Wait
 
             Dim doc As TextDocument
@@ -806,6 +808,8 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             Mouse.OverrideCursor = Nothing
+            If buildOnly Then Return
+
             currentProgramProcess = Process.Start(outputFileName)
             currentProgramProcess.EnableRaisingEvents = True
 
@@ -830,15 +834,27 @@ Namespace Microsoft.SmallVisualBasic
 
 
         Private Sub PublishDocument(document As TextDocument)
+            If document.Text.Trim.Length < 50 Then
+                MsgBox("Can't publish this program because its length is less than 50 chars.")
+                Return
+            End If
+
+            RunProgram(True)
+
+            If ActiveDocument.Errors.Count > 0 Then
+                MsgBox("Please fix code errors before publishing this program.")
+                Return
+            End If
+
             Try
                 Cursor = Cursors.Wait
                 Dim service As New Service()
-                Dim text = service.SaveProgram("", document.Text, document.BaseId)
+                Dim result = service.SaveProgram("", document.Text, document.BaseId)
 
-                If Equals(text, "error") Then
+                If Equals(result, "error") Then
                     Utility.MessageBox.Show(ResourceHelper.GetString("FailedToPublishToWeb"), ResourceHelper.GetString("Title"), ResourceHelper.GetString("PublishToWebFailedReason"), NotificationButtons.Close, NotificationIcon.Error)
                 Else
-                    Dim publishProgramDialog As New PublishProgramDialog(text)
+                    Dim publishProgramDialog As New PublishProgramDialog(result)
                     publishProgramDialog.Owner = Me
                     publishProgramDialog.ShowDialog()
                 End If
@@ -978,7 +994,6 @@ Namespace Microsoft.SmallVisualBasic
                     Me.ActiveDocument?.Focus()
                 End Sub)
 
-
         Private Sub TabCode_Selected(sender As Object, e As RoutedEventArgs)
             If CStr(txtControlName.Tag) <> "" Then
                 Dim controlIndex = CInt(txtControlName.Tag)
@@ -1113,7 +1128,6 @@ Namespace Microsoft.SmallVisualBasic
                 Return New TextDocument(codeFilePath)
             End If
 
-
         End Function
 
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
@@ -1194,14 +1208,12 @@ Namespace Microsoft.SmallVisualBasic
 
             AddHandler DiagramHelper.Designer.PageShown, AddressOf FormDesigner_CurrentPageChanged
 
-            ' Set any defaults you want
             'DiagramHelper.Designer.SetDefaultPropertiesSub =
             '    Sub()
             '        DiagramHelper.Designer.SetDefaultProperties()
             '        'Set any defaults you want here
 
             '    End Sub
-
 
         End Sub
 
