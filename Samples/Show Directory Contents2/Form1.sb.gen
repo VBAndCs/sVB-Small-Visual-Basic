@@ -1,0 +1,54 @@
+'@Form Hints:
+'#Form1{
+'    TxtPath: TextBox
+'    Label1: Label
+'    BtnBrowse: Button
+'    TxtContents: TextBox
+'    LstDirs: ListBox
+'    Label2: Label
+'    Label3: Label
+'    BtnUp: Button
+'}
+
+Me = "form1"
+TxtPath = "form1.txtpath"
+Label1 = "form1.label1"
+BtnBrowse = "form1.btnbrowse"
+TxtContents = "form1.txtcontents"
+LstDirs = "form1.lstdirs"
+Label2 = "form1.label2"
+Label3 = "form1.label3"
+BtnUp = "form1.btnup"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    BtnBrowse: OnClick
+'    Form1: OnClosing
+'    TxtPath: OnKeyDown
+'    LstDirs: OnSelection
+'    BtnUp: OnClick
+'}
+
+' BtnBrowse Events:
+Control.HandleEvents(BtnBrowse)
+Control.OnClick = BtnBrowse_OnClick
+
+' Form1 Events:
+Control.HandleEvents(Form1)
+Form.OnClosing = Form1_OnClosing
+
+' TxtPath Events:
+Control.HandleEvents(TxtPath)
+Control.OnKeyDown = TxtPath_OnKeyDown
+
+' LstDirs Events:
+Control.HandleEvents(LstDirs)
+ListBox.OnSelection = LstDirs_OnSelection
+
+' BtnUp Events:
+Control.HandleEvents(BtnUp)
+Control.OnClick = BtnUp_OnClick
+
+
