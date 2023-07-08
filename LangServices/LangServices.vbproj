@@ -120,7 +120,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="NavigateTo.vb" />
-    <Compile Include="RunAction.vb" />
     <Compile Include="SmallBasicClassifier.vb" />
     <Compile Include="SmallBasicClassifierProvider.vb" />
     <Compile Include="SymbolType.vb" />

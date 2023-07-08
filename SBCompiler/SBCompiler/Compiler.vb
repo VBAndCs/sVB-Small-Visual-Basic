@@ -129,12 +129,12 @@ Namespace Microsoft.SmallVisualBasic
             If _Parser.IsGlobal Then
                 _Parser.ClassName = "Global"
                 Dim codeGenerator As New CodeGenerator(
-                        New List(Of Parser) From {Parser},
+                        New List(Of Parser) From {_Parser},
                         _typeInfoBag,
                         If(_exeFile = "", "tempGlobal", Path.GetFileNameWithoutExtension(_exeFile)),
                         If(_exeFile = "", svbDir, Path.GetDirectoryName(_exeFile))
                 )
-                codeGenerator.GenerateExecutable(True) ' Aleays use try not to emit to exe
+                codeGenerator.GenerateExecutable(True) ' Always use true not to emit to exe
                 _GlobalParser = _Parser
                 GlobalLastCompiled = Now
             End If
@@ -172,16 +172,17 @@ Namespace Microsoft.SmallVisualBasic
                 Throw New ArgumentNullException("parsers")
             End If
 
-            If Equals(outputName, Nothing) Then
+            If outputName = "" Then
                 Throw New ArgumentNullException("outputName")
             End If
 
-            If Equals(directory, Nothing) Then
+            If directory = "" Then
                 Throw New ArgumentNullException("directory")
             End If
 
             Dim gen As New CodeGenerator(
-                    parsers, _typeInfoBag, outputName, directory)
+                    parsers, _typeInfoBag, outputName, directory
+            )
             Dim refs = gen.GenerateExecutable()
             CopyLibraryAssemblies(directory, refs)
             Return _errors

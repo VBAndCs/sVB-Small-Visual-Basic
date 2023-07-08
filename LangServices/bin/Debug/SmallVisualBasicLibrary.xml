@@ -47,6 +47,35 @@ SmallVisualBasicLibrary
   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
 </summary>
 </member>
+<member name="T:Microsoft.SmallVisualBasic.Evaluator.Evaluator">
+ <summary>
+ Allows you to evaluate mathematical expressions at runtime.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Evaluator.Evaluator.Expression">
+ <summary>
+ Gets or sets the mathematical expression that you want to evaluate. This expression is case-insensitive.
+ You can use x as the input variable, and you can send its value as a parameter when you call the Evaluate method.
+ The expression can contain arithmitic operators like (+ - * / % Mod ^).
+ You can also use the methods of the Math type. For example:
+ Evaluator.Expression = "(2 + 3 * x) / Sin(GetRadians(x))"
+ For simplicity, you can use Radians instead or GetRadians or even use Rad:
+ Evaluator.Expression = "(2 + 3 * x) / Sin(Rad(x))"
+ For more info about the math expression syntax, see the sVB docs reference book.
+ </summary>        
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Evaluator.Evaluator.Evaluate(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Calculates the value of the mathematical expression with x substituted with the given value.
+ </summary>
+ <param name="x">The value to substitute x with.</param>
+ <returns>The value of the mathematical expression at the given x.</returns>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Evaluator.Evaluator.LastErrors">
+ <summary>
+ Returns a string that contains details about last errors that happened while parsing and evaluating the current expression.
+ </summary>
+</member>
 <member name="T:Microsoft.SmallVisualBasic.Library.Internal.NativeHelper">
  <summary>
  A private static helper for calling Native APIs
@@ -1697,6 +1726,13 @@ Converts the given array to a string
  Gets the natural logarithmic base, which equals 2.7182818284590451
  </summary>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Math.Exp(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets the number resulted from raisng the natural logarithmic base (E) to the given power
+ </summary>
+ <param name="exponent">The number to be used as the power of E.</param>
+ <returns>E raised to the specified exponent.</returns>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Math.Log(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Gets the logarithm (base 10) value of the given number.
@@ -1838,7 +1874,7 @@ Converts the given array to a string
  Rounds a given number to the given decimal places.
  </summary>
  <param name="number">The number whose approximation is required.</param>
- <paramref name="decimalPlaces">The number of decimal places to keep in the number.</paramref>
+ <param name="decimalPlaces">The number of decimal places to keep in the number.</param>
  <returns>
  The rounded value of the given number.
  </returns>

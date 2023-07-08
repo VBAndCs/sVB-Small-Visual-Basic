@@ -1176,8 +1176,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Return token.ParseType = ParseType.Operator
         End Function
 
-        Dim ShowCompletion As New RunAction()
-
         Public Sub ShowCompletionAdornment(
                            snapshot As ITextSnapshot,
                            caretPosition As Integer,
@@ -1186,15 +1184,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     )
 
             ' Wait until code editor respond To changes, to avoid any conflicts
-            ShowCompletion.After(
-                  20,
-                  Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem, ctrlSpace)
+            dispatcher.BeginInvoke(
+                DispatcherPriority.Background,
+                Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem, ctrlSpace)
             )
-
-            'Application.Current.Dispatcher.BeginInvoke(
-            '    DispatcherPriority.Background,
-            '    Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem, ctrlSpace)
-            ')
 
         End Sub
 
@@ -1508,11 +1501,13 @@ LineShow:
         Private Shared completionItems As New Dictionary(Of String, List(Of CompletionItem))
 
         Dim WordHighlightColor As Media.Color
+        Private Shared dispatcher As Dispatcher
 
         Shared Sub New()
             For Each t In WinForms.PreCompiler.GetTypes()
                 AddCompletionList(t)
             Next
+            dispatcher = Application.Current.Dispatcher
         End Sub
 
         Private Shared Sub AddCompletionList(type As Type)

@@ -237,7 +237,7 @@ Public Class Designer
     Public Shared Property PagesGrid As Grid
     Public Shared TempProjectPath As String
 
-    Private Shared TempKeyNum As Integer = 0
+    Public Shared TempKeyNum As Integer = 0
     Public PageKey As String
 
     Public Shared Event PageShown(index As Integer)
@@ -303,7 +303,6 @@ Public Class Designer
         CurrentPage = New Designer()
         PagesGrid.Children.Add(CurrentPage)
         Helper.UpdateControl(CurrentPage)
-
     End Sub
 
     Public Shared Function OpenNewPage(Optional UpdateCurrentPage As Boolean = True) As String
@@ -1020,9 +1019,10 @@ Public Class Designer
         End If
     End Sub
 
-
-    Public Shared Sub Open(fileName As String)
-        If fileName.ToLower() = Helper.GlobalFileName Then
+    ' Use the SwitchTo method to open files. It will call this function and update the form designer
+    Friend Shared Sub Open(fileName As String)
+        Dim fileName2 = fileName.ToLower()
+        If fileName2 = Helper.GlobalFileName Then
             fileName = IO.Path.Combine(appDir, Helper.ExactGlobalFileName)
         End If
 
@@ -1050,6 +1050,12 @@ Public Class Designer
             CurrentPage.PageKey = GetTempKey(CurrentPage._xamlFile)
             Pages(CurrentPage.PageKey) = CurrentPage
             UpdateFormInfo()
+
+            If TempProjectPath <> "" AndAlso fileName2.StartsWith(TempProjectPath) Then
+                CurrentPage._codeFile = CurrentPage._xamlFile.Replace(".xaml", ".sb")
+                CurrentPage._xamlFile = ""
+                CurrentPage.HasChanges = True
+            End If
 
         Catch ex As Exception
             MsgBox(ex.Message)

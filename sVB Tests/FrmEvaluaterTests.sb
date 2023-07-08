@@ -1,0 +1,97 @@
+
+'------------------------------------------------
+Function Test_Arithmetics()
+   Evaluator.Expression = "(x^2 + 1) * (-x + 5) / 4"
+   Return UnitTest.AssertEqual(
+      {
+         Evaluator.Evaluate(-1),
+         Evaluator.Evaluate(0),
+         Evaluator.Evaluate(37)
+      },
+      {
+         (Math.Power(-1, 2) + 1) * (1 + 5) / 4,
+         (Math.Power(0, 2) + 1) * (-0 + 5) / 4,
+         (Math.Power(37, 2) + 1) * (-37 + 5) / 4
+      },
+      "Arithmetics"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Mod()
+   
+   Evaluator.Expression = "x^0.5 %3 mod 2"
+   Return UnitTest.AssertEqual(
+      {
+         Evaluator.Evaluate(100),
+         Evaluator.Evaluate(144),
+         Evaluator.Evaluate(81)
+      },
+      {
+         Math.Remainder(Math.Remainder(Math.SquareRoot(100), 3), 2),
+         Math.Remainder(Math.Remainder(Math.SquareRoot(144), 3), 2),
+         Math.Remainder(Math.Remainder(Math.SquareRoot(81), 3), 2)
+      },
+      "Mod"
+   )
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Math()
+   actual = {}
+   expected = {}
+   
+   Evaluator.Expression = "abs(x)/x"
+   actual.AddNextItem(Evaluator.Evaluate(-5))
+   expected.AddNextItem(Math.Abs(-5) / -5)
+   actual.AddNextItem(Evaluator.Evaluate(5))
+   expected.AddNextItem(Math.Abs(5) / 5)
+   
+   Evaluator.Expression = "Cos(GetRadians(x)) / Sin(Radians(x))"
+   actual.AddNextItem(Evaluator.Evaluate(45))
+   a = Math.Cos(Math.GetRadians(45)) / Math.Sin(Math.GetRadians(45))
+   expected.AddNextItem(a)
+   actual.AddNextItem(Evaluator.Evaluate(135))
+   b = Math.Cos(Math.GetRadians(135)) / Math.Sin(Math.GetRadians(135))
+   expected.AddNextItem(b)
+   
+   Evaluator.Expression = "Cos(Rad(x)) / Sin(rad(x))"
+   actual.AddNextItem(Evaluator.Evaluate(45))
+   expected.AddNextItem(a)
+   actual.AddNextItem(Evaluator.Evaluate(135))
+   expected.AddNextItem(b)
+   
+   Evaluator.Expression = "GetDegrees(acos(x)) + Degrees(arcsin(x))"
+   actual.AddNextItem(Evaluator.Evaluate(0.2))
+   a = Math.GetDegrees(Math.ArcCos(0.2)) + Math.GetDegrees(Math.ArcSin(0.2))
+   expected.AddNextItem(a)
+   actual.AddNextItem(Evaluator.Evaluate(0.5))
+   b = Math.GetDegrees(Math.ArcCos(0.5)) + Math.GetDegrees(Math.ArcSin(0.5))
+   expected.AddNextItem(b)
+   
+   Evaluator.Expression = "Deg(arccos(x)) + deg(asin(x))"
+   actual.AddNextItem(Evaluator.Evaluate(0.2))
+   expected.AddNextItem(a)
+   actual.AddNextItem(Evaluator.Evaluate(0.5))
+   expected.AddNextItem(b)
+   
+   
+   Evaluator.Expression = "round(x)-round(x, 2)"
+   actual.AddNextItem(Evaluator.Evaluate(2.748))
+   a = Math.Round(2.748) -Math.Round2(2.748, 2)
+   expected.AddNextItem(a)
+   actual.AddNextItem(Evaluator.Evaluate(4.1))
+   b = Math.Round(4.1) -Math.Round2(4.1, 2)
+   expected.AddNextItem(b)
+   
+   Evaluator.Expression = "round(x)-round2(x, 2)"
+   actual.AddNextItem(Evaluator.Evaluate(2.748))
+   expected.AddNextItem(a)
+   actual.AddNextItem(Evaluator.Evaluate(4.1))
+   expected.AddNextItem(b)
+   
+   Return UnitTest.AssertEqual(actual, expected, "Math")
+EndFunction
+

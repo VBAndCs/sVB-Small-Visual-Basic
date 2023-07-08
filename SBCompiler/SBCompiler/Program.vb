@@ -3,10 +3,21 @@ Imports System.IO
 
 Namespace Microsoft.SmallVisualBasic
     Friend NotInheritable Class Program
-        Private _text3 As String = VisualBasic.Constants.vbCrLf & "i = 15" & VisualBasic.Constants.vbCrLf & "j = 23" & VisualBasic.Constants.vbCrLf & "if (j >= i AND j <= i * 20) then" & VisualBasic.Constants.vbCrLf & "TextWindow.WriteLine(""Foo"")" & VisualBasic.Constants.vbCrLf & "endif" & VisualBasic.Constants.vbCrLf & "TextWindow.Pause()" & VisualBasic.Constants.vbCrLf & VisualBasic.Constants.vbCrLf & "Sub MySub" & VisualBasic.Constants.vbCrLf & "  TextWindow.WriteLine(i)" & VisualBasic.Constants.vbCrLf & "EndSub" & VisualBasic.Constants.vbCrLf
+
+        Private _text3 As String = "
+i = 15
+j = 23
+if (j >= i AND j <= i * 20) then
+    TextWindow.WriteLine(""Foo"")
+endif
+TextWindow.Pause()
+
+Sub MySub
+    TextWindow.WriteLine(i)
+EndSub"
 
         Public Shared Sub Main(args As String())
-            Dim program As Program = New Program()
+            Dim program As New Program()
 
             If args.Length <> 1 Then
                 Console.WriteLine("Usage: SmallBasicCompiler.exe <SB File>")
@@ -21,8 +32,8 @@ Namespace Microsoft.SmallVisualBasic
                 Return
             End If
 
-            Using source As StreamReader = New StreamReader(file)
-                Dim compiler As Compiler = New Compiler()
+            Using source As New StreamReader(file)
+                Dim compiler As New Compiler()
                 Path.GetDirectoryName(file)
                 Dim fileName = Path.GetFileNameWithoutExtension(file)
                 compiler.Compile(source)
@@ -55,9 +66,8 @@ Namespace Microsoft.SmallVisualBasic
             Dim files = Directory.GetFiles("C:\Users\vijayeg\Documents\smallbasic\samples", "*.smallbasic")
 
             For Each _text In files
-
                 Using source As New StreamReader(_text)
-                    Dim compiler As Compiler = New Compiler()
+                    Dim compiler As New Compiler()
                     Dim directoryName = Path.GetDirectoryName(_text)
                     Dim fileNameWithoutExtension = Path.GetFileNameWithoutExtension(_text)
                     compiler.Compile(source)
@@ -76,9 +86,8 @@ Namespace Microsoft.SmallVisualBasic
             Dim files = Directory.GetFiles("C:\Users\vijayeg\Documents\smallbasic\samples", "*.smallbasic")
 
             For Each _text In files
-
-                Using reader As StreamReader = New StreamReader(_text)
-                    Dim parser As Parser = New Parser()
+                Using reader As New StreamReader(_text)
+                    Dim parser As New Parser()
                     parser.Parse(reader)
                     Console.Write(_text)
                     Console.WriteLine(": {0} errors.", parser.Errors.Count)
@@ -119,11 +128,11 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub TestExpression()
-            Dim parser As Parser = New Parser()
+            Dim parser As New Parser()
 
             While True
                 Console.Write("> ")
-                Dim lineText As String = Console.ReadLine()
+                Dim lineText = Console.ReadLine()
                 Dim tokenList = LineScanner.GetTokenEnumerator(lineText, 0)
                 Dim expression = parser.BuildLogicalExpression(tokenList)
                 Console.WriteLine("= {0}", Parser.EvaluateExpression(expression))

@@ -65,7 +65,9 @@ Namespace Microsoft.SmallVisualBasic
             AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf CatchAppExceptions
 
             Me.MainWindow = GetMainWindow()
+#If DEBUG Then
             Splash.ShowSplash()
+#End If
             Me.MainWindow.Show()
             MyBase.OnStartup(e)
         End Sub

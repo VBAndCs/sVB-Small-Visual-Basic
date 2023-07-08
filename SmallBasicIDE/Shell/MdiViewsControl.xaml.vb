@@ -235,7 +235,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
         End Function
 
         Dim LastselectedView As MdiView
-        Dim FocusView As New RunAction()
+        Private Shared dispatcher As System.Windows.Threading.Dispatcher = Application.Current.Dispatcher
 
         Friend Sub ChangeSelection(selectedView As MdiView)
             If selectedView Is LastselectedView Then Return
@@ -268,14 +268,15 @@ Namespace Microsoft.SmallVisualBasic.Shell
                 _SelectedItem = selectedView
                 selectedView.IsSelected = True
 
-                SelectView.Stop()
-                FocusView.After(20,
-                   Sub()
-                       KeepFocus = True
-                       selectedView.Document.Focus()
-                       RaiseEvent ActiveDocumentChanged()
-                       KeepFocus = False
-                   End Sub)
+                StopSelectingView = True
+                dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Background,
+                    Sub()
+                        KeepFocus = True
+                        selectedView.Document.Focus()
+                        RaiseEvent ActiveDocumentChanged()
+                        KeepFocus = False
+                    End Sub)
             End If
 
 
@@ -304,24 +305,29 @@ Namespace Microsoft.SmallVisualBasic.Shell
         End Sub
 
         Dim KeepFocus As Boolean
+        Dim StopSelectingView As Boolean = False
 
         Private Sub OnFocusWithinChanged(sender As Object, e As DependencyPropertyChangedEventArgs)
             If KeepFocus Then Return
-            SelectView.After(20,
-                Sub()
-                    Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
-                    ChangeSelection(selectedView)
-                End Sub
+            dispatcher.BeginInvoke(
+                 System.Windows.Threading.DispatcherPriority.Background,
+                 Sub()
+                     Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+                     ChangeSelection(selectedView)
+                 End Sub
             )
 
         End Sub
 
-        Dim SelectView As New RunAction()
-
         Private Sub OnMouseDownInView(sender As Object, e As MouseEventArgs)
             Dim uIElement = CType(sender, UIElement)
-            SelectView.After(20,
+            dispatcher.BeginInvoke(
+                 System.Windows.Threading.DispatcherPriority.Background,
                    Sub()
+                       If StopSelectingView Then
+                           StopSelectingView = False
+                           Return
+                       End If
                        Dim selectedView = FindViewContainingTemplateItem(uIElement)
                        uIElement.Focus()
                        ChangeSelection(selectedView)
@@ -456,19 +462,20 @@ Namespace Microsoft.SmallVisualBasic.Shell
         End Sub
 
         Private Sub CmbEventNames_DropDownOpened(sender As Object, e As EventArgs)
-            DiagramHelper.RunAction.After(1,
-                Sub()
-                    Dim view As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
-                    Dim cmbControls = view.CmbControlNames
-                    Dim CmbEvents = view.CmbEventNames
+            dispatcher.BeginInvoke(
+                 System.Windows.Threading.DispatcherPriority.Background,
+                 Sub()
+                     Dim view As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+                     Dim cmbControls = view.CmbControlNames
+                     Dim CmbEvents = view.CmbEventNames
 
-                    HighlightItem(sender, CmbEvents.SelectedIndex)
-                    If cmbControls.SelectedIndex = 0 Then ' Global
-                        SetItemsBold(CmbEvents, Nothing)
-                    Else
-                        SelectHandlers(view, cmbControls.SelectedItem)
-                    End If
-                End Sub)
+                     HighlightItem(sender, CmbEvents.SelectedIndex)
+                     If cmbControls.SelectedIndex = 0 Then ' Global
+                         SetItemsBold(CmbEvents, Nothing)
+                     Else
+                         SelectHandlers(view, cmbControls.SelectedItem)
+                     End If
+                 End Sub)
         End Sub
 
         Public Sub SelectHandlers(

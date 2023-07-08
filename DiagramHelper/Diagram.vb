@@ -300,7 +300,10 @@ Public Class DiagramObject
             EndEdit(True)
             e.Handled = True
             Dsn.Editor.Focus()
-            RunAction.After(100, Sub() exitLostFocus = False)
+            Helper.Dispatcher.BeginInvoke(
+                    System.Windows.Threading.DispatcherPriority.Background,
+                    Sub() exitLostFocus = False
+            )
         End If
     End Sub
 
@@ -344,11 +347,6 @@ Public Class DiagramObject
         Return True
     End Function
 
-    Dim focusEditor As New RunAction(10,
-        Sub()
-            Dsn.Editor.Focus()
-        End Sub)
-
     Dim exitLostFocus As Boolean
 
     Public Sub Editor_LostFocus(sender As Object, e As RoutedEventArgs)
@@ -356,7 +354,10 @@ Public Class DiagramObject
 
         If Not EndEdit(True) Then
             e.Handled = True
-            focusEditor.Start()
+            Helper.Dispatcher.BeginInvoke(
+                 Windows.Threading.DispatcherPriority.Background,
+                 Sub() Dsn.Editor.Focus()
+            )
         End If
     End Sub
 

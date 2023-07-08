@@ -20,8 +20,6 @@
 
     Public Event ItemDoubleClick(sender As Object, e As MouseButtonEventArgs)
 
-    Dim ensureVisible As New RunAction(10, Sub() FilesList.ScrollIntoView(FilesList.SelectedItem))
-
     Private Sub Explorer_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
         If firstTime Then
             firstTime = False
@@ -29,7 +27,13 @@
             FilesList = TryCast(Template.FindName("PART_ListBox", Me), ListBox)
             FilesList.ItemContainerStyle = FindResource("listBoxItemStyle")
             FilesList.ItemsSource = ItemsSource
-            AddHandler ItemsSource.CollectionChanged, Sub() ensureVisible.Start()
+            AddHandler ItemsSource.CollectionChanged,
+                Sub()
+                    Helper.Dispatcher.BeginInvoke(
+                         Windows.Threading.DispatcherPriority.Background,
+                         Sub() FilesList.ScrollIntoView(FilesList.SelectedItem)
+                    )
+                End Sub
             If FilesList.Items.Count > 0 Then FilesList.SelectedIndex = 0
         End If
         FilesList.ScrollIntoView(FilesList.SelectedItem)
@@ -111,7 +115,8 @@
             item.IsSelected = True
             e.Handled = True
 
-            RunAction.After(200,
+            Helper.Dispatcher.BeginInvoke(
+                   System.Windows.Threading.DispatcherPriority.Background,
                    Sub()
                        If ClickCount = 2 Then Return
                        BeginEdit()
@@ -208,9 +213,6 @@
         End Select
     End Sub
 
-
-    Dim focusTextBox As New RunAction(10, Sub() editTextBox.Focus())
-
     Public Sub editTextBox_LostFocus(sender As Object, e As KeyboardFocusChangedEventArgs)
         If Commit() Then
             RemoveHandler editTextBox.PreviewKeyDown, AddressOf editTextBox_PreviewKeyDown
@@ -218,7 +220,10 @@
             RemoveHandler editTextBox.PreviewLostKeyboardFocus, AddressOf editTextBox_LostFocus
         Else
             e.Handled = True
-            focusTextBox.Start()
+            Helper.Dispatcher.BeginInvoke(
+                  Windows.Threading.DispatcherPriority.Background,
+                  Sub() editTextBox.Focus()
+             )
         End If
     End Sub
 

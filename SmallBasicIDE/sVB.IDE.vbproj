@@ -54,6 +54,9 @@
     <MyType>
     </MyType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <DefineDebug>true</DefineDebug>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ComponentModel, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -644,7 +644,7 @@ Namespace Microsoft.SmallVisualBasic
             If document.IsDirty Then
                 tabCode.IsSelected = True
                 document.Focus()
-                closePopHelp.After(1)
+                PopHelp.IsOpen = False
 
                 Select Case Utility.MessageBox.Show(ResourceHelper.GetString("SaveDocumentBeforeClosing"), ResourceHelper.GetString("Title"), document.Title & ResourceHelper.GetString("DocumentModified"), Nf.Cancel Or Nf.No Or Nf.Yes, NotificationIcon.Information)
                     Case Nf.Yes
@@ -766,16 +766,18 @@ Namespace Microsoft.SmallVisualBasic
 
                             Else
                                 doc = OpenDocIfNot(sbCodeFile)
-                                Call New RunAction(
-                                    Sub()
-                                        doc.ShowErrors(errors)
-                                        tabCode.IsSelected = True
-                                    End Sub
-                                ).After(20)
+                                dispatcher.BeginInvoke(
+                                     System.Windows.Threading.DispatcherPriority.Background,
+                                     Sub()
+                                         doc.ShowErrors(errors)
+                                         tabCode.IsSelected = True
+                                     End Sub
+                                )
 
-                                Call New RunAction(
-                                    Sub() doc.EditorControl.TextView.Caret.EnsureVisible()
-                                ).After(500)
+                                dispatcher.BeginInvoke(
+                                     System.Windows.Threading.DispatcherPriority.Background,
+                                     Sub() doc.EditorControl.TextView.Caret.EnsureVisible()
+                                )
 
                                 Mouse.OverrideCursor = Nothing
                                 Return
@@ -815,7 +817,7 @@ Namespace Microsoft.SmallVisualBasic
 
             AddHandler currentProgramProcess.Exited,
                     Sub()
-                        Dispatcher.BeginInvoke(DispatcherPriority.Normal, CType(
+                        dispatcher.BeginInvoke(DispatcherPriority.Normal, CType(
                              Function()
                                  Me.programRunningOverlay.Visibility = Visibility.Hidden
                                  currentProgramProcess = Nothing
@@ -988,11 +990,7 @@ Namespace Microsoft.SmallVisualBasic
             Return Nothing
         End Function
 
-        Dim saveInfo As New RunAction(
-                Sub()
-                    SaveDesignInfo()
-                    Me.ActiveDocument?.Focus()
-                End Sub)
+        Private Shared dispatcher As Dispatcher = Application.Current.Dispatcher
 
         Private Sub TabCode_Selected(sender As Object, e As RoutedEventArgs)
             If CStr(txtControlName.Tag) <> "" Then
@@ -1010,7 +1008,12 @@ Namespace Microsoft.SmallVisualBasic
                 doc?.Focus()
 
             ElseIf DiagramHelper.Designer.CurrentPage IsNot Nothing Then
-                saveInfo.After(20)
+                dispatcher.BeginInvoke(
+                       DispatcherPriority.Background,
+                       Sub()
+                           SaveDesignInfo()
+                           Me.ActiveDocument?.Focus()
+                       End Sub)
             End If
 
             ' Note this prop isn't changed yet
@@ -1031,6 +1034,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim projectName = Now.ToString("yy-MM-dd-HH-mm-ss", New CultureInfo("en-US"))
             tempProjectPath = Path.Combine(App.SvbUnsavedFolder, projectName).ToLower()
             DiagramHelper.Designer.TempProjectPath = tempProjectPath
+            SaveSetting("SmallVisualBasic", "Backup", "LastProject", tempProjectPath)
             Return tempProjectPath
         End Function
 
@@ -1133,6 +1137,8 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub MainWindow_Closed(sender As Object, e As EventArgs) Handles Me.Closed
             DeleteTempProjects(App.SvbTempFolder)
             DeleteTempProjects(App.SvbUnsavedFolder)
+            ' Window is closed normally
+            SaveSetting("SmallVisualBasic", "Backup", "LastProject", "")
         End Sub
 
         Sub DeleteTempProjects(tempDir As String)
@@ -1157,29 +1163,28 @@ Namespace Microsoft.SmallVisualBasic
             tabCode.IsSelected = True
             Mouse.OverrideCursor = Cursors.Wait
 
-            Dim AddEventHandler As New RunAction(
-                Sub()
-                    If formDesigner.CodeFile <> "" Then
-                        Dim doc = OpenDocIfNot(formDesigner.CodeFile)
-                        If doc.ControlsInfo Is Nothing Then SaveDesignInfo(doc, False)
+            dispatcher.BeginInvoke(
+                   System.Windows.Threading.DispatcherPriority.Background,
+                   Sub()
+                       If formDesigner.CodeFile <> "" Then
+                           Dim doc = OpenDocIfNot(formDesigner.CodeFile)
+                           If doc.ControlsInfo Is Nothing Then SaveDesignInfo(doc, False)
 
-                        Dim key = controlName.ToLower()
-                        Dim type = If(doc.ControlsInfo.ContainsKey(key), doc.ControlsInfo(key), "")
+                           Dim key = controlName.ToLower()
+                           Dim type = If(doc.ControlsInfo.ContainsKey(key), doc.ControlsInfo(key), "")
 
-                        If doc.AddEventHandler(controlName, sb.PreCompiler.GetDefaultEvent(type), False) Then
-                            doc.PageKey = formDesigner.PageKey
-                            ' The code behind is saved before the new Handler is added.
-                            ' We must make the designer dirty, to force saving this chamge in 
-                            ' a next call to SaveDesignInfo()
-                            formDesigner.HasChanges = True
-                        End If
-                    End If
+                           If doc.AddEventHandler(controlName, sb.PreCompiler.GetDefaultEvent(type), False) Then
+                               doc.PageKey = formDesigner.PageKey
+                               ' The code behind is saved before the new Handler is added.
+                               ' We must make the designer dirty, to force saving this chamge in 
+                               ' a next call to SaveDesignInfo()
+                               formDesigner.HasChanges = True
+                           End If
+                       End If
 
-                    tabCode.IsSelected = True
-                    Mouse.OverrideCursor = Nothing
-                End Sub)
-
-            AddEventHandler.After(1)
+                       tabCode.IsSelected = True
+                       Mouse.OverrideCursor = Nothing
+                   End Sub)
         End Sub
 
         Private Sub FormDesigner_DiagramDoubleClick(control As UIElement)
@@ -1267,6 +1272,9 @@ Namespace Microsoft.SmallVisualBasic
 
                 If oldCodeFile <> "" Then
                     CopyImages(IO.Path.GetDirectoryName(oldCodeFile), newDir)
+                    If oldCodeFile.ToLower.StartsWith(tempProjectPath) Then
+                        Directory.Delete(Path.GetDirectoryName(oldCodeFile), True)
+                    End If
                 End If
             End If
 
@@ -1289,7 +1297,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub FormDesigner_CurrentPageChanged(index As Integer)
-            If index <0 AndAlso index > DiagramHelper.Designer.GlobalFileIndex Then
+            If index < 0 AndAlso index > DiagramHelper.Designer.GlobalFileIndex Then
                 UpdateTitle()
                 UpdateTextBoxes()
                 txtControlName.IsEnabled = True
@@ -1334,14 +1342,18 @@ Namespace Microsoft.SmallVisualBasic
 
         End Sub
 
-        Dim FocusTxtName As New DiagramHelper.RunAction(20,
-                 Sub()
-                     txtControlName.Focus()
-                     txtControlName.SelectAll()
-                 End Sub)
+        Dim focusTxtNameStarted As Boolean = False
 
-        Dim FocusTxtText As New DiagramHelper.RunAction(20,
-                 Sub() txtControlText.SelectAll())
+        Private Sub FocusTxtName()
+            focusTxtNameStarted = True
+            dispatcher.BeginInvoke(
+                   DispatcherPriority.Background,
+                   Sub()
+                       focusTxtNameStarted = False
+                       txtControlName.Focus()
+                       txtControlName.SelectAll()
+                   End Sub)
+        End Sub
 
         Dim ExitSelectionChanged As Boolean
 
@@ -1365,7 +1377,7 @@ Namespace Microsoft.SmallVisualBasic
                             ExitSelectionChanged = False
 
                             ' goback to the textbox
-                            FocusTxtName.Start()
+                            FocusTxtName()
                             Return
                         End If
                     End If
@@ -1581,13 +1593,13 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub TxtControlName_LostFocus(sender As Object, e As RoutedEventArgs)
             txtControlName.SelectionLength = 0
-            If FocusTxtName.Started Then Return
+            If focusTxtNameStarted Then Return
 
             If CommitName() Then
                 txtControlName.Tag = ""
             Else
                 If e IsNot Nothing Then e.Handled = True
-                FocusTxtName.Start()
+                FocusTxtName()
             End If
         End Sub
 
@@ -1652,6 +1664,22 @@ Namespace Microsoft.SmallVisualBasic
                 If closePage Then
                     DiagramHelper.Designer.ClosePage(False, True)
                 End If
+
+            Else
+                tempProjectPath = GetSetting("SmallVisualBasic", "Backup", "LastProject", "")
+                If tempProjectPath <> "" AndAlso Directory.Exists(tempProjectPath) Then
+                    DiagramHelper.Designer.TempProjectPath = tempProjectPath
+                    DiagramHelper.Designer.ClosePage(False, True, False)
+                    DiagramHelper.Designer.TempKeyNum = 0
+
+                    For Each dir1 In Directory.GetDirectories(tempProjectPath)
+                        Dim xamlFiles = Directory.GetFiles(dir1, "*.xaml")
+                        If xamlFiles.Length > 0 Then
+                            DiagramHelper.Designer.SwitchTo(xamlFiles(0))
+                        End If
+                    Next
+
+                End If
             End If
 
             For Each fileName In FilesToOpen
@@ -1676,24 +1704,23 @@ Namespace Microsoft.SmallVisualBasic
             If SelectCodeTab Then
                 If doc IsNot Nothing Then
                     tabCode.IsSelected = True
-                    Call New RunAction(
-                        Sub()
-                            viewsControl.ChangeSelection(doc.MdiView)
-                        End Sub
-                    ).After(10)
+                    dispatcher.BeginInvoke(
+                         System.Windows.Threading.DispatcherPriority.Background,
+                         Sub() viewsControl.ChangeSelection(doc.MdiView)
+                    )
                 End If
 
             Else
-                Dim selectDesigner As New RunAction(
-                    Sub()
-                        tabDesigner.IsSelected = True
-                        ' Crate a new doc and close it, to consume the first time load delay.
-                        doc = New TextDocument(Nothing)
-                        Dim mdiView As New MdiView() With {.Document = doc}
-                        mdiViews.Add(mdiView)
-                        CloseView(mdiView)
-                    End Sub)
-                selectDesigner.After(10)
+                dispatcher.BeginInvoke(
+                      System.Windows.Threading.DispatcherPriority.Background,
+                      Sub()
+                          tabDesigner.IsSelected = True
+                          ' Crate a new doc and close it, to consume the first time load delay.
+                          doc = New TextDocument(Nothing)
+                          Dim mdiView As New MdiView() With {.Document = doc}
+                          mdiViews.Add(mdiView)
+                          CloseView(mdiView)
+                      End Sub)
             End If
         End Sub
 
@@ -1713,17 +1740,30 @@ Namespace Microsoft.SmallVisualBasic
             End If
         End Sub
 
-        Dim closePopHelp As New RunAction(Sub() PopHelp.IsOpen = False)
+        Dim closePopHelp As New DispatcherTimer(
+                 New TimeSpan(0, 0, 10),
+                 DispatcherPriority.Background,
+                 Sub() PopHelp.IsOpen = False,
+                 dispatcher
+            )
+
         Private Sub PopHelp_Opened(sender As Object, e As EventArgs)
-            closePopHelp.After(10000)
+            closePopHelp.IsEnabled = True
+        End Sub
+
+        Private Sub PopHelp_Closed(sender As Object, e As EventArgs)
+            closePopHelp.IsEnabled = False
         End Sub
 
         Private Sub TxtControlName_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtControlName.GotFocus
-            FocusTxtName.Start()
+            FocusTxtName()
         End Sub
 
         Private Sub TxtControlText_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtControlText.GotFocus
-            FocusTxtText.Start()
+            dispatcher.BeginInvoke(
+                DispatcherPriority.Background,
+                Sub() txtControlText.SelectAll()
+            )
         End Sub
 
         Private Sub MainWindow_Deactivated(sender As Object, e As EventArgs) Handles Me.Deactivated
@@ -1739,17 +1779,16 @@ Namespace Microsoft.SmallVisualBasic
             File.WriteAllText(genFile, doc.GenerateCodeBehind(formDesigner, True))
         End Sub
 
-        Dim ShowGlobalFile As New RunAction(
-                Sub()
-                    tabCode.IsSelected = True
-                    tabDesigner.IsSelected = False
-                End Sub
-        )
-
         Private Sub tabDesigner_PreviewMouseDoubleClick(sender As Object, e As MouseButtonEventArgs)
             If e.OriginalSource IsNot DesignerGrid Then Return
             If Not formDesigner.IsEnabled Then
-                ShowGlobalFile.After(1)
+                dispatcher.BeginInvoke(
+                    DispatcherPriority.Background,
+                    Sub()
+                        tabCode.IsSelected = True
+                        tabDesigner.IsSelected = False
+                    End Sub)
+
             End If
         End Sub
 
@@ -1762,10 +1801,6 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub CmbOpenedDocs_GotFocus(sender As Object, e As RoutedEventArgs)
             CmbOpenedDocs.IsDropDownOpen = True
-        End Sub
-
-        Private Sub CmbOpenedDocs_GotFocus(sender As Object, e As MouseButtonEventArgs)
-
         End Sub
 
         Private Sub CmbOpenedDocs_PreviewMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs)
@@ -1809,6 +1844,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub BtnRun_Click(sender As Object, e As RoutedEventArgs)
             RunProgram()
         End Sub
+
 
     End Class
 

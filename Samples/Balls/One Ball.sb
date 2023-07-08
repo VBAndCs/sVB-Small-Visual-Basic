@@ -1,0 +1,92 @@
+GraphicsWindow.Title = "Animate A Football"
+GraphicsWindow.BackgroundColor = "White"
+GraphicsWindow.Width = 250
+GraphicsWindow.Height = 400
+BoingSound = Sound.Load("boing.wav")
+
+' football graphic
+BallImage = ImageList.LoadImage("ball.gif")
+BallW = ImageList.GetWidthOfImage(BallImage)
+BallH = ImageList.GetHeightOfImage(BallImage)
+Ball = Shapes.AddImage(BallImage)
+BallX = (GraphicsWindow.Width - BallW) / 2
+BallY = 0
+BallXSpeed = 10
+BallYSpeed = 20
+Shapes.Move(Ball, BallX, BallY)
+
+
+' button
+GraphicsWindow.BrushColor = "Black"
+GraphicsWindow.FontSize = 16
+GraphicsWindow.FontBold = "false"
+
+TimerButton = Controls.AddButton("Start", 190, 10)
+TimerButton.OnClick = ButtonClicked
+Timer.Interval = 100
+Timer.Pause()
+Timer.Tick = OnTick
+
+
+
+Sub ButtonClicked
+   If TimerButton.Text = "Start" Then
+      TimerButton.Text = "Stop"
+      Timer.Resume()
+   Else
+      TimerButton.Text = "Start"
+      Timer.Pause()
+   EndIf
+EndSub
+
+
+Sub OnTick
+   MoveX()
+   MoveY()
+EndSub
+
+Sub MoveX
+   BallX = BallX + BallXSpeed
+   Shapes.Move(Ball, BallX, BallY)
+   x = GraphicsWindow.Width - BallW
+   If BallX >= x Then
+      BallX = x
+      BallXSpeed = -BallXSpeed
+      'Sound.PlayChimes()
+      'Sound.PlayMusic("O4L16 ML CDEFGAB")
+      
+      Sound.Play(BoingSound)
+      
+   ElseIf (BallX <= 0) Then
+      BallX = 0
+      BallXSpeed = -BallXSpeed
+      'Sound.PlayBellRingAndWait()
+      'Sound.PlayMusic("O6L16 ML CDEFGAB")
+      
+      Sound.Play(BoingSound)
+   EndIf
+   
+EndSub
+
+Sub MoveY()
+   BallY = BallY + BallYSpeed
+   Shapes.Move(Ball, BallX, BallY)
+   y = GraphicsWindow.Height - BallH
+   If BallY >= y Then
+      BallY = y
+      BallYSpeed = -BallYSpeed
+      'Sound.PlayChimes()
+      'Sound.PlayMusic("O4L16 ML CDEFGAB")
+      
+      Sound.Play(BoingSound)
+      
+   ElseIf (BallY <= 0) Then
+      BallY = 0
+      BallYSpeed = -BallYSpeed
+      'Sound.PlayBellRingAndWait()
+      'Sound.PlayMusic("O6L16 ML CDEFGAB")
+      
+      Sound.Play(BoingSound)
+   EndIf
+EndSub
+

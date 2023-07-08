@@ -10,6 +10,7 @@ Public Class Helper
     Friend Const MmToPx = 96 / 25.4
     Friend Const CmToPx = 96 / 2.54
     Friend Const PxToCm = 2.54 / 96
+    Public Shared Dispatcher As Dispatcher = Application.Current.Dispatcher
 
     Public Shared Function GetFormNameFromXaml(xamlPath As String) As String
         Using reader = Xml.XmlReader.Create(xamlPath)

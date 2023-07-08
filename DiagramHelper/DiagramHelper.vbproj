@@ -134,7 +134,6 @@
     <Compile Include="Arrow.xaml.vb">
       <DependentUpon>Arrow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Helper Classes\RunAfter.vb" />
     <Compile Include="Explorer.vb" />
     <Compile Include="ProjectExplorer.vb" />
     <Compile Include="SBControl.vb" />

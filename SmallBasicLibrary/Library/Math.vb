@@ -76,6 +76,16 @@ Namespace Library
         Public Shared ReadOnly Property E As Primitive = System.Math.E
 
         ''' <summary>
+        ''' Gets the number resulted from raisng the natural logarithmic base (E) to the given power
+        ''' </summary>
+        ''' <param name="exponent">The number to be used as the power of E.</param>
+        ''' <returns>E raised to the specified exponent.</returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function Exp(exponent As Primitive) As Primitive
+            Return New Primitive(System.Math.Exp(exponent))
+        End Function
+
+        ''' <summary>
         ''' Gets the logarithm (base 10) value of the given number.
         ''' </summary>
         ''' <param name="number">
@@ -252,7 +262,7 @@ Namespace Library
         ''' Rounds a given number to the given decimal places.
         ''' </summary>
         ''' <param name="number">The number whose approximation is required.</param>
-        ''' <paramref name="decimalPlaces">The number of decimal places to keep in the number.</paramref>
+        ''' <param name="decimalPlaces">The number of decimal places to keep in the number.</param>
         ''' <returns>
         ''' The rounded value of the given number.
         ''' </returns>
