@@ -1446,7 +1446,7 @@ EndFunction
             Return sVB.CompileGlobalModule(inputDir, outputFileName)
         End Function
 
-        Public Function GetFormNames(Optional normalize As Boolean = False) As List(Of String)
+        Public Function GetFormNames() As List(Of String)
             Dim forms As New List(Of String)
             If Not Me.IsTheGlobalFile AndAlso Me.Form = "" Then Return forms
 
@@ -1458,7 +1458,13 @@ EndFunction
             For Each xamlFile In Directory.GetFiles(inputDir, "*.xaml")
                 Dim name = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile)
                 If name = "" Then Continue For
-                forms.Add(If(normalize, name.ToLower(), name))
+                name = name.ToLower()
+                If forms.Contains(name) Then
+                    Errors.Add(xamlFile)
+                    Errors.Add(name)
+                    Return Nothing
+                End If
+                forms.Add(name)
             Next
 
             Return forms

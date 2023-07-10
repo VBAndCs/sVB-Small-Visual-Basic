@@ -685,9 +685,26 @@ Namespace Microsoft.SmallVisualBasic
                 filePath,
                 doc.Form = "" AndAlso Not doc.IsTheGlobalFile
             )
-            Dim formNames = doc.GetFormNames(True)
 
             doc.Errors.Clear()
+            Dim formNames = doc.GetFormNames()
+            If doc.Errors.Count > 0 Then
+                Dim formFile = doc.Errors(0)
+                Dim formName = doc.Errors(1)
+                doc.Errors.Clear()
+                DiagramHelper.Designer.SwitchTo(formFile)
+                dispatcher.BeginInvoke(
+                    DispatcherPriority.Background,
+                    Sub()
+                        tabCode.IsSelected = False
+                        tabDesigner.IsSelected = True
+                        MsgBox($"There is another form in the project with the name `{formName}`. Each form must have a unique programmable name. Please fix this before running the program.")
+                        Mouse.OverrideCursor = Nothing
+                        ProjExplorer.FilesList.Focus()
+                    End Sub)
+                Return
+            End If
+
             Dim parsers As List(Of Parser)
 
             Try

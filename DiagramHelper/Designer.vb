@@ -426,7 +426,7 @@ Public Class Designer
         ElseIf Not IO.File.Exists(key) AndAlso key.ToLower() <> Helper.GlobalFileName Then ' closed
             Return key
         Else
-            Dim xamlPath = key
+            Dim xamlPath = key.ToLower()
             Dim codePath = xamlPath.Substring(0, xamlPath.Length - 5) & ".sb"
 
             For Each item In Pages
