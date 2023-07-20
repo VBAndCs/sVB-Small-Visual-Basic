@@ -215,9 +215,8 @@ Namespace WinForms
         Private Const LibraryNS As String = "Microsoft.SmallVisualBasic.Library."
 
         Private Shared Sub FillModuleMembers(t As Type)
-            types.Add(t)
-
             Dim members As New List(Of String)
+            types.Add(t)
 
             For Each m In t.GetMembers()
                 members.Add(m.Name.ToLower)

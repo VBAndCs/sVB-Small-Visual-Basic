@@ -15,7 +15,7 @@ Namespace Microsoft.SmallVisualBasic
         Public Property ModuleNames As Dictionary(Of String, String)
 
         Friend _typeInfoBag As TypeInfoBag
-        Friend ReadOnly PossibleEventHandlers As New List(Of (Id As Token, index As Integer))
+        Friend ReadOnly PossibleEventHandlers As New List(Of EventHandlerInfo)
         Friend Property IsLoweredCode As Boolean
 
         Friend Sub AddIdentifier(identifier As Token)
@@ -85,7 +85,7 @@ Namespace Microsoft.SmallVisualBasic
                 Dim subroutine = If(_GlobalVariables.ContainsKey(typeName), Nothing, Statements.SubroutineStatement.GetSubroutine(prop))
                 Dim idExpr = New IdentifierExpression() With {
                         .Identifier = typeNameInfo,
-                        .Subroutine = subroutine
+                        .subroutine = subroutine
                 }
 
                 propNameInfo.SymbolType = Completion.CompletionItemType.DynamicPropertyName
@@ -368,9 +368,9 @@ Namespace Microsoft.SmallVisualBasic
                 End If
 
                 Return AddLocalVar(variable)
-                End If
+            End If
 
-                Return ""
+            Return ""
         End Function
 
         Private Sub ValidateVariableName(name As Token)
@@ -507,5 +507,36 @@ Namespace Microsoft.SmallVisualBasic
 
     End Class
 
+    Friend Structure EventHandlerInfo
+        Public Id As Token
+        Public index As Integer
 
+        Public Sub New(id As Token, index As Integer)
+            Me.Id = id
+            Me.index = index
+        End Sub
+
+        Public Overrides Function Equals(obj As Object) As Boolean
+            If Not (TypeOf obj Is EventHandlerInfo) Then
+                Return False
+            End If
+
+            Dim other = DirectCast(obj, EventHandlerInfo)
+            Return System.Collections.Generic.EqualityComparer(Of Token).Default.Equals(Id, other.Id) AndAlso
+                   index = other.index
+        End Function
+
+        Public Overrides Function GetHashCode() As Integer
+            Dim hashCode As Long = -2034414933
+            hashCode = (hashCode * -1521134295 + System.Collections.Generic.EqualityComparer(Of Token).Default.GetHashCode(Id)).GetHashCode()
+            hashCode = (hashCode * -1521134295 + index.GetHashCode()).GetHashCode()
+            Return hashCode
+        End Function
+
+        Public Sub Deconstruct(ByRef id As Token, ByRef index As Integer)
+            id = Me.Id
+            index = Me.index
+        End Sub
+
+    End Structure
 End Namespace

@@ -8,7 +8,7 @@
     <RootNamespace>DiagramHelper</RootNamespace>
     <AssemblyName>DiagramHelper</AssemblyName>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MyType>Custom</MyType>
     <ProjectGuid>{1502A593-20A7-4781-88D5-9FFC87489424}</ProjectGuid>
     <TargetFrameworkProfile />

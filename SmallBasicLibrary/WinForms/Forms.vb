@@ -116,8 +116,17 @@ Namespace WinForms
                             _forms(form_Name) = wnd
 
                             ' Add control names:
-                            Dim controls = canvas.GetChildren().ToList()
+                            Dim controls = GetChildren(canvas).ToList()
                             For Each ui In controls
+                                Dim lst = TryCast(ui, ItemsControl)
+                                If lst IsNot Nothing AndAlso lst.Items.Count = 1 Then
+                                    Dim item = lst.Items(0).ToString()
+                                    Dim typeNmae = ui.GetType.Name
+                                    If item.StartsWith(typeNmae) AndAlso IsNumeric(item.Substring(typeNmae.Length)) Then
+                                        lst.Items.Clear()
+                                    End If
+                                End If
+
                                 Dim fw = TryCast(ui, FrameworkElement)
                                 Dim controlName = Automation.AutomationProperties.GetName(ui)
 
@@ -167,13 +176,13 @@ Namespace WinForms
                                     fw.ClearValue(FrameworkElement.WidthProperty)
                                     fw.ClearValue(FrameworkElement.HeightProperty)
 
-                                        canvas.Children.Add(lb)
-                                        Canvas.SetLeft(lb, left)
-                                        Canvas.SetTop(lb, top)
-                                        _controls(form_Name & "." & controlName.ToLower()) = lb
-                                    End If
+                                    canvas.Children.Add(lb)
+                                    Canvas.SetLeft(lb, left)
+                                    Canvas.SetTop(lb, top)
+                                    _controls(form_Name & "." & controlName.ToLower()) = lb
+                                End If
 
-                                    SetControlText(ui, GetControlText(ui))
+                                SetControlText(ui, GetControlText(ui))
                             Next
 
                         Catch ex As Exception

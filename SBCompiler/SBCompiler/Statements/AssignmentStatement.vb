@@ -62,7 +62,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 RightValue.AddSymbols(symbolTable)
                 If isEventHandler AndAlso TypeOf RightValue Is IdentifierExpression Then
                     Dim id = CType(RightValue, IdentifierExpression).Identifier
-                    symbolTable.PossibleEventHandlers.Add((id, symbolTable.AllIdentifiers.Count - 1))
+                    symbolTable.PossibleEventHandlers.Add(New EventHandlerInfo(id, symbolTable.AllIdentifiers.Count - 1))
                 End If
             End If
 

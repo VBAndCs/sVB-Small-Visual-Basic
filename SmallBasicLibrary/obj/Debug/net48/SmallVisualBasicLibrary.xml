@@ -128,6 +128,14 @@ SmallVisualBasicLibrary
  <param name="array">The input array. The array must be intialized first, even with an empty array {}.</param>
  <param name="value">The item you want to add after the last item in the array.</param>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Array.Append(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Adds an item at the end of the array. The input array will be changed directly, so this method is faster when you want to build a large array, but be careful because it will affect the reference array that the current array is copied from!
+ sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
+ </summary>
+ <param name="array">The input array. The array must be intialized first, even with an empty array {}.</param>
+ <param name="value">The item you want to add after the last item in the array.</param>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Array.AddItems(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Adds many items to the array.
@@ -3176,6 +3184,13 @@ Converts the current array to a string.
 <member name="M:Microsoft.SmallVisualBasic.WinForms.ArrayEx.AddNextItem(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Adds an item to the array. The current array will be changed directly, so this method is faster when you want to build a large array, but be careful because it will affect the reference array that the current array is copied from!
+ sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
+ </summary>
+ <param name="value">The item you want to add after the last item in the array.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ArrayEx.Append(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Adds an item at the end of the array. The current array will be changed directly, so this method is faster when you want to build a large array, but be careful because it will affect the reference array that the current array is copied from!
  sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
  </summary>
  <param name="value">The item you want to add after the last item in the array.</param>

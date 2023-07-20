@@ -21,7 +21,7 @@
                        Foreground="Yellow">Small Visual Basic </TextBlock>
 
             <TextBlock HorizontalAlignment="Center"  FontSize="28" FontWeight="Bold" 
-                       Foreground="Yellow">v2.8.6.7</TextBlock>
+                       Foreground="Yellow">v2.8.7</TextBlock>
 
             <TextBlock HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" 
                        Margin="0,20"

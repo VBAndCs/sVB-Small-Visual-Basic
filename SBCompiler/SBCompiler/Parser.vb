@@ -470,7 +470,7 @@ Namespace Microsoft.SmallVisualBasic
 
             Dim openP = tokenEnum.Current
             If EatToken(tokenEnum, TokenType.LeftParens) Then
-                Dim caller = (subroutineCall.Name.Line, subroutineCall.Name.EndColumn)
+                Dim caller = New CallerInfo(subroutineCall.Name.Line, subroutineCall.Name.EndColumn, 0)
                 If openP.Line = commaLine AndAlso (openP.Column = commaColumn OrElse openP.EndColumn = commaColumn) Then
                     callerInfo = New CallerInfo(caller.Line, caller.EndColumn, 0)
                     commaLine = -2
@@ -647,7 +647,7 @@ Namespace Microsoft.SmallVisualBasic
                         AddError(tokenEnum.Current, "The ! operator can't be used to call methods")
                     End If
 
-                    Dim caller = (variable.Line, variable.EndColumn)
+                    Dim caller = New CallerInfo(variable.Line, variable.EndColumn, 0)
                     If openP.Line = commaLine AndAlso (openP.Column = commaColumn OrElse openP.EndColumn = commaColumn) Then
                         callerInfo = New CallerInfo(caller.Line, caller.EndColumn, 0)
                         commaLine = -2
@@ -731,7 +731,7 @@ Namespace Microsoft.SmallVisualBasic
 
             openP = tokenEnum.Current
             If EatOptionalToken(tokenEnum, TokenType.LeftParens) Then
-                Dim caller = (current.Line, current.EndColumn)
+                Dim caller = New CallerInfo(current.Line, current.EndColumn, 0)
                 If openP.Line = commaLine AndAlso (openP.Column = commaColumn OrElse openP.EndColumn = commaColumn) Then
                     callerInfo = New CallerInfo(caller.Line, caller.EndColumn, 0)
                     commaLine = -2
@@ -820,7 +820,7 @@ Namespace Microsoft.SmallVisualBasic
                            tokenEnum As TokenEnumerator,
                            closeToken As TokenType,
                            <Out> ByRef closeTokenFound As Boolean,
-                           caller? As (Line As Integer, EndColumn As Integer),
+                           caller As CallerInfo,
                            Optional commaIsOptional As Boolean = True
                   ) As List(Of Expression)
 
@@ -832,8 +832,8 @@ Namespace Microsoft.SmallVisualBasic
                 Dim current = tokenEnum.Current
                 If current.Type = closeToken Then
                     If current.Line = commaLine AndAlso (current.Column = commaColumn OrElse current.EndColumn = commaColumn) Then
-                        If caller.HasValue Then
-                            callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count - 1)
+                        If caller IsNot Nothing Then
+                            callerInfo = New CallerInfo(caller.Line, caller.EndColumn, items.Count - 1)
                             commaLine = -2
                             Return Nothing
                         End If
@@ -868,8 +868,8 @@ Namespace Microsoft.SmallVisualBasic
                 If EatOptionalToken(tokenEnum, TokenType.Comma) Then
                     exprExpected = True
                     If comma.Line = commaLine AndAlso (comma.Column = commaColumn OrElse comma.EndColumn = commaColumn) Then
-                        If caller.HasValue Then
-                            callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count)
+                        If caller IsNot Nothing Then
+                            callerInfo = New CallerInfo(caller.Line, caller.EndColumn, items.Count)
                             commaLine = -2
                             Return Nothing
                         End If
@@ -880,8 +880,8 @@ Namespace Microsoft.SmallVisualBasic
                     Select Case current.Type
                         Case closeToken
                             If current.Line = commaLine AndAlso current.Column = commaColumn Then
-                                If caller.HasValue Then
-                                    callerInfo = New CallerInfo(caller.Value.Line, caller.Value.EndColumn, items.Count - 1)
+                                If caller IsNot Nothing Then
+                                    callerInfo = New CallerInfo(caller.Line, caller.EndColumn, items.Count - 1)
                                     commaLine = -2
                                     Return Nothing
                                 End If
@@ -1139,24 +1139,24 @@ Namespace Microsoft.SmallVisualBasic
             _SymbolTable.AutoCompletion = False
         End Sub
 
-        Public Shared Function ParseDateLiteral(literal As String) As (Ticks As Long?, IsDate As Boolean)
+        Public Shared Function ParseDateLiteral(literal As String) As DateResult
             If literal.Length < 2 Then
-                Return (Nothing, False)
+                Return New DateResult(Nothing, False)
             End If
 
             If literal(1) = "-" OrElse literal(1) = "+" Then
                 Dim s As TimeSpan
                 If TimeSpan.TryParse(literal.Trim("#"c, "+"c), CultureInfo.InvariantCulture, s) Then
-                    Return (s.Ticks, False)
+                    Return New DateResult(s.Ticks, False)
                 Else
-                    Return (Nothing, False)
+                    Return New DateResult(Nothing, False)
                 End If
             Else
                 Dim d As Date
                 If Date.TryParse(literal.Trim("#"), CultureInfo.InvariantCulture, DateTimeStyles.None, d) Then
-                    Return (d.Ticks, True)
+                    Return New DateResult(d.Ticks, True)
                 Else
-                    Return (Nothing, True)
+                    Return New DateResult(Nothing, True)
                 End If
             End If
 
@@ -1299,7 +1299,7 @@ Namespace Microsoft.SmallVisualBasic
                     statement = New ReturnStatement With {
                         .StartToken = returnToken,
                         .ReturnExpression = returnExpr,
-                        .Subroutine = subroutine
+                        .subroutine = subroutine
                     }
 
                     If subroutine Is Nothing Then
@@ -1432,7 +1432,7 @@ Namespace Microsoft.SmallVisualBasic
                 Return True
             End If
 
-            token = Token.Illegal
+            token = token.Illegal
             AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("TokenExpected"), expectedToken))
             Return False
         End Function
@@ -1454,7 +1454,7 @@ Namespace Microsoft.SmallVisualBasic
                 Return True
             End If
 
-            token = Token.Illegal
+            token = token.Illegal
             Return False
         End Function
 
@@ -1474,7 +1474,7 @@ Namespace Microsoft.SmallVisualBasic
                 If token.Text <> "_" Then Return True
             End If
 
-            token = Token.Illegal
+            token = token.Illegal
             AddError(tokenEnum.Current, ResourceHelper.GetString("IdentifierExpected"))
             Return False
         End Function
@@ -1526,4 +1526,32 @@ Namespace Microsoft.SmallVisualBasic
             Me.ParamIndex = paramIndex
         End Sub
     End Class
+
+    Public Structure DateResult
+        Public Ticks As Long?
+        Public IsDate As Boolean
+
+        Public Sub New(ticks As Long?, isDate As Boolean)
+            Me.Ticks = ticks
+            Me.IsDate = isDate
+        End Sub
+
+        Public Overrides Function Equals(obj As Object) As Boolean
+            If Not (TypeOf obj Is DateResult) Then
+                Return False
+            End If
+
+            Dim other = DirectCast(obj, DateResult)
+            Return Ticks = other.Ticks AndAlso
+                   IsDate = other.IsDate
+        End Function
+
+        Public Overrides Function GetHashCode() As Integer
+            Dim hashCode As Long = 737059814
+            hashCode = (hashCode * -1521134295 + Ticks.GetHashCode()).GetHashCode()
+            hashCode = (hashCode * -1521134295 + IsDate.GetHashCode()).GetHashCode()
+            Return hashCode
+        End Function
+
+    End Structure
 End Namespace

@@ -2,6 +2,11 @@
 Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.WinForms
 
+
+''' <summary>
+''' A demo sample library created by VB.NET for sVB. The source code exists in the DemoLib folder in the samples folder, and the DemoLib sample shows you how to use this libray.
+''' Note that you can delete the DemoLib.dll and DempLib.xml from the sVB\bin\Lib folder if you done trying this demo libray.
+''' </summary>
 <SmallVisualBasicType>
 Public Class DemoLib
 

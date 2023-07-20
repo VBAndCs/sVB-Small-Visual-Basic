@@ -47,6 +47,7 @@ Namespace Library
         ''' <param name="array">The input array. The array must be intialized first, even with an empty array {}.</param>
         ''' <param name="value">The item you want to add after the last item in the array.</param>
         <WinForms.ReturnValueType(VariableType.Array)>
+        <HideFromIntellisense>
         Public Shared Sub AddNextItem(array As Primitive, value As Primitive)
             Dim map = array._arrayMap
             If map Is Nothing Then
@@ -55,6 +56,23 @@ Namespace Library
             Dim index = map.Count + 1
             map(index) = value
         End Sub
+
+        ''' <summary>
+        ''' Adds an item at the end of the array. The input array will be changed directly, so this method is faster when you want to build a large array, but be careful because it will affect the reference array that the current array is copied from!
+        ''' sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
+        ''' </summary>
+        ''' <param name="array">The input array. The array must be intialized first, even with an empty array {}.</param>
+        ''' <param name="value">The item you want to add after the last item in the array.</param>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        Public Shared Sub Append(array As Primitive, value As Primitive)
+            Dim map = array._arrayMap
+            If map Is Nothing Then
+                Throw New InvalidOperationException("Can't add items to an empty array.")
+            End If
+            Dim index = map.Count + 1
+            map(index) = value
+        End Sub
+
 
         ''' <summary>
         ''' Adds many items to the array.

@@ -3,7 +3,7 @@
     <AssemblyName>SmallVisualBasicLibrary</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <UseWPF>True</UseWPF>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net45</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>

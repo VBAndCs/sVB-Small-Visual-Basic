@@ -20,9 +20,9 @@ Small Visual Basic (sVB) is an educational programming language, created by Eng.
 # Download the language:
 Starting from v2.8.1, sVB has an installer, that creates a startup menu and desktop shortcuts for sVB and its book.
 You can download the installer from the [visualstudio marketplace](https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller)
-To install sVB, Unzip the downlaoded file and run the sVB_Installer.msi. You can accept default options and click next in each setup page, and wait for the setup to finish. If your PC doesn't contain the .NET framework 4.8, thee estup will ask you to download it, so you should accept and install it.
+To install sVB, Unzip the downlaoded file and run the sVB_Installer.msi. You can accept default options and click next in each setup page, and wait for the setup to finish. If your PC doesn't contain the .NET framework 4.5, the estup will ask you to download it, so you should accept and install it.
 To get older versions, go to the [Releases page](https://github.com/VBAndCs/sVB-Small-Visual-Basic/releases), navigate to the version you want, expand the Assets list at the bottom of the page, and download the ZIP file, and follow these instructions:
-1.	sVB needs [.NET framework 4.8](https://go.microsoft.com/fwlink/?LinkId=2085155). If you don't have it on your PC, download and install it.
+1.	sVB needs [.NET framework 4.5](https://go.microsoft.com/fwlink/?LinkId=2085155). If you don't have it on your PC, download and install it.
 2.	Unzip the "sVB.zip" file. You will have a folder with the same name where you unzipped the file. Open the folder and double-click "sVB.exe".
 
 # sVB full reference PDF book
@@ -48,7 +48,7 @@ Furthermore, I wanted to use sVB as a training yard for understanding and workin
 This is a necessary step for the VB community, after MS neglected VB.NET since 2017, and stopped evolving it since 2020. And this is why Anthony D. Green forked Roslyn and start evolving VB.NET under the name [ModVB](https://anthonydgreen.net/2022/08/20/introducing-modvb/) since 2022.
 Anthony had participated in designing and creating Roslyn and VB.NET in the first place, but he is still one man, and the community must help him maintain and evolve ModVB, if they really want it to live long and prosper. 
 So, here is a small programming language written in VB.NET for you. You can fork it, play with it, and evolve it as you want, and when you feel comfortable with compilers, try to take a look at Roslyn and ModVB.
-Note that all sVB projects are WPF projects, that target the .NET framework 4.8. You can run the source code in VS.NET 2019 and later. But before running the code, please copy the "Lib" and "Toolbar" folders from the "SmallBasicIDE\SB.Lib" folder to the "SmallBasicIDE\bin\Debug" and "SmallBasicIDE\bin\Release" folders respectively, as obviously "Git" excludes these folders, and I prefer it this way.
+Note that all sVB projects are WPF projects, that target the .NET framework 4.5. You can run the source code in VS.NET 2019 and later. But before running the code, please copy the "Lib" and "Toolbar" folders from the "SmallBasicIDE\SB.Lib" folder to the "SmallBasicIDE\bin\Debug" and "SmallBasicIDE\bin\Release" folders respectively, as obviously "Git" excludes these folders, and I prefer it this way.
 
 # Why do we need sVB:
 > "BASIC used to be on every computer a child touched, but today there's no easy way for kids to get hooked on programming."

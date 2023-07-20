@@ -206,10 +206,20 @@ Namespace WinForms
         ''' sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
         ''' </summary>
         ''' <param name="value">The item you want to add after the last item in the array.</param>
-        <WinForms.ReturnValueType(VariableType.Array)>
         <ExMethod>
+        <HideFromIntellisense>
         Public Shared Sub AddNextItem(array As Primitive, value As Primitive)
-            Library.Array.AddNextItem(array, value)
+            Library.Array.Append(array, value)
+        End Sub
+
+        ''' <summary>
+        ''' Adds an item at the end of the array. The current array will be changed directly, so this method is faster when you want to build a large array, but be careful because it will affect the reference array that the current array is copied from!
+        ''' sVB calls this method when you use the array intializer {}, so it is faster than adding individual items using the array indixer [].
+        ''' </summary>
+        ''' <param name="value">The item you want to add after the last item in the array.</param>
+        <ExMethod>
+        Public Shared Sub Append(array As Primitive, value As Primitive)
+            Library.Array.Append(array, value)
         End Sub
     End Class
 End Namespace

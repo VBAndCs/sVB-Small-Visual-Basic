@@ -348,9 +348,17 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     Case matchingPair2
                         If pair1Count = 0 Then
                             If direction < 0 Then
-                                _editorControl.HighlightWords(_MatchingPairsHighlightColor, (token.Column + line.Start, 1), (startPos, 1))
+                                _editorControl.HighlightWords(
+                                        _MatchingPairsHighlightColor,
+                                        New Span(token.Column + line.Start, 1),
+                                        New Span(startPos, 1)
+                                 )
                             Else
-                                _editorControl.HighlightWords(_MatchingPairsHighlightColor, (startPos, 1), (token.Column + line.Start, 1))
+                                _editorControl.HighlightWords(
+                                        _MatchingPairsHighlightColor,
+                                        New Span(startPos, 1),
+                                        New Span(token.Column + line.Start, 1)
+                                )
                             End If
                             Return
                         End If

@@ -316,8 +316,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 force = CType(sender, Boolean)
             ElseIf TypeOf sender Is String OrElse TypeOf sender Is Char Then
                 symbol = CType(sender, String)
-            ElseIf TypeOf sender Is (String, Boolean) Then
-                Dim info = CType(sender, (Symbol As String, Force As Boolean))
+            ElseIf TypeOf sender Is Symbolinfo Then
+                Dim info = CType(sender, SymbolInfo)
                 force = info.Force
                 symbol = info.Symbol
                 If symbol = ", " Then
@@ -404,7 +404,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         If column > token.Column Then
                             currentToken = If(
                                   prevIsSep AndAlso token.ParseType = ParseType.Comment,
-                                  Token.Illegal,
+                                  token.Illegal,
                                   token
                             )
                             nextToken = GetNonCommentToken(tokens, i + 1, False)
@@ -1023,7 +1023,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                         .DisplayName = name,
                                         .ItemType = CompletionItemType.Control,
                                         .ReplacementText = name,
-                                        .DefinitionIdintifier = New Token() With {.Line = -1, .Type = TokenType.Identifier}
+                                        .DefinitionIdintifier = New Token() With {.line = -1, .Type = TokenType.Identifier}
                                     }
                                 )
                             Next
@@ -1148,7 +1148,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Else
                         b4PrevToken = prevToken
                         prevToken = currentToken
-                        currentToken = Token.Illegal
+                        currentToken = token.Illegal
                         index = i + 1
                     End If
 
@@ -1514,11 +1514,16 @@ LineShow:
             Dim compList As New List(Of CompletionItem)
 
             Dim methods = type.GetMethods(System.Reflection.BindingFlags.Static Or System.Reflection.BindingFlags.Public)
+            Dim hideAttr = GetType(Library.HideFromIntellisenseAttribute)
+            Dim exAttr = GetType(WinForms.ExMethodAttribute)
+            Dim exPropAttr = GetType(WinForms.ExPropertyAttribute)
 
             For Each methodInfo In methods
+                If methodInfo.GetCustomAttributes(hideAttr, inherit:=False).Length > 0 Then Continue For
+
                 Dim name As String
                 Dim item As New CompletionItem()
-                If methodInfo.GetCustomAttributes(GetType(WinForms.ExMethodAttribute), inherit:=False).Count > 0 Then
+                If methodInfo.GetCustomAttributes(exAttr, inherit:=False).Count > 0 Then
                     name = methodInfo.Name
                     item.Key = name
                     item.DisplayName = name
@@ -1533,7 +1538,7 @@ LineShow:
                     item.MemberInfo = methodInfo
                     compList.Add(item)
 
-                ElseIf methodInfo.Name.ToLower().StartsWith("get") AndAlso methodInfo.GetCustomAttributes(GetType(WinForms.ExPropertyAttribute), inherit:=False).Count > 0 Then
+                ElseIf methodInfo.Name.ToLower().StartsWith("get") AndAlso methodInfo.GetCustomAttributes(exPropAttr, inherit:=False).Count > 0 Then
                     name = methodInfo.Name.Substring(3)
                     item.Key = name
                     item.DisplayName = name
@@ -1545,8 +1550,12 @@ LineShow:
             Next
 
             Dim events = type.GetEvents(System.Reflection.BindingFlags.Static Or System.Reflection.BindingFlags.Public)
+            Dim callback = GetType(Library.SmallVisualBasicCallback)
+
             For Each eventInfo In events
-                If eventInfo.EventHandlerType Is GetType(Library.SmallVisualBasicCallback) Then
+                If eventInfo.GetCustomAttributes(hideAttr, inherit:=False).Length > 0 Then Continue For
+
+                If eventInfo.EventHandlerType Is callback Then
                     Dim name = eventInfo.Name
                     compList.Add(New CompletionItem() With {
                     .Key = name,
@@ -1599,8 +1608,41 @@ LineShow:
         Public Sub ShowHelp(Optional force As Boolean = False)
             OnHelpUpdate(force, Nothing)
         End Sub
+
         Public Sub ShowHelp(symbol As String)
-            OnHelpUpdate((symbol, True), Nothing)
+            OnHelpUpdate(New SymbolInfo(symbol, True), Nothing)
         End Sub
     End Class
+
+    Public Structure SymbolInfo
+        Public Symbol As String
+        Public Force As Boolean
+
+        Public Sub New(symbol As String, force As Boolean)
+            Me.Symbol = symbol
+            Me.Force = force
+        End Sub
+
+        Public Overrides Function Equals(obj As Object) As Boolean
+            If Not (TypeOf obj Is SymbolInfo) Then
+                Return False
+            End If
+
+            Dim other = DirectCast(obj, SymbolInfo)
+            Return Symbol = other.Symbol AndAlso
+                   Force = other.Force
+        End Function
+
+        Public Overrides Function GetHashCode() As Integer
+            Dim hashCode As Long = -1232129091
+            hashCode = (hashCode * -1521134295 + System.Collections.Generic.EqualityComparer(Of String).Default.GetHashCode(Symbol)).GetHashCode()
+            hashCode = (hashCode * -1521134295 + Force.GetHashCode()).GetHashCode()
+            Return hashCode
+        End Function
+
+        Public Sub Deconstruct(ByRef symbol As String, ByRef force As Boolean)
+            symbol = Me.Symbol
+            force = Me.Force
+        End Sub
+    End Structure
 End Namespace

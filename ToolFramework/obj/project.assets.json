@@ -1,11 +1,11 @@
 {
   "version": 3,
   "targets": {
-    ".NETFramework,Version=v4.8": {}
+    ".NETFramework,Version=v4.5": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
-    ".NETFramework,Version=v4.8": []
+    ".NETFramework,Version=v4.5": []
   },
   "packageFolders": {
     "C:\\Users\\Mhmd\\.nuget\\packages\\": {}
@@ -24,22 +24,22 @@
         "C:\\Program Files\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net48"
+        "net45"
       ],
       "sources": {
         "C:\\Program Files\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net48": {
-          "targetAlias": "net48",
+        "net45": {
+          "targetAlias": "net45",
           "projectReferences": {}
         }
       }
     },
     "frameworks": {
-      "net48": {
-        "targetAlias": "net48",
+      "net45": {
+        "targetAlias": "net45",
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
       }
     }
