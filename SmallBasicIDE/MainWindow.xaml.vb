@@ -523,7 +523,6 @@ Namespace Microsoft.SmallVisualBasic
                 If doc.IsNew AndAlso Not doc.IsDirty Then
                     CloseView(doc.MdiView)
                 End If
-
             End If
 
             tabCode.IsSelected = True
@@ -1699,36 +1698,42 @@ Namespace Microsoft.SmallVisualBasic
                 End If
             End If
 
-            For Each fileName In FilesToOpen
-                Dim file = fileName.ToLower()
-                If file.EndsWith(".sb") Then
-                    doc = OpenDocIfNot(fileName)
-                    SelectCodeTab = True
+            tabDesigner.IsSelected = False
+            tabCode.IsSelected = True
 
-                ElseIf file.EndsWith(".xaml") Then
-                    DiagramHelper.Designer.SwitchTo(fileName)
-                    SelectCodeTab = False
-                End If
-            Next
+            dispatcher.BeginInvoke(
+                  System.Windows.Threading.DispatcherPriority.Background,
+                  Sub()
+                      For Each fileName In FilesToOpen
+                          Dim file = fileName.ToLower()
+                          If file.EndsWith(".sb") Then
+                              doc = OpenDocIfNot(fileName)
+                              SelectCodeTab = True
 
-            ' Load the code editor
-            If doc Is Nothing Then
-                tabCode.IsSelected = True
-            Else
-                DoNotOpenDefaultDoc = Not closePage
-            End If
+                          ElseIf file.EndsWith(".xaml") Then
+                              DiagramHelper.Designer.SwitchTo(fileName)
+                              SelectCodeTab = False
+                          End If
+                      Next
 
-            If SelectCodeTab Then
-                If doc IsNot Nothing Then
-                    tabCode.IsSelected = True
-                    dispatcher.BeginInvoke(
+                      ' Load the code editor
+                      If doc Is Nothing Then
+                          tabCode.IsSelected = True
+                      Else
+                          DoNotOpenDefaultDoc = Not closePage
+                      End If
+
+                      If SelectCodeTab Then
+                          If doc IsNot Nothing Then
+                              tabCode.IsSelected = True
+                              dispatcher.BeginInvoke(
                          System.Windows.Threading.DispatcherPriority.Background,
                          Sub() viewsControl.ChangeSelection(doc.MdiView)
                     )
-                End If
+                          End If
 
-            Else
-                dispatcher.BeginInvoke(
+                      Else
+                          dispatcher.BeginInvoke(
                       System.Windows.Threading.DispatcherPriority.Background,
                       Sub()
                           tabDesigner.IsSelected = True
@@ -1738,7 +1743,8 @@ Namespace Microsoft.SmallVisualBasic
                           mdiViews.Add(mdiView)
                           CloseView(mdiView)
                       End Sub)
-            End If
+                      End If
+                  End Sub)
         End Sub
 
         Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
