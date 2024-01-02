@@ -29,11 +29,11 @@ Sub Button2_OnClick()
    start = Date.Now
    totalTime = #+0#
    For i = 1 To 10000
-      ' Causion: The Array.AddNextItemmethod is fast but it is a by reference operation
+      ' Causion: The Array.Append method is fast but it is a by reference operation
       ' and can affect another arry if the current array is copied from it by using the = operator
       ' or by passing it to a parameter or returning it form a function
       ' The same applies on the Array.SetItemAt method.
-      x.AddNextItem(i)
+      x.Append(i)
       If i.Remainder(100) = 0 Then
          t = Date.Now - start
          d = t - totalTime

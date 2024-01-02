@@ -254,11 +254,19 @@ Namespace WinForms
         Public Shared Custom Event OnSlide As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
-                    Dim _sender = GetSlider([Event].SenderControl)
-                    AddHandler _sender.ValueChanged,
-                        Sub(Sender As Wpf.Control, e As RoutedEventArgs)
-                            [Event].EventsHandler(Sender, e, handler)
-                        End Sub
+                    Dim name = [Event].SenderControl
+                    Dim _sender = GetSlider(name)
+                    Dim h = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                [Event].HandleEvent(Sender, e, handler)
+                            End Sub
+
+                    Control.RemovePrevEventHandler(
+                            name,
+                            NameOf(Wpf.Slider.ValueChangedEvent),
+                            Sub() RemoveHandler _sender.ValueChanged, h
+                    )
+                    AddHandler _sender.ValueChanged, h
+
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnSlide), ex)
                 End Try

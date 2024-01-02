@@ -11,19 +11,40 @@
     Shared Function ChangeBorderBrush(Element As FrameworkElement) As Brush
         Dim Shape As Shape = TryCast(Element, Shape)
         Dim brush As Brush
+        Dim Dsn = Helper.GetDesigner(Element)
+
         If Shape IsNot Nothing Then
             brush = ChangeBrush(Element, Shape.StrokeProperty)
-            If Shape.Stroke IsNot Nothing AndAlso (Double.IsNaN(Shape.StrokeThickness) OrElse Shape.StrokeThickness = 0) Then Shape.StrokeThickness = 1
+            If Shape.Stroke IsNot Nothing AndAlso (Double.IsNaN(Shape.StrokeThickness) OrElse Shape.StrokeThickness = 0) Then
+                Dim Unit = Dsn.UndoStack.LastChange
+                Dim PropState = TryCast(Unit(0), PropertyState)
+                PropState.Add(
+                        Shape.StrokeThicknessProperty,
+                        New ValuePair(Of Object)(Shape.StrokeThickness, 1)
+                )
+                Shape.StrokeThickness = 1
+                Dsn.UndoStack.LastChange = Unit
+            End If
         Else
             Dim Control = TryCast(Element, Control)
             If Control IsNot Nothing Then
                 brush = ChangeBrush(Element, Control.BorderBrushProperty)
                 If Control.BorderBrush IsNot Nothing AndAlso (
                         Double.IsNaN(Control.BorderThickness.Left) OrElse
-                        Control.BorderThickness.Left = 0
-                    ) Then Control.BorderThickness = New Thickness(1)
+                        Control.BorderThickness.Left = 0) Then
+                    Dim t As New Thickness(1)
+                    Dim Unit = Dsn.UndoStack.LastChange
+                    Dim PropState = TryCast(Unit(0), PropertyState)
+                    PropState.Add(
+                            Control.BorderThicknessProperty,
+                            New ValuePair(Of Object)(Control.BorderThickness, t)
+                    )
+                    Control.BorderThickness = t
+                    Dsn.UndoStack.LastChange = Unit
+                End If
             End If
         End If
+
         Return FixImageBrush(brush)
     End Function
 
@@ -33,7 +54,10 @@
 
         If Shape IsNot Nothing Then
             If Value < 0 AndAlso Shape.StrokeThickness = 0 Then Return
-            Dim OldState As New PropertyState(AddressOf DiagramObject.Diagrams(Element).AfterRestoreAction, Element, Shape.StrokeThicknessProperty)
+            Dim OldState As New PropertyState(
+                    AddressOf DiagramObject.Diagrams(Element).AfterRestoreAction,
+                    Element, Shape.StrokeThicknessProperty
+            )
             Shape.StrokeThickness += Value
             Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
         Else
@@ -41,7 +65,11 @@
             If Control IsNot Nothing Then
                 Dim t = Math.Round(Control.BorderThickness.Left, 1)
                 If Value < 0 AndAlso t = 0 Then Return
-                Dim OldState As New PropertyState(AddressOf DiagramObject.Diagrams(Element).AfterRestoreAction, Element, Control.BorderThicknessProperty)
+                Dim OldState As New PropertyState(
+                        AddressOf DiagramObject.Diagrams(Element).AfterRestoreAction,
+                        Element,
+                        Control.BorderThicknessProperty
+                 )
                 Control.BorderThickness = New Thickness(t + Value)
                 Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
             End If
@@ -77,23 +105,25 @@
         Return Nothing
     End Function
 
-    Private Shared Function FixImageBrush(brush As Brush) As Brush
+    Friend Shared Function FixImageBrush(brush As Brush) As Brush
         If brush Is Nothing Then Return Nothing
 
         Dim imgBrush = TryCast(brush, ImageBrush)
         If imgBrush Is Nothing Then Return brush
+        Dim imgFile = imgBrush.ImageSource?.ToString()
+        If imgFile = "" Then Return brush
+        imgFile = imgFile.ToLower().Replace("\", "/").Replace("file:///", "")
 
         Dim pageFile = Designer.CurrentPage.XamlFile
         If pageFile = "" Then
             pageFile = Designer.CurrentPage.CodeFile
+            If pageFile = "" Then pageFile = Designer.TempProjectPath
             If pageFile = "" Then Return brush
         End If
 
-        Dim dir = IO.Path.GetDirectoryName(pageFile)
-        Dim bmp = TryCast(imgBrush.ImageSource, BitmapImage)
-        If bmp Is Nothing Then Return brush
+        Dim dir = If(IO.Directory.Exists(pageFile), pageFile, IO.Path.GetDirectoryName(pageFile))
+        If dir = IO.Path.GetDirectoryName(imgFile) Then Return brush
 
-        Dim imgFile = bmp.UriSource.LocalPath
         Dim imgFile2 = IO.Path.Combine(
             dir,
             IO.Path.GetFileName(imgFile)
@@ -132,7 +162,7 @@
         For Each Pair In PropState
             Dim oldValue = Pair.Value.OldValue
             Dim newValue = Pair.Value.NewValue
-            If oldValue Is newValue OrElse oldValue.Equals(newValue) Then Continue For
+            If oldValue IsNot Nothing AndAlso (oldValue Is newValue OrElse oldValue.Equals(newValue)) Then Continue For
             Element.SetValue(Pair.Key, Helper.Clone(newValue))
         Next
 

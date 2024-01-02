@@ -372,7 +372,7 @@ Namespace Library
             Dim count = array._arrayMap.Count
 
             Dim intStart = System.Math.Max(CInt(start), 1)
-            intStart = System.Math.Min(intStart, count)
+            If intStart > count Then Return 0
 
             Dim ids = array._arrayMap.Keys
             Dim map = array._arrayMap
@@ -382,10 +382,10 @@ Namespace Library
             For i = intStart - 1 To count - 1
                 If ignCase Then
                     If map(ids(i)).AsString().ToLower() = lowercaseValue Then
-                        Return i
+                        Return i + 1
                     End If
                 ElseIf map(ids(i)) = value Then
-                    Return i
+                    Return i + 1
                 End If
             Next
 

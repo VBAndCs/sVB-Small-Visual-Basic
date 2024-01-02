@@ -1,5 +1,4 @@
 
-
 '------------------------------------------------
 Function Test_AddItem()
    a = {}
@@ -202,6 +201,33 @@ Function Test_Find()
    
 EndFunction
 
+'------------------------------------------------
+Function Test_IndexOf()
+   a = {1, 2, 3, "Adam"}
+   a["Name"] = "adam"
+   a!Age = 15
+   
+   Return UnitTest.AssertTrue(
+      {
+         a.IndexOf(0, 0, True) = 0,
+         a.IndexOf("", 1, True) = "",
+         a.IndexOf(1, 0, True) = 1,
+         a.IndexOf(2, 1, True) = 2,
+         a.IndexOf(2, 2, True) = 2,
+         a.IndexOf(3, 1, True) = 3,
+         a.IndexOf(3, 4, True) = 0,
+         a.IndexOf("Adam", 1, False) = 4,
+         a.IndexOf("adam", 1, False) = 5,
+         a.IndexOf("adam", 1, True) = 4,
+         a.IndexOf("adam", 5, True) = 5,
+         a.IndexOf("adam", 5, False) = 5,
+         a.IndexOf("Adam", 5, False) = 0,
+         a.IndexOf(15, 1, False) = 6,
+         a.IndexOf(15, 7, False) = 0
+      },
+      "Array.IndexOf"
+   )
+EndFunction
 
 '------------------------------------------------
 Function Test_Indices()

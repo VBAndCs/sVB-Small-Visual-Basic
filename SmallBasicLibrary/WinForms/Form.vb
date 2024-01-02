@@ -1428,28 +1428,109 @@ Namespace WinForms
 
 
         ''' <summary>
+        ''' Fired when the user presses a keyboard key down on the form or any of its child controls.
+        ''' </summary>
+        Public Shared Custom Event OnPreviewKeyDown As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
+                Dim _sender = Control.GetSender(NameOf(OnPreviewKeyDown), True)
+                Dim h = Sub(Sender As Object, e As RoutedEventArgs)
+                            [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler, True)
+                        End Sub
+
+                Control.RemovePrevEventHandler(
+                        [Event].SenderControl,
+                        NameOf(FrameworkElement.PreviewKeyDownEvent),
+                        Sub() RemoveHandler _sender.PreviewKeyDown, h
+                )
+                AddHandler _sender.PreviewKeyDown, h
+            End AddHandler
+
+            RemoveHandler(handler As SmallVisualBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
+        ''' <summary>
+        ''' Fired when the user releases a keyboard key on the form or any of its child controls.
+        ''' </summary>
+        Public Shared Custom Event OnPreviewKeyUp As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
+                Dim _sender = Control.GetSender(NameOf(OnPreviewKeyUp), True)
+                Dim h = Sub(Sender As Object, e As RoutedEventArgs)
+                            [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler, True)
+                        End Sub
+
+                Control.RemovePrevEventHandler(
+                        [Event].SenderControl,
+                        NameOf(FrameworkElement.PreviewKeyUpEvent),
+                        Sub() RemoveHandler _sender.PreviewKeyUp, h
+                )
+                AddHandler _sender.PreviewKeyUp, h
+            End AddHandler
+
+            RemoveHandler(handler As SmallVisualBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
+
+
+        ''' <summary>
+        ''' Fired when user moves the mouse wheel ober the form or any of its children
+        ''' </summary>
+        Public Shared Custom Event OnPreviewMouseWheel As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
+                Dim _sender = Control.GetSender(NameOf(OnPreviewMouseWheel))
+                Dim h = Sub(Sender As Object, e As RoutedEventArgs)
+                            [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler, True)
+                        End Sub
+
+                Control.RemovePrevEventHandler(
+                        [Event].SenderControl,
+                        NameOf(FrameworkElement.PreviewMouseWheelEvent),
+                        Sub() System.Windows.Input.Mouse.RemovePreviewMouseWheelHandler(_sender, h)
+                )
+                System.Windows.Input.Mouse.AddPreviewMouseWheelHandler(_sender, h)
+            End AddHandler
+
+            RemoveHandler(handler As SmallVisualBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
+        ''' <summary>
         ''' Fired after the form is shown and all controls are rendered and are ready to use their properties.
         ''' </summary>
         Public Shared Custom Event OnShown As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 App.Invoke(
                      Sub()
-                         Dim form = CType(Forms.GetForm([Event].SenderControl), System.Windows.Window)
+                         Dim formName = [Event].SenderControl.AsString().ToLower()
+                         Dim form = CType(Forms.GetForm(formName), System.Windows.Window)
+
+                         If ShownHandlers.ContainsKey(formName) Then
+                             RemoveHandler form.ContentRendered, ShownHandlers(formName)
+                         End If
 
                          Try
                              Dim h = Sub(sender As Object, e As EventArgs)
                                          Try
                                              Dim win = CType(sender, System.Windows.Window)
-                                             [Event].SenderControl = win.Name & "." & win.Name
+                                             [Event].SenderControl = win.Name
                                              Call handler()
                                              [Event].Handled = False
-
-
                                          Catch ex As Exception
                                              Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnShown)}`event,  caused this error: {ex.Message}", ex)
                                          End Try
                                      End Sub
 
+                             ShownHandlers(formName) = h
                              AddHandler form.ContentRendered, h
                              AddAttachedActionHandler(form, h)
 
@@ -1476,21 +1557,30 @@ Namespace WinForms
                      Sub()
                          Dim form = Forms.GetForm([Event].SenderControl)
                          Try
-                             AddHandler form.Closing,
-                                 Sub(sender As Object, e As ComponentModel.CancelEventArgs)
-                                     Try
-                                         Dim win = CType(sender, System.Windows.Window)
-                                         [Event].SenderControl = win.Name & "." & win.Name
+                             Dim formName = [Event].SenderControl.AsString().ToLower()
+                             If ClosingHandlers.ContainsKey(formName) Then
+                                 RemoveHandler form.Closing, ClosingHandlers(formName)
+                             End If
 
-                                         Call handler()
+                             Dim h = Sub(sender As Object, e As ComponentModel.CancelEventArgs)
+                                         Try
+                                             Dim win = CType(sender, System.Windows.Window)
+                                             [Event].SenderControl = win.Name
 
-                                         ' the handler may set the Handled property. We will use it and reset it.
-                                         e.Cancel = [Event].Handled
-                                         [Event].Handled = False
-                                     Catch ex As Exception
-                                         Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)
-                                     End Try
-                                 End Sub
+                                             Call handler()
+
+                                             ' the handler may set the Handled property. We will use it and reset it.
+                                             e.Cancel = [Event].Handled
+                                             [Event].Handled = False
+
+                                         Catch ex As Exception
+                                             Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)
+                                         End Try
+                                     End Sub
+
+                             ClosingHandlers(formName) = h
+                             AddHandler form.Closing, h
+
                          Catch ex As Exception
                              [Event].ShowErrorMessage(NameOf(OnClosing), ex)
                          End Try
@@ -1504,6 +1594,10 @@ Namespace WinForms
             End RaiseEvent
         End Event
 
+        Friend Shared ClosedHandlers As New Dictionary(Of String, SmallVisualBasicCallback)
+        Friend Shared ClosingHandlers As New Dictionary(Of String, ComponentModel.CancelEventHandler)
+        Friend Shared ShownHandlers As New Dictionary(Of String, EventHandler)
+
         ''' <summary>
         ''' Fired after the form is closed
         ''' </summary>
@@ -1511,22 +1605,10 @@ Namespace WinForms
             AddHandler(handler As SmallVisualBasicCallback)
                 App.Invoke(
                      Sub()
-                         Dim form = Forms.GetForm([Event].SenderControl)
                          Try
-                             AddHandler form.Closed,
-                                 Sub(sender As Object, e As EventArgs)
-                                     Try
-                                         Dim win = CType(sender, System.Windows.Window)
-                                         [Event].SenderControl = win.Name & "." & win.Name
-
-                                         Call handler()
-                                         [Event].Handled = False
-                                     Catch ex As Exception
-                                         Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)
-                                     End Try
-                                 End Sub
+                             ClosedHandlers([Event].SenderControl.AsString().ToLower()) = handler
                          Catch ex As Exception
-                             [Event].ShowErrorMessage(NameOf(OnClosing), ex)
+                             [Event].ShowErrorMessage(NameOf(OnClosed), ex)
                          End Try
                      End Sub)
             End AddHandler

@@ -592,7 +592,7 @@ Namespace Microsoft.SmallVisualBasic
 
                     If document.PageKey <> "" Then
                         Dim formName = document.Form.ToLower()
-                        Dim newXamlfile = fileName.Replace(".sb", ".xaml")
+                        Dim newXamlfile = fileName.Replace(".sb", ".xaml").ToLower()
 
                         For Each xamlFile In Directory.GetFiles(projectDir, "*.xaml")
                             If xamlFile.ToLower() = newXamlfile Then Continue For
@@ -1289,7 +1289,10 @@ Namespace Microsoft.SmallVisualBasic
                 If oldCodeFile <> "" Then
                     CopyImages(IO.Path.GetDirectoryName(oldCodeFile), newDir)
                     If oldCodeFile.ToLower.StartsWith(tempProjectPath) Then
-                        Directory.Delete(Path.GetDirectoryName(oldCodeFile), True)
+                        Try
+                            Directory.Delete(Path.GetDirectoryName(oldCodeFile), True)
+                        Catch
+                        End Try
                     End If
                 End If
             End If
@@ -1572,7 +1575,7 @@ Namespace Microsoft.SmallVisualBasic
                 ExitSelectionChanged = True
                 tabCode.IsSelected = False
                 tabDesigner.IsSelected = True
-                MsgBox("Form and control names can't start with a ni,ber nor contain spaces or any symbols. Use `_` instead.")
+                MsgBox("Form and control names can't start with a number nor contain spaces or any symbols. Use `_` instead.")
                 ExitSelectionChanged = False
                 Return True
             End If
@@ -1857,6 +1860,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub BtnNewPage_Click(sender As Object, e As RoutedEventArgs)
             DiagramHelper.Designer.OpenNewPage()
             formDesigner.Focus()
+            SaveDesignInfo(Nothing, False)
         End Sub
 
         Private Sub BtnOpenPage_Click(sender As Object, e As RoutedEventArgs)

@@ -157,26 +157,40 @@ Public Class DiagramPanel
 
         Dim Unit = Dsn.UndoStack.Peek
         If Unit Is Nothing Then Return
-        Dim PropState = TryCast(Unit(0), PropertyState)
-        If PropState Is Nothing Then Return
+        Dim n = Unit.Count - 1
 
-        For Each obj As FrameworkElement In Dsn.SelectedItems
-            If obj Is Diagram Then Continue For
+        For Each fw As FrameworkElement In Dsn.SelectedItems
+            If fw Is Diagram Then Continue For
 
-            Dim NewPropState As New PropertyState(
-                    obj, PropState.Keys.ToArray)
+            For i = 0 To n
+                Dim propState = TryCast(Unit(i), PropertyState)
+                If PropState Is Nothing Then Continue For
 
-            For Each pair In PropState
-                Dim oldValue = pair.Value.OldValue
-                Dim newValue = pair.Value.NewValue
-                If oldValue IsNot newValue AndAlso Not oldValue.Equals(newValue) Then
-                    obj.SetValue(pair.Key, Helper.Clone(pair.Value.NewValue))
-                End If
+                Dim target = GetTarget(fw, propState.Owner)
+                Dim NewPropState As New PropertyState(target, propState.Keys.ToArray)
+
+                For Each pair In propState
+                    Dim oldValue = pair.Value.OldValue
+                    Dim newValue = pair.Value.NewValue
+                    If oldValue Is Nothing OrElse (oldValue IsNot newValue AndAlso Not oldValue.Equals(newValue)) Then
+                        target.SetValue(pair.Key, Helper.Clone(pair.Value.NewValue))
+                    End If
+                Next
+
+                If NewPropState.HasChanges Then Unit.Add(NewPropState.SetNewValue())
             Next
-
-            If NewPropState.HasChanges Then Unit.Add(NewPropState.SetNewValue())
         Next
     End Sub
+
+    Private Shared Function GetTarget(fw As FrameworkElement, stateOwner As DependencyObject) As Object
+        If TypeOf stateOwner Is ListBoxItem Then
+            Return Helper.GetListBoxItem(fw)
+        ElseIf TypeOf stateOwner Is DiagramPanel Then
+            Return Helper.GetDiagramPanel(fw)
+        Else
+            Return fw
+        End If
+    End Function
 
 
 #Region "DesignerItem"
@@ -636,4 +650,66 @@ Public Class DiagramPanel
 
         freezMenuCheck = False
     End Sub
+
+    Private Sub PropertiesMenuItem_Click(sender As Object, e As RoutedEventArgs)
+        Dim WndProps As New WndProperties
+        With WndProps
+            .Show()
+            .Hide()
+            .LeftValue = GetDoubleValue(DesignerItem, Canvas.LeftProperty)
+            .TopValue = GetDoubleValue(DesignerItem, Canvas.TopProperty)
+            .WidthValue = GetDoubleValue(Me, WidthProperty)
+            .HeightValue = GetDoubleValue(Me, HeightProperty)
+            .MaxWidthValue = GetDoubleValue(Me, MaxWidthProperty)
+            .MaxHeightValue = GetDoubleValue(Me, MaxHeightProperty)
+            .EnabledValue = Diagram.IsEnabled
+            .VisibleValue = Diagram.IsVisible
+            .RightToLeftValue = Diagram.FlowDirection = FlowDirection.RightToLeft
+            .TagValue = Diagram.Tag
+            .ToolTipValue = Diagram.ToolTip
+        End With
+
+        If WndProps.ShowDialog = True Then
+            Dim unit As New UndoRedoUnit
+            Dim muliItems = Dsn.SelectedItems.Count > 1
+
+            Dim OldState As New PropertyState(DesignerItem, Canvas.LeftProperty, Canvas.TopProperty)
+            If WndProps.LeftValue.HasValue Then Canvas.SetLeft(DesignerItem, WndProps.LeftValue)
+            If WndProps.TopValue.HasValue Then Canvas.SetTop(DesignerItem, WndProps.TopValue)
+            If muliItems OrElse OldState.HasChanges Then unit.Add(OldState.SetNewValue)
+
+            OldState = New PropertyState(Me, FrameworkElement.WidthProperty, FrameworkElement.HeightProperty)
+            If WndProps.WidthValue.HasValue Then Me.Width = WndProps.WidthValue
+            If WndProps.HeightValue.HasValue Then Me.Height = WndProps.HeightValue
+            If muliItems OrElse OldState.HasChanges Then unit.Add(OldState.SetNewValue)
+
+            OldState = New PropertyState(Me, FrameworkElement.MaxWidthProperty, FrameworkElement.MaxHeightProperty)
+            If WndProps.MaxWidthValue.HasValue Then Me.MaxWidth = WndProps.MaxWidthValue
+            If WndProps.MaxHeightValue.HasValue Then Me.MaxHeight = WndProps.MaxHeightValue
+            If muliItems OrElse OldState.HasChanges Then unit.Add(OldState.SetNewValue)
+
+            If unit.Count > 0 Then
+                Dsn.UndoStack.ReportChanges(unit)
+                ApplyLastChangeToSelected()
+            End If
+        End If
+    End Sub
+
+    Private Function GetDoubleValue(item As FrameworkElement, dp As DependencyProperty) As Double?
+        Dim value As Double = item.GetValue(dp)
+        If Dsn.SelectedItems.Count = 1 Then Return value
+
+        Dim onCanvus = TypeOf item Is ListBoxItem
+        For Each fw As FrameworkElement In Dsn.SelectedItems
+            If fw Is item Then Continue For
+
+            If onCanvus Then
+                If Not Helper.GetListBoxItem(fw).GetValue(dp).Equals(value) Then Return Nothing
+            ElseIf Not Helper.GetDiagramPanel(fw).GetValue(dp).Equals(value) Then
+                Return Nothing
+            End If
+        Next
+
+        Return value
+    End Function
 End Class

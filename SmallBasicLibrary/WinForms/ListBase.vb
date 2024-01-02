@@ -8,6 +8,7 @@ Namespace WinForms
         Private Shared Function GetSelector(listName As String) As Wpf.Primitives.Selector
             Dim c = Control.GetControl(listName)
             Dim lst = TryCast(c, Wpf.Primitives.Selector)
+
             If lst Is Nothing Then
                 Throw New Exception($"{listName} is not a name of a ListBox or a ComboBox control.")
             End If

@@ -114,15 +114,29 @@
         GetDesigner(sender).IncreaseGridThickness(0.1)
     End Sub
 
-    Private Sub PageSizeMenuItem_Click(sender As Object, e As RoutedEventArgs)
+    Private Sub PropertiesMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim Dsn = GetDesigner(sender)
-        Dim WndPageSetup As New WndPageSetup
-        WndPageSetup.PageWidth = Dsn.PageWidth / Helper.CmToPx
-        WndPageSetup.PageHeight = Dsn.PageHeight / Helper.CmToPx
-        If WndPageSetup.ShowDialog = True Then
+        Dim WndProps As New WndProperties
+        ' Show the form to apply its templates
+        WndProps.Show()
+        WndProps.LeftValue = 0
+        WndProps.NumLeft.CheckBox.IsChecked = False
+        WndProps.TopValue = 0
+        WndProps.NumTop.CheckBox.IsChecked = False
+        WndProps.WidthValue = Dsn.PageWidth
+        WndProps.HeightValue = Dsn.PageHeight
+        WndProps.MaxWidthValue = 0
+        WndProps.NumMaxWidth.CheckBox.IsChecked = False
+        WndProps.MaxHeightValue = 0
+        WndProps.NumMaxHeight.CheckBox.IsChecked = False
+        WndProps.TagValue = Nothing
+        WndProps.ToolTipValue = Nothing
+        WndProps.Hide()
+
+        If WndProps.ShowDialog = True Then
             Dim OldState As New PropertyState(Dsn, Designer.PageWidthProperty, Designer.PageHeightProperty)
-            Dsn.PageWidth = WndPageSetup.PageWidth * Helper.CmToPx
-            Dsn.PageHeight = WndPageSetup.PageHeight * Helper.CmToPx
+            Dsn.PageWidth = WndProps.WidthValue
+            Dsn.PageHeight = WndProps.HeightValue
             If OldState.HasChanges Then
                 Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
             End If

@@ -234,6 +234,7 @@ Namespace Library
         ''' The position at which the sub-text appears in the specified text.  If the text doesn't appear, it returns 0.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
+        <HideFromIntellisense>
         Public Shared Function GetIndexOf(
                          text As Primitive,
                          subText As Primitive,
@@ -241,14 +242,43 @@ Namespace Library
                          isBackward As Primitive
                    ) As Primitive
 
+            Return IndexOf(text, subText, start, isBackward)
+        End Function
+
+        ''' <summary>
+        ''' Finds the position where a sub-text appears in the specified text.
+        ''' </summary>
+        ''' <param name="text">the text to search in.</param>
+        ''' <param name="subText">the text to search for.</param>
+        ''' <param name="start">the text position to start seacting from</param>
+        ''' <param name="isBackward">True if you want to search from start back to the the first position in the text (1), or False if you want to go forward to the end of the text.</param>
+        ''' <returns>
+        ''' The position at which the sub-text appears in the specified text.  If the text doesn't appear, it returns 0.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function IndexOf(
+                         text As Primitive,
+                         subText As Primitive,
+                         start As Primitive,
+                         isBackward As Primitive
+                   ) As Primitive
+
             If text.IsEmpty OrElse subText.IsEmpty Then Return 0
-            If Not start.IsNumber OrElse start.AsDecimal < 1 Then Return 0
-            If start.AsDecimal > text.AsString.Length + 1 Then Return 0
+            If Not start.IsNumber Then Return 0
+
+            Dim intStart As Integer = start.AsDecimal - 1
+            Dim t = text.AsString()
+
+            If intStart < 0 Then intStart = 0
+            If intStart >= t.Length Then
+                If Not CBool(isBackward) Then Return 0
+                intStart = t.Length - 1
+            End If
 
             If isBackward Then
-                Return text.AsString().LastIndexOf(subText, start - 1) + 1
+                Return t.LastIndexOf(subText, intStart) + 1
             Else
-                Return text.AsString().IndexOf(subText, start - 1) + 1
+                Return t.IndexOf(subText, intStart) + 1
             End If
         End Function
 

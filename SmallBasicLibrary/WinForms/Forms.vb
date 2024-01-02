@@ -142,8 +142,9 @@ Namespace WinForms
                                     If rotation IsNot Nothing Then angle = rotation.Angle
                                 End If
 
+                                Dim key = form_Name & "." & controlName.ToLower()
                                 If TypeOf ui Is Wpf.Control Then
-                                    _controls(form_Name & "." & controlName.ToLower()) = ui
+                                    _controls(key) = ui
                                     CType(ui, Wpf.Control).Name = controlName
                                     Control.SetAngle(ui, angle)
 
@@ -151,6 +152,7 @@ Namespace WinForms
                                     c.SetValue(Control.BorderThicknessProperty, c.BorderThickness)
                                     c.SetValue(Control.BorderBrushProperty, c.BorderBrush)
                                     c.SetValue(Control.TipProperty, c.ToolTip)
+
                                 Else
                                     Dim left = Canvas.GetLeft(ui)
                                     Dim top = Canvas.GetTop(ui)
@@ -179,10 +181,10 @@ Namespace WinForms
                                     canvas.Children.Add(lb)
                                     Canvas.SetLeft(lb, left)
                                     Canvas.SetTop(lb, top)
-                                    _controls(form_Name & "." & controlName.ToLower()) = lb
+                                    _controls(key) = lb
                                 End If
 
-                                SetControlText(ui, GetControlText(ui))
+                                SetControlText(ui, key, GetControlText(ui))
                             Next
 
                         Catch ex As Exception
@@ -212,19 +214,27 @@ Namespace WinForms
         End Function
 
 
-        Private Shared Sub SetControlText(control As UIElement, value As String)
+        Private Shared Sub SetControlText(control As UIElement, key As String, value As String)
             Try
                 CObj(control).Text = value
             Catch
                 Try
-                    Dim x = CObj(control).Content
+                    Dim cc = TryCast(control, Wpf.ContentControl)
+                    If cc Is Nothing Then Return
+                    Dim x = cc.Content
                     If x Is Nothing OrElse TypeOf x Is String Then
-                        CObj(control).Content = value
+                        If TypeOf (control) Is Wpf.Label OrElse TypeOf (control) Is Wpf.Primitives.ButtonBase Then
+                            Dim tb = Label.GetTextBlock([Event].GetControlName(control))
+                            tb.Text = value
+                        Else
+                            cc.Content = value
+                        End If
+
+                    ElseIf TypeOf x Is Wpf.TextBlock Then
+                        CType(x, Wpf.TextBlock).IsHitTestVisible = False
                     End If
                 Catch
-                    ' TODO: Add a label to hold the text
                 End Try
-
             End Try
         End Sub
 
@@ -266,6 +276,19 @@ Namespace WinForms
 
         Private Shared Sub Form_Closed(sender As Object, e As EventArgs)
             Dim win = CType(sender, Window)
+            Dim winName = win.Name.ToLower()
+            If Form.ClosedHandlers.ContainsKey(winName) Then
+                Dim handler = Form.ClosedHandlers(winName)
+
+                Try
+                    [Event].SenderControl = winName
+                    Call handler()
+                    [Event].Handled = False
+                Catch ex As Exception
+                    Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `OnClosed` event, caused this error: {ex.Message}", ex)
+                End Try
+            End If
+
             RemoveFormAndControls(win.Name.ToLower())
         End Sub
 

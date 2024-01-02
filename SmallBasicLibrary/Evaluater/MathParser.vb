@@ -4,13 +4,13 @@ Imports System.Globalization
 Imports Microsoft.SmallVisualBasic.Evaluator.Expressions
 
 Namespace Evaluator
-    Friend Class Parser
+    Friend Class MathParser
         Private MathExpression As String
         Private _currentLineEnum As TokenEnumerator
 
         Public Property Errors As List(Of [Error])
 
-        Private Function BuildExpression(tokenEnum As TokenEnumerator) As Expression
+        Private Function BuildExpression(tokenEnum As TokenEnumerator, Optional firstOperationOnly As Boolean = False) As Expression
             If tokenEnum.IsEnd Then
                 Return Nothing
             End If
@@ -28,6 +28,7 @@ Namespace Evaluator
 
                 leftHandExpr = MergeExpression(leftHandExpr, rightHandExpr, current2)
                 If leftHandExpr Is Nothing Then Return Nothing
+                If firstOperationOnly Then Exit While
             End While
 
             leftHandExpr.StartToken = current
@@ -35,7 +36,7 @@ Namespace Evaluator
             Return leftHandExpr
         End Function
 
-        Private Function BuildTerm(tokenEnum As TokenEnumerator) As Expression
+        Private Function BuildTerm(tokenEnum As TokenEnumerator, Optional takePower As Boolean = False) As Expression
             Dim current = tokenEnum.Current
 
             If tokenEnum.IsEnd OrElse tokenEnum.Current.Type = TokenType.Illegal Then
@@ -66,7 +67,7 @@ Namespace Evaluator
                     End If
 
                     tokenEnum.MoveNext()
-                    Dim expression2 = BuildTerm(tokenEnum)
+                    Dim expression2 = BuildTerm(tokenEnum, True)
                     If expression2 Is Nothing Then Return Nothing
 
                     expression = New NegativeExpression() With {
@@ -75,6 +76,15 @@ Namespace Evaluator
                         .Precedence = 9
                     }
             End Select
+
+            If takePower Then
+                Dim op = tokenEnum.Current
+                If op.Type = TokenType.Power Then
+                    tokenEnum.MoveNext()
+                    Dim rightHand = BuildTerm(tokenEnum)
+                    expression = MergeExpression(expression, rightHand, op)
+                End If
+            End If
 
             expression.StartToken = current
             expression.EndToken = tokenEnum.Current
@@ -125,12 +135,8 @@ Namespace Evaluator
         Private Function BuildIdentifierTerm(tokenEnum As TokenEnumerator) As Expression
             Dim current = tokenEnum.Current
             tokenEnum.MoveNext()
-            Dim variable As Token = Nothing
-
             Dim tokenType = tokenEnum.Current.Type
-            Dim openP As Token
 
-            openP = tokenEnum.Current
             If EatOptionalToken(tokenEnum, TokenType.LeftParens) Then
                 Dim closeTokenFound = False
                 Dim methodCallExpression As New MethodCallExpression(
@@ -252,7 +258,7 @@ Namespace Evaluator
         Friend Shared Function GetOperatorPriority(token As TokenType) As Integer
             Select Case token
                 Case TokenType.Power
-                    Return 8
+                    Return 9
                 Case TokenType.Division, TokenType.Multiplication
                     Return 7
                 Case TokenType.Mod

@@ -186,11 +186,33 @@ Namespace WinForms
         Public Shared Custom Event OnCheck As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
-                    Dim _sender = GetCheckBox([Event].SenderControl)
-                    Dim _handler = Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
-                    AddHandler _sender.Checked, _handler
-                    AddHandler _sender.Unchecked, _handler
-                    AddHandler _sender.Indeterminate, _handler
+                    Dim name = [Event].SenderControl
+                    Dim _sender = GetCheckBox(name)
+                    Dim h = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                [Event].HandleEvent(Sender, e, handler)
+                            End Sub
+
+                    Control.RemovePrevEventHandler(
+                            name,
+                            NameOf(Wpf.CheckBox.CheckedEvent),
+                            Sub() RemoveHandler _sender.Checked, h
+                    )
+                    AddHandler _sender.Checked, h
+
+                    Control.RemovePrevEventHandler(
+                            name,
+                            NameOf(Wpf.CheckBox.UncheckedEvent),
+                            Sub() RemoveHandler _sender.Unchecked, h
+                    )
+                    AddHandler _sender.Unchecked, h
+
+                    Control.RemovePrevEventHandler(
+                            name,
+                            NameOf(Wpf.CheckBox.IndeterminateEvent),
+                            Sub() RemoveHandler _sender.Indeterminate, h
+                    )
+                    AddHandler _sender.Indeterminate, h
+
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnCheck), ex)
                 End Try

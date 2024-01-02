@@ -254,8 +254,19 @@ Namespace WinForms
         Public Shared Custom Event OnSelection As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
-                    Dim _sender = GetComboBox([Event].SenderControl)
-                    AddHandler _sender.SelectionChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    Dim name = [Event].SenderControl
+                    Dim _sender = GetComboBox(name)
+                    Dim h = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                            End Sub
+
+                    Control.RemovePrevEventHandler(
+                            name,
+                            NameOf(Wpf.ComboBox.SelectionChangedEvent),
+                            Sub() RemoveHandler _sender.SelectionChanged, h
+                     )
+                    AddHandler _sender.SelectionChanged, h
+
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnSelection), ex)
                 End Try

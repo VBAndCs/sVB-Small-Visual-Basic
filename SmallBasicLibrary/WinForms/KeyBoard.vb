@@ -12,18 +12,18 @@ Namespace WinForms
 
         Shared Sub New()
             App.Invoke(
-                Sub() EventManager.RegisterClassHandler(
+                Sub()
+                    EventManager.RegisterClassHandler(
                         GetType(Window),
                         UIElement.PreviewKeyDownEvent,
-                        New KeyEventHandler(AddressOf KeyDown))
-            )
-
-            App.Invoke(
-                Sub() EventManager.RegisterClassHandler(
-                        GetType(Window),
-                        UIElement.PreviewTextInputEvent,
-                        New TextCompositionEventHandler(AddressOf TextInput))
-            )
+                        New KeyEventHandler(AddressOf KeyDown)
+                    )
+                    EventManager.RegisterClassHandler(
+                         GetType(Window),
+                         UIElement.PreviewTextInputEvent,
+                         New TextCompositionEventHandler(AddressOf TextInput)
+                    )
+                End Sub)
         End Sub
 
         Private Shared Sub TextInput(sender As Object, e As TextCompositionEventArgs)

@@ -173,13 +173,11 @@ F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\Arrow.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\Resources\Brushes.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\Resources\ExpanderStyle.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\ToolBox.baml
-F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\WndPageSetup.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\WndSkew.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\Arrow.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\DiagramPanel.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\Resources\DesignerDecorator.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\ToolBox.g.vb
-F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\WndPageSetup.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\WndSkew.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\GeneratedInternalTypeHelper.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\DiagramHelper_MarkupCompile.cache
@@ -199,3 +197,5 @@ F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\DiagramHelper.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\DiagramHelper.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\DiagramHelper.pdb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\bin\Debug\WpfDialogs.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\WndProperties.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Debug\WndProperties.g.vb

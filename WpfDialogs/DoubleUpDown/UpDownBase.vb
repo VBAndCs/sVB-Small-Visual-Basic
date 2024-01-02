@@ -1,6 +1,8 @@
 ﻿Imports System.Globalization
 
-<TemplatePart(Name:="PART_TextBox", Type:=GetType(TextBox)), TemplatePart(Name:="PART_Spinner", Type:=GetType(Spinner))> _
+<TemplatePart(Name:="PART_TextBox", Type:=GetType(TextBox))>
+<TemplatePart(Name:="PART_Spinner", Type:=GetType(Spinner))>
+<TemplatePart(Name:="PART_CheckBox", Type:=GetType(CheckBox))>
 Public MustInherit Class UpDownBase
     Inherits Control
     Implements IValidateInput
@@ -9,6 +11,8 @@ Public MustInherit Class UpDownBase
 
     Friend Const PART_TextBox As String = "PART_TextBox"
     Friend Const PART_Spinner As String = "PART_Spinner"
+    Friend Const PART_CheckBox As String = "PART_CheckBox"
+
     Private _isSyncingTextAndValueProperties As Boolean
     Private _isTextChangedFromUI As Boolean
 
@@ -17,25 +21,53 @@ Public MustInherit Class UpDownBase
 
 #Region "Properties"
 
-    Private privateSpinner As Spinner
     Friend Property Spinner() As Spinner
+    Public ReadOnly Property TextBox() As TextBox
+
+    Dim _CheckBox As CheckBox
+    Public ReadOnly Property CheckBox() As CheckBox
         Get
-            Return privateSpinner
+            If _CheckBox IsNot Nothing Then Return _CheckBox
+            Return GetCheckBox
         End Get
-        Private Set(ByVal value As Spinner)
-            privateSpinner = value
+    End Property
+
+    Private Function GetCheckBox() As CheckBox
+        _CheckBox = TryCast(GetTemplateChild(PART_CheckBox), CheckBox)
+        If _CheckBox IsNot Nothing Then
+            _CheckBox.Visibility = If(IsCheckable, Visibility.Visible, Visibility.Collapsed)
+            AddHandler _CheckBox.Checked, AddressOf OnChecked
+            AddHandler _CheckBox.Unchecked, AddressOf OnUnchecked
+        End If
+        Return _CheckBox
+    End Function
+
+    Public Property IsCheckable As Boolean
+        Get
+            Return GetValue(IsCheckableProperty)
+        End Get
+
+        Set(ByVal value As Boolean)
+            SetValue(IsCheckableProperty, value)
         End Set
     End Property
 
-    Private privateTextBox As TextBox
-    Public Property TextBox() As TextBox
-        Get
-            Return privateTextBox
-        End Get
-        Private Set(ByVal value As TextBox)
-            privateTextBox = value
-        End Set
-    End Property
+    Public Shared ReadOnly IsCheckableProperty As DependencyProperty =
+                           DependencyProperty.Register("IsCheckable",
+                           GetType(Boolean), GetType(UpDownBase),
+                           New PropertyMetadata(False, AddressOf OnIsCheckableChanged))
+
+    Private Shared Sub OnIsCheckableChanged(d As DependencyObject, e As DependencyPropertyChangedEventArgs)
+        Dim ud = CType(d, UpDownBase)
+        If ud.CheckBox Is Nothing Then Return
+        ud.CheckBox.Visibility = If(e.NewValue, Visibility.Visible, Visibility.Collapsed)
+    End Sub
+
+
+
+
+
+
 
 #Region "CultureInfo"
 
@@ -378,7 +410,7 @@ Public MustInherit Class UpDownBase
     Public Overrides Sub OnApplyTemplate()
         MyBase.OnApplyTemplate()
 
-        TextBox = TryCast(GetTemplateChild(PART_TextBox), TextBox)
+        _TextBox = TryCast(GetTemplateChild(PART_TextBox), TextBox)
         If TextBox IsNot Nothing Then
             If String.IsNullOrEmpty(Text) Then
                 TextBox.Text = "0.0"
@@ -401,6 +433,8 @@ Public MustInherit Class UpDownBase
         End If
 
         SetValidSpinDirection()
+
+        GetCheckBox()
     End Sub
 
     Protected Overrides Sub OnGotFocus(ByVal e As RoutedEventArgs)
@@ -455,6 +489,15 @@ Public MustInherit Class UpDownBase
         If AllowSpin AndAlso (Not IsReadOnly) Then
             OnSpin(e)
         End If
+    End Sub
+
+
+    Private Sub OnUnchecked(sender As Object, e As RoutedEventArgs)
+        Spinner.IsEnabled = False
+    End Sub
+
+    Private Sub OnChecked(sender As Object, e As RoutedEventArgs)
+        Spinner.IsEnabled = True
     End Sub
 
 #End Region

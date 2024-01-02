@@ -102,9 +102,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WndPageSetup.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="WndProperties.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="WndSkew.xaml">
       <SubType>Designer</SubType>
@@ -179,8 +179,8 @@
     <Compile Include="ToolBox.xaml.vb">
       <DependentUpon>ToolBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WndPageSetup.xaml.vb">
-      <DependentUpon>WndPageSetup.xaml</DependentUpon>
+    <Compile Include="WndProperties.xaml.vb">
+      <DependentUpon>WndProperties.xaml</DependentUpon>
     </Compile>
     <Compile Include="WndSkew.xaml.vb">
       <DependentUpon>WndSkew.xaml</DependentUpon>

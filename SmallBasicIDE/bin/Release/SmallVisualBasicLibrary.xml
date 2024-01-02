@@ -899,6 +899,14 @@ Converts the given array to a string
  <param name="contents">The contents to write into the specified file. You can send an array to write its elements to the file, each element in a line.</param>
  <returns>True if the operation was successful, or False otherwise.</returns>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.Library.File.WriteArray(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Opens a file and replaces its data with the given array.
+ </summary>
+ <param name="filePath">The full path of the file, like c:\temp\settings.data.</param>
+ <param name="array">The array to write its string representaion into the specified file.</param>
+ <returns>True if the operation was successful, or False otherwise.</returns>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.Library.File.ReadLine(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Opens the specified file and reads the contents at the specified line number.
@@ -918,6 +926,13 @@ Converts the given array to a string
  </summary>
  <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
  <returns>an array containing the lines of the specified file, or an empty string if the file is not found.</returns>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.File.ReadArray(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Opens the specified file and reads its data as an array.
+ </summary>
+ <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
+ <returns>an array if the specified file content is a valid string representation of an array, or an empty string otherwise.</returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.File.WriteLine(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
@@ -1971,6 +1986,13 @@ Converts the given array to a string
  The mouse class provides accessors to get or set the mouse related properties, like the cursor position, pointer, etc.
  </summary>
 </member>
+<member name="P:Microsoft.SmallVisualBasic.Library.Mouse.LastMouseWheelDirection">
+ <summary>
+ Get a value that indicates the last mouse wheel movement direction:
+  * 0 means down.
+  * 1 means up.
+ </summary>
+</member>
 <member name="P:Microsoft.SmallVisualBasic.Library.Mouse.MouseX">
  <summary>
  Gets or sets the mouse cursor's x co-ordinate.
@@ -2447,11 +2469,22 @@ Converts the given array to a string
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Sound.Play(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
- Plays an audio file.  This could be an mp3 or wav or wma file.  Other file formats may or may not play depending on the audio codecs installed on the user's computer.
- If the file was already paused, this operation will resume from the position where the playback was paused.
+ Plays the given audio file. 
+ If the file is currently played or paused, this operation will replay it from the start. Use the Resume method to continue playing the paused file.
  </summary>
  <param name="filePath">
- The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
+ The path for the audio file. This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
+ ''' The file type could be an mp3 or wav or wma file. Other file formats may or may not play depending on the audio codecs installed on the user's computer.
+ </param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Sound.Resume(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Resumes playing the given audio from the position it was paused at.
+ If the file hasn't not played yet, this operation will play it from start.
+ </summary>
+ <param name="filePath">
+ The path for the audio file. This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
+ The file type could be an mp3 or wav or wma file. Other file formats may or may not play depending on the audio codecs installed on the user's computer.
  </param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Sound.PlayAndWait(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -2638,6 +2671,18 @@ Converts the given array to a string
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Text.GetIndexOf(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Finds the position where a sub-text appears in the specified text.
+ </summary>
+ <param name="text">the text to search in.</param>
+ <param name="subText">the text to search for.</param>
+ <param name="start">the text position to start seacting from</param>
+ <param name="isBackward">True if you want to search from start back to the the first position in the text (1), or False if you want to go forward to the end of the text.</param>
+ <returns>
+ The position at which the sub-text appears in the specified text.  If the text doesn't appear, it returns 0.
+ </returns>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Text.IndexOf(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Finds the position where a sub-text appears in the specified text.
  </summary>
@@ -4892,14 +4937,14 @@ Creates a color from its alpha, red, green, and blue components.
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Control.GetWidth(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Gets or sets the width of the control.
- If you want an auto-width to fit the control's content width, set this property to -1. 
+ If you want an auto-width to fit the control's content width, set this property to 0 or amy negative number. 
  You can also limit the auto width by setting the MaxWidth property.
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Control.GetHeight(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Gets or sets the height of the control. 
- If you want an auto-heigh to fit the control's content heigh, set this property to -1. 
+ If you want an auto-heigh to fit the control's content heigh, set this property to 0 or any negative number. 
  You can also limit the auto height by setting the MaxHeigh property.
  </summary>
 </member>
@@ -5194,19 +5239,9 @@ Creates a color from its alpha, red, green, and blue components.
  Fired when the user presses a keyboard key down
  </summary>
 </member>
-<member name="E:Microsoft.SmallVisualBasic.WinForms.Control.OnPreviewKeyDown">
- <summary>
- Fired when the user presses a keyboard key down on a control or any of its cjild controls.
- </summary>
-</member>
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Control.OnKeyUp">
  <summary>
  Fired when the user releases a keyboard key.
- </summary>
-</member>
-<member name="E:Microsoft.SmallVisualBasic.WinForms.Control.OnPreviewKeyUp">
- <summary>
- Fired when the user releases a keyboard key on the control or any of its child controls.
  </summary>
 </member>
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Control.OnGotFocus">
@@ -5516,7 +5551,7 @@ Creates a color from its alpha, red, green, and blue components.
  </summary>
  <param name="date">the input date \ time</param>
  <param name="value">a number between 1 and 12 that represents the month</param>
- <returns>a new date with the new month value. The input date will not change</returns>
+ <returns>a new date with the new month value if it's valide. The input date will not be changed</returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Date.ChangeDay(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
@@ -6105,6 +6140,13 @@ Creates a color from its alpha, red, green, and blue components.
  Gets or sets the mouse cursor's y co-ordinate.
  </summary>
 </member>
+<member name="P:Microsoft.SmallVisualBasic.WinForms.Event.LastMouseWheelDirection">
+ <summary>
+ Get a value that indicates the last mouse wheel movement direction:
+  * 0 means down.
+  * 1 means up.
+ </summary>
+</member>
 <member name="P:Microsoft.SmallVisualBasic.WinForms.Event.IsLeftButtonDown">
  <summary>
  Gets whether or not the left button is pressed.
@@ -6443,6 +6485,21 @@ Creates a color from its alpha, red, green, and blue components.
  Saves the current form design to the given xaml file. This is useful if you use code to create a form and add controls to it in runtime, so you can save it's design to a file if you want.
  </summary>
  <param name="xamlFile">the path an name of the file you want to save the design to.</param>
+</member>
+<member name="E:Microsoft.SmallVisualBasic.WinForms.Form.OnPreviewKeyDown">
+ <summary>
+ Fired when the user presses a keyboard key down on the form or any of its child controls.
+ </summary>
+</member>
+<member name="E:Microsoft.SmallVisualBasic.WinForms.Form.OnPreviewKeyUp">
+ <summary>
+ Fired when the user releases a keyboard key on the form or any of its child controls.
+ </summary>
+</member>
+<member name="E:Microsoft.SmallVisualBasic.WinForms.Form.OnPreviewMouseWheel">
+ <summary>
+ Fired when user moves the mouse wheel ober the form or any of its children
+ </summary>
 </member>
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Form.OnShown">
  <summary>
@@ -8078,6 +8135,12 @@ Creates a color from its alpha, red, green, and blue components.
 <member name="M:Microsoft.SmallVisualBasic.WinForms.SoundEx.Play(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>Plays the current audio.</summary>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.SoundEx.Resume(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Resumes playing the current audio from the position it was paused at.
+ If the file hasn't not played yet, this operation will play it from start.
+ </summary>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.SoundEx.PlayAndWait(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Plays the current audio and waits until it is finished playing.
@@ -8323,6 +8386,17 @@ Creates a color from its alpha, red, green, and blue components.
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.TextEx.GetIndexOf(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Finds the position where a sub-text appears in the specified text.
+ </summary>
+ <param name="subText">the text to search for.</param>
+ <param name="start">the text position to start seacting from</param>
+ <param name="isBackward">True if you want to search from start back to the the first position in the text (1), or False if you want to go forward to the end of the text.</param>
+ <returns>
+ The position at which the sub-text appears in the specified text.  If the text doesn't appear, it returns 0.
+ </returns>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.TextEx.IndexOf(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Finds the position where a sub-text appears in the specified text.
  </summary>

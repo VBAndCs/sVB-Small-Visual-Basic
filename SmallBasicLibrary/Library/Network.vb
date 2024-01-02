@@ -103,7 +103,7 @@ Namespace Library
                 localFileName = IO.Path.Combine(Program.Directory, localFileName)
             End If
 
-            Return localFileName
+            Return Environment.ExpandEnvironmentVariables(localFileName)
         End Function
 
         Friend Shared Function GetWebPageContents(url As String) As String

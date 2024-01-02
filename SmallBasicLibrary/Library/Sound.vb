@@ -158,11 +158,12 @@ Namespace Library
 
 
         ''' <summary>
-        ''' Plays an audio file.  This could be an mp3 or wav or wma file.  Other file formats may or may not play depending on the audio codecs installed on the user's computer.
-        ''' If the file was already paused, this operation will resume from the position where the playback was paused.
+        ''' Plays the given audio file. 
+        ''' If the file is currently played or paused, this operation will replay it from the start. Use the Resume method to continue playing the paused file.
         ''' </summary>
         ''' <param name="filePath">
-        ''' The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
+        ''' The path for the audio file. This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
+        ''' ''' The file type could be an mp3 or wav or wma file. Other file formats may or may not play depending on the audio codecs installed on the user's computer.
         ''' </param>
         Public Shared Sub Play(filePath As Primitive)
             SmallBasicApplication.Invoke(
@@ -173,6 +174,22 @@ Namespace Library
                         mp.Play()
                     End If
 
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Resumes playing the given audio from the position it was paused at.
+        ''' If the file hasn't not played yet, this operation will play it from start.
+        ''' </summary>
+        ''' <param name="filePath">
+        ''' The path for the audio file. This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
+        ''' The file type could be an mp3 or wav or wma file. Other file formats may or may not play depending on the audio codecs installed on the user's computer.
+        ''' </param>
+        Public Shared Sub [Resume](filePath As Primitive)
+            SmallBasicApplication.Invoke(
+                Sub()
+                    Dim mp = GetMediaPlayer(filePath)
+                    If mp IsNot Nothing Then mp.Play()
                 End Sub)
         End Sub
 

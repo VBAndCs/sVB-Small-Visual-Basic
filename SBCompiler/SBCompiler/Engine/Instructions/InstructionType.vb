@@ -1,4 +1,4 @@
-﻿Namespace Microsoft.SmallVisualBasic
+﻿Namespace Microsoft.SmallVisualBasic.Engine
     Public Enum InstructionType
         ArrayAssignment
         EventAssignment

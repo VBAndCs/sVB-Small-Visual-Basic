@@ -57,12 +57,12 @@ ToolBox
 InitializeComponent
 </summary>
 </member>
-<member name="T:DiagramHelper.WndPageSetup">
+<member name="T:DiagramHelper.WndProperties">
 <summary>
-WndPageSetup
+WndProperties
 </summary>
 </member>
-<member name="M:DiagramHelper.WndPageSetup.InitializeComponent">
+<member name="M:DiagramHelper.WndProperties.InitializeComponent">
 <summary>
 InitializeComponent
 </summary>

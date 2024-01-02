@@ -21,6 +21,6 @@ TextBox.OnTextChanged = TxtEditor_OnTextChanged
 ' FrmMain Events:
 Control.HandleEvents(FrmMain)
 Form.OnClosing = FrmMain_OnClosing
-Control.OnPreviewKeyDown = FrmMain_OnPreviewKeyDown
+Form.OnPreviewKeyDown = FrmMain_OnPreviewKeyDown
 
 

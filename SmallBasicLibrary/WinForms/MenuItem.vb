@@ -181,7 +181,7 @@ Namespace WinForms
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetMenuItem([Event].SenderControl)
-                    AddHandler _sender.SubmenuOpened, Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs) [Event].EventsHandler(CType(Sender, System.Windows.FrameworkElement), e, handler)
+                    AddHandler _sender.SubmenuOpened, Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs) [Event].HandleEvent(CType(Sender, System.Windows.FrameworkElement), e, handler)
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnOpen), ex)
                 End Try
@@ -201,9 +201,24 @@ Namespace WinForms
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetMenuItem([Event].SenderControl)
-                    Dim _handler = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs) [Event].EventsHandler(Sender, e, handler)
-                    AddHandler _sender.Checked, _handler
-                    AddHandler _sender.Unchecked, _handler
+                    Dim h = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs)
+                                [Event].HandleEvent(Sender, e, handler)
+                            End Sub
+
+                    Control.RemovePrevEventHandler(
+                            [Event].SenderControl,
+                            NameOf(Wpf.MenuItem.CheckedEvent),
+                            Sub() RemoveHandler _sender.Checked, h
+                    )
+                    AddHandler _sender.Checked, h
+
+                    Control.RemovePrevEventHandler(
+                            [Event].SenderControl,
+                            NameOf(Wpf.MenuItem.UncheckedEvent),
+                            Sub() RemoveHandler _sender.Unchecked, h
+                    )
+                    AddHandler _sender.Unchecked, h
+
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnCheck), ex)
                 End Try

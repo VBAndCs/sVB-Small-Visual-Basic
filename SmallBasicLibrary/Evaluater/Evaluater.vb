@@ -35,7 +35,7 @@ Namespace Evaluator
                     expr = Nothing
                     Errors?.Clear()
                 Else
-                    Dim _parser As New Parser
+                    Dim _parser As New MathParser
                     expr = _parser.Parse(value)
                     Errors = _parser.Errors
                 End If

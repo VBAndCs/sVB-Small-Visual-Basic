@@ -172,6 +172,7 @@ Namespace Library
 
         Friend ReadOnly Property IsNumber As Boolean
             Get
+                If _arrayMap?.Count > 0 Then Return False
                 If _stringValue = "" Then Return True ' Consider it 0
 
                 Dim result As Decimal = 0D
@@ -330,11 +331,28 @@ Namespace Library
         End Function
 
         Public Function Multiply(multiplicand As Primitive) As Primitive
-            Return New Primitive(AsDecimal() * multiplicand.AsDecimal())
+            If Me.IsNumber Then
+                If multiplicand.IsNumber Then
+                    Return New Primitive(Me.AsDecimal() * multiplicand.AsDecimal())
+                ElseIf Not Me.IsArray Then
+                    Return Duplicate(multiplicand.AsString(), Me.AsDecimal())
+                End If
+            ElseIf multiplicand.IsNumber AndAlso Not Me.IsArray Then
+                Return Duplicate(Me.AsString(), multiplicand.AsDecimal())
+            End If
+
+            Return New Primitive("")
+        End Function
+
+        Private Function Duplicate(str As String, count As Decimal) As Primitive
+            Dim sb As New StringBuilder
+            For i = 1 To count
+                sb.Append(str)
+            Next
+            Return New Primitive(sb.ToString())
         End Function
 
         Public Function Divide(divisor As Primitive) As Primitive
-            divisor.AsDecimal()
             Return New Primitive(AsDecimal() / divisor.AsDecimal())
         End Function
 

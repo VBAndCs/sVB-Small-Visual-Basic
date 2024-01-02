@@ -494,8 +494,19 @@ Namespace WinForms
         Public Shared Custom Event OnTextChanged As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
-                    Dim _sender = GetTextBox([Event].SenderControl)
-                    AddHandler _sender.TextChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    Dim name = [Event].SenderControl
+                    Dim _sender = GetTextBox(name)
+                    Dim h = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                            End Sub
+
+                    Control.RemovePrevEventHandler(
+                        name,
+                        NameOf(Wpf.Primitives.TextBoxBase.TextChangedEvent),
+                        Sub() RemoveHandler _sender.TextChanged, h
+                    )
+                    AddHandler _sender.TextChanged, h
+
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnTextChanged), ex)
                 End Try
@@ -516,19 +527,35 @@ Namespace WinForms
         Public Shared Custom Event OnTextInput As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
-                    Dim _sender = GetTextBox([Event].SenderControl)
+                    Dim name = [Event].SenderControl
+                    Dim _sender = GetTextBox(name)
+                    Dim h = Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
+                                If e.Key = Keys.Space Then
+                                    Keyboard._lastTextInput = " "
+                                    [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                                End If
+                            End Sub
 
                     ' Wpf doesn't raise TextInput when space is pressed!
                     ' We will fix this by raising this special case from the KeyDown event
-                    AddHandler _sender.PreviewKeyDown,
-                        Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
-                            If e.Key = Keys.Space Then
-                                Keyboard._lastTextInput = " "
-                                [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
-                            End If
-                        End Sub
+                    Control.RemovePrevEventHandler(
+                        name,
+                        NameOf(FrameworkElement.PreviewKeyDownEvent),
+                        Sub() RemoveHandler _sender.PreviewKeyDown, h
+                    )
+                    AddHandler _sender.PreviewKeyDown, h
 
-                    AddHandler _sender.PreviewTextInput, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    Dim h2 = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                 [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                             End Sub
+
+                    Control.RemovePrevEventHandler(
+                        name,
+                        NameOf(Wpf.Primitives.TextBoxBase.PreviewTextInputEvent),
+                        Sub() RemoveHandler _sender.PreviewTextInput, h2
+                    )
+                    AddHandler _sender.PreviewTextInput, h2
+
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnTextInput), ex)
                 End Try
@@ -547,19 +574,35 @@ Namespace WinForms
         Public Shared Custom Event OnSelection As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
-                    Dim _sender = GetTextBox([Event].SenderControl)
+                    Dim name = [Event].SenderControl
+                    Dim _sender = GetTextBox(name)
+                    Dim h = Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
+                                If e.Key = Keys.Space Then
+                                    Keyboard._lastTextInput = " "
+                                    [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                                End If
+                            End Sub
 
                     ' Wpf doesn't raise TextInput when space is pressed!
                     ' We will fix this by raising this special case from the KeyDown event
-                    AddHandler _sender.PreviewKeyDown,
-                        Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
-                            If e.Key = Keys.Space Then
-                                Keyboard._lastTextInput = " "
-                                [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
-                            End If
-                        End Sub
+                    Control.RemovePrevEventHandler(
+                        name,
+                        NameOf(FrameworkElement.PreviewKeyDownEvent),
+                        Sub() RemoveHandler _sender.PreviewKeyDown, h
+                    )
+                    AddHandler _sender.PreviewKeyDown, h
 
-                    AddHandler _sender.SelectionChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    Dim h2 = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                 [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                             End Sub
+
+                    Control.RemovePrevEventHandler(
+                        name,
+                        NameOf(Wpf.Primitives.TextBoxBase.SelectionChangedEvent),
+                        Sub() RemoveHandler _sender.SelectionChanged, h
+                    )
+                    AddHandler _sender.SelectionChanged, h2
+
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnSelection), ex)
                 End Try

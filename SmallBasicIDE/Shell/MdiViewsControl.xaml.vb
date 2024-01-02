@@ -393,11 +393,12 @@ Namespace Microsoft.SmallVisualBasic.Shell
         End Sub
 
         Private Sub CmbEventNames_PreviewTextInput(sender As Object, e As TextCompositionEventArgs)
-            Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
-            If selectedView.CmbControlNames.SelectedIndex = 0 Then Return
+            If e.Text = "" Then Return
 
+            Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+            Dim startPos = If(selectedView.CmbControlNames.SelectedIndex = 0, 0, 2)
             Dim cmb = CType(sender, ComboBox)
-            Dim c = e.Text.ToLower()(0)
+            Dim c = e.Text.ToUpper()(0)
             Dim items = cmb.Items
 
             Dim st As Integer = cmb.SelectedIndex
@@ -410,8 +411,8 @@ Namespace Microsoft.SmallVisualBasic.Shell
             Next
 
             For i = st + 1 To items.Count - 1
-                Dim eventName = CStr(items(i)).ToLower()
-                If eventName(2) = c Then
+                Dim eventName = CStr(items(i))
+                If eventName.IndexOf(c, startPos) > -1 Then
                     HighlightItem(cmb, i)
                     e.Handled = True
                     Return
@@ -419,8 +420,8 @@ Namespace Microsoft.SmallVisualBasic.Shell
             Next
 
             For i = 0 To st
-                Dim eventName = CStr(items(i)).ToLower()
-                If eventName(2) = c Then
+                Dim eventName = CStr(items(i))
+                If eventName.IndexOf(c, startPos) > -1 Then
                     HighlightItem(cmb, i)
                     e.Handled = True
                     Return

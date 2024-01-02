@@ -21,6 +21,15 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
+        ''' Resumes playing the current audio from the position it was paused at.
+        ''' If the file hasn't not played yet, this operation will play it from start.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub [Resume](filePath As Primitive)
+            Sound.Resume(filePath)
+        End Sub
+
+        ''' <summary>
         ''' Plays the current audio and waits until it is finished playing.
         ''' If the file was already paused, this operation will resume from the position where the playback was paused.
         ''' </summary>
@@ -44,6 +53,7 @@ Namespace WinForms
         Public Shared Sub [Stop](filePath As Primitive)
             Sound.Stop(filePath)
         End Sub
+
 
     End Class
 End Namespace

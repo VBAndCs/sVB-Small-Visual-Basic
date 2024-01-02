@@ -534,9 +534,6 @@ Public Class Designer
         Next
 
         Dim xaml As New Text.StringBuilder(XamlWriter.Save(canvas))
-        xaml.Replace("FontStretch=""Normal""", "")
-        xaml.Replace("FontStyle=""Normal""", "")
-        xaml.Replace("FontWeight=""Normal""", "")
         xaml.Replace("Typography.StandardLigatures=""True""", "")
         xaml.Replace("Typography.ContextualLigatures=""True""", "")
         xaml.Replace("Typography.DiscretionaryLigatures=""False""", "")
@@ -580,7 +577,6 @@ Public Class Designer
         xaml.Replace("Typography.StandardSwashes=""0""", "")
         xaml.Replace("Typography.ContextualSwashes=""0""", "")
         xaml.Replace("Typography.StylisticAlternates=""0""", "")
-        xaml.Replace("LayoutTransform=""Identity""", "")
         xaml.Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ")
         Return xaml.ToString()
 
@@ -696,8 +692,32 @@ Public Class Designer
 
     Private Sub Designer_Drop(sender As Object, e As DragEventArgs) Handles Me.Drop
         Dim Pos = e.GetPosition(Me.DesignerCanvas)
-        Dim tbItem As ToolBoxItem = e.Data.GetData(GetType(ToolBoxItem))
-        DarwDiagram(tbItem, Pos)
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            Dim Files() As String = e.Data.GetData(DataFormats.FileDrop)
+            Dim key = CurrentPage.PageKey
+            For Each file In Files
+                Select Case IO.Path.GetExtension(file).ToLower()
+                    Case ".xaml"
+                        SwitchTo(file)
+
+                    Case ".bmp", ".jpg", ".jpeg", ".png", ".gif"
+                        SwitchTo(key)
+                        Dim label As New Label()
+                        label.Width = 200
+                        label.Height = 200
+                        label.Background = New ImageBrush(New BitmapImage(New Uri(file)))
+                        AddToForm(Pos, label, label.GetType(), "Label")
+                        SetControlText(label, "", False)
+                        Pos.X += 10
+                        Pos.Y += 10
+                End Select
+            Next
+
+        Else
+            Dim tbItem As ToolBoxItem = e.Data.GetData(GetType(ToolBoxItem))
+            DarwDiagram(tbItem, Pos)
+        End If
+
     End Sub
 
     Private Sub DarwDiagram(
@@ -710,7 +730,6 @@ Public Class Designer
         If tbItem IsNot Nothing Then
             Dim newItem = tbItem.Child
             Dim diagram As UIElement
-            Dim defaultName = ""
             Dim controlType As Type
             Dim typeName As String
             Dim sbControl = TryCast(newItem, SBControl)
@@ -728,30 +747,34 @@ Public Class Designer
             If width > -1 Then SetFrameWidth(diagram, Math.Max(20, width))
             If height > -1 Then SetFrameHeight(diagram, Math.Max(20, height))
 
-            defaultName = GetDefaultControlName(controlType, typeName)
+            AddToForm(pos, diagram, controlType, typeName)
+        End If
+    End Sub
 
-            If defaultName <> "" Then
-                Automation.AutomationProperties.SetName(diagram, defaultName)
-                SetControlText(diagram, defaultName, False)
-            End If
+    Private Sub AddToForm(pos As Point, diagram As UIElement, controlType As Type, typeName As String)
+        Dim defaultName = GetDefaultControlName(controlType, typeName)
 
-            diagram.ClearValue(ToolTipProperty)
+        If defaultName <> "" Then
+            Automation.AutomationProperties.SetName(diagram, defaultName)
+            SetControlText(diagram, defaultName, False)
+        End If
+
+        diagram.ClearValue(ToolTipProperty)
 
 
-            Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items, diagram)
-            Me.Items.Add(diagram)
-            UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+        Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items, diagram)
+        Me.Items.Add(diagram)
+        UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
 
-            Designer.SetLeft(diagram, pos.X)
-            Designer.SetTop(diagram, pos.Y)
-            Helper.UpdateControl(Me)
+        Designer.SetLeft(diagram, pos.X)
+        Designer.SetTop(diagram, pos.Y)
+        Helper.UpdateControl(Me)
 
-            Dim Item = Helper.GetListBoxItem(diagram)
-            Me.SelectedIndex = -1
-            If Item IsNot Nothing Then
-                Item.IsSelected = True
-                Item.Focus()
-            End If
+        Dim Item = Helper.GetListBoxItem(diagram)
+        Me.SelectedIndex = -1
+        If Item IsNot Nothing Then
+            Item.IsSelected = True
+            Item.Focus()
         End If
     End Sub
 
@@ -836,11 +859,21 @@ Public Class Designer
             Dim Lst As ArrayList = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
             Me.SelectedItems.Clear()
             Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items)
+
             For Each Diagram As UIElement In Lst
-                Designer.SetLeft(Diagram, Designer.GetLeft(Diagram) + 10)
-                Designer.SetTop(Diagram, Designer.GetTop(Diagram) + 10)
+                Dim left = Designer.GetLeft(Diagram)
+                Dim top = Designer.GetTop(Diagram)
+                Designer.SetLeft(Diagram, left + 10)
+                Designer.SetTop(Diagram, top + 10)
                 Dim name = GetControlName(Diagram)
                 SetControlName(Diagram, GetNextName(name))
+                Dim control = TryCast(Diagram, Control)
+                If control IsNot Nothing Then
+                    Commands.FixImageBrush(control.Background)
+                    Commands.FixImageBrush(control.Foreground)
+                    Commands.FixImageBrush(control.BorderBrush)
+                End If
+
                 OldState.Add(Diagram)
                 Me.Items.Add(Diagram)
                 OldState.SetNewValue()
@@ -1538,7 +1571,8 @@ Public Class Designer
         If contentControl IsNot Nothing Then
             contentControl.Content = New TextBlock() With {
                 .Text = value,
-                .TextWrapping = TextWrapping.Wrap
+                .TextWrapping = TextWrapping.Wrap,
+                .IsHitTestVisible = False
             }
 
         ElseIf listControl IsNot Nothing Then

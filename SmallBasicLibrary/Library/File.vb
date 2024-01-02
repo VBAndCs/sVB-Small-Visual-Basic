@@ -27,7 +27,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadContents(filePath As Primitive) As Primitive
             LastError = ""
-            Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
+            Dim path As String = Network.GetLocalFile(filePath)
             Try
                 If Not IO.File.Exists(path) Then
                     LastError = $"The file `{path}` is not found."
@@ -81,6 +81,32 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Opens a file and replaces its data with the given array.
+        ''' </summary>
+        ''' <param name="filePath">The full path of the file, like c:\temp\settings.data.</param>
+        ''' <param name="array">The array to write its string representaion into the specified file.</param>
+        ''' <returns>True if the operation was successful, or False otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Function WriteArray(filePath As Primitive, array As Primitive) As Primitive
+            Try
+                LastError = ""
+                Dim path As String = Network.GetLocalFile(filePath)
+
+                Using writer As New StreamWriter(path, False, Encoding.Default)
+                    writer.Write(array.AsString())
+                End Using
+
+                Return True
+
+            Catch ex As Exception
+                LastError = ex.Message
+            End Try
+
+            Return False
+        End Function
+
+
+        ''' <summary>
         ''' Opens the specified file and reads the contents at the specified line number.
         ''' Don't use this method in a loop to read many lines from the same file, because it always starts reading from the first line of the file until it reaches the required line, which will have a very bad impact in loops.
         ''' Instead, if the file size is less than 1 mega bytes, you can use the ReadLines method to read all the file lines then walk through it using the loop as you want.
@@ -94,7 +120,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadLine(filePath As Primitive, lineNumber As Primitive) As Primitive
             LastError = ""
-            Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
+            Dim path As String = Network.GetLocalFile(filePath)
             If lineNumber < 1 Then
                 LastError = $"{lineNumber} is not a valid line number."
                 Return ""
@@ -167,6 +193,34 @@ Namespace Library
             Return ""
         End Function
 
+        ''' <summary>
+        ''' Opens the specified file and reads its data as an array.
+        ''' </summary>
+        ''' <param name="filePath">The full path of the file to read from, like c:\temp\settings.data.</param>
+        ''' <returns>an array if the specified file content is a valid string representation of an array, or an empty string otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        Public Shared Function ReadArray(filePath As Primitive) As Primitive
+            LastError = ""
+            Dim path As String = Network.GetLocalFile(filePath)
+
+            Try
+                If Not IO.File.Exists(path) Then
+                    LastError = $"The file `{path}` is not found."
+                    Return ""
+                End If
+
+                Dim arr = New Primitive(My.Computer.FileSystem.ReadAllText(path, Encoding.Default))
+                If arr.IsArray Then Return arr
+                LastError = "The file content is not a valid array!"
+                Return ""
+
+            Catch ex As Exception
+                LastError = ex.Message
+            End Try
+
+            Return ""
+        End Function
+
 
         ''' <summary>
         ''' Opens the specified file and writes the contents at the specified line number.
@@ -187,7 +241,7 @@ Namespace Library
                    ) As Primitive
 
             LastError = ""
-            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+            Dim path1 = Network.GetLocalFile(filePath)
             Dim tempFileName = Path.GetTempFileName()
 
             Try
@@ -249,7 +303,7 @@ Namespace Library
                    ) As Primitive
 
             LastError = ""
-            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+            Dim path1 As String = Network.GetLocalFile(filePath)
             Dim tempFileName = Path.GetTempFileName()
 
             Try
@@ -330,7 +384,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function InsertLines(filePath As Primitive, lineNumber As Primitive, lines As Primitive) As Primitive
             LastError = ""
-            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+            Dim path1 As String = Network.GetLocalFile(filePath)
             Dim tempFileName = Path.GetTempFileName()
 
             Try
@@ -393,7 +447,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function AppendLines(filePath As Primitive, lines As Primitive) As Primitive
             LastError = ""
-            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+            Dim path1 As String = Network.GetLocalFile(filePath)
 
             Try
                 Using writer As New StreamWriter(path1, append:=True, Encoding.Default)
@@ -424,7 +478,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function AppendContents(filePath As Primitive, contents As Primitive) As Primitive
             LastError = ""
-            Dim path1 = Environment.ExpandEnvironmentVariables(filePath)
+            Dim path1 As String = Network.GetLocalFile(filePath)
 
             Try
                 Using writer As New StreamWriter(path1, append:=True, Encoding.Default)
@@ -450,8 +504,8 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function CopyFile(sourceFilePath As Primitive, destinationFilePath As Primitive) As Primitive
             LastError = ""
-            Dim file1 = Environment.ExpandEnvironmentVariables(sourceFilePath)
-            Dim file2 = Environment.ExpandEnvironmentVariables(destinationFilePath)
+            Dim file1 As String = Network.GetLocalFile(sourceFilePath)
+            Dim file2 As String = Network.GetLocalFile(destinationFilePath)
 
             If Not IO.File.Exists(file1) Then
                 LastError = "Source file doesn't exist."
@@ -486,7 +540,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function DeleteFile(filePath As Primitive) As Primitive
             LastError = ""
-            Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
+            Dim path As String = Network.GetLocalFile(filePath)
 
             Try
                 IO.File.Delete(path)
@@ -506,7 +560,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function CreateDirectory(directoryPath As Primitive) As Primitive
             LastError = ""
-            Dim dir = Environment.ExpandEnvironmentVariables(directoryPath)
+            Dim dir As String = Network.GetLocalFile(directoryPath)
 
             Try
                 Directory.CreateDirectory(dir)
@@ -526,7 +580,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function DeleteDirectory(directoryPath As Primitive) As Primitive
             LastError = ""
-            Dim dir = Environment.ExpandEnvironmentVariables(directoryPath)
+            Dim dir As String = Network.GetLocalFile(directoryPath)
 
             Try
                 Directory.Delete(dir, recursive:=True)
@@ -548,7 +602,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function GetFiles(directoryPath As Primitive) As Primitive
             LastError = ""
-            Dim dir = Environment.ExpandEnvironmentVariables(directoryPath)
+            Dim dir As String = Network.GetLocalFile(directoryPath)
 
             Try
                 If Directory.Exists(dir) Then
@@ -583,7 +637,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function GetDirectories(directoryPath As Primitive) As Primitive
             LastError = ""
-            Dim dir = Environment.ExpandEnvironmentVariables(directoryPath)
+            Dim dir As String = Network.GetLocalFile(directoryPath)
 
             Try
                 If Directory.Exists(dir) Then
@@ -732,7 +786,7 @@ Namespace Library
                 folder = ""
             End Try
 
-            Return folder
+            Return Network.GetLocalFile(folder)
         End Function
 
         ''' <summary>

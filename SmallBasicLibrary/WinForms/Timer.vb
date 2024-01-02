@@ -85,22 +85,32 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+
+        Friend Shared TickHandlers As New Dictionary(Of String, EventHandler)
+
         ''' <summary>
         ''' Fired when user releases the left mouse-button
         ''' </summary>
         Public Shared Custom Event OnTick As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
-                    Dim _sender = GetTimer([Event].SenderControl)
-                    AddHandler _sender.Tick,
-                        Sub(Sender As Object, e As EventArgs)
-                            Try
-                                [Event].SenderControl = CType(Sender, DispatcherTimer).Tag
-                                Call handler()
-                            Catch ex As Exception
-                                ReportError($"The event handler sub `{handler.Method.Name}` caused this error: {ex.Message}", ex)
-                            End Try
-                        End Sub
+                    Dim name = [Event].SenderControl
+                    Dim _sender = GetTimer(name)
+                    Dim h = Sub(Sender As Object, e As EventArgs)
+                                Try
+                                    [Event].SenderControl = CType(Sender, DispatcherTimer).Tag
+                                    Call handler()
+                                Catch ex As Exception
+                                    ReportError($"The event handler sub `{handler.Method.Name}` caused this error: {ex.Message}", ex)
+                                End Try
+                            End Sub
+
+                    If TickHandlers.ContainsKey(name) Then
+                        RemoveHandler _sender.Tick, TickHandlers(name)
+                    End If
+
+                    TickHandlers(name) = h
+                    AddHandler _sender.Tick, h
 
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnTick), ex)

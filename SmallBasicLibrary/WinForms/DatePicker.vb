@@ -59,7 +59,17 @@ Namespace WinForms
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetDatePicker([Event].SenderControl)
-                    AddHandler _sender.SelectedDateChanged, Sub(Sender As Wpf.Control, e As RoutedEventArgs) [Event].EventsHandler(CType(Sender, FrameworkElement), e, handler)
+                    Dim h = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                            End Sub
+
+                    Control.RemovePrevEventHandler(
+                            [Event].SenderControl,
+                            NameOf(Wpf.DatePicker.SelectedDateChangedEvent),
+                            Sub() RemoveHandler _sender.SelectedDateChanged, h
+                     )
+                    AddHandler _sender.SelectedDateChanged, h
+
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnSelection), ex)
                 End Try

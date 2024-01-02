@@ -76,13 +76,11 @@ F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Arrow.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\Brushes.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\ExpanderStyle.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\ToolBox.baml
-F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndPageSetup.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndSkew.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Arrow.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramPanel.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\Resources\DesignerDecorator.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\ToolBox.g.vb
-F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndPageSetup.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndSkew.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\GeneratedInternalTypeHelper.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper_MarkupCompile.cache
@@ -103,3 +101,5 @@ F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.pdb
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\DiagramHelper.vbproj.AssemblyReference.cache
 F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\bin\Release\WpfDialogs.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndProperties.baml
+F:\_VS.NET\Small Basic IDE\sVB\1\DiagramHelper\obj\Release\WndProperties.g.vb

@@ -44,6 +44,7 @@ Namespace WinForms
             End Get
         End Property
 
+
         ''' <summary>
         ''' returns the last text that was about to be written to the TextBox
         ''' </summary>
@@ -74,7 +75,7 @@ Namespace WinForms
             _SenderControl = ControlName
         End Sub
 
-        Shared Sub EventsHandler(
+        Shared Sub HandleEvent(
                             sender As FrameworkElement,
                             e As RoutedEventArgs,
                             userEventHandler As SmallVisualBasicCallback,
@@ -83,6 +84,7 @@ Namespace WinForms
 
             Try
                 If e.Source IsNot sender AndAlso
+                    Not (TypeOf e.Source Is Wpf.Canvas AndAlso TryCast(sender, Window)?.AllowsTransparency) AndAlso
                     TypeOf sender IsNot Wpf.Label AndAlso
                     Not allowTunneling Then Return
 
@@ -101,9 +103,9 @@ Namespace WinForms
 
         Friend Shared Function GetControlName(sender As FrameworkElement) As Primitive
             If TypeOf sender Is Window Then
-                Return sender.Name.ToLower
+                Return sender.Name.ToLower()
             ElseIf TypeOf sender Is Wpf.Canvas Then
-                Return CType(sender.Parent, Window).Name.ToLower
+                Return CType(sender.Parent, Window).Name.ToLower()
             Else
                 Dim parent As FrameworkElement = sender.Parent
                 Do While parent IsNot Nothing
@@ -135,6 +137,19 @@ Namespace WinForms
                 Return Mouse.MouseY
             End Get
         End Property
+
+        ''' <summary>
+        ''' Get a value that indicates the last mouse wheel movement direction:
+        '''  * 0 means down.
+        '''  * 1 means up.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared ReadOnly Property LastMouseWheelDirection As Primitive
+            Get
+                Return Mouse.LastMouseWheelDirection
+            End Get
+        End Property
+
 
         ''' <summary>
         ''' Gets whether or not the left button is pressed.

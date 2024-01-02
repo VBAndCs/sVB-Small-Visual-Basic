@@ -97,7 +97,16 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:UpDownBase">
-                    <local:Spinner IsTabStop="False" x:Name="PART_Spinner"
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="PART_CheckBox" Visibility="Collapsed"
+                                IsChecked="True" VerticalAlignment="Center"  
+                                 Margin="0,0,4,0"/>
+                        <local:Spinner IsTabStop="False" x:Name="PART_Spinner"
+                                   Grid.Column="1"
                                    Background="{TemplateBinding Background}"
                                    BorderBrush="{TemplateBinding BorderBrush}"
                                    BorderThickness="{TemplateBinding BorderThickness}">
@@ -125,13 +134,14 @@
                                  />
 
                     </local:Spinner>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
     <Style TargetType="{x:Type local:DoubleUpDown}" BasedOn="{StaticResource NumericUpDown}">
-        <Setter Property="Increment" Value=".1"/>
+        <Setter Property="Increment" Value="0.1"/>
         <Setter Property="FormatString" Value="F1"/>
         <Setter Property="FontSize" Value="18"/>
     </Style>

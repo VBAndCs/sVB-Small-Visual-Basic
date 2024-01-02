@@ -508,7 +508,7 @@ Namespace WinForms
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
         ''' <param name="value">a number between 1 and 12 that represents the month</param>
-        ''' <returns>a new date with the new month value. The input date will not change</returns>
+        ''' <returns>a new date with the new month value if it's valide. The input date will not be changed</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function ChangeMonth([date] As Primitive, value As Primitive) As Primitive
             If [date].numberType = NumberType.TimeSpan Then Return [date]

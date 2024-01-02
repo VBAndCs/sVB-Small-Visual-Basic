@@ -9,7 +9,6 @@ Namespace WinForms
     Public NotInheritable Class ImageBox
 
         Private Shared Function GetImageBox(imageBoxName As String) As Wpf.Image
-
             Dim c = Control.GetFrameworkElement(imageBoxName)
             Dim imgBox = TryCast(c, Wpf.Image)
             If imgBox Is Nothing Then

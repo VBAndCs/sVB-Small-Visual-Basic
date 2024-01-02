@@ -102,10 +102,14 @@ Namespace WinForms
             Dim tb = TryCast(content, Wpf.TextBlock)
 
             If tb Is Nothing Then
-                tb = New Wpf.TextBlock()
-                If content IsNot Nothing Then tb.Text = content.ToString()
+                tb = New Wpf.TextBlock() With {
+                    .IsHitTestVisible = False,
+                    .TextWrapping = TextWrapping.Wrap,
+                    .Text = content?.ToString()
+                }
                 cntrl.Content = tb
-                tb.TextWrapping = TextWrapping.Wrap
+            Else
+                tb.IsHitTestVisible = False
             End If
 
             Return tb
