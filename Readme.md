@@ -13,7 +13,7 @@
 * [sVB for kids](https://github.com/VBAndCs/sVB-Small-Visual-Basic#svb-for-kids)
 * [Conclusions](https://github.com/VBAndCs/sVB-Small-Visual-Basic#conclusions)
 
-#What's new In sVB 2.8.8:
+# What's new In sVB 2.8.8:
 * Fixing some reported bugs.
 * In the form designer, you can drag images from your file system and drop them on the form design surface to show them in labels.
 * In code, you can use the * operator to duplicate strings like in Python. Ex:
