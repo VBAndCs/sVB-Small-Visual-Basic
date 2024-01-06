@@ -103,13 +103,10 @@ Namespace WinForms
 
             If tb Is Nothing Then
                 tb = New Wpf.TextBlock() With {
-                    .IsHitTestVisible = False,
                     .TextWrapping = TextWrapping.Wrap,
                     .Text = content?.ToString()
                 }
                 cntrl.Content = tb
-            Else
-                tb.IsHitTestVisible = False
             End If
 
             Return tb

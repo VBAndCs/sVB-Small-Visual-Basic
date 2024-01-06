@@ -44,7 +44,7 @@ Namespace Library.Internal
             _applicationThread.SetApartmentState(ApartmentState.STA)
             _applicationThread.Start()
             autoEvent.WaitOne()
-            _dispatcher = Dispatcher.FromThread(_applicationThread)
+            _Dispatcher = Dispatcher.FromThread(_applicationThread)
         End Sub
 
         Public Shared Sub BeginProgram()
@@ -83,7 +83,7 @@ Namespace Library.Internal
 
         Friend Shared Sub BeginInvoke(invokeDelegate As InvokeHelper)
             _pendingOperations += 1
-            _dispatcher.BeginInvoke(DispatcherPriority.Render, invokeDelegate)
+            _Dispatcher.BeginInvoke(DispatcherPriority.Render, invokeDelegate)
             If _pendingOperations > 40 Then
                 ClearDispatcherQueue()
                 _pendingOperations = 0
@@ -171,16 +171,16 @@ Namespace Library.Internal
         End Sub
 
         Friend Shared Sub Invoke(invokeDelegate As InvokeHelper)
-            _dispatcher.Invoke(DispatcherPriority.Render, invokeDelegate)
+            _Dispatcher.Invoke(DispatcherPriority.Render, invokeDelegate)
         End Sub
 
         Friend Shared Function InvokeWithReturn(invokeDelegate As InvokeHelperWithReturn) As Object
-            Return _dispatcher.Invoke(DispatcherPriority.Render, invokeDelegate)
+            Return _Dispatcher.Invoke(DispatcherPriority.Render, invokeDelegate)
         End Function
 
         Friend Shared Sub ClearDispatcherQueue()
             Try
-                _dispatcher.Invoke(DispatcherPriority.Background, CType(Function(param0 As Object) Nothing, DispatcherOperationCallback), Nothing)
+                _Dispatcher.Invoke(DispatcherPriority.Background, CType(Function(param0 As Object) Nothing, DispatcherOperationCallback), Nothing)
             Catch
 
             End Try

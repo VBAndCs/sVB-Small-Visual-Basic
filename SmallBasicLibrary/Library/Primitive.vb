@@ -139,7 +139,7 @@ Namespace Library
                         _stringValue = ts
 
                     Case Else
-                        _stringValue = _decimalValue.Value.ToString()
+                        _stringValue = If(_stringValue <> "", _stringValue, _decimalValue.Value.ToString())
                 End Select
 
             ElseIf _arrayMap IsNot Nothing AndAlso _arrayMap.Count > 0 Then

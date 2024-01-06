@@ -210,7 +210,7 @@ Namespace WinForms
 
                     Control.RemovePrevEventHandler(
                             name,
-                            NameOf(Wpf.ListBox.SelectionChangedEvent),
+                            NameOf(OnSelection),
                             Sub() RemoveHandler _sender.SelectionChanged, h
                      )
                     AddHandler _sender.SelectionChanged, h

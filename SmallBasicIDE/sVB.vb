@@ -436,12 +436,13 @@ Class sVB
                     End If
 
                     errors.RemoveAt(i)
-                        ReRun = True
+                    ReRun = True
 
-                    Else ' Event
-                        Dim ModuleName = propInfo.Module
-                    lines(lineNum) = $"Control.HandleEvents({obj})" & vbLf &
-                                                prevText & $"{ModuleName}.{nextText}"
+                Else ' Event
+                    Dim ModuleName = propInfo.Module
+                    lines(lineNum) = $"Event.SenderAssembly = Program.AsemblyName" & vbLf &
+                                               $"Control.HandleEvents({obj})" & vbLf &
+                                               prevText & $"{ModuleName}.{nextText}"
                     errors.RemoveAt(i)
                     ReRun = True
                 End If

@@ -207,16 +207,13 @@ Namespace WinForms
 
                     Control.RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(Wpf.MenuItem.CheckedEvent),
-                            Sub() RemoveHandler _sender.Checked, h
+                            NameOf(OnCheck),
+                            Sub()
+                                RemoveHandler _sender.Checked, h
+                                RemoveHandler _sender.Unchecked, h
+                            End Sub
                     )
                     AddHandler _sender.Checked, h
-
-                    Control.RemovePrevEventHandler(
-                            [Event].SenderControl,
-                            NameOf(Wpf.MenuItem.UncheckedEvent),
-                            Sub() RemoveHandler _sender.Unchecked, h
-                    )
                     AddHandler _sender.Unchecked, h
 
                 Catch ex As Exception

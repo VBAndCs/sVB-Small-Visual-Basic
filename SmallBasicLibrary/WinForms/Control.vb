@@ -1338,7 +1338,6 @@ Namespace WinForms
 
 #End Region
 
-
 #Region "Animation"
 
         ''' <summary>
@@ -1478,8 +1477,7 @@ Namespace WinForms
         Friend Shared RemoveEventHandlerActions As New Dictionary(Of String, Action)
 
         Friend Shared Sub RemovePrevEventHandler(controlName As String, eventName As String, [removeHandler] As Action)
-            Dim key = (controlName + "." + eventName).ToLower()
-            Dim oldHandler As RoutedEventHandler = Nothing
+            Dim key = ([Event].SenderAssembly.ToString() & ":" & controlName & "." & eventName).ToLower()
             If RemoveEventHandlerActions.ContainsKey(key) Then
                 RemoveEventHandlerActions(key).Invoke()
             End If
@@ -1529,7 +1527,7 @@ Namespace WinForms
                 If TypeOf _sender Is Wpf.Canvas Then
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.MouseLeftButtonDownEvent),
+                            NameOf(OnMouseLeftDown),
                             Sub() RemoveHandler _sender.MouseLeftButtonDown, h
                      )
                     AddHandler _sender.MouseLeftButtonDown, h
@@ -1537,7 +1535,7 @@ Namespace WinForms
                 Else
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.PreviewMouseLeftButtonDownEvent),
+                            NameOf(OnMouseLeftDown),
                             Sub() RemoveHandler _sender.PreviewMouseLeftButtonDown, h
                      )
                     AddHandler _sender.PreviewMouseLeftButtonDown, h
@@ -1565,7 +1563,7 @@ Namespace WinForms
                 If btn IsNot Nothing Then
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(Wpf.Primitives.ButtonBase.ClickEvent),
+                            NameOf(OnClick),
                             Sub() RemoveHandler btn.Click, h
                     )
                     AddHandler btn.Click, h
@@ -1573,7 +1571,7 @@ Namespace WinForms
                 Else
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.MouseLeftButtonUpEvent),
+                            NameOf(OnClick),
                             Sub() RemoveHandler _sender.MouseLeftButtonUp, h
                     )
                     AddHandler _sender.MouseLeftButtonUp, h
@@ -1600,7 +1598,7 @@ Namespace WinForms
                 If TypeOf _sender Is Wpf.Canvas Then
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.MouseLeftButtonUpEvent),
+                            NameOf(OnMouseLeftUp),
                             Sub() RemoveHandler _sender.MouseLeftButtonUp, h
                      )
                     AddHandler _sender.MouseLeftButtonUp, h
@@ -1608,7 +1606,7 @@ Namespace WinForms
                 Else
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.PreviewMouseLeftButtonUpEvent),
+                            NameOf(OnMouseLeftUp),
                             Sub() RemoveHandler _sender.PreviewMouseLeftButtonUp, h
                      )
                     AddHandler _sender.PreviewMouseLeftButtonUp, h
@@ -1635,7 +1633,7 @@ Namespace WinForms
                 If TypeOf _sender Is Wpf.Canvas Then
                     RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.MouseLeftButtonDownEvent),
+                        NameOf(OnDoubleClick),
                         Sub() RemoveHandler _sender.MouseLeftButtonDown, h
                     )
                     AddHandler _sender.MouseLeftButtonDown, h
@@ -1643,7 +1641,7 @@ Namespace WinForms
                 Else
                     RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.PreviewMouseLeftButtonDownEvent),
+                        NameOf(OnDoubleClick),
                         Sub() RemoveHandler _sender.PreviewMouseLeftButtonDown, h
                     )
                     AddHandler _sender.PreviewMouseLeftButtonDown, h
@@ -1670,7 +1668,7 @@ Namespace WinForms
                 If TypeOf _sender Is Wpf.Canvas Then
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.MouseRightButtonDownEvent),
+                            NameOf(OnMouseRightDown),
                             Sub() RemoveHandler _sender.MouseRightButtonDown, h
                     )
                     AddHandler _sender.MouseRightButtonDown, h
@@ -1678,7 +1676,7 @@ Namespace WinForms
                 Else
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.PreviewMouseRightButtonDownEvent),
+                            NameOf(OnMouseRightDown),
                             Sub() RemoveHandler _sender.PreviewMouseRightButtonDown, h
                     )
                     AddHandler _sender.PreviewMouseRightButtonDown, h
@@ -1705,7 +1703,7 @@ Namespace WinForms
                 If TypeOf _sender Is Wpf.Canvas Then
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.MouseRightButtonUpEvent),
+                            NameOf(OnMouseRightUp),
                             Sub() RemoveHandler _sender.MouseRightButtonUp, h
                     )
                     AddHandler _sender.MouseRightButtonUp, h
@@ -1713,7 +1711,7 @@ Namespace WinForms
                 Else
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.PreviewMouseRightButtonUpEvent),
+                            NameOf(OnMouseRightUp),
                             Sub() RemoveHandler _sender.PreviewMouseRightButtonUp, h
                     )
                     AddHandler _sender.PreviewMouseRightButtonUp, h
@@ -1739,7 +1737,7 @@ Namespace WinForms
 
                 RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.PreviewMouseMoveEvent),
+                        NameOf(OnMouseMove),
                         Sub() RemoveHandler _sender.PreviewMouseMove, h
                 )
                 AddHandler _sender.PreviewMouseMove, h
@@ -1765,7 +1763,7 @@ Namespace WinForms
                 If TypeOf _sender Is Wpf.Canvas Then
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.MouseWheelEvent),
+                            NameOf(OnMouseWheel),
                             Sub() RemoveHandler _sender.MouseWheel, h
                     )
                     AddHandler _sender.MouseWheel, h
@@ -1773,7 +1771,7 @@ Namespace WinForms
                 Else
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.PreviewMouseWheelEvent),
+                            NameOf(OnMouseWheel),
                             Sub() RemoveHandler _sender.PreviewMouseWheel, h
                     )
                     AddHandler _sender.PreviewMouseWheel, h
@@ -1799,7 +1797,7 @@ Namespace WinForms
 
                 RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.MouseEnterEvent),
+                        NameOf(OnMouseEnter),
                         Sub() RemoveHandler _sender.MouseEnter, h
                 )
                 AddHandler _sender.MouseEnter, h
@@ -1824,7 +1822,7 @@ Namespace WinForms
 
                 RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.MouseLeaveEvent),
+                        NameOf(OnMouseLeave),
                         Sub() RemoveHandler _sender.MouseLeave, h
                 )
                 AddHandler _sender.MouseLeave, h
@@ -1851,7 +1849,7 @@ Namespace WinForms
                     ' The form should not preview keys, to let controls handle them
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.KeyDownEvent),
+                            NameOf(OnKeyDown),
                             Sub() RemoveHandler _sender.KeyDown, h
                     )
                     AddHandler _sender.KeyDown, h
@@ -1859,7 +1857,7 @@ Namespace WinForms
                     ' Preview keydown can habdle space and other keys im TextBox                    
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.PreviewKeyDownEvent),
+                            NameOf(OnKeyDown),
                             Sub() RemoveHandler _sender.PreviewKeyDown, h
                     )
                     AddHandler _sender.PreviewKeyDown, h
@@ -1886,7 +1884,7 @@ Namespace WinForms
                 If TypeOf _sender Is Wpf.Canvas Then
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.KeyUpEvent),
+                            NameOf(OnKeyUp),
                             Sub() RemoveHandler _sender.KeyUp, h
                     )
                     AddHandler _sender.KeyUp, h
@@ -1894,7 +1892,7 @@ Namespace WinForms
                 Else
                     RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(FrameworkElement.PreviewKeyUpEvent),
+                            NameOf(OnKeyUp),
                             Sub() RemoveHandler _sender.PreviewKeyUp, h
                     )
                     AddHandler _sender.PreviewKeyUp, h
@@ -1922,7 +1920,7 @@ Namespace WinForms
 
                 RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.GotKeyboardFocusEvent),
+                        NameOf(OnGotFocus),
                         Sub() RemoveHandler _sender.GotKeyboardFocus, h
                 )
                 AddHandler _sender.GotKeyboardFocus, h
@@ -1949,7 +1947,7 @@ Namespace WinForms
 
                 RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.LostFocusEvent),
+                        NameOf(OnLostFocus),
                         Sub() RemoveHandler _sender.LostFocus, h
                 )
                 AddHandler _sender.LostFocus, h
@@ -1963,6 +1961,70 @@ Namespace WinForms
         End Event
 
 #End Region
+
+        ''' <summary>
+        ''' Brings the current control to front of all other controls on the form.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub BringToFront(controlName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim control = GetControl(controlName)
+                        If TypeOf control Is Window Then
+                            CType(control, Window).Activate()
+                            Return
+                        End If
+
+                        Dim prefix = GetFormName(controlName) & "."
+                        Dim zIndex = Wpf.Panel.GetZIndex(control)
+
+                        For Each key In Forms._controls.Keys
+                            If key.StartsWith(prefix) Then
+                                Dim zId = Wpf.Panel.GetZIndex(GetControl(key))
+                                If zId > zIndex Then zIndex = zId
+                            End If
+                        Next
+                        Wpf.Panel.SetZIndex(control, zIndex + 1)
+
+                    Catch ex As Exception
+                        ReportSubError(controlName, "BringToFront", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Sends the current control to the back of all other controls on the form.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub SendToBack(controlName As Primitive)
+            App.Invoke(
+                 Sub()
+                     Try
+                         Dim control = GetControl(controlName)
+                         Dim prefix = GetFormName(controlName) & "."
+                         Dim zIndex = Wpf.Panel.GetZIndex(control)
+
+                         For Each key In Forms._controls.Keys
+                             If key.StartsWith(prefix) Then
+                                 Dim zId = Wpf.Panel.GetZIndex(GetControl(key))
+                                 If zId < zIndex Then zIndex = zId
+                             End If
+                         Next
+                         Wpf.Panel.SetZIndex(control, zIndex - 1)
+
+                     Catch ex As Exception
+                         ReportSubError(controlName, "SendToBack", ex)
+                     End Try
+                 End Sub)
+        End Sub
+
+        Private Shared Function GetFormName(controlName As Primitive) As String
+            Dim name = controlName.AsString().ToLower()
+            Dim dotPos = name.IndexOf(".")
+            If dotPos = -1 Then Return name
+            Return name.Substring(0, dotPos)
+        End Function
 
         Friend Shared Function GetControl(key As String) As Wpf.Control
             Return GetFrameworkElement(key)
@@ -1991,6 +2053,7 @@ Namespace WinForms
                 If p.GetType Is parentType Then Return CType(p, UIElement)
             Loop
         End Function
+
     End Class
 
 

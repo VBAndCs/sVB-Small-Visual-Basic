@@ -1989,7 +1989,7 @@ Converts the given array to a string
 <member name="P:Microsoft.SmallVisualBasic.Library.Mouse.LastMouseWheelDirection">
  <summary>
  Get a value that indicates the last mouse wheel movement direction:
-  * 0 means down.
+  * -1 means down.
   * 1 means up.
  </summary>
 </member>
@@ -2470,7 +2470,7 @@ Converts the given array to a string
 <member name="M:Microsoft.SmallVisualBasic.Library.Sound.Play(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Plays the given audio file. 
- If the file was already paused, this operation will replay it from the start. Use the Resume method to continue playing the paused file.
+ If the file is currently played or paused, this operation will replay it from the start. Use the Resume method to continue playing the paused file.
  </summary>
  <param name="filePath">
  The path for the audio file. This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
@@ -5252,6 +5252,16 @@ Creates a color from its alpha, red, green, and blue components.
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Control.OnLostFocus">
  <summary>
  Fired when the control looses the focus.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Control.BringToFront(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Brings the current control to front of all other controls on the form.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Control.SendToBack(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Sends the current control to the back of all other controls on the form.
  </summary>
 </member>
 <member name="T:Microsoft.SmallVisualBasic.WinForms.ControlTypes">
@@ -8137,7 +8147,7 @@ Creates a color from its alpha, red, green, and blue components.
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.SoundEx.Resume(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
- Resumes playing the given audio from the position it was paused at.
+ Resumes playing the current audio from the position it was paused at.
  If the file hasn't not played yet, this operation will play it from start.
  </summary>
 </member>

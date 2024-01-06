@@ -13,6 +13,9 @@ Namespace WinForms
             ReportError($"Setting the handler for {[Event].SenderControl}.{eventName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
+        <HideFromIntellisense>
+        Public Shared Property SenderAssembly As Primitive
+
         ''' <summary>
         ''' Gets or sets the name of the control that raised the event
         ''' </summary>

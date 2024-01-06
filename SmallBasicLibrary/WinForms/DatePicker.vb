@@ -65,7 +65,7 @@ Namespace WinForms
 
                     Control.RemovePrevEventHandler(
                             [Event].SenderControl,
-                            NameOf(Wpf.DatePicker.SelectedDateChangedEvent),
+                            NameOf(OnSelection),
                             Sub() RemoveHandler _sender.SelectedDateChanged, h
                      )
                     AddHandler _sender.SelectedDateChanged, h

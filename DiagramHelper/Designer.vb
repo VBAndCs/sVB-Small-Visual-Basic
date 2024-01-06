@@ -1571,8 +1571,7 @@ Public Class Designer
         If contentControl IsNot Nothing Then
             contentControl.Content = New TextBlock() With {
                 .Text = value,
-                .TextWrapping = TextWrapping.Wrap,
-                .IsHitTestVisible = False
+                .TextWrapping = TextWrapping.Wrap
             }
 
         ElseIf listControl IsNot Nothing Then
@@ -2117,7 +2116,7 @@ Public Class Designer
             If IO.Path.GetFileNameWithoutExtension(_xamlFile).ToLower() = "global" Then Return False
             Return Me.HasChanges OrElse (
                 _xamlFile = "" AndAlso _codeFile <> "" AndAlso
-                Not _codeFile.ToLower().StartsWith(TempProjectPath)
+                (TempProjectPath <> "" AndAlso Not _codeFile.ToLower().StartsWith(TempProjectPath))
             )
         End Get
     End Property

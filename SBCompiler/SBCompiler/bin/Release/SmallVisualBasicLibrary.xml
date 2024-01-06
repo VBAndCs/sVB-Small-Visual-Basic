@@ -1989,7 +1989,7 @@ Converts the given array to a string
 <member name="P:Microsoft.SmallVisualBasic.Library.Mouse.LastMouseWheelDirection">
  <summary>
  Get a value that indicates the last mouse wheel movement direction:
-  * 0 means down.
+  * -1 means down.
   * 1 means up.
  </summary>
 </member>
@@ -5252,6 +5252,16 @@ Creates a color from its alpha, red, green, and blue components.
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Control.OnLostFocus">
  <summary>
  Fired when the control looses the focus.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Control.BringToFront(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Brings the current control to front of all other controls on the form.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Control.SendToBack(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Sends the current control to the back of all other controls on the form.
  </summary>
 </member>
 <member name="T:Microsoft.SmallVisualBasic.WinForms.ControlTypes">

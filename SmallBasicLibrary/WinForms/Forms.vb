@@ -194,9 +194,10 @@ Namespace WinForms
 
             End SyncLock
 
-            ' Ensure Keyboard Module is loaded, 
-            ' to create a global hanler for the PreviewKeyDown event
+            ' Ensure Keyboard and Mouse modules are loaded, 
+            ' to create a global hanler for the PreviewKeyDown and PreviewMouseWheelEvent events
             Dim __ = Keyboard.LastKey
+            __ = Mouse.LastMouseWheelDirection
 
             Return form_Name
         End Function
@@ -231,7 +232,7 @@ Namespace WinForms
                         End If
 
                     ElseIf TypeOf x Is Wpf.TextBlock Then
-                        CType(x, Wpf.TextBlock).IsHitTestVisible = False
+                        'CType(x, Wpf.TextBlock).IsHitTestVisible = False
                     End If
                 Catch
                 End Try

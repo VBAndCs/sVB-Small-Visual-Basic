@@ -1043,6 +1043,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Dim tempProjectPath As String
+        Dim CurrentProccessID As String = Process.GetCurrentProcess().Id.ToString()
 
         Private Function GetProjectPath() As String
             If tempProjectPath <> "" Then Return tempProjectPath
@@ -1051,6 +1052,7 @@ Namespace Microsoft.SmallVisualBasic
             tempProjectPath = Path.Combine(App.SvbUnsavedFolder, projectName).ToLower()
             DiagramHelper.Designer.TempProjectPath = tempProjectPath
             SaveSetting("SmallVisualBasic", "Backup", "LastProject", tempProjectPath)
+            SaveSetting("SmallVisualBasic", "Backup", "ProccessID", CurrentProccessID)
             Return tempProjectPath
         End Function
 
@@ -1155,6 +1157,7 @@ Namespace Microsoft.SmallVisualBasic
             DeleteTempProjects(App.SvbUnsavedFolder)
             ' Window is closed normally
             SaveSetting("SmallVisualBasic", "Backup", "LastProject", "")
+            SaveSetting("SmallVisualBasic", "Backup", "ProccessID", "")
         End Sub
 
         Sub DeleteTempProjects(tempDir As String)
@@ -1687,17 +1690,22 @@ Namespace Microsoft.SmallVisualBasic
             Else
                 tempProjectPath = GetSetting("SmallVisualBasic", "Backup", "LastProject", "")
                 If tempProjectPath <> "" AndAlso Directory.Exists(tempProjectPath) Then
-                    DiagramHelper.Designer.TempProjectPath = tempProjectPath
-                    DiagramHelper.Designer.ClosePage(False, True, False)
-                    DiagramHelper.Designer.TempKeyNum = 0
+                    Dim proccessID = GetSetting("SmallVisualBasic", "Backup", "ProccessID")
+                    If proccessID = "" Then
+                        LoadedUnsavedProject()
+                    Else
+                        Dim sVBProcessName = Process.GetCurrentProcess().ProcessName
+                        Dim id = CInt(proccessID)
+                        Dim isRunning = False
 
-                    For Each dir1 In Directory.GetDirectories(tempProjectPath)
-                        Dim xamlFiles = Directory.GetFiles(dir1, "*.xaml")
-                        If xamlFiles.Length > 0 Then
-                            DiagramHelper.Designer.SwitchTo(xamlFiles(0))
-                        End If
-                    Next
-
+                        For Each p In Process.GetProcesses()
+                            If p.Id = id AndAlso p.ProcessName = sVBProcessName Then
+                                isRunning = True
+                                Exit For
+                            End If
+                        Next
+                        If Not isRunning Then LoadedUnsavedProject()
+                    End If
                 End If
             End If
 
@@ -1730,24 +1738,38 @@ Namespace Microsoft.SmallVisualBasic
                           If doc IsNot Nothing Then
                               tabCode.IsSelected = True
                               dispatcher.BeginInvoke(
-                         System.Windows.Threading.DispatcherPriority.Background,
-                         Sub() viewsControl.ChangeSelection(doc.MdiView)
-                    )
+                                     System.Windows.Threading.DispatcherPriority.Background,
+                                     Sub() viewsControl.ChangeSelection(doc.MdiView)
+                              )
                           End If
 
                       Else
                           dispatcher.BeginInvoke(
-                      System.Windows.Threading.DispatcherPriority.Background,
-                      Sub()
-                          tabDesigner.IsSelected = True
-                          ' Crate a new doc and close it, to consume the first time load delay.
-                          doc = New TextDocument(Nothing)
-                          Dim mdiView As New MdiView() With {.Document = doc}
-                          mdiViews.Add(mdiView)
-                          CloseView(mdiView)
-                      End Sub)
+                              System.Windows.Threading.DispatcherPriority.Background,
+                              Sub()
+                                  tabDesigner.IsSelected = True
+                                  ' Crate a new doc and close it, to consume the first time load delay.
+                                  doc = New TextDocument(Nothing)
+                                  Dim mdiView As New MdiView() With {.Document = doc}
+                                  mdiViews.Add(mdiView)
+                                  CloseView(mdiView)
+                              End Sub)
                       End If
                   End Sub)
+        End Sub
+
+        Private Sub LoadedUnsavedProject()
+            DiagramHelper.Designer.TempProjectPath = tempProjectPath
+            DiagramHelper.Designer.ClosePage(False, True, False)
+            DiagramHelper.Designer.TempKeyNum = 0
+
+            For Each dir1 In Directory.GetDirectories(tempProjectPath)
+                Dim xamlFiles = Directory.GetFiles(dir1, "*.xaml")
+                If xamlFiles.Length > 0 Then
+                    DiagramHelper.Designer.SwitchTo(xamlFiles(0))
+                    DoNotOpenDefaultDoc = True
+                End If
+            Next
         End Sub
 
         Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded

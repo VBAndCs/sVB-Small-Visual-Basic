@@ -194,23 +194,15 @@ Namespace WinForms
 
                     Control.RemovePrevEventHandler(
                             name,
-                            NameOf(Wpf.CheckBox.CheckedEvent),
-                            Sub() RemoveHandler _sender.Checked, h
+                            NameOf(OnCheck),
+                            Sub()
+                                RemoveHandler _sender.Checked, h
+                                RemoveHandler _sender.Unchecked, h
+                                RemoveHandler _sender.Indeterminate, h
+                            End Sub
                     )
                     AddHandler _sender.Checked, h
-
-                    Control.RemovePrevEventHandler(
-                            name,
-                            NameOf(Wpf.CheckBox.UncheckedEvent),
-                            Sub() RemoveHandler _sender.Unchecked, h
-                    )
                     AddHandler _sender.Unchecked, h
-
-                    Control.RemovePrevEventHandler(
-                            name,
-                            NameOf(Wpf.CheckBox.IndeterminateEvent),
-                            Sub() RemoveHandler _sender.Indeterminate, h
-                    )
                     AddHandler _sender.Indeterminate, h
 
                 Catch ex As Exception

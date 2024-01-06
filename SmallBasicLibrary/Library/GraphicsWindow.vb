@@ -608,12 +608,15 @@ Namespace Library
             If Not _windowCreated Then CreateWindow()
 
             _isHidden = False
-            If Not _windowVisible Then
-                Invoke(Sub()
-                           _window.Show()
-                       End Sub)
-                _windowVisible = True
-            End If
+            Invoke(
+                Sub()
+                    If _windowVisible Then
+                        _window.Activate()
+                    Else
+                        _window.Show()
+                        _windowVisible = True
+                    End If
+                End Sub)
         End Sub
 
         ''' <summary>

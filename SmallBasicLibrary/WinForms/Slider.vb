@@ -262,7 +262,7 @@ Namespace WinForms
 
                     Control.RemovePrevEventHandler(
                             name,
-                            NameOf(Wpf.Slider.ValueChangedEvent),
+                            NameOf(OnSlide),
                             Sub() RemoveHandler _sender.ValueChanged, h
                     )
                     AddHandler _sender.ValueChanged, h

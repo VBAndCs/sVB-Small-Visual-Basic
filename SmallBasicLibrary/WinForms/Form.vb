@@ -1439,7 +1439,7 @@ Namespace WinForms
 
                 Control.RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.PreviewKeyDownEvent),
+                        NameOf(OnPreviewKeyDown),
                         Sub() RemoveHandler _sender.PreviewKeyDown, h
                 )
                 AddHandler _sender.PreviewKeyDown, h
@@ -1464,7 +1464,7 @@ Namespace WinForms
 
                 Control.RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.PreviewKeyUpEvent),
+                        NameOf(OnPreviewKeyUp),
                         Sub() RemoveHandler _sender.PreviewKeyUp, h
                 )
                 AddHandler _sender.PreviewKeyUp, h
@@ -1491,7 +1491,7 @@ Namespace WinForms
 
                 Control.RemovePrevEventHandler(
                         [Event].SenderControl,
-                        NameOf(FrameworkElement.PreviewMouseWheelEvent),
+                        NameOf(OnPreviewMouseWheel),
                         Sub() System.Windows.Input.Mouse.RemovePreviewMouseWheelHandler(_sender, h)
                 )
                 System.Windows.Input.Mouse.AddPreviewMouseWheelHandler(_sender, h)

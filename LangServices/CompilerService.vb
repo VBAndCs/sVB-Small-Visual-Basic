@@ -511,6 +511,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     notLastToken = nextToken.subLine = subLine
                 End If
 
+                Dim FixLiterals = Sub()
+                                      If notLastToken Then
+                                          Select Case nextToken.Type
+                                              Case TokenType.Dot, TokenType.Lookup, TokenType.Comma, TokenType.Colon,
+                                                      TokenType.LeftBracket, TokenType.LeftCurlyBracket, TokenType.LeftParens,
+                                                      TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
+                                                  FixSpaces(textEdit, line, token, nextToken, 0)
+                                              Case Else
+                                                  FixSpaces(textEdit, line, token, nextToken, 1)
+                                          End Select
+                                      End If
+                                  End Sub
+
                 Select Case token.Type
                     Case TokenType.Equals, TokenType.NotEqualTo, TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
                                    TokenType.LessThanEqualTo,
@@ -526,7 +539,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 FixSpaces(textEdit, line, token, nextToken, 1)
                             End If
                         End If
-
 
                     Case TokenType.Subtraction
                         If notLastToken Then
@@ -555,44 +567,48 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Case TokenType.Comma
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 1)
 
+                    Case TokenType.NumericLiteral
+                        Dim t = token.Text
+
+                        If t.EndsWith(".") Then
+                            textEdit.Insert(line.Start + token.EndColumn, "0")
+                        End If
+
+                        FixLiterals()
+
+                        If t.StartsWith(".") Then
+                            textEdit.Insert(line.Start + token.Column, "0")
+                        End If
+
+                    Case TokenType.DateLiteral
+                        FixLiterals()
+
+                        Dim d = token.Text
+                        Dim length = d.Length
+                        If length > 1 Then
+                            Dim index = 1
+
+                            Do
+                                If d(index) <> " " Then Exit Do
+                                index += 1
+                            Loop While index < length
+
+                            If index > 1 Then textEdit.Replace(line.Start + token.Column + 1, index - 1, "")
+
+                            index = length - 2
+                            Do
+                                If d(index) <> " " Then Exit Do
+                                index -= 1
+                            Loop While index > 0
+
+                            If index < length - 2 Then textEdit.Replace(line.Start + token.Column + index + 1, length - 2 - index, "")
+                        End If
+
                     Case TokenType.Identifier, TokenType.StringLiteral,
-                             TokenType.NumericLiteral, TokenType.DateLiteral,
                              TokenType.True, TokenType.False
-                        If notLastToken Then
-                            Select Case nextToken.Type
-                                Case TokenType.Dot, TokenType.Lookup, TokenType.Comma, TokenType.Colon,
-                                        TokenType.LeftBracket, TokenType.LeftCurlyBracket, TokenType.LeftParens,
-                                        TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
-                                    FixSpaces(textEdit, line, token, nextToken, 0)
-                                Case Else
-                                    FixSpaces(textEdit, line, token, nextToken, 1)
-                            End Select
-                        End If
+                        FixLiterals()
 
-                        If token.Type = TokenType.DateLiteral Then
-                            Dim d = token.Text
-                            Dim length = d.Length
-                            If length > 1 Then
-                                Dim index = 1
-
-                                Do
-                                    If d(index) <> " " Then Exit Do
-                                    index += 1
-                                Loop While index < length
-
-                                If index > 1 Then textEdit.Replace(line.Start + token.Column + 1, index - 1, "")
-
-                                index = length - 2
-                                Do
-                                    If d(index) <> " " Then Exit Do
-                                    index -= 1
-                                Loop While index > 0
-
-                                If index < length - 2 Then textEdit.Replace(line.Start + token.Column + index + 1, length - 2 - index, "")
-                            End If
-                        End If
-
-                            Case TokenType.Dot, TokenType.Lookup
+                    Case TokenType.Dot, TokenType.Lookup
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 0)
 
                     Case Else
@@ -606,7 +622,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             End If
                         End If
                 End Select
-
             Next
         End Sub
 

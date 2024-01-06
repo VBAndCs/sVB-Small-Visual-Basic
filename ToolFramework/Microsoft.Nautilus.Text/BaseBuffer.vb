@@ -92,6 +92,14 @@ Namespace Microsoft.Nautilus.Text
 
                 If Not CanInsert(position) Then Return False
 
+                For n = changes.Count - 1 To 0 Step -1
+                    Dim change = changes(n)
+                    If change.Position = position Then
+                        changes(n) = New TextChange(position, "", change.NewText & text)
+                        Return True
+                    End If
+                Next
+
                 changes.Add(New TextChange(position, "", text))
                 Return True
             End Function

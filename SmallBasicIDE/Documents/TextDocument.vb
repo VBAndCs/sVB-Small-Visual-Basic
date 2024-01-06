@@ -965,6 +965,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Return genCode.ToString()
         End Function
 
+        Dim asmName As String = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name.ToLower()
+
         Friend Sub GenerateEventHints(genCode As Text.StringBuilder)
 
             ' Remove handlers of renamed subs
@@ -973,10 +975,11 @@ Namespace Microsoft.SmallVisualBasic.Documents
             If EventHandlers.Count > 0 Then
                 genCode.AppendLine("'#Events{")
                 Dim sbHandlers As New Text.StringBuilder
-
                 Dim controlEvents = From eventHandler In EventHandlers
                                     Group By eventHandler.Value.ControlName
                                     Into EventInfo = Group
+
+                sbHandlers.AppendLine($"Event.SenderAssembly = Program.AsemblyName")
 
                 For Each ev In controlEvents
                     genCode.Append($"'    {ev.ControlName}:")

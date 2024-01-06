@@ -502,7 +502,7 @@ Namespace WinForms
 
                     Control.RemovePrevEventHandler(
                         name,
-                        NameOf(Wpf.Primitives.TextBoxBase.TextChangedEvent),
+                        NameOf(OnTextChanged),
                         Sub() RemoveHandler _sender.TextChanged, h
                     )
                     AddHandler _sender.TextChanged, h
@@ -536,24 +536,21 @@ Namespace WinForms
                                 End If
                             End Sub
 
-                    ' Wpf doesn't raise TextInput when space is pressed!
-                    ' We will fix this by raising this special case from the KeyDown event
-                    Control.RemovePrevEventHandler(
-                        name,
-                        NameOf(FrameworkElement.PreviewKeyDownEvent),
-                        Sub() RemoveHandler _sender.PreviewKeyDown, h
-                    )
-                    AddHandler _sender.PreviewKeyDown, h
-
                     Dim h2 = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
                                  [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
                              End Sub
 
+                    ' Wpf doesn't raise TextInput when space is pressed!
+                    ' We will fix this by raising this special case from the KeyDown event
                     Control.RemovePrevEventHandler(
                         name,
-                        NameOf(Wpf.Primitives.TextBoxBase.PreviewTextInputEvent),
-                        Sub() RemoveHandler _sender.PreviewTextInput, h2
+                        NameOf(OnTextInput),
+                        Sub()
+                            RemoveHandler _sender.PreviewKeyDown, h
+                            RemoveHandler _sender.PreviewTextInput, h2
+                        End Sub
                     )
+                    AddHandler _sender.PreviewKeyDown, h
                     AddHandler _sender.PreviewTextInput, h2
 
                 Catch ex As Exception
@@ -583,24 +580,21 @@ Namespace WinForms
                                 End If
                             End Sub
 
-                    ' Wpf doesn't raise TextInput when space is pressed!
-                    ' We will fix this by raising this special case from the KeyDown event
-                    Control.RemovePrevEventHandler(
-                        name,
-                        NameOf(FrameworkElement.PreviewKeyDownEvent),
-                        Sub() RemoveHandler _sender.PreviewKeyDown, h
-                    )
-                    AddHandler _sender.PreviewKeyDown, h
-
                     Dim h2 = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
                                  [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
                              End Sub
 
+                    ' Wpf doesn't raise TextInput when space is pressed!
+                    ' We will fix this by raising this special case from the KeyDown event
                     Control.RemovePrevEventHandler(
                         name,
-                        NameOf(Wpf.Primitives.TextBoxBase.SelectionChangedEvent),
-                        Sub() RemoveHandler _sender.SelectionChanged, h
+                        NameOf(OnSelection),
+                        Sub()
+                            RemoveHandler _sender.PreviewKeyDown, h
+                            RemoveHandler _sender.SelectionChanged, h
+                        End Sub
                     )
+                    AddHandler _sender.PreviewKeyDown, h
                     AddHandler _sender.SelectionChanged, h2
 
                 Catch ex As Exception

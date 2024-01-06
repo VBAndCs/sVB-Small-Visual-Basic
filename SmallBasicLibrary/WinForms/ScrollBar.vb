@@ -127,7 +127,7 @@ Namespace WinForms
 
                     Control.RemovePrevEventHandler(
                             name,
-                            NameOf(Wpf.Primitives.ScrollBar.ValueChangedEvent),
+                            NameOf(OnScroll),
                             Sub() RemoveHandler _sender.ValueChanged, h
                     )
                     AddHandler _sender.ValueChanged, h

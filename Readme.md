@@ -13,7 +13,7 @@
 * [sVB for kids](https://github.com/VBAndCs/sVB-Small-Visual-Basic#svb-for-kids)
 * [Conclusions](https://github.com/VBAndCs/sVB-Small-Visual-Basic#conclusions)
 
-# What's new In sVB 2.8.8:
+#What's new In sVB 2.8.8:
 * Fixing some reported bugs.
 * In the form designer, you can drag images from your file system and drop them on the form design surface to show them in labels.
 * In code, you can use the * operator to duplicate strings like in Python. Ex:
@@ -21,8 +21,9 @@ TextWindow.WriteLine("{*} " * 10)
 The above code will ill print:
 {*} {*} {*} {*} {*} {*} {*} {*} {*} {*}
 * Adding the Sound.Resume method to resume playing a paused audio. The Sound.Play method behavior has been changed in a previous version to stop the currently played audio before playing the new one, and this prevents resuming paused files as was in SB, to prevent some issues when frequently playing the same audio in short intervals which for some reason causes the audio to stop permanently!
+* Adding the Control.BriingToFront and Control.SendToBack methods.
 * The event system has many improvements like:
-1. Registering only one handler for each event. In previous versions, adding the same handler twice for the same event, fire the event twice, and adding two different handlers for the same event, makes both of them be called when the event is fired! This is not the case now in sVB 2.8.8, since the only handler used is the last one assigned to the event.
+1. Registering only one handler for each event per assembly. In previous versions, adding the same handler twice for the same event, fire the event twice, and adding two different handlers for the same event, makes both of them be called when the event is fired! This is not the case now in sVB 2.8.8, since the only handler used is the last one assigned to the event.
 2. Adding the Event.LastMouseWheelDirection to be used with the OnMouseWheel event. Without this property, this event was useless!
 3. Adding the Form.OnPreviewMouseWheel event.
 4. Moving the OnPreviewKeyUp and OnPreviewKeyDown events from the Control to the Form.

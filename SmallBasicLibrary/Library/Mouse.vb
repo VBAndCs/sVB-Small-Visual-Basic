@@ -20,12 +20,12 @@ Namespace Library
         End Sub
 
         Private Shared Sub MouseWheel(sender As Object, e As System.Windows.Input.MouseWheelEventArgs)
-            _LastMouseWheelDirection = If(e.Delta < 0, 0, 1)
+            _LastMouseWheelDirection = If(e.Delta < 0, -1, 1)
         End Sub
 
         ''' <summary>
         ''' Get a value that indicates the last mouse wheel movement direction:
-        '''  * 0 means down.
+        '''  * -1 means down.
         '''  * 1 means up.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>

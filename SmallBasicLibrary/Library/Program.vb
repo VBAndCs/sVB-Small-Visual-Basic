@@ -33,6 +33,13 @@ Namespace Library
             End Get
         End Property
 
+        <HideFromIntellisense>
+        Public Shared ReadOnly Property AsemblyName As Primitive
+            Get
+                Return Assembly.GetCallingAssembly().GetName().Name
+            End Get
+        End Property
+
         ''' <summary>
         ''' Delays program execution by the specified amount of milliseconds.
         ''' If this method caused any troubles, please use the WinDelay method
