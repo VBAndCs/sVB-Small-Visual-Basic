@@ -505,6 +505,8 @@ Namespace Microsoft.SmallVisualBasic
                     Return TokenType.True
                 Case "false"
                     Return TokenType.False
+                Case "nothing"
+                    Return TokenType.Nothing
                 Case Else
                     Return TokenType.Identifier
             End Select
@@ -540,7 +542,7 @@ Namespace Microsoft.SmallVisualBasic
                          TokenType.If, TokenType.Step,
                          TokenType.Sub, TokenType.Function,
                          TokenType.Then, TokenType.To, TokenType.In, TokenType.While,
-                         TokenType.True, TokenType.False
+                         TokenType.True, TokenType.False, TokenType.Nothing
                     Return ParseType.Keyword
 
                 Case TokenType.And, TokenType.Or,

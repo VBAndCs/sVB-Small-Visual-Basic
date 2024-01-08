@@ -11,6 +11,10 @@
       <summary>Allows the user to drag the control by mouse</summary>
       <param name="targetControl">the control you want to allow the user to drag</param>
     </member>
+    <member name="M:Global.PreventDrag(Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>Prevents the user from dragding the control by mouse</summary>
+      <param name="targetControl">the control you want to allow the user to drag</param>
+    </member>
     <member name="M:Global.CreateHexagon(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
       <summary>Creates a hexagonal figure with strait lines.</summary>
       <param name="targetLabel">The label to draw the figure on.</param>

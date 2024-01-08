@@ -979,8 +979,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
                                     Group By eventHandler.Value.ControlName
                                     Into EventInfo = Group
 
-                sbHandlers.AppendLine($"Event.SenderAssembly = Program.AsemblyName")
-
                 For Each ev In controlEvents
                     genCode.Append($"'    {ev.ControlName}:")
                     sbHandlers.AppendLine($"' {ev.ControlName} Events:")

@@ -12,6 +12,13 @@ Sub AllowDrag(
    targetControl.OnMouseLeftDown = _OnMouseLeftDown
 EndSub
 
+' Prevents the user from dragding the control by mouse
+Sub PreventDrag(
+      targetControl ' the control you want to allow the user to drag
+   )
+   targetControl.RemoveEventHandler("OnMouseMove")
+   targetControl.RemoveEventHandler("OnMouseLeftDown")
+EndSub
 
 '------------------------------------------------
 Sub _OnMouseLeftDown()

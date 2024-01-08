@@ -117,6 +117,7 @@
     <Compile Include="Expressions\Expression.vb" />
     <Compile Include="Expressions\IdentifierExpression.vb" />
     <Compile Include="Expressions\InitializerExpression.vb" />
+    <Compile Include="Expressions\NothingExpression.vb" />
     <Compile Include="Expressions\LiteralExpression.vb" />
     <Compile Include="Expressions\MethodCallExpression.vb" />
     <Compile Include="Expressions\NegativeExpression.vb" />
@@ -195,12 +196,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SmallBasicLibrary\sVB.Library.vbproj">
-      <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>
-      <Name>sVB.Library</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
@@ -211,6 +206,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SmallBasicLibrary\sVB.Library.vbproj">
+      <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>
+      <Name>sVB.Library</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

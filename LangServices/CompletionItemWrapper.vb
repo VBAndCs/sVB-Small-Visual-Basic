@@ -383,7 +383,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 Case SymbolType.Event
                     Dim eventInfo = TryCast(_item.MemberInfo, EventInfo)
-                    result = $"{Prefix}{eventInfo.DeclaringType.FullName}.{eventInfo.Name}"
+                    If eventInfo IsNot Nothing Then
+                        result = $"{Prefix}{eventInfo.DeclaringType.FullName}.{eventInfo.Name}"
+                    End If
 
                 Case SymbolType.Type
                     Dim type = TryCast(_item.MemberInfo, Type)

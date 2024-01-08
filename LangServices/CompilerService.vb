@@ -690,7 +690,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim token = tokens(n)
                 Dim tokenLine = token.Line
                 If tokenLine > lineNumber Then Exit For
-                If tokenLine = lineNumber AndAlso token.Column > column Then Exit For
+                If tokenLine = lineNumber AndAlso (
+                        token.Column > column OrElse
+                        (token.Type = TokenType.StringLiteral AndAlso token.EndColumn = column AndAlso token.EndColumn - token.Column = 1)
+                    ) Then Exit For
             Next
 
             Return n - 1

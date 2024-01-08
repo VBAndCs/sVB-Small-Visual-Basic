@@ -11,36 +11,6 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public Property LeftHand As Expression
         Public Property Indexer As Expression
 
-        Public Shared Function ParseAndEmit(code As String, subroutine As SubroutineStatement, scope As CodeGenScope, lineOffset As Integer) As Expression
-            Dim tempRoutine = SubroutineStatement.Current
-            SubroutineStatement.Current = subroutine
-
-            Dim _parser = Parser.Parse(code, scope.SymbolTable, lineOffset)
-
-            Dim semantic As New SemanticAnalyzer(_parser, scope.TypeInfoBag)
-            semantic.Analyze()
-
-            'Build new fields
-            For Each key In _parser.SymbolTable.GlobalVariables.Keys
-                If Not scope.Fields.ContainsKey(key) Then
-                    Dim fieldBuilder = scope.TypeBuilder.DefineField(key, GetType(Primitive), FieldAttributes.Private Or FieldAttributes.Static)
-                    scope.Fields.Add(key, fieldBuilder)
-                End If
-            Next
-
-            ' EmitIL
-            For Each item In _parser.ParseTree
-                item.PrepareForEmit(scope)
-            Next
-
-            For Each item In _parser.ParseTree
-                item.EmitIL(scope)
-            Next
-
-            SubroutineStatement.Current = tempRoutine
-
-            Return CType(_parser.ParseTree(0), AssignmentStatement).LeftValue
-        End Function
 
 
         Public Overrides Sub AddSymbols(symbolTable As SymbolTable)

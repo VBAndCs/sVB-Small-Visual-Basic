@@ -27,6 +27,16 @@ The above code will ill print:
 2. Adding the Event.LastMouseWheelDirection to be used with the OnMouseWheel event. Without this property, this event was useless!
 3. Adding the Form.OnPreviewMouseWheel event.
 4. Moving the OnPreviewKeyUp and OnPreviewKeyDown events from the Control to the Form.
+5. Adding the RemoveEventHandler to controls, which recives the string name of the event to remove its handler aded by the current program. sVB also added a syntax for that, so you can simply set the eveny handler to `Nothing`. Ex:
+```
+Button1.OnClick = Nothing
+```
+
+This also works with old Small Basic events like Timer.Tick, which can't be used with the RemoveEventHandler method:
+```
+Timer.Tick = Nothing
+```
+
 5. In the code editor, the event-handlers list now allows to select the handler name when the user presses a character that matches any uppercase character in the handler name. For example, pressing the character a can select a subroutine named Test_Addition, and pressing k can select the OnKeyUp event.
 
 # What is Small Visual Basic?

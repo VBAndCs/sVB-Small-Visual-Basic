@@ -9,7 +9,7 @@ Namespace Microsoft.SmallVisualBasic
         Private _directory As String
         Private _appName As String
         Private _parsers As List(Of Parser)
-        Private _entryPoint As MethodInfo
+        Private Shared entryPoint As MethodInfo
         Private _currentScope As CodeGenScope
         Private _typeInfoBag As TypeInfoBag
 
@@ -104,6 +104,8 @@ Namespace Microsoft.SmallVisualBasic
             )
 
             Dim moduleBuilder = asm.DefineDynamicModule(_outputName & ".exe", emitSymbolInfo:=True)
+            Dim typeBuilder = moduleBuilder.DefineType("_SmallVisualBasic_Program", TypeAttributes.Sealed)
+            EntryPoint = typeBuilder.DefineMethod("_Main", MethodAttributes.Static)
 
             Dim mainFormInit As MethodInfo = Nothing
             Dim formInit As MethodInfo = Nothing
@@ -119,8 +121,9 @@ Namespace Microsoft.SmallVisualBasic
             Next
 
             If Not forGlobalHelp Then
-                EmitMain(If(mainFormInit, formInit), moduleBuilder)
-                asm.SetEntryPoint(_entryPoint, PEFileKinds.WindowApplication)
+                EmitMain(If(mainFormInit, formInit))
+                typeBuilder.CreateType()
+                asm.SetEntryPoint(EntryPoint, PEFileKinds.WindowApplication)
                 asm.Save(_outputName & ".exe")
                 _xmlDoc.Save(IO.Path.Combine(_directory, _outputName & ".xml"))
                 Return asm.GetReferencedAssemblies()
@@ -188,10 +191,8 @@ Namespace Microsoft.SmallVisualBasic
             Return initializeMethod
         End Function
 
-        Private Function EmitMain(mainFormInit As MethodInfo, moduleBuilder As ModuleBuilder) As Boolean
-            Dim typeBuilder = moduleBuilder.DefineType("_SmallVisualBasic_Program", TypeAttributes.Sealed)
-            _entryPoint = typeBuilder.DefineMethod("_Main", MethodAttributes.Static)
-            Dim methodBuilder = CType(_entryPoint, MethodBuilder)
+        Private Function EmitMain(mainFormInit As MethodInfo) As Boolean
+            Dim methodBuilder = CType(entryPoint, MethodBuilder)
             Dim iLGenerator = methodBuilder.GetILGenerator()
             Dim beginProgram = GetType(SmallBasicApplication).GetMethod(
                 "BeginProgram",
@@ -207,7 +208,6 @@ Namespace Microsoft.SmallVisualBasic
             iLGenerator.EmitCall(OpCodes.Call, pauseIfVisible, Nothing)
 
             iLGenerator.Emit(OpCodes.Ret)
-            typeBuilder.CreateType()
             Return True
         End Function
 

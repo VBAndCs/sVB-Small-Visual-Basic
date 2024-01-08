@@ -440,9 +440,13 @@ Class sVB
 
                 Else ' Event
                     Dim ModuleName = propInfo.Module
-                    lines(lineNum) = $"Event.SenderAssembly = Program.AsemblyName" & vbLf &
-                                               $"Control.HandleEvents({obj})" & vbLf &
-                                               prevText & $"{ModuleName}.{nextText}"
+                    If tokens(tokens.Count - 1).Type = TokenType.Nothing Then
+                        lines(lineNum) = $"Control.RemoveEventHandler({obj}, ""{tokens(2).Text}"")"
+                    Else
+                        lines(lineNum) = $"Control.HandleEvents({obj})" & vbLf &
+                                                   prevText & $"{ModuleName}.{nextText}"
+                    End If
+
                     errors.RemoveAt(i)
                     ReRun = True
                 End If

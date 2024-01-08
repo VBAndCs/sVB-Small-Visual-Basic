@@ -7,6 +7,7 @@
         DateLiteral
         [True]
         [False]
+        [Nothing]
         Identifier
         [Else]
         [ElseIf]

@@ -60,7 +60,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Dim code = $"_sVB_dynamic_Data_{dynCounter}={TypeName.Text}[""{PropertyName.Text}""]"
                 Dim subroutine = SubroutineStatement.GetSubroutine(Me)
                 If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
-                ArrayExpression.ParseAndEmit(code, subroutine, scope, StartToken.Line).EmitIL(scope)
+                Parser.ParseAndEmit(code, subroutine, scope, StartToken.Line).EmitIL(scope)
             Else
                 Dim typeInfo = scope.TypeInfoBag.Types(TypeName.LCaseText)
                 Dim propertyInfo = typeInfo.Properties(PropertyName.LCaseText)

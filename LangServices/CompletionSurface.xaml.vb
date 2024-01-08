@@ -299,8 +299,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             ElseIf token.ParseType = ParseType.Operator Then
                 Select Case token.Type
-                    Case TokenType.Or, TokenType.And, TokenType.RightBracket,
-                             TokenType.RightCurlyBracket, TokenType.RightParens
+                    Case TokenType.Or, TokenType.And
 
                     Case Else
                         Return ""
@@ -482,6 +481,7 @@ LineRetry:
                 Dim completionItemWrapper As CompletionItemWrapper = TryCast(Me.CompletionListBox.SelectedItem, CompletionItemWrapper)
 
                 If completionItemWrapper IsNot Nothing Then
+                    e.Handled = True
                     _Adornment.AdornmentProvider.CommitItem(completionItemWrapper)
                 End If
             End If

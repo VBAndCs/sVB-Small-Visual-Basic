@@ -5184,6 +5184,12 @@ Creates a color from its alpha, red, green, and blue components.
  The time for the animation, in milliseconds.
  </param>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Control.RemoveEventHandler(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Removes the handler of the given event of the current control.
+ </summary>
+ <param name="eventName">The name of the event to remove its handler</param>
+</member>
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Control.OnMouseLeftDown">
  <summary>
  Fired when user presses the left mouse-button down
@@ -5191,7 +5197,7 @@ Creates a color from its alpha, red, green, and blue components.
 </member>
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Control.OnClick">
  <summary>
- Fired when user releases the left mouse-button
+ Fired when user clicks the control by the left mouse button.
  </summary>
 </member>
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Control.OnMouseLeftUp">
@@ -6101,13 +6107,9 @@ Creates a color from its alpha, red, green, and blue components.
 </member>
 <member name="P:Microsoft.SmallVisualBasic.WinForms.Event.SenderControl">
  <summary>
- Gets or sets the name of the control that raised the event
+Gets the name of the control that raised the last event.
+It is useful when you use one sub to handle many events, to get info about the contol that fired the event.
  </summary>
- <remarks>
- If you are adding an event handler manually, You must set Event.SenderForm and Event.SenderControl before adding an event handler, or just call `Event.HandleEventsOf(form, control)` to do this.
- But it is easier to add event handlers from the upper lists in the code editor, so the designer hides all these details in the .sb.gen file.
- If you use one sub to handle an event of more than one control, read SenderForm and SenderControl to get info about which contol is firing the event now.
- </remarks>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.WinForms.Event.Handled">
  <summary>
@@ -7981,6 +7983,11 @@ Creates a color from its alpha, red, green, and blue components.
  Separators will not be included.
  </summary>
  <returns>an array of menu items</returns>
+</member>
+<member name="E:Microsoft.SmallVisualBasic.WinForms.MenuItem.OnClick">
+ <summary>
+ Fired when user clicks the menu item by the left mouse button.
+ </summary>
 </member>
 <member name="E:Microsoft.SmallVisualBasic.WinForms.MenuItem.OnOpen">
  <summary>

@@ -227,9 +227,10 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub AnalyzeAssignmentStatement(assignmentStatement As AssignmentStatement)
             Dim idExpr = TryCast(assignmentStatement.RightValue, IdentifierExpression)
+            Dim token = assignmentStatement.RightValue.StartToken
 
-            If idExpr IsNot Nothing AndAlso _symbolTable.Subroutines.ContainsKey(idExpr.Identifier.LCaseText) Then
-                NoteEventReference(assignmentStatement.LeftValue, idExpr.Identifier)
+            If token.Type = TokenType.Nothing OrElse (idExpr IsNot Nothing AndAlso _symbolTable.Subroutines.ContainsKey(token.LCaseText)) Then
+                NoteEventReference(assignmentStatement.LeftValue, token)
                 Return
             End If
 
@@ -399,14 +400,16 @@ Namespace Microsoft.SmallVisualBasic
                            subName As Token
                      )
 
-            If _symbolTable.Subroutines.ContainsKey(subName.LCaseText) Then
-                Dim token = _symbolTable.Subroutines(subName.LCaseText)
-                Dim subroutine = CType(token.Parent, SubroutineStatement)
-                If subroutine.SubToken.Type = TokenType.Function Then
-                    _parser.AddError(subName, $"Functions can't be used as event handlers.")
+            If Not subName.Type = TokenType.Nothing Then
+                If _symbolTable.Subroutines.ContainsKey(subName.LCaseText) Then
+                    Dim token = _symbolTable.Subroutines(subName.LCaseText)
+                    Dim subroutine = CType(token.Parent, SubroutineStatement)
+                    If subroutine.SubToken.Type = TokenType.Function Then
+                        _parser.AddError(subName, $"Functions can't be used as event handlers.")
+                    End If
+                Else
+                    _parser.AddError(subName, $"Subroutine `{subName.Text}` is not defiend.")
                 End If
-            Else
-                _parser.AddError(subName, $"Subroutine `{subName.Text}` is not defiend.")
             End If
 
             Dim propExpr = TryCast(leftValue, PropertyExpression)

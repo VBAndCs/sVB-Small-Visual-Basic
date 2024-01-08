@@ -136,22 +136,29 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 End If
 
             ElseIf Not scope.ForGlobalHelp AndAlso propertyExpr IsNot Nothing Then
+                Dim subroutine = SubroutineStatement.GetSubroutine(LeftValue)
                 If propertyExpr.IsDynamic Then
                     Dim code = $"{propertyExpr.TypeName.Text}[""{propertyExpr.PropertyName.Text}""] = {RightValue}"
-                    Dim subroutine = SubroutineStatement.GetSubroutine(LeftValue)
                     If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
-                    ArrayExpression.ParseAndEmit(code, subroutine, scope, StartToken.Line)
+                    Parser.ParseAndEmit(code, subroutine, scope, StartToken.Line)
                 Else
                     Dim typeInfo = scope.TypeInfoBag.Types(propertyExpr.TypeName.LCaseText)
 
                     If typeInfo.Events.TryGetValue(propertyExpr.PropertyName.LCaseText, eventInfo) Then
-                        Dim identifierExpression2 = TryCast(RightValue, IdentifierExpression)
-                        Dim token = scope.SymbolTable.Subroutines(identifierExpression2.Identifier.LCaseText)
-                        Dim meth = scope.MethodBuilders(token.LCaseText)
-                        scope.ILGenerator.Emit(OpCodes.Ldnull)
-                        scope.ILGenerator.Emit(OpCodes.Ldftn, meth)
-                        scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallVisualBasicCallback).GetConstructors()(0))
-                        scope.ILGenerator.EmitCall(OpCodes.Call, eventInfo.GetAddMethod(), Nothing)
+                        If RightValue.StartToken.Type = TokenType.Nothing Then
+                            scope.ILGenerator.Emit(OpCodes.Ldnull)
+                            scope.ILGenerator.Emit(OpCodes.Ldftn, GetType(SmallVisualBasic.Library.Program).GetMethod("DoNothing", BindingFlags.Public Or BindingFlags.Static))
+                            scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallVisualBasicCallback).GetConstructors()(0))
+                            scope.ILGenerator.EmitCall(OpCodes.Call, eventInfo.GetRemoveMethod(), Nothing)
+                        Else
+                            Dim subExpr = TryCast(RightValue, IdentifierExpression)
+                            Dim subName = scope.SymbolTable.Subroutines(subExpr.Identifier.LCaseText)
+                            Dim method = scope.MethodBuilders(subName.LCaseText)
+                            scope.ILGenerator.Emit(OpCodes.Ldnull)
+                            scope.ILGenerator.Emit(OpCodes.Ldftn, method)
+                            scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallVisualBasicCallback).GetConstructors()(0))
+                            scope.ILGenerator.EmitCall(OpCodes.Call, eventInfo.GetAddMethod(), Nothing)
+                        End If
 
                     Else
                         Dim propertyInfo = typeInfo.Properties(propertyExpr.PropertyName.LCaseText)
@@ -189,7 +196,14 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 Dim isHandler = prop IsNot Nothing AndAlso prop.IsEvent
                 bag.IsHandler = isHandler
                 CompletionHelper.FillSubroutines(bag, functionsOnly:=Not isHandler)
-                If Not isHandler Then
+                If isHandler Then
+                    bag.CompletionItems.Add(New CompletionItem() With {
+                        .DisplayName = "Nothing",
+                        .ItemType = CompletionItemType.Keyword,
+                        .Key = "nothing",
+                        .ReplacementText = "Nothing"
+                    })
+                Else
                     CompletionHelper.FillExpressionItems(bag)
                 End If
 

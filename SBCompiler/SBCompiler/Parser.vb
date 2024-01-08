@@ -27,6 +27,38 @@ Namespace Microsoft.SmallVisualBasic
 
         Public ReadOnly Property SymbolTable As SymbolTable
 
+        Public Shared Function ParseAndEmit(code As String, subroutine As SubroutineStatement, scope As CodeGenScope, lineOffset As Integer) As Expression
+            Dim tempRoutine = SubroutineStatement.Current
+            SubroutineStatement.Current = subroutine
+
+            Dim _parser = Parser.Parse(code, scope.SymbolTable, lineOffset)
+
+            Dim semantic As New SemanticAnalyzer(_parser, scope.TypeInfoBag)
+            semantic.Analyze()
+
+            'Build new fields
+            For Each key In _parser.SymbolTable.GlobalVariables.Keys
+                If Not scope.Fields.ContainsKey(key) Then
+                    Dim fieldBuilder = scope.TypeBuilder.DefineField(key, GetType(Primitive), Reflection.FieldAttributes.Private Or Reflection.FieldAttributes.Static)
+                    scope.Fields.Add(key, fieldBuilder)
+                End If
+            Next
+
+            ' EmitIL
+            For Each item In _parser.ParseTree
+                item.PrepareForEmit(scope)
+            Next
+
+            For Each item In _parser.ParseTree
+                item.EmitIL(scope)
+            Next
+
+            SubroutineStatement.Current = tempRoutine
+
+            Return TryCast(_parser.ParseTree(0), AssignmentStatement)?.LeftValue
+        End Function
+
+
         Private Function ConstructWhileStatement(tokenEnum As TokenEnumerator) As WhileStatement
             Dim whileStatement As New WhileStatement With {
                 .StartToken = tokenEnum.Current,
@@ -536,6 +568,11 @@ Namespace Microsoft.SmallVisualBasic
                     expression.Precedence = 9
                     tokenEnum.MoveNext()
 
+                Case TokenType.Nothing
+                    expression = New NothingExpression(tokenEnum.Current)
+                    expression.Precedence = 9
+                    tokenEnum.MoveNext()
+
                 Case TokenType.LeftParens
                     tokenEnum.MoveNext()
                     expression = BuildExpression(tokenEnum, includeLogical)
@@ -768,21 +805,58 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Private Sub ValidateFormName(m As MethodCallExpression)
-            If FormNames Is Nothing Then Return
+            If m Is Nothing OrElse m.Arguments Is Nothing Then Return
+            If m.Arguments.Count < 2 Then Return
 
-            If m.TypeName.LCaseText = "forms" Then
+            Dim typeName = m.TypeName.LCaseText
+            Dim argID As Integer
+
+            If typeName = "forms" OrElse typeName = "form" Then
+                If FormNames Is Nothing Then Return
+
                 Select Case m.MethodName.LCaseText
                     Case "showform", "showdialog"
-                        If m.Arguments.Count > 0 Then
-                            Dim strLit = TryCast(m.Arguments(0), LiteralExpression)
-                            If strLit?.Literal.Type = TokenType.StringLiteral Then
-                                Dim formName = strLit.Literal
-                                If Not FormNames.Contains(formName.LCaseText.Trim("""")) Then
-                                    AddError(strLit.Literal, $"The project doesn't contain a form named {formName.Text}")
-                                End If
+                        argID = 0
+                    Case "showchildform"
+                        argID = 1
+                    Case Else
+                        Return
+                End Select
+
+                Dim strLit = TryCast(m.Arguments(argID), LiteralExpression)
+                If strLit IsNot Nothing Then
+                    Dim formToken = strLit.Literal
+                    Dim formName = formToken.LCaseText.Trim("""")
+
+                    If formName = "" Then
+                        AddError(strLit.Literal, $"Please provide a form name.")
+                    ElseIf Not FormNames.Contains(formName) Then
+                        AddError(strLit.Literal, $"The project doesn't contain a form named {formToken.Text}")
+                    End If
+                End If
+
+            ElseIf typeName = "control" AndAlso m.MethodName.LCaseText = "removeeventhandler" Then
+                Dim strLit = TryCast(m.Arguments(1), LiteralExpression)
+                If strLit IsNot Nothing Then
+                    Dim eventToken = strLit.Literal
+                    Dim eventName = eventToken.LCaseText.Trim("""")
+
+                    If eventName = "" Then
+                        AddError(strLit.Literal, $"Please provide an event name.")
+                    Else
+                        Dim IdExpr = TryCast(m.Arguments(0), IdentifierExpression)
+                        If IdExpr Is Nothing Then Return
+
+                        Dim obj = IdExpr.Identifier
+                        Dim typeInfo = SymbolTable.GetTypeInfo(obj)
+                        If Not typeInfo.Events.ContainsKey(eventName) Then
+                            typeInfo = Compiler.TypeInfoBag.Types("control")
+                            If Not typeInfo.Events.ContainsKey(eventName) Then
+                                AddError(strLit.Literal, $"''{obj.Text}"" doesn't contain an event named {eventToken.Text}")
                             End If
                         End If
-                End Select
+                    End If
+                End If
             End If
         End Sub
 
@@ -1299,7 +1373,7 @@ Namespace Microsoft.SmallVisualBasic
                     statement = New ReturnStatement With {
                         .StartToken = returnToken,
                         .ReturnExpression = returnExpr,
-                        .subroutine = subroutine
+                        .Subroutine = subroutine
                     }
 
                     If subroutine Is Nothing Then
@@ -1404,9 +1478,9 @@ Namespace Microsoft.SmallVisualBasic
                         Case TokenType.Equals
                             Return primitive.EqualTo(primitive2)
                         Case TokenType.And
-                            Return primitive.op_And(primitive, primitive2)
+                            Return Primitive.op_And(primitive, primitive2)
                         Case TokenType.Or
-                            Return primitive.op_Or(primitive, primitive2)
+                            Return Primitive.op_Or(primitive, primitive2)
                         Case TokenType.LessThan
                             Return primitive.LessThan(primitive2)
                         Case TokenType.LessThanEqualTo
@@ -1432,7 +1506,7 @@ Namespace Microsoft.SmallVisualBasic
                 Return True
             End If
 
-            token = token.Illegal
+            token = Token.Illegal
             AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("TokenExpected"), expectedToken))
             Return False
         End Function
@@ -1454,7 +1528,7 @@ Namespace Microsoft.SmallVisualBasic
                 Return True
             End If
 
-            token = token.Illegal
+            token = Token.Illegal
             Return False
         End Function
 
@@ -1474,7 +1548,7 @@ Namespace Microsoft.SmallVisualBasic
                 If token.Text <> "_" Then Return True
             End If
 
-            token = token.Illegal
+            token = Token.Illegal
             AddError(tokenEnum.Current, ResourceHelper.GetString("IdentifierExpected"))
             Return False
         End Function

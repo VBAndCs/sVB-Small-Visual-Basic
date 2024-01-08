@@ -169,9 +169,17 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
 
                 DismissAdornment(force:=True)
-                    TryCast(textView, Control)?.Focus()
-                    If repWith.EndsWith("(") Then ShowHelp()
+                TryCast(textView, Control)?.Focus()
+
+                If repWith.EndsWith("(") Then
+                    Application.Current.Dispatcher.Invoke(
+                        DispatcherPriority.Background, CType(
+                        Function()
+                            OnHelpUpdate("(", Nothing)
+                            Return Nothing
+                        End Function, DispatcherOperationCallback), Nothing)
                 End If
+            End If
         End Sub
 
         Friend Function GetReplacementSpane() As SnapshotSpan
@@ -182,7 +190,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim span = replaceSpan.GetSpan(snapshot)
             Dim start As Integer = span.Start
             Dim pos = textView.Caret.Position.TextInsertionIndex
-            If pos > span.End Then Return New SnapshotSpan(snapshot, pos, 0)
+            If pos > span.End Then Return New SnapshotSpan(snapshot, pos - span.Length, span.Length)
 
             Dim text = replaceSpan.GetText(replaceSpan.TextBuffer.CurrentSnapshot)
 
@@ -623,14 +631,27 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 Dim pos = textView.Caret.Position.TextInsertionIndex
                                 line = textView.TextSnapshot.GetLineFromPosition(pos)
                                 Dim txt = line.GetText().Substring(pos - line.Start)
-                                Dim token = LineScanner.GetFirstToken(txt, 0)
+                                Dim tokens = LineScanner.GetTokens(txt, 0)
+                                Dim token = If(tokens.Count = 0, Microsoft.SmallVisualBasic.Token.Illegal, tokens(0))
                                 IsSpectialListVisible = True
 
                                 If especialItem.ToLower <> token.LCaseText AndAlso
                                         Not (especialItem.EndsWith("Name") AndAlso token.Type = TokenType.StringLiteral) AndAlso Not (
                                                 especialItem = "Boolean" AndAlso (token.Type = TokenType.False OrElse token.Type = TokenType.True)
-                                        ) Then
-                                    bag = GetCompletionBag(especialItem)
+                                    ) Then
+                                    If especialItem = "EventName" Then
+                                        tokens = LineScanner.GetTokens(line.GetText(), 0)
+                                        Dim index = tokens.Count - 1
+                                        ' The ( is not written yet, so if it is about to be written, don't read an extra token
+                                        If symbol <> "("c Then
+                                            token = GetNextToken(index, -1, line, tokens)
+                                        End If
+                                        token = GetNextToken(index, -1, line, tokens)
+                                        token = GetNextToken(index, -1, line, tokens)
+                                        If token.Type = TokenType.Dot Then token = GetNextToken(index, -1, line, tokens)
+                                    End If
+
+                                    bag = GetCompletionBag(especialItem, token)
                                     token.Column = pos - line.Start
                                     token.Text = ""
                                     canGetOriginalBag = True
@@ -640,8 +661,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                         token,
                                         line
                                     )
+                                    End If
                                 End If
-                            End If
                         End If
                     End If
 
@@ -895,12 +916,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                         Case "("c, ")"c, ","c
                             OnHelpUpdate(c, Nothing)
+
+                        Case """"c ' Show special names like forms, fonts, events if needed
+                            ShowCompletionAdornment(e.After, newEnd, True)
                     End Select
                 End If
             End If
         End Sub
 
         Dim byConventionName As String
+        Dim EventNames As List(Of CompletionItem)
 
         Public Function GetCompletionBag(
                           line As ITextSnapshotLine,
@@ -921,10 +946,25 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim prevToken As Token = Nothing
             Dim b4PrevToken As Token = Nothing
             Dim index = ParseTokens(tokens, column, currentToken, prevToken, b4PrevToken)
+            Dim prevIndex = index
+
+            If Not forHelp AndAlso prevToken.IsIllegal Then
+                Dim line1 = line
+                Dim tokens1 = tokens
+                prevToken = GetNextToken(prevIndex, -1, line, tokens)
+
+                If prevToken.Type = TokenType.LeftParens Then
+                    b4PrevToken = GetNextToken(prevIndex, -1, line, tokens)
+                Else ' Restore
+                    prevToken = Token.Illegal
+                    prevIndex = -1
+                    line = line1
+                    tokens = tokens1
+                End If
+            End If
 
             Dim isFirstToken = (index < 1)
             Dim identifierToken = Token.Illegal
-
             Dim isLookup = (prevToken.Type = TokenType.Lookup)
 
             If prevToken.Type = TokenType.Dot OrElse isLookup Then
@@ -989,10 +1029,17 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         ElseIf method.Contains("showform") OrElse
                                    method.Contains("showdialog") OrElse
                                    method.Contains("showchildform") OrElse
-                                   method.Contains("runformtests") Then
+                                   method.Contains("runformtests") OrElse
+                                   method.Contains("formname") Then
                             newBag.CompletionItems.AddRange(FormNames)
                         ElseIf method.Contains("color") Then
                             newBag.CompletionItems.AddRange(ColorNames)
+                        ElseIf method = "removeeventhandler" Then
+                            If index > 3 Then
+                                FillEventNames(newBag, GetTypeName(tokens(index - 4), controlsInfo))
+                            ElseIf prevIndex > 1 Then
+                                FillEventNames(newBag, GetTypeName(tokens(prevIndex - 2), controlsInfo))
+                            End If
                         End If
                     End If
                     Return newBag
@@ -1023,7 +1070,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                         .DisplayName = name,
                                         .ItemType = CompletionItemType.Control,
                                         .ReplacementText = name,
-                                        .DefinitionIdintifier = New Token() With {.line = -1, .Type = TokenType.Identifier}
+                                        .DefinitionIdintifier = New Token() With {.Line = -1, .Type = TokenType.Identifier}
                                     }
                                 )
                             Next
@@ -1096,13 +1143,34 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Return newBag
         End Function
 
+        Function GetTypeName(identifierToken As Token, controlsInfo As Dictionary(Of String, String)) As String
+            Dim name = identifierToken.LCaseText
+            If controlsInfo?.ContainsKey(name) Then Return controlsInfo(name)
+            Dim moduleName = compHelper.GetInferedType(identifierToken)
+            If moduleName <> "" Then Return moduleName
+            Return WinForms.PreCompiler.GetModuleFromVarName(name)
+        End Function
+
+        Private Sub FillEventNames(bag As CompletionBag, typeName As String)
+            If typeName = "" Then Return
+
+            For Each name In WinForms.PreCompiler.GetEvents(typeName)
+                bag.CompletionItems.Add(New CompletionItem() With {
+                    .Key = name,
+                    .DisplayName = name,
+                    .ItemType = CompletionItemType.EventName,
+                    .ReplacementText = $"""{name}"""
+                })
+            Next
+        End Sub
+
         Private Shared Function ParseTokens(
-                            tokens As List(Of Token),
-                            column As Integer,
-                            ByRef currentToken As Token,
-                            ByRef prevToken As Token,
-                            ByRef b4PrevToken As Token
-                     ) As Integer
+                    tokens As List(Of Token),
+                    column As Integer,
+                    ByRef currentToken As Token,
+                    ByRef prevToken As Token,
+                    ByRef b4PrevToken As Token
+                ) As Integer
 
             Dim n = tokens.Count - 1
             currentToken = Token.Illegal
@@ -1148,7 +1216,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Else
                         b4PrevToken = prevToken
                         prevToken = currentToken
-                        currentToken = token.Illegal
+                        currentToken = Token.Illegal
                         index = i + 1
                     End If
 
@@ -1201,17 +1269,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Try
                 Dim bag As CompletionBag
                 Dim especialItem = ""
-                Dim curToken As Token
-
+                Dim curToken As Token = Nothing
+                Dim tokens As List(Of Token) = Nothing
+                Dim n = -1
                 Dim line = snapshot.GetLineFromPosition(caretPosition)
+
                 If checkEspecialItem Then
-                    Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
+                    tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
                     If tokens.Count < 2 Then
                         If ctrlSpace Then GoTo LineShow
                         Return
                     End If
 
-                    Dim n = GetLastTokenIndex(line, caretPosition, tokens)
+                    n = GetLastTokenIndex(line, caretPosition, tokens)
                     If n = 0 Then
                         If ctrlSpace Then GoTo LineShow
                         Return
@@ -1242,7 +1312,7 @@ LineShow:
                     bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
                     canGetOriginalBag = False
                 Else
-                    bag = GetCompletionBag(especialItem)
+                    bag = GetCompletionBag(especialItem, If(n < 3, Token.Illegal, tokens(n - 3)))
                     canGetOriginalBag = True
                 End If
 
@@ -1312,6 +1382,8 @@ LineShow:
                 Return "FontName"
             ElseIf name.Contains("formname") Then
                 Return "FormName"
+            ElseIf name.Contains("eventname") Then
+                Return "EventName"
             End If
 
             Return ""
@@ -1423,9 +1495,10 @@ LineShow:
                 End Function, DispatcherOperationCallback), Nothing)
         End Sub
 
-        Private Function GetCompletionBag(especialItem As String) As CompletionBag
+        Private Function GetCompletionBag(especialItem As String, objName As Token) As CompletionBag
             Dim bag As CompletionBag
             bag = compHelper.GetEmptyCompletionBag(GlobalParser)
+
             Select Case especialItem
                 Case "Boolean"
                     especialItem = "*"
@@ -1450,9 +1523,20 @@ LineShow:
                     bag.CompletionItems.AddRange(FormNames)
                     especialItem = "*"
 
+                Case "EventName"
+                    Dim controlsInfo = textBuffer.Properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
+                    FillEventNames(bag, GetTypeName(objName, controlsInfo))
+                    especialItem = ""  ' Don't offer any other global items
+
                 Case "Sub"
                     bag.IsHandler = True
                     CompletionHelper.FillSubroutines(bag)
+                    bag.CompletionItems.Add(New CompletionItem() With {
+                        .DisplayName = "Nothing",
+                        .ItemType = CompletionItemType.Keyword,
+                        .Key = "nothing",
+                        .ReplacementText = "Nothing"
+                    })
                     especialItem = "" ' Don't offer any other global items
 
                 Case Else
@@ -1569,6 +1653,31 @@ LineShow:
 
             completionItems.Add(type.Name, compList)
         End Sub
+
+        Private Shared Sub GetEventList(type As Type)
+            Dim compList As New List(Of CompletionItem)
+
+            Dim hideAttr = GetType(Library.HideFromIntellisenseAttribute)
+            Dim events = type.GetEvents(System.Reflection.BindingFlags.Static Or System.Reflection.BindingFlags.Public)
+            Dim callback = GetType(Library.SmallVisualBasicCallback)
+
+            For Each eventInfo In events
+                If eventInfo.GetCustomAttributes(hideAttr, inherit:=False).Length > 0 Then Continue For
+
+                If eventInfo.EventHandlerType Is callback Then
+                    Dim name = eventInfo.Name
+                    compList.Add(New CompletionItem() With {
+                    .Key = name,
+                    .DisplayName = name,
+                    .ItemType = CompletionItemType.EventName,
+                    .ReplacementText = name
+                })
+                End If
+            Next
+
+            completionItems.Add(type.Name, compList)
+        End Sub
+
 
         Private Sub FillMemberNames(
                                 completionBag As CompletionBag,

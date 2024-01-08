@@ -76,7 +76,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             Dim code = Me.Lower(leftValue)
             Dim subroutine = SubroutineStatement.GetSubroutine(Me)
             If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
-            Return ArrayExpression.ParseAndEmit(code, subroutine, scope, lineOffset)
+            Return Parser.ParseAndEmit(code, subroutine, scope, lineOffset)
         End Function
 
 
