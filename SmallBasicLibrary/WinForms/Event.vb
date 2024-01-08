@@ -13,19 +13,18 @@ Namespace WinForms
             ReportError($"Setting the handler for {[Event].SenderControl}.{eventName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
-        <HideFromIntellisense>
-        Public Shared Property SenderAssembly As Primitive
+        Friend Shared _senderControl As Primitive
 
         ''' <summary>
-        ''' Gets or sets the name of the control that raised the event
+        '''Gets the name of the control that raised the last event.
+        '''It is useful when you use one sub to handle many events, to get info about the contol that fired the event.
         ''' </summary>
-        ''' <remarks>
-        ''' If you are adding an event handler manually, You must set Event.SenderForm and Event.SenderControl before adding an event handler, or just call `Event.HandleEventsOf(form, control)` to do this.
-        ''' But it is easier to add event handlers from the upper lists in the code editor, so the designer hides all these details in the .sb.gen file.
-        ''' If you use one sub to handle an event of more than one control, read SenderForm and SenderControl to get info about which contol is firing the event now.
-        ''' </remarks>
         <ReturnValueType(VariableType.Control)>
-        Public Shared Property SenderControl As Primitive
+        Public Shared ReadOnly Property SenderControl As Primitive
+            Get
+                Return _senderControl
+            End Get
+        End Property
 
         ''' <summary>
         ''' If you set this property to true inside an event handler sub, the event will be considered handled and will not be processed by windows anymore.

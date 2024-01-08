@@ -31,7 +31,7 @@ Namespace Library
             End Get
         End Property
 
-        Private Shared Events As New EventHandlerList
+        Private Shared buttonClickedHandler As SmallVisualBasicCallback
 
 
         ''' <summary>
@@ -39,38 +39,36 @@ Namespace Library
         ''' </summary>
         Public Shared Custom Event ButtonClicked As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                Dim h = TryCast(Events("ButtonClicked"), SmallVisualBasicCallback)
-                If h IsNot Nothing Then Events.RemoveHandler("ButtonClicked", h)
-                Events.AddHandler("ButtonClicked", Value)
+                GraphicsWindow.VerifyAccess()
+                buttonClickedHandler = Value
             End AddHandler
 
             RemoveHandler(Value As SmallVisualBasicCallback)
-                Events.RemoveHandler("ButtonClicked", Value)
+                buttonClickedHandler = Nothing
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events("ButtonClicked"), SmallVisualBasicCallback)
-                If h IsNot Nothing Then h.Invoke()
+                If buttonClickedHandler IsNot Nothing Then buttonClickedHandler.Invoke()
             End RaiseEvent
         End Event
+
+        Private Shared TextTypedHandler As SmallVisualBasicCallback
 
         ''' <summary>
         ''' Raises an event when text is typed into any TextBox control.
         ''' </summary>
         Public Shared Custom Event TextTyped As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                Dim h = TryCast(Events("TextTyped"), SmallVisualBasicCallback)
-                If h IsNot Nothing Then Events.RemoveHandler("TextTyped", h)
-                Events.AddHandler("TextTyped", Value)
+                GraphicsWindow.VerifyAccess()
+                TextTypedHandler = Value
             End AddHandler
 
             RemoveHandler(Value As SmallVisualBasicCallback)
-                Events.RemoveHandler("TextTyped", Value)
+                TextTypedHandler = Nothing
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events("TextTyped"), SmallVisualBasicCallback)
-                If h IsNot Nothing Then h.Invoke()
+                If TextTypedHandler IsNot Nothing Then TextTypedHandler.Invoke()
             End RaiseEvent
         End Event
 
@@ -85,6 +83,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Button)>
         Public Shared Function AddButton(caption As Primitive, left As Primitive, top As Primitive) As Primitive
+            GraphicsWindow.VerifyAccess()
             Dim name As String = Shapes.GenerateNewName("Button", True)
             GraphicsWindow.Invoke(
                 Sub()

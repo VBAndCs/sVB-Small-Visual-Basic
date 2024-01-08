@@ -12,6 +12,11 @@ Namespace Library
     Public NotInheritable Class Program
         Private Shared args As String() = Environment.GetCommandLineArgs()
 
+        Public Shared Sub DoNothing()
+            ' To be used as a fake removel hander for events
+            Dim x = 0
+        End Sub
+
         ''' <summary>
         ''' Gets the number of command-line arguments passed to this program.
         ''' </summary>
@@ -30,13 +35,6 @@ Namespace Library
             Get
                 Dim asm = Assembly.GetCallingAssembly()
                 Return Path.GetDirectoryName(asm.Location)
-            End Get
-        End Property
-
-        <HideFromIntellisense>
-        Public Shared ReadOnly Property AsemblyName As Primitive
-            Get
-                Return Assembly.GetCallingAssembly().GetName().Name
             End Get
         End Property
 

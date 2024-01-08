@@ -997,11 +997,15 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         <ExMethod>
         Public Shared Function ChooseBackColor(controlName As Primitive) As Primitive
-            Dim color = WinForms.Color.ShowDialog(GetBackColor(controlName))
-            If Not color.IsEmpty Then
-                SetBackColor(controlName, color)
-            End If
-            Return color
+            App.Invoke(
+                Sub()
+                    Dim color = WinForms.Color.ShowDialog(GetBackColor(controlName))
+
+                    If Not color.IsEmpty Then
+                        SetBackColor(controlName, color)
+                    End If
+                    ChooseBackColor = color
+                End Sub)
         End Function
 
 
@@ -1012,11 +1016,14 @@ Namespace WinForms
         <ReturnValueType(VariableType.Color)>
         <ExMethod>
         Public Shared Function ChooseForeColor(controlName As Primitive) As Primitive
-            Dim color = WinForms.Color.ShowDialog(GetForeColor(controlName))
-            If Not color.IsEmpty Then
-                SetForeColor(controlName, color)
-            End If
-            Return color
+            App.Invoke(
+                Sub()
+                    Dim color = WinForms.Color.ShowDialog(GetForeColor(controlName))
+                    If Not color.IsEmpty Then
+                        SetForeColor(controlName, color)
+                    End If
+                    ChooseForeColor = color
+                End Sub)
         End Function
 
 
@@ -1027,11 +1034,14 @@ Namespace WinForms
         <ReturnValueType(VariableType.Array)>
         <ExMethod>
         Public Shared Function ChooseFont(controlName As Primitive) As Primitive
-            Dim font = Desktop.ShowFontDialog(GetFont(controlName))
-            If Not font.IsEmpty Then
-                SetFont(controlName, font)
-            End If
-            Return font
+            App.Invoke(
+                Sub()
+                    Dim font = Desktop.ShowFontDialog(GetFont(controlName))
+                    If Not font.IsEmpty Then
+                        SetFont(controlName, font)
+                    End If
+                    ChooseFont = font
+                End Sub)
         End Function
 
         ''' <summary>
@@ -1476,18 +1486,20 @@ Namespace WinForms
 
         Friend Shared RemoveEventHandlerActions As New Dictionary(Of String, Action)
 
+        Private Shared senderAssembly As String
         Friend Shared Sub RemovePrevEventHandler(controlName As String, eventName As String, [removeHandler] As Action)
-            Dim key = ([Event].SenderAssembly.ToString() & ":" & controlName & "." & eventName).ToLower()
+            Dim key = (senderAssembly & ":" & controlName & "." & eventName).ToLower()
             If RemoveEventHandlerActions.ContainsKey(key) Then
-                RemoveEventHandlerActions(key).Invoke()
+                RemoveEventHandlerActions(key)?.Invoke()
             End If
+
             RemoveEventHandlerActions(key) = [removeHandler]
         End Sub
 
-
         <HideFromIntellisense>
         Public Shared Sub HandleEvents(controlName As Primitive)
-            [Event].SenderControl = controlName
+            senderAssembly = Reflection.Assembly.GetCallingAssembly().GetName().Name
+            [Event]._senderControl = controlName
         End Sub
 
         Shared Function GetSender(eventNmae As String, Optional getForm As Boolean = False) As FrameworkElement
@@ -1512,6 +1524,16 @@ Namespace WinForms
 
             Return Nothing
         End Function
+
+        ''' <summary>
+        ''' Removes the handler of the given event of the current control.
+        ''' </summary>
+        ''' <param name="eventName">The name of the event to remove its handler</param>
+        <ExMethod>
+        Public Shared Sub RemoveEventHandler(controlName As Primitive, eventName As Primitive)
+            senderAssembly = Reflection.Assembly.GetCallingAssembly().GetName().Name
+            RemovePrevEventHandler(controlName, eventName, Nothing)
+        End Sub
 
 
         ''' <summary>
@@ -1550,7 +1572,7 @@ Namespace WinForms
         End Event
 
         ''' <summary>
-        ''' Fired when user releases the left mouse-button
+        ''' Fired when user clicks the control by the left mouse button.
         ''' </summary>
         Public Shared Custom Event OnClick As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)

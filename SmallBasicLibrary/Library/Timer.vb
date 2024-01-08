@@ -26,28 +26,23 @@ Namespace Library
             End Set
         End Property
 
-        Private Shared Events As New EventHandlerList
+        Private Shared tickHandler As SmallVisualBasicCallback
 
         ''' <summary>
         ''' Raises an event when the timer ticks.
         ''' </summary>
         Public Shared Custom Event Tick As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                Dim Key = NameOf(Tick)
-                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
-                If h IsNot Nothing Then Events.RemoveHandler(Key, h)
-                Events.AddHandler(Key, Value)
+                tickHandler = Value
             End AddHandler
 
             RemoveHandler(Value As SmallVisualBasicCallback)
-                Events.RemoveHandler(NameOf(Tick), Value)
+                tickHandler = Nothing
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(Tick)), SmallVisualBasicCallback)
-                If h IsNot Nothing Then h.Invoke()
+                If tickHandler IsNot Nothing Then tickHandler.Invoke()
             End RaiseEvent
-
         End Event
 
         Shared Sub New()

@@ -282,7 +282,7 @@ Namespace WinForms
                 Dim handler = Form.ClosedHandlers(winName)
 
                 Try
-                    [Event].SenderControl = winName
+                    [Event]._senderControl = winName
                     Call handler()
                     [Event].Handled = False
                 Catch ex As Exception

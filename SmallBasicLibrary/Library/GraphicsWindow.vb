@@ -461,7 +461,7 @@ Namespace Library
             End Get
         End Property
 
-        Private Shared Events As New EventHandlerList
+        Private Shared keyDownHandler As SmallVisualBasicCallback
 
         ''' <summary>
         ''' Raises an event when a key is pressed down on the keyboard.
@@ -469,21 +469,19 @@ Namespace Library
         Public Shared Custom Event KeyDown As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
-                Dim Key = NameOf(KeyDown)
-                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
-                If h IsNot Nothing Then Events.RemoveHandler(Key, h)
-                Events.AddHandler(Key, Value)
+                keyDownHandler = Value
             End AddHandler
 
             RemoveHandler(Value As SmallVisualBasicCallback)
-                Events.RemoveHandler(NameOf(KeyDown), Value)
+                keyDownHandler = Nothing
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(KeyDown)), SmallVisualBasicCallback)
-                If h IsNot Nothing Then h.Invoke()
+                If keyDownHandler IsNot Nothing Then keyDownHandler.Invoke()
             End RaiseEvent
         End Event
+
+        Private Shared keyUpHandler As SmallVisualBasicCallback
 
         ''' <summary>
         ''' Raises an event when a key is released on the keyboard.
@@ -491,21 +489,19 @@ Namespace Library
         Public Shared Custom Event KeyUp As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
-                Dim Key = NameOf(KeyUp)
-                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
-                If h IsNot Nothing Then Events.RemoveHandler(Key, h)
-                Events.AddHandler(Key, Value)
+                keyUpHandler = Value
             End AddHandler
 
             RemoveHandler(Value As SmallVisualBasicCallback)
-                Events.RemoveHandler(NameOf(KeyUp), Value)
+                keyUpHandler = Nothing
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(KeyUp)), SmallVisualBasicCallback)
-                If h IsNot Nothing Then h.Invoke()
+                If keyUpHandler IsNot Nothing Then keyUpHandler.Invoke()
             End RaiseEvent
         End Event
+
+        Private Shared mouseDownHandler As SmallVisualBasicCallback
 
         ''' <summary>
         ''' Raises an event when the mouse button is clicked down.
@@ -513,22 +509,20 @@ Namespace Library
         Public Shared Custom Event MouseDown As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
-                Dim Key = NameOf(MouseDown)
-                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
-                If h IsNot Nothing Then Events.RemoveHandler(Key, h)
-                Events.AddHandler(Key, Value)
+                mouseDownHandler = Value
             End AddHandler
 
             RemoveHandler(Value As SmallVisualBasicCallback)
-                Events.RemoveHandler(NameOf(MouseDown), Value)
+                mouseDownHandler = Nothing
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(MouseDown)), SmallVisualBasicCallback)
-                If h IsNot Nothing Then h.Invoke()
+                If mouseDownHandler IsNot Nothing Then mouseDownHandler.Invoke()
             End RaiseEvent
 
         End Event
+
+        Private Shared mouseUpHandler As SmallVisualBasicCallback
 
         ''' <summary>
         ''' Raises an event when the mouse button is released.
@@ -536,22 +530,19 @@ Namespace Library
         Public Shared Custom Event MouseUp As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
-                Dim Key = NameOf(MouseUp)
-                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
-                If h IsNot Nothing Then Events.RemoveHandler(Key, h)
-                Events.AddHandler(Key, Value)
+                mouseUpHandler = Value
             End AddHandler
 
             RemoveHandler(Value As SmallVisualBasicCallback)
-                Events.RemoveHandler(NameOf(MouseUp), Value)
+                mouseUpHandler = Nothing
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(MouseUp)), SmallVisualBasicCallback)
-                If h IsNot Nothing Then h.Invoke()
+                If mouseUpHandler IsNot Nothing Then mouseUpHandler.Invoke()
             End RaiseEvent
-
         End Event
+
+        Private Shared mouseMoveHandler As SmallVisualBasicCallback
 
         ''' <summary>
         ''' Raises an event when the mouse is moved around.
@@ -559,23 +550,19 @@ Namespace Library
         Public Shared Custom Event MouseMove As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
-                Dim Key = NameOf(MouseMove)
-                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
-                If h IsNot Nothing Then Events.RemoveHandler(Key, h)
-                Events.AddHandler(Key, Value)
+                mouseMoveHandler = Value
             End AddHandler
 
             RemoveHandler(Value As SmallVisualBasicCallback)
-                Events.RemoveHandler(NameOf(MouseMove), Value)
+                mouseMoveHandler = Nothing
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(MouseMove)), SmallVisualBasicCallback)
-                If h IsNot Nothing Then h.Invoke()
+                If mouseMoveHandler IsNot Nothing Then mouseMoveHandler.Invoke()
             End RaiseEvent
-
-
         End Event
+
+        Private Shared textInputHandler As SmallVisualBasicCallback
 
         ''' <summary>
         ''' Raises an event when text is entered on the GraphicsWindow.
@@ -583,22 +570,16 @@ Namespace Library
         Public Shared Custom Event TextInput As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
                 VerifyAccess()
-                Dim Key = NameOf(TextInput)
-                Dim h = TryCast(Events(Key), SmallVisualBasicCallback)
-                If h IsNot Nothing Then Events.RemoveHandler(Key, h)
-                Events.AddHandler(Key, Value)
+                textInputHandler = Value
             End AddHandler
 
             RemoveHandler(Value As SmallVisualBasicCallback)
-                Events.RemoveHandler(NameOf(TextInput), Value)
+                textInputHandler = Nothing
             End RemoveHandler
 
             RaiseEvent()
-                Dim h = TryCast(Events(NameOf(TextInput)), SmallVisualBasicCallback)
-                If h IsNot Nothing Then h.Invoke()
+                If textInputHandler IsNot Nothing Then textInputHandler.Invoke()
             End RaiseEvent
-
-
         End Event
 
         ''' <summary>

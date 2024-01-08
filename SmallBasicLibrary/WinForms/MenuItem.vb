@@ -175,13 +175,50 @@ Namespace WinForms
         End Function
 
         ''' <summary>
+        ''' Fired when user clicks the menu item by the left mouse button.
+        ''' </summary>
+        Public Shared Custom Event OnClick As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
+                Dim _sender = GetMenuItem([Event].SenderControl)
+                Dim h = Sub(Sender As Object, e As System.Windows.RoutedEventArgs)
+                            [Event].HandleEvent(CType(Sender, System.Windows.FrameworkElement), e, handler)
+                        End Sub
+
+                Control.RemovePrevEventHandler(
+                    [Event].SenderControl,
+                    NameOf(OnClick),
+                    Sub() RemoveHandler _sender.Click, h
+                )
+                AddHandler _sender.Click, h
+
+            End AddHandler
+
+            RemoveHandler(handler As SmallVisualBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
+
+        ''' <summary>
         ''' Fired when the submenu is opened.
         ''' </summary>
         Public Shared Custom Event OnOpen As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
                     Dim _sender = GetMenuItem([Event].SenderControl)
-                    AddHandler _sender.SubmenuOpened, Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs) [Event].HandleEvent(CType(Sender, System.Windows.FrameworkElement), e, handler)
+                    Dim h = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs)
+                                [Event].HandleEvent(CType(Sender, System.Windows.FrameworkElement), e, handler)
+                            End Sub
+
+                    Control.RemovePrevEventHandler(
+                        [Event].SenderControl,
+                        NameOf(OnOpen),
+                        Sub() RemoveHandler _sender.SubmenuOpened, h
+                    )
+                    AddHandler _sender.SubmenuOpened, h
+
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnOpen), ex)
                 End Try

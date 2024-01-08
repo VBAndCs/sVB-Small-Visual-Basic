@@ -98,7 +98,7 @@ Namespace WinForms
                     Dim _sender = GetTimer(name)
                     Dim h = Sub(Sender As Object, e As EventArgs)
                                 Try
-                                    [Event].SenderControl = CType(Sender, DispatcherTimer).Tag
+                                    [Event]._senderControl = CType(Sender, DispatcherTimer).Tag
                                     Call handler()
                                 Catch ex As Exception
                                     ReportError($"The event handler sub `{handler.Method.Name}` caused this error: {ex.Message}", ex)

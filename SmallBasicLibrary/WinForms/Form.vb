@@ -1522,7 +1522,7 @@ Namespace WinForms
                              Dim h = Sub(sender As Object, e As EventArgs)
                                          Try
                                              Dim win = CType(sender, System.Windows.Window)
-                                             [Event].SenderControl = win.Name
+                                             [Event]._senderControl = win.Name
                                              Call handler()
                                              [Event].Handled = False
                                          Catch ex As Exception
@@ -1565,7 +1565,7 @@ Namespace WinForms
                              Dim h = Sub(sender As Object, e As ComponentModel.CancelEventArgs)
                                          Try
                                              Dim win = CType(sender, System.Windows.Window)
-                                             [Event].SenderControl = win.Name
+                                             [Event]._senderControl = win.Name
 
                                              Call handler()
 
