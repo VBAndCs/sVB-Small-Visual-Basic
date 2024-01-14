@@ -50,6 +50,18 @@ Public Class UndoRedoStack(Of T)
         End Get
     End Property
 
+    Public ReadOnly Property UndoItems As List(Of T)
+        Get
+            Return pUndo.ToList()
+        End Get
+    End Property
+
+    Public ReadOnly Property RedoItems As List(Of T)
+        Get
+            Return pRedo.ToList()
+        End Get
+    End Property
+
     Function Undo() As T
         pRedo.Push(pUndo.Peek)
         Undo = pUndo.Pop

@@ -84,6 +84,46 @@
                            New PropertyMetadata(500.0))
 
 
+    Public Property MinWidthValue As Double?
+        Get
+            If Not NumMinWidth.CheckBox.IsChecked Then Return Nothing
+            Return CDbl(GetValue(MinWidthValueProperty))
+        End Get
+
+        Set(value As Double?)
+            SetDoubleValue(
+                  value,
+                  MinWidthValueProperty,
+                  NumMinWidth
+            )
+        End Set
+    End Property
+
+    Public Shared ReadOnly MinWidthValueProperty As DependencyProperty =
+                           DependencyProperty.Register("MinWidthValue",
+                           GetType(Double), GetType(WndProperties),
+                           New PropertyMetadata(0.0))
+
+    Public Property MinHeightValue As Double?
+        Get
+            If Not NumMinHeight.CheckBox.IsChecked Then Return Nothing
+            Return CDbl(GetValue(MinHeightValueProperty))
+        End Get
+
+        Set(value As Double?)
+            SetDoubleValue(
+                  value,
+                  MinHeightValueProperty,
+                  NumMinHeight
+            )
+        End Set
+    End Property
+
+    Public Shared ReadOnly MinHeightValueProperty As DependencyProperty =
+                           DependencyProperty.Register("MinHeightValue",
+                           GetType(Double), GetType(WndProperties),
+                           New PropertyMetadata(0.0))
+
     Public Property MaxWidthValue As Double?
         Get
             If Not NumMaxWidth.CheckBox.IsChecked Then Return Nothing
@@ -93,7 +133,7 @@
 
         Set(value As Double?)
             SetDoubleValue(
-                  If(Double.IsPositiveInfinity(value), 0, value),
+                  If(value.HasValue AndAlso Double.IsPositiveInfinity(value), 0, value),
                   MaxWidthValueProperty,
                   NumMaxWidth
             )
@@ -114,7 +154,7 @@
 
         Set(value As Double?)
             SetDoubleValue(
-                  If(Double.IsPositiveInfinity(value), 0, value),
+                  If(value.HasValue AndAlso Double.IsPositiveInfinity(value), 0, value),
                   MaxHeightValueProperty,
                   NumMaxHeight
             )
@@ -192,6 +232,23 @@
                            GetType(Integer), GetType(WndProperties),
                            New PropertyMetadata(0))
 
+
+    Public Property WordWrapValue As Boolean?
+        Get
+            Return IndexToBoolean(GetValue(WordWrapValueProperty))
+        End Get
+
+        Set(value As Boolean?)
+            SetValue(WordWrapValueProperty, GetIndex(value))
+        End Set
+    End Property
+
+    Public Shared ReadOnly WordWrapValueProperty As DependencyProperty =
+                           DependencyProperty.Register("WordWrapValue",
+                           GetType(Integer), GetType(WndProperties),
+                           New PropertyMetadata(-1))
+
+
     Public Property TagValue As String
         Get
             If Not chkTag.IsChecked Then Return Nothing
@@ -242,7 +299,15 @@
                            New PropertyMetadata(""))
 
     Private Sub BtnOk_Click(sender As Object, e As RoutedEventArgs)
-        Me.DialogResult = True
+        If NumMaxWidth.Value AndAlso NumMaxWidth.Value < NumMinWidth.Value Then
+            NumMaxWidth.Focus()
+            MsgBox("MaxWidth can't be less than MinWidth")
+        ElseIf NumMaxHeight.Value > 0 AndAlso NumMaxHeight.Value < NumMinHeight.Value Then
+            NumMaxHeight.Focus()
+            MsgBox("MaxHeight can't be less than MinHeight")
+        Else
+            Me.DialogResult = True
+        End If
     End Sub
 
     Private Sub BtnCancel_Click(sender As Object, e As RoutedEventArgs)

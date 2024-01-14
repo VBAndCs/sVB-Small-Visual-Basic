@@ -22,6 +22,7 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Text="Left" Margin="10,5,0,5" VerticalAlignment="Center"/>
@@ -44,42 +45,73 @@
                       Margin="5,5,10,5" Minimum="0" Maximum="10000"  Increment="5" FormatString="F1"
                       Value="{Binding HeightValue, ElementName=WndProps, Mode=TwoWay}"/>
 
-                <TextBlock Text="MaxWidth" Grid.Row="2" Margin="10,5,0,5" VerticalAlignment="Center"/>
-                <c:DoubleUpDown x:Name="NumMaxWidth" Grid.Row="2" Grid.Column="1" MinHeight="30"
+                <TextBlock Text="MinWidth" Grid.Row="2" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <c:DoubleUpDown x:Name="NumMinWidth" Grid.Row="2" Grid.Column="1" MinHeight="30"
+                      Margin="5,5,10,5"  Minimum="0" Maximum="10000" Increment="5" FormatString="F1"
+                      Value="{Binding MinWidthValue, ElementName=WndProps, Mode=TwoWay}"/>
+
+                <TextBlock  Grid.Row="2" Grid.Column="3" Text="MinHeight" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <c:DoubleUpDown x:Name="NumMinHeight" Grid.Row="2"  Grid.Column="4" MinHeight="30"
+                      Margin="5,5,10,5" Minimum="0" Maximum="10000"  Increment="5" FormatString="F1"
+                      Value="{Binding MinHeightValue, ElementName=WndProps, Mode=TwoWay}"/>
+
+                <TextBlock Text="MaxWidth" Grid.Row="3" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <c:DoubleUpDown x:Name="NumMaxWidth" Grid.Row="3" Grid.Column="1" MinHeight="30"
                       Margin="5,5,10,5"  Minimum="0" Maximum="10000" Increment="5" FormatString="F1"
                       Value="{Binding MaxWidthValue, ElementName=WndProps, Mode=TwoWay}"/>
 
-                <TextBlock  Grid.Row="2" Grid.Column="3" Text="MaxHeight" Margin="10,5,0,5" VerticalAlignment="Center"/>
-                <c:DoubleUpDown x:Name="NumMaxHeight" Grid.Row="2"  Grid.Column="4" MinHeight="30"
+                <TextBlock  Grid.Row="3" Grid.Column="3" Text="MaxHeight" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <c:DoubleUpDown x:Name="NumMaxHeight" Grid.Row="3"  Grid.Column="4" MinHeight="30"
                       Margin="5,5,10,5" Minimum="0" Maximum="10000"  Increment="5" FormatString="F1"
                       Value="{Binding MaxHeightValue, ElementName=WndProps, Mode=TwoWay}"/>
 
-                <TextBlock  Grid.Row="3" Text="Enabled" Margin="10,5,0,5" VerticalAlignment="Center"/>
-                <ComboBox x:Name="cmbEnabled" Grid.Row="3"  Grid.Column="1" 
+                <TextBlock  Grid.Row="4" Text="Enabled" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cmbEnabled" Grid.Row="4"  Grid.Column="1" 
                       Margin="5,5,10,5" MinHeight="30"
                       SelectedIndex="{Binding EnabledValue, ElementName=WndProps, Mode=TwoWay}">
                     <ComboBoxItem>False</ComboBoxItem>
                     <ComboBoxItem>True</ComboBoxItem>
                 </ComboBox>
 
-                <TextBlock  Grid.Row="3" Grid.Column="3" Text="Visible" Margin="10,5,0,5" VerticalAlignment="Center"/>
-                <ComboBox x:Name="cmbVisible" Grid.Row="3"  Grid.Column="4" 
+                <TextBlock  Grid.Row="4" Grid.Column="3" Text="Visible" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cmbVisible" Grid.Row="4"  Grid.Column="4" 
                       Margin="5,5,10,5" 
                       SelectedIndex="{Binding VisibleValue, ElementName=WndProps, Mode=TwoWay}">
                     <ComboBoxItem>False</ComboBoxItem>
                     <ComboBoxItem>True</ComboBoxItem>
                 </ComboBox>
 
-                <TextBlock  Grid.Row="4" Text="RightToLeft" Margin="10,5,0,5" VerticalAlignment="Center"/>
-                <ComboBox x:Name="cmbRightToLeft" Grid.Row="4"  Grid.Column="1" 
+                <TextBlock  Grid.Row="5" Text="RightToLeft" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cmbRightToLeft" Grid.Row="5"  Grid.Column="1" 
                       Margin="5,5,10,5" 
                       SelectedIndex="{Binding RightToLeftValue, ElementName=WndProps, Mode=TwoWay}">
                     <ComboBoxItem>False</ComboBoxItem>
                     <ComboBoxItem>True</ComboBoxItem>
                 </ComboBox>
 
-                <TextBlock  Grid.Row="4" Grid.Column="3" Text="Tag" Margin="10,5,0,5" VerticalAlignment="Center"/>
-                <Grid Grid.Row="4"  Grid.Column="4" Margin="5,5,10,5" >
+                <TextBlock  Grid.Row="5" Grid.Column="3" Text="WordWrap" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <ComboBox x:Name="cmbWordWrap" Grid.Row="5"  Grid.Column="4" 
+                      Margin="5,5,10,5" 
+                      SelectedIndex="{Binding WordWrapValue, ElementName=WndProps, Mode=TwoWay}">
+                    <ComboBoxItem>False</ComboBoxItem>
+                    <ComboBoxItem>True</ComboBoxItem>
+                </ComboBox>
+
+                <TextBlock  Grid.Row="6" Text="ToolTip" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <Grid Grid.Row="6"  Grid.Column="1" Margin="5,5,10,5"  >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox x:Name="chkToolTip" Visibility="Collapsed"
+                          IsChecked="True" VerticalAlignment="Center"  
+                          Margin="0,0,4,0"/>
+                    <TextBox x:Name="txtToolTip" Grid.Column="1"
+                      Text="{Binding ToolTipValue, ElementName=WndProps, Mode=TwoWay}"/>
+                </Grid>
+
+                <TextBlock  Grid.Row="6" Grid.Column="3" Text="Tag" Margin="10,5,0,5" VerticalAlignment="Center"/>
+                <Grid Grid.Row="6"  Grid.Column="4" Margin="5,5,10,5" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition/>
@@ -90,20 +122,6 @@
                     <TextBox x:Name="txtTag" Grid.Column="1" 
                       Text="{Binding TagValue, ElementName=WndProps, Mode=TwoWay}"/>
                 </Grid>
-
-                <TextBlock  Grid.Row="5" Text="ToolTip" Margin="10,5,0,5" VerticalAlignment="Center"/>
-                <Grid Grid.Row="5"  Grid.Column="1" Grid.ColumnSpan="4" Margin="5,5,10,5"  >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <CheckBox x:Name="chkToolTip" Visibility="Collapsed"
-                          IsChecked="True" VerticalAlignment="Center"  
-                          Margin="0,0,4,0"/>
-                    <TextBox x:Name="txtToolTip" Grid.Column="1"
-                      Text="{Binding ToolTipValue, ElementName=WndProps, Mode=TwoWay}"/>
-                </Grid>                
-
             </Grid >
         </Border>
         

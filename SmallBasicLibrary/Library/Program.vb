@@ -14,7 +14,6 @@ Namespace Library
 
         Public Shared Sub DoNothing()
             ' To be used as a fake removel hander for events
-            Dim x = 0
         End Sub
 
         ''' <summary>
@@ -44,9 +43,9 @@ Namespace Library
         ''' </summary>
         ''' <param name="milliSeconds">The amount of delay.</param>
         Public Shared Sub Delay(milliSeconds As Primitive)
-            Dim t = CInt(milliSeconds)
-            If t <= 0 Then Return
-            Thread.Sleep(t)
+            Dim delayTime = CDbl(milliSeconds)
+            If delayTime <= 0 Then Return
+            Thread.Sleep(TimeSpan.FromMilliseconds(delayTime))
         End Sub
 
         ''' <summary>
@@ -55,13 +54,19 @@ Namespace Library
         ''' </summary>
         ''' <param name="milliSeconds">The amount of delay.</param>
         Public Shared Sub WinDelay(milliSeconds As Primitive)
-            Dim t = CDbl(milliSeconds)
-            If t <= 0 Then Return
+            Dim delayTime = CInt(milliSeconds)
+            If delayTime <= 0 Then Return
 
-            SmallBasicApplication.Invoke(
-                Sub()
-                    Thread.Sleep(TimeSpan.FromMilliseconds(t))
-                End Sub)
+            ' Don't use Thread.Delay, because if could freeze some UI elemnts.
+            ' Instead use a loop to waste time, but allow teh UI to refresh
+            Dim start = Now
+            Do While (Now - start).TotalMilliseconds < delayTime
+                System.Windows.Application.Current.Dispatcher.Invoke(
+                        System.Windows.Threading.DispatcherPriority.Background,
+                        Sub()
+                            ' Do nothing. Just let thee UI refresh itself
+                        End Sub)
+            Loop
         End Sub
 
         ''' <summary>

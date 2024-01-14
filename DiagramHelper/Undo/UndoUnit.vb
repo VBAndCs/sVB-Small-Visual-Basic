@@ -1,6 +1,6 @@
 ﻿Public Interface IRestore
-    Sub RestoreOldValue()
-    Sub RestoreNewValue()
+    Sub RestoreOldValues()
+    Sub RestoreNewValues()
 End Interface
 
 Public Class UndoRedoUnit
@@ -16,13 +16,13 @@ Public Class UndoRedoUnit
 
     Sub RestoreOldState()
         For Each State In Me
-            State.RestoreOldValue()
+            State.RestoreOldValues()
         Next
     End Sub
 
     Sub RestoreNewState()
         For i = Me.Count - 1 To 0 Step -1
-            Me(i).RestoreNewValue()
+            Me(i).RestoreNewValues()
         Next
     End Sub
 

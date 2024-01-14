@@ -1051,7 +1051,7 @@ Namespace Microsoft.SmallVisualBasic
             Select Case token
                 Case TokenType.Division, TokenType.Multiplication
                     Return 8
-                Case TokenType.Addition, TokenType.Subtraction
+                Case TokenType.Concatenation, TokenType.Addition, TokenType.Subtraction
                     Return 7
                 Case TokenType.LessThan, TokenType.LessThanEqualTo, TokenType.GreaterThan, TokenType.GreaterThanEqualTo
                     Return 6
@@ -1465,6 +1465,8 @@ Namespace Microsoft.SmallVisualBasic
                     Dim primitive2 = EvaluateExpression(binaryExpression.RightHandSide)
 
                     Select Case binaryExpression.Operator.Type
+                        Case TokenType.Concatenation
+                            Return primitive & primitive2
                         Case TokenType.Addition
                             Return primitive + primitive2
                         Case TokenType.Subtraction

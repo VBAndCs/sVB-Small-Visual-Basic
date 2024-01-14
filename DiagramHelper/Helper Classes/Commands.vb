@@ -25,6 +25,7 @@
                 Shape.StrokeThickness = 1
                 Dsn.UndoStack.LastChange = Unit
             End If
+
         Else
             Dim Control = TryCast(Element, Control)
             If Control IsNot Nothing Then
@@ -59,7 +60,7 @@
                     Element, Shape.StrokeThicknessProperty
             )
             Shape.StrokeThickness += Value
-            Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+            Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
         Else
             Dim Control = TryCast(Element, Control)
             If Control IsNot Nothing Then
@@ -71,7 +72,7 @@
                         Control.BorderThicknessProperty
                  )
                 Control.BorderThickness = New Thickness(t + Value)
-                Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+                Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
             End If
         End If
     End Sub
@@ -95,7 +96,7 @@
             If TypeOf Element Is FrameworkElement Then
                 If OldState.HasChanges Then
                     Dim Dsn = Helper.GetDesigner(Element)
-                    Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+                    Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
                 End If
             End If
             Return brush
@@ -155,24 +156,45 @@
         Dim Unit = Dsn.UndoStack.LastChange
         If Unit Is Nothing Then Return
 
-        Dim PropState = TryCast(Unit(0), PropertyState)
-        If PropState Is Nothing Then Return
+        Dim newUint As New UndoRedoUnit
+        For i = 0 To Unit.Count - 1
+            Dim propState = TryCast(Unit(i), PropertyState)
+            If PropState Is Nothing Then Continue For
 
-        Dim OldState As New PropertyState(AddressOf DiagramObject.Diagrams(Element).AfterRestoreAction, Element, PropState.Keys.ToArray)
-        For Each Pair In PropState
-            Dim oldValue = Pair.Value.OldValue
-            Dim newValue = Pair.Value.NewValue
-            If oldValue IsNot Nothing AndAlso (oldValue Is newValue OrElse oldValue.Equals(newValue)) Then Continue For
-            Element.SetValue(Pair.Key, Helper.Clone(newValue))
+            Dim target = GetTarget(Element, propState.Owner)
+            If target Is Nothing Then Continue For
+
+            Dim newPropState As New PropertyState(
+                    AddressOf DiagramObject.Diagrams(Element).AfterRestoreAction,
+                    target,
+                    propState.Keys.ToArray)
+
+            For Each Pair In propState
+                Dim oldValue = Pair.Value.OldValue
+                Dim newValue = Pair.Value.NewValue
+                If oldValue IsNot Nothing AndAlso (oldValue Is newValue OrElse oldValue.Equals(newValue)) Then Continue For
+                target.SetValue(Pair.Key, Helper.Clone(newValue))
+            Next
+            If newPropState.HasChanges Then newUint.Add(newPropState.SetNewValues())
         Next
 
         Dim Pnl = Helper.GetDiagramPanel(Element)
         If Pnl.DiagramGroup IsNot Nothing Then Pnl.DiagramGroup.Select()
-
-        If OldState.HasChanges Then
-            Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue), False)
-        End If
+        If newUint.Count > 0 Then Dsn.UndoStack.ReportChanges(newUint, False)
     End Sub
+
+    Friend Shared Function GetTarget(fw As FrameworkElement, stateOwner As DependencyObject) As Object
+        If TypeOf stateOwner Is ListBoxItem Then
+            Return Helper.GetListBoxItem(fw)
+        ElseIf TypeOf stateOwner Is DiagramPanel Then
+            Return Helper.GetDiagramPanel(fw)
+        ElseIf TypeOf stateOwner Is Canvas OrElse TypeOf stateOwner Is Designer Then
+            Return Nothing
+        End If
+
+        Return fw
+    End Function
+
 
     Friend Shared Cancelled As Boolean = False
 
@@ -194,7 +216,7 @@
             Pnl.UpdateLocationBorder()
 
             If OldState.HasChanges Then
-                Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+                Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
             End If
         Else
             Cancelled = True
@@ -207,7 +229,7 @@
             Diagram.SetValue(Prop, WpfDialogs.ColorDialog.Brush)
             If OldState.HasChanges Then
                 Dim Dsn = Helper.GetDesigner(Diagram)
-                Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+                Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
             End If
         End If
     End Sub
@@ -217,12 +239,12 @@
 
         Dim Pnl = Helper.GetDiagramPanel(Diagram)
         Dim FontProps = Designer.GetDiagramTextFontProps(Diagram)
-        FontProps.Add(WpfDialogs.FontDialog.FontProperties.ToArray)
+        FontProps.Add(WpfDialogs.FontDialog.FontProperties.ToArray())
         Dim OldState As New PropertyState(Diagram, Designer.DiagramTextFontPropsProperty)
         If WpfDialogs.FontDialog.Show(Diagram) Then
             FontProps.UpdateValuesFromObj()
             If OldState.HasChanges Then
-                Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+                Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
             End If
         Else
             Cancelled = True
@@ -250,7 +272,7 @@
         Designer.SetDiagramTextFontProps(diagram, FontProps)
         Dim OldState As New PropertyState(A, diagram, Designer.DiagramTextFontPropsProperty)
         FontProps(Prop) = Value
-        Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+        Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
 
     End Sub
 
@@ -268,6 +290,6 @@
         Dim A As Action = AddressOf Pnl.DiagramObj.AfterRestoreAction
         Dim OldState As New PropertyState(A, Diagram, Prop)
         Diagram.SetValue(Prop, Value)
-        Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+        Pnl.Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
     End Sub
 End Class

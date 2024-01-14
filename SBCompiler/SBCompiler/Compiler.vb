@@ -453,6 +453,7 @@ Namespace Microsoft.SmallVisualBasic
             _typeInfoBag.TimeSpanToPrimitive = typeFromHandle.GetMethod("TimeSpanToPrimitive")
             _typeInfoBag.PrimitiveToBoolean = typeFromHandle.GetMethod("ConvertToBoolean")
             _typeInfoBag.Negation = typeFromHandle.GetMethod("op_UnaryNegation")
+            _typeInfoBag.Concat = typeFromHandle.GetMethod("op_Concatenate")
             _typeInfoBag.Add = typeFromHandle.GetMethod("op_Addition")
             _typeInfoBag.Subtract = typeFromHandle.GetMethod("op_Subtraction")
             _typeInfoBag.Multiply = typeFromHandle.GetMethod("op_Multiply")

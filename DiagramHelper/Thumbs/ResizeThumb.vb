@@ -54,7 +54,8 @@ Friend Class ResizeThumb
                            DependencyProperty.Register("DesignerItem",
                            GetType(ListBoxItem), GetType(ResizeThumb))
 
-    Dim OldState As PropertyState
+    Dim diagramState As PropertyState
+    Dim pnlState As PropertyState
 
     Private Sub ResizeThumb_DragStarted(sender As Object, e As DragStartedEventArgs)
 
@@ -87,10 +88,14 @@ Friend Class ResizeThumb
             Me.DeltaY = (W + DeltaX) * TanAy
         End If
 
-        OldState = New PropertyState(Pnl.AfterRestoreSub, Diagram,
+        diagramState = New PropertyState(Pnl.AfterRestoreSub, Diagram,
                           Designer.FrameWidthProperty, Designer.FrameHeightProperty,
                           Designer.LeftProperty, Designer.TopProperty,
                           FrameworkElement.LayoutTransformProperty)
+
+        pnlState = New PropertyState(Pnl,
+                          DiagramPanel.AutoWidthProperty,
+                          DiagramPanel.AutoHeightProperty)
 
     End Sub
 
@@ -107,6 +112,7 @@ Friend Class ResizeThumb
                     Canvas.SetTop(DesignerItem, Canvas.GetTop(DesignerItem) + (1 - Me.transformOrigin.X) * deltaHorizontal * Math.Sin(Me.RotateAngle))
                     Canvas.SetLeft(DesignerItem, Canvas.GetLeft(DesignerItem) + deltaHorizontal * Math.Cos(Me.RotateAngle) + (Me.transformOrigin.X * deltaHorizontal * (1 - Math.Cos(Me.RotateAngle))))
                     Pnl.Width = Pnl.ActualWidth - deltaHorizontal
+                    Pnl.AutoWidth = False
 
                     If Keyboard.Modifiers = ModifierKeys.Control Then
                         DeltaX -= deltaHorizontal
@@ -123,15 +129,14 @@ Friend Class ResizeThumb
                     Canvas.SetTop(DesignerItem, Canvas.GetTop(DesignerItem) - Me.transformOrigin.X * deltaHorizontal * Math.Sin(Me.RotateAngle))
                     Canvas.SetLeft(DesignerItem, Canvas.GetLeft(DesignerItem) + (deltaHorizontal * Me.transformOrigin.X * (1 - Math.Cos(Me.RotateAngle))))
                     Pnl.Width = Pnl.ActualWidth - deltaHorizontal
+                    Pnl.AutoWidth = False
 
                     If Keyboard.Modifiers = ModifierKeys.Control Then
                         DeltaX += deltaHorizontal
                         Me.skewTransform.AngleX = Math.Atan2(DeltaX, Pnl.ActualHeight - DeltaY) * 180 / Math.PI
                     End If
-
                 End If
         End Select
-
 
         Select Case VerticalAlignment
             Case VerticalAlignment.Top
@@ -141,6 +146,7 @@ Friend Class ResizeThumb
                     Canvas.SetTop(DesignerItem, Canvas.GetTop(DesignerItem) + deltaVertical * Math.Cos(-Me.RotateAngle) + (Me.transformOrigin.Y * deltaVertical * (1 - Math.Cos(-Me.RotateAngle))))
                     Canvas.SetLeft(DesignerItem, Canvas.GetLeft(DesignerItem) + deltaVertical * Math.Sin(-Me.RotateAngle) - (Me.transformOrigin.Y * deltaVertical * Math.Sin(-Me.RotateAngle)))
                     Pnl.Height = Pnl.ActualHeight - deltaVertical
+                    Pnl.AutoHeight = False
 
                     If Keyboard.Modifiers = ModifierKeys.Control Then
                         DeltaY += deltaVertical
@@ -155,6 +161,7 @@ Friend Class ResizeThumb
                     Canvas.SetTop(DesignerItem, Canvas.GetTop(DesignerItem) + (Me.transformOrigin.Y * deltaVertical * (1 - Math.Cos(-Me.RotateAngle))))
                     Canvas.SetLeft(DesignerItem, Canvas.GetLeft(DesignerItem) - deltaVertical * Me.transformOrigin.Y * Math.Sin(-Me.RotateAngle))
                     Pnl.Height = Pnl.ActualHeight - deltaVertical
+                    Pnl.AutoHeight = False
 
                     If Keyboard.Modifiers = ModifierKeys.Control Then
                         DeltaY -= deltaVertical
@@ -210,9 +217,14 @@ Friend Class ResizeThumb
     End Sub
 
     Sub ReportChanges()
-        If OldState?.HasChanges Then
-            Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
-        End If
+        Dim diagramChanged = diagramState?.HasChanges
+        Dim pnlChanged = pnlState?.HasChanges
+        If Not diagramChanged AndAlso Not pnlChanged Then Return
+
+        Dim unit As New UndoRedoUnit()
+        If diagramChanged Then unit.Add(diagramState.SetNewValues)
+        If pnlChanged Then unit.Add(pnlState.SetNewValues)
+        Dsn.UndoStack.ReportChanges(unit)
     End Sub
 
     Protected Overrides Sub Finalize()

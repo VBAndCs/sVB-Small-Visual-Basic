@@ -13,10 +13,8 @@ Namespace WinForms
     ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class Forms
-
         Friend Shared _forms As New ControlsDictionay
         Friend Shared _controls As New ControlsDictionay
-
 
         Friend Shared Function GetForm(name As String) As Window
             name = name.ToLower()
@@ -108,8 +106,12 @@ Namespace WinForms
                                    .Title = Automation.AutomationProperties.GetHelpText(canvas),
                                    .Content = canvas,
                                    .ResizeMode = ResizeMode.CanMinimize,
-                                   .Background = canvas.Background
+                                   .Background = canvas.Background,
+                                   .MaxWidth = canvas.MaxWidth,
+                                   .MaxHeight = canvas.MaxHeight
                             }
+                            canvas.IsEnabled = True
+                            canvas.Visibility = Visibility.Visible
 
                             AddHandler wnd.Closed, AddressOf Form_Closed
 
@@ -118,6 +120,17 @@ Namespace WinForms
                             ' Add control names:
                             Dim controls = GetChildren(canvas).ToList()
                             For Each ui In controls
+                                Dim fw = TryCast(ui, FrameworkElement)
+                                If fw?.Name = "__FORM__PROPS__" Then
+                                    wnd.MinWidth = fw.MinWidth
+                                    wnd.MinHeight = fw.MinHeight
+                                    wnd.MaxWidth = fw.MaxWidth
+                                    wnd.MaxHeight = fw.MaxHeight
+                                    wnd.Tag = fw.Tag
+                                    wnd.ToolTip = fw.ToolTip
+                                    Continue For
+                                End If
+
                                 Dim lst = TryCast(ui, ItemsControl)
                                 If lst IsNot Nothing AndAlso lst.Items.Count = 1 Then
                                     Dim item = lst.Items(0).ToString()
@@ -127,7 +140,6 @@ Namespace WinForms
                                     End If
                                 End If
 
-                                Dim fw = TryCast(ui, FrameworkElement)
                                 Dim controlName = Automation.AutomationProperties.GetName(ui)
 
                                 If controlName = "" Then
@@ -230,9 +242,6 @@ Namespace WinForms
                         Else
                             cc.Content = value
                         End If
-
-                    ElseIf TypeOf x Is Wpf.TextBlock Then
-                        'CType(x, Wpf.TextBlock).IsHitTestVisible = False
                     End If
                 Catch
                 End Try

@@ -28,11 +28,13 @@ Namespace Microsoft.SmallVisualBasic
         Public [Or] As MethodInfo
         Public GetArrayValue As MethodInfo
         Public SetArrayValue As MethodInfo
+        Friend Concat As MethodInfo
 
         Public ReadOnly Property Types As Dictionary(Of String, TypeInfo)
             Get
                 Return _types
             End Get
         End Property
+
     End Class
 End Namespace

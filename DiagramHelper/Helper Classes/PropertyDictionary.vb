@@ -98,7 +98,13 @@ Public Class PropertyDictionary
             Dim OwnerType = Entry.Value.OwnerType
             Dim descriptor = DependencyPropertyDescriptor.FromName(Entry.Key, OwnerType, DependencyObject.GetType())
             Dim [Property] = descriptor.DependencyProperty
-            DependencyObject.SetValue([Property], Me([Property]))
+            Dim v1 = Me([Property])
+            Dim v2 = DependencyObject.GetValue([Property])
+
+            If Not v1.Equals(v2) Then
+                If TryCast(v1, ICollection)?.Count = 0 AndAlso TryCast(v2, ICollection)?.Count = 0 Then Continue For
+                DependencyObject.SetValue([Property], v1)
+            End If
         Next
     End Sub
 

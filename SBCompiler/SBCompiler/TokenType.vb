@@ -36,6 +36,7 @@
         [Or]
         Dot
         Lookup
+        Concatenation
         Addition
         Subtraction
         Division

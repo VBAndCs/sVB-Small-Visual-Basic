@@ -70,21 +70,21 @@ Class PropertyState
         Return False
     End Function
 
-    Sub RestoreOldValue() Implements IRestore.RestoreOldValue
+    Sub RestoreOldValues() Implements IRestore.RestoreOldValues
         For Each Pair In Me
             Owner.SetValue(Pair.Key, Me.Clone(Pair.Value.OldValue))
         Next
         If AfterRestoreAction IsNot Nothing Then AfterRestoreAction()
     End Sub
 
-    Sub RestoreNewValue() Implements IRestore.RestoreNewValue
+    Sub RestoreNewValues() Implements IRestore.RestoreNewValues
         For Each Pair In Me
             Owner.SetValue(Pair.Key, Me.Clone(Pair.Value.NewValue))
         Next
         If AfterRestoreAction IsNot Nothing Then AfterRestoreAction()
     End Sub
 
-    Function SetNewValue() As PropertyState
+    Function SetNewValues() As PropertyState
         For Each Pair In Me
             Pair.Value.NewValue = Me.Clone(Owner.GetValue(Pair.Key))
         Next

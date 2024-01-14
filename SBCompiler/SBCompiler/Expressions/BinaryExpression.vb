@@ -30,6 +30,8 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             Dim methodInfo As MethodInfo = Nothing
 
             Select Case [Operator].Type
+                Case TokenType.Concatenation
+                    methodInfo = scope.TypeInfoBag.Concat
                 Case TokenType.Addition
                     methodInfo = scope.TypeInfoBag.Add
                 Case TokenType.Subtraction
@@ -90,6 +92,9 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             Select Case [Operator].Type
                 Case TokenType.Multiplication, TokenType.Division
                     Return VariableType.Double
+
+                Case TokenType.Concatenation
+                    Return VariableType.String
 
                 Case TokenType.Addition
                     If leftType = VariableType.Any OrElse rightType = VariableType.Any OrElse

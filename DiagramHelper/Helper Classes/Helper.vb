@@ -69,7 +69,13 @@ Public Class Helper
         If element Is Nothing Then Return Nothing
         Dim Parent = VisualTreeHelper.GetParent(element)
         Do
-            If Parent Is Nothing OrElse TypeOf (Parent) Is ListBoxItem Then Return Parent
+            If Parent Is Nothing Then Return Nothing
+
+            If TypeOf (Parent) Is ListBoxItem Then
+                Dim rootListBoxItem = GetListBoxItem(VisualTreeHelper.GetParent(Parent))
+                Return If(rootListBoxItem Is Nothing, Parent, rootListBoxItem)
+            End If
+
             Parent = VisualTreeHelper.GetParent(Parent)
         Loop
     End Function
@@ -187,6 +193,18 @@ Public Class Helper
             DisObj.Dispatcher.Invoke(DispatcherPriority.Render, Sub() Exit Sub)
         Catch
         End Try
+    End Sub
+
+    Shared Sub RunLater(DisObj As DispatcherObject, action As Action)
+        If DisObj Is Nothing Then Return
+        Dim dt As New DispatcherTimer(
+            TimeSpan.FromMilliseconds(20),
+            DispatcherPriority.Background,
+            Sub()
+                action()
+                dt.Stop()
+            End Sub, DisObj.Dispatcher)
+        dt.Start()
     End Sub
 
 End Class

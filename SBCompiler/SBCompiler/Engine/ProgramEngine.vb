@@ -304,6 +304,8 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 Dim rightExpr = EvaluateExpression(expression.RightHandSide)
 
                 Select Case expression.Operator.Type
+                    Case TokenType.Concatenation
+                        Return leftExpr.Concat(rightExpr)
                     Case TokenType.Addition
                         Return leftExpr.Add(rightExpr)
                     Case TokenType.And

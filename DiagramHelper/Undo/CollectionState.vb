@@ -4,6 +4,8 @@
 
     Public AfterRestoreAction As Action(Of Object)
     Public Collection As IList
+    Public Event BeforeRemoveItem(item As Object)
+    Public Event AfterInsertItem(item As Object)
 
     Sub New(Collection As IList)
         Me.Collection = Collection
@@ -39,12 +41,16 @@
         Next
     End Sub
 
-    Sub RestoreOldValue() Implements IRestore.RestoreOldValue
+    Sub RestoreOldValues() Implements IRestore.RestoreOldValues
         For i = Me.Count - 1 To 0 Step -1
             If Me.Values(i).OldValue = -1 Then
-                Collection.Remove(Me.Keys(i))
+                Dim item = Keys(i)
+                RaiseEvent BeforeRemoveItem(item)
+                Collection.Remove(item)
             Else
-                Collection.Insert(Me.Values(i).OldValue, Me.Keys(i))
+                Dim item = Keys(i)
+                Collection.Insert(Me.Values(i).OldValue, item)
+                RaiseEvent AfterInsertItem(item)
             End If
         Next
 
@@ -54,12 +60,16 @@
 
     End Sub
 
-    Sub RestoreNewValue() Implements IRestore.RestoreNewValue
+    Sub RestoreNewValues() Implements IRestore.RestoreNewValues
         For i = 0 To Me.Count - 1
             If Me.Values(i).NewValue = -1 Then
-                Collection.Remove(Me.Keys(i))
+                Dim item = Keys(i)
+                RaiseEvent BeforeRemoveItem(item)
+                Collection.Remove(item)
             Else
-                Collection.Insert(Me.Values(i).NewValue, Me.Keys(i))
+                Dim item = Keys(i)
+                Collection.Insert(Me.Values(i).NewValue, item)
+                RaiseEvent AfterInsertItem(item)
             End If
         Next
 
@@ -70,7 +80,7 @@
     End Sub
 
 
-    Function SetNewValue() As CollectionState
+    Function SetNewValues() As CollectionState
         For Each Pair In Me
             Pair.Value.NewValue = Collection.IndexOf(Pair.Key)
         Next

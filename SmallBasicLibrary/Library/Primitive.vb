@@ -255,6 +255,11 @@ Namespace Library
             Return New Primitive(AsString() & primitive.AsString())
         End Function
 
+        Public Function Concat(secondPrimitive As Primitive) As Primitive
+            Return Me.AsString() & secondPrimitive.AsString()
+        End Function
+
+
         Public Function Add(addend As Primitive) As Primitive
             Dim n1 = TryGetAsDecimal()
             Dim n2 = addend.TryGetAsDecimal()
@@ -631,6 +636,10 @@ Namespace Library
 
         Public Shared Operator +(primitive1 As Primitive, primitive2 As Primitive) As Primitive
             Return primitive1.Add(primitive2)
+        End Operator
+
+        Public Shared Operator &(primitive1 As Primitive, primitive2 As Primitive) As Primitive
+            Return New Primitive(primitive1.AsString() & primitive2.AsString())
         End Operator
 
         Public Shared Operator -(primitive1 As Primitive, primitive2 As Primitive) As Primitive

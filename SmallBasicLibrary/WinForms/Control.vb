@@ -1444,8 +1444,8 @@ Namespace WinForms
                 Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
-                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.WidthProperty, width, duration)
-                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.HeightProperty, height, duration)
+                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.WidthProperty, width, CDbl(duration))
+                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.HeightProperty, height, CDbl(duration))
                     End Sub)
             Catch ex As Exception
                 ReportSubError(controlName, "AnimateSize", ex)

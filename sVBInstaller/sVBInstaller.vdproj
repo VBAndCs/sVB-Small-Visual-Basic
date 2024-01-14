@@ -1017,18 +1017,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_7AA1229CE5F3BA25B2E91B87C795A53C"
-        "OwnerKey" = "8:_F99398A675025338E040986902B11A40"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7AA1229CE5F3BA25B2E91B87C795A53C"
-        "OwnerKey" = "8:_C1A41205CDA4479E9BADF2A99BD8D2D9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_7AB05D70FE4A4EACA6BFC3D18E5EB580"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1246,7 +1234,7 @@
         "Entry"
         {
         "MsmKey" = "8:_90E47A155CDDD2B08F2BC44A0E66969A"
-        "OwnerKey" = "8:_7AA1229CE5F3BA25B2E91B87C795A53C"
+        "OwnerKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1564,7 +1552,7 @@
         "Entry"
         {
         "MsmKey" = "8:_AEA651B94AD259C379D1ECAC3395D9BA"
-        "OwnerKey" = "8:_7AA1229CE5F3BA25B2E91B87C795A53C"
+        "OwnerKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2205,6 +2193,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
+        "OwnerKey" = "8:_F99398A675025338E040986902B11A40"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
+        "OwnerKey" = "8:_C1A41205CDA4479E9BADF2A99BD8D2D9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F0C3A72B0915445A9E45F7B7B358BF01"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2231,18 +2231,6 @@
         {
         "MsmKey" = "8:_F22E1B6C938442E0B12CE8D5658FEB0E"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F27C9DBE3120CDDD6C208F33557BABA9"
-        "OwnerKey" = "8:_7AA1229CE5F3BA25B2E91B87C795A53C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F27C9DBE3120CDDD6C208F33557BABA9"
-        "OwnerKey" = "8:_C1A41205CDA4479E9BADF2A99BD8D2D9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2327,6 +2315,18 @@
         {
         "MsmKey" = "8:_FB7DCAD8758343478F27386CB4027B58"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FBCC5627FCBADC40A8EE7E7FE58CC292"
+        "OwnerKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FBCC5627FCBADC40A8EE7E7FE58CC292"
+        "OwnerKey" = "8:_C1A41205CDA4479E9BADF2A99BD8D2D9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2458,7 +2458,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7AA1229CE5F3BA25B2E91B87C795A53C"
+        "OwnerKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2476,7 +2476,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F27C9DBE3120CDDD6C208F33557BABA9"
+        "OwnerKey" = "8:_FBCC5627FCBADC40A8EE7E7FE58CC292"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -5939,37 +5939,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7AA1229CE5F3BA25B2E91B87C795A53C"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:sVBCompiler, Version=2.7.2.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_7AA1229CE5F3BA25B2E91B87C795A53C"
-                    {
-                    "Name" = "8:sVBCompiler.exe"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:sVBCompiler.exe"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7AB05D70FE4A4EACA6BFC3D18E5EB580"
@@ -9767,6 +9736,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EFABA3207A408F9BEC2D12C700368E84"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:sVBCompiler, Version=2.7.2.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_EFABA3207A408F9BEC2D12C700368E84"
+                    {
+                    "Name" = "8:sVBCompiler.exe"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:sVBCompiler.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F0C3A72B0915445A9E45F7B7B358BF01"
             {
             "SourcePath" = "8:..\\Samples\\Arrays.sb"
@@ -9865,37 +9865,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F27C9DBE3120CDDD6C208F33557BABA9"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:SmallBasicLibrary, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_F27C9DBE3120CDDD6C208F33557BABA9"
-                    {
-                    "Name" = "8:SmallBasicLibrary.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:SmallBasicLibrary.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F27D04AB8BD948FCB3A76016E4FEE074"
@@ -10187,6 +10156,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FBCC5627FCBADC40A8EE7E7FE58CC292"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:SmallBasicLibrary, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_FBCC5627FCBADC40A8EE7E7FE58CC292"
+                    {
+                    "Name" = "8:SmallBasicLibrary.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:SmallBasicLibrary.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FC6F4BD1C2D54885BE14C9D81DAAA491"
@@ -11404,16 +11404,16 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 2.8.8.2"
-        "ProductCode" = "8:{429BF869-5DCB-47BC-9788-F220F47BD8E1}"
-        "PackageCode" = "8:{EE099DAB-53CF-4646-B8A7-699A2188D8A9}"
+        "ProductName" = "8:Small Visual Basic 2.8.9"
+        "ProductCode" = "8:{347A8E2D-1151-47B6-97A1-D64A0C1294B1}"
+        "PackageCode" = "8:{8CD253A7-C331-4B32-B5C0-1D385883AB2D}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.8.8"
+        "ProductVersion" = "8:2.8.9"
         "Manufacturer" = "8:Small Visual Basic"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -11570,7 +11570,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 2.8.8.2"
+            "Name" = "8:sVB 2.8.9"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -11598,7 +11598,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 2.8.8.2"
+            "Name" = "8:sVB 2.8.9"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -11612,7 +11612,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 2.8.8.2"
+            "Name" = "8:sVB 2.8.9"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

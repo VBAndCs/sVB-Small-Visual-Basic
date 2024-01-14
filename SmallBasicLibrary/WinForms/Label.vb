@@ -84,12 +84,19 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
+                        If imageFile.AsString() = "" Then
+                            SetText(labelName, "")
+                            Return
+                        End If
+
                         If Not IO.Path.IsPathRooted(imageFile) Then
                             imageFile = IO.Path.Combine(Program.Directory, imageFile)
                         End If
+
                         GetLabel(labelName).Content = New Wpf.Image() With {
                             .Source = New BitmapImage(New Uri(imageFile))
                         }
+
                     Catch ex As Exception
                         Control.ReportError(labelName, "Image", imageFile, ex)
                     End Try

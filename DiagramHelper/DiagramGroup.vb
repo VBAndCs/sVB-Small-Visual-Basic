@@ -170,7 +170,7 @@
             Dim A As Action = AddressOf DiagramObject.Diagrams(Diagram).AfterRestoreAction
             Dim OldSate As New PropertyState(A, Diagram, Designer.GroupIDProperty)
             Diagram.ClearValue(Designer.GroupIDProperty)
-            UndoUnit.Add(OldSate.SetNewValue)
+            UndoUnit.Add(OldSate.SetNewValues)
         Loop
         Dim Dsn = Helper.GetDesigner(Canvas)
         Dsn.UndoStack.ReportChanges(UndoUnit)

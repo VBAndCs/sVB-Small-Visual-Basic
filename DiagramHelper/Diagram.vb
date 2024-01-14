@@ -207,7 +207,6 @@ Public Class DiagramObject
             Dim x = p.X - DraggingStartPoint.X
             Dim y = p.Y - DraggingStartPoint.Y
             DoMoveDiagram(x, y)
-
             e.Handled = True
         End If
     End Sub
@@ -260,7 +259,7 @@ Public Class DiagramObject
     Private Sub ReportMoveUndo()
         If OldPropertyState IsNot Nothing AndAlso OldPropertyState.HasChanges Then
             For Each State As PropertyState In Unit
-                State.SetNewValue()
+                State.SetNewValues()
             Next
             Dsn.UndoStack.ReportChanges(Unit)
         End If

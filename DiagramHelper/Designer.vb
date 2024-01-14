@@ -2,7 +2,7 @@
 Imports System.ComponentModel
 Imports System.Windows.Markup
 Imports System.Xml
-
+Imports ItemPair = System.Tuple(Of System.Windows.Controls.ListBoxItem, DiagramHelper.DiagramPanel)
 Public Class Designer
     Inherits ListBox
 
@@ -175,7 +175,7 @@ Public Class Designer
             If fw IsNot Nothing Then fw.Name = name
             Automation.AutomationProperties.SetName(control, name)
 
-            Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+            Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
             RaiseEvent PageShown(UpdateControlNameAndText)
             Return True
 
@@ -209,7 +209,7 @@ Public Class Designer
         Try
             Dim OldState As New PropertyState(AddressOf UpdateFormInfo, Me, Designer.NameProperty)
             Me.Name = name
-            Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+            Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
             UpdateFormInfo()
             RaiseEvent PageShown(UpdateFormName)
             Return True
@@ -462,10 +462,6 @@ Public Class Designer
     End Sub
 
     Private Function PageToXaml() As String
-        For Each Diagram In Me.Items
-            Commands.UpdateFontProperties(Diagram)
-        Next
-
         Dim canvas As New Canvas With {
             .Name = If(Name = "", PageKey.Replace("KEY", "Form"), Name),
             .Width = PageWidth,
@@ -480,17 +476,26 @@ Public Class Designer
             canvas.ClearValue(Automation.AutomationProperties.HelpTextProperty)
         End If
 
-        For Each diagram In Me.Items
+        For Each diagram As DependencyObject In Me.Items
+            Commands.UpdateFontProperties(diagram)
             Dim diagram2 As FrameworkElement = Helper.Clone(diagram)
+            Dim pnl = Helper.GetDiagramPanel(diagram)
+
             ' Note: These properties are changed by code. 
             ' Keep them if the user changed them in properties window.
             diagram2.ClearValue(AllowDropProperty)
             diagram2.ClearValue(CursorProperty)
             diagram2.ClearValue(IsTabStopProperty)
 
+            Dim v = diagram.GetValue(DiagramPanel.IsDiagramEnabledProperty)
+            If diagram2.IsEnabled <> v Then diagram2.IsEnabled = v
+            Dim v2 = If(diagram.GetValue(DiagramPanel.IsdiagramVisibleProperty), Visibility.Visible, Visibility.Hidden)
+            If diagram2.Visibility <> v2 Then diagram2.Visibility = v2
+            If diagram2.MaxWidth <> pnl.MaxWidth Then diagram2.MaxWidth = pnl.MaxWidth
+            If diagram2.MaxHeight <> pnl.MaxHeight Then diagram2.MaxHeight = pnl.MaxHeight
+
             ' GroupID, DiagramText will cause isuues in Small Basic, because they need a reference to DiagramHelper
             ' Use any wpf built-in properety to hold theor values
-
             Dim gID = GetGroupID(diagram2)
             If gID > 0 Then
                 Automation.AutomationProperties.SetAutomationId(diagram2, gID)
@@ -499,7 +504,6 @@ Public Class Designer
                 diagram2.ClearValue(Automation.AutomationProperties.AutomationIdProperty)
             End If
 
-
             ' Copy properties from designer to Canvas
             Canvas.SetLeft(diagram2, Designer.GetLeft(diagram2))
             diagram2.ClearValue(Designer.LeftProperty)
@@ -507,18 +511,18 @@ Public Class Designer
             Canvas.SetTop(diagram2, Designer.GetTop(diagram2))
             diagram2.ClearValue(Designer.TopProperty)
 
-
-            diagram2.Width = Designer.GetFrameWidth(diagram2)
-            diagram2.Height = Designer.GetFrameHeight(diagram2)
+            diagram2.Width = If(pnl.AutoWidth, Double.NaN, Designer.GetFrameWidth(diagram2))
+            diagram2.Height = If(pnl.AutoHeight, Double.NaN, Designer.GetFrameHeight(diagram2))
 
             diagram2.ClearValue(Designer.FrameWidthProperty)
             diagram2.ClearValue(Designer.FrameHeightProperty)
             diagram2.ClearValue(Designer.DiagramTextFontPropsProperty)
+
             Dim content = TryCast(diagram2, ContentControl)?.Content
             TryCast(content, TextBlock)?.ClearValue(Designer.DiagramTextFontPropsProperty)
 
             Dim z = Panel.GetZIndex(Helper.GetListBoxItem(diagram))
-            Panel.SetZIndex(diagram2, z)
+            If z <> Panel.GetZIndex(diagram2) Then Panel.SetZIndex(diagram2, z)
 
             Dim angle = Designer.GetRotationAngle(diagram2)
             If angle <> 0 Then Helper.Rotate(diagram2, angle)
@@ -533,53 +537,20 @@ Public Class Designer
             canvas.Children.Add(diagram2)
         Next
 
-        Dim xaml As New Text.StringBuilder(XamlWriter.Save(canvas))
-        xaml.Replace("Typography.StandardLigatures=""True""", "")
-        xaml.Replace("Typography.ContextualLigatures=""True""", "")
-        xaml.Replace("Typography.DiscretionaryLigatures=""False""", "")
-        xaml.Replace("Typography.HistoricalLigatures=""False""", "")
-        xaml.Replace("Typography.AnnotationAlternates=""0""", "")
-        xaml.Replace("Typography.ContextualAlternates=""True""", "")
-        xaml.Replace("Typography.HistoricalForms=""False""", "")
-        xaml.Replace("Typography.Kerning=""True""", "")
-        xaml.Replace("Typography.CapitalSpacing=""False""", "")
-        xaml.Replace("Typography.CaseSensitiveForms=""False""", "")
-        xaml.Replace("Typography.StylisticSet1=""False""", "")
-        xaml.Replace("Typography.StylisticSet2=""False""", "")
-        xaml.Replace("Typography.StylisticSet3=""False""", "")
-        xaml.Replace("Typography.StylisticSet4=""False""", "")
-        xaml.Replace("Typography.StylisticSet5=""False""", "")
-        xaml.Replace("Typography.StylisticSet6=""False""", "")
-        xaml.Replace("Typography.StylisticSet7=""False""", "")
-        xaml.Replace("Typography.StylisticSet8=""False""", "")
-        xaml.Replace("Typography.StylisticSet9=""False""", "")
-        xaml.Replace("Typography.StylisticSet10=""False""", "")
-        xaml.Replace("Typography.StylisticSet11=""False""", "")
-        xaml.Replace("Typography.StylisticSet12=""False""", "")
-        xaml.Replace("Typography.StylisticSet13=""False""", "")
-        xaml.Replace("Typography.StylisticSet14=""False""", "")
-        xaml.Replace("Typography.StylisticSet15=""False""", "")
-        xaml.Replace("Typography.StylisticSet16=""False""", "")
-        xaml.Replace("Typography.StylisticSet17=""False""", "")
-        xaml.Replace("Typography.StylisticSet18=""False""", "")
-        xaml.Replace("Typography.StylisticSet19=""False""", "")
-        xaml.Replace("Typography.StylisticSet20=""False""", "")
-        xaml.Replace("Typography.Fraction=""Normal""", "")
-        xaml.Replace("Typography.SlashedZero=""False""", "")
-        xaml.Replace("Typography.MathematicalGreek=""False""", "")
-        xaml.Replace("Typography.EastAsianExpertForms=""False""", "")
-        xaml.Replace("Typography.Variants=""Normal""", "")
-        xaml.Replace("Typography.Capitals=""Normal""", "")
-        xaml.Replace("Typography.NumeralStyle=""Normal""", "")
-        xaml.Replace("Typography.NumeralAlignment=""Normal""", "")
-        xaml.Replace("Typography.EastAsianWidths=""Normal""", "")
-        xaml.Replace("Typography.EastAsianLanguage=""Normal""", "")
-        xaml.Replace("Typography.StandardSwashes=""0""", "")
-        xaml.Replace("Typography.ContextualSwashes=""0""", "")
-        xaml.Replace("Typography.StylisticAlternates=""0""", "")
-        xaml.Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ")
-        Return xaml.ToString()
+        Dim tempControl = New Control() With {
+            .Name = "__FORM__PROPS__",
+             .MinWidth = Me.DesignerCanvas.MinWidth,
+             .MinHeight = Me.DesignerCanvas.MinHeight,
+             .MaxWidth = Me.DesignerCanvas.MaxWidth,
+             .MaxHeight = Me.DesignerCanvas.MaxHeight,
+             .Tag = Me.Tag,
+             .ToolTip = Me.PageToolTip
+        }
+        tempControl.SetValue(Canvas.LeftProperty, Me.PageLeft)
+        tempControl.SetValue(Canvas.TopProperty, Me.PageTop)
+        canvas.Children.Add(tempControl)
 
+        Return XamlWriter.Save(canvas)
     End Function
 
 
@@ -603,9 +574,13 @@ Public Class Designer
         Me.Name = canvas.Name
         _Text = Automation.AutomationProperties.GetHelpText(canvas)
 
+        ' the canvas must be visible and enanled at design time, so store actual values in attached properties
+        canvas.SetValue(DiagramPanel.IsDiagramEnabledProperty, canvas.IsEnabled)
+        canvas.IsEnabled = True
+        canvas.SetValue(DiagramPanel.IsDiagramVisibleProperty, canvas.Visibility = Visibility.Visible)
+        canvas.Visibility = Visibility.Visible
+
         Me.Visibility = Visibility.Hidden
-        If Not Double.IsNaN(canvas.Width) Then Me.PageWidth = canvas.Width
-        If Not Double.IsNaN(canvas.Height) Then Me.PageHeight = canvas.Height
 
         If DesignerCanvas Is Nothing Then
             OpenFileCanvas = canvas
@@ -615,56 +590,80 @@ Public Class Designer
         End If
 
         For Each child In canvas.Children
-            Dim Diagram = TryCast(Helper.Clone(child), FrameworkElement)
-            If Diagram Is Nothing Then Continue For
+            Dim diagram = TryCast(Helper.Clone(child), FrameworkElement)
+            If diagram Is Nothing Then Continue For
 
-            Me.Items.Add(Diagram)
+            If diagram.Name = "__FORM__PROPS__" Then
+                Me.DesignerCanvas.MinWidth = diagram.MinWidth
+                Me.DesignerCanvas.MinHeight = diagram.MinHeight
+                Me.DesignerCanvas.MaxWidth = diagram.MaxWidth
+                Me.DesignerCanvas.MaxHeight = diagram.MaxHeight
+                Me.Tag = diagram.Tag
+                Me.PageToolTip = diagram.ToolTip
+                Continue For
+            End If
+
+            Me.Items.Add(diagram)
+            Helper.UpdateControl(Me)
+
             ' Restore the GroupID and DiagramText properties
-            Dim txt = Automation.AutomationProperties.GetHelpText(Diagram)
+            Dim txt = Automation.AutomationProperties.GetHelpText(diagram)
             If txt <> "" Then
-                SetControlText(Diagram, txt)
-                Diagram.ClearValue(Automation.AutomationProperties.HelpTextProperty)
+                SetControlText(diagram, txt)
+                diagram.ClearValue(Automation.AutomationProperties.HelpTextProperty)
             End If
 
-            Dim gId = Automation.AutomationProperties.GetAutomationId(Diagram)
+            Dim gId = Automation.AutomationProperties.GetAutomationId(diagram)
             If gId = "" Then
-                Diagram.ClearValue(GroupIDProperty)
+                diagram.ClearValue(GroupIDProperty)
             Else
-                SetGroupID(Diagram, gId)
-                Diagram.ClearValue(Automation.AutomationProperties.AutomationIdProperty)
+                SetGroupID(diagram, gId)
+                diagram.ClearValue(Automation.AutomationProperties.AutomationIdProperty)
             End If
 
-            Designer.SetFrameWidth(Diagram, Diagram.Width)
-            Diagram.ClearValue(WidthProperty)
+            ' the diagram must be visible and enanled at design time, so store actual values in attached properties
+            diagram.SetValue(DiagramPanel.IsDiagramEnabledProperty, diagram.IsEnabled)
+            diagram.IsEnabled = True
+            diagram.SetValue(DiagramPanel.IsDiagramVisibleProperty, diagram.Visibility = Visibility.Visible)
+            diagram.Visibility = Visibility.Visible
 
-            Designer.SetFrameHeight(Diagram, Diagram.Height)
-            Diagram.ClearValue(HeightProperty)
+            Dim pnl = Helper.GetDiagramPanel(diagram)
+            pnl.MaxWidth = diagram.MaxWidth
+            diagram.MaxWidth = Double.PositiveInfinity
+            pnl.MaxHeight = diagram.MaxHeight
+            diagram.MaxHeight = Double.PositiveInfinity
 
-            Dim left = Canvas.GetLeft(Diagram)
+            pnl.SetSize(diagram.Width, diagram.Height)
+            diagram.ClearValue(WidthProperty)
+            diagram.ClearValue(HeightProperty)
+
+            Dim left = Canvas.GetLeft(diagram)
             If Double.IsNaN(left) Then left = 0
-            SetLeft(Diagram, left)
+            SetLeft(diagram, left)
 
-            Dim top = Canvas.GetTop(Diagram)
+            Dim top = Canvas.GetTop(diagram)
             If Double.IsNaN(top) Then top = 0
-            Designer.SetTop(Diagram, top)
+            Designer.SetTop(diagram, top)
 
-            Dim RotateTransform = TryCast(Diagram.RenderTransform, RotateTransform)
+            Dim RotateTransform = TryCast(diagram.RenderTransform, RotateTransform)
             If RotateTransform Is Nothing Then
-                Designer.SetRotationAngle(Diagram, 0)
+                Designer.SetRotationAngle(diagram, 0)
             Else
                 Dim angle = RotateTransform.Angle
-                Diagram.RenderTransform = Nothing
-                Designer.SetRotationAngle(Diagram, angle)
+                diagram.RenderTransform = Nothing
+                Designer.SetRotationAngle(diagram, angle)
             End If
 
-            Dim lt = Diagram.LayoutTransform
-            Diagram.LayoutTransform = Nothing
-            Helper.UpdateControl(Diagram)
-            Diagram.LayoutTransform = lt
+            Dim lt = diagram.LayoutTransform
+            diagram.LayoutTransform = Nothing
+            Helper.UpdateControl(diagram)
+            diagram.LayoutTransform = lt
         Next
 
-        Helper.UpdateControl(Me)
+        If Not Double.IsNaN(canvas.Width) Then Me.PageWidth = canvas.Width
+        If Not Double.IsNaN(canvas.Height) Then Me.PageHeight = canvas.Height
 
+        Helper.UpdateControl(Me)
         Me.Visibility = Visibility.Visible
     End Sub
 
@@ -672,14 +671,18 @@ Public Class Designer
 
 
     Function GetSelectionBounds() As Rect
+        Return GetControlBounds(Me.SelectedItems)
+    End Function
+
+    Function GetControlBounds(controls As IList) As Rect
         Dim MinX As Double = Double.MaxValue
         Dim MaxX As Double = Double.MinValue
         Dim MinY As Double = Double.MaxValue
         Dim MaxY As Double = Double.MinValue
 
-        For Each Diagram As FrameworkElement In Me.SelectedItems
-            Dim R As New Rect(0, 0, Diagram.ActualWidth, Diagram.ActualHeight)
-            R = Diagram.TransformToVisual(Me.DesignerCanvas).TransformBounds(R)
+        For Each diagram As FrameworkElement In controls
+            Dim R As New Rect(0, 0, diagram.ActualWidth, diagram.ActualHeight)
+            R = diagram.TransformToVisual(Me.DesignerCanvas).TransformBounds(R)
 
             If R.TopLeft.X < MinX Then MinX = R.TopLeft.X
             If R.TopRight.X > MaxX Then MaxX = R.TopRight.X
@@ -763,8 +766,11 @@ Public Class Designer
 
 
         Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items, diagram)
+        AddHandler OldState.BeforeRemoveItem, AddressOf UndoRedo_BeforeRemoveItem
+        AddHandler OldState.AfterInsertItem, AddressOf UndoRedo_AfterInsertItem
+
         Me.Items.Add(diagram)
-        UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+        UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
 
         Designer.SetLeft(diagram, pos.X)
         Designer.SetTop(diagram, pos.Y)
@@ -805,14 +811,55 @@ Public Class Designer
     Sub RemoveSelectedDiagrams()
         Dim Diagrams = Me.SelectedItems
         Dim OldState As New CollectionState(AddressOf AfterRestoreAction, Me.Items)
+        AddHandler OldState.BeforeRemoveItem, AddressOf UndoRedo_BeforeRemoveItem
+        AddHandler OldState.AfterInsertItem, AddressOf UndoRedo_AfterInsertItem
+
         For i = Diagrams.Count - 1 To 0 Step -1
             OldState.Add(Diagrams(i))
             Me.RemoveDiagram(Diagrams(i))
         Next
 
         If DeleteUndoUnit Is Nothing Then DeleteUndoUnit = New UndoRedoUnit
-        DeleteUndoUnit.Add(OldState.SetNewValue)
+        DeleteUndoUnit.Add(OldState.SetNewValues)
+    End Sub
 
+
+    Private diagramInfo As New Dictionary(Of FrameworkElement, ItemPair)
+
+    Private Sub UndoRedo_BeforeRemoveItem(item As Object)
+        diagramInfo(item) = New ItemPair(Helper.GetListBoxItem(item), Helper.GetDiagramPanel(item))
+    End Sub
+
+    Private Sub UndoRedo_AfterInsertItem(item As Object)
+        Dim oldInfo = diagramInfo(item)
+        Dim oldListItem = oldInfo.Item1
+        Dim oldPanel = oldInfo.Item2
+        Helper.UpdateControl(Me)
+        Dim newPanel = Helper.GetDiagramPanel(item)
+        Dim newListItem = Helper.GetListBoxItem(item)
+
+        fixUnits(UndoStack.UndoItems, oldListItem, oldPanel, newListItem, newPanel)
+        fixUnits(UndoStack.RedoItems, oldListItem, oldPanel, newListItem, newPanel)
+    End Sub
+
+    Private Sub fixUnits(
+               units As List(Of UndoRedoUnit),
+               oldListItem As ListBoxItem,
+               oldPanel As DiagramPanel,
+               newListItem As ListBoxItem,
+               newPanel As DiagramPanel)
+
+        For Each unit In units
+            For Each state In unit
+                Dim propState = TryCast(state, PropertyState)
+                If propState Is Nothing Then Continue For
+                If propState.Owner Is oldPanel Then
+                    propState.Owner = newPanel
+                ElseIf propState.Owner Is oldListItem Then
+                    propState.Owner = newListItem
+                End If
+            Next
+        Next
     End Sub
 
     Public Sub RemoveSelectedItems()
@@ -859,6 +906,8 @@ Public Class Designer
             Dim Lst As ArrayList = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
             Me.SelectedItems.Clear()
             Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items)
+            AddHandler OldState.BeforeRemoveItem, AddressOf UndoRedo_BeforeRemoveItem
+            AddHandler OldState.AfterInsertItem, AddressOf UndoRedo_AfterInsertItem
 
             For Each Diagram As UIElement In Lst
                 Dim left = Designer.GetLeft(Diagram)
@@ -876,7 +925,7 @@ Public Class Designer
 
                 OldState.Add(Diagram)
                 Me.Items.Add(Diagram)
-                OldState.SetNewValue()
+                OldState.SetNewValues()
             Next
 
             UndoStack.ReportChanges(New UndoRedoUnit(OldState))
@@ -1184,7 +1233,9 @@ Public Class Designer
     End Sub
 
     Public Sub Undo()
-        If UndoStack.CanUndo Then UndoStack.Undo().RestoreOldState()
+        If UndoStack.CanUndo Then
+            UndoStack.Undo().RestoreOldState()
+        End If
     End Sub
 
     Public Sub Redo()
@@ -1201,7 +1252,7 @@ Public Class Designer
         If (Value < 0 AndAlso GridPen.Thickness <= 0.1) OrElse (Value > 0 AndAlso GridPen.Thickness >= 1.5) Then Return
         Dim OldState As New PropertyState(GridPen, Pen.ThicknessProperty)
         GridPen.Thickness += Value
-        Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+        Me.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
     End Sub
 
     Friend Sub AfterRestoreAction(Diagrams As IList)
@@ -1529,7 +1580,7 @@ Public Class Designer
 
             _Text = value
             Automation.AutomationProperties.SetHelpText(Me, value)
-            UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue()))
+            UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues()))
 
         ElseIf Me.Items.Count > controlIndex Then
             Dim c = Me.Items(controlIndex)
@@ -1562,17 +1613,22 @@ Public Class Designer
                     control, Automation.AutomationProperties.HelpTextProperty)
 
             Automation.AutomationProperties.SetHelpText(control, value)
-            UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue()))
+            UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues()))
         End If
 
         Dim contentControl = TryCast(control, ContentControl)
         Dim listControl = TryCast(control, ItemsControl)
 
         If contentControl IsNot Nothing Then
-            contentControl.Content = New TextBlock() With {
-                .Text = value,
-                .TextWrapping = TextWrapping.Wrap
-            }
+            Dim tb = TryCast(contentControl.Content, TextBlock)
+            If tb Is Nothing Then
+                contentControl.Content = New TextBlock() With {
+                    .Text = value,
+                    .TextWrapping = TextWrapping.Wrap
+                }
+            Else
+                tb.Text = value
+            End If
 
         ElseIf listControl IsNot Nothing Then
             listControl.Items.Clear()
@@ -1903,6 +1959,44 @@ Public Class Designer
                            New PropertyMetadata(Nothing))
 #End Region
 
+#Region "PageLeft"
+    <TypeConverter(GetType(LengthConverter))>
+    Public Property PageLeft As Double
+        Get
+            Return GetValue(PageLeftProperty)
+        End Get
+
+        Set(value As Double)
+            SetValue(PageLeftProperty, value)
+        End Set
+    End Property
+
+    Public Shared ReadOnly PageLeftProperty As DependencyProperty =
+                           DependencyProperty.Register("PageLeft",
+                           GetType(Double), GetType(Designer),
+                           New PropertyMetadata(Double.NaN))
+
+#End Region
+
+#Region "PageTop"
+    <TypeConverter(GetType(LengthConverter))>
+    Public Property PageTop As Double
+        Get
+            Return GetValue(PageTopProperty)
+        End Get
+
+        Set(value As Double)
+            SetValue(PageTopProperty, value)
+        End Set
+    End Property
+
+    Public Shared ReadOnly PageTopProperty As DependencyProperty =
+                           DependencyProperty.Register("PageTop",
+                           GetType(Double), GetType(Designer),
+                           New PropertyMetadata(Double.NaN))
+
+#End Region
+
 #Region "PageWidth"
     <TypeConverter(GetType(LengthConverter))>
     Public Property PageWidth As Double
@@ -1916,11 +2010,32 @@ Public Class Designer
     End Property
 
     Shared Sub PageWidthChanged(sender As System.Windows.DependencyObject, e As System.Windows.DependencyPropertyChangedEventArgs)
-        Dim Designer As Designer = sender
-        If Designer.DesignerCanvas Is Nothing Then Return
-        Designer.DesignerCanvas.Width = e.NewValue
-        Designer.ConnectionCanvas.Width = e.NewValue
-        Designer.UpdateGrid()
+        Dim dsn As Designer = sender
+        If dsn.DesignerCanvas Is Nothing Then Return
+
+        Dim maxWidth = dsn.DesignerCanvas.MaxWidth
+        Dim minWidth = dsn.DesignerCanvas.MinWidth
+        Dim value = CDbl(e.NewValue)
+
+        If value < minWidth Then
+            dsn.PageWidth = minWidth
+        ElseIf value > maxWidth Then
+            dsn.PageWidth = maxWidth
+        Else
+            dsn.DesignerCanvas.Width = value
+            dsn.ConnectionCanvas.Width = value
+            dsn.UpdateGrid()
+
+            If Double.IsNaN(value) Then
+                If dsn.Items.Count = 0 Then
+                    Helper.UpdateControl(dsn)
+                    dsn.PageWidth = dsn.DesignerCanvas.ActualWidth
+                Else
+                    Dim r = dsn.GetControlBounds(dsn.Items)
+                    dsn.PageWidth = r.Right + 2
+                End If
+            End If
+        End If
     End Sub
 
     Public Shared ReadOnly PageWidthProperty As DependencyProperty =
@@ -1943,11 +2058,32 @@ Public Class Designer
     End Property
 
     Shared Sub PageHeightChanged(sender As System.Windows.DependencyObject, e As System.Windows.DependencyPropertyChangedEventArgs)
-        Dim Designer As Designer = sender
-        If Designer.DesignerCanvas Is Nothing Then Return
-        Designer.DesignerCanvas.Height = e.NewValue
-        Designer.ConnectionCanvas.Height = e.NewValue
-        Designer.UpdateGrid()
+        Dim dsn As Designer = sender
+        If dsn.DesignerCanvas Is Nothing Then Return
+
+        Dim maxHeight = dsn.DesignerCanvas.MaxHeight
+        Dim minHeight = dsn.DesignerCanvas.MinHeight
+        Dim value = e.NewValue
+
+        If value < minHeight Then
+            dsn.PageHeight = minHeight
+        ElseIf value > maxHeight Then
+            dsn.PageHeight = maxHeight
+        Else
+            dsn.DesignerCanvas.Height = value
+            dsn.ConnectionCanvas.Height = value
+            dsn.UpdateGrid()
+
+            If Double.IsNaN(value) Then
+                If dsn.Items.Count = 0 Then
+                    Helper.UpdateControl(dsn)
+                    dsn.PageHeight = dsn.DesignerCanvas.ActualHeight
+                Else
+                    Dim r = dsn.GetControlBounds(dsn.Items)
+                    dsn.PageHeight = r.Bottom + 2
+                End If
+            End If
+        End If
     End Sub
 
     Public Shared ReadOnly PageHeightProperty As DependencyProperty =
@@ -1956,6 +2092,25 @@ Public Class Designer
                            New PropertyMetadata(29.7 * Helper.CmToPx, AddressOf PageHeightChanged))
 
 #End Region
+
+#Region "PageToolTip"
+    Public Property PageToolTip As String
+        Get
+            Return GetValue(PageToolTipProperty)
+        End Get
+
+        Set(value As String)
+            SetValue(PageToolTipProperty, value)
+        End Set
+    End Property
+
+    Public Shared ReadOnly PageToolTipProperty As DependencyProperty =
+                           DependencyProperty.Register("PageToolTip",
+                           GetType(String), GetType(Designer),
+                           New PropertyMetadata(Nothing))
+
+#End Region
+
 
 #Region "ShowGrid"
 
@@ -2008,7 +2163,7 @@ Public Class Designer
         Designer.TbLeftLocation.LayoutTransform = Sc
         Designer.TbTopLocation.LayoutTransform = Sc
 
-        If Designer.ZoomBox IsNot Nothing Then Designer.ZoomBox.zoomSlider.Value = e.NewValue * 100
+        If Designer.ZoomBox IsNot Nothing Then Designer.ZoomBox.ZoomSlider.Value = e.NewValue * 100
 
         Designer.UpdateGrid()
     End Sub

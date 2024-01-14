@@ -13,6 +13,37 @@ Public Class DiagramPanel
     Friend AfterRestoreSub As Action
     Friend DiagramGroup As DiagramGroup
 
+    Public Property AutoWidth As Boolean
+        Get
+            Return GetValue(AutoWidthProperty)
+        End Get
+
+        Set(ByVal value As Boolean)
+            SetValue(AutoWidthProperty, value)
+        End Set
+    End Property
+
+    Public Shared ReadOnly AutoWidthProperty As DependencyProperty =
+                           DependencyProperty.Register("AutoWidth",
+                           GetType(Boolean), GetType(DiagramPanel),
+                           New PropertyMetadata(False))
+
+
+    Public Property AutoHeight As Boolean
+        Get
+            Return GetValue(AutoHeightProperty)
+        End Get
+
+        Set(ByVal value As Boolean)
+            SetValue(AutoHeightProperty, value)
+        End Set
+    End Property
+
+    Public Shared ReadOnly AutoHeightProperty As DependencyProperty =
+                           DependencyProperty.Register("AutoHeight",
+                           GetType(Boolean), GetType(DiagramPanel),
+                           New PropertyMetadata(False))
+
     Public Overrides Sub OnApplyTemplate()
         MyBase.OnApplyTemplate()
         DesignerItem = Helper.GetListBoxItem(Me)
@@ -157,16 +188,17 @@ Public Class DiagramPanel
 
         Dim Unit = Dsn.UndoStack.Peek
         If Unit Is Nothing Then Return
-        Dim n = Unit.Count - 1
 
         For Each fw As FrameworkElement In Dsn.SelectedItems
             If fw Is Diagram Then Continue For
 
-            For i = 0 To n
+            For i = 0 To Unit.Count - 1
                 Dim propState = TryCast(Unit(i), PropertyState)
-                If PropState Is Nothing Then Continue For
+                If propState Is Nothing Then Continue For
 
-                Dim target = GetTarget(fw, propState.Owner)
+                Dim target = Commands.GetTarget(fw, propState.Owner)
+                If target Is Nothing Then Continue For
+
                 Dim NewPropState As New PropertyState(target, propState.Keys.ToArray)
 
                 For Each pair In propState
@@ -177,20 +209,10 @@ Public Class DiagramPanel
                     End If
                 Next
 
-                If NewPropState.HasChanges Then Unit.Add(NewPropState.SetNewValue())
+                If NewPropState.HasChanges Then Unit.Add(NewPropState.SetNewValues())
             Next
         Next
     End Sub
-
-    Private Shared Function GetTarget(fw As FrameworkElement, stateOwner As DependencyObject) As Object
-        If TypeOf stateOwner Is ListBoxItem Then
-            Return Helper.GetListBoxItem(fw)
-        ElseIf TypeOf stateOwner Is DiagramPanel Then
-            Return Helper.GetDiagramPanel(fw)
-        Else
-            Return fw
-        End If
-    End Function
 
 
 #Region "DesignerItem"
@@ -212,14 +234,14 @@ Public Class DiagramPanel
         Dsn.MaxZIndex += 1
         Dim OldState = New PropertyState(DesignerItem, Canvas.ZIndexProperty)
         Canvas.SetZIndex(DesignerItem, Dsn.MaxZIndex)
-        Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue()))
+        Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues()))
     End Sub
 
     Public Sub SendToBack()
         Dsn.MinZIndex -= 1
         Dim OldState = New PropertyState(DesignerItem, Canvas.ZIndexProperty)
         Canvas.SetZIndex(DesignerItem, Dsn.MinZIndex)
-        Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue()))
+        Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues()))
     End Sub
 
     Private Sub DesignerItem_LostFocus(sender As Object, e As RoutedEventArgs)
@@ -570,7 +592,7 @@ Public Class DiagramPanel
             Dim act As Action = AddressOf DiagramObject.Diagrams(d).AfterRestoreAction
             Dim OldSate As New PropertyState(act, d, Designer.GroupIDProperty)
             Designer.SetGroupID(d, timeStamp)
-            UndoUnit.Add(OldSate.SetNewValue)
+            UndoUnit.Add(OldSate.SetNewValues)
         Next
 
         Dsn.UndoStack.ReportChanges(UndoUnit)
@@ -651,49 +673,416 @@ Public Class DiagramPanel
         freezMenuCheck = False
     End Sub
 
+
+    Public Shared Function GetIsDiagramEnabled(ByVal element As DependencyObject) As Boolean
+        If element Is Nothing Then
+            Throw New ArgumentNullException("element")
+        End If
+
+        Return element.GetValue(IsDiagramEnabledProperty)
+    End Function
+
+    Public Shared Sub SetIsDiagramEnabled(ByVal element As DependencyObject, ByVal value As Boolean)
+        If element Is Nothing Then
+            Throw New ArgumentNullException("element")
+        End If
+
+        element.SetValue(IsDiagramEnabledProperty, value)
+    End Sub
+
+    Public Shared ReadOnly IsDiagramEnabledProperty As _
+               DependencyProperty = DependencyProperty.RegisterAttached("IsDiagramEnabled",
+               GetType(Boolean), GetType(FrameworkElement),
+               New PropertyMetadata(True))
+
+
+    Public Shared Function GetIsDiagramVisible(ByVal element As DependencyObject) As Boolean
+        If element Is Nothing Then
+            Throw New ArgumentNullException("element")
+        End If
+
+        Return element.GetValue(IsDiagramVisibleProperty)
+    End Function
+
+    Public Shared Sub SetIsDiagramVisible(ByVal element As DependencyObject, ByVal value As Boolean)
+        If element Is Nothing Then
+            Throw New ArgumentNullException("element")
+        End If
+
+        element.SetValue(IsDiagramVisibleProperty, value)
+    End Sub
+
+    Public Shared ReadOnly IsDiagramVisibleProperty As _
+               DependencyProperty = DependencyProperty.RegisterAttached("IsDiagramVisible",
+               GetType(Boolean), GetType(FrameworkElement),
+               New PropertyMetadata(True))
+
+
     Private Sub PropertiesMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim WndProps As New WndProperties
         With WndProps
-            .Show()
+            .Show() ' Apply the templates
             .Hide()
             .LeftValue = GetDoubleValue(DesignerItem, Canvas.LeftProperty)
             .TopValue = GetDoubleValue(DesignerItem, Canvas.TopProperty)
-            .WidthValue = GetDoubleValue(Me, WidthProperty)
-            .HeightValue = GetDoubleValue(Me, HeightProperty)
+            .WidthValue = If(AutoWidth, 0, GetDoubleValue(Me, WidthProperty))
+            .HeightValue = If(AutoHeight, 0, GetDoubleValue(Me, HeightProperty))
+            .MinWidthValue = GetDoubleValue(Me, MinWidthProperty)
+            .MinHeightValue = GetDoubleValue(Me, MinHeightProperty)
             .MaxWidthValue = GetDoubleValue(Me, MaxWidthProperty)
             .MaxHeightValue = GetDoubleValue(Me, MaxHeightProperty)
-            .EnabledValue = Diagram.IsEnabled
-            .VisibleValue = Diagram.IsVisible
-            .RightToLeftValue = Diagram.FlowDirection = FlowDirection.RightToLeft
-            .TagValue = Diagram.Tag
-            .ToolTipValue = Diagram.ToolTip
+            .EnabledValue = GetBooleanValue(IsDiagramEnabledProperty)
+            .VisibleValue = GetBooleanValue(IsDiagramVisibleProperty)
+            .RightToLeftValue = GetFlowDirectionValue()
+            .TagValue = GetStringValue(FrameworkElement.TagProperty)
+            .ToolTipValue = GetStringValue(FrameworkElement.ToolTipProperty)
         End With
+
+        SetWordWrapValue(WndProps)
 
         If WndProps.ShowDialog = True Then
             Dim unit As New UndoRedoUnit
-            Dim muliItems = Dsn.SelectedItems.Count > 1
+            Dim OldState As PropertyState
 
-            Dim OldState As New PropertyState(DesignerItem, Canvas.LeftProperty, Canvas.TopProperty)
-            If WndProps.LeftValue.HasValue Then Canvas.SetLeft(DesignerItem, WndProps.LeftValue)
-            If WndProps.TopValue.HasValue Then Canvas.SetTop(DesignerItem, WndProps.TopValue)
-            If muliItems OrElse OldState.HasChanges Then unit.Add(OldState.SetNewValue)
-
-            OldState = New PropertyState(Me, FrameworkElement.WidthProperty, FrameworkElement.HeightProperty)
-            If WndProps.WidthValue.HasValue Then Me.Width = WndProps.WidthValue
-            If WndProps.HeightValue.HasValue Then Me.Height = WndProps.HeightValue
-            If muliItems OrElse OldState.HasChanges Then unit.Add(OldState.SetNewValue)
-
-            OldState = New PropertyState(Me, FrameworkElement.MaxWidthProperty, FrameworkElement.MaxHeightProperty)
-            If WndProps.MaxWidthValue.HasValue Then Me.MaxWidth = WndProps.MaxWidthValue
-            If WndProps.MaxHeightValue.HasValue Then Me.MaxHeight = WndProps.MaxHeightValue
-            If muliItems OrElse OldState.HasChanges Then unit.Add(OldState.SetNewValue)
-
-            If unit.Count > 0 Then
-                Dsn.UndoStack.ReportChanges(unit)
-                ApplyLastChangeToSelected()
+            Dim leftChanged = WndProps.LeftValue.HasValue
+            Dim LeftValue As Double
+            If leftChanged Then
+                LeftValue = WndProps.LeftValue.Value
             End If
+
+            Dim topChanged = WndProps.TopValue.HasValue
+            Dim topValue As Double
+            If topChanged Then
+                topValue = WndProps.TopValue.Value
+            End If
+
+            Dim minWidthChanged = WndProps.MinWidthValue.HasValue
+            Dim minWidthValue As Double
+            If minWidthChanged Then
+                minWidthValue = WndProps.MinWidthValue.Value
+            End If
+
+            Dim minHeightChanged = WndProps.MinHeightValue.HasValue
+            Dim minHeightValue As Double
+            If minHeightChanged Then
+                minHeightValue = WndProps.MinHeightValue.Value
+            End If
+
+            Dim maxWidthChanged = WndProps.MaxWidthValue.HasValue
+            Dim maxWidthValue As Double
+            If maxWidthChanged Then
+                maxWidthValue = WndProps.MaxWidthValue.Value
+            End If
+
+            Dim maxHeightChanged = WndProps.MaxHeightValue.HasValue
+            Dim maxHeightValue As Double
+            If maxHeightChanged Then
+                maxHeightValue = WndProps.MaxHeightValue.Value
+            End If
+
+            Dim rtlChanged = WndProps.RightToLeftValue.HasValue
+            Dim flowDir As FlowDirection
+            If rtlChanged Then
+                flowDir = If(WndProps.RightToLeftValue.Value, FlowDirection.RightToLeft, FlowDirection.LeftToRight)
+            End If
+
+            Dim toolTipChanged = WndProps.chkToolTip.IsChecked
+            Dim toolTipValue As String
+            If toolTipChanged Then
+                toolTipValue = WndProps.ToolTipValue
+            End If
+
+            Dim tagChanged = WndProps.chkTag.IsChecked
+            Dim tagValue As String
+            If tagChanged Then
+                tagValue = WndProps.TagValue
+            End If
+
+            For Each fw As FrameworkElement In Dsn.SelectedItems
+                If leftChanged OrElse topChanged Then
+                    Dim dsnItem = Helper.GetListBoxItem(fw)
+                    OldState = New PropertyState(dsnItem)
+                    If leftChanged AndAlso Canvas.GetLeft(dsnItem) <> LeftValue Then
+                        OldState.Add(Canvas.LeftProperty)
+                        Canvas.SetLeft(dsnItem, LeftValue)
+                    End If
+
+                    If topChanged AndAlso Canvas.GetTop(dsnItem) <> topValue Then
+                        OldState.Add(Canvas.TopProperty)
+                        Canvas.SetTop(dsnItem, topValue)
+                    End If
+
+                    If OldState.HasChanges Then unit.Add(OldState.SetNewValues)
+                End If
+
+                If minWidthChanged OrElse minHeightChanged OrElse maxWidthChanged OrElse maxHeightChanged Then
+                    Dim pnl = Helper.GetDiagramPanel(fw)
+                    OldState = New PropertyState(pnl)
+
+                    If minWidthChanged AndAlso pnl.MinWidth <> minWidthValue Then
+                        OldState.Add(FrameworkElement.MinWidthProperty)
+                        pnl.MinWidth = minWidthValue
+                    End If
+
+                    If minHeightChanged AndAlso pnl.MinHeight <> minHeightValue Then
+                        OldState.Add(FrameworkElement.MinHeightProperty)
+                        pnl.MinHeight = minHeightValue
+                    End If
+
+                    If maxWidthChanged AndAlso pnl.MaxWidth <> maxWidthValue Then
+                        OldState.Add(FrameworkElement.MaxWidthProperty)
+                        pnl.MaxWidth = maxWidthValue
+                    End If
+
+                    If maxHeightChanged AndAlso pnl.MaxHeight <> maxHeightValue Then
+                        OldState.Add(FrameworkElement.MaxHeightProperty)
+                        pnl.MaxHeight = maxHeightValue
+                    End If
+
+                    If OldState.HasChanges Then unit.Add(OldState.SetNewValues)
+                End If
+
+                OldState = New PropertyState(fw)
+                If rtlChanged AndAlso fw.FlowDirection <> flowDir Then
+                    OldState.Add(FrameworkElement.FlowDirectionProperty)
+                    fw.FlowDirection = flowDir
+                End If
+
+                If toolTipChanged AndAlso fw.ToolTip <> toolTipValue Then
+                    OldState.Add(FrameworkElement.ToolTipProperty)
+                    fw.ToolTip = toolTipValue
+                End If
+
+                If tagChanged AndAlso fw.Tag <> tagValue Then
+                    OldState.Add(FrameworkElement.TagProperty)
+                    fw.Tag = tagValue
+                End If
+
+                If OldState.HasChanges Then unit.Add(OldState.SetNewValues)
+            Next
+
+            SetDiagramsSize(WndProps, unit)
+            SetBooleanValue(DiagramPanel.IsDiagramEnabledProperty, WndProps.EnabledValue, unit)
+            SetBooleanValue(DiagramPanel.IsDiagramVisibleProperty, WndProps.VisibleValue, unit)
+
+            If WndProps.WordWrapValue.HasValue Then
+                SetWordWrap(WndProps.WordWrapValue, unit)
+            End If
+
+            If unit.Count > 0 Then Dsn.UndoStack.ReportChanges(unit)
         End If
     End Sub
+
+    Private Function GetStringValue(dp As DependencyProperty) As String
+        Dim value = If(CStr(Diagram.GetValue(dp)), "")
+        If Dsn.SelectedItems.Count = 1 Then Return value
+
+        For Each fw As FrameworkElement In Dsn.SelectedItems
+            If fw Is Diagram Then Continue For
+            Dim v = If(CStr(fw.GetValue(dp)), "")
+            If v <> value Then Return Nothing
+        Next
+
+        Return value
+    End Function
+
+    Private Function GetFlowDirectionValue() As Boolean?
+        Dim value = Diagram.FlowDirection
+        If Dsn.SelectedItems.Count = 1 Then Return value = FlowDirection.RightToLeft
+
+        For Each fw As FrameworkElement In Dsn.SelectedItems
+            If fw Is Diagram Then Continue For
+            If fw.FlowDirection <> value Then Return Nothing
+        Next
+
+        Return value = FlowDirection.RightToLeft
+    End Function
+
+    Private Sub SetBooleanValue(dp As DependencyProperty, boolValue As Boolean?, unit As UndoRedoUnit)
+        If boolValue Is Nothing Then Return
+        Dim v = boolValue.Value
+        For Each fw As FrameworkElement In Dsn.SelectedItems
+            Dim OldState As New PropertyState(fw, dp)
+            If fw.GetValue(dp) <> v Then fw.SetValue(dp, v)
+            If OldState.HasChanges Then unit.Add(OldState.SetNewValues)
+        Next
+    End Sub
+
+    Private Function GetBooleanValue(dp As DependencyProperty) As Boolean?
+        Dim value As Boolean = Diagram.GetValue(dp)
+        If Dsn.SelectedItems.Count = 1 Then Return value
+
+        For Each fw As FrameworkElement In Dsn.SelectedItems
+            If fw Is Diagram Then Continue For
+            If Not fw.GetValue(dp).Equals(value) Then Return Nothing
+        Next
+
+        Return value
+    End Function
+
+    Private Sub SetDiagramsSize(WndProps As WndProperties, unit As UndoRedoUnit)
+        Dim newWidth = WndProps.WidthValue
+        Dim newHeight = WndProps.HeightValue
+        If newWidth Is Nothing AndAlso newHeight Is Nothing Then Return
+
+        For Each d1 In Dsn.SelectedItems
+            SetDiagramSize(Helper.GetDiagramPanel(d1), newWidth, newHeight, unit)
+        Next
+    End Sub
+
+    Friend Sub SetSize(width As Double, height As Double)
+        SetDiagramSize(Me, width, height, New UndoRedoUnit())
+    End Sub
+
+    Private Shared Sub SetDiagramSize(pnl As DiagramPanel, newWidth As Double?, newHeight As Double?, unit As UndoRedoUnit)
+        Dim diagram = pnl.Diagram
+        Dim changeWidth = newWidth.HasValue AndAlso pnl.Width <> newWidth.Value
+        Dim changeHeight = newHeight.HasValue AndAlso pnl.Height <> newHeight.Value
+
+        If Not (changeWidth OrElse changeHeight) Then Return
+
+        Dim propState As New PropertyState(pnl)
+        Dim diagram2 As FrameworkElement = Nothing
+
+        If (changeWidth AndAlso Double.IsNaN(newWidth)) OrElse (
+                changeHeight AndAlso Double.IsNaN(newHeight)
+            ) Then diagram2 = ResizeDiagram(diagram)
+
+        Dim w = -1
+        Dim h = -1
+
+        If changeWidth Then
+            propState.Add(FrameworkElement.WidthProperty, AutoWidthProperty)
+            If Double.IsNaN(newWidth) Then
+                pnl.AutoWidth = True
+                w = diagram2.ActualWidth
+                pnl.Width = w + SystemParameters.ScrollWidth
+            Else
+                pnl.AutoWidth = False
+                pnl.Width = newWidth.Value
+            End If
+        End If
+
+        If changeHeight Then
+            propState.Add(FrameworkElement.HeightProperty, AutoHeightProperty)
+            If Double.IsNaN(newHeight) Then
+                pnl.AutoHeight = True
+                h = diagram2.ActualHeight
+                pnl.Height = h + SystemParameters.ScrollHeight
+            Else
+                pnl.AutoHeight = False
+                pnl.Height = newHeight.Value
+            End If
+        End If
+
+        Helper.UpdateControl(pnl)
+        If w > -1 Then pnl.Width = w + 4
+        If h > -1 Then pnl.Height = h + 4
+        unit.Add(propState.SetNewValues)
+    End Sub
+
+    Private Shared Function ResizeDiagram(diagram As FrameworkElement) As FrameworkElement
+        Dim d2 = CType(Helper.Clone(diagram), FrameworkElement)
+        Dim canv = New Canvas()
+        canv.Children.Add(d2)
+
+        Dim tempWnd = New Window() With {
+            .ShowInTaskbar = False,
+            .WindowStyle = WindowStyle.None,
+            .AllowsTransparency = True,
+            .Background = Brushes.Transparent,
+            .Content = canv
+        }
+
+        tempWnd.Show()
+        tempWnd.Close()
+        tempWnd = Nothing
+        Return d2
+    End Function
+
+    Private Sub SetWordWrap(wordWrapValue As Boolean, unit As UndoRedoUnit)
+        Dim OldState As PropertyState = Nothing
+        Dim value = If(wordWrapValue, TextWrapping.Wrap, TextWrapping.NoWrap)
+
+        For Each fw As FrameworkElement In Dsn.SelectedItems
+            If TypeOf fw Is TextBox Then
+                Dim txt = CType(fw, TextBox)
+                If txt.TextWrapping <> value Then
+                    OldState = New PropertyState(txt, TextBox.TextWrappingProperty)
+                    txt.TextWrapping = value
+                    unit.Add(OldState.SetNewValues)
+                End If
+
+            ElseIf TypeOf fw Is ContentControl Then
+                Dim tb = TryCast(CType(fw, ContentControl).Content, TextBlock)
+                If tb IsNot Nothing AndAlso tb.TextWrapping <> value Then
+                    OldState = New PropertyState(tb, TextBlock.TextWrappingProperty)
+                    tb.TextWrapping = value
+                    unit.Add(OldState.SetNewValues)
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Sub SetDiagramWordWrap(fw As FrameworkElement, value As Boolean)
+        Dim wr = If(value, TextWrapping.Wrap, TextWrapping.NoWrap)
+
+        If TypeOf fw Is TextBox Then
+            CType(fw, TextBox).TextWrapping = wr
+        ElseIf TypeOf fw Is ContentControl Then
+            Dim tb = TryCast(CType(fw, ContentControl).Content, TextBlock)
+            If tb IsNot Nothing Then tb.TextWrapping = wr
+        End If
+    End Sub
+
+    Private Sub SetWordWrapValue(WndProps As WndProperties)
+        Dim value As Boolean? = Nothing
+        Dim n = 0
+
+        If Dsn.SelectedItems.Count = 1 Then
+            value = GetDiagramWordWrap(Diagram)
+            If value Is Nothing Then
+                WndProps.cmbWordWrap.IsEnabled = False
+            Else
+                WndProps.WordWrapValue = value
+            End If
+            Return
+        End If
+
+        For Each fw As FrameworkElement In Dsn.SelectedItems
+            Dim wr = GetDiagramWordWrap(fw)
+            If wr Is Nothing Then
+                n += 1
+            ElseIf value.HasValue Then
+                If wr.Value <> value.Value Then
+                    WndProps.WordWrapValue = Nothing
+                    Return
+                End If
+            Else
+                value = wr
+            End If
+        Next
+
+        If n = Dsn.SelectedItems.Count Then
+            WndProps.cmbWordWrap.IsEnabled = False
+        Else
+            WndProps.WordWrapValue = value
+        End If
+
+    End Sub
+
+    Private Function GetDiagramWordWrap(control As FrameworkElement) As Boolean?
+        If TypeOf control Is TextBox Then
+            Return (CType(control, TextBox).TextWrapping = TextWrapping.Wrap)
+        ElseIf TypeOf control Is ContentControl Then
+            Dim tb = TryCast(CType(control, ContentControl).Content, TextBlock)
+            If tb IsNot Nothing Then Return (tb.TextWrapping = TextWrapping.Wrap)
+        End If
+
+        Return Nothing
+    End Function
+
+
 
     Private Function GetDoubleValue(item As FrameworkElement, dp As DependencyProperty) As Double?
         Dim value As Double = item.GetValue(dp)
@@ -705,7 +1094,7 @@ Public Class DiagramPanel
 
             If onCanvus Then
                 If Not Helper.GetListBoxItem(fw).GetValue(dp).Equals(value) Then Return Nothing
-            ElseIf Not Helper.GetDiagramPanel(fw).GetValue(dp).Equals(value) Then
+            ElseIf CDbl(Helper.GetDiagramPanel(fw).GetValue(dp)) <> value Then
                 Return Nothing
             End If
         Next

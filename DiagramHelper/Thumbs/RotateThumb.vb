@@ -131,7 +131,7 @@ Friend Class RotateThumb
 
     Private Sub ReportChanges()
         If OldState.HasChanges Then
-            Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+            Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValues))
         End If
     End Sub
 

@@ -1261,7 +1261,12 @@ Namespace Library
             End If
         End Sub
 
-        Friend Shared Sub DoubleAnimateProperty(obj As IAnimatable, [property] As DependencyProperty, [end] As Double, duration As Double)
+        Friend Shared Sub DoubleAnimateProperty(
+                   obj As IAnimatable,
+                   [property] As DependencyProperty,
+                   [end] As Double,
+                   duration As Double)
+
             Dim dpo = CType(obj, DependencyObject)
             Dim start = CDbl(dpo.GetValue([property]))
             If Double.IsNaN(start) Then start = 0.0

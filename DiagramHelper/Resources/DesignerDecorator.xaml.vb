@@ -116,31 +116,101 @@
 
     Private Sub PropertiesMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim Dsn = GetDesigner(sender)
+        Dim canvas = Dsn.DesignerCanvas
         Dim WndProps As New WndProperties
-        ' Show the form to apply its templates
-        WndProps.Show()
-        WndProps.LeftValue = 0
-        WndProps.NumLeft.CheckBox.IsChecked = False
-        WndProps.TopValue = 0
-        WndProps.NumTop.CheckBox.IsChecked = False
-        WndProps.WidthValue = Dsn.PageWidth
-        WndProps.HeightValue = Dsn.PageHeight
-        WndProps.MaxWidthValue = 0
-        WndProps.NumMaxWidth.CheckBox.IsChecked = False
-        WndProps.MaxHeightValue = 0
-        WndProps.NumMaxHeight.CheckBox.IsChecked = False
-        WndProps.TagValue = Nothing
-        WndProps.ToolTipValue = Nothing
-        WndProps.Hide()
 
-        If WndProps.ShowDialog = True Then
-            Dim OldState As New PropertyState(Dsn, Designer.PageWidthProperty, Designer.PageHeightProperty)
-            Dsn.PageWidth = WndProps.WidthValue
-            Dsn.PageHeight = WndProps.HeightValue
-            If OldState.HasChanges Then
-                Dsn.UndoStack.ReportChanges(New UndoRedoUnit(OldState.SetNewValue))
+        With WndProps
+            .Show() ' Show the form to apply its templates
+            .Hide()
+            .LeftValue = Dsn.PageLeft
+            .NumLeft.IsCheckable = True
+            .TopValue = Dsn.PageTop
+            .NumTop.IsCheckable = True
+            .WidthValue = Dsn.PageWidth
+            .HeightValue = Dsn.PageHeight
+            .MinWidthValue = canvas.MinWidth
+            .MinHeightValue = canvas.MinHeight
+            .MaxWidthValue = canvas.MaxWidth
+            .MaxHeightValue = canvas.MaxHeight
+            .RightToLeftValue = (canvas.FlowDirection = FlowDirection.RightToLeft)
+            .cmbWordWrap.IsEnabled = False
+            .TagValue = If(Dsn.Tag, "")
+            .ToolTipValue = If(Dsn.PageToolTip, "")
+
+            If .ShowDialog = True Then
+                Dim unit As New UndoRedoUnit()
+                Dim OldState As New PropertyState(Dsn)
+
+                If Dsn.PageLeft <> .LeftValue Then
+                    OldState.Add(Designer.PageLeftProperty)
+                    Dsn.PageLeft = .LeftValue
+                End If
+
+                If Dsn.PageTop <> .TopValue Then
+                    OldState.Add(Designer.PageTopProperty)
+                    Dsn.PageTop = .TopValue
+                End If
+
+                If Dsn.PageWidth <> .WidthValue Then
+                    OldState.Add(Designer.PageWidthProperty)
+                    Dsn.PageWidth = .WidthValue.Value
+                End If
+
+                If Dsn.PageHeight <> .HeightValue Then
+                    OldState.Add(Designer.PageHeightProperty)
+                    Dsn.PageHeight = .HeightValue.Value
+                End If
+
+                Dim txt = If(.TagValue = "", Nothing, .TagValue)
+                If Dsn.Tag <> txt Then
+                    OldState.Add(Designer.TagProperty)
+                    Dsn.Tag = txt
+                End If
+
+                txt = If(.ToolTipValue = "", Nothing, .ToolTipValue)
+                If Dsn.PageToolTip <> txt Then
+                    OldState.Add(Designer.PageToolTipProperty)
+                    Dsn.PageToolTip = txt
+                End If
+
+                If OldState.HasChanges Then unit.Add(OldState)
+
+                OldState = New PropertyState(canvas)
+                If canvas.MinWidth <> .MinWidthValue Then
+                    OldState.Add(Canvas.MinWidthProperty)
+                    canvas.MinWidth = .MinWidthValue
+                    Dsn.PageWidth = Math.Max(canvas.MinWidth, Dsn.PageWidth)
+                End If
+
+                If canvas.MinHeight <> .MinHeightValue Then
+                    OldState.Add(Canvas.MinHeightProperty)
+                    canvas.MinHeight = .MinHeightValue
+                    Dsn.PageHeight = Math.Max(canvas.MinHeight, Dsn.PageHeight)
+                End If
+
+                If canvas.MaxWidth <> .MaxWidthValue Then
+                    OldState.Add(Canvas.MaxWidthProperty)
+                    canvas.MaxWidth = .MaxWidthValue
+                    Dsn.PageWidth = Math.Min(canvas.MaxWidth, Dsn.PageWidth)
+                End If
+
+                If canvas.MaxHeight <> .MaxHeightValue Then
+                    OldState.Add(Canvas.MaxHeightProperty)
+                    canvas.MaxHeight = .MaxHeightValue
+                    Dsn.PageHeight = Math.Min(canvas.MaxHeight, Dsn.PageHeight)
+                End If
+
+                Dim rtl = If(.RightToLeftValue, FlowDirection.RightToLeft, FlowDirection.LeftToRight)
+                If canvas.FlowDirection <> rtl Then
+                    OldState.Add(Canvas.FlowDirectionProperty)
+                    canvas.FlowDirection = rtl
+                End If
+
+                If OldState.HasChanges Then unit.Add(OldState)
+
+                If unit.Count > 0 Then Dsn.UndoStack.ReportChanges(unit)
             End If
-        End If
+        End With
     End Sub
 
     Private Sub AllowTransparencyMenuItem_Checked(sender As Object, e As RoutedEventArgs)

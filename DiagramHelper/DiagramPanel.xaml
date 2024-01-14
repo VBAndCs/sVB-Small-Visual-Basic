@@ -90,7 +90,7 @@
             </MenuItem>
             <Separator/>
             <MenuItem Header="Apply Last Change" InputGestureText="F4" Click="ApplyLastChangeMenuItem_Click"  />
-            <!--<MenuItem Header="Properties" Click="PropertiesMenuItem_Click"  />-->
+            <MenuItem Header="Properties" Click="PropertiesMenuItem_Click"  />
 
         </ContextMenu>
     </UserControl.ContextMenu>

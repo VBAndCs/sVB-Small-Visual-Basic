@@ -182,7 +182,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
                                 End If
 
-                            Case TokenType.Addition, TokenType.Subtraction, TokenType.Multiplication, TokenType.Division, TokenType.Or, TokenType.And
+                            Case TokenType.Concatenation, TokenType.Addition, TokenType.Subtraction, TokenType.Multiplication, TokenType.Division, TokenType.Or, TokenType.And
                                 If lineStart Then
                                     subLineOffset = Math.Max(1, subLineOffset)
                                     AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
@@ -528,7 +528,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Case TokenType.Equals, TokenType.NotEqualTo, TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
                                    TokenType.LessThanEqualTo,
                                    TokenType.And, TokenType.Or,
-                                   TokenType.Addition, TokenType.Multiplication, TokenType.Division
+                                   TokenType.Concatenation, TokenType.Addition, TokenType.Multiplication, TokenType.Division
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 1)
 
                     Case TokenType.LessThan

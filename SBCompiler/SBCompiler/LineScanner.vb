@@ -189,6 +189,10 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             Select Case currentChar
+                Case "&"c
+                    token.Type = TokenType.Concatenation
+                    token.Text = "&"
+
                 Case "+"c
                     token.Type = TokenType.Addition
                     token.Text = "+"
@@ -549,7 +553,7 @@ Namespace Microsoft.SmallVisualBasic
                          TokenType.Equals, TokenType.NotEqualTo,
                          TokenType.LessThan, TokenType.LessThanEqualTo,
                          TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
-                         TokenType.Addition, TokenType.Subtraction,
+                         TokenType.Concatenation, TokenType.Addition, TokenType.Subtraction,
                          TokenType.Division, TokenType.Multiplication,
                          TokenType.Dot, TokenType.Lookup, TokenType.Comma, TokenType.Colon,
                          TokenType.LeftParens, TokenType.RightParens,
