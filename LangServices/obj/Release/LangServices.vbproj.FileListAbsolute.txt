@@ -70,6 +70,7 @@ F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\bin\Release\sVBCompiler.exe.config
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\bin\Release\SmallVisualBasicLibrary.pdb
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\bin\Release\SmallVisualBasicLibrary.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\bin\Release\ToolFramework.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\LangServices.vbproj.AssemblyReference.cache
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\CircularList.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\CircularList.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\CompletionSurface.g.vb
@@ -85,4 +86,3 @@ F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\LangServices.vbproj.Co
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\LanguageService.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\LanguageService.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\LanguageService.pdb
-F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Release\LangServices.vbproj.AssemblyReference.cache

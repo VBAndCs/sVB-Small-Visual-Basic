@@ -57,6 +57,16 @@ ToolBox
 InitializeComponent
 </summary>
 </member>
+<member name="T:DiagramHelper.WndMenuDesigner">
+<summary>
+WndMenuDesigner
+</summary>
+</member>
+<member name="M:DiagramHelper.WndMenuDesigner.InitializeComponent">
+<summary>
+InitializeComponent
+</summary>
+</member>
 <member name="T:DiagramHelper.WndProperties">
 <summary>
 WndProperties

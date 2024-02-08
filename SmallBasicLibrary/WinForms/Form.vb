@@ -343,6 +343,7 @@ Namespace WinForms
             If dot > -1 Then
                 controlName = controlName.Substring(dot + 1)
             End If
+
             Dim key = frmName & "." & controlName.ToLower()
 
             If Forms._controls.ContainsKey(key) Then
@@ -377,21 +378,9 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
-                        Dim memu As New Wpf.Menu()
-                        memu.Name = menuName
-                        Forms._controls(key) = memu
-
-                        If TypeOf frm.Content Is Wpf.Canvas Then
-                            Dim canvas = frm.Content
-                            Dim sp As New Wpf.StackPanel()
-                            sp.Orientation = Wpf.Orientation.Vertical
-                            frm.Content = sp
-                            sp.Children.Add(memu)
-                            sp.Children.Add(canvas)
-                        Else
-                            Dim sp = CType(frm.Content, Wpf.StackPanel)
-                            sp.Children(0) = memu
-                        End If
+                        Dim menu As New Wpf.Menu()
+                        menu.Name = menuName
+                        AddMenu(frm, menu)
 
                     Catch ex As Exception
                         Control.ReportSubError(menuName, "AddItem", ex)
@@ -401,6 +390,23 @@ Namespace WinForms
             Return key
         End Function
 
+        Friend Shared Sub AddMenu(frm As Window, menu As Wpf.Menu)
+            menu.FlowDirection = frm.FlowDirection
+            Dim key = ValidateArgs(frm.Name, menu.Name)
+            Forms._controls(key) = menu
+
+            If TypeOf frm.Content Is Wpf.Canvas Then
+                Dim canvas = frm.Content
+                Dim sp As New Wpf.StackPanel()
+                sp.Orientation = Wpf.Orientation.Vertical
+                frm.Content = sp
+                sp.Children.Add(menu)
+                sp.Children.Add(canvas)
+            Else
+                Dim sp = CType(frm.Content, Wpf.StackPanel)
+                sp.Children(0) = menu
+            End If
+        End Sub
 
         ''' <summary>
         ''' Adds a new Button control to the form
@@ -957,12 +963,12 @@ Namespace WinForms
         Public Shared Sub RemoveControl(formName As Primitive, controlName As Primitive)
             Dim key = controlName.AsString().ToLower()
             Dim frm = formName.AsString().ToLower()
-            If Not key.StartsWith(frm & ".") Then key = $"{frm}.{controlName}"
+            If Not key.StartsWith(frm & ".") Then key = $"{frm}.{key}"
 
             App.Invoke(
                   Sub()
                       If Forms._controls.ContainsKey(key) Then
-                          Dim form = CType(Forms._forms(formName), Window)
+                          Dim form = CType(Forms._forms(frm), Window)
                           Dim canv = GetCanvas(form)
                           Dim c = Forms._controls(key)
 
@@ -970,6 +976,16 @@ Namespace WinForms
                               Dim sp = CType(form.Content, Wpf.StackPanel)
                               sp.Children.Clear()
                               form.Content = canv
+                              Dim menu = CType(c, Wpf.Menu)
+                              For i = menu.Items.Count - 1 To 0 Step -1
+                                  Dim m = CType(menu.Items(i), Wpf.MenuItem)
+                                  MainMenu.RemoveItem(key, frm & "." & m.Name.ToLower())
+                              Next
+
+                          ElseIf TypeOf c Is Wpf.MenuItem Then
+                              Dim m = CType(c, Wpf.MenuItem)
+                              Dim items = CType(m.Parent, Wpf.ItemsControl).Items
+                              MainMenu.RemoveMenuItem(items, frm & "." & m.Name.ToLower())
                           Else
                               canv.Children.Remove(c)
                           End If

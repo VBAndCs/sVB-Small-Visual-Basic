@@ -38,7 +38,7 @@ Namespace WinForms
                         shortcut As Primitive
                     ) As Primitive
 
-            Dim _menuName = menuName.AsString
+            Dim _menuName = menuName.AsString()
             Dim key = Form.ValidateArgs(_menuName.Substring(0, _menuName.IndexOf(".")), itemName)
 
             App.Invoke(
@@ -60,6 +60,43 @@ Namespace WinForms
 
             Return key
         End Function
+
+        ''' <summary>
+        ''' Removes a menu item from the current menu.
+        ''' </summary>
+        ''' <param name="itemName">The name of the new menu item</param>
+        <ExMethod>
+        Public Shared Sub RemoveItem(
+                        menuName As Primitive,
+                        itemName As Primitive
+                    )
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim menu = GetMenu(menuName)
+                        RemoveMenuItem(menu.Items, itemName.ToString().ToLower())
+                    Catch ex As Exception
+                        Control.ReportSubError(menuName, "RemoveItem", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        Friend Shared Sub RemoveMenuItem(items As Wpf.ItemCollection, itemName As String)
+            If Not Forms._controls.ContainsKey(itemName) Then Return
+
+            Dim item = CType(Forms._controls(itemName), Wpf.MenuItem)
+            Dim subItems = item.Items
+            Dim formName = itemName.Substring(0, itemName.IndexOf(".") + 1)
+
+            For i = subItems.Count - 1 To 0 Step -1
+                Dim m = CType(subItems(i), Wpf.MenuItem)
+                RemoveMenuItem(subItems, formName + m.Name.ToLower())
+            Next
+
+            items.Remove(item)
+            Forms._controls.Remove(itemName)
+        End Sub
 
         ''' <summary>
         ''' Returns an array containing the child menu items of the current menu.

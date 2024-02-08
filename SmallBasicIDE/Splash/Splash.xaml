@@ -17,11 +17,11 @@
                 VerticalAlignment="Top"
                 HorizontalAlignment="Right"/>
         <StackPanel Margin="0,-30,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock HorizontalAlignment="Center"  FontSize="36" FontWeight="Bold" 
+            <TextBlock HorizontalAlignment="Center"  FontSize="40" FontWeight="Bold" 
                        Foreground="Yellow">Small Visual Basic </TextBlock>
 
             <TextBlock HorizontalAlignment="Center"  FontSize="28" FontWeight="Bold" 
-                       Foreground="Yellow">v2.8.9</TextBlock>
+                       Foreground="Yellow">v2.9</TextBlock>
 
             <TextBlock HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" 
                        Margin="0,20"

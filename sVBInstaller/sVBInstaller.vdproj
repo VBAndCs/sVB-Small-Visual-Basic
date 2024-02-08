@@ -2194,13 +2194,19 @@
         "Entry"
         {
         "MsmKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
-        "OwnerKey" = "8:_F99398A675025338E040986902B11A40"
+        "OwnerKey" = "8:_FE73082A3E14C910559E8B3867A5E752"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
         "OwnerKey" = "8:_C1A41205CDA4479E9BADF2A99BD8D2D9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
+        "OwnerKey" = "8:_F99398A675025338E040986902B11A40"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2458,6 +2464,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_FE73082A3E14C910559E8B3867A5E752"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2477,12 +2489,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_FBCC5627FCBADC40A8EE7E7FE58CC292"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_FE73082A3E14C910559E8B3867A5E752"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -11404,7 +11410,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 2.8.9"
+        "ProductName" = "8:Small Visual Basic 2.8.9.3"
         "ProductCode" = "8:{347A8E2D-1151-47B6-97A1-D64A0C1294B1}"
         "PackageCode" = "8:{8CD253A7-C331-4B32-B5C0-1D385883AB2D}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -11570,7 +11576,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 2.8.9"
+            "Name" = "8:sVB 2.8.9.3"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -11598,7 +11604,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 2.8.9"
+            "Name" = "8:sVB 2.8.9.3"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -11612,7 +11618,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 2.8.9"
+            "Name" = "8:sVB 2.8.9.3"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

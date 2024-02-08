@@ -12,38 +12,7 @@
 * [It is also a Small Visual Basic .NET!](https://github.com/VBAndCs/sVB-Small-Visual-Basic#it-is-also-a-small-visual-basic-net)
 * [sVB for kids](https://github.com/VBAndCs/sVB-Small-Visual-Basic#svb-for-kids)
 * [Conclusions](https://github.com/VBAndCs/sVB-Small-Visual-Basic#conclusions)
-
-#What's new In sVB 2.8.9:
-It is the 3rd anniversary since I announced the first prove of concept of sVB, and now sVB reached its 2.8.9 version, which finally got a small properties window.
-Also, sVB got the string concatenation operator &
-Happy birth day sVB!
  
-#What's new In sVB 2.8.8:
-* Fixing some reported bugs.
-* In the form designer, you can drag images from your file system and drop them on the form design surface to show them in labels.
-* In code, you can use the * operator to duplicate strings like in Python. Ex:
-TextWindow.WriteLine("{*} " * 10)
-The above code will ill print:
-{*} {*} {*} {*} {*} {*} {*} {*} {*} {*}
-* Adding the Sound.Resume method to resume playing a paused audio. The Sound.Play method behavior has been changed in a previous version to stop the currently played audio before playing the new one, and this prevents resuming paused files as was in SB, to prevent some issues when frequently playing the same audio in short intervals which for some reason causes the audio to stop permanently!
-* Adding the Control.BriingToFront and Control.SendToBack methods.
-* The event system has many improvements like:
-1. Registering only one handler for each event per assembly. In previous versions, adding the same handler twice for the same event, fire the event twice, and adding two different handlers for the same event, makes both of them be called when the event is fired! This is not the case now in sVB 2.8.8, since the only handler used is the last one assigned to the event.
-2. Adding the Event.LastMouseWheelDirection to be used with the OnMouseWheel event. Without this property, this event was useless!
-3. Adding the Form.OnPreviewMouseWheel event.
-4. Moving the OnPreviewKeyUp and OnPreviewKeyDown events from the Control to the Form.
-5. Adding the RemoveEventHandler to controls, which recives the string name of the event to remove its handler aded by the current program. sVB also added a syntax for that, so you can simply set the eveny handler to `Nothing`. Ex:
-```
-Button1.OnClick = Nothing
-```
-
-This also works with old Small Basic events like Timer.Tick, which can't be used with the RemoveEventHandler method:
-```
-Timer.Tick = Nothing
-```
-
-6. In the code editor, the event-handlers list now allows to select the handler name when the user presses a character that matches any uppercase character in the handler name. For example, pressing the character a can select a subroutine named Test_Addition, and pressing k can select the OnKeyUp event.
-
 # What is Small Visual Basic?
 Small Visual Basic (sVB) is an educational programming language, created by Eng. Mohammad Hamdy as an evolved version of Microsoft Small Basic (SB). It is meant to be easier and more powerful at the same time, to introduce programming basics to kids and beginners of any age, provided that they can use the English keyboard on the Windows operating system.
 

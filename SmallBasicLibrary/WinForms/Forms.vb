@@ -108,18 +108,24 @@ Namespace WinForms
                                    .ResizeMode = ResizeMode.CanMinimize,
                                    .Background = canvas.Background,
                                    .MaxWidth = canvas.MaxWidth,
-                                   .MaxHeight = canvas.MaxHeight
+                                   .MaxHeight = canvas.MaxHeight,
+                                   .FlowDirection = canvas.FlowDirection
                             }
                             canvas.IsEnabled = True
                             canvas.Visibility = Visibility.Visible
-
                             AddHandler wnd.Closed, AddressOf Form_Closed
-
                             _forms(form_Name) = wnd
 
                             ' Add control names:
-                            Dim controls = GetChildren(canvas).ToList()
-                            For Each ui In controls
+                            'Dim controls = GetChildren(canvas).ToList()
+                            Dim menu As Menu = Nothing
+
+                            For Each ui As UIElement In canvas.Children
+                                If TypeOf ui Is Menu Then
+                                    menu = ui
+                                    Continue For
+                                End If
+
                                 Dim fw = TryCast(ui, FrameworkElement)
                                 If fw?.Name = "__FORM__PROPS__" Then
                                     wnd.MinWidth = fw.MinWidth
@@ -128,6 +134,11 @@ Namespace WinForms
                                     wnd.MaxHeight = fw.MaxHeight
                                     wnd.Tag = fw.Tag
                                     wnd.ToolTip = fw.ToolTip
+                                    wnd.Left = fw.GetValue(Canvas.LeftProperty)
+                                    wnd.Top = fw.GetValue(Canvas.TopProperty)
+                                    If Not Double.IsNaN(wnd.Left) OrElse Not Double.IsNaN(wnd.Top) Then
+                                        wnd.WindowStartupLocation = WindowStartupLocation.Manual
+                                    End If
                                     Continue For
                                 End If
 
@@ -178,18 +189,35 @@ Namespace WinForms
                                             .Name = controlName,
                                             .Width = fw.Width,
                                             .Height = fw.Height,
+                                            .MinWidth = fw.MinWidth,
+                                            .MaxWidth = fw.MaxWidth,
+                                            .MinHeight = fw.MinHeight,
+                                            .MaxHeight = fw.MaxHeight,
+                                            .IsEnabled = fw.IsEnabled,
+                                            .Visibility = fw.Visibility,
+                                            .FlowDirection = fw.FlowDirection,
+                                            .Tag = fw.Tag,
+                                            .ToolTip = fw.ToolTip,
                                             .HorizontalContentAlignment = HorizontalAlignment.Stretch,
                                             .VerticalContentAlignment = VerticalAlignment.Stretch,
                                             .Content = ui,
-                                           .Background = Nothing,
-                                           .LayoutTransform = LayoutTransform,
-                                           .RenderTransform = Nothing
+                                            .Background = Nothing,
+                                            .LayoutTransform = LayoutTransform,
+                                            .RenderTransform = Nothing
                                      }
 
                                     Control.SetAngle(lb, angle)
                                     fw.ClearValue(FrameworkElement.WidthProperty)
                                     fw.ClearValue(FrameworkElement.HeightProperty)
-
+                                    fw.ClearValue(FrameworkElement.MinWidthProperty)
+                                    fw.ClearValue(FrameworkElement.MinHeightProperty)
+                                    fw.ClearValue(FrameworkElement.MaxWidthProperty)
+                                    fw.ClearValue(FrameworkElement.MaxHeightProperty)
+                                    fw.ClearValue(FrameworkElement.IsEnabledProperty)
+                                    fw.ClearValue(FrameworkElement.VisibilityProperty)
+                                    fw.ClearValue(FrameworkElement.FlowDirectionProperty)
+                                    fw.ClearValue(FrameworkElement.TagProperty)
+                                    fw.ClearValue(FrameworkElement.ToolTipProperty)
                                     canvas.Children.Add(lb)
                                     Canvas.SetLeft(lb, left)
                                     Canvas.SetTop(lb, top)
@@ -198,6 +226,15 @@ Namespace WinForms
 
                                 SetControlText(ui, key, GetControlText(ui))
                             Next
+
+                            If menu IsNot Nothing Then
+                                canvas.Children.Remove(menu)
+                                Form.AddMenu(wnd, menu)
+                                For Each m In menu.Items
+                                    AddMenuNames(form_Name, m)
+                                Next
+                                AddHandler wnd.PreviewKeyDown, AddressOf Form_PreviewKeyDown
+                            End If
 
                         Catch ex As Exception
                             ReportError("LoadForm caused an error: " & ex.Message, ex)
@@ -213,6 +250,31 @@ Namespace WinForms
 
             Return form_Name
         End Function
+
+        Private Shared Sub Form_PreviewKeyDown(sender As Object, e As Input.KeyEventArgs)
+            App.Invoke(
+                Sub()
+                    For Each sh In MenuItem.ShortcutHandlers.Values
+                        If sh Is Nothing Then Continue For
+                        If e.Key <> sh.key Then Continue For
+                        If sh.Ctrl AndAlso (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Control) = 0 Then Continue For
+                        If sh.Shift AndAlso (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Shift) = 0 Then Continue For
+                        If sh.Alt AndAlso (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Alt) = 0 Then Continue For
+                        Call sh.Handler()
+                        Exit For
+                    Next
+                End Sub)
+        End Sub
+
+        Private Shared Sub AddMenuNames(form_Name As String, m As Wpf.MenuItem)
+            Dim key = form_Name & "." & m.Name.ToLower()
+            _controls(key) = m
+            m.IsCheckable = (LCase(m.Tag) = "true")
+
+            For Each m2 In m.Items
+                AddMenuNames(form_Name, m2)
+            Next
+        End Sub
 
         Public Shared Function ExpandRelativeImageFiles(xaml As String, fileName As String) As String
             Dim d = If(fileName = "",

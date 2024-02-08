@@ -195,10 +195,10 @@ Public Class Helper
         End Try
     End Sub
 
-    Shared Sub RunLater(DisObj As DispatcherObject, action As Action)
+    Shared Sub RunLater(DisObj As DispatcherObject, action As Action, Optional milliseconds As Integer = 20)
         If DisObj Is Nothing Then Return
         Dim dt As New DispatcherTimer(
-            TimeSpan.FromMilliseconds(20),
+            TimeSpan.FromMilliseconds(milliseconds),
             DispatcherPriority.Background,
             Sub()
                 action()
@@ -208,3 +208,9 @@ Public Class Helper
     End Sub
 
 End Class
+
+Module DoubleHelper
+    Public Function AreEquals(d1 As Double, d2 As Double) As Boolean
+        Return d1.Equals(d2) OrElse Math.Abs(d1 - d2) < Double.Epsilon
+    End Function
+End Module

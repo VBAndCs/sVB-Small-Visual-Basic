@@ -64,6 +64,27 @@ Namespace WinForms
         End Function
 
         ''' <summary>
+        ''' Removes a sub menu item from the current menu item.
+        ''' </summary>
+        ''' <param name="itemName">The name of the new menu item</param>
+        <ExMethod>
+        Public Shared Sub RemoveItem(
+                        parentItem As Primitive,
+                        itemName As Primitive
+                    )
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim menuItem = GetMenuItem(parentItem)
+                        MainMenu.RemoveMenuItem(menuItem.Items, itemName.ToString().ToLower())
+                    Catch ex As Exception
+                        Control.ReportSubError(parentItem, "RemoveItem", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
         ''' Adds a separator line betwen menu items
         ''' </summary>
         <ExMethod>
@@ -174,23 +195,35 @@ Namespace WinForms
                 End Sub)
         End Function
 
+        Friend Shared ShortcutHandlers As New Dictionary(Of Wpf.MenuItem, ShortcutHandler)
+
         ''' <summary>
         ''' Fired when user clicks the menu item by the left mouse button.
         ''' </summary>
         Public Shared Custom Event OnClick As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
-                Dim _sender = GetMenuItem([Event].SenderControl)
-                Dim h = Sub(Sender As Object, e As System.Windows.RoutedEventArgs)
-                            [Event].HandleEvent(CType(Sender, System.Windows.FrameworkElement), e, handler)
-                        End Sub
+                App.Invoke(
+                    Sub()
+                        Dim _sender = GetMenuItem([Event].SenderControl)
+                        Dim shortcut = _sender.InputGestureText
+                        If shortcut <> "" Then
+                            ShortcutHandlers(_sender) = New ShortcutHandler(shortcut, handler)
+                        End If
 
-                Control.RemovePrevEventHandler(
-                    [Event].SenderControl,
-                    NameOf(OnClick),
-                    Sub() RemoveHandler _sender.Click, h
-                )
-                AddHandler _sender.Click, h
+                        Dim h = Sub(Sender As Object, e As System.Windows.RoutedEventArgs)
+                                    [Event].HandleEvent(CType(Sender, System.Windows.FrameworkElement), e, handler)
+                                End Sub
 
+                        Control.RemovePrevEventHandler(
+                            [Event].SenderControl,
+                            NameOf(OnClick),
+                            Sub()
+                                RemoveHandler _sender.Click, h
+                                ShortcutHandlers(_sender) = Nothing
+                            End Sub
+                        )
+                        AddHandler _sender.Click, h
+                    End Sub)
             End AddHandler
 
             RemoveHandler(handler As SmallVisualBasicCallback)

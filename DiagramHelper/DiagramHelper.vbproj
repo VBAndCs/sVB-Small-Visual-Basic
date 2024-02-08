@@ -102,6 +102,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="WndMenuDesigner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="WndProperties.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -179,6 +183,9 @@
     <Compile Include="ToolBox.xaml.vb">
       <DependentUpon>ToolBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WndMenuDesigner.xaml.vb">
+      <DependentUpon>WndMenuDesigner.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WndProperties.xaml.vb">
       <DependentUpon>WndProperties.xaml</DependentUpon>
     </Compile>
@@ -199,6 +206,10 @@
     <AppDesigner Include="My Project\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SBCompiler\SBCompiler\svB.Compiler.vbproj">
+      <Project>{c35b1c89-a93e-43ff-8608-7c8274562a87}</Project>
+      <Name>svB.Compiler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WpfDialogs\WpfDialogs.vbproj">
       <Project>{c80161ce-9098-4af6-bcf9-39dd675b444c}</Project>
       <Name>WpfDialogs</Name>

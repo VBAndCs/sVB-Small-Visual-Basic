@@ -7744,6 +7744,12 @@ It is useful when you use one sub to handle many events, to get info about the c
  <param name="shortcut">The keyboard shortcut keys, like Ctrl+N, or use "" if there is no shortcut.</param>
  <returns>The menu item that have been added.</returns>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.MainMenu.RemoveItem(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Removes a menu item from the current menu.
+ </summary>
+ <param name="itemName">The name of the new menu item</param>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.MainMenu.GetMenuItems(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Returns an array containing the child menu items of the current menu.
@@ -7958,6 +7964,12 @@ It is useful when you use one sub to handle many events, to get info about the c
  <param name="text">The title of the sub menu item</param>
  <param name="shortcut">The keyboard shortcut keys, like Ctrl+N</param>
  <returns>The menu item that have been added.</returns>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.MenuItem.RemoveItem(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Removes a sub menu item from the current menu item.
+ </summary>
+ <param name="itemName">The name of the new menu item</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.MenuItem.AddSeparator(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>

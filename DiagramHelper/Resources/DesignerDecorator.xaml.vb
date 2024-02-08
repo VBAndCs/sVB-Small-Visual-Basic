@@ -132,7 +132,7 @@
             .MinHeightValue = canvas.MinHeight
             .MaxWidthValue = canvas.MaxWidth
             .MaxHeightValue = canvas.MaxHeight
-            .RightToLeftValue = (canvas.FlowDirection = FlowDirection.RightToLeft)
+            .RightToLeftValue = (Dsn.FlowDirection = FlowDirection.RightToLeft)
             .cmbWordWrap.IsEnabled = False
             .TagValue = If(Dsn.Tag, "")
             .ToolTipValue = If(Dsn.PageToolTip, "")
@@ -141,22 +141,24 @@
                 Dim unit As New UndoRedoUnit()
                 Dim OldState As New PropertyState(Dsn)
 
-                If Dsn.PageLeft <> .LeftValue Then
+                Dim v = If(.LeftValue, Double.NaN)
+                If Not AreEquals(Dsn.PageLeft, v) Then
                     OldState.Add(Designer.PageLeftProperty)
-                    Dsn.PageLeft = .LeftValue
+                    Dsn.PageLeft = v
                 End If
 
-                If Dsn.PageTop <> .TopValue Then
+                v = If(.TopValue, Double.NaN)
+                If Not AreEquals(Dsn.PageTop, v) Then
                     OldState.Add(Designer.PageTopProperty)
-                    Dsn.PageTop = .TopValue
+                    Dsn.PageTop = v
                 End If
 
-                If Dsn.PageWidth <> .WidthValue Then
+                If Not AreEquals(Dsn.PageWidth, .WidthValue) Then
                     OldState.Add(Designer.PageWidthProperty)
                     Dsn.PageWidth = .WidthValue.Value
                 End If
 
-                If Dsn.PageHeight <> .HeightValue Then
+                If Not AreEquals(Dsn.PageHeight, .HeightValue) Then
                     OldState.Add(Designer.PageHeightProperty)
                     Dsn.PageHeight = .HeightValue.Value
                 End If
@@ -173,40 +175,41 @@
                     Dsn.PageToolTip = txt
                 End If
 
-                If OldState.HasChanges Then unit.Add(OldState)
+                If OldState.HasChanges Then unit.Add(OldState.SetNewValues())
 
                 OldState = New PropertyState(canvas)
-                If canvas.MinWidth <> .MinWidthValue Then
+                If Not AreEquals(canvas.MinWidth, .MinWidthValue) Then
                     OldState.Add(Canvas.MinWidthProperty)
                     canvas.MinWidth = .MinWidthValue
                     Dsn.PageWidth = Math.Max(canvas.MinWidth, Dsn.PageWidth)
                 End If
 
-                If canvas.MinHeight <> .MinHeightValue Then
+                If Not AreEquals(canvas.MinHeight, .MinHeightValue) Then
                     OldState.Add(Canvas.MinHeightProperty)
                     canvas.MinHeight = .MinHeightValue
                     Dsn.PageHeight = Math.Max(canvas.MinHeight, Dsn.PageHeight)
                 End If
 
-                If canvas.MaxWidth <> .MaxWidthValue Then
+                If Not AreEquals(canvas.MaxWidth, .MaxWidthValue) Then
                     OldState.Add(Canvas.MaxWidthProperty)
                     canvas.MaxWidth = .MaxWidthValue
                     Dsn.PageWidth = Math.Min(canvas.MaxWidth, Dsn.PageWidth)
                 End If
 
-                If canvas.MaxHeight <> .MaxHeightValue Then
+                If Not AreEquals(canvas.MaxHeight, .MaxHeightValue) Then
                     OldState.Add(Canvas.MaxHeightProperty)
                     canvas.MaxHeight = .MaxHeightValue
                     Dsn.PageHeight = Math.Min(canvas.MaxHeight, Dsn.PageHeight)
                 End If
 
                 Dim rtl = If(.RightToLeftValue, FlowDirection.RightToLeft, FlowDirection.LeftToRight)
-                If canvas.FlowDirection <> rtl Then
-                    OldState.Add(Canvas.FlowDirectionProperty)
-                    canvas.FlowDirection = rtl
+                If Dsn.FlowDirection <> rtl Then
+                    OldState.Add(Designer.FlowDirectionProperty)
+                    Dsn.FlowDirection = rtl
+                    Dsn.MenuBar.FlowDirection = rtl
                 End If
 
-                If OldState.HasChanges Then unit.Add(OldState)
+                If OldState.HasChanges Then unit.Add(OldState.SetNewValues())
 
                 If unit.Count > 0 Then Dsn.UndoStack.ReportChanges(unit)
             End If
@@ -224,4 +227,18 @@
         dsn.UndoStack.ReportChanges(Unit)
     End Sub
 
+    Private Sub MenuDesignerMenuItem_Click(sender As Object, e As RoutedEventArgs)
+        ' We need to raise an event which is not possible from outside the designer
+        ' So, all code will be executed in the Designer.ShowMenuDesigner sub
+        GetDesigner(sender).ShowMenuDesigner()
+    End Sub
+
+    Private Sub MainMenuBar_MouseDoubleClick(sender As Object, e As MouseButtonEventArgs)
+        If Designer.dontShowMenuDesigner Then Return
+
+        If Helper.GetParent(Of MenuItem)(e.OriginalSource) Is Nothing Then
+            e.Handled = True
+            Helper.GetDesigner(sender).ShowMenuDesigner()
+        End If
+    End Sub
 End Class

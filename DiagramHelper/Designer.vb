@@ -22,6 +22,7 @@ Public Class Designer
     Dim DeleteUndoUnit As UndoRedoUnit
     Friend SelectedBounds As Rect
     Friend GridPen As Pen
+    Friend MenuBar As Menu
 
     Public ReadOnly Property AllowTransparency As Boolean
         Get
@@ -31,7 +32,6 @@ Public Class Designer
             Return AllowTransparencyMenuItem.IsChecked
         End Get
     End Property
-
 
     Dim _codeFile As String = ""
 
@@ -76,13 +76,14 @@ Public Class Designer
 
         Dim Brdr As Border = VisualTreeHelper.GetChild(Me, 0)
         Dim G = CType(Brdr.Child, Grid)
-
         ScrollViewer = G.Children(0)
         GridLinesBorder = G.Children(1)
+
         G = ScrollViewer.Content
-        DesignerCanvas = VisualTreeHelper.GetChild(G.Children(0), 0)
+        MenuBar = G.Children(0)
+        DesignerCanvas = VisualTreeHelper.GetChild(G.Children(1), 0)
         DesignerGrid = G
-        ConnectionCanvas = G.Children(1)
+        ConnectionCanvas = G.Children(2)
         DesignerCanvas.Width = PageWidth
         DesignerCanvas.Height = PageHeight
         ConnectionCanvas.Width = PageWidth
@@ -138,27 +139,73 @@ Public Class Designer
         End If
     End Function
 
-    Public Function SetControlName(control As UIElement, name As String) As Boolean
+    Private Function IsKeyword(newName As String) As Boolean
+        Dim name = newName.ToLower()
+        Dim msg = $"'{newName}' is an sVB keyword and can't be used as a name. you can add a control prefix to the name, such as `Frm{newName}` or `Txt{newName}`."
+
+        If name = "me" OrElse name = "global" Then
+            MsgBox(msg)
+            Return True
+        End If
+
+        Dim tokens = Microsoft.SmallVisualBasic.LineScanner.GetTokens(name, 0)
+        If tokens.Count > 1 Then
+            MsgBox("Form and control names can't start with a number nor contain spaces or any symbols. Use `_` instead.")
+            Return True
+        End If
+
+        Select Case tokens(0).ParseType
+            Case Microsoft.SmallVisualBasic.ParseType.Keyword, Microsoft.SmallVisualBasic.ParseType.Operator
+                MsgBox(msg)
+                Return True
+            Case Else
+                Return False
+        End Select
+    End Function
+
+
+    Public Function SetControlName(control As UIElement, name As String, Optional menu As Menu = Nothing) As Boolean
         If name = "" Then Return False
 
+        Dim controlName = Me.GetControlName(control)
+        If controlName = name Then Return True ' Not that we allow the user to rename the control with a different casing
+        If IsKeyword(name) Then Return False
+
         Dim newName = name.ToLower()
-        If Me.GetControlName(control).ToLower() <> newName Then
+
+        If controlName.ToLower() <> newName Then
+            If Microsoft.SmallVisualBasic.Compiler.TypeInfoBag.Types.ContainsKey(newName) Then
+                MessageBox.Show($"'{name}' is the name of a Small Visual Basic type! Choose another name", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                Return False
+            End If
+
             If IsNumeric(newName(0)) Then
                 MessageBox.Show("Name can't start with a number.", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
                 Return False
             End If
 
             If newName = Me.Name.ToLower() Then
-                MessageBox.Show($"'{newName}' is the form name! Choose another name", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                MessageBox.Show($"'{Me.Name}' is the form name! Choose another name", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
                 Return False
             End If
 
             For Each cnt In Me.Items
-                If Me.GetControlName(cnt).ToLower() = newName Then
-                    MessageBox.Show($"There is another control named '{newName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                Dim cName = Me.GetControlName(cnt)
+                If cName.ToLower() = newName Then
+                    MessageBox.Show($"There is another control named '{cName}'!", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
                     Return False
                 End If
             Next
+
+            menu = If(menu, Me.MainMenu)
+            If menu IsNot Nothing Then
+                If newName = menu.Name.ToLower() Then
+                    MessageBox.Show($"'{menu.Name}' is the name of the main menu! Choose another name", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                    Return False
+                End If
+
+                If Not CheckSubMenuNames(menu, newName) Then Return False
+            End If
         End If
 
         Try
@@ -186,12 +233,34 @@ Public Class Designer
         Return False
     End Function
 
+    Private Function CheckSubMenuNames(menu As ItemsControl, newName As String) As Boolean
+        For Each m As Control In menu.Items
+            Dim mName = m.Name
+            If mName.ToLower() = newName Then
+                MessageBox.Show($"There is a menu item named '{mName}'! Use a different name.", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                Return False
+            End If
+
+            If TypeOf m Is Separator Then Continue For
+            If Not CheckSubMenuNames(m, newName) Then Return False
+        Next
+        Return True
+    End Function
+
     Public Function ChangeFormName(name As String) As Boolean
         If name = "" Then Return False
         If CurrentPage Is Nothing OrElse Not Pages.ContainsKey(CurrentPage.PageKey) Then Return False
+        If Me.Name = name Then Return True
+        If IsKeyword(name) Then Return False
 
         Dim newName = name.ToLower()
+
         If Me.Name.ToLower() <> newName Then
+            If Microsoft.SmallVisualBasic.Compiler.TypeInfoBag.Types.ContainsKey(newName) Then
+                MessageBox.Show($"'{name}' is the name of a Small Visual Basic type! Choose another name", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                Return False
+            End If
+
             If IsNumeric(newName(0)) Then
                 MessageBox.Show("Name can't start with a number.", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
                 Return False
@@ -203,8 +272,16 @@ Public Class Designer
                     Return False
                 End If
             Next
-        End If
 
+            If MainMenu IsNot Nothing Then
+                If newName = MainMenu.Name.ToLower() Then
+                    MessageBox.Show($"'{MainMenu.Name}' is the name of the main menu! Choose another name", "Invalid Name", MessageBoxButton.OK, MessageBoxImage.Error)
+                    Return False
+                End If
+
+                If Not CheckSubMenuNames(MainMenu, newName) Then Return False
+            End If
+        End If
 
         Try
             Dim OldState As New PropertyState(AddressOf UpdateFormInfo, Me, Designer.NameProperty)
@@ -241,12 +318,39 @@ Public Class Designer
     Public PageKey As String
 
     Public Shared Event PageShown(index As Integer)
+    Public Shared Event OnMenuItemClicked(sender As MenuItem)
 
     Public ReadOnly Property IsNew As Boolean
         Get
             Return Not HasChanges AndAlso _xamlFile = ""
         End Get
     End Property
+
+    Friend Sub ShowMenuDesigner()
+        Dim m = Me.MainMenu
+        Dim wnd As New WndMenuDesigner()
+        wnd.Show()
+        wnd.Hide()
+        Dim m2 = wnd.MainMenu
+        m2.Items.Clear()
+
+        If m IsNot Nothing Then
+            For Each item In m.Items
+                m2.Items.Add(DiagramHelper.Helper.Clone(item))
+            Next
+        End If
+
+        If wnd.ShowDialog() = True Then
+            Dim value = If(m2.Items.Count = 0, Nothing, m2)
+            If value Is Nothing AndAlso GetValue(MainMenuProperty) Is Nothing Then
+                Return
+            End If
+
+            Dim state As New PropertyState(Me, MainMenuProperty)
+            SetValue(MainMenuProperty, value)
+            UndoStack.ReportChanges(New UndoRedoUnit(state.SetNewValues()))
+        End If
+    End Sub
 
     Public Shared Function GetTempFormName() As String
         TempKeyNum += 1
@@ -467,8 +571,13 @@ Public Class Designer
             .Width = PageWidth,
             .Height = PageHeight,
             .Background = DesignerCanvas.Background,
-            .Tag = AllowTransparencyMenuItem.IsChecked
+            .Tag = AllowTransparencyMenuItem.IsChecked,
+            .FlowDirection = Me.FlowDirection
         }
+
+        If MainMenu IsNot Nothing Then
+            canvas.Children.Add(Helper.Clone(MainMenu))
+        End If
 
         If _Text <> "" Then
             Automation.AutomationProperties.SetHelpText(canvas, _Text)
@@ -538,7 +647,7 @@ Public Class Designer
         Next
 
         Dim tempControl = New Control() With {
-            .Name = "__FORM__PROPS__",
+             .Name = "__FORM__PROPS__",
              .MinWidth = Me.DesignerCanvas.MinWidth,
              .MinHeight = Me.DesignerCanvas.MinHeight,
              .MaxWidth = Me.DesignerCanvas.MaxWidth,
@@ -581,6 +690,8 @@ Public Class Designer
         canvas.Visibility = Visibility.Visible
 
         Me.Visibility = Visibility.Hidden
+        Me.FlowDirection = canvas.FlowDirection
+        canvas.ClearValue(FrameworkElement.FlowDirectionProperty)
 
         If DesignerCanvas Is Nothing Then
             OpenFileCanvas = canvas
@@ -593,6 +704,11 @@ Public Class Designer
             Dim diagram = TryCast(Helper.Clone(child), FrameworkElement)
             If diagram Is Nothing Then Continue For
 
+            If TypeOf diagram Is Menu Then
+                Me.SetValue(MainMenuProperty, diagram)
+                Continue For
+            End If
+
             If diagram.Name = "__FORM__PROPS__" Then
                 Me.DesignerCanvas.MinWidth = diagram.MinWidth
                 Me.DesignerCanvas.MinHeight = diagram.MinHeight
@@ -600,6 +716,8 @@ Public Class Designer
                 Me.DesignerCanvas.MaxHeight = diagram.MaxHeight
                 Me.Tag = diagram.Tag
                 Me.PageToolTip = diagram.ToolTip
+                Me.PageLeft = diagram.GetValue(Canvas.LeftProperty)
+                Me.PageTop = diagram.GetValue(Canvas.TopProperty)
                 Continue For
             End If
 
@@ -1079,6 +1197,7 @@ Public Class Designer
                 UpdateFormInfo()
                 Me.HasChanges = False
             End If
+            Me._mustSaveDesign = False
 
         Catch ex As Exception
             MsgBox(ex.Message)
@@ -1141,7 +1260,7 @@ Public Class Designer
             .Title = "Open Diagram Design Page"
         }
         If dlg.ShowDialog() = True Then
-            If Not CurrentPage.HasChanges AndAlso
+            If Not CurrentPage.IsDirty AndAlso
                     CurrentPage.IsNew AndAlso Pages.Count = 1 Then
                 ClosePage(False, True)
             End If
@@ -1491,7 +1610,8 @@ Public Class Designer
     End Function
 
     Private Sub UndoStack_UndoRedoStateChanged(CanUndo As Boolean, CanRedo As Boolean) Handles UndoStack.UndoRedoStateChanged
-        Me.HasChanges = CanUndo 'OrElse CanRedo
+        Me._mustSaveDesign = CanUndo OrElse CanRedo
+        Me.HasChanges = CanUndo
         Me.CanUndo = CanUndo
         Me.CanRedo = CanRedo
     End Sub
@@ -1664,6 +1784,64 @@ Public Class Designer
     Friend MinZIndex As Integer
     Public IsReloading As Boolean = False
     Public ItemDeleted As Boolean
+
+    Public Property MainMenu As Menu
+        Get
+            Return GetValue(MainMenuProperty)
+        End Get
+
+        Set(ByVal value As Menu)
+            SetValue(MainMenuProperty, value)
+        End Set
+    End Property
+
+    Public Shared ReadOnly MainMenuProperty As DependencyProperty =
+                           DependencyProperty.Register("MainMenu",
+                           GetType(Menu), GetType(Designer),
+                           New PropertyMetadata(Nothing, AddressOf MainMenuChanged))
+
+    Public MenuNames As List(Of String)
+
+    Private Shared Sub MainMenuChanged(d As DependencyObject, e As DependencyPropertyChangedEventArgs)
+        Dim menuItems = CurrentPage.MenuBar.Items
+        menuItems.Clear()
+        Dim menu = CType(e.NewValue, Menu)
+        If menu Is Nothing Then Return
+
+        CurrentPage.MenuNames = New List(Of String)
+        For Each item In menu.Items
+            Dim m = CType(Helper.Clone(item), Control)
+            menuItems.Add(m)
+            If TypeOf m IsNot Separator Then AddMenuClickHandlers(m)
+        Next
+    End Sub
+
+    Private Shared Sub AddMenuClickHandlers(menuItem As MenuItem)
+        CurrentPage.MenuNames.Add(menuItem.Name)
+
+        If menuItem.Items.Count = 0 Then
+            AddHandler menuItem.Click, AddressOf menuItemClicked
+            Return
+        End If
+
+        AddHandler menuItem.MouseDoubleClick, AddressOf menuItemClicked
+        For Each m In menuItem.Items
+            If TypeOf m IsNot Separator Then AddMenuClickHandlers(m)
+        Next
+    End Sub
+
+    Friend Shared dontShowMenuDesigner As Boolean = False
+
+    Private Shared Sub menuItemClicked(sender As Object, e As RoutedEventArgs)
+        dontShowMenuDesigner = True
+        e.Handled = True
+        RaiseEvent OnMenuItemClicked(sender)
+        CurrentPage.Dispatcher.BeginInvoke(
+            Threading.DispatcherPriority.Background,
+            Sub() dontShowMenuDesigner = False
+       )
+    End Sub
+
 
 #Region "Left Attached Property"
     <TypeConverter(GetType(LengthConverter))>
@@ -2063,7 +2241,7 @@ Public Class Designer
 
         Dim maxHeight = dsn.DesignerCanvas.MaxHeight
         Dim minHeight = dsn.DesignerCanvas.MinHeight
-        Dim value = e.NewValue
+        Dim value = CDbl(e.NewValue)
 
         If value < minHeight Then
             dsn.PageHeight = minHeight
@@ -2213,11 +2391,17 @@ Public Class Designer
 
 #End Region
 
+    Dim _mustSaveDesign As Boolean
+    Public ReadOnly Property MustSaveDesign As Boolean
+        Get
+            Return _mustSaveDesign OrElse HasChanges
+        End Get
+    End Property
 
 #Region "HasChanges"
 
     Public Property HasChanges As Boolean
-        Get
+        Friend Get
             Return GetValue(HasChangesProperty)
         End Get
 
@@ -2269,7 +2453,7 @@ Public Class Designer
     Private ReadOnly Property IsDirty As Boolean
         Get
             If IO.Path.GetFileNameWithoutExtension(_xamlFile).ToLower() = "global" Then Return False
-            Return Me.HasChanges OrElse (
+            Return Me._mustSaveDesign OrElse Me.HasChanges OrElse (
                 _xamlFile = "" AndAlso _codeFile <> "" AndAlso
                 (TempProjectPath <> "" AndAlso Not _codeFile.ToLower().StartsWith(TempProjectPath))
             )
@@ -2283,9 +2467,9 @@ Public Class Designer
     End Property
 
     Public Shared ReadOnly CanRedoProperty As DependencyProperty =
-                           DependencyProperty.Register("CanRedo",
-                           GetType(Boolean), GetType(Designer),
-                           New PropertyMetadata(False))
+                          DependencyProperty.Register("CanRedo",
+                          GetType(Boolean), GetType(Designer),
+                          New PropertyMetadata(False))
 
 #End Region
 

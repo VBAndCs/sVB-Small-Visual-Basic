@@ -79,8 +79,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 _file = If(filePath, "")
             End If
 
-
-            If  _file <> "" Then
+            If _file <> "" Then
                 _IsTheGlobalFile = IO.Path.GetFileNameWithoutExtension(_file).ToLower = "global"
             End If
         End Sub

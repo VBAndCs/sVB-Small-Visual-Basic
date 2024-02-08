@@ -123,7 +123,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
                 If _errorListControl Is Nothing Then
                     _errorListControl = New ErrorListControl(Me)
-                    _errorListControl.ItemsSource = Errors
+                    _errorListControl.ItemsSource = _Errors
                 End If
 
                 Return _errorListControl
@@ -915,6 +915,21 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 End If
             Next
 
+            If formDesigner.MainMenu IsNot Nothing Then
+                Dim menuName = formDesigner.MainMenu.Name
+                controlsInfoList(menuName.ToLower()) = "MainMenu"
+                controlNamesList.Add(menuName)
+                genCode.AppendLine($"'    {menuName}: MainMenu")
+                declaration.AppendLine($"{menuName} = ""{formName.ToLower()}.{menuName.ToLower()}""")
+
+                For Each menuName In formDesigner.MenuNames
+                    controlsInfoList(menuName.ToLower()) = "MenuItem"
+                    controlNamesList.Add(menuName)
+                    genCode.AppendLine($"'    {menuName}: MenuItem")
+                    declaration.AppendLine($"{menuName} = ""{formName.ToLower()}.{menuName.ToLower()}""")
+                Next
+            End If
+
             genCode.AppendLine("'}")
             genCode.AppendLine()
             genCode.Append(declaration)
@@ -1430,22 +1445,24 @@ EndFunction
         Public Sub ShowErrors(errors As List(Of [Error]))
             ' don't use _errorListControl because it can be Nothing
             ErrorListControl.ErrorTokens.Clear()
-            Me.Errors.Clear()
+            _Errors.Clear()
 
             For Each err As [Error] In errors
                 Dim token = err.Token
                 token.Line = err.Line - sVB.LineOffset
                 ErrorListControl.ErrorTokens.Add(token)
+                Dim errMsg As String
 
                 If err.Line = -1 Then
-                    Me.Errors.Add(err.Description)
+                    errMsg = err.Description
+                    _Errors.Add(errMsg)
                 Else
-                    Me.Errors.Add($"{token.Line + 1},{err.Column + 1}: {err.Description}")
+                    errMsg = $"{token.Line + 1},{err.Column + 1}: {err.Description}"
+                    _Errors.Add(errMsg)
                 End If
             Next
 
             _errorListControl.SelectError(0)
-
         End Sub
 
         Public Function CompileGlobalModule() As List(Of Parser)
@@ -1469,8 +1486,8 @@ EndFunction
                 If name = "" Then Continue For
                 name = name.ToLower()
                 If forms.Contains(name) Then
-                    Errors.Add(xamlFile)
-                    Errors.Add(name)
+                    _Errors.Add(xamlFile)
+                    _Errors.Add(name)
                     Return Nothing
                 End If
                 forms.Add(name)

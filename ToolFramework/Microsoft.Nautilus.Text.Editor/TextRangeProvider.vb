@@ -99,7 +99,7 @@ Namespace Microsoft.Nautilus.Text.Editor.Automation.Implementation
         End Function
 
         Private Function GetAttributeValue(attribute As Integer) As Object Implements ITextRangeProvider.GetAttributeValue
-            Throw New NotImplementedException
+            'Throw New NotImplementedException
         End Function
 
         Private Function GetBoundingRectangles() As Double() Implements ITextRangeProvider.GetBoundingRectangles

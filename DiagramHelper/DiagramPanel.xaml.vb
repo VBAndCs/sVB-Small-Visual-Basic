@@ -802,12 +802,12 @@ Public Class DiagramPanel
                 If leftChanged OrElse topChanged Then
                     Dim dsnItem = Helper.GetListBoxItem(fw)
                     OldState = New PropertyState(dsnItem)
-                    If leftChanged AndAlso Canvas.GetLeft(dsnItem) <> LeftValue Then
+                    If leftChanged AndAlso Not AreEquals(Canvas.GetLeft(dsnItem), LeftValue) Then
                         OldState.Add(Canvas.LeftProperty)
                         Canvas.SetLeft(dsnItem, LeftValue)
                     End If
 
-                    If topChanged AndAlso Canvas.GetTop(dsnItem) <> topValue Then
+                    If topChanged AndAlso Not AreEquals(Canvas.GetTop(dsnItem), topValue) Then
                         OldState.Add(Canvas.TopProperty)
                         Canvas.SetTop(dsnItem, topValue)
                     End If
@@ -819,22 +819,22 @@ Public Class DiagramPanel
                     Dim pnl = Helper.GetDiagramPanel(fw)
                     OldState = New PropertyState(pnl)
 
-                    If minWidthChanged AndAlso pnl.MinWidth <> minWidthValue Then
+                    If minWidthChanged AndAlso Not AreEquals(pnl.MinWidth, minWidthValue) Then
                         OldState.Add(FrameworkElement.MinWidthProperty)
                         pnl.MinWidth = minWidthValue
                     End If
 
-                    If minHeightChanged AndAlso pnl.MinHeight <> minHeightValue Then
+                    If minHeightChanged AndAlso Not AreEquals(pnl.MinHeight, minHeightValue) Then
                         OldState.Add(FrameworkElement.MinHeightProperty)
                         pnl.MinHeight = minHeightValue
                     End If
 
-                    If maxWidthChanged AndAlso pnl.MaxWidth <> maxWidthValue Then
+                    If maxWidthChanged AndAlso Not AreEquals(pnl.MaxWidth, maxWidthValue) Then
                         OldState.Add(FrameworkElement.MaxWidthProperty)
                         pnl.MaxWidth = maxWidthValue
                     End If
 
-                    If maxHeightChanged AndAlso pnl.MaxHeight <> maxHeightValue Then
+                    If maxHeightChanged AndAlso Not AreEquals(pnl.MaxHeight, maxHeightValue) Then
                         OldState.Add(FrameworkElement.MaxHeightProperty)
                         pnl.MaxHeight = maxHeightValue
                     End If
@@ -936,8 +936,8 @@ Public Class DiagramPanel
 
     Private Shared Sub SetDiagramSize(pnl As DiagramPanel, newWidth As Double?, newHeight As Double?, unit As UndoRedoUnit)
         Dim diagram = pnl.Diagram
-        Dim changeWidth = newWidth.HasValue AndAlso pnl.Width <> newWidth.Value
-        Dim changeHeight = newHeight.HasValue AndAlso pnl.Height <> newHeight.Value
+        Dim changeWidth = newWidth.HasValue AndAlso Not AreEquals(pnl.Width, newWidth.Value)
+        Dim changeHeight = newHeight.HasValue AndAlso Not AreEquals(pnl.Height, newHeight.Value)
 
         If Not (changeWidth OrElse changeHeight) Then Return
 
@@ -1093,9 +1093,9 @@ Public Class DiagramPanel
             If fw Is item Then Continue For
 
             If onCanvus Then
-                If Not Helper.GetListBoxItem(fw).GetValue(dp).Equals(value) Then Return Nothing
-            ElseIf CDbl(Helper.GetDiagramPanel(fw).GetValue(dp)) <> value Then
-                Return Nothing
+                If Not AreEquals(CDbl(Helper.GetListBoxItem(fw).GetValue(dp)), value) Then Return Nothing
+            ElseIf Not AreEquals(CDbl(Helper.GetDiagramPanel(fw).GetValue(dp)), value) Then
+                    Return Nothing
             End If
         Next
 

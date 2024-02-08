@@ -564,7 +564,10 @@ Namespace WinForms
             App.Invoke(
                    Sub()
                        Try
-                           GetControl(controlName).FlowDirection = If(CBool(value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
+                           Dim c = GetControl(controlName)
+                           Dim rtl = If(CBool(value), FlowDirection.RightToLeft, FlowDirection.LeftToRight)
+                           c.FlowDirection = rtl
+                           If TypeOf c Is Window Then Form.GetCanvas(c).FlowDirection = rtl
                        Catch ex As Exception
                            ReportPropertyError(controlName, "RightToLeft", value, ex)
                        End Try

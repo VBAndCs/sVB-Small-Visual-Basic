@@ -1270,6 +1270,7 @@ Namespace Library
             Dim dpo = CType(obj, DependencyObject)
             Dim start = CDbl(dpo.GetValue([property]))
             If Double.IsNaN(start) Then start = 0.0
+            If start = [end] Then Return
 
             Dim animation As New DoubleAnimation(
                 start,

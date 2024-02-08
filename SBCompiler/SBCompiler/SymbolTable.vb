@@ -360,7 +360,7 @@ Namespace Microsoft.SmallVisualBasic
                     ' hence control names are not declared as variabls yet!
                     ' so, we need to add them here to make intellisense work correctly.
                     For Each controlName In _ControlNames
-                        If variableName = controlName.ToLower Then
+                        If variableName = controlName.ToLower() Then
                             _GlobalVariables.Add(variableName, variable.Identifier)
                             Return variableName
                         End If
