@@ -108,6 +108,8 @@
                 CmbKeys.SelectedItem = s.Substring(s.LastIndexOf("+") + 1)
             End If
         End If
+
+        SelectName()
     End Sub
 
     Private Function CommintChanges() As Boolean
@@ -136,6 +138,7 @@
         OpenMenu(m)
         ' Set the property not the back filed to change colors
         CurrrentMenuItem = newItem
+        TxtName.Focus()
     End Sub
 
     Private Function CreateMenuItem() As MenuItem
@@ -150,14 +153,16 @@
     End Function
 
     Private Const MnuPrefix = "Mnu"
+    Private Const SepPrefix = "Sep"
 
     Private Function GetNewID(parent As ItemsControl, Optional id As Integer = 1) As Integer
         Dim mp = MnuPrefix.ToLower()
+        Dim sp = SepPrefix.ToLower()
         Dim L = mp.Length
 
         For Each m As Control In parent.Items
             Dim name = m.Name.ToLower()
-            If name.StartsWith(mp) Then
+            If name.StartsWith(mp) OrElse name.StartsWith(sp) Then
                 Dim n = name.Substring(L)
                 If IsNumeric(n) Then
                     If CInt(n) >= id Then id = CInt(n) + 1
@@ -204,6 +209,7 @@
             OpenMenu(_CurrrentMenuItem)
             ' Set the property not the back filed to change colors
             CurrrentMenuItem = newItem
+            TxtName.Focus()
         End If
     End Sub
 
@@ -223,13 +229,14 @@
 
     Private Sub Window_PreviewKeyDown(sender As Object, e As KeyEventArgs)
         Dim activeControl = FocusManager.GetFocusedElement(Me)
-        Dim cancel = TypeOf activeControl Is ComboBox OrElse
-                                TypeOf activeControl Is ComboBoxItem OrElse
-                                TypeOf activeControl Is TextBox
+        Dim cancelLeftAndRight = TypeOf activeControl Is TextBox
+        Dim cancelUpAndDown = TypeOf activeControl Is ComboBox OrElse
+                                                    TypeOf activeControl Is ComboBoxItem
 
         Select Case e.Key
             Case Key.Escape
                 DontAskAgain = True
+
             Case Key.F3
                 BtnAddNext_Click(Nothing, Nothing)
                 e.Handled = True
@@ -239,7 +246,7 @@
                 e.Handled = True
 
             Case Key.Up
-                If cancel Then Return
+                If cancelUpAndDown Then Return
                 If e.KeyboardDevice.Modifiers = ModifierKeys.Control Then
                     DecreaseIndex()
                 Else
@@ -248,7 +255,7 @@
                 e.Handled = True
 
             Case Key.Down
-                If cancel Then Return
+                If cancelUpAndDown Then Return
                 If e.KeyboardDevice.Modifiers = ModifierKeys.Control Then
                     IncreaseIndex()
                 ElseIf _CurrrentMenuItem.Parent Is MainMenu Then
@@ -259,7 +266,7 @@
                 e.Handled = True
 
             Case Key.Left
-                If cancel Then Return
+                If cancelLeftAndRight Then Return
                 If e.KeyboardDevice.Modifiers = ModifierKeys.Control Then
                     DecreaseDepth()
                 ElseIf _CurrrentMenuItem.Parent Is MainMenu Then
@@ -270,7 +277,7 @@
                 e.Handled = True
 
             Case Key.Right
-                If cancel Then Return
+                If cancelLeftAndRight Then Return
                 If e.KeyboardDevice.Modifiers = ModifierKeys.Control Then
                     IncreaseDepth()
                 ElseIf _CurrrentMenuItem.Parent Is MainMenu Then
@@ -456,7 +463,14 @@
 
         newName = newName(0).ToString().ToUpper & If(newName.Length > 1, newName.Substring(1), "")
         If TxtName.Text <> newName Then TxtName.Text = newName
-        Return Designer.CurrentPage.SetControlName(_CurrrentMenuItem, newName, MainMenu)
+        If Designer.CurrentPage.SetControlName(_CurrrentMenuItem, newName, MainMenu) Then
+            If TxtText.IsEnabled AndAlso newName.ToLower().EndsWith(TxtText.Text.ToLower()) Then
+                CommitText()
+            End If
+            Return True
+        End If
+
+        Return False
     End Function
 
     Private Sub BtnDelete_Click(sender As Object, e As RoutedEventArgs)
@@ -471,7 +485,7 @@
         items.RemoveAt(i)
         If i = items.Count Then
             If i = 0 Then
-                CurrrentMenuItem = Parent
+                CurrrentMenuItem = parent
             Else
                 CurrrentMenuItem = items(i - 1)
             End If
@@ -493,7 +507,7 @@
 
     Private Sub BtnAddSep_Click(sender As Object, e As RoutedEventArgs)
         Dim newItem As New Separator()
-        newItem.Name = "Sep" & newID
+        newItem.Name = SepPrefix & newID
         newID += 1
         AddHandler newItem.PreviewMouseDown, AddressOf MenuItem_Click
 
@@ -633,8 +647,49 @@
                          ) = MsgBoxResult.Cancel
     End Sub
 
-    Private Sub TextBox_GotFocus(sender As Object, e As RoutedEventArgs)
+    Private Sub TxtText_GotFocus(sender As Object, e As RoutedEventArgs)
         Helper.RunLater(Me, Sub() CType(sender, TextBox).SelectAll(), 1)
         Controls_GotFocus(sender, Nothing)
+    End Sub
+
+    Private Sub TxtName_GotFocus(sender As Object, e As RoutedEventArgs)
+        Helper.RunLater(Me, AddressOf SelectName, 1)
+    End Sub
+
+    Dim isDefaultText As Boolean
+
+    Private Sub SelectName()
+        Dim name = TxtName.Text.ToLower()
+        Dim len = TxtName.Text.Length
+        If name.StartsWith("menu") Then
+            TxtName.Select(4, len - 4)
+        ElseIf name.StartsWith("mnu") Then
+            TxtName.Select(3, len - 3)
+        Else
+            TxtName.SelectAll()
+        End If
+
+        Controls_GotFocus(TxtName, Nothing)
+        isDefaultText = TxtText.Text.ToLower.StartsWith("menuitem")
+    End Sub
+
+    Private Sub TxtName_TextChanged(sender As Object, e As TextChangedEventArgs)
+        If Not TxtText.IsEnabled OrElse Not isDefaultText Then Return
+
+        Dim name = TxtName.Text.ToLower()
+        Dim len = TxtName.Text.Length
+        Dim suggestedName = ""
+
+        If name.StartsWith("menuitem") Then
+            suggestedName = TxtName.Text.Substring(8)
+        ElseIf name.StartsWith("menu") Then
+            suggestedName = TxtName.Text.Substring(4)
+        ElseIf name.StartsWith("mnu") Then
+            suggestedName = TxtName.Text.Substring(3)
+        Else
+            suggestedName = TxtName.Text
+        End If
+
+        If suggestedName <> "" Then TxtText.Text = suggestedName
     End Sub
 End Class

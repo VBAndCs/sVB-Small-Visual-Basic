@@ -254,21 +254,35 @@ Namespace WinForms
         Private Shared Sub Form_PreviewKeyDown(sender As Object, e As Input.KeyEventArgs)
             App.Invoke(
                 Sub()
-                    For Each sh In MenuItem.ShortcutHandlers.Values
+                    For Each item In MenuItem.ShortcutHandlers
+                        Dim sh = item.Value
                         If sh Is Nothing Then Continue For
                         If e.Key <> sh.key Then Continue For
                         If sh.Ctrl AndAlso (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Control) = 0 Then Continue For
                         If sh.Shift AndAlso (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Shift) = 0 Then Continue For
                         If sh.Alt AndAlso (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Alt) = 0 Then Continue For
-                        Call sh.Handler()
-                        Exit For
+
+                        Dim m = item.Key
+                        If m.IsCheckable Then
+                            m.IsChecked = Not m.IsChecked
+                            ' If there is no OnCkeck handler, call the OnClick handler
+                            If sh.Handler IsNot Nothing Then Call sh.Handler()
+                        Else
+                                Call sh.Handler()
+                        End If
+
+                        e.Handled = True
+                        Exit Sub
                     Next
                 End Sub)
         End Sub
 
-        Private Shared Sub AddMenuNames(form_Name As String, m As Wpf.MenuItem)
-            Dim key = form_Name & "." & m.Name.ToLower()
-            _controls(key) = m
+        Private Shared Sub AddMenuNames(form_Name As String, item As Wpf.Control)
+            Dim key = form_Name & "." & item.Name.ToLower()
+            _controls(key) = item
+            If TypeOf item Is Separator Then Return
+
+            Dim m = CType(item, Wpf.MenuItem)
             m.IsCheckable = (LCase(m.Tag) = "true")
 
             For Each m2 In m.Items

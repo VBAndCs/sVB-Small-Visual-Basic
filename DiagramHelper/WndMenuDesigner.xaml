@@ -42,14 +42,15 @@
                 <TextBox x:Name="TxtName" Grid.Column="1" Margin="5,5,15,5"
                          PreviewKeyDown="TxtName_PreviewKeyDown"
                          LostFocus="TxtName_LostFocus"
-                         GotFocus="TextBox_GotFocus"
+                         GotFocus="TxtName_GotFocus"
+                         TextChanged="TxtName_TextChanged"
                          PreviewMouseLeftButtonUp="Controls_GotFocus"/>
 
                 <TextBlock Grid.Column="2" Margin="5,0,0,0">Text:</TextBlock>
                 <TextBox x:Name="TxtText" Grid.Column="3" Margin="5,5,15,5"
                          PreviewKeyDown="TxtText_PreviewKeyDown"
                          LostFocus="TxtText_LostFocus"
-                         GotFocus="TextBox_GotFocus"
+                         GotFocus="TxtText_GotFocus"
                          PreviewMouseLeftButtonUp="Controls_GotFocus"/>
 
                 <GroupBox x:Name="GrpShortcut" Grid.Row="1"  Grid.ColumnSpan="2" Margin="15,5"  Header="Shortcut: " BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left">

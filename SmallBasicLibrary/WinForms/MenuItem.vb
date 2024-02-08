@@ -269,26 +269,34 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnCheck As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
-                Try
-                    Dim _sender = GetMenuItem([Event].SenderControl)
-                    Dim h = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs)
-                                [Event].HandleEvent(Sender, e, handler)
-                            End Sub
+                App.Invoke(
+                    Sub()
+                        Try
+                            Dim _sender = GetMenuItem([Event].SenderControl)
+                            Dim shortcut = _sender.InputGestureText
+                            If shortcut <> "" AndAlso _sender.IsCheckable Then
+                                ShortcutHandlers(_sender) = New ShortcutHandler(shortcut, Nothing)
+                            End If
 
-                    Control.RemovePrevEventHandler(
-                            [Event].SenderControl,
-                            NameOf(OnCheck),
-                            Sub()
-                                RemoveHandler _sender.Checked, h
-                                RemoveHandler _sender.Unchecked, h
-                            End Sub
-                    )
-                    AddHandler _sender.Checked, h
-                    AddHandler _sender.Unchecked, h
+                            Dim h = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs)
+                                        [Event].HandleEvent(Sender, e, handler)
+                                    End Sub
 
-                Catch ex As Exception
-                    [Event].ShowErrorMessage(NameOf(OnCheck), ex)
-                End Try
+                            Control.RemovePrevEventHandler(
+                                    [Event].SenderControl,
+                                    NameOf(OnCheck),
+                                    Sub()
+                                        RemoveHandler _sender.Checked, h
+                                        RemoveHandler _sender.Unchecked, h
+                                    End Sub
+                            )
+                            AddHandler _sender.Checked, h
+                            AddHandler _sender.Unchecked, h
+
+                        Catch ex As Exception
+                            [Event].ShowErrorMessage(NameOf(OnCheck), ex)
+                        End Try
+                    End Sub)
             End AddHandler
 
             RemoveHandler(handler As SmallVisualBasicCallback)
