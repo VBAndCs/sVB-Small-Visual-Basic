@@ -4926,12 +4926,22 @@ Creates a color from its alpha, red, green, and blue components.
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Control.GetLeft(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
- Gets or sets the x-pos of the control on its parent control.
+ Gets or sets the x-pos of the left edge of control on its parent control.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Control.GetRight(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets or sets the x-pos of the right edge of control on its parent control.
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Control.GetTop(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
- Gets or sets the y-pos of the control on its parent control.
+ Gets or sets the y-pos of the top edge of the control on its parent control.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Control.GetBottom(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets or sets the y-pos of the bottom edge of the control on its parent control.
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Control.GetWidth(Microsoft.SmallVisualBasic.Library.Primitive)">

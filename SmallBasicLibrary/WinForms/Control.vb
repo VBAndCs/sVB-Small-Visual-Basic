@@ -157,7 +157,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Gets or sets the x-pos of the control on its parent control.
+        ''' Gets or sets the x-pos of the left edge of control on its parent control.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -188,7 +188,40 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Gets or sets the y-pos of the control on its parent control.
+        ''' Gets or sets the x-pos of the right edge of control on its parent control.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetRight(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        GetRight = System.Math.Round(Wpf.Canvas.GetLeft(c) + c.ActualWidth, 2, MidpointRounding.AwayFromZero)
+                    Catch ex As Exception
+                        ReportError(controlName, "Right", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetRight(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        ' Remove any animation effect to allow setting the new value
+                        c.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
+                        Wpf.Canvas.SetLeft(c, CDbl(value) - c.ActualWidth)
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "Right", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Gets or sets the y-pos of the top edge of the control on its parent control.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -211,9 +244,42 @@ Namespace WinForms
                         Dim obj = GetControl(controlName)
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
-                        Wpf.Canvas.SetTop(obj, value)
+                        Wpf.Canvas.SetTop(obj, CDbl(value))
                     Catch ex As Exception
                         ReportPropertyError(controlName, "Top", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Gets or sets the y-pos of the bottom edge of the control on its parent control.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetBottom(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        GetBottom = System.Math.Round(Wpf.Canvas.GetTop(c) + c.ActualWidth, 2, MidpointRounding.AwayFromZero)
+                    Catch ex As Exception
+                        ReportError(controlName, "Bottom", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetBottom(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim c = GetControl(controlName)
+                        ' Remove any animation effect to allow setting the new value
+                        c.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
+                        Wpf.Canvas.SetTop(c, CDbl(value) - c.ActualHeight)
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "Bottom", value, ex)
                     End Try
                 End Sub)
         End Sub

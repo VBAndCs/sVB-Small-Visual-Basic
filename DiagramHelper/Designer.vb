@@ -1818,29 +1818,29 @@ Public Class Designer
 
     Private Shared Sub AddMenuClickHandlers(menuItem As MenuItem)
         CurrentPage.MenuNames.Add(menuItem.Name)
+        AddHandler menuItem.PreviewMouseLeftButtonDown, AddressOf menuItemClicked
+        If menuItem.Items.Count = 0 Then Return
 
-        If menuItem.Items.Count = 0 Then
-            AddHandler menuItem.Click, AddressOf menuItemClicked
-            Return
-        End If
-
-        AddHandler menuItem.MouseDoubleClick, AddressOf menuItemClicked
         For Each m In menuItem.Items
             If TypeOf m IsNot Separator Then AddMenuClickHandlers(m)
         Next
     End Sub
 
-    Friend Shared dontShowMenuDesigner As Boolean = False
+    Private Shared Sub menuItemClicked(sender As Object, e As MouseButtonEventArgs)
 
-    Private Shared Sub menuItemClicked(sender As Object, e As RoutedEventArgs)
-        dontShowMenuDesigner = True
-        e.Handled = True
-        RaiseEvent OnMenuItemClicked(sender)
-        CurrentPage.Dispatcher.BeginInvoke(
-            Threading.DispatcherPriority.Background,
-            Sub() dontShowMenuDesigner = False
-       )
+        If e.ClickCount > 1 OrElse TryCast(sender, ItemsControl)?.Items.Count = 0 Then
+            dontShowMenuDesigner = True
+            e.Handled = True
+            RaiseEvent OnMenuItemClicked(e.Source)
+
+            CurrentPage.Dispatcher.BeginInvoke(
+                Threading.DispatcherPriority.Background,
+                Sub() dontShowMenuDesigner = False
+            )
+        End If
     End Sub
+
+    Friend Shared dontShowMenuDesigner As Boolean = False
 
 
 #Region "Left Attached Property"

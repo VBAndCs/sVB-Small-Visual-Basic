@@ -735,7 +735,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
             Catch
             End Try
-
         End Sub
 
         Dim stopFormatingLine As Integer = -1

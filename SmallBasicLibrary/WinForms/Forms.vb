@@ -295,13 +295,13 @@ Namespace WinForms
                 Program.Directory.AsString(),
                 IO.Path.GetDirectoryName(fileName)
             ).ToLower() & IO.Path.DirectorySeparatorChar
+
             xaml = xaml.Replace("Source=""\", $"Source=""{d}")
             xaml = xaml.Replace("FileName=""\", $"FileName=""{d}")
             xaml = xaml.Replace("Source=""/", $"Source=""{d}")
             xaml = xaml.Replace("FileName=""/", $"FileName=""{d}")
             Return xaml
         End Function
-
 
         Private Shared Sub SetControlText(control As UIElement, key As String, value As String)
             Try

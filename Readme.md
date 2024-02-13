@@ -1,6 +1,11 @@
 <p align="center">
   <img src="https://github.com/VBAndCs/sVB-Small-Visual-Basic/assets/48354902/9e1ebcbf-212f-4578-8b67-b57551b80270"/>
+
+This book will help you to introduce sVB to you kid:
+[Small Visual Basic Kid Programmer](https://www.amazon.com/dp/B0CVK1BMC9)
+  <img src="https://m.media-amazon.com/images/W/MEDIAX_849526-T2/images/I/71w4pgF1VrL._SY342_.jpg"/>
 </p>
+
 
 # Contents
 * [What is Small Visual Basic?](https://github.com/VBAndCs/sVB-Small-Visual-Basic#what-is-small-visual-basic)
@@ -14,9 +19,9 @@
 * [Conclusions](https://github.com/VBAndCs/sVB-Small-Visual-Basic#conclusions)
 
 #What's new In sVB 2.9:
-The form designer now has a menu designer, which allows you to add menu items and set their properties like name, title, and shoutcut keys. To show the menu designer, right-click the form surface and click the "Meny Designer" command from the context menu.
-After closing the menu designr, menu items willl appear on top of the form designer, where you can click any of them to add its OnClick evemt handler to the code editor. You can also double-click main menu items to add its OnOpen evemt handler to the code editor.
-Using the designer to set the shourtcut keys for the menu items makes the form auto-handle these keys for you without having to write any more code for them.
+The form designer now has a menu designer, which allows you to add menu items and set their properties like name, title, and shortcut keys. To show the menu designer, right-click the form surface and click the "Menu Designer" command from the context menu.
+After closing the menu designer, menu items will appear on top of the form designer, where you can click any of them to add its OnClick event handler to the code editor. You can also double-click main menu items to add its OnOpen event handler to the code editor.
+Using the designer to set the shortcut keys for the menu items makes the form auto-handle these keys for you without having to write any more code for them.
 See the "sVB Notepad 2" application in the samples folder, where the menus are created by the menu designer, and compare that to the  rewrote the "sVB Notepad" application where they are crated by code.
 
 #What's new In sVB 2.8.9:

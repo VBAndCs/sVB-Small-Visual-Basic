@@ -132,6 +132,8 @@
             .MinHeightValue = canvas.MinHeight
             .MaxWidthValue = canvas.MaxWidth
             .MaxHeightValue = canvas.MaxHeight
+            .cmbEnabled.IsEnabled = False
+            .cmbVisible.IsEnabled = False
             .RightToLeftValue = (Dsn.FlowDirection = FlowDirection.RightToLeft)
             .cmbWordWrap.IsEnabled = False
             .TagValue = If(Dsn.Tag, "")
@@ -202,14 +204,17 @@
                     Dsn.PageHeight = Math.Min(canvas.MaxHeight, Dsn.PageHeight)
                 End If
 
+                If OldState.HasChanges Then unit.Add(OldState.SetNewValues())
+
                 Dim rtl = If(.RightToLeftValue, FlowDirection.RightToLeft, FlowDirection.LeftToRight)
                 If Dsn.FlowDirection <> rtl Then
-                    OldState.Add(Designer.FlowDirectionProperty)
+                    OldState = New PropertyState(Dsn, FrameworkElement.FlowDirectionProperty)
+                    Dim OldMenuState = New PropertyState(Dsn.MenuBar, FrameworkElement.FlowDirectionProperty)
                     Dsn.FlowDirection = rtl
                     Dsn.MenuBar.FlowDirection = rtl
+                    unit.Add(OldState.SetNewValues())
+                    unit.Add(OldMenuState.SetNewValues())
                 End If
-
-                If OldState.HasChanges Then unit.Add(OldState.SetNewValues())
 
                 If unit.Count > 0 Then Dsn.UndoStack.ReportChanges(unit)
             End If

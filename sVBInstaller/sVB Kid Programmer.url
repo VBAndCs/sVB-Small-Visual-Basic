@@ -1,0 +1,12 @@
+[DEFAULT]
+BASEURL=https://www.amazon.com/dp/B0CVK1BMC9
+[DOC_litb-read-frame]
+BASEURL=https://www.amazon.com/dp/B0CVK1BMC9
+ORIGURL=
+[{000214A0-0000-0000-C000-000000000046}]
+Prop3=19,11
+[InternetShortcut]
+URL=https://www.amazon.com/dp/B0CVK1BMC9
+IDList=
+IconFile=https://www.amazon.com/favicon.ico
+IconIndex=1
