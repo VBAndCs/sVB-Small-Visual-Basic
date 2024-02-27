@@ -1,6 +1,7 @@
 ﻿Imports System.Globalization
 Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -9,9 +10,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Public Name As Token
         Public Args As List(Of Expression)
-        Public IsFunctionCall As Boolean
         Public OuterSubroutine As SubroutineStatement
-        Friend KeepReturnValue As Boolean
+        Friend Property KeepReturnValue As Boolean
 
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
@@ -88,6 +88,35 @@ Namespace Microsoft.SmallVisualBasic.Statements
             sb.AppendLine(")")
 
             Return sb.ToString()
+        End Function
+
+        Public Overrides Function Execute(runner As ProgramRunner) As statement
+            Dim subName = Name.LCaseText
+
+            If Args IsNot Nothing AndAlso Args.Count > 0 Then
+                Dim values As New Library.Primitive()
+                Dim n = 1
+                For Each arg In Args
+                    values.Items(n) = arg.Evaluate(runner)
+                    n += 1
+                Next
+
+                ' Subroutine can call itself recursivley, so we must keep the args of each call in a stack,
+                ' and remove the last args from the stack at the end of each subroutine call
+                Dim key = $"{subName}.args"
+                Dim argsStack As New Library.Primitive
+                runner.Fields.TryGetValue(key, argsStack)
+                If argsStack.GetItemCount() = 0 Then
+                    argsStack.Items(1) = values
+                Else
+                    Library.Array.Append(argsStack, values)
+                End If
+                runner.Fields(key) = argsStack
+            End If
+
+            Dim subroutine = runner.SymbolTable.Subroutines(subName)
+            subroutine.Parent.Execute(runner)
+            Return Nothing
         End Function
     End Class
 End Namespace

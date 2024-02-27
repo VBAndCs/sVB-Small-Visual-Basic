@@ -1,5 +1,6 @@
 ﻿Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 
 Namespace Microsoft.SmallVisualBasic.Statements
 
@@ -87,6 +88,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Public Overrides Function ToString() As String
             Return StartToken.Text & If(UpLevel = -1, " *", New String("-"c, UpLevel)) & vbCrLf
+        End Function
+
+        Public Overrides Function Execute(runner As ProgramRunner) As Statement
+            Return Me
         End Function
     End Class
 End Namespace

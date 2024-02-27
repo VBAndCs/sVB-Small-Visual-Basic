@@ -1,4 +1,5 @@
 ﻿Imports System.Text
+Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Expressions
@@ -109,6 +110,18 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
             Return VariableType.Array
+        End Function
+
+        Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
+            Dim count = Arguments.Count
+            If count = 0 Then Return Array.EmptyArray()
+
+            Dim arr As New Primitive()
+            arr.Items(0) = Arguments(0).Evaluate(runner)
+            For i = 1 To count - 1
+                Array.Append(arr, Arguments(i).Evaluate(runner))
+            Next
+            Return arr
         End Function
     End Class
 End Namespace

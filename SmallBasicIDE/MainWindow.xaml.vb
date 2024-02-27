@@ -660,7 +660,19 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub RunProgram(Optional buildOnly As Boolean = False)
             Mouse.OverrideCursor = Cursors.Wait
+            BuildAndRun(buildOnly)
+            Mouse.OverrideCursor = Nothing
+        End Sub
 
+        Private Sub DebugProgram()
+            Dim compiler = BuildAndRun(True)
+            If compiler Is Nothing Then Return
+            Dim programEngine As New Engine.ProgramEngine(compiler)
+            programEngine.RunProgram()
+        End Sub
+
+
+        Friend Function BuildAndRun(buildOnly As Boolean) As Compiler
             Dim doc As TextDocument
 
             If tabDesigner.IsSelected Then
@@ -670,7 +682,7 @@ Namespace Microsoft.SmallVisualBasic
                     doc = SaveDesignInfo()
                 Catch ex As Exception
                     MsgBox(ex.Message)
-                    Return
+                    Return Nothing
                 End Try
                 tabDesigner.IsSelected = True
             Else
@@ -689,7 +701,7 @@ Namespace Microsoft.SmallVisualBasic
                 filePath,
                 doc.Form = "" AndAlso Not doc.IsTheGlobalFile
             )
-
+            SmallVisualBasic.Library.Program.AppDir = Path.GetDirectoryName(outputFileName)
             doc.Errors.Clear()
             Dim formNames = doc.GetFormNames()
             If doc.Errors.Count > 0 Then
@@ -706,7 +718,7 @@ Namespace Microsoft.SmallVisualBasic
                         Mouse.OverrideCursor = Nothing
                         ProjExplorer.FilesList.Focus()
                     End Sub)
-                Return
+                Return Nothing
             End If
 
             Dim parsers As List(Of Parser)
@@ -718,7 +730,7 @@ Namespace Microsoft.SmallVisualBasic
                     'sVB.Compiler.ExeFile = outputFileName
                     If Not sVB.Compile("", code, doc, parsers) Then
                         Mouse.OverrideCursor = Nothing
-                        Return
+                        Return Nothing
                     End If
 
                 Else
@@ -726,7 +738,7 @@ Namespace Microsoft.SmallVisualBasic
                     If parsers Is Nothing Then
                         ' global file has errors
                         Mouse.OverrideCursor = Nothing
-                        Return
+                        Return Nothing
                     End If
 
                     If filePath = "" Then
@@ -739,7 +751,7 @@ Namespace Microsoft.SmallVisualBasic
                         code = doc.Text
                         If Not sVB.Compile(genCode, code, doc, parsers) Then
                             Mouse.OverrideCursor = Nothing
-                            Return
+                            Return Nothing
                         End If
 
                     Else
@@ -801,7 +813,7 @@ Namespace Microsoft.SmallVisualBasic
                                 )
 
                                 Mouse.OverrideCursor = Nothing
-                                Return
+                                Return Nothing
                             End If
                         Next
 
@@ -811,7 +823,7 @@ Namespace Microsoft.SmallVisualBasic
                     If parsers.Count = 0 Then
                         If Not sVB.Compile("", doc.Text, doc, parsers) Then
                             Mouse.OverrideCursor = Nothing
-                            Return
+                            Return Nothing
                         End If
                     End If
                 End If
@@ -827,11 +839,10 @@ Namespace Microsoft.SmallVisualBasic
                 doc.ShowErrors(errors)
                 tabCode.IsSelected = True
                 Mouse.OverrideCursor = Nothing
-                Return
+                Return Nothing
             End If
 
-            Mouse.OverrideCursor = Nothing
-            If buildOnly Then Return
+            If buildOnly Then Return sVB.Compiler
 
             currentProgramProcess = Process.Start(outputFileName)
             currentProgramProcess.EnableRaisingEvents = True
@@ -852,9 +863,8 @@ Namespace Microsoft.SmallVisualBasic
             Me.programRunningOverlay.Visibility = Visibility.Visible
             Me.endProgramButton.Focus()
 
-        End Sub
-
-
+            Return sVB.Compiler
+        End Function
 
         Private Sub PublishDocument(document As TextDocument)
             If document.Text.Trim.Length < 50 Then

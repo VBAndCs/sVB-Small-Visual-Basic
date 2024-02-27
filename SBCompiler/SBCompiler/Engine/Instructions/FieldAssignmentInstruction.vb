@@ -14,5 +14,10 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 Return InstructionType.FieldAssignment
             End Get
         End Property
+
+        Public Overrides Function Execute(runner As ProgramRunner) As String
+            runner.Fields(_FieldName) = _RightSide.Evaluate(runner)
+            Return Nothing
+        End Function
     End Class
 End Namespace

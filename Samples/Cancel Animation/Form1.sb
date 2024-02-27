@@ -5,10 +5,10 @@ BtnCancel.Enabled = False
 
 T1 = Me.AddTimer("t1", 100)
 T1.Pause()
-T1.OnTick = T1_OnClick
+T1.OnTick = T1_OnTick
 
 '------------------------------------------------
-Sub T1_OnClick()
+Sub T1_OnTick()
    Me.Text = Me.BackColor
    If Date.GetTotalMilliseconds(Date.Now - Start) >= Duration Then
       T1.Pause()

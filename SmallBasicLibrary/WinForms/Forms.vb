@@ -120,10 +120,16 @@ Namespace WinForms
                             'Dim controls = GetChildren(canvas).ToList()
                             Dim menu As Menu = Nothing
 
-                            For Each ui As UIElement In canvas.Children
+                            Dim elements = canvas.Children
+                            Dim elementNum = -1
+                            Do
+                                elementNum += 1
+                                If elementNum >= elements.Count Then Exit Do
+
+                                Dim ui = elements(elementNum)
                                 If TypeOf ui Is Menu Then
                                     menu = ui
-                                    Continue For
+                                    Continue Do
                                 End If
 
                                 Dim fw = TryCast(ui, FrameworkElement)
@@ -139,7 +145,7 @@ Namespace WinForms
                                     If Not Double.IsNaN(wnd.Left) OrElse Not Double.IsNaN(wnd.Top) Then
                                         wnd.WindowStartupLocation = WindowStartupLocation.Manual
                                     End If
-                                    Continue For
+                                    Continue Do
                                 End If
 
                                 Dim lst = TryCast(ui, ItemsControl)
@@ -155,7 +161,7 @@ Namespace WinForms
 
                                 If controlName = "" Then
                                     controlName = fw.Name
-                                    If controlName = "" Then Continue For
+                                    If controlName = "" Then Continue Do
                                 End If
 
                                 Dim angle = 0.0
@@ -179,7 +185,8 @@ Namespace WinForms
                                 Else
                                     Dim left = Canvas.GetLeft(ui)
                                     Dim top = Canvas.GetTop(ui)
-                                    canvas.Children.Remove(ui)
+                                    elements.Remove(ui)
+                                    elementNum -= 1
 
                                     Dim LayoutTransform = fw.LayoutTransform
                                     fw.LayoutTransform = Nothing
@@ -218,17 +225,18 @@ Namespace WinForms
                                     fw.ClearValue(FrameworkElement.FlowDirectionProperty)
                                     fw.ClearValue(FrameworkElement.TagProperty)
                                     fw.ClearValue(FrameworkElement.ToolTipProperty)
-                                    canvas.Children.Add(lb)
+                                    elements.Add(lb)
                                     Canvas.SetLeft(lb, left)
                                     Canvas.SetTop(lb, top)
                                     _controls(key) = lb
                                 End If
 
                                 SetControlText(ui, key, GetControlText(ui))
-                            Next
+                            Loop
 
                             If menu IsNot Nothing Then
-                                canvas.Children.Remove(menu)
+                                elements.Remove(menu)
+                                elementNum -= 1
                                 Form.AddMenu(wnd, menu)
                                 For Each m In menu.Items
                                     AddMenuNames(form_Name, m)
@@ -251,6 +259,15 @@ Namespace WinForms
             Return form_Name
         End Function
 
+        Friend Shared forceClose As Boolean = False
+        Friend Shared Sub ForceCloseAll()
+            forceClose = True
+            For Each w As Window In _forms.Values
+                w.Close()
+            Next
+            forceClose = False
+        End Sub
+
         Private Shared Sub Form_PreviewKeyDown(sender As Object, e As Input.KeyEventArgs)
             App.Invoke(
                 Sub()
@@ -268,7 +285,7 @@ Namespace WinForms
                             ' If there is no OnCkeck handler, call the OnClick handler
                             If sh.Handler IsNot Nothing Then Call sh.Handler()
                         Else
-                                Call sh.Handler()
+                            Call sh.Handler()
                         End If
 
                         e.Handled = True
@@ -361,6 +378,7 @@ Namespace WinForms
         End Function
 
         Private Shared Sub Form_Closed(sender As Object, e As EventArgs)
+            If forceClose Then Return
             Dim win = CType(sender, Window)
             Dim winName = win.Name.ToLower()
             If Form.ClosedHandlers.ContainsKey(winName) Then

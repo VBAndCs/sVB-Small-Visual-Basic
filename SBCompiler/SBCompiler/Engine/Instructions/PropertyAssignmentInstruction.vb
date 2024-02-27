@@ -15,5 +15,10 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 Return InstructionType.PropertyAssignment
             End Get
         End Property
+
+        Public Overrides Function Execute(runner As ProgramRunner) As String
+            _PropertyInfo.SetValue(Nothing, _RightSide.Evaluate(runner), Nothing)
+            Return Nothing
+        End Function
     End Class
 End Namespace

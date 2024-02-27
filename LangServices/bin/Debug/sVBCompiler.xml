@@ -22,5 +22,12 @@ sVBCompiler
   resource lookups using this strongly typed resource class.
 </summary>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.Statements.GotoStatement.#ctor(System.Int32)">
+ <summary>
+ Creates a Goto statement that jumps to a line number.
+ It is used for debugging only, but not allowed in code.
+ </summary>
+ <param name="line"></param>
+</member>
 </members>
 </doc>

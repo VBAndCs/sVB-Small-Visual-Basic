@@ -11,6 +11,7 @@ Namespace Library
     <SmallVisualBasicType>
     Public NotInheritable Class Program
         Private Shared args As String() = Environment.GetCommandLineArgs()
+        Public Shared AppDir As Primitive
 
         Public Shared Sub DoNothing()
             ' To be used as a fake removel hander for events
@@ -32,8 +33,12 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property Directory As Primitive
             Get
-                Dim asm = Assembly.GetCallingAssembly()
-                Return Path.GetDirectoryName(asm.Location)
+                If SmallBasicApplication.IsDebugging Then
+                    Return AppDir
+                Else
+                    Dim asm = Assembly.GetCallingAssembly()
+                    Return Path.GetDirectoryName(asm.Location)
+                End If
             End Get
         End Property
 

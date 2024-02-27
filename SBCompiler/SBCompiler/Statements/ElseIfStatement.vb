@@ -1,4 +1,5 @@
 ﻿Imports System.Text
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -63,5 +64,9 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 st.InferType(symbolTable)
             Next
         End Sub
+
+        Public Overrides Function Execute(runner As ProgramRunner) As Statement
+            Return runner.Execute(ThenStatements)
+        End Function
     End Class
 End Namespace

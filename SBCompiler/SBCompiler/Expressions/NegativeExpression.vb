@@ -1,6 +1,7 @@
 ﻿Imports System
 Imports System.Globalization
 Imports System.Reflection.Emit
+Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
@@ -36,6 +37,10 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
             Return VariableType.Double
+        End Function
+
+        Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
+            Return -_Expression.Evaluate(runner)
         End Function
     End Class
 End Namespace

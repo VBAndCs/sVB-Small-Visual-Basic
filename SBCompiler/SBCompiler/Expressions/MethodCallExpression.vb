@@ -2,6 +2,7 @@
 Imports System.Reflection
 Imports System.Reflection.Emit
 Imports System.Text
+Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
@@ -49,10 +50,9 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
             If TypeName.Type = TokenType.Illegal Then ' Function Call
                 Dim subroutine As New Statements.SubroutineCallStatement() With {
-                    .Name = MethodName,
-                    .Args = Arguments,
-                    .IsFunctionCall = True,
-                    .OuterSubroutine = OuterSubroutine,
+                    .Name = _MethodName,
+                    .Args = _Arguments,
+                    .OuterSubroutine = _OuterSubroutine,
                     .KeepReturnValue = True
                 }
                 subroutine.EmitIL(scope)
@@ -67,21 +67,21 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Function GetMethodInfo(scope As CodeGenScope) As MethodInfo
-            Dim typeInfo = scope.TypeInfoBag.Types(TypeName.LCaseText)
-            Return typeInfo.Methods(MethodName.LCaseText)
+            Dim typeInfo = scope.TypeInfoBag.Types(_TypeName.LCaseText)
+            Return typeInfo.Methods(_MethodName.LCaseText)
         End Function
 
         Public Overrides Function ToString() As String
             Dim sb As New StringBuilder()
 
-            If Not TypeName.IsIllegal Then
-                sb.Append($"{TypeName.Text}.")
+            If Not _TypeName.IsIllegal Then
+                sb.Append($"{_TypeName.Text}.")
             End If
 
-            sb.Append(MethodName.Text & "(")
+            sb.Append(_MethodName.Text & "(")
 
-            If Arguments.Count > 0 Then
-                For Each arg In Arguments
+            If _Arguments.Count > 0 Then
+                For Each arg In _Arguments
                     sb.Append(arg.ToString())
                     sb.Append(", ")
                 Next
@@ -94,13 +94,33 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Function
 
         Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
-            If TypeName.IsIllegal Then
-                Dim funcName = MethodName.LCaseText
+            If _TypeName.IsIllegal Then
+                Dim funcName = _MethodName.LCaseText
                 Return symbolTable.GetInferedType(funcName)
             Else
                 Return symbolTable.GetReturnValueType(_TypeName, _MethodName, True)
             End If
 
         End Function
+
+        Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
+            If TypeName.Type = TokenType.Illegal Then ' Function Call
+                Dim subroutine As New Statements.SubroutineCallStatement() With {
+                    .Name = _MethodName,
+                    .Args = _Arguments
+                }
+                subroutine.Execute(runner)
+                Return runner.Fields($"{_MethodName.LCaseText}.return")
+            End If
+
+            Dim typeInfo = runner.TypeInfoBag.Types(_TypeName.LCaseText)
+            Dim methodInfo = typeInfo.Methods(_MethodName.LCaseText)
+            Dim args As New List(Of Object)()
+            For Each argument In _Arguments
+                args.Add(argument.Evaluate(runner))
+            Next
+            Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
+        End Function
+
     End Class
 End Namespace

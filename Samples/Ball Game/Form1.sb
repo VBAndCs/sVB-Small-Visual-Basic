@@ -1,12 +1,13 @@
 SpeedX = 5
 SpeedY = 10
-RightEdge = Me.Width - Ball.Width
-BottomEdge = Racket.Top - Ball.Height
 GameOver = False
 Score = 0
-
+RacketDelta = 15
 Timer.Interval = 30
 Timer.Tick = MoveBall
+RacketTimer = Me.AddTimer("RacketTimer", 20)
+RacketTimer.Pause()
+RacketTimer.OnTick = MoveRacket
 
 Sub MoveBall()
    Ball.Top = Ball.Top + SpeedY
@@ -17,10 +18,10 @@ Sub MoveBall()
       Return
    EndIf
    
-   If Ball.Top > BottomEdge Then
-      If Ball.Left + Ball.Width >= Racket.Left
-            And Ball.Left <= Racket.Left + Racket.Width Then
-         Ball.Top = BottomEdge
+   If Ball.Bottom >= Racket.Top Then
+      If Ball.Right >= Racket.Left
+            And Ball.Left <= Racket.Right Then
+         Ball.Bottom = Racket.Top
          SpeedY = -SpeedY
          Score = Score + 1
          Me.Text = Score
@@ -36,8 +37,8 @@ Sub MoveBall()
    EndIf
    
    Ball.Left = Ball.Left + SpeedX
-   If Ball.Left > RightEdge Then
-      Ball.Left = RightEdge
+   If Ball.Right > Me.Width Then
+      Ball.Right = Me.Width
       SpeedX = -SpeedX
       Sound.Play("boing.wav")
    ElseIf Ball.Left < 0 Then
@@ -51,10 +52,37 @@ EndSub
 
 '------------------------------------------------
 Sub Form1_OnKeyDown()
-   If Keyboard.LastKey = Keys.Left Then
-      Racket.Left = Racket.Left - 10
-   ElseIf Keyboard.LastKey = Keys.Right Then
-      Racket.Left = Racket.Left + 10
+   If GameOver Then
+      If Keyboard.LastKey = Keys.Space Then
+         Ball.Left = 20
+         Ball.Top = 30
+         SpeedX = 5
+         SpeedY = 10
+         GameOver = False
+         Score = 0
+         Timer.Resume()
+      EndIf
+      
+      Return
    EndIf
    
+   If Keyboard.LastKey = Keys.Left Then
+      RacketDelta = -15
+      RacketTimer.Resume()
+   ElseIf Keyboard.LastKey = Keys.Right Then
+      RacketDelta = 15
+      RacketTimer.Resume()
+   EndIf
+   
+EndSub
+
+'------------------------------------------------
+Sub Form1_OnKeyUp()
+   RacketTimer.Pause()
+EndSub
+
+
+'------------------------------------------------
+Sub MoveRacket()
+   Racket.Left = Racket.Left + RacketDelta
 EndSub

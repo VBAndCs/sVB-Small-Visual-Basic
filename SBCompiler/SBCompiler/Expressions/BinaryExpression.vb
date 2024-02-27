@@ -1,5 +1,6 @@
 ﻿Imports System.Reflection
 Imports System.Reflection.Emit
+Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
@@ -122,5 +123,42 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             End Select
 
         End Function
+
+        Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
+            Dim leftExpr = LeftHandSide.Evaluate(runner)
+            Dim rightExpr = RightHandSide.Evaluate(runner)
+
+            Select Case _Operator.Type
+                Case TokenType.Concatenation
+                    Return leftExpr.Concat(rightExpr)
+                Case TokenType.Addition
+                    Return leftExpr.Add(rightExpr)
+                Case TokenType.And
+                    Return Primitive.op_And(leftExpr, rightExpr)
+                Case TokenType.Division
+                    Return leftExpr.Divide(rightExpr)
+                Case TokenType.Equals
+                    Return leftExpr.EqualTo(rightExpr)
+                Case TokenType.GreaterThan
+                    Return leftExpr.GreaterThan(rightExpr)
+                Case TokenType.GreaterThanEqualTo
+                    Return leftExpr.GreaterThanOrEqualTo(rightExpr)
+                Case TokenType.LessThan
+                    Return leftExpr.LessThan(rightExpr)
+                Case TokenType.LessThanEqualTo
+                    Return leftExpr.LessThanOrEqualTo(rightExpr)
+                Case TokenType.Multiplication
+                    Return leftExpr.Multiply(rightExpr)
+                Case TokenType.NotEqualTo
+                    Return leftExpr.NotEqualTo(rightExpr)
+                Case TokenType.Or
+                    Return Primitive.op_Or(leftExpr, rightExpr)
+                Case TokenType.Subtraction
+                    Return leftExpr.Subtract(rightExpr)
+                Case Else
+                    Return Nothing
+            End Select
+        End Function
+
     End Class
 End Namespace

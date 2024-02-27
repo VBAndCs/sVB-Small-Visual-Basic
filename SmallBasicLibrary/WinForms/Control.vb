@@ -1450,12 +1450,8 @@ Namespace WinForms
         ''' <summary>
         ''' Animates the control's backColor to a new transparency.
         ''' </summary>
-        ''' <param name="transparency">
-        ''' The new transparency to animate the backColor to. Use a value between 0 and 100.
-        ''' </param>
-        ''' <param name="duration">
-        ''' The time for the animation, in milliseconds.
-        ''' </param>
+        ''' <param name="transparency">The new transparency to animate the backColor to. Use a value between 0 and 100.</param>
+        ''' <param name="duration">The time for the animation, in milliseconds.</param>
         <ExMethod>
         Public Shared Sub AnimateTransparency(controlName As Primitive, transparency As Primitive, duration As Primitive)
             Try

@@ -1,5 +1,6 @@
 ﻿Imports System
 Imports System.Reflection.Emit
+Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Expressions
@@ -46,6 +47,16 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Overrides Function InferType(symbolTable As SymbolTable) As VariableType
             Return symbolTable.GetInferedType(Identifier)
+        End Function
+
+        Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
+            Dim value As Primitive = Nothing
+            Dim fields = runner.Fields
+            If fields.TryGetValue(runner.GetKey(Identifier), value) Then
+                Return value
+            End If
+
+            Return Nothing
         End Function
     End Class
 End Namespace

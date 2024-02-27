@@ -2914,9 +2914,7 @@ Returns true if the given text is empty, or returns false otherwise.
  <summary>
  Writes text or number to the text window.  A new line character will be appended to the output, so that the next time something is written to the text window, it will go in a new line.
  </summary>
- <param name="data">
- The text or number to write to the text window.
- </param>
+ <param name="data">The text or number to write to the text window.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.WriteLines(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
@@ -5148,12 +5146,8 @@ Creates a color from its alpha, red, green, and blue components.
  <summary>
  Animates the control's backColor to a new transparency.
  </summary>
- <param name="transparency">
- The new transparency to animate the backColor to. Use a value between 0 and 100.
- </param>
- <param name="duration">
- The time for the animation, in milliseconds.
- </param>
+ <param name="transparency">The new transparency to animate the backColor to. Use a value between 0 and 100.</param>
+ <param name="duration">The time for the animation, in milliseconds.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Control.AnimatePos(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>

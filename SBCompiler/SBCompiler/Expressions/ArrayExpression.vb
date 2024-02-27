@@ -27,13 +27,13 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Sub AddSymbolInitialization(symbolTable As SymbolTable)
-            Dim arrayExpression = TryCast(LeftHand, ArrayExpression)
-            Dim identifierExpression = TryCast(LeftHand, IdentifierExpression)
+            Dim arrExpr = TryCast(LeftHand, ArrayExpression)
 
-            If arrayExpression IsNot Nothing Then
-                arrayExpression.AddSymbolInitialization(symbolTable)
+            If arrExpr Is Nothing Then
+                Dim idExpr = TryCast(LeftHand, IdentifierExpression)
+                idExpr?.AddSymbolInitialization(symbolTable)
             Else
-                identifierExpression?.AddSymbolInitialization(symbolTable)
+                arrExpr.AddSymbolInitialization(symbolTable)
             End If
         End Sub
 
@@ -43,7 +43,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             LeftHand.EmitIL(scope)
             If Indexer Is Nothing Then
                 ' This is just for intellisense info of the global file
-                ' that may contain errors which is igmored at design time.
+                ' that may contain errors which are ignored at design time.
                 ' This will not affect the compilation.
                 LiteralExpression.Zero.EmitIL(scope)
             Else
@@ -94,5 +94,28 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Return VariableType.Any
             End If
         End Function
+
+        Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
+            Dim idEpr = TryCast(_LeftHand, IdentifierExpression)
+            Dim value As Primitive = Nothing
+
+            If idEpr IsNot Nothing Then
+                Dim fields = runner.Fields
+                If Not fields.TryGetValue(runner.GetKey(idEpr.Identifier), value) Then
+                    value = ""
+                End If
+
+                Return Primitive.GetArrayValue(value, _Indexer.Evaluate(runner))
+            End If
+
+            Dim arrExpr = TryCast(_LeftHand, ArrayExpression)
+
+            If arrExpr IsNot Nothing Then
+                Return Primitive.GetArrayValue(arrExpr.Evaluate(runner), _Indexer.Evaluate(runner))
+            End If
+
+            Return Nothing
+        End Function
+
     End Class
 End Namespace

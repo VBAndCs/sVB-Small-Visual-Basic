@@ -148,7 +148,7 @@ Namespace Library
         ''' </summary>
         Public Shared Sub Show()
             If Not _windowVisible Then
-                Dim consoleWindow As IntPtr = NativeHelper.GetConsoleWindow()
+                Dim consoleWindow = NativeHelper.GetConsoleWindow()
                 If consoleWindow = IntPtr.Zero Then
                     NativeHelper.AllocConsole()
                 End If
@@ -184,20 +184,21 @@ Namespace Library
         Public Shared Sub Pause()
             VerifyAccess()
             Console.WriteLine("Press any key to continue...")
-            Console.Read()
-            If WinForms.Forms._forms.Count = 0 AndAlso Not GraphicsWindow._windowVisible Then
-                SmallBasicApplication.End()
-            Else
-                TextWindow.Hide()
-            End If
+            Console.ReadKey(intercept:=True)
         End Sub
 
         ''' <summary>
         ''' Waits for user input only when the TextWindow is already open.
         ''' </summary>
+        <HideFromIntellisense>
         Public Shared Sub PauseIfVisible()
             If _windowVisible Then
                 Pause()
+                If WinForms.Forms._forms.Count = 0 AndAlso Not GraphicsWindow._windowVisible Then
+                    SmallBasicApplication.End()
+                Else
+                    TextWindow.Hide()
+                End If
             End If
         End Sub
 
@@ -218,7 +219,8 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Read() As Primitive
             VerifyAccess()
-            Return New Primitive(Console.ReadLine())
+            Dim x = Console.ReadLine()
+            Return New Primitive(x)
         End Function
 
         ''' <summary>
@@ -243,56 +245,55 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ReadNumber() As Primitive
             VerifyAccess()
-            Dim stringBuilder1 As New StringBuilder
-            Dim flag As Boolean = False
-            Dim num As Integer = 0
-            While True
-                Dim consoleKeyInfo1 As ConsoleKeyInfo = Console.ReadKey(intercept:=True)
-                Dim keyChar1 As Char = consoleKeyInfo1.KeyChar
-                Dim flag2 As Boolean = False
-                If keyChar1 = "-"c AndAlso num = 0 Then
-                    flag2 = True
-                ElseIf keyChar1 = "."c AndAlso Not flag Then
-                    flag = True
-                    flag2 = True
-                ElseIf keyChar1 >= "0"c AndAlso keyChar1 <= "9"c Then
-                    flag2 = True
+            Dim sbNumber As New StringBuilder
+            Dim dotExists As Boolean = False
+            Dim count As Integer = 0
+
+            Do
+                Dim keyInfo = Console.ReadKey(intercept:=True)
+                Dim c As Char = keyInfo.KeyChar
+                Dim isValid As Boolean = False
+                If (c = "-"c AndAlso count = 0) OrElse (c >= "0"c AndAlso c <= "9"c) Then
+                    isValid = True
+                ElseIf c = "."c AndAlso Not dotExists Then
+                    dotExists = True
+                    isValid = True
                 End If
-                If flag2 Then
-                    Console.Write(keyChar1)
-                    stringBuilder1.Append(keyChar1)
-                    num += 1
-                ElseIf num > 0 AndAlso consoleKeyInfo1.Key = ConsoleKey.Backspace Then
+
+                If isValid Then
+                    Console.Write(c)
+                    sbNumber.Append(c)
+                    count += 1
+                ElseIf count > 0 AndAlso keyInfo.Key = ConsoleKey.Backspace Then
                     Console.CursorLeft -= 1
                     Console.Write(" ")
                     Console.CursorLeft -= 1
-                    num -= 1
-                    keyChar1 = stringBuilder1(num)
-                    If keyChar1 = "."c Then
-                        flag = False
+                    count -= 1
+                    c = sbNumber(count)
+                    If c = "."c Then
+                        dotExists = False
                     End If
-                    stringBuilder1.Remove(num, 1)
-                ElseIf consoleKeyInfo1.Key = ConsoleKey.Enter Then
-                    Exit While
+                    sbNumber.Remove(count, 1)
+                ElseIf keyInfo.Key = ConsoleKey.Enter Then
+                    Exit Do
                 End If
-            End While
-            Console.WriteLine()
-            If stringBuilder1.Length = 0 Then
-                Return New Primitive(0)
-            End If
+            Loop
 
-            Return New Primitive(stringBuilder1.ToString())
+            Console.WriteLine()
+            If sbNumber.Length = 0 Then
+                Return New Primitive(0)
+            Else
+                Return New Primitive(sbNumber.ToString())
+            End If
         End Function
 
         ''' <summary>
         ''' Writes text or number to the text window.  A new line character will be appended to the output, so that the next time something is written to the text window, it will go in a new line.
         ''' </summary>
-        ''' <param name="data">
-        ''' The text or number to write to the text window.
-        ''' </param>
+        ''' <param name="data">The text or number to write to the text window.</param>
         Public Shared Sub WriteLine(data As Primitive)
             VerifyAccess()
-            Console.WriteLine(CStr(data))
+            Console.WriteLine(data.AsString())
         End Sub
 
         ''' <summary>
@@ -331,9 +332,7 @@ Namespace Library
         ''' Verifies if the access to text Window has been made yet
         ''' </summary>
         Private Shared Sub VerifyAccess()
-            If Not _windowVisible Then
-                Show()
-            End If
+            If Not _windowVisible Then Show()
         End Sub
     End Class
 End Namespace

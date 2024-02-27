@@ -1580,6 +1580,8 @@ Namespace WinForms
 
                              Dim h = Sub(sender As Object, e As ComponentModel.CancelEventArgs)
                                          Try
+                                             If Forms.forceClose Then Return
+
                                              Dim win = CType(sender, System.Windows.Window)
                                              [Event]._senderControl = win.Name
 

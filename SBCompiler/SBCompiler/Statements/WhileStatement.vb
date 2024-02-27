@@ -1,6 +1,7 @@
 ﻿Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -120,5 +121,32 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return sb.ToString()
         End Function
 
+        Public Overrides Function Execute(runner As ProgramRunner) As Statement
+            Do While Condition.Evaluate(runner)
+                Dim result = runner.Execute(Body)
+                If TypeOf result Is JumpLoopStatement Then
+                    Dim jumpSt = CType(result, JumpLoopStatement)
+                    If jumpSt.StartToken.Type = TokenType.ExitLoop Then
+                        If jumpSt.UpLevel > 0 Then
+                            jumpSt.UpLevel -= 1
+                            Return jumpSt
+                        Else
+                            Return Nothing
+                        End If
+
+                    ElseIf jumpSt.UpLevel > 0 Then
+                        jumpSt.UpLevel -= 1
+                        Return jumpSt
+                    Else
+                        jumpSt.UpLevel = 0
+                        Continue Do
+                    End If
+
+                ElseIf TypeOf result Is ReturnStatement Then
+                    Return result
+                End If
+            Loop
+            Return Nothing
+        End Function
     End Class
 End Namespace

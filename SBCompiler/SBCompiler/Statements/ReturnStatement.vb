@@ -1,5 +1,6 @@
 ﻿Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -54,5 +55,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
         End Sub
 
+        Public Overrides Function Execute(runner As ProgramRunner) As statement
+            If ReturnExpression IsNot Nothing Then
+                runner.Fields($"{Subroutine.Name.LCaseText}.return") = ReturnExpression.Evaluate(runner)
+            End If
+            Return Me
+        End Function
     End Class
 End Namespace

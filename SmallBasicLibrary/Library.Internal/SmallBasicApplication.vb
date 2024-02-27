@@ -28,23 +28,35 @@ Namespace Library.Internal
             End Get
         End Property
 
+        Friend Shared IsDebugging As Boolean
+
         Shared Sub New()
             mainThreadActions = New Queue(Of InvokeHelper)
             _pendingOperations = 0
             Dim autoEvent As New AutoResetEvent(initialState:=False)
-            _applicationThread = New Thread(
-                Sub()
-                    Dim app As New Application
-                    autoEvent.Set()
-                    _application = app
-                    app.ShutdownMode = ShutdownMode.OnLastWindowClose
-                    app.Run()
-                End Sub)
+            _application = Application.Current
 
-            _applicationThread.SetApartmentState(ApartmentState.STA)
-            _applicationThread.Start()
-            autoEvent.WaitOne()
-            _Dispatcher = Dispatcher.FromThread(_applicationThread)
+            If _application IsNot Nothing Then
+                IsDebugging = True
+                _application = Application.Current
+                _Dispatcher = _application.Dispatcher
+            Else
+                IsDebugging = False
+                _applicationThread = New Thread(
+                    Sub()
+                        Dim app As New Application()
+                        autoEvent.Set()
+                        _application = app
+                        app.ShutdownMode = ShutdownMode.OnLastWindowClose
+                        app.Run()
+                    End Sub)
+
+                _applicationThread.SetApartmentState(ApartmentState.STA)
+                _applicationThread.Start()
+                autoEvent.WaitOne()
+                _Dispatcher = Dispatcher.FromThread(_applicationThread)
+            End If
+
         End Sub
 
         Public Shared Sub BeginProgram()
@@ -52,16 +64,12 @@ Namespace Library.Internal
         End Sub
 
         Friend Shared Function CropBitmap(original As BitmapSource, left As Primitive, top As Primitive, width As Primitive, height As Primitive) As BitmapSource
-            If CBool((left < 0)) Then
-                left = 0
-            End If
-            If CBool((top < 0)) Then
-                top = 0
-            End If
-            If CBool((left + width > original.PixelWidth)) Then
+            If left < 0 Then left = 0
+            If top < 0 Then top = 0
+            If left + width > original.PixelWidth Then
                 width = original.PixelWidth - left
             End If
-            If CBool((top + height > original.PixelHeight)) Then
+            If top + height > original.PixelHeight Then
                 height = original.PixelHeight - top
             End If
 
@@ -72,13 +80,26 @@ Namespace Library.Internal
         End Function
 
         Friend Shared Sub [End]()
-            Invoke(Sub()
-                       _application.Shutdown()
-                       _Dispatcher.InvokeShutdown()
-                   End Sub)
-            If AppDomain.CurrentDomain.FriendlyName <> "Debuggee" Then
-                Process.GetCurrentProcess().Kill()
+            If IsDebugging Then
+                TextWindow.Hide()
+                WinForms.Forms.ForceCloseAll()
+                Return
             End If
+
+            If GraphicsWindow._window Is Nothing Then
+                Try
+                    GraphicsWindow._window.Close()
+                Catch
+                End Try
+            End If
+
+            Invoke(
+                Sub()
+                    _application.Shutdown()
+                    _Dispatcher.InvokeShutdown()
+                End Sub)
+
+            Process.GetCurrentProcess().Kill()
         End Sub
 
         Friend Shared Sub BeginInvoke(invokeDelegate As InvokeHelper)
@@ -197,6 +218,10 @@ Namespace Library.Internal
                     Process.GetCurrentProcess().Kill()
                 End If
             End If
+        End Sub
+
+        Protected Overrides Sub Finalize()
+            MyBase.Finalize()
         End Sub
     End Class
 End Namespace

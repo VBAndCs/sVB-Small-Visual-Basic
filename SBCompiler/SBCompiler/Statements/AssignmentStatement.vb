@@ -1,6 +1,7 @@
 ﻿Imports System.Reflection
 Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Expressions
 Imports Microsoft.SmallVisualBasic.Library
 
@@ -114,42 +115,46 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Overrides Sub EmitIL(scope As CodeGenScope)
             If LeftValue Is Nothing Then Return
 
-            Dim identifierExpr = TryCast(LeftValue, IdentifierExpression)
-            Dim propertyExpr = TryCast(LeftValue, PropertyExpression)
-            Dim arrayExpr = TryCast(LeftValue, ArrayExpression)
-            Dim eventInfo As EventInfo = Nothing
+            Dim idExpr = TryCast(LeftValue, IdentifierExpression)
 
-            If identifierExpr IsNot Nothing Then
+            If idExpr IsNot Nothing Then
                 If Not LowerAndEmitIL(scope) Then
-                    Dim var = scope.GetLocalBuilder(identifierExpr.Subroutine, identifierExpr.Identifier)
+                    Dim var = scope.GetLocalBuilder(idExpr.Subroutine, idExpr.Identifier)
                     If var IsNot Nothing Then
                         scope.ILGenerator.Emit(OpCodes.Stloc, var)
                     Else
-                        Dim field = scope.Fields(identifierExpr.Identifier.LCaseText)
+                        Dim field = scope.Fields(idExpr.Identifier.LCaseText)
                         scope.ILGenerator.Emit(OpCodes.Stsfld, field)
                     End If
                 End If
+                Exit Sub
+            End If
 
-            ElseIf arrayExpr IsNot Nothing Then
+            Dim arrExpr = TryCast(LeftValue, ArrayExpression)
+            If arrExpr IsNot Nothing Then
                 If Not LowerAndEmitIL(scope) Then
-                    arrayExpr.EmitILForSetter(scope)
+                    arrExpr.EmitILForSetter(scope)
                 End If
+                Exit Sub
+            End If
 
-            ElseIf Not scope.ForGlobalHelp AndAlso propertyExpr IsNot Nothing Then
-                Dim subroutine = SubroutineStatement.GetSubroutine(LeftValue)
-                If propertyExpr.IsDynamic Then
-                    Dim code = $"{propertyExpr.TypeName.Text}[""{propertyExpr.PropertyName.Text}""] = {RightValue}"
+            Dim propExpr = TryCast(LeftValue, PropertyExpression)
+            If Not scope.ForGlobalHelp AndAlso propExpr IsNot Nothing Then
+                If propExpr.IsDynamic Then
+                    Dim subroutine = SubroutineStatement.GetSubroutine(LeftValue)
+                    Dim code = $"{propExpr.TypeName.Text}[""{propExpr.PropertyName.Text}""] = {RightValue}"
                     If subroutine Is Nothing Then subroutine = SubroutineStatement.Current
                     Parser.ParseAndEmit(code, subroutine, scope, StartToken.Line)
                 Else
-                    Dim typeInfo = scope.TypeInfoBag.Types(propertyExpr.TypeName.LCaseText)
+                    Dim typeInfo = scope.TypeInfoBag.Types(propExpr.TypeName.LCaseText)
+                    Dim eventInfo As EventInfo = Nothing
 
-                    If typeInfo.Events.TryGetValue(propertyExpr.PropertyName.LCaseText, eventInfo) Then
+                    If typeInfo.Events.TryGetValue(propExpr.PropertyName.LCaseText, EventInfo) Then
                         If RightValue.StartToken.Type = TokenType.Nothing Then
                             scope.ILGenerator.Emit(OpCodes.Ldnull)
                             scope.ILGenerator.Emit(OpCodes.Ldftn, GetType(SmallVisualBasic.Library.Program).GetMethod("DoNothing", BindingFlags.Public Or BindingFlags.Static))
                             scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallVisualBasicCallback).GetConstructors()(0))
-                            scope.ILGenerator.EmitCall(OpCodes.Call, eventInfo.GetRemoveMethod(), Nothing)
+                            scope.ILGenerator.EmitCall(OpCodes.Call, EventInfo.GetRemoveMethod(), Nothing)
                         Else
                             Dim subExpr = TryCast(RightValue, IdentifierExpression)
                             Dim subName = scope.SymbolTable.Subroutines(subExpr.Identifier.LCaseText)
@@ -157,16 +162,15 @@ Namespace Microsoft.SmallVisualBasic.Statements
                             scope.ILGenerator.Emit(OpCodes.Ldnull)
                             scope.ILGenerator.Emit(OpCodes.Ldftn, method)
                             scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallVisualBasicCallback).GetConstructors()(0))
-                            scope.ILGenerator.EmitCall(OpCodes.Call, eventInfo.GetAddMethod(), Nothing)
+                            scope.ILGenerator.EmitCall(OpCodes.Call, EventInfo.GetAddMethod(), Nothing)
                         End If
 
                     Else
-                        Dim propertyInfo = typeInfo.Properties(propertyExpr.PropertyName.LCaseText)
+                        Dim propertyInfo = typeInfo.Properties(propExpr.PropertyName.LCaseText)
                         Dim setMethod = propertyInfo.GetSetMethod()
                         RightValue.EmitIL(scope)
                         scope.ILGenerator.EmitCall(OpCodes.Call, setMethod, Nothing)
                     End If
-
                 End If
             End If
         End Sub
@@ -236,9 +240,83 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 InferType(symbolTable, identifier, key)
 
             ElseIf TypeOf LeftValue Is PropertyExpression Then
-                    Dim prop = CType(LeftValue, PropertyExpression)
+                Dim prop = CType(LeftValue, PropertyExpression)
                 If prop.IsDynamic Then
                     InferType(symbolTable, prop.PropertyName, prop.DynamicKey)
+                End If
+            End If
+        End Sub
+
+        Public Overrides Function Execute(runner As ProgramRunner) As Statement
+            Dim idExpr = TryCast(LeftValue, IdentifierExpression)
+            If idExpr IsNot Nothing Then
+                runner.Fields(runner.GetKey(idExpr.Identifier)) = RightValue.Evaluate(runner)
+                Return Nothing
+            End If
+
+            Dim arrExpr = TryCast(LeftValue, ArrayExpression)
+            If arrExpr IsNot Nothing Then
+                SetArrayValue(runner, arrExpr, RightValue.Evaluate(runner))
+                Return Nothing
+            End If
+
+            Dim propExpr = TryCast(LeftValue, PropertyExpression)
+            If propExpr IsNot Nothing Then
+                If propExpr.IsDynamic Then
+                    Dim arrExpr2 As New ArrayExpression() With {
+                        .LeftHand = New IdentifierExpression() With {.Identifier = propExpr.TypeName},
+                        .Indexer = New IdentifierExpression() With {.Identifier = propExpr.PropertyName},
+                        .Parent = Me
+                    }
+                    SetArrayValue(runner, arrExpr2, RightValue.Evaluate(runner))
+
+                Else
+                    Dim typeInfo = runner.TypeInfoBag.Types(propExpr.TypeName.LCaseText)
+                    Dim eventInfo As EventInfo = Nothing
+
+                    If typeInfo.Events.TryGetValue(propExpr.PropertyName.LCaseText, eventInfo) Then
+                        If RightValue.StartToken.Type = TokenType.Nothing Then
+                            eventInfo.GetAddMethod().Invoke(Nothing, {CType(Sub() Exit Sub, SmallVisualBasicCallback)})
+                        Else
+                            Dim subExpr = TryCast(RightValue, IdentifierExpression)
+                            Dim subroutine = runner.SymbolTable.Subroutines(subExpr.Identifier.LCaseText)
+                            eventInfo.GetAddMethod().Invoke(Nothing,
+                                     {CType(Sub() subroutine.Parent.Execute(runner), SmallVisualBasicCallback)}
+                            )
+                        End If
+
+                    Else
+                        Dim propertyInfo = typeInfo.Properties(propExpr.PropertyName.LCaseText)
+                        propertyInfo.SetValue(Nothing, RightValue.Evaluate(runner), Nothing)
+                    End If
+                End If
+            End If
+
+            Return Nothing
+        End Function
+
+
+        Friend Sub SetArrayValue(runner As ProgramRunner, arrExpr As ArrayExpression, value As Primitive)
+            Dim idExpr = TryCast(arrExpr.LeftHand, IdentifierExpression)
+            Dim fields = runner.Fields
+
+            If idExpr IsNot Nothing Then
+                Dim arrName = runner.GetKey(idExpr.Identifier)
+                Dim arr As Primitive = Nothing
+                If Not fields.TryGetValue(arrName, arr) Then
+                    arr = Nothing
+                End If
+                fields(arrName) = Primitive.SetArrayValue(value, arr, arrExpr.Indexer.Evaluate(runner))
+
+            Else
+                Dim arrExpr2 = TryCast(arrExpr.LeftHand, ArrayExpression)
+                If arrExpr2 IsNot Nothing Then
+                    Dim arr2 = Primitive.SetArrayValue(
+                          value,
+                          arrExpr.Evaluate(runner),
+                          arrExpr.Indexer.Evaluate(runner)
+                    )
+                    SetArrayValue(runner, arrExpr2, arr2)
                 End If
             End If
         End Sub

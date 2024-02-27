@@ -1,4 +1,5 @@
 ﻿Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -49,6 +50,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Public Overrides Function ToString() As String
             Return MethodCallExpression.ToString() & vbCrLf
+        End Function
+
+        Public Overrides Function Execute(runner As ProgramRunner) As statement
+            MethodCallExpression.Evaluate(runner)
+            Return Nothing
         End Function
     End Class
 End Namespace

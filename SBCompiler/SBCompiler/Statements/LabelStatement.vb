@@ -1,5 +1,6 @@
 ﻿Imports System.Globalization
 Imports System.Reflection.Emit
+Imports Microsoft.SmallVisualBasic.Engine
 
 Namespace Microsoft.SmallVisualBasic.Statements
     Public Class LabelStatement
@@ -65,5 +66,9 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
 
         End Sub
+
+        Public Overrides Function Execute(runner As ProgramRunner) As statement
+            Return Nothing
+        End Function
     End Class
 End Namespace

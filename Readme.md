@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://github.com/VBAndCs/sVB-Small-Visual-Basic/assets/48354902/9e1ebcbf-212f-4578-8b67-b57551b80270"/>
 
-This book will help you to introduce sVB to you kid:
+This book can help you to introduce sVB to your kid:
 [Small Visual Basic Kid Programmer](https://www.amazon.com/dp/B0CVK1BMC9)
 </p>
 <p align="center">

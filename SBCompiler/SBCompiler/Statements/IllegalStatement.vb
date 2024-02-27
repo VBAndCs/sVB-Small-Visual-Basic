@@ -1,4 +1,6 @@
-﻿Namespace Microsoft.SmallVisualBasic.Statements
+﻿Imports Microsoft.SmallVisualBasic.Engine
+
+Namespace Microsoft.SmallVisualBasic.Statements
     Public Class IllegalStatement
         Inherits Statement
 
@@ -14,6 +16,10 @@
 
         Public Overrides Function ToString() As String
             Return "<<Illegal>>" & vbCrLf
+        End Function
+
+        Public Overrides Function Execute(runner As ProgramRunner) As statement
+            Return Nothing
         End Function
     End Class
 End Namespace

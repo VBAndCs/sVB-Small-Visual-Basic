@@ -1,6 +1,7 @@
 ﻿Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -217,12 +218,12 @@ Namespace Microsoft.SmallVisualBasic.Statements
             If IsField Then
                 iteratorField = scope.Fields(Iterator.LCaseText)
                 scope.ILGenerator.Emit(OpCodes.Stsfld, iteratorField)
-                scope.ILGenerator.MarkLabel(ConditionLabel)
+                scope.ILGenerator.MarkLabel(conditionLabel)
                 scope.ILGenerator.Emit(OpCodes.Ldsfld, iteratorField)
             Else
                 iteratorVar = scope.CreateLocalBuilder(Subroutine, Iterator)
                 scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
-                scope.ILGenerator.MarkLabel(ConditionLabel)
+                scope.ILGenerator.MarkLabel(conditionLabel)
                 scope.ILGenerator.Emit(OpCodes.Ldloc, iteratorVar)
             End If
 
@@ -268,7 +269,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 scope.ILGenerator.Emit(OpCodes.Stloc, iteratorVar)
             End If
 
-            scope.ILGenerator.Emit(OpCodes.Br, ConditionLabel)
+            scope.ILGenerator.Emit(OpCodes.Br, conditionLabel)
             scope.ILGenerator.MarkLabel(ExitLabel)
         End Sub
 
@@ -370,5 +371,40 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return sb.ToString()
         End Function
 
+        Public Overrides Function Execute(runner As ProgramRunner) As Statement
+            Dim key = runner.GetKey(Iterator)
+            Dim start = _InitialValue.Evaluate(runner)
+            Dim [end] = _FinalValue.Evaluate(runner)
+            Dim [step] = If(_StepValue Is Nothing,
+                                        New Library.Primitive(1),
+                                        _StepValue.Evaluate(runner)
+                                  )
+            For i = start To [end] Step [step]
+                runner.Fields(key) = i
+                Dim result = runner.Execute(Body)
+                If TypeOf result Is JumpLoopStatement Then
+                    Dim jumpSt = CType(result, JumpLoopStatement)
+                    If jumpSt.StartToken.Type = TokenType.ExitLoop Then
+                        If jumpSt.UpLevel > 0 Then
+                            jumpSt.UpLevel -= 1
+                            Return jumpSt
+                        Else
+                            Return Nothing
+                        End If
+
+                    ElseIf jumpSt.UpLevel > 0 Then
+                        jumpSt.UpLevel -= 1
+                        Return jumpSt
+                    Else
+                        jumpSt.UpLevel = 0
+                        Continue For
+                    End If
+
+                ElseIf TypeOf result Is ReturnStatement Then
+                    Return result
+                End If
+            Next
+            Return Nothing
+        End Function
     End Class
 End Namespace

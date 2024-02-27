@@ -1,6 +1,7 @@
 ﻿Imports System.Reflection
 Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Expressions
@@ -80,5 +81,21 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Return symbolTable.GetReturnValueType(_TypeName, _PropertyName, False)
             End If
         End Function
+
+        Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
+            If IsDynamic Then
+                Dim arrExpr As New ArrayExpression() With {
+                      .LeftHand = New IdentifierExpression() With {.Identifier = _TypeName},
+                      .Indexer = New IdentifierExpression() With {.Identifier = _PropertyName},
+                      .Parent = Me.Parent
+                  }
+                Return arrExpr.Evaluate(runner)
+            Else
+                Dim typeInfo = runner.TypeInfoBag.Types(_TypeName.LCaseText)
+                Dim propertyInfo = typeInfo.Properties(_PropertyName.LCaseText)
+                Return CType(propertyInfo.GetValue(Nothing, Nothing), Primitive)
+            End If
+        End Function
+
     End Class
 End Namespace

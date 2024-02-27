@@ -2,6 +2,7 @@
 Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 
 Namespace Microsoft.SmallVisualBasic.Statements
     Public Class SubroutineStatement
@@ -395,5 +396,39 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
 
         End Sub
+
+        Public Overrides Function Execute(runner As ProgramRunner) As statement
+            Dim hasParams = Params IsNot Nothing AndAlso Params.Count > 0
+            Dim argsStack As New Library.Primitive
+            Dim subName = Name.LCaseText
+            Dim subKey = $"{subName}.args"
+            Dim n = 1
+
+            If hasParams Then ' Push args
+                argsStack = runner.Fields(subKey)
+                n = argsStack.GetItemCount()
+                Dim LastValues = argsStack.Items(n)
+                For i = 0 To Params.Count - 1
+                    Dim argKey = $"{subName}.{Params(i).LCaseText}"
+                    runner.Fields(argKey) = LastValues.Items(i + 1)
+                Next
+            End If
+
+            runner.Execute(Body)
+
+            If hasParams Then ' Pop args
+                If n > 0 Then
+                    argsStack = Library.Array.RemoveItem(argsStack, argsStack.GetItemCount())
+                    runner.Fields(subKey) = argsStack
+                    Dim LastValues = argsStack.Items(n - 1)
+                    For i = 0 To Params.Count - 1
+                        Dim argKey = $"{subName}.{Params(i).LCaseText}"
+                        runner.Fields(argKey) = LastValues.Items(i + 1)
+                    Next
+                End If
+            End If
+
+            Return Nothing
+        End Function
     End Class
 End Namespace

@@ -67,7 +67,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
                 Dim pro1 = Process.Start(projectPath)
                 pro1.WaitForInputIdle()
                 Dim tickCount = 0
-                Dim dt As DispatcherTimer = New DispatcherTimer With {
+                Dim dt As New DispatcherTimer With {
                     .Interval = TimeSpan.FromMilliseconds(1000.0)
                 }
                 AddHandler dt.Tick, Sub()
@@ -80,6 +80,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
                                     End Sub
 
                 dt.Start()
+
             Else
                 Me.statusPanel.Visibility = Visibility.Collapsed
                 Me.notInstalledPanel.Visibility = Visibility.Visible
@@ -91,11 +92,11 @@ Namespace Microsoft.SmallVisualBasic.Shell
             Me.statusPanel.Visibility = Visibility.Visible
             Me.statusText.Text = ResourceHelper.GetString("Converting")
             document.Errors.Clear()
-            Dim compiler = Compile(document.Text, document.Errors)
+            Dim compiler = Helper.MainWindow.BuildAndRun(True)
 
             If document.Errors.Count = 0 Then
                 Try
-                    Dim visualBasicExporter As VisualBasicExporter = New VisualBasicExporter(compiler)
+                    Dim visualBasicExporter As New VisualBasicExporter(compiler)
                     Dim projectName = If(Not document.IsNew,
                             Path.GetFileNameWithoutExtension(document.File),
                             "Untitled"

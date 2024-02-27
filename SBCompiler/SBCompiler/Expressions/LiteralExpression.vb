@@ -116,6 +116,33 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             End Select
 
         End Function
+
+        Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Library.Primitive
+            Dim text = _Literal.Text
+
+            Select Case Literal.Type
+                Case TokenType.StringLiteral
+                    Return New Library.Primitive(text.Substring(1, text.Length - 2))
+
+                Case TokenType.DateLiteral
+                    Dim result = Parser.ParseDateLiteral(Literal.Text)
+                    Return If(result.IsDate,
+                        Library.Primitive.DateToPrimitive(result.Ticks),
+                        Library.Primitive.TimeSpanToPrimitive(result.Ticks)
+                    )
+
+                Case TokenType.True
+                    Return New Library.Primitive(True)
+
+                Case TokenType.False
+                    Return New Library.Primitive(False)
+
+                Case Else
+                    Return New Library.Primitive(CDec(text))
+            End Select
+
+        End Function
+
     End Class
 
 End Namespace

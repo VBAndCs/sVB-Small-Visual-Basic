@@ -210,7 +210,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     subLineOffset = indentStack.Peek()
                                 End If
 
-                            Case "_", "+", "-", "*", "/", "and", "or"
+                            Case "_", "&", "+", "-", "*", "/", "and", "or"
                                 subLineOffset = Math.Max(1, subLineOffset)
 
                             Case "="

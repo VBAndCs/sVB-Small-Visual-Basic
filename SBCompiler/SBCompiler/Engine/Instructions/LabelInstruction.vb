@@ -12,5 +12,9 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 Return InstructionType.LabelInstruction
             End Get
         End Property
+
+        Public Overrides Function Execute(runner As ProgramRunner) As String
+            Return Nothing
+        End Function
     End Class
 End Namespace

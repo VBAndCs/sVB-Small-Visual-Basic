@@ -5,38 +5,19 @@ Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Engine
     Public Class ProgramTranslator
-        Private _Compiler As Microsoft.SmallVisualBasic.Compiler, _ProgramInstructions As System.Collections.Generic.List(Of Microsoft.SmallVisualBasic.Engine.Instruction), _SubroutineInstructions As System.Collections.Generic.Dictionary(Of String, System.Collections.Generic.List(Of Microsoft.SmallVisualBasic.Engine.Instruction))
         Private labelId As Integer = 10
 
         Public Property Compiler As Compiler
-            Get
-                Return _Compiler
-            End Get
-            Private Set(value As Compiler)
-                _Compiler = value
-            End Set
-        End Property
 
         Public Property ProgramInstructions As List(Of Instruction)
-            Get
-                Return _ProgramInstructions
-            End Get
-            Private Set(value As List(Of Instruction))
-                _ProgramInstructions = value
-            End Set
-        End Property
 
         Public Property SubroutineInstructions As Dictionary(Of String, List(Of Instruction))
-            Get
-                Return _SubroutineInstructions
-            End Get
-            Private Set(value As Dictionary(Of String, List(Of Instruction)))
-                _SubroutineInstructions = value
-            End Set
-        End Property
+
+        Dim symbolTable As SymbolTable
 
         Public Sub New(compiler As Compiler)
             Me.Compiler = compiler
+            symbolTable = compiler.Parser.SymbolTable
         End Sub
 
         Private Function CreateNewLabel() As String
@@ -45,9 +26,9 @@ Namespace Microsoft.SmallVisualBasic.Engine
         End Function
 
         Public Sub TranslateProgram()
-            ProgramInstructions = New List(Of Instruction)()
-            SubroutineInstructions = New Dictionary(Of String, List(Of Instruction))()
-            TranslateStatements(ProgramInstructions, Compiler.Parser.ParseTree)
+            _ProgramInstructions = New List(Of Instruction)()
+            _SubroutineInstructions = New Dictionary(Of String, List(Of Instruction))()
+            TranslateStatements(_ProgramInstructions, _Compiler.Parser.ParseTree)
         End Sub
 
         Public Sub TranslateStatements(instructions As List(Of Instruction), statements As List(Of Statement))
@@ -79,11 +60,11 @@ Namespace Microsoft.SmallVisualBasic.Engine
         End Sub
 
         Private Sub TranslateAssignmentStatement(instructions As List(Of Instruction), statement As AssignmentStatement)
-            Dim identifierExpression As IdentifierExpression = TryCast(statement.LeftValue, IdentifierExpression)
+            Dim idExpr As IdentifierExpression = TryCast(statement.LeftValue, IdentifierExpression)
 
-            If identifierExpression IsNot Nothing Then
+            If idExpr IsNot Nothing Then
                 instructions.Add(New FieldAssignmentInstruction With {
-                    .FieldName = identifierExpression.Identifier.LCaseText,
+                    .FieldName = SymbolTable.GetKey(idExpr.Identifier),
                     .LineNumber = statement.StartToken.Line,
                     .RightSide = statement.RightValue
                 })
@@ -128,17 +109,17 @@ Namespace Microsoft.SmallVisualBasic.Engine
         End Sub
 
         Private Sub TranslateForStatement(instructions As List(Of Instruction), statement As ForStatement)
-            Dim labelName As String = CreateNewLabel()
+            Dim labelNext As String = CreateNewLabel()
             Dim labelName2 As String = CreateNewLabel()
             Dim labelName3 As String = CreateNewLabel()
             Dim labelName4 As String = CreateNewLabel()
             instructions.Add(New FieldAssignmentInstruction With {
-                .FieldName = statement.Iterator.LCaseText,
+                .FieldName = symbolTable.GetKey(statement.Iterator),
                 .RightSide = statement.InitialValue,
                 .LineNumber = statement.StartToken.Line
             })
             instructions.Add(New LabelInstruction With {
-                .LabelName = labelName,
+                .LabelName = labelNext,
                 .LineNumber = statement.StartToken.Line
             })
 
@@ -203,7 +184,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
             })
             TranslateStatements(instructions, statement.Body)
             instructions.Add(New FieldAssignmentInstruction With {
-                .FieldName = statement.Iterator.LCaseText,
+                .FieldName = symbolTable.GetKey(statement.Iterator),
                 .RightSide = New BinaryExpression With {
                     .LeftHandSide = New IdentifierExpression With {
                         .Identifier = statement.Iterator,
@@ -222,7 +203,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 .LineNumber = statement.StartToken.Line
             })
             instructions.Add(New GotoInstruction With {
-                .LabelName = labelName,
+                .LabelName = labelNext,
                 .LineNumber = statement.StartToken.Line
             })
             instructions.Add(New LabelInstruction With {
@@ -238,7 +219,10 @@ Namespace Microsoft.SmallVisualBasic.Engine
             })
         End Sub
 
-        Private Sub TranslateIfStatement(instructions As List(Of Instruction), statement As IfStatement)
+        Private Sub TranslateIfStatement(
+                    instructions As List(Of Instruction),
+                    statement As IfStatement)
+
             Dim labelName As String = CreateNewLabel()
             Dim labelName2 As String = CreateNewLabel()
             instructions.Add(New IfNotGotoInstruction With {
@@ -299,7 +283,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Private Sub TranslateSubroutineStatement(statement As SubroutineStatement)
             Dim list As List(Of Instruction) = New List(Of Instruction)()
-            SubroutineInstructions(statement.Name.LCaseText) = list
+            _SubroutineInstructions(statement.Name.LCaseText) = list
             TranslateStatements(list, statement.Body)
         End Sub
 

@@ -1,6 +1,7 @@
 ﻿Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -234,5 +235,48 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return sb.ToString()
         End Function
 
+        Public Overrides Function Execute(runner As ProgramRunner) As Statement
+            Dim key = runner.GetKey(Iterator)
+            Dim arr = ArrayExpression.Evaluate(runner)
+            Dim keys = Library.Array.GetAllIndices(arr)
+            Dim start = New Library.Primitive(1)
+            Dim [end] = keys.GetItemCount()
+
+            For i = start To [end]
+                runner.Fields(key) = arr.Items(keys.Items(i))
+                Dim result = runner.Execute(Body)
+                If TypeOf result Is JumpLoopStatement Then
+                    Dim jumpSt = CType(result, JumpLoopStatement)
+                    If jumpSt.StartToken.Type = TokenType.ExitLoop Then
+                        If jumpSt.UpLevel > 0 Then
+                            jumpSt.UpLevel -= 1
+                            Return jumpSt
+                        Else
+                            Return Nothing
+                        End If
+
+                    ElseIf jumpSt.UpLevel > 0 Then
+                        jumpSt.UpLevel -= 1
+                        Return jumpSt
+                    Else
+                        jumpSt.UpLevel = 0
+                        Continue For
+                    End If
+
+                ElseIf TypeOf result Is ReturnStatement Then
+                    Return result
+
+                ElseIf TypeOf result Is GotoStatement Then
+                    Dim label = CType(result, GotoStatement).Label
+                    If label.Line < EndLoopToken.Line Then
+
+                    Else
+                        Return result
+                    End If
+                End If
+            Next
+
+            Return Nothing
+        End Function
     End Class
 End Namespace

@@ -4,7 +4,7 @@
 '    BtnAnimate: Button
 '}
 
-Me = "Form1"
+Me = "form1"
 BtnCancel = "form1.btncancel"
 BtnAnimate = "form1.btnanimate"
 _path = Program.Directory + "\Form1.xaml"

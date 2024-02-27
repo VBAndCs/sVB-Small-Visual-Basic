@@ -1,6 +1,7 @@
 ﻿Imports System.Reflection.Emit
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Expressions
 
 Namespace Microsoft.SmallVisualBasic.Statements
@@ -230,5 +231,36 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
 
         End Sub
+
+        Public Overrides Function Execute(runner As ProgramRunner) As Statement
+            Dim result As Statement = Nothing
+            Dim done = False
+
+            If CBool(Condition.Evaluate(runner)) Then
+                result = runner.Execute(ThenStatements)
+                done = True
+            ElseIf ElseIfStatements.Count > 0 Then
+                For i = 0 To ElseIfStatements.Count - 1
+                    Dim st = ElseIfStatements(i)
+                    If CBool(st.Condition.Evaluate(runner)) Then
+                        result = st.Execute(runner)
+                        done = True
+                        Exit For
+                    End If
+                Next
+            End If
+
+            If Not done AndAlso ElseStatements.Count > 0 Then
+                result = runner.Execute(ElseStatements)
+            End If
+
+            If TypeOf result Is GotoStatement OrElse
+                        TypeOf result Is ReturnStatement OrElse
+                        TypeOf result Is JumpLoopStatement Then
+                Return result
+            Else
+                Return Nothing
+            End If
+        End Function
     End Class
 End Namespace

@@ -20,5 +20,6 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public MustOverride Function InferType(symbolTable As SymbolTable) As VariableType
 
+        Public MustOverride Function Evaluate(runner As Engine.ProgramRunner) As Library.Primitive
     End Class
 End Namespace

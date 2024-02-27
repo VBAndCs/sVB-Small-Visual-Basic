@@ -7,19 +7,12 @@ Namespace Microsoft.SmallVisualBasic
     Public Class Compiler
         Private Shared _referenceAssemblies As New List(Of Assembly)
         Private Shared _libraryFiles As New List(Of String)()
-        Private Shared _typeInfoBag As TypeInfoBag
-        Private Shared _references As New List(Of String)
-
         Private _errors As New List(Of [Error])()
 
-        Public ReadOnly Property References As List(Of String)
-            Get
-                Return _references
-            End Get
-        End Property
-
+        Public Shared ReadOnly Property References As New List(Of String)
         Public ReadOnly Property Parser As Parser
         Public Property GlobalParser As Parser
+
         Public GlobalLastCompiled As Date = Date.MinValue
         Dim lastModified As Date = Date.MinValue
         Dim _exeFile As String
@@ -60,15 +53,17 @@ Namespace Microsoft.SmallVisualBasic
         End Property
 
         Public Shared ReadOnly Property TypeInfoBag As TypeInfoBag
-            Get
-                Return _typeInfoBag
-            End Get
-        End Property
 
         Shared Sub New()
-            _typeInfoBag = New TypeInfoBag()
-            Initialize()
+            _TypeInfoBag = New TypeInfoBag()
+            Initialize(_TypeInfoBag)
         End Sub
+
+        Friend Shared Function GetTypeInfoBag() As TypeInfoBag
+            Dim typeInfoBag = New TypeInfoBag()
+            Initialize(typeInfoBag)
+            Return typeInfoBag
+        End Function
 
         Public Sub New()
             _Parser = New Parser(_errors)
@@ -78,10 +73,10 @@ Namespace Microsoft.SmallVisualBasic
             _Parser = New Parser(_errors)
         End Sub
 
-        Private Shared Sub Initialize()
+        Private Shared Sub Initialize(typeInfoBag As TypeInfoBag)
             PopulateReferences()
-            PopulateClrSymbols()
-            PopulatePrimitiveMethods()
+            PopulateClrSymbols(typeInfoBag)
+            PopulatePrimitiveMethods(typeInfoBag)
         End Sub
 
         Public Function Compile(
@@ -255,7 +250,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Shared Sub PopulateReferences()
             _referenceAssemblies.Add(GetType(Primitive).Assembly)
 
-            For Each reference In _references
+            For Each reference In _References
                 Try
                     Dim item = Assembly.LoadFile(reference)
                     _referenceAssemblies.Add(item)
@@ -265,9 +260,9 @@ Namespace Microsoft.SmallVisualBasic
             Next
         End Sub
 
-        Private Shared Sub PopulateClrSymbols()
+        Private Shared Sub PopulateClrSymbols(typeInfoBag As TypeInfoBag)
             For Each refAssembly In _referenceAssemblies
-                AddAssemblyTypesToList(refAssembly)
+                AddAssemblyTypesToList(typeInfoBag, refAssembly)
             Next
 
             Dim exePath = Assembly.GetExecutingAssembly().Location
@@ -292,7 +287,7 @@ Namespace Microsoft.SmallVisualBasic
                         If type IsNot Nothing AndAlso type.IsVisible Then
                             Dim name = IO.Path.GetFileNameWithoutExtension(fileName)
                             name = name.Replace(" ", "")
-                            AddTypeToList(type, name)
+                            AddTypeToList(TypeInfoBag, type, name)
                             _libraryFiles.Add(fileName)
                         End If
                     Catch ex As Exception
@@ -309,7 +304,7 @@ Namespace Microsoft.SmallVisualBasic
             For Each fileName In files
                 Try
                     Dim _assembly = Assembly.LoadFile(fileName)
-                    If AddAssemblyTypesToList(_assembly) Then
+                    If AddAssemblyTypesToList(TypeInfoBag, _assembly) Then
                         _libraryFiles.Add(fileName)
                     End If
                 Catch ex As Exception
@@ -319,7 +314,7 @@ Namespace Microsoft.SmallVisualBasic
             LoadExes(path)
         End Sub
 
-        Private Shared Function AddAssemblyTypesToList(assembly As Assembly) As Boolean
+        Private Shared Function AddAssemblyTypesToList(typeInfoBag As TypeInfoBag, assembly As Assembly) As Boolean
             If assembly Is Nothing Then Return False
 
             Dim result = False
@@ -327,7 +322,7 @@ Namespace Microsoft.SmallVisualBasic
 
             For Each type In types
                 If type.IsVisible AndAlso IsSBType(type) Then
-                    AddTypeToList(type)
+                    AddTypeToList(typeInfoBag, type)
                     result = True
                 End If
             Next
@@ -340,7 +335,7 @@ Namespace Microsoft.SmallVisualBasic
                 type.GetCustomAttributes(GetType(SmallBasic.Library.SmallBasicTypeAttribute), inherit:=False).Length > 0
         End Function
 
-        Private Shared Sub AddTypeToList(type As Type, Optional typeName As String = Nothing)
+        Private Shared Sub AddTypeToList(typeInfoBag As TypeInfoBag, type As Type, Optional typeName As String = Nothing)
             Dim typeInfo As New TypeInfo With {
                 .Type = type,
                 .Name = If(typeName, type.Name),
@@ -376,12 +371,12 @@ Namespace Microsoft.SmallVisualBasic
 
             If typeInfo.Events.Count > 0 OrElse typeInfo.Methods.Count > 0 OrElse typeInfo.Properties.Count > 0 Then
                 If typeInfo.Key = "graphicswindow" Then
-                    _typeInfoBag.Types("gw") = GetAlias(typeInfo, "GW")
+                    typeInfoBag.Types("gw") = GetAlias(typeInfo, "GW")
                 ElseIf typeInfo.Key = "textwindow" Then
-                    _typeInfoBag.Types("tw") = GetAlias(typeInfo, "TW")
+                    typeInfoBag.Types("tw") = GetAlias(typeInfo, "TW")
                 End If
 
-                _typeInfoBag.Types(typeInfo.Key) = typeInfo
+                typeInfoBag.Types(typeInfo.Key) = typeInfo
             End If
         End Sub
 
@@ -445,29 +440,29 @@ Namespace Microsoft.SmallVisualBasic
                     eventInfo.EventHandlerType Is GetType(SmallBasic.Library.SmallBasicCallback)
         End Function
 
-        Private Shared Sub PopulatePrimitiveMethods()
+        Private Shared Sub PopulatePrimitiveMethods(typeInfoBag As TypeInfoBag)
             Dim typeFromHandle = GetType(Primitive)
-            _typeInfoBag.StringToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(String)})
-            _typeInfoBag.NumberToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(Double)})
-            _typeInfoBag.DateToPrimitive = typeFromHandle.GetMethod("DateToPrimitive")
-            _typeInfoBag.TimeSpanToPrimitive = typeFromHandle.GetMethod("TimeSpanToPrimitive")
-            _typeInfoBag.PrimitiveToBoolean = typeFromHandle.GetMethod("ConvertToBoolean")
-            _typeInfoBag.Negation = typeFromHandle.GetMethod("op_UnaryNegation")
-            _typeInfoBag.Concat = typeFromHandle.GetMethod("op_Concatenate")
-            _typeInfoBag.Add = typeFromHandle.GetMethod("op_Addition")
-            _typeInfoBag.Subtract = typeFromHandle.GetMethod("op_Subtraction")
-            _typeInfoBag.Multiply = typeFromHandle.GetMethod("op_Multiply")
-            _typeInfoBag.Divide = typeFromHandle.GetMethod("op_Division")
-            _typeInfoBag.GreaterThan = typeFromHandle.GetMethod("op_GreaterThan")
-            _typeInfoBag.GreaterThanOrEqualTo = typeFromHandle.GetMethod("op_GreaterThanOrEqual")
-            _typeInfoBag.LessThan = typeFromHandle.GetMethod("op_LessThan")
-            _typeInfoBag.LessThanOrEqualTo = typeFromHandle.GetMethod("op_LessThanOrEqual")
-            _typeInfoBag.EqualTo = typeFromHandle.GetMethod("op_Equality", New Type(1) {GetType(Primitive), GetType(Primitive)})
-            _typeInfoBag.NotEqualTo = typeFromHandle.GetMethod("op_Inequality", New Type(1) {GetType(Primitive), GetType(Primitive)})
-            _typeInfoBag.And = typeFromHandle.GetMethod("op_And", New Type(1) {GetType(Primitive), GetType(Primitive)})
-            _typeInfoBag.Or = typeFromHandle.GetMethod("op_Or", New Type(1) {GetType(Primitive), GetType(Primitive)})
-            _typeInfoBag.GetArrayValue = typeFromHandle.GetMethod("GetArrayValue")
-            _typeInfoBag.SetArrayValue = typeFromHandle.GetMethod("SetArrayValue")
+            typeInfoBag.StringToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(String)})
+            typeInfoBag.NumberToPrimitive = typeFromHandle.GetMethod("op_Implicit", New Type(0) {GetType(Double)})
+            typeInfoBag.DateToPrimitive = typeFromHandle.GetMethod("DateToPrimitive")
+            typeInfoBag.TimeSpanToPrimitive = typeFromHandle.GetMethod("TimeSpanToPrimitive")
+            typeInfoBag.PrimitiveToBoolean = typeFromHandle.GetMethod("ConvertToBoolean")
+            typeInfoBag.Negation = typeFromHandle.GetMethod("op_UnaryNegation")
+            typeInfoBag.Concat = typeFromHandle.GetMethod("op_Concatenate")
+            typeInfoBag.Add = typeFromHandle.GetMethod("op_Addition")
+            typeInfoBag.Subtract = typeFromHandle.GetMethod("op_Subtraction")
+            typeInfoBag.Multiply = typeFromHandle.GetMethod("op_Multiply")
+            typeInfoBag.Divide = typeFromHandle.GetMethod("op_Division")
+            typeInfoBag.GreaterThan = typeFromHandle.GetMethod("op_GreaterThan")
+            typeInfoBag.GreaterThanOrEqualTo = typeFromHandle.GetMethod("op_GreaterThanOrEqual")
+            typeInfoBag.LessThan = typeFromHandle.GetMethod("op_LessThan")
+            typeInfoBag.LessThanOrEqualTo = typeFromHandle.GetMethod("op_LessThanOrEqual")
+            typeInfoBag.EqualTo = typeFromHandle.GetMethod("op_Equality", New Type(1) {GetType(Primitive), GetType(Primitive)})
+            typeInfoBag.NotEqualTo = typeFromHandle.GetMethod("op_Inequality", New Type(1) {GetType(Primitive), GetType(Primitive)})
+            typeInfoBag.And = typeFromHandle.GetMethod("op_And", New Type(1) {GetType(Primitive), GetType(Primitive)})
+            typeInfoBag.Or = typeFromHandle.GetMethod("op_Or", New Type(1) {GetType(Primitive), GetType(Primitive)})
+            typeInfoBag.GetArrayValue = typeFromHandle.GetMethod("GetArrayValue")
+            typeInfoBag.SetArrayValue = typeFromHandle.GetMethod("SetArrayValue")
         End Sub
     End Class
 

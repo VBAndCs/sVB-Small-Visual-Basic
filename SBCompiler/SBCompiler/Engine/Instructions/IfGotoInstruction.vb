@@ -14,5 +14,13 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 Return InstructionType.IfGoto
             End Get
         End Property
+
+        Public Overrides Function Execute(runner As ProgramRunner) As String
+            If Library.Primitive.ConvertToBoolean(_Condition.Evaluate(runner)) Then
+                Return _LabelName
+            End If
+
+            Return Nothing
+        End Function
     End Class
 End Namespace

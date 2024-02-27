@@ -114,5 +114,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
             End Select
         End Sub
+
+        Public MustOverride Function Execute(runner As Engine.ProgramRunner) As Statement
+
     End Class
 End Namespace

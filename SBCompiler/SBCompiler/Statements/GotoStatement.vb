@@ -1,6 +1,7 @@
 ﻿Imports System.Globalization
 Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
 
 Namespace Microsoft.SmallVisualBasic.Statements
     Public Class GotoStatement
@@ -9,6 +10,19 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public GotoToken As Token
         Public Label As Token
         Public subroutine As SubroutineStatement
+
+        Public Sub New()
+        End Sub
+
+        ''' <summary>
+        ''' Creates a Goto statement that jumps to a line number.
+        ''' It is used for debugging only, but not allowed in code.
+        ''' </summary>
+        ''' <param name="line"></param>
+        Public Sub New(line As Integer)
+            Label = Token.Illegal
+            Label.Line = line
+        End Sub
 
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
@@ -21,11 +35,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
             GotoToken.Parent = Me
             Label.Parent = Me
             Label.SymbolType = CompletionItemType.Label
-            symbolTable.AddIdentifier(Label)
+            If Not Label.IsIllegal Then symbolTable.AddIdentifier(Label)
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-            If scope.ForGlobalHelp Then Return
+            If scope.ForGlobalHelp OrElse Me.Label.IsIllegal Then Return
 
             Dim label = scope.Labels(Me.Label.LCaseText)
             scope.ILGenerator.Emit(OpCodes.Br, label)
@@ -38,6 +52,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Public Overrides Function ToString() As String
             Return $"{GotoToken.Text} {Label.Text}" & vbCrLf
+        End Function
+
+        Public Overrides Function Execute(runner As ProgramRunner) As Statement
+            Return Me
         End Function
     End Class
 End Namespace

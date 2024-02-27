@@ -109,6 +109,7 @@
     <Compile Include="Engine\Instructions\LabelInstruction.vb" />
     <Compile Include="Engine\Instructions\MethodCallInstruction.vb" />
     <Compile Include="Engine\ProgramEngine.vb" />
+    <Compile Include="Engine\ProgramRunner.vb" />
     <Compile Include="Engine\ProgramTranslator.vb" />
     <Compile Include="Engine\Instructions\PropertyAssignmentInstruction.vb" />
     <Compile Include="Engine\Instructions\SubroutineCallInstruction.vb" />

@@ -139,7 +139,7 @@ Namespace Microsoft.SmallVisualBasic
                     End If
 
                 Case ",", "{", "(", "[",
-                     "+", "-", "\", "/",
+                     "&", "+", "-", "\", "/",
                      "=", "<>", ">", ">=", "<", "<=",
                      "or", "and"
                     If IsABlockToken(nextLineFirstToken.Type) Then Return False
@@ -147,7 +147,7 @@ Namespace Microsoft.SmallVisualBasic
                 Case Else
                     Select Case nextLineFirstTokenText
                         Case ")", "]", "}",
-                             "+", "-", "*", "\", "/",
+                             "&", "+", "-", "*", "\", "/",
                              "=", "<>", ">", ">=", "<", "<=",
                              "or", "and"
 
