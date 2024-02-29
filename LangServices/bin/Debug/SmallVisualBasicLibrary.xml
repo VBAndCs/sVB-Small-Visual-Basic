@@ -1704,9 +1704,7 @@ Converts the given array to a string
  <summary>
  Gets the absolute value of the given number.  For example, -32.233 will return 32.233.
  </summary>
- <param name="number">
- The number to get the absolute value for.
- </param>
+ <param name="number">The number to get the absolute value for.</param>
  <returns>
  The absolute value of the given number.
  </returns>
@@ -1948,9 +1946,7 @@ Converts the given array to a string
  <summary>
  Gets a random number between 1 and the specified maxNumber (inclusive).
  </summary>
- <param name="maxNumber">
- The maximum number for the requested random value.
- </param>
+ <param name="maxNumber">The maximum number for the requested random value.</param>
  <returns>
  A Random number that is less than or equal to the specified max.
  </returns>
@@ -1959,12 +1955,8 @@ Converts the given array to a string
  <summary>
  Handles double to decimal conversion
  </summary>
- <param name="number">
- The input number
- </param>
- <returns>
- The output number
- </returns>
+ <param name="number">The input number</param>
+ <returns>The output number</returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Math.Hex(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>

@@ -105,6 +105,12 @@ Namespace Library
             End Set
         End Property
 
+        <HideFromIntellisense>
+        Public Shared Sub ClearIfLoaded()
+            Dim consoleWindow = NativeHelper.GetConsoleWindow()
+            If consoleWindow <> IntPtr.Zero Then Console.Clear()
+        End Sub
+
         ''' <summary>
         ''' Gets or sets the Title for the text window.
         ''' </summary>
@@ -151,11 +157,16 @@ Namespace Library
                 Dim consoleWindow = NativeHelper.GetConsoleWindow()
                 If consoleWindow = IntPtr.Zero Then
                     NativeHelper.AllocConsole()
+                    consoleWindow = NativeHelper.GetConsoleWindow()
+                    Dim systemMenu = NativeHelper.GetSystemMenu(consoleWindow, False)
+                    NativeHelper.DeleteMenu(systemMenu, NativeHelper.SC_CLOSE, NativeHelper.MF_BYCOMMAND)
                 End If
-                NativeHelper.ShowWindow(consoleWindow, 8)
+
+                SmallBasicApplication.BeginInvoke(Sub() NativeHelper.ShowWindow(consoleWindow, 5))
                 _windowVisible = True
             End If
         End Sub
+
 
         ''' <summary>
         ''' Hides the text window.  Content is perserved when the window is shown again.

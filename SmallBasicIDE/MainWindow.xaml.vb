@@ -659,6 +659,8 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Private Sub RunProgram(Optional buildOnly As Boolean = False)
+            'DebugProgram()
+            'Return
             Mouse.OverrideCursor = Cursors.Wait
             BuildAndRun(buildOnly)
             Mouse.OverrideCursor = Nothing

@@ -16,9 +16,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the absolute value of the given number.  For example, -32.233 will return 32.233.
         ''' </summary>
-        ''' <param name="number">
-        ''' The number to get the absolute value for.
-        ''' </param>
+        ''' <param name="number">The number to get the absolute value for.</param>
         ''' <returns>
         ''' The absolute value of the given number.
         ''' </returns>
@@ -325,46 +323,32 @@ Namespace Library
         ''' <summary>
         ''' Gets a random number between 1 and the specified maxNumber (inclusive).
         ''' </summary>
-        ''' <param name="maxNumber">
-        ''' The maximum number for the requested random value.
-        ''' </param>
+        ''' <param name="maxNumber">The maximum number for the requested random value.</param>
         ''' <returns>
         ''' A Random number that is less than or equal to the specified max.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetRandomNumber(maxNumber As Primitive) As Primitive
-            If CBool((maxNumber < 1)) Then
-                maxNumber = 1
-            End If
-
-            If _random Is Nothing Then
-                _random = New Random(Now.Ticks Mod Integer.MaxValue)
-            End If
-
+            If CBool((maxNumber < 1)) Then maxNumber = 1
+            If _random Is Nothing Then _random = New Random()
             Return _random.Next(maxNumber) + 1
         End Function
 
         ''' <summary>
         ''' Handles double to decimal conversion
         ''' </summary>
-        ''' <param name="number">
-        ''' The input number
-        ''' </param>
-        ''' <returns>
-        ''' The output number
-        ''' </returns>
+        ''' <param name="number">The input number</param>
+        ''' <returns>The output number</returns>
         Private Shared Function DoubleToDecimal(number As Double) As Primitive
-            If Double.IsNaN(number) Then Return New Primitive(0)
-
-            If Double.IsPositiveInfinity(number) Then
+            If Double.IsNaN(number) Then
+                Return New Primitive(0)
+            ElseIf Double.IsPositiveInfinity(number) Then
                 Return New Primitive(Decimal.MaxValue)
-            End If
-
-            If Double.IsNegativeInfinity(number) Then
+            ElseIf Double.IsNegativeInfinity(number) Then
                 Return New Primitive(Decimal.MinValue)
+            Else
+                Return New Primitive(number)
             End If
-
-            Return New Primitive(number)
         End Function
 
         ''' <summary>

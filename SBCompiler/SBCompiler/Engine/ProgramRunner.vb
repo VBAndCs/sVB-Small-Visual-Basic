@@ -109,7 +109,19 @@ Namespace Microsoft.SmallVisualBasic.Engine
             End If
 
             Dim thread As New Thread(
-                Sub() Execute(Engine.Compiler.Parser.ParseTree)
+                Sub()
+                    Try
+                        SmallVisualBasic.Library.TextWindow.ClearIfLoaded()
+                    Catch
+                    End Try
+
+                    Execute(Engine.Compiler.Parser.ParseTree)
+
+                    Try
+                        SmallVisualBasic.Library.TextWindow.PauseIfVisible()
+                    Catch
+                    End Try
+                End Sub
              )
             thread.IsBackground = True
             thread.Start()

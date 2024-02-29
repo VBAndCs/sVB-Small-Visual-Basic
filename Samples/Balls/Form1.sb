@@ -37,8 +37,8 @@ Sub InitializeBalls()
          ballLabel.Width = BallW
          ballLabel.Height = BallH
          ballLabel.Tag = {
-            5 + Math.GetRandomNumber(15),
-            10 + Math.GetRandomNumber(25)
+            Math.GetRandomNumber(30) -10,
+            Math.GetRandomNumber(40) -15
          }
          ballLabel.Visible = True
       EndIf
