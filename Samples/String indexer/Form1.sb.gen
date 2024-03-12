@@ -5,13 +5,14 @@
 '    Button1: Button
 '}
 
-Me = "Form1"
+Me = "form1"
 TextBox1 = "form1.textbox1"
 Label1 = "form1.label1"
 Button1 = "form1.button1"
-Form1 = Forms.LoadForm("Form1", "form1.xaml")
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 Form.Show(Form1)
-
 '#Events{
 '    Button1: OnClick
 '    TextBox1: OnKeyDown

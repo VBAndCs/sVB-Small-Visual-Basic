@@ -20,7 +20,7 @@ Namespace Microsoft.Windows.Controls
         Inherits ContentControl
         Implements INotifyPropertyChanged
 
-        Private Const _lineNumberMarginName As String = "Avalon Line Number Margin"
+        Private Const LineNumberMarginName As String = "Avalon Line Number Margin"
         Public Shared ReadOnly TextBufferProperty As DependencyProperty = DependencyProperty.Register("TextBuffer", GetType(ITextBuffer), GetType(CodeEditorControl), New FrameworkPropertyMetadata(AddressOf TextBufferChanged))
         Public Shared ReadOnly ContentTypeProperty As DependencyProperty = DependencyProperty.Register("ContentType", GetType(String), GetType(CodeEditorControl))
         Public Shared ReadOnly HighlightSearchHitsProperty As DependencyProperty = DependencyProperty.Register("HighlightSearchHits", GetType(Boolean), GetType(CodeEditorControl))
@@ -99,7 +99,7 @@ Namespace Microsoft.Windows.Controls
             Set(value As Boolean)
                 _isLineNumberMarginVisible = value
                 If _textViewHost IsNot Nothing Then
-                    Dim textViewMargin As ITextViewMargin = _textViewHost.GetTextViewMargin("Avalon Line Number Margin")
+                    Dim textViewMargin As ITextViewMargin = _textViewHost.GetTextViewMargin(LineNumberMarginName)
                     If textViewMargin IsNot Nothing Then
                         textViewMargin.MarginVisible = value
                         _lineNumberMargin = TryCast(textViewMargin, Canvas)
@@ -190,10 +190,7 @@ Namespace Microsoft.Windows.Controls
 
         Public ReadOnly Property TextViewHost As IAvalonTextViewHost
             Get
-                If _textViewHost Is Nothing Then
-                    Initialize()
-                End If
-
+                If _textViewHost Is Nothing Then Initialize()
                 Return _textViewHost
             End Get
         End Property
@@ -206,6 +203,12 @@ Namespace Microsoft.Windows.Controls
 
         <Import>
         Public Property UndoHistoryRegistry As IUndoHistoryRegistry
+
+        Public ReadOnly Property LineNumberMargin As AvalonLineNumberMargin
+            Get
+                Return CType(TextViewHost.GetTextViewMargin(LineNumberMarginName), AvalonLineNumberMargin)
+            End Get
+        End Property
 
         Public Event PropertyChanged As PropertyChangedEventHandler Implements ComponentModel.INotifyPropertyChanged.PropertyChanged
 
@@ -386,20 +389,20 @@ Namespace Microsoft.Windows.Controls
                 _textView.Editor = Me
 
                 _textViewHost = New AvalonTextViewHost(
-                        UndoHistoryRegistry,
-                        Orderer,
+                        _UndoHistoryRegistry,
+                        _Orderer,
                         TextView,
-                        AvalonTextViewMarginFactories,
-                        EditorOperationsProvider,
-                        MouseBindingFactories,
-                        KeyboardFilters
+                        _AvalonTextViewMarginFactories,
+                        _EditorOperationsProvider,
+                        _MouseBindingFactories,
+                        _KeyboardFilters
                 )
 
                 _textViewHost.TextView.Background = MyBase.Background
                 _textViewHost.ScaleFactor = _scaleFactor
 
                 If Not IsLineNumberMarginVisible Then
-                    _textViewHost.GetTextViewMargin("Avalon Line Number Margin").MarginVisible = False
+                    _textViewHost.GetTextViewMargin(LineNumberMarginName).MarginVisible = False
                 End If
 
                 AddHandler _textView.Selection.SelectionChanged, AddressOf OnSelectionChanged

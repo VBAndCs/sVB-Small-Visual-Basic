@@ -14,6 +14,7 @@ Namespace Microsoft.SmallVisualBasic
         Public SymbolType As Completion.CompletionItemType
         Public Comment As String
         Friend Hidden As Boolean
+        Public EndLine As Integer
 
         Public ReadOnly Property EndColumn As Integer
             Get

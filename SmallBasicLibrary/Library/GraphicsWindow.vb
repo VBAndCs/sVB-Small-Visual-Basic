@@ -45,7 +45,7 @@ Namespace Library
         Private Shared _lastKey As Key
         Private Shared _lastText As String
         Private Shared _random As Random
-        Private Shared _backgroundBrush As SolidColorBrush
+        Private Shared _backgroundColor As Primitive
         Friend Shared _objectsMap As New Dictionary(Of String, UIElement)
         Private Shared _scaleTransformMap As New Dictionary(Of String, ScaleTransform)
         Private Shared _mainCanvas As Canvas
@@ -64,21 +64,20 @@ Namespace Library
         Public Shared Property BackgroundColor As Primitive
             Get
                 VerifyAccess()
-                Return InvokeWithReturn(
-                    Function() As Primitive
-                        Return New Primitive(GetStringFromColor(_backgroundBrush.Color))
-                    End Function)
+                Return _backgroundColor
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                _backgroundColor = Value
+                VerifyAccess(True)
                 BeginInvoke(
                     Sub()
-                        _backgroundBrush = New SolidColorBrush(GetColorFromString(Value))
-                        _window.Background = _backgroundBrush
+                        _window.Background = WinForms.Color.GetBrush(Value)
                     End Sub)
             End Set
         End Property
+
+        Private Shared _brushColor As Primitive = WinForms.Colors.CornflowerBlue
 
         ''' <summary>
         ''' Gets or sets the brush color to be used to fill shapes drawn on the Graphics Window.
@@ -87,26 +86,16 @@ Namespace Library
         Public Shared Property BrushColor As Primitive
             Get
                 VerifyAccess()
-                If _fillBrush Is Nothing Then
-                    Return WinForms.Colors.None
-                End If
-
-                Return InvokeWithReturn(
-                    Function() As Primitive
-                        Return New Primitive(GetStringFromColor(_fillBrush.Color))
-                    End Function)
+                Return _brushColor
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
+                _brushColor = Value
                 BeginInvoke(
                     Sub()
-                        If WinForms.Color.IsNone(Value) Then
-                            _fillBrush = Nothing
-                        Else
-                            _fillBrush = New SolidColorBrush(GetColorFromString(Value))
-                            _fillBrush.Freeze()
-                        End If
+                        _fillBrush = WinForms.Color.GetBrush(Value)
+                        _fillBrush?.Freeze()
                     End Sub)
             End Set
         End Property
@@ -137,6 +126,8 @@ Namespace Library
             End Set
         End Property
 
+        Private Shared _penWidth As Primitive = New Primitive(2)
+
         ''' <summary>
         ''' Gets or sets the width of the pen used to draw shapes on the Graphics Window.
         ''' </summary>
@@ -144,20 +135,21 @@ Namespace Library
         Public Shared Property PenWidth As Primitive
             Get
                 VerifyAccess()
-                Return InvokeWithReturn(
-                     Function() As Primitive
-                         Return New Primitive(If(_pen IsNot Nothing, _pen.Thickness, 2.0))
-                     End Function)
+                Return _penWidth
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                _pen = New Media.Pen(_pen.Brush, Value)
-                                _pen.Freeze()
-                            End Sub)
+                _penWidth = Value
+                BeginInvoke(
+                    Sub()
+                        _pen = New Media.Pen(_pen.Brush, Value)
+                        _pen.Freeze()
+                    End Sub)
             End Set
         End Property
+
+        Private Shared _penColor As Primitive = WinForms.Colors.Blue
 
         ''' <summary>
         ''' Gets or sets the color of the pen used to draw shapes on the Graphics Window.
@@ -166,25 +158,18 @@ Namespace Library
         Public Shared Property PenColor As Primitive
             Get
                 VerifyAccess()
-                Return InvokeWithReturn(
-                    Function() As Primitive
-                        Return New Primitive(
-                            If(_pen IsNot Nothing,
-                                GetStringFromColor(CType(_pen.Brush, SolidColorBrush).Color),
-                                WinForms.Colors.None.AsString())
-                        )
-                    End Function)
+                Return _penColor
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
+                _penColor = Value
                 BeginInvoke(
                     Sub()
                         If WinForms.Color.IsNone(Value) Then
                             _pen = Nothing
                         Else
-                            Dim colorFromString As Media.Color = GetColorFromString(Value)
-                            _pen = New Media.Pen(New SolidColorBrush(colorFromString), _pen.Thickness)
+                            _pen = New Media.Pen(WinForms.Color.GetBrush(Value), _penWidth)
                             _pen.Freeze()
                         End If
                     End Sub)
@@ -220,9 +205,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                BeginInvoke(Sub()
-                                _fontSize = Value
-                            End Sub)
+                BeginInvoke(Sub() _fontSize = Value)
             End Set
         End Property
 
@@ -236,13 +219,14 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                BeginInvoke(Sub()
-                                If CBool(Value) Then
-                                    _fontWeight = FontWeights.Bold
-                                Else
-                                    _fontWeight = FontWeights.Normal
-                                End If
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        If CBool(Value) Then
+                            _fontWeight = FontWeights.Bold
+                        Else
+                            _fontWeight = FontWeights.Normal
+                        End If
+                    End Sub)
             End Set
         End Property
 
@@ -256,13 +240,14 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                BeginInvoke(Sub()
-                                If CBool(Value) Then
-                                    _fontStyle = FontStyles.Italic
-                                Else
-                                    _fontStyle = FontStyles.Normal
-                                End If
-                            End Sub)
+                BeginInvoke(
+                    Sub()
+                        If CBool(Value) Then
+                            _fontStyle = FontStyles.Italic
+                        Else
+                            _fontStyle = FontStyles.Normal
+                        End If
+                    End Sub)
             End Set
         End Property
 
@@ -281,9 +266,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                _window.Title = Value
-                            End Sub)
+                BeginInvoke(Sub() _window.Title = Value)
             End Set
         End Property
 
@@ -348,9 +331,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub()
-                                _window.Left = Value
-                            End Sub)
+                BeginInvoke(Sub() _window.Left = Value)
             End Set
         End Property
 
@@ -377,6 +358,8 @@ Namespace Library
         Private Shared windPosY As Double = 0
         Private Shared windWidth As Double = 0
         Private Shared windHeight As Double = 0
+        Private Shared _fullScreen As Primitive
+
 
         ''' <summary>
         ''' Set this property to True to show the Graphics Window in the full screen mode, or set it to False to exit the full screen mode and restore its normal state.
@@ -386,31 +369,33 @@ Namespace Library
         Public Shared Property FullScreen As Primitive
             Get
                 VerifyAccess()
-                Return InvokeWithReturn(
-                    Function() As Primitive
-                        Return New Primitive(_window.WindowStyle = WindowStyle.None)
-                    End Function)
+                Return _fullScreen
             End Get
 
             Set(value As Primitive)
                 VerifyAccess()
+                _fullScreen = value
                 BeginInvoke(
                     Sub()
                         If CBool(value) Then
                             windPosX = _window.Left
                             windPosY = _window.Top
-                            windWidth = _window.Width
-                            windHeight = _window.Height
-                            _window.WindowStyle = WindowStyle.None
-                            _window.ResizeMode = ResizeMode.NoResize
+                            windWidth = _window.ActualWidth
+                            windHeight = _window.ActualHeight
+                            If Not _window.AllowsTransparency Then
+                                _window.WindowStyle = WindowStyle.None
+                                _window.ResizeMode = ResizeMode.NoResize
+                            End If
                             _window.Left = 0
                             _window.Top = 0
                             _window.Width = SystemParameters.WorkArea.Width
                             _window.Height = SystemParameters.WorkArea.Height
 
                         ElseIf _window.WindowStyle = WindowStyle.None Then
-                            _window.WindowStyle = WindowStyle.ThreeDBorderWindow
-                            _window.ResizeMode = ResizeMode.CanResize
+                            If Not _window.AllowsTransparency Then
+                                _window.WindowStyle = WindowStyle.ThreeDBorderWindow
+                                _window.ResizeMode = ResizeMode.CanResize
+                            End If
                             _window.Width = windWidth
                             _window.Height = windHeight
                             _window.Left = windPosX
@@ -586,8 +571,10 @@ Namespace Library
         ''' Shows the Graphics window to enable interactions with it.
         ''' </summary>
         Public Shared Sub Show()
-            If Not _windowCreated Then CreateWindow()
-
+            If Not _windowCreated Then
+                CreateWindow()
+                BeginInvoke(Sub() _window.WindowState = WindowState.Maximized)
+            End If
             _isHidden = False
             Invoke(
                 Sub()
@@ -708,27 +695,25 @@ Namespace Library
         ''' <param name="y3">The y co-ordinate of the third point.</param>
         Public Shared Sub DrawTriangle(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive, x3 As Primitive, y3 As Primitive)
             VerifyAccess()
-            BeginInvoke(Sub()
-                            Dim dc As DrawingContext = _mainDrawing.Append()
-                            Dim value As New PathFigure With
-                            {
+            BeginInvoke(
+                Sub()
+                    Dim dc As DrawingContext = _mainDrawing.Append()
+                    Dim value As New PathFigure With {
                             .StartPoint = New System.Windows.Point(x1, y1),
                             .IsClosed = True,
                             .Segments = New PathSegmentCollection From {
                                     CType(New LineSegment(New System.Windows.Point(x2, y2), isStroked:=True), PathSegment),
                                     CType(New LineSegment(New System.Windows.Point(x3, y3), isStroked:=True), PathSegment)
                             }
-                            }
-                            Dim figures As New PathFigureCollection From {
-                                value
-                            }
-                            Dim pathGeometry1 As New PathGeometry
-                            pathGeometry1.Figures = figures
-                            pathGeometry1.Freeze()
-                            dc.DrawGeometry(Nothing, _pen, pathGeometry1)
-                            dc.Close()
-                            AddRasterizeOperationToQueue()
-                        End Sub)
+                    }
+                    Dim figures As New PathFigureCollection From {value}
+                    Dim pathGeometry1 As New PathGeometry
+                    pathGeometry1.Figures = figures
+                    pathGeometry1.Freeze()
+                    dc.DrawGeometry(Nothing, _pen, pathGeometry1)
+                    dc.Close()
+                    AddRasterizeOperationToQueue()
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -742,27 +727,25 @@ Namespace Library
         ''' <param name="y3">The y co-ordinate of the third point.</param>
         Public Shared Sub FillTriangle(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive, x3 As Primitive, y3 As Primitive)
             VerifyAccess()
-            BeginInvoke(Sub()
-                            Dim dc As DrawingContext = _mainDrawing.Append()
-                            Dim value As New PathFigure With
-                            {
+            BeginInvoke(
+                Sub()
+                    Dim dc As DrawingContext = _mainDrawing.Append()
+                    Dim value As New PathFigure With {
                             .StartPoint = New System.Windows.Point(x1, y1),
                             .IsClosed = True,
                             .Segments = New PathSegmentCollection From {
                                     CType(New LineSegment(New System.Windows.Point(x2, y2), isStroked:=True), PathSegment),
                                     CType(New LineSegment(New System.Windows.Point(x3, y3), isStroked:=True), PathSegment)
                             }
-                            }
-                            Dim figures As New PathFigureCollection From {
-                                value
-                            }
-                            Dim pathGeometry1 As New PathGeometry
-                            pathGeometry1.Figures = figures
-                            pathGeometry1.Freeze()
-                            dc.DrawGeometry(_fillBrush, Nothing, pathGeometry1)
-                            dc.Close()
-                            AddRasterizeOperationToQueue()
-                        End Sub)
+                    }
+                    Dim figures As New PathFigureCollection From {value}
+                    Dim pathGeometry1 As New PathGeometry
+                    pathGeometry1.Figures = figures
+                    pathGeometry1.Freeze()
+                    dc.DrawGeometry(_fillBrush, Nothing, pathGeometry1)
+                    dc.Close()
+                    AddRasterizeOperationToQueue()
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -857,22 +840,12 @@ Namespace Library
         ''' <summary>
         ''' Draws the specified image from memory on to the screen, in the specified size.
         ''' </summary>
-        ''' <param name="imageName">
-        ''' The name of the image to draw
-        ''' </param>
-        ''' <param name="x">
-        ''' The x co-ordinate of the point to draw the image at.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the point to draw the image at.
-        ''' </param>
-        ''' <param name="width">
-        ''' The width to draw the image.
-        ''' </param>
-        ''' <param name="height">
-        ''' The height to draw the image.
-        ''' </param>
-        Public Shared Sub DrawResizedImage(imageName As Primitive, x As Primitive, y As Primitive, width1 As Primitive, height1 As Primitive)
+        ''' <param name="imageName">The name of the image to draw</param>
+        ''' <param name="x">The x co-ordinate of the point to draw the image at.</param>
+        ''' <param name="y">The y co-ordinate of the point to draw the image at.</param>
+        ''' <param name="width">The width to draw the image.</param>
+        ''' <param name="height">The height to draw the image.</param>
+        Public Shared Sub DrawResizedImage(imageName As Primitive, x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             If imageName.IsEmpty Then
                 Return
             End If
@@ -882,7 +855,7 @@ Namespace Library
                 BeginInvoke(
                     Sub()
                         Dim dc As DrawingContext = _mainDrawing.Append()
-                        dc.DrawImage(image1, New System.Windows.Rect(x, y, width1, height1))
+                        dc.DrawImage(image1, New System.Windows.Rect(x, y, width, height))
                         dc.Close()
                         AddRasterizeOperationToQueue()
                     End Sub)
@@ -892,21 +865,14 @@ Namespace Library
         ''' <summary>
         ''' Draws the specified image from memory on to the screen.  
         ''' </summary>
-        ''' <param name="imageName">
-        ''' The name of the image to draw.
-        ''' </param>
-        ''' <param name="x">
-        ''' The x co-ordinate of the point to draw the image at.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the point to draw the image at.
-        ''' </param>
+        ''' <param name="imageName">The name of the image to draw.</param>
+        ''' <param name="x">The x co-ordinate of the point to draw the image at.</param>
+        ''' <param name="y">The y co-ordinate of the point to draw the image at.</param>
         Public Shared Sub DrawImage(imageName As Primitive, x As Primitive, y As Primitive)
-            If imageName.IsEmpty Then
-                Return
-            End If
+            If imageName.IsEmpty Then Return
+
             VerifyAccess()
-            Dim image1 As BitmapSource = ImageList.GetBitmap(imageName)
+            Dim image1 = ImageList.GetBitmap(imageName)
             If image1 IsNot Nothing Then
                 BeginInvoke(
                     Sub()
@@ -921,21 +887,15 @@ Namespace Library
         ''' <summary>
         ''' Draws the pixel specified by the x and y co-ordinates using the specified color.
         ''' </summary>
-        ''' <param name="x">
-        ''' The x co-ordinate of the pixel.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the pixel.
-        ''' </param>
-        ''' <param name="color">
-        ''' The color of the pixel to set.
-        ''' </param>
-        Public Shared Sub SetPixel(x As Primitive, y As Primitive, color1 As Primitive)
+        ''' <param name="x">The x co-ordinate of the pixel.</param>
+        ''' <param name="y">The y co-ordinate of the pixel.</param>
+        ''' <param name="color">The color of the pixel to set.</param>
+        Public Shared Sub SetPixel(x As Primitive, y As Primitive, color As Primitive)
             VerifyAccess()
             BeginInvoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
-                    dc.DrawRectangle(New SolidColorBrush(GetColorFromString(color1)), Nothing, New System.Windows.Rect(x, y, 1.0, 1.0))
+                    dc.DrawRectangle(New SolidColorBrush(GetColorFromString(color)), Nothing, New System.Windows.Rect(x, y, 1.0, 1.0))
                     dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
@@ -944,15 +904,9 @@ Namespace Library
         ''' <summary>
         ''' Gets the color of the pixel at the specified x and y co-ordinates.
         ''' </summary>
-        ''' <param name="x">
-        ''' The x co-ordinate of the pixel.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the pixel.
-        ''' </param>
-        ''' <returns>
-        ''' The color of the pixel.
-        ''' </returns>
+        ''' <param name="x">The x co-ordinate of the pixel.</param>
+        ''' <param name="y">The y co-ordinate of the pixel.</param>
+        ''' <returns>The color of the pixel.</returns>
         <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Function GetPixel(x As Primitive, y As Primitive) As Primitive
             VerifyAccess()
@@ -974,9 +928,7 @@ Namespace Library
         ''' <summary>
         ''' Gets a valid random color.
         ''' </summary>
-        ''' <returns>
-        ''' A valid random color.
-        ''' </returns>
+        ''' <returns>A valid random color.</returns>
         <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Function GetRandomColor() As Primitive
             If _random Is Nothing Then
@@ -989,15 +941,9 @@ Namespace Library
         ''' <summary>
         ''' Constructs a color given the Red, Green and Blue values.
         ''' </summary>
-        ''' <param name="red">
-        ''' The red component of the Color (0-255).
-        ''' </param>
-        ''' <param name="green">
-        ''' The green component of the color (0-255).
-        ''' </param>
-        ''' <param name="blue">
-        ''' The blue component of the color (0-255).
-        ''' </param>
+        ''' <param name="red">The red component of the Color (0-255).</param>
+        ''' <param name="green">The green component of the color (0-255).</param>
+        ''' <param name="blue">The blue component of the color (0-255).</param>
         ''' <returns>
         ''' Returns a color that can be used to set the brush or pen color.
         ''' </returns>
@@ -1027,23 +973,18 @@ Namespace Library
         ''' <summary>
         ''' Displays a message box to the user.
         ''' </summary>
-        ''' <param name="text">
-        ''' The text to be displayed on the message box.
-        ''' </param>
-        ''' <param name="title">
-        ''' The title for the message box.
-        ''' </param>
+        ''' <param name="text">The text to be displayed on the message box.</param>
+        ''' <param name="title">The title for the message box.</param>
         Public Shared Sub ShowMessage(text As Primitive, title As Primitive)
             VerifyAccess()
-            Invoke(Sub()
-                       MessageBox.Show(_window, text, title)
-                   End Sub)
+            Invoke(Sub() MessageBox.Show(_window, text, title))
         End Sub
 
         ''' <summary>
         ''' Show the graphics window and gets the form object that repreesents it.
         ''' </summary>
-        ''' <returns>The graphics window name which is "graphicswindow".
+        ''' <returns>
+        ''' The graphics window name which is "graphicswindow".
         ''' Note that sVB can deal with this name as a form object, so, you can use it to access the properties and methods of the form that repreesents the graphics window.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Form)>
@@ -1052,21 +993,28 @@ Namespace Library
             Return Controls.GW_NAME
         End Function
 
-        Private Shared Sub CreateWindow()
+        Private Shared Sub CreateWindow(Optional keepValue As Boolean = False)
             SyncLock _syncLock
                 Invoke(
                     Sub()
-                        If _backgroundBrush Is Nothing Then _backgroundBrush = Media.Brushes.White
-                        If _fillBrush Is Nothing Then _fillBrush = Media.Brushes.CornflowerBlue
-                        If _pen Is Nothing Then _pen = New Media.Pen(System.Windows.Media.Brushes.Black, 2.0)
-                        If _fontFamily Is Nothing Then _fontFamily = New Media.FontFamily("Tahoma")
+                        If Not keepValue Then _backgroundColor = WinForms.Colors.White
+                        _brushColor = WinForms.Colors.CornflowerBlue
+                        _fillBrush = Media.Brushes.CornflowerBlue
+                        _penColor = WinForms.Colors.Black
+                        _penWidth = New Primitive(2)
+                        _pen = New Media.Pen(Media.Brushes.Black, 2.0)
+                        _fontFamily = New Media.FontFamily("Tahoma")
+                        _fullScreen = New Primitive(False)
                         _windowCreated = True
+
+                        Dim allowsTransparency = (_backgroundColor = WinForms.Colors.Transparent OrElse _backgroundColor = WinForms.Colors.None)
                         _window = New Window() With {
                             .Title = "sVB Graphics Window",
-                            .Background = _backgroundBrush,
+                            .AllowsTransparency = allowsTransparency,
+                            .WindowStyle = If(allowsTransparency, WindowStyle.None, WindowStyle.ThreeDBorderWindow),
+                            .Background = WinForms.Color.GetBrush(_backgroundColor),
                             .Height = 480.0,
-                            .Width = 640.0,
-                            .WindowState = WindowState.Maximized
+                            .Width = 640.0
                         }
 
                         If Not _isHidden Then _window.Show()
@@ -1135,14 +1083,20 @@ Namespace Library
         End Sub
 
         Private Shared Sub SetWindowContent()
-            _mainCanvas = New Canvas
-            _mainCanvas.HorizontalAlignment = HorizontalAlignment.Stretch
-            _mainCanvas.VerticalAlignment = VerticalAlignment.Stretch
-            _renderBitmap = New RenderTargetBitmap(_window.Width + 120, _window.Height + 120, 96.0, 96.0, PixelFormats.Default)
-            Dim image1 As New System.Windows.Controls.Image
-            image1.Source = _renderBitmap
-            image1.Stretch = Stretch.None
-            _bitmapContainer = image1
+            _mainCanvas = New Canvas With {
+                .HorizontalAlignment = HorizontalAlignment.Stretch,
+                .VerticalAlignment = VerticalAlignment.Stretch
+            }
+            _renderBitmap = New RenderTargetBitmap(
+                _window.Width + 120,
+                _window.Height + 120,
+                96.0, 96.0,
+                PixelFormats.Default
+            )
+            _bitmapContainer = New System.Windows.Controls.Image With {
+                .Source = _renderBitmap,
+                .Stretch = Stretch.None
+            }
             _mainDrawing = New DrawingGroup
             _visualContainer = New VisualContainer(_mainDrawing)
             Dim grid1 As New Grid
@@ -1155,7 +1109,7 @@ Namespace Library
         Private Shared Sub WindowClosing(sender As Object, e As CancelEventArgs)
             If WinForms.Forms._forms.Count = 0 AndAlso
                 Not TextWindow._windowVisible Then
-                SmallBasicApplication.End()
+                Program.End()
             End If
 
             WinForms.Forms.RemoveFormAndControls(Controls.GW_NAME)
@@ -1169,10 +1123,16 @@ Namespace Library
 
         Private Shared Sub WindowSizeChanged(sender As Object, e As SizeChangedEventArgs)
             If e.NewSize.Width > _renderBitmap.Width OrElse e.NewSize.Height > _renderBitmap.Height Then
-                Dim renderBitmap As RenderTargetBitmap = _renderBitmap
-                _renderBitmap = New RenderTargetBitmap(e.NewSize.Width + 120, e.NewSize.Height + 120, 96.0, 96.0, PixelFormats.Default)
+                Dim renderBitmap = _renderBitmap
+                _renderBitmap = New RenderTargetBitmap(
+                    e.NewSize.Width + 120,
+                    e.NewSize.Height + 120,
+                    96.0,
+                    96.0,
+                    PixelFormats.Default
+                 )
                 Dim drawingVisual1 As New DrawingVisual
-                Dim dc As DrawingContext = drawingVisual1.RenderOpen()
+                Dim dc = drawingVisual1.RenderOpen()
                 dc.DrawImage(renderBitmap, New System.Windows.Rect(0.0, 0.0, renderBitmap.Width, renderBitmap.Height))
                 dc.Close()
                 _renderBitmap.Render(drawingVisual1)
@@ -1183,12 +1143,10 @@ Namespace Library
             End If
         End Sub
 
-        Friend Shared Sub VerifyAccess()
+        Friend Shared Sub VerifyAccess(Optional keepValue As Boolean = False)
             If Not _windowCreated Then
-                CreateWindow()
-                If Not _isHidden Then
-                    Show()
-                End If
+                CreateWindow(keepValue)
+                BeginInvoke(Sub() _window.WindowState = WindowState.Maximized)
             End If
         End Sub
 
@@ -1286,8 +1244,7 @@ Namespace Library
         Friend Shared Function GetColorFromString(color As String) As Media.Color
             Try
                 Return Media.ColorConverter.ConvertFromString(color)
-            Catch __unusedException1__ As Exception
-
+            Catch
             End Try
 
             Return Colors.Black
@@ -1300,9 +1257,7 @@ Namespace Library
 
         Friend Shared Sub SetCursor(cursor1 As Cursor)
             VerifyAccess()
-            Invoke(Sub()
-                       _window.Cursor = cursor1
-                   End Sub)
+            Invoke(Sub() _window.Cursor = cursor1)
         End Sub
     End Class
 End Namespace

@@ -11,7 +11,7 @@ EndFunction ' a random number
 
 '------------------------------------------------
 Sub Button1_OnClick()
-   newButton = CreateRndButton(form1)
+   newButton = CreateRndButton(Form1)
    newButton.OnClick = Button1_OnClick
 EndSub
 

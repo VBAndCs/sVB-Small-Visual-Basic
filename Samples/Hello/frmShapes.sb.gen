@@ -8,16 +8,17 @@
 '    TextBox1: TextBox
 '}
 
-Me = "frmShapes"
+Me = "frmshapes"
 Control1 = "frmshapes.control1"
 Elps2 = "frmshapes.elps2"
 Control2 = "frmshapes.control2"
 Button1 = "frmshapes.button1"
 Label1 = "frmshapes.label1"
 TextBox1 = "frmshapes.textbox1"
-frmShapes = Forms.LoadForm("frmShapes", "frmshapes.xaml")
+_path = Program.Directory + "\frmShapes.xaml"
+frmShapes = Forms.LoadForm("frmShapes", _path)
+Form.SetArgsArr(frmshapes, Stack.PopValue("_frmshapes_argsArr"))
 Form.Show(frmShapes)
-
 '#Events{
 '    Button1: OnClick
 '}

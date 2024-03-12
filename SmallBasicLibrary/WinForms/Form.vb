@@ -991,6 +991,15 @@ Namespace WinForms
                           End If
 
                           Forms._controls.Remove(key)
+
+                      ElseIf WinTimer.Timers.ContainsKey(key) Then
+                          If key.StartsWith(formName) Then
+                              If WinTimer.TickHandlers.ContainsKey(key) Then
+                                  RemoveHandler WinTimer.Timers(key).Tick, WinTimer.TickHandlers(key)
+                                  WinTimer.TickHandlers.Remove(key)
+                              End If
+                              WinTimer.Timers.Remove(key)
+                          End If
                       End If
                   End Sub)
         End Sub
@@ -1078,6 +1087,13 @@ Namespace WinForms
             Dim num = 1
 
             For Each key In Forms._controls.Keys
+                If key.StartsWith(prefix) Then
+                    map(num) = key
+                    num += 1
+                End If
+            Next
+
+            For Each key In WinTimer.Timers.Keys
                 If key.StartsWith(prefix) Then
                     map(num) = key
                     num += 1
@@ -1182,32 +1198,34 @@ Namespace WinForms
         <ExMethod>
         Public Shared Function ShowChildForm(parentFormName As Primitive, childFormName As Primitive, argsArr As Primitive) As Primitive
             Dim asm = System.Reflection.Assembly.GetCallingAssembly()
-            App.Invoke(
-                  Sub()
-                      Try
-                          Dim parentWnd = Forms.GetForm(parentFormName)
-
-                          If GetIsLoaded(childFormName) Then
-                              Dim childWnd = Forms.GetForm(childFormName)
-                              childWnd.Owner = parentWnd
-                              SetArgsArr(childFormName, argsArr)
-                              Show(childFormName)
-                              childWnd.RaiseEvent(New RoutedEventArgs(OnFormShownEvent))
-                          Else
-                              Stack.PushValue("_" & childFormName.AsString().ToLower() & "_argsArr", argsArr)
-                              Form.Initialize(childFormName, asm)
-                              Dim childWnd = Forms.GetForm(childFormName)
-                              childWnd.Owner = parentWnd
-                          End If
-
-                      Catch ex As Exception
-                          Form.ReportSubError(childFormName, "ShowChildForm", ex)
-                      End Try
-                  End Sub)
-
+            DoShowChildForm(parentFormName, childFormName, argsArr, Sub() Form.Initialize(childFormName, asm))
             Return childFormName
         End Function
 
+        Public Shared Sub DoShowChildForm(parentFormName As Primitive, childFormName As Primitive, argsArr As Primitive, InitializeForm As Action)
+            App.Invoke(
+                 Sub()
+                     Try
+                         Dim parentWnd = Forms.GetForm(parentFormName)
+
+                         If GetIsLoaded(childFormName) Then
+                             Dim childWnd = Forms.GetForm(childFormName)
+                             childWnd.Owner = parentWnd
+                             SetArgsArr(childFormName, argsArr)
+                             Show(childFormName)
+                             childWnd.RaiseEvent(New RoutedEventArgs(OnFormShownEvent))
+                         Else
+                             Stack.PushValue("_" & childFormName.AsString().ToLower() & "_argsArr", argsArr)
+                             InitializeForm()
+                             Dim childWnd = Forms.GetForm(childFormName)
+                             childWnd.Owner = parentWnd
+                         End If
+
+                     Catch ex As Exception
+                         Form.ReportSubError(childFormName, "ShowChildForm", ex)
+                     End Try
+                 End Sub)
+        End Sub
 
         ''' <summary>
         ''' Gets or sets the name of the button that the user clicked when he closes the dialog form.

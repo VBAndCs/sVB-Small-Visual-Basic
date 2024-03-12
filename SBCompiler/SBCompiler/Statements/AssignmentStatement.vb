@@ -100,15 +100,14 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim InferedTypes = symbolTable.InferedTypes
             If InferedTypes.ContainsKey(key) Then Return
 
-            Dim varType = WinForms.PreCompiler.GetVarType(identifier.Text)
-
-            Dim type As VariableType
-            If varType = VariableType.Any Then
-                type = If(RightValue?.InferType(symbolTable), VariableType.Any)
-            Else
-                type = varType
-            End If
-
+            Dim varName = identifier.Text
+            Dim varType = WinForms.PreCompiler.GetVarType(varName)
+            Dim varType2 = If(RightValue?.InferType(symbolTable), VariableType.Any)
+            Dim type = If(varType = VariableType.Any OrElse
+                        (varType >= VariableType.Control AndAlso varName.Length < varType.ToString().Length AndAlso varType2 < VariableType.Control),
+                  varType2,
+                  varType
+            )
             If type <> VariableType.Any Then InferedTypes(key) = type
         End Sub
 
@@ -162,7 +161,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                             scope.ILGenerator.Emit(OpCodes.Ldnull)
                             scope.ILGenerator.Emit(OpCodes.Ldftn, method)
                             scope.ILGenerator.Emit(OpCodes.Newobj, GetType(SmallVisualBasicCallback).GetConstructors()(0))
-                            scope.ILGenerator.EmitCall(OpCodes.Call, EventInfo.GetAddMethod(), Nothing)
+                            scope.ILGenerator.EmitCall(OpCodes.Call, eventInfo.GetAddMethod(), Nothing)
                         End If
 
                     Else
@@ -179,6 +178,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             If scope.ForGlobalHelp Then
                 ' no need to emit the actaul code. This is just for help info
                 LiteralExpression.Zero.EmitIL(scope)
+                Return False
             ElseIf TypeOf RightValue Is InitializerExpression Then
                 Dim initExpr = CType(RightValue, InitializerExpression)
                 initExpr.LowerAndEmit(LeftValue.ToString(), scope, StartToken.Line)
@@ -262,13 +262,17 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
             Dim propExpr = TryCast(LeftValue, PropertyExpression)
             If propExpr IsNot Nothing Then
+                Dim value = RightValue.Evaluate(runner)
                 If propExpr.IsDynamic Then
                     Dim arrExpr2 As New ArrayExpression() With {
                         .LeftHand = New IdentifierExpression() With {.Identifier = propExpr.TypeName},
-                        .Indexer = New IdentifierExpression() With {.Identifier = propExpr.PropertyName},
+                        .Indexer = New LiteralExpression($"""{propExpr.PropertyName.Text}"""),
                         .Parent = Me
                     }
-                    SetArrayValue(runner, arrExpr2, RightValue.Evaluate(runner))
+                    SetArrayValue(runner, arrExpr2, value)
+
+                ElseIf propExpr.TypeName.LCaseText = "global" Then
+                    runner.SetGlobalField(propExpr.PropertyName.LCaseText, value)
 
                 Else
                     Dim typeInfo = runner.TypeInfoBag.Types(propExpr.TypeName.LCaseText)
@@ -276,18 +280,36 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                     If typeInfo.Events.TryGetValue(propExpr.PropertyName.LCaseText, eventInfo) Then
                         If RightValue.StartToken.Type = TokenType.Nothing Then
-                            eventInfo.GetAddMethod().Invoke(Nothing, {CType(Sub() Exit Sub, SmallVisualBasicCallback)})
+                            eventInfo.GetRemoveMethod().Invoke(Nothing, {CType(Sub() Exit Sub, SmallVisualBasicCallback)})
                         Else
                             Dim subExpr = TryCast(RightValue, IdentifierExpression)
                             Dim subroutine = runner.SymbolTable.Subroutines(subExpr.Identifier.LCaseText)
-                            eventInfo.GetAddMethod().Invoke(Nothing,
-                                     {CType(Sub() subroutine.Parent.Execute(runner), SmallVisualBasicCallback)}
-                            )
+                            eventInfo.GetAddMethod().Invoke(Nothing, {
+                                 CType(Sub()
+                                           Dim handlerThread As New Threading.Thread(
+                                                Sub()
+                                                    If runner.DebuggerState = DebuggerState.Paused Then
+                                                        If typeInfo.Name.EndsWith("Timer") AndAlso eventInfo.Name.EndsWith("Tick") Then
+                                                            Return
+                                                        Else
+                                                            MsgBox("You are running the program in debug mode, and it is curreuntly paused, so you can't do anything before resuming execution. You will be switched to the current line that has the break point.")
+                                                            runner.RaiseDebuggerStateChanged()
+                                                        End If
+                                                    Else
+                                                        runner.CurrentThread = Threading.Thread.CurrentThread
+                                                        subroutine.Parent.Execute(runner)
+                                                    End If
+                                                    runner.DoStepOver = False
+                                                End Sub)
+                                           handlerThread.IsBackground = True
+                                           handlerThread.Start()
+                                       End Sub, SmallVisualBasicCallback)
+                            })
                         End If
 
                     Else
                         Dim propertyInfo = typeInfo.Properties(propExpr.PropertyName.LCaseText)
-                        propertyInfo.SetValue(Nothing, RightValue.Evaluate(runner), Nothing)
+                        propertyInfo.SetValue(Nothing, value, Nothing)
                     End If
                 End If
             End If

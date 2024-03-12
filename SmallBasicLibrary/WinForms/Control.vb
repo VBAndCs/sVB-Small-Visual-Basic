@@ -121,7 +121,11 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetTypeName = GetControl(controlName).GetType().Name
+                        If WinTimer.Timers.ContainsKey(controlName) Then
+                            GetTypeName = ControlTypes.WinTimer
+                        Else
+                            GetTypeName = GetControl(controlName).GetType().Name
+                        End If
                     Catch ex As Exception
                         ReportError(controlName, "TypeName", ex)
                     End Try

@@ -147,6 +147,8 @@ Namespace Microsoft.SmallVisualBasic
         Public Function GetInferedType(key As String) As VariableType
             If InferedTypes.ContainsKey(key) Then
                 Return InferedTypes(key)
+            ElseIf ModuleNames?.ContainsKey(key) Then
+                Return [Enum].Parse(GetType(VariableType), ModuleNames(key))
             Else
                 Return VariableType.Any
             End If
@@ -215,6 +217,9 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Function GetTypeInfoFromInfered(typeName As Token) As TypeInfo
             Dim varType = GetInferedType(typeName)
+            If varType = VariableType.Any Then
+                varType = WinForms.PreCompiler.GetVarType(typeName.Text)
+            End If
             Dim varTypeName = WinForms.PreCompiler.GetTypeName(varType)
 
             If varTypeName <> "" Then
@@ -456,7 +461,10 @@ Namespace Microsoft.SmallVisualBasic
                 Case varDeclaration.Line
                     Return identifier.Column = varDeclaration.Column
                 Case Else
-                    Return identifier.Line > varDeclaration.Line
+                    ' a global var prevents defining a local var with the sam name,
+                    ' but a for iterator wuth the same name can be defined next as a local var,
+                    ' and in this case the var seems to be used before defined but it is ok
+                    Return identifier.Line > varDeclaration.Line OrElse _GlobalVariables.ContainsKey(var)
             End Select
 
         End Function

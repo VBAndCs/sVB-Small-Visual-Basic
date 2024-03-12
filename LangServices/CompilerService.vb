@@ -7,6 +7,45 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private _compiler As Compiler
         Public Event HelpUpdated(itemWrapper As CompletionItemWrapper)
 
+
+        Public Function GetTokens(
+                     snapshot As ITextSnapshot,
+                     ByRef startLine As Integer,
+                     ByRef currentLine As Integer,
+                     endLine As Integer) As List(Of Token)
+
+            Dim tokens As New List(Of Token)
+            Dim lineTokens As List(Of Token)
+            Dim nextLineText = snapshot.GetLineFromLineNumber(startLine).GetText()
+            Dim addNextLine = True
+
+            For i = startLine To endLine - 1
+                Dim curLineText = nextLineText
+                nextLineText = snapshot.GetLineFromLineNumber(i + 1).GetText()
+                lineTokens = LineScanner.GetTokens(curLineText, i - startLine)
+                addNextLine = LineScanner.IsLineContinuity(lineTokens, nextLineText)
+
+                If i = currentLine OrElse addNextLine Then
+                    tokens.AddRange(lineTokens)
+                Else
+                    startLine = currentLine 'ignore prev line
+                    If startLine = endLine Then
+                        addNextLine = True
+                        Exit For
+                    End If
+                End If
+            Next
+
+            If addNextLine Then
+                lineTokens = LineScanner.GetTokens(nextLineText, endLine - startLine)
+                tokens.AddRange(lineTokens)
+            End If
+
+            currentLine -= startLine  '  line pos abs for scaned tokens
+            Return tokens
+        End Function
+
+
         Public Function GetNextToken(ByRef i As Integer, direction As Integer, ByRef line As ITextSnapshotLine, ByRef tokens As List(Of Token)) As Token
             i += direction
             If i < 0 Then
@@ -332,6 +371,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 For Each id In symbolTable.AllIdentifiers
                     Dim line = snapshot.GetLineFromLineNumber(id.Line)
                     If line.LineNumber < start OrElse line.LineNumber > [end] Then Continue For
+
+                    If id.LCaseText = "me" Then
+                        If id.Text <> "Me" Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, "Me")
+                        Continue For
+                    End If
 
                     ' fix local vars usage
                     If id.SymbolType = CompletionItemType.LocalVariable Then

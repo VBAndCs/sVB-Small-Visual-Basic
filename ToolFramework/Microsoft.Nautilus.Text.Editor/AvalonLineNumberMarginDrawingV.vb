@@ -11,16 +11,29 @@ Namespace Microsoft.Nautilus.Text.Editor
         Private _horizontalOffset As Double
         Private _viewLineHeight As Double
         Private _viewLineTop As Double
-
+        Private _ShowBreakpoint As Boolean
         Public ReadOnly Property VerticalOffset As Double
 
         Public ReadOnly Property LineNumber As Integer
 
+        Public Property ShowBreakpoint As Boolean
+            Get
+                Return _ShowBreakpoint
+            End Get
+
+            Set
+                If _ShowBreakpoint <> Value Then
+                    _ShowBreakpoint = Value
+                    InvalidateVisual()
+                End If
+            End Set
+        End Property
+
         Private Sub CalculateVerticalOffset()
             If _viewLineHeight > _textLine.Height Then
-                _verticalOffset = _viewLineTop + (_viewLineHeight - _textLine.Height) * 0.5 + 1.0
+                _VerticalOffset = _viewLineTop + (_viewLineHeight - _textLine.Height) * 0.5 + 1.0
             Else
-                _verticalOffset = _viewLineTop + 1.0
+                _VerticalOffset = _viewLineTop + 1.0
             End If
         End Sub
 
@@ -50,18 +63,25 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Public Sub Update(viewLineHeight As Double, viewLineTop As Double)
-            Dim verticalOffset1 As Double = _verticalOffset
+            Dim verticalOffset = _VerticalOffset
             _viewLineHeight = viewLineHeight
             _viewLineTop = viewLineTop
             CalculateVerticalOffset()
 
-            If verticalOffset1 <> _verticalOffset Then
+            If verticalOffset <> _VerticalOffset Then
                 InvalidateVisual()
             End If
         End Sub
 
         Protected Overrides Sub OnRender(drawingContext As DrawingContext)
-            _textLine.Draw(drawingContext, New Point(_horizontalOffset, _VerticalOffset), InvertAxes.None)
+            Dim origin = New Point(_horizontalOffset, _VerticalOffset)
+            _textLine.Draw(drawingContext, origin, InvertAxes.None)
+            If _ShowBreakpoint Then
+                Dim w = (CType(Me.Parent, Controls.Canvas).ActualWidth - _textLine.Width) / 2
+                Dim h = _textLine.Height / 2
+                Dim center = New Point(w, _VerticalOffset + h)
+                drawingContext.DrawEllipse(Brushes.DarkRed, Nothing, center, h, h)
+            End If
         End Sub
     End Class
 End Namespace

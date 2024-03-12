@@ -90,6 +90,12 @@ Namespace Microsoft.SmallVisualBasic
                     Exit Do
                 End If
             Loop
+
+            If tokens.Count > 0 Then
+                Dim firstToken = tokens(0)
+                firstToken.EndLine = tokens(tokens.Count - 1).Line
+                tokens(0) = firstToken
+            End If
             Return tokens
         End Function
 

@@ -104,21 +104,63 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Function
 
         Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
-            If TypeName.Type = TokenType.Illegal Then ' Function Call
+            Dim tName = _TypeName.LCaseText
+            Dim mName = _MethodName.LCaseText
+            Dim isGlobalFunc = (tName = "global")
+
+            If TypeName.IsIllegal OrElse isGlobalFunc Then ' Function Call
                 Dim subroutine As New Statements.SubroutineCallStatement() With {
                     .Name = _MethodName,
-                    .Args = _Arguments
+                    .Args = _Arguments,
+                    .IsGlobalFunc = isGlobalFunc
                 }
+
                 subroutine.Execute(runner)
-                Return runner.Fields($"{_MethodName.LCaseText}.return")
+
+                Dim retKey = $"{MName}.return"
+                If isGlobalFunc Then
+                    Return runner.GetGlobalField(retKey)
+                Else
+                    Return runner.Fields(retKey)
+                End If
             End If
 
-            Dim typeInfo = runner.TypeInfoBag.Types(_TypeName.LCaseText)
-            Dim methodInfo = typeInfo.Methods(_MethodName.LCaseText)
             Dim args As New List(Of Object)()
             For Each argument In _Arguments
                 args.Add(argument.Evaluate(runner))
             Next
+
+            If tName = "forms" Then
+                If mName = "showform" Then
+                    Dim formName = CType(args(0), Library.Primitive)
+                    Dim argsArr = CType(args(1), Library.Primitive)
+                    WinForms.Forms.DoShowForm(
+                        formName, argsArr, Sub() runner.RunForm(formName))
+                    Return formName
+
+                ElseIf mName = "showdialog" Then
+                    Dim formName = CType(args(0), Library.Primitive)
+                    Dim argsArr = CType(args(1), Library.Primitive)
+                    Return WinForms.Forms.DoShowDialog(
+                        formName, argsArr, Sub() runner.RunForm(formName))
+                End If
+
+            ElseIf tName = "form" AndAlso mName = "showchildform" Then
+                Dim parentFormName = CType(args(0), Library.Primitive)
+                Dim childFormName = CType(args(1), Library.Primitive)
+                Dim argsArr = CType(args(2), Library.Primitive)
+
+                WinForms.Form.DoShowChildForm(
+                    parentFormName,
+                    childFormName,
+                    argsArr,
+                    Sub() runner.RunForm(childFormName)
+                )
+                Return childFormName
+            End If
+
+            Dim typeInfo = runner.TypeInfoBag.Types(tName)
+            Dim methodInfo = typeInfo.Methods(_MethodName.LCaseText)
             Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
         End Function
 

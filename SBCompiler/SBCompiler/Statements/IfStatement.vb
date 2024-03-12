@@ -239,9 +239,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
             If CBool(Condition.Evaluate(runner)) Then
                 result = runner.Execute(ThenStatements)
                 done = True
+
             ElseIf ElseIfStatements.Count > 0 Then
                 For i = 0 To ElseIfStatements.Count - 1
                     Dim st = ElseIfStatements(i)
+                    runner.CheckForExecutionBreakAtLine(st.ElseIfToken.Line)
                     If CBool(st.Condition.Evaluate(runner)) Then
                         result = st.Execute(runner)
                         done = True
@@ -251,14 +253,17 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
 
             If Not done AndAlso ElseStatements.Count > 0 Then
+                runner.CheckForExecutionBreakAtLine(ElseToken.Line)
                 result = runner.Execute(ElseStatements)
             End If
 
-            If TypeOf result Is GotoStatement OrElse
+            If TypeOf result Is EndDebugging OrElse
+                        TypeOf result Is GotoStatement OrElse
                         TypeOf result Is ReturnStatement OrElse
                         TypeOf result Is JumpLoopStatement Then
                 Return result
             Else
+                runner.CheckForExecutionBreakAtLine(EndIfToken.Line)
                 Return Nothing
             End If
         End Function

@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v2.9.0.5" Loaded="Window_Loaded"
+        Title="Small Visual Basic v2.9.0.7" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -107,6 +107,14 @@
                     Executed="OnFormatProgram" />
         <CommandBinding Command="{x:Static l:MainWindow.RunCommand}" 
                     CanExecute="CanRunProgram" Executed="OnProgramRun" />
+        <CommandBinding Command="{x:Static l:MainWindow.DebugCommand}" 
+                    CanExecute="CanRunProgram" Executed="OnDebugProgram" />        
+        <CommandBinding Command="{x:Static l:MainWindow.ToggleBreakpointCommand}" 
+                    Executed="OnToggleBreakpoint" />
+        <CommandBinding Command="{x:Static l:MainWindow.StepOverCommand}" 
+                    CanExecute="CanRunProgram" Executed="OnStepOver" />
+        <CommandBinding Command="{x:Static l:MainWindow.StepIntoCommand}" 
+                    CanExecute="CanRunProgram" Executed="OnStepInto" />
         <CommandBinding Command="{x:Static l:MainWindow.EndProgramCommand}" 
                     Executed="OnProgramEnd" />
         <CommandBinding Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" 
@@ -148,6 +156,14 @@
                 Gesture="Ctrl+Y" />
         <KeyBinding Command="{x:Static l:MainWindow.RunCommand}" 
                 Gesture="F5" />
+        <KeyBinding Command="{x:Static l:MainWindow.DebugCommand}" 
+                Gesture="Ctrl+F5" />        
+        <KeyBinding Command="{x:Static l:MainWindow.ToggleBreakpointCommand}" 
+                Gesture="F9" />
+        <KeyBinding Command="{x:Static l:MainWindow.StepOverCommand}" 
+                Gesture="F10" />
+        <KeyBinding Command="{x:Static l:MainWindow.StepIntoCommand}" 
+                Gesture="F11" />
     </UIElement.InputBindings>
 
     <Grid>

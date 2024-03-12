@@ -16,7 +16,6 @@ Namespace Microsoft.Nautilus.Text.Editor
         Inherits ContentControl
         Implements IAvalonTextViewHost
 
-        Private _textView As IAvalonTextView
         Private _viewTransform As ScaleTransform
         Private _avalonTextViewMarginFactories As IEnumerable(Of ImportantMarginInfo)
         Private _outerGrid As Grid
@@ -25,7 +24,6 @@ Namespace Microsoft.Nautilus.Text.Editor
         Private _editorMouseBinding As AvalonMouseBinding
         Private _undoHistory As UndoHistory
         Private _editorOperations As IEditorOperations
-        Private _readOnly As Boolean
         Private _marginGrids As Grid()
         Private _extensibleMargins As Dictionary(Of String, IAvalonTextViewMargin)
         Private _keyboardFilters As IEnumerable(Of KeyboardFilter)
@@ -64,20 +62,8 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Property
 
         Public Property IsReadOnly As Boolean Implements IAvalonTextViewHost.IsReadOnly
-            Get
-                Return _readOnly
-            End Get
-
-            Set(value As Boolean)
-                _readOnly = value
-            End Set
-        End Property
 
         Public ReadOnly Property TextView As IAvalonTextView Implements IAvalonTextViewHost.TextView
-            Get
-                Return _textView
-            End Get
-        End Property
 
         Public ReadOnly Property HostControl As Control Implements IAvalonTextViewHost.HostControl
             Get
@@ -99,7 +85,7 @@ Namespace Microsoft.Nautilus.Text.Editor
 
         Public Property WordWrapStyle As WordWrapStyles Implements IAvalonTextViewHost.WordWrapStyle
             Get
-                Return _textView.WordWrapStyle
+                Return _TextView.WordWrapStyle
             End Get
 
             Set(value As WordWrapStyles)
@@ -108,8 +94,16 @@ Namespace Microsoft.Nautilus.Text.Editor
             End Set
         End Property
 
-        Public Sub New(undoHistoryRegistry As IUndoHistoryRegistry, orderer As IOrderer, textView1 As IAvalonTextView, avalonTextViewMarginFactories As IEnumerable(Of ImportantMarginInfo), editorOperationsProvider As IEditorOperationsProvider, mouseBindingFactories As IEnumerable(Of MouseBindingFactory), keyboardFilters As IEnumerable(Of KeyboardFilter))
-            If textView1 Is Nothing Then
+        Public Sub New(
+                      undoHistoryRegistry As IUndoHistoryRegistry,
+                      orderer As IOrderer,
+                      textView As IAvalonTextView,
+                      avalonTextViewMarginFactories As IEnumerable(Of ImportantMarginInfo),
+                      editorOperationsProvider As IEditorOperationsProvider,
+                      mouseBindingFactories As IEnumerable(Of MouseBindingFactory),
+                      keyboardFilters As IEnumerable(Of KeyboardFilter))
+
+            If textView Is Nothing Then
                 Throw New ArgumentNullException("textView")
             End If
 
@@ -118,23 +112,23 @@ Namespace Microsoft.Nautilus.Text.Editor
             End If
 
             _orderer = orderer
-            _textView = textView1
+            _TextView = textView
             _editorMouseBinding = New AvalonMouseBinding(Me, editorOperationsProvider, mouseBindingFactories)
-            _undoHistory = undoHistoryRegistry.RegisterHistory(textView1.TextBuffer)
-            _editorOperations = editorOperationsProvider.GetEditorOperations(textView1)
+            _undoHistory = undoHistoryRegistry.RegisterHistory(textView.TextBuffer)
+            _editorOperations = editorOperationsProvider.GetEditorOperations(textView)
             _avalonTextViewMarginFactories = avalonTextViewMarginFactories
             _keyboardFilters = keyboardFilters
             InitializeComponent()
             _viewTransform = New ScaleTransform(1.0, 1.0)
-            _textView.VisualElement.LayoutTransform = _viewTransform
-            AddHandler _textView.VisualElement.PreviewKeyDown, AddressOf OnPreviewKeyDown
-            AddHandler _textView.VisualElement.PreviewKeyUp, AddressOf OnPreviewKeyUp
-            AddHandler _textView.VisualElement.PreviewTextInput, AddressOf OnPreviewTextInput
-            AddHandler _textView.VisualElement.GotKeyboardFocus, AddressOf OnGotKeyboardFocus
-            AddHandler _textView.VisualElement.LostKeyboardFocus, AddressOf OnLostKeyboardFocus
-            AddHandler _textView.VisualElement.KeyDown, AddressOf OnKeyDown
-            AddHandler _textView.VisualElement.KeyUp, AddressOf OnKeyUp
-            AddHandler _textView.VisualElement.TextInput, AddressOf OnTextInput
+            _TextView.VisualElement.LayoutTransform = _viewTransform
+            AddHandler _TextView.VisualElement.PreviewKeyDown, AddressOf OnPreviewKeyDown
+            AddHandler _TextView.VisualElement.PreviewKeyUp, AddressOf OnPreviewKeyUp
+            AddHandler _TextView.VisualElement.PreviewTextInput, AddressOf OnPreviewTextInput
+            AddHandler _TextView.VisualElement.GotKeyboardFocus, AddressOf OnGotKeyboardFocus
+            AddHandler _TextView.VisualElement.LostKeyboardFocus, AddressOf OnLostKeyboardFocus
+            AddHandler _TextView.VisualElement.KeyDown, AddressOf OnKeyDown
+            AddHandler _TextView.VisualElement.KeyUp, AddressOf OnKeyUp
+            AddHandler _TextView.VisualElement.TextInput, AddressOf OnTextInput
         End Sub
 
         Public Function GetTextViewMargin(marginName As String) As ITextViewMargin Implements IAvalonTextViewHost.GetTextViewMargin
@@ -224,30 +218,26 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Function
 
         Private Sub SetupExtensibleMargin(placement As MarginPlacement)
-            Dim list1 As New List(Of ImportantMarginInfo)
-            For Each avalonTextViewMarginFactory1 As ImportantMarginInfo In _avalonTextViewMarginFactories
-                If avalonTextViewMarginFactory1.Metadata.MarginPlacement = CInt(CLng(Fix(placement)) Mod Integer.MaxValue) Then
-                    list1.Add(avalonTextViewMarginFactory1)
+            Dim marginInfo As New List(Of ImportantMarginInfo)
+            For Each marginFactory In _avalonTextViewMarginFactories
+                If marginFactory.Metadata.MarginPlacement = placement Then
+                    marginInfo.Add(marginFactory)
                 End If
             Next
 
-            list1 = New List(Of ImportantMarginInfo)(_orderer.Order(list1))
-            Dim count1 As Integer = list1.Count
-
-            For i As Integer = 0 To count1 - 1
+            marginInfo = _orderer.Order(marginInfo).ToList()
+            For i = 0 To marginInfo.Count - 1
                 If IsMarginPlacementHorizontal(placement) Then
-                    Dim value As New RowDefinition
-                    _marginGrids(CInt(CLng(Fix(placement)) Mod Integer.MaxValue)).RowDefinitions.Add(value)
+                    _marginGrids(placement).RowDefinitions.Add(New RowDefinition)
                 Else
-                    Dim value2 As New ColumnDefinition
-                    _marginGrids(CInt(CLng(Fix(placement)) Mod Integer.MaxValue)).ColumnDefinitions.Add(value2)
+                    _marginGrids(placement).ColumnDefinitions.Add(New ColumnDefinition)
                 End If
 
-                Dim avalonTextViewMargin = list1(i).GetBoundValue().CreateAvalonTextViewMargin(_textView)
-                Grid.SetColumn(avalonTextViewMargin.VisualElement, _marginGrids(CInt(CLng(Fix(placement)) Mod Integer.MaxValue)).ColumnDefinitions.Count - 1)
-                Grid.SetRow(avalonTextViewMargin.VisualElement, _marginGrids(CInt(CLng(Fix(placement)) Mod Integer.MaxValue)).RowDefinitions.Count - 1)
-                _marginGrids(CInt(CLng(Fix(placement)) Mod Integer.MaxValue)).Children.Add(avalonTextViewMargin.VisualElement)
-                _extensibleMargins.Add(list1(i).Metadata.Name, avalonTextViewMargin)
+                Dim margin = marginInfo(i).GetBoundValue().CreateAvalonTextViewMargin(_TextView)
+                Grid.SetColumn(margin.VisualElement, _marginGrids(placement).ColumnDefinitions.Count - 1)
+                Grid.SetRow(margin.VisualElement, _marginGrids(placement).RowDefinitions.Count - 1)
+                _marginGrids(placement).Children.Add(margin.VisualElement)
+                _extensibleMargins.Add(marginInfo(i).Metadata.Name, margin)
             Next
         End Sub
 

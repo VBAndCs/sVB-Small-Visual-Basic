@@ -43,13 +43,13 @@ Namespace Library.Internal
             Else
                 IsDebugging = False
                 _applicationThread = New Thread(
-                    Sub()
-                        Dim app As New Application()
-                        autoEvent.Set()
-                        _application = app
-                        app.ShutdownMode = ShutdownMode.OnLastWindowClose
-                        app.Run()
-                    End Sub)
+                     Sub()
+                         Dim app As New Application()
+                         autoEvent.Set()
+                         _application = app
+                         app.ShutdownMode = ShutdownMode.OnLastWindowClose
+                         app.Run()
+                     End Sub)
 
                 _applicationThread.SetApartmentState(ApartmentState.STA)
                 _applicationThread.Start()
@@ -60,6 +60,7 @@ Namespace Library.Internal
         End Sub
 
         Public Shared Sub BeginProgram()
+            Program.IsTerminated = False
             AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf HandleException
         End Sub
 
@@ -79,14 +80,28 @@ Namespace Library.Internal
                     End Function), BitmapSource)
         End Function
 
+
         Friend Shared Sub [End]()
+            Timer.Pause()
+            RemoveHandler Timer.Tick, Nothing
+            Program.IsTerminated = True
+
             If IsDebugging Then
+                If GraphicsWindow._window IsNot Nothing Then
+                    Try
+                        GraphicsWindow._windowCreated = False
+                        GraphicsWindow._window.Close()
+                    Catch
+                    End Try
+                End If
+
+                Stack._stackMap = New Dictionary(Of Primitive, Stack(Of Primitive))
                 TextWindow.Hide()
                 WinForms.Forms.ForceCloseAll()
                 Return
             End If
 
-            If GraphicsWindow._window Is Nothing Then
+                If GraphicsWindow._window Is Nothing Then
                 Try
                     GraphicsWindow._window.Close()
                 Catch

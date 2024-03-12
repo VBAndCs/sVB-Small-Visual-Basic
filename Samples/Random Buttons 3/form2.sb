@@ -1,6 +1,6 @@
 
 '------------------------------------------------
 Sub Button1_OnClick()
-   newButton = Global.CreateRndButton(me)
+   newButton = Global.CreateRndButton(Me)
    newButton.OnClick = Button1_OnClick
 EndSub

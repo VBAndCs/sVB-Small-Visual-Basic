@@ -648,8 +648,9 @@ Namespace Library
                 End If
 
                 GraphicsWindow.RemoveShape(controlName)
-                WinForms.Form.RemoveControl(GW_NAME, controlName)
             End If
+            WinForms.Form.RemoveControl(GW_NAME, controlName)
+
         End Sub
 
         ''' <summary>

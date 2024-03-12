@@ -3,17 +3,15 @@ Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Engine
 
-    <Serializable>
     Public Class ProgramRunner
-        Private previousLineNumber As Integer = -1
+        Friend PreviousLineNumber As Integer = -1
+        Friend CurrentLineNumber As Integer
 
         Public Property Breakpoints As New List(Of Integer)
 
-        Public Property CurrentInstruction As Instruction
+        Public Property CurrentStatement As Statement
 
         Public Property DebuggerCommand As DebuggerCommand
-
-        Public Property DebuggerExecution As New ManualResetEvent(initialState:=True)
 
         Public Property DebuggerState As DebuggerState
 
@@ -22,20 +20,77 @@ Namespace Microsoft.SmallVisualBasic.Engine
         Public Property LabelMap As New Dictionary(Of String, Integer)
 
         Public Property SubroutineInstructions As Dictionary(Of String, List(Of Instruction))
+
+        Public DocLineOffset As Integer
+
         Public Property Engine As ProgramEngine
         Public Property Fields As New Dictionary(Of String, Library.Primitive)
 
         Friend SymbolTable As SymbolTable
         Friend TypeInfoBag As TypeInfoBag
+        Public currentParser As Parser
 
-        Public Event LineNumberChanged As EventHandler
+
         Public Event DebuggerStateChanged As EventHandler
 
-        Public Sub New(appDomain As AppDomain)
-            _Engine = appDomain.GetData("ProgramEngine")
-            TypeInfoBag = Compiler.GetTypeInfoBag()
-            SymbolTable = Engine.Compiler.Parser.SymbolTable
+        Public Sub New(engine As ProgramEngine, parser As Parser)
+            DocLineOffset = parser.DocStartLine
+            _Engine = engine
+            TypeInfoBag = Compiler.TypeInfoBag
+            currentParser = parser
+            SymbolTable = currentParser.SymbolTable
+            _Engine.runners(currentParser) = Me
+            _Engine.CurrentDebuggerState = _DebuggerState
+            RaiseEvent DebuggerStateChanged(Me, EventArgs.Empty)
         End Sub
+
+        Dim isGlobalInitialized As Boolean = False
+
+        Friend ReadOnly Property GlobalRunner As ProgramRunner
+            Get
+                Dim gRunner = _Engine.runners(_Engine.GlobalParser)
+                If Not isGlobalInitialized Then
+                    isGlobalInitialized = True
+                    gRunner.Execute(_Engine.GlobalParser.ParseTree)
+                End If
+                Return gRunner
+            End Get
+        End Property
+
+        Friend Sub RunForm(formName As String)
+            Dim className = "_smallvisualbasic_" & formName.ToLower()
+            Dim formParser As Parser
+            For Each p In _Engine.Parsers
+                If p.ClassName.ToLower() = className Then
+                    formParser = p
+                    Exit For
+                End If
+            Next
+
+            If formParser Is Nothing Then
+                Throw New Exception("There is no form name {formName} in the project")
+            End If
+
+            Dim formRunner As ProgramRunner
+            If _Engine.runners.ContainsKey(formParser) Then
+                formRunner = _Engine.runners(formParser)
+            Else
+                formRunner = New ProgramRunner(_Engine, formParser)
+            End If
+            formRunner.Execute(formParser.ParseTree)
+        End Sub
+
+        Friend Sub SetGlobalField(name As String, value As Library.Primitive)
+            GlobalRunner.Fields(name) = value
+        End Sub
+
+        Friend Function GetGlobalField(name As String) As Library.Primitive
+            If GlobalRunner.Fields.ContainsKey(name) Then
+                Return GlobalRunner.Fields(name)
+            Else
+                Return 0
+            End If
+        End Function
 
         Friend Function GetKey(identifier As Token) As String
             Dim variableName = identifier.LCaseText
@@ -51,120 +106,122 @@ Namespace Microsoft.SmallVisualBasic.Engine
         End Function
 
         Private Sub ChangeDebuggerState(state As DebuggerState)
-            If DebuggerState <> state Then
-                DebuggerState = state
+            If _DebuggerState <> state Then
+                _DebuggerState = state
+                _Engine.CurrentDebuggerState = state
                 RaiseEvent DebuggerStateChanged(Me, EventArgs.Empty)
             End If
         End Sub
 
-        Private Sub CheckForExecutionBreak()
-            If CurrentInstruction.LineNumber <> previousLineNumber Then
-                If Breakpoints.Contains(CurrentInstruction.LineNumber) Then
-                    DebuggerExecution.Reset()
-                End If
-
-                If Not DebuggerExecution.WaitOne(0) Then
-                    ChangeDebuggerState(DebuggerState.Paused)
-                    DebuggerExecution.WaitOne()
+        Friend Sub CheckForExecutionBreakAtLine(lineNumber As Integer, Optional isSub As Boolean = False)
+            If DoStepOver Then
+                If Depth > 0 OrElse (isSub AndAlso lineNumber <> StepOverLineNumber) Then
+                    Return
                 End If
             End If
 
-            ChangeDebuggerState(DebuggerState.Running)
+            CurrentLineNumber = lineNumber
+            CheckForExecutionBreak(False)
+            PreviousLineNumber = lineNumber
         End Sub
 
-        Private Sub PrepareDebuggerForNextInstruction()
-            If CurrentInstruction.LineNumber <> previousLineNumber AndAlso (
+        Private Sub CheckForExecutionBreak(isFirstStatement As Boolean)
+            If isFirstStatement AndAlso _Engine.StopOnFirstStaement Then
+                _Engine.StopOnFirstStaement = False
+                Pause()
+                ChangeDebuggerState(DebuggerState.Running)
+
+            ElseIf CurrentLineNumber <> PreviousLineNumber Then
+                If Breakpoints.Contains(CurrentLineNumber - DocLineOffset) OrElse
                         DebuggerCommand = DebuggerCommand.StepInto OrElse
-                        DebuggerCommand = DebuggerCommand.StepOver
-                    ) Then
-                DebuggerExecution.Reset()
+                        DebuggerCommand = DebuggerCommand.StepOver Then
+                    Pause()
+                    ChangeDebuggerState(DebuggerState.Running)
+                End If
             End If
         End Sub
+
+
+        Friend CurrentThread As Thread
 
         Public Sub [Continue]()
-            DebuggerExecution.Set()
+            isPaused = False
+            If CurrentThread.IsAlive Then
+                Try
+                    CurrentThread.Resume()
+                Catch
+                End Try
+            End If
         End Sub
 
+        Dim isPaused As Boolean
+
         Public Sub Pause()
-            DebuggerExecution.Reset()
+            isPaused = True
+            ChangeDebuggerState(DebuggerState.Paused)
+            CurrentThread.Suspend()
         End Sub
 
         Public Sub Reset()
             Fields.Clear()
+            Depth = 0
         End Sub
+
+
+        Friend Depth As Integer = 0
+        Friend DoStepOver As Boolean = False
+        Friend StepOverLineNumber As Integer = -1
 
         Public Sub StepInto()
             DebuggerCommand = DebuggerCommand.StepInto
+            Depth = 0
+            DoStepOver = False
             [Continue]()
         End Sub
 
         Public Sub StepOver()
             DebuggerCommand = DebuggerCommand.StepOver
+            Depth = 0
+            DoStepOver = True
+            StepOverLineNumber = CurrentLineNumber
             [Continue]()
         End Sub
 
-        Public Sub RunProgram(stopOnFirstInstruction As Boolean)
-            If stopOnFirstInstruction Then
-                DebuggerExecution.Reset()
-            End If
-
-            Dim thread As New Thread(
-                Sub()
-                    Try
-                        SmallVisualBasic.Library.TextWindow.ClearIfLoaded()
-                    Catch
-                    End Try
-
-                    Execute(Engine.Compiler.Parser.ParseTree)
-
-                    Try
-                        SmallVisualBasic.Library.TextWindow.PauseIfVisible()
-                    Catch
-                    End Try
-                End Sub
-             )
-            thread.IsBackground = True
-            thread.Start()
-        End Sub
-
-        Friend Sub ExecuteInstructions(instructions As List(Of Instruction))
-            For i = 0 To instructions.Count - 1
-                Dim labelInstruction = TryCast(instructions(i), LabelInstruction)
-
-                If labelInstruction IsNot Nothing Then
-                    LabelMap(labelInstruction.LabelName) = i
-                End If
-            Next
-
-            Dim num = 0
-
-            While num < instructions.Count
-                CurrentInstruction = instructions(num)
-
-                If CurrentInstruction.LineNumber <> previousLineNumber AndAlso LineNumberChangedEvent IsNot Nothing Then
-                    RaiseEvent LineNumberChanged(Me, EventArgs.Empty)
-                End If
-
-                CheckForExecutionBreak()
-                Dim text = CurrentInstruction.Execute(Me)
-                PrepareDebuggerForNextInstruction()
-                previousLineNumber = CurrentInstruction.LineNumber
-                num = If(Not Equals(text, Nothing), LabelMap(text), num + 1)
-            End While
-
-            ChangeDebuggerState(DebuggerState.Finished)
-        End Sub
 
         Friend Function Execute(statements As List(Of Statement)) As Statement
+            PreviousLineNumber = -1
             If statements.Count = 0 Then Return Nothing
+
             Dim startLine = statements(0).StartToken.Line
             Dim endLine = statements.Last.StartToken.Line
+            _Engine.CurrentRunner = Me
+            Dim isFirstStatement = True
 
             For i = 0 To statements.Count - 1
                 Dim st = statements(i)
-                If TypeOf st Is SubroutineStatement Then Continue For
+                If TypeOf st Is SubroutineStatement OrElse
+                    TypeOf st Is EmptyStatement OrElse
+                    TypeOf st Is IllegalStatement Then Continue For
+
+                CurrentStatement = st
+                CurrentLineNumber = CurrentStatement.StartToken.Line
+                Dim isNotGenCode = CurrentLineNumber - DocLineOffset > -1
+
+                If isNotGenCode Then
+                    If Not DoStepOver OrElse Depth = 0 Then
+                        CheckForExecutionBreak(isFirstStatement)
+                    End If
+                End If
+
+                PreviousLineNumber = CurrentLineNumber
                 Dim result = st.Execute(Me)
-                If TypeOf result Is ReturnStatement OrElse TypeOf result Is JumpLoopStatement Then
+
+                If isNotGenCode Then isFirstStatement = False
+                If TypeOf result Is EndDebugging Then Return result
+
+                If SmallVisualBasic.Library.Program.IsTerminated Then
+                    Return New EndDebugging()
+                ElseIf TypeOf result Is ReturnStatement OrElse TypeOf result Is JumpLoopStatement Then
                     Return result
                 ElseIf TypeOf result Is GotoStatement Then
                     Dim gotoLine = CType(result, GotoStatement).Label.Line
@@ -180,8 +237,13 @@ Namespace Microsoft.SmallVisualBasic.Engine
                     End If
                 End If
             Next
+
             Return Nothing
         End Function
+
+        Friend Sub RaiseDebuggerStateChanged()
+            RaiseEvent DebuggerStateChanged(_Engine.CurrentRunner, EventArgs.Empty)
+        End Sub
     End Class
 
 

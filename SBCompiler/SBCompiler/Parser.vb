@@ -16,6 +16,7 @@ Namespace Microsoft.SmallVisualBasic
         Private keepSymbols As Boolean
         Private lineOffset As Integer
 
+        Public DocStartLine As Integer
         Public ClassName As String = "_SmallVisualBasic_Module1"
         Public IsMainForm As Boolean
         Public IsGlobal As Boolean
@@ -242,7 +243,6 @@ Namespace Microsoft.SmallVisualBasic
             Dim foundElse = False
 
             While tokenEnum IsNot Nothing
-
                 If tokenEnum.Current.Type = TokenType.EndIf Then
                     ifStatement.EndIfToken = tokenEnum.Current
                     foundEndIf = True
@@ -472,7 +472,10 @@ Namespace Microsoft.SmallVisualBasic
                 }
             End If
 
-            Dim assignStatement As New AssignmentStatement() With {.StartToken = current, .LeftValue = expression}
+            Dim assignStatement As New AssignmentStatement() With {
+                .StartToken = current,
+                .LeftValue = expression
+            }
 
             If EatOptionalToken(tokenEnum, TokenType.Equals, assignStatement.EqualsToken) Then
                 assignStatement.RightValue = BuildArithmeticExpression(tokenEnum)
@@ -480,6 +483,15 @@ Namespace Microsoft.SmallVisualBasic
                 If assignStatement.RightValue Is Nothing Then
                     If commaLine = -2 Then Return Nothing
                     AddError(tokenEnum.Current, ResourceHelper.GetString("ExpressionExpected"))
+                ElseIf assignStatement.StartToken.LCaseText = "timer" AndAlso ClassName.Length > 18 Then
+                    Dim propExpr = TryCast(assignStatement.LeftValue, PropertyExpression)
+                    If propExpr IsNot Nothing AndAlso propExpr.PropertyName.LCaseText = "tick" Then
+                        Dim p As New Parser()
+                        p.lineOffset = assignStatement.StartToken.Line
+                        p.Parse(New List(Of String) From {$"Forms.TimerParentForm = ""{ClassName.Substring(18).ToLower()}"""})
+                        _ParseTree.Add(p.ParseTree(0))
+                    End If
+
                 End If
 
                 ExpectEndOfLine(tokenEnum)
@@ -510,7 +522,7 @@ Namespace Microsoft.SmallVisualBasic
                 End If
 
                 Dim closeTokenFound = False
-                subroutineCall.Args = ParseCommaSepaeatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
+                subroutineCall.Args = ParseCommaSeparatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
                 If commaLine = -2 Then Return Nothing
                 If closeTokenFound Then
                     tokenEnum.MoveNext()
@@ -585,7 +597,7 @@ Namespace Microsoft.SmallVisualBasic
                     Dim closeTokenFound = False
                     Dim initExpr As New InitializerExpression(
                         precedence:=9,
-                        arguments:=ParseCommaSepaeatedList(tokenEnum, TokenType.RightCurlyBracket, closeTokenFound, Nothing, False)
+                        arguments:=ParseCommaSeparatedList(tokenEnum, TokenType.RightCurlyBracket, closeTokenFound, Nothing, False)
                     )
 
                     If commaLine = -2 Then Return Nothing
@@ -697,7 +709,7 @@ Namespace Microsoft.SmallVisualBasic
                         precedence:=9,
                         typeName:=current,
                         methodName:=variable,
-                        arguments:=ParseCommaSepaeatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
+                        arguments:=ParseCommaSeparatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
                    )
 
                     ValidateFormName(methodCallExpression)
@@ -781,7 +793,7 @@ Namespace Microsoft.SmallVisualBasic
                         precedence:=9,
                         typeName:=Token.Illegal,
                         methodName:=current,
-                        arguments:=ParseCommaSepaeatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
+                        arguments:=ParseCommaSeparatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
                 )
 
                 ValidateFormName(methodCallExpression)
@@ -884,13 +896,13 @@ Namespace Microsoft.SmallVisualBasic
             tokens.MoveNext()
             Dim parser As New Parser()
             Dim closeTokenFound = False
-            Dim argExprs = parser.ParseCommaSepaeatedList(tokens, closeToken, closeTokenFound, Nothing, False)
+            Dim argExprs = parser.ParseCommaSeparatedList(tokens, closeToken, closeTokenFound, Nothing, False)
             If closeTokenFound Then tokens.MoveNext()
             If parser.Errors.Count > 0 Then Return Nothing
             Return argExprs
         End Function
 
-        Private Function ParseCommaSepaeatedList(
+        Private Function ParseCommaSeparatedList(
                            tokenEnum As TokenEnumerator,
                            closeToken As TokenType,
                            <Out> ByRef closeTokenFound As Boolean,
@@ -905,7 +917,7 @@ Namespace Microsoft.SmallVisualBasic
             Do
                 Dim current = tokenEnum.Current
                 If current.Type = closeToken Then
-                    If current.Line = commaLine AndAlso (current.Column = commaColumn OrElse current.EndColumn = commaColumn) Then
+                    If current.Line = commaLine AndAlso (current.Column = commaColumn OrElse (current.EndColumn = commaColumn AndAlso tokenEnum.PeekNext.Type <> TokenType.Comma)) Then
                         If caller IsNot Nothing Then
                             callerInfo = New CallerInfo(caller.Line, caller.EndColumn, items.Count - 1)
                             commaLine = -2
@@ -928,7 +940,15 @@ Namespace Microsoft.SmallVisualBasic
                 Dim expression = BuildArithmeticExpression(tokenEnum)
 
                 If expression Is Nothing Then
-                    If commaLine = -2 Then Return Nothing
+                    If commaLine = -2 Then
+                        Return Nothing
+                    ElseIf current.Line = commaLine AndAlso (current.Column = commaColumn OrElse current.EndColumn = commaColumn) Then
+                        If caller IsNot Nothing Then
+                            callerInfo = New CallerInfo(caller.Line, caller.EndColumn, items.Count)
+                            commaLine = -2
+                            Return Nothing
+                        End If
+                    End If
                     AddError(tokenEnum.Current, ResourceHelper.GetString("ExpressionExpected"))
                     Exit Do
                 End If
@@ -982,6 +1002,7 @@ Namespace Microsoft.SmallVisualBasic
             If Not closeTokenFound Then
                 TokenIsExpected(tokenEnum, closeToken)
             End If
+
             Return items
         End Function
 
@@ -1271,6 +1292,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Dim loweredLines() As String
         Dim loweredIndex As Integer = -1
+        Public DocPath As String
 
         Friend Function ReadNextLine() As TokenEnumerator
             If _rewindRequested Then

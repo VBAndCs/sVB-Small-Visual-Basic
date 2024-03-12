@@ -1385,85 +1385,49 @@ Converts the given array to a string
  <summary>
  Draws the specified image from memory on to the screen, in the specified size.
  </summary>
- <param name="imageName">
- The name of the image to draw
- </param>
- <param name="x">
- The x co-ordinate of the point to draw the image at.
- </param>
- <param name="y">
- The y co-ordinate of the point to draw the image at.
- </param>
- <param name="width">
- The width to draw the image.
- </param>
- <param name="height">
- The height to draw the image.
- </param>
+ <param name="imageName">The name of the image to draw</param>
+ <param name="x">The x co-ordinate of the point to draw the image at.</param>
+ <param name="y">The y co-ordinate of the point to draw the image at.</param>
+ <param name="width">The width to draw the image.</param>
+ <param name="height">The height to draw the image.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.DrawImage(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Draws the specified image from memory on to the screen.  
  </summary>
- <param name="imageName">
- The name of the image to draw.
- </param>
- <param name="x">
- The x co-ordinate of the point to draw the image at.
- </param>
- <param name="y">
- The y co-ordinate of the point to draw the image at.
- </param>
+ <param name="imageName">The name of the image to draw.</param>
+ <param name="x">The x co-ordinate of the point to draw the image at.</param>
+ <param name="y">The y co-ordinate of the point to draw the image at.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.SetPixel(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Draws the pixel specified by the x and y co-ordinates using the specified color.
  </summary>
- <param name="x">
- The x co-ordinate of the pixel.
- </param>
- <param name="y">
- The y co-ordinate of the pixel.
- </param>
- <param name="color">
- The color of the pixel to set.
- </param>
+ <param name="x">The x co-ordinate of the pixel.</param>
+ <param name="y">The y co-ordinate of the pixel.</param>
+ <param name="color">The color of the pixel to set.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.GetPixel(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Gets the color of the pixel at the specified x and y co-ordinates.
  </summary>
- <param name="x">
- The x co-ordinate of the pixel.
- </param>
- <param name="y">
- The y co-ordinate of the pixel.
- </param>
- <returns>
- The color of the pixel.
- </returns>
+ <param name="x">The x co-ordinate of the pixel.</param>
+ <param name="y">The y co-ordinate of the pixel.</param>
+ <returns>The color of the pixel.</returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.GetRandomColor">
  <summary>
  Gets a valid random color.
  </summary>
- <returns>
- A valid random color.
- </returns>
+ <returns>A valid random color.</returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.GetColorFromRGB(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Constructs a color given the Red, Green and Blue values.
  </summary>
- <param name="red">
- The red component of the Color (0-255).
- </param>
- <param name="green">
- The green component of the color (0-255).
- </param>
- <param name="blue">
- The blue component of the color (0-255).
- </param>
+ <param name="red">The red component of the Color (0-255).</param>
+ <param name="green">The green component of the color (0-255).</param>
+ <param name="blue">The blue component of the color (0-255).</param>
  <returns>
  Returns a color that can be used to set the brush or pen color.
  </returns>
@@ -1477,18 +1441,15 @@ Converts the given array to a string
  <summary>
  Displays a message box to the user.
  </summary>
- <param name="text">
- The text to be displayed on the message box.
- </param>
- <param name="title">
- The title for the message box.
- </param>
+ <param name="text">The text to be displayed on the message box.</param>
+ <param name="title">The title for the message box.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.AsForm">
  <summary>
  Show the graphics window and gets the form object that repreesents it.
  </summary>
- <returns>The graphics window name which is "graphicswindow".
+ <returns>
+ The graphics window name which is "graphicswindow".
  Note that sVB can deal with this name as a form object, so, you can use it to access the properties and methods of the form that repreesents the graphics window.
  </returns>
 </member>
@@ -2529,6 +2490,12 @@ Converts the given array to a string
  The number of items in the specified stack.
  </returns>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Stack.Clear(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Removees all items from the specified stack.
+ </summary>
+ <param name="stackName">The name of the stack.</param>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Stack.PopValue(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Pops the value from the specified stack.
@@ -2871,6 +2838,11 @@ Returns true if the given text is empty, or returns false otherwise.
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.PauseIfVisible">
  <summary>
  Waits for user input only when the TextWindow is already open.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.PauseThenClose">
+ <summary>
+ Waits for user to press any key to close the window.
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.PauseWithoutMessage">
@@ -5316,6 +5288,9 @@ Creates a color from its alpha, red, green, and blue components.
 <member name="P:Microsoft.SmallVisualBasic.WinForms.ControlTypes.ScrollBar">
  <summary>ScrollBar</summary>
 </member>
+<member name="P:Microsoft.SmallVisualBasic.WinForms.ControlTypes.WinTimer">
+ <summary>WinTimer</summary>
+</member>
 <member name="P:Microsoft.SmallVisualBasic.WinForms.ControlTypes.ToggleButton">
  <summary>ToggleButton</summary>
 </member>
@@ -6528,6 +6503,11 @@ It is useful when you use one sub to handle many events, to get info about the c
 <member name="T:Microsoft.SmallVisualBasic.WinForms.Forms">
  <summary>
  This types provides methods to create forms, show them, and get a list of all opened forms in the program.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.WinForms.Forms.TimerParentForm">
+ <summary>
+ Used internally by the compiler to stop the calssic timer when the form is closed
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Forms.GetForms(Microsoft.SmallVisualBasic.Library.Primitive)">

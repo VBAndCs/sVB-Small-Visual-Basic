@@ -1,4 +1,4 @@
-
+TextBox1.MultiLine = True
 
 '------------------------------------------------
 Sub Button1_OnClick()

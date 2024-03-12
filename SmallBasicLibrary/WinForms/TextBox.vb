@@ -160,7 +160,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim pos As Integer = value - 1
+                        Dim pos = CInt(value.AsDecimal - 1)
                         If pos < 0 Then pos = 0
                         Dim txt = GetTextBox(textBoxName)
                         txt.CaretIndex = Math.Min(pos, txt.Text.Length)
@@ -183,7 +183,9 @@ Namespace WinForms
                     Try
                         GetLength = GetTextBox(textBoxName).Text.Length
                     Catch ex As Exception
-                        Control.ReportError(textBoxName, "GetLength", ex)
+                        ' Sometimes a var name is infered as a TextBox control,
+                        ' but actually it is just a string, so let's return its lneght
+                        GetLength = textBoxName.AsString().Length
                     End Try
                 End Sub)
         End Function

@@ -4,12 +4,11 @@ Imports Microsoft.SmallVisualBasic.Completion
 Namespace Microsoft.SmallVisualBasic.Statements
     Public MustInherit Class Statement
         Public StartToken As Token
-
         Public EndingComment As Token
         Public LeadingComment As String
         Public Parent As Statement
 
-        Dim sepLineChars() As Char = {"-"c, "_"c, "*", "#", "$"c, "&"c, "+"c, "="c, "!"c}
+        Private Shared sepLineChars() As Char = {"-"c, "_"c, "*", "#", "$"c, "&"c, "+"c, "="c, "!"c}
 
         Public Overridable Sub AddSymbols(symbolTable As SymbolTable)
             StartToken.Parent = Me

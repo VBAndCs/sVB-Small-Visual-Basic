@@ -2,8 +2,6 @@
 
 Public Class Splash
 
-
-
     Public Shared Sub ShowSplash()
         Dim splash As New Splash()
         splash.Show()

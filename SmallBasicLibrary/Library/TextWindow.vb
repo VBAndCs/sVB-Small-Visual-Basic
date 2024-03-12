@@ -149,6 +149,15 @@ Namespace Library
             End Set
         End Property
 
+        <HideFromIntellisense>
+        Public Shared Sub Close()
+            Dim consoleWindow = NativeHelper.GetConsoleWindow()
+            If consoleWindow <> IntPtr.Zero Then
+                NativeHelper.ShowWindow(consoleWindow, 0)
+                NativeHelper.FreeConsole()
+            End If
+        End Sub
+
         ''' <summary>
         ''' Shows the Text window to enable interactions with it.
         ''' </summary>
@@ -158,11 +167,13 @@ Namespace Library
                 If consoleWindow = IntPtr.Zero Then
                     NativeHelper.AllocConsole()
                     consoleWindow = NativeHelper.GetConsoleWindow()
+                    'If SmallBasicApplication.IsDebugging Then
                     Dim systemMenu = NativeHelper.GetSystemMenu(consoleWindow, False)
                     NativeHelper.DeleteMenu(systemMenu, NativeHelper.SC_CLOSE, NativeHelper.MF_BYCOMMAND)
+                    'End If
                 End If
 
-                SmallBasicApplication.BeginInvoke(Sub() NativeHelper.ShowWindow(consoleWindow, 5))
+                    NativeHelper.ShowWindow(consoleWindow, 5)
                 _windowVisible = True
             End If
         End Sub
@@ -175,7 +186,7 @@ Namespace Library
             If _windowVisible Then
                 Dim consoleWindow As IntPtr = NativeHelper.GetConsoleWindow()
                 If consoleWindow <> IntPtr.Zero Then
-                    NativeHelper.ShowWindow(consoleWindow, 0)
+                    SmallBasicApplication.BeginInvoke(Sub() NativeHelper.ShowWindow(consoleWindow, 0))
                 End If
                 _windowVisible = False
             End If
@@ -195,21 +206,37 @@ Namespace Library
         Public Shared Sub Pause()
             VerifyAccess()
             Console.WriteLine("Press any key to continue...")
-            Console.ReadKey(intercept:=True)
+            Try
+                Console.ReadKey(intercept:=True)
+            Catch
+            End Try
         End Sub
 
         ''' <summary>
         ''' Waits for user input only when the TextWindow is already open.
         ''' </summary>
-        <HideFromIntellisense>
         Public Shared Sub PauseIfVisible()
+            If _windowVisible Then Pause()
+        End Sub
+
+        ''' <summary>
+        ''' Waits for user to press any key to close the window.
+        ''' </summary>
+        Public Shared Sub PauseThenClose()
             If _windowVisible Then
-                Pause()
-                If WinForms.Forms._forms.Count = 0 AndAlso Not GraphicsWindow._windowVisible Then
-                    SmallBasicApplication.End()
-                Else
-                    TextWindow.Hide()
-                End If
+                Console.WriteLine("Press any key to close the window...")
+                Try
+                    Console.ReadKey(intercept:=True)
+                    If WinForms.Forms._forms.Count = 0 AndAlso Not GraphicsWindow._windowVisible Then
+                        Program.End()
+                    Else
+                        Hide()
+                    End If
+                Catch
+                    Console.WriteLine("An error occured.")
+                    Console.WriteLine("If you are debugging this sVB projet in VS.NET in its debugging mode, thee console window will nor work correctly.")
+                    Console.WriteLine("Stop the VS debugger the Press Ctrl+F5 to run sVB im VS without debugging, then debug your project in sVB.")
+                End Try
             End If
         End Sub
 
@@ -218,7 +245,10 @@ Namespace Library
         ''' </summary>
         Public Shared Sub PauseWithoutMessage()
             VerifyAccess()
-            Console.ReadKey(intercept:=True)
+            Try
+                Console.ReadKey(intercept:=True)
+            Catch
+            End Try
         End Sub
 
         ''' <summary>

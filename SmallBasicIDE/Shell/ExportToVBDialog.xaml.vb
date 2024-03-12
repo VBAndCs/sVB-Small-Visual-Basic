@@ -92,11 +92,11 @@ Namespace Microsoft.SmallVisualBasic.Shell
             Me.statusPanel.Visibility = Visibility.Visible
             Me.statusText.Text = ResourceHelper.GetString("Converting")
             document.Errors.Clear()
-            Dim compiler = Helper.MainWindow.BuildAndRun(True)
+            Dim parsers = Helper.MainWindow.BuildAndRun(True)
 
             If document.Errors.Count = 0 Then
                 Try
-                    Dim visualBasicExporter As New VisualBasicExporter(compiler)
+                    Dim visualBasicExporter As New VisualBasicExporter(parsers)
                     Dim projectName = If(Not document.IsNew,
                             Path.GetFileNameWithoutExtension(document.File),
                             "Untitled"

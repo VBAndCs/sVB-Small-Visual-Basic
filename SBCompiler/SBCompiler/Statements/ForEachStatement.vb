@@ -241,10 +241,17 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim keys = Library.Array.GetAllIndices(arr)
             Dim start = New Library.Primitive(1)
             Dim [end] = keys.GetItemCount()
+            Dim startLine = ForEachToken.Line
+            Dim endLine = EndLoopToken.Line
 
             For i = start To [end]
                 runner.Fields(key) = arr.Items(keys.Items(i))
+                If i <> start Then
+                    runner.CheckForExecutionBreakAtLine(startLine)
+                End If
                 Dim result = runner.Execute(Body)
+                If TypeOf result Is EndDebugging Then Return result
+
                 If TypeOf result Is JumpLoopStatement Then
                     Dim jumpSt = CType(result, JumpLoopStatement)
                     If jumpSt.StartToken.Type = TokenType.ExitLoop Then
@@ -268,12 +275,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                 ElseIf TypeOf result Is GotoStatement Then
                     Dim label = CType(result, GotoStatement).Label
-                    If label.Line < EndLoopToken.Line Then
-
-                    Else
+                    If label.Line > EndLoopToken.Line OrElse label.Line < ForEachToken.Line Then
                         Return result
                     End If
                 End If
+                runner.CheckForExecutionBreakAtLine(endLine)
             Next
 
             Return Nothing

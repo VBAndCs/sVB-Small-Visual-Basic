@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="570" Width="900"
+        Title="MainWindow" Height="520" Width="864"
         Icon="smallbasic.ico" WindowStyle ="None"  WindowStartupLocation="CenterScreen"
         Background="Transparent" AllowsTransparency="True"
         ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True">
@@ -12,22 +12,22 @@
     <Grid>
         <Image  Source="splash.png" Stretch="Uniform"/>
         <Image  Source="sVB.png" Stretch="Uniform" 
-                Margin="110,220"
+                Margin="110,200"
                 Width="100" Height="100"
                 VerticalAlignment="Top"
                 HorizontalAlignment="Right"/>
         <StackPanel Margin="0,-30,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock HorizontalAlignment="Center"  FontSize="40" FontWeight="Bold" 
+            <TextBlock HorizontalAlignment="Center"  FontSize="48" FontWeight="Bold" 
                        Foreground="Yellow">Small Visual Basic </TextBlock>
 
             <TextBlock HorizontalAlignment="Center"  FontSize="28" FontWeight="Bold" 
-                       Foreground="Yellow">v2.9.0.5</TextBlock>
+                       Foreground="Yellow">v2.9.0.7</TextBlock>
 
             <TextBlock HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" 
-                       Margin="0,20"
+                       Margin="0,50"
                        Foreground="White">@ Mohammad Hamdy Ghanem</TextBlock>
 
-            <TextBlock HorizontalAlignment="Center" FontSize="28" FontWeight="Bold" 
+            <TextBlock HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" 
                       Foreground="Yellow">Based on:</TextBlock>
         </StackPanel>
     </Grid>

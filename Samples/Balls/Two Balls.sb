@@ -1,9 +1,8 @@
+GW.BackgroundColor = Colors.None
+GW.FullScreen = True
 
 GraphicsWindow.Show()
 GraphicsWindow.Title = "Animate A Football"
-GraphicsWindow.BackgroundColor = "White"
-GraphicsWindow.Width = 600
-GraphicsWindow.Height = 400
 
 ' football graphic
 BallImage1 = ImageList.LoadImage("yellow_ball.gif")
@@ -19,8 +18,7 @@ Shapes.HideShape(Ball[2])
 GraphicsWindow.BrushColor = "Black"
 GraphicsWindow.FontSize = 16
 GraphicsWindow.FontBold = "false"
-TimerButton = Controls.AddButton("Start", 280, 360)
-TimerButton.OnClick = ButtonClickedSub
+'TimerButton = Controls.AddButton("Start", 280, 360)
 
 ' Arrays initialisieren
 BallX[1] = 0
@@ -32,27 +30,20 @@ BallYSpeed[1] = 10
 Timer.Interval = 100
 Timer.Tick = TickSub
 Timer.Pause()
+ButtonClickedSub()
 
 Sub ButtonClickedSub
-   If TimerButton.Text = "Start" Then
-      TimerButton.Text = "Stop"
-      For i = 1 To 2
-         BallX[i] = Math.GetRandomNumber(GraphicsWindow.Width - BallW) -1
-         BallY[i] = Math.GetRandomNumber(GraphicsWindow.Width - BallW) -1
-         'BallXSpeed[i] = 21 - Math.GetRandomNumber(41)
-         'BallYSpeed[i] = 21 - Math.GetRandomNumber(41)
-         BallXSpeed[i] = 10
-         BallYSpeed[i] = 20
-         Shapes.Move(Ball[i], BallX[i], BallY[i])
-         Shapes.ShowShape(Ball[i])
-      EndFor
-      Timer.Resume()
-   Else
-      Controls.SetButtonCaption(TimerButton, "Start")
-      Shapes.HideShape(Ball[i])
-      Shapes.HideShape(Ball[i])
-      Timer.Pause()
-   EndIf
+   For i = 1 To 2
+      BallX[i] = Math.GetRandomNumber(GraphicsWindow.Width - BallW) -1
+      BallY[i] = Math.GetRandomNumber(GraphicsWindow.Width - BallW) -1
+      'BallXSpeed[i] = 21 - Math.GetRandomNumber(41)
+      'BallYSpeed[i] = 21 - Math.GetRandomNumber(41)
+      BallXSpeed[i] = 10
+      BallYSpeed[i] = 20
+      Shapes.Move(Ball[i], BallX[i], BallY[i])
+      Shapes.ShowShape(Ball[i])
+   EndFor
+   Timer.Resume()
 EndSub
 
 Sub TickSub

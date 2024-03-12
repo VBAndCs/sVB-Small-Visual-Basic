@@ -11,6 +11,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Name As Token
         Public Args As List(Of Expression)
         Public OuterSubroutine As SubroutineStatement
+        Friend IsGlobalFunc As Boolean
         Friend Property KeepReturnValue As Boolean
 
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
@@ -92,6 +93,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Public Overrides Function Execute(runner As ProgramRunner) As statement
             Dim subName = Name.LCaseText
+            Dim targetRunner = If(IsGlobalFunc, runner.GlobalRunner, runner)
 
             If Args IsNot Nothing AndAlso Args.Count > 0 Then
                 Dim values As New Library.Primitive()
@@ -105,18 +107,18 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 ' and remove the last args from the stack at the end of each subroutine call
                 Dim key = $"{subName}.args"
                 Dim argsStack As New Library.Primitive
-                runner.Fields.TryGetValue(key, argsStack)
+                targetRunner.Fields.TryGetValue(key, argsStack)
                 If argsStack.GetItemCount() = 0 Then
                     argsStack.Items(1) = values
                 Else
                     Library.Array.Append(argsStack, values)
                 End If
-                runner.Fields(key) = argsStack
+                targetRunner.Fields(key) = argsStack
             End If
 
-            Dim subroutine = runner.SymbolTable.Subroutines(subName)
-            subroutine.Parent.Execute(runner)
-            Return Nothing
+            Dim subroutine = targetRunner.SymbolTable.Subroutines(subName)
+            Dim result = subroutine.Parent.Execute(targetRunner)
+            Return If(TypeOf result Is EndDebugging, result, Nothing)
         End Function
     End Class
 End Namespace

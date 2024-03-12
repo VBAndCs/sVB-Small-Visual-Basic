@@ -72,6 +72,10 @@ Namespace WinForms
         Public Shared ReadOnly Property ScrollBar As Primitive = "ScrollBar"
 
 
+        ''' <summary>WinTimer</summary>
+        <ReturnValueType(VariableType.ControlType)>
+        Public Shared ReadOnly Property WinTimer As Primitive = "WinTimer"
+
         ''' <summary>ToggleButton</summary>
         <ReturnValueType(VariableType.ControlType)>
         Public Shared ReadOnly Property ToggleButton As Primitive = "ToggleButton"

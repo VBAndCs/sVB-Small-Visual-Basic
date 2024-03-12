@@ -36,6 +36,16 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Public LastModified As Date = Date.Now
 
+        Friend ReadOnlyRegion As IReadOnlyRegionHandle
+
+        Dim _breakpoints As List(Of Integer)
+        Friend ReadOnly Property Breakpoints As List(Of Integer)
+            Get
+                If _breakpoints Is Nothing Then _breakpoints = New List(Of Integer)
+                Return _breakpoints
+            End Get
+        End Property
+
         Public Property BaseId As String
 
         Public Property WordHighlightColor As Media.Color = Media.Colors.LightGray
@@ -114,13 +124,53 @@ Namespace Microsoft.SmallVisualBasic.Documents
                                 DispatcherOperationCallback), Nothing)
                 End If
 
+                AddHandler _editorControl.LineNumberMargin.LineBreakpointChanged, AddressOf ToggleBreakpoint
                 Return _editorControl
             End Get
         End Property
 
+        Private Sub ClearBreakpoint()
+            Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(_editorControl.TextView)
+            stMarkerProvider.ClearAllMarkers()
+            _editorControl.LineNumberMargin.ClearBreakpoint()
+        End Sub
+
+        Friend Sub ToggleBreakpoint(ByRef lineNumber As Integer, ByRef showBreakpoint As Boolean)
+            If lineNumber < 0 Then Return
+
+            Dim span = GetFullStatementSpan(lineNumber)
+            If span Is Nothing Then
+                lineNumber = -1
+                Return
+            End If
+
+            Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(_editorControl.TextView)
+            If Breakpoints.Contains(lineNumber) Then
+                _breakpoints.Remove(lineNumber)
+                showBreakpoint = False
+                Dim marker = stMarkerProvider.GetMarker(lineNumber)
+                If marker.MarkerColor = System.Windows.Media.Colors.DarkGoldenrod Then
+                    marker.MarkerColor = System.Windows.Media.Colors.Gold
+                Else
+                    stMarkerProvider.RemoveMarker(marker)
+                End If
+
+            Else
+                _breakpoints.Add(lineNumber)
+                showBreakpoint = True
+                Dim marker = stMarkerProvider.GetMarker(lineNumber)
+
+                If marker Is Nothing Then
+                    marker = New StatementMarker(span, lineNumber, System.Windows.Media.Colors.Red)
+                    stMarkerProvider.AddStatementMarker(marker)
+                Else
+                    marker.MarkerColor = System.Windows.Media.Colors.DarkGoldenrod
+                End If
+            End If
+        End Sub
+
         Public ReadOnly Property ErrorListControl As ErrorListControl
             Get
-
                 If _errorListControl Is Nothing Then
                     _errorListControl = New ErrorListControl(Me)
                     _errorListControl.ItemsSource = _Errors
@@ -129,6 +179,17 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Return _errorListControl
             End Get
         End Property
+
+        Friend Sub EnsureLineVisible(lineNumber As Integer)
+            Dim line = _textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber)
+            EnsureLineVisible(line)
+        End Sub
+
+        Friend Sub EnsureLineVisible(line As ITextSnapshotLine)
+            Dim tv = _editorControl.TextView
+            tv.Caret.MoveTo(line.Start)
+            tv.ViewScroller.EnsureSpanVisible(New Span(line.Start, line.Length), 0.0, 00.0)
+        End Sub
 
         Public ReadOnly Property Text As String
             Get
@@ -434,6 +495,42 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End Select
         End Sub
 
+        Public Function GetFullStatementSpan(ByRef lineNumber As Integer) As TextSpan
+            Dim snapshot = TextBuffer.CurrentSnapshot
+            Dim source As New TextBufferReader(snapshot)
+            Dim line = snapshot.GetLineFromLineNumber(lineNumber)
+            If Trim(line.GetText()) = "" Then Return Nothing
+
+            Dim currentLine = lineNumber
+            Dim codeLines As New List(Of String)
+            Dim tokens As List(Of Token)
+
+            Do
+                Dim lineText = source.ReadLine()
+                If lineText Is Nothing Then Exit Do
+                codeLines.Add(lineText)
+            Loop
+
+            For i = 0 To codeLines.Count - 1
+                lineNumber = i
+                tokens = LineScanner.GetTokens(codeLines(i), i, codeLines)
+                If tokens.Count = 0 Then Continue For
+
+                If tokens(0).EndLine >= currentLine Then
+                    Dim Line1 = snapshot.GetLineFromLineNumber(tokens(0).Line)
+                    Dim Line2 = snapshot.GetLineFromLineNumber(tokens(0).EndLine)
+                    Return New TextSpan(
+                                        Line1.TextSnapshot,
+                                        Line1.Start,
+                                        Line2.End - Line1.Start + 1,
+                                        SpanTrackingMode.EdgeExclusive)
+                End If
+            Next
+
+            Return Nothing
+        End Function
+
+
         Public Function GetBlock(lineNumber As Integer, statementType As Type) As Statements.Statement
             CompileForHighlight()
 
@@ -519,6 +616,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Public Overrides Sub Close()
             RemoveHandler _editorControl.TextView.Caret.PositionChanged, AddressOf OnCaretPositionChanged
+            RemoveHandler _editorControl.KeyUp, AddressOf AutoCompleteBlocks
+            RemoveHandler _editorControl.LineNumberMargin.LineBreakpointChanged, AddressOf ToggleBreakpoint
             RemoveHandler _textBuffer.Changed, AddressOf OnTextBufferChanged
             RemoveHandler _undoHistory.UndoRedoHappened, AddressOf UndoRedoHappened
             MyBase.Close()
@@ -602,7 +701,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Dim _formatting As Boolean
 
         Dim sourceCodeChanged As Boolean = True
-        Dim needsToreCompile As Boolean
+        Dim needsToReCompile As Boolean
         Dim needsToFormat As Boolean = True
 
         Private Sub OnTextBufferChanged(sender As Object, e As TextChangedEventArgs)
@@ -610,6 +709,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             needsToFormat = True
             LastModified = Now
             IsDirty = True
+
             If IsTheGlobalFile Then
                 For Each view As MdiView In _MdiView.MdiViews.Items
                     view.Document.GlobalModuleHasChanged = True
@@ -617,7 +717,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End If
 
             _editorControl.ClearHighlighting()
-            ErrorListControl.Close()
+            ClearBreakpoint()
             If _formatting OrElse _IgnoreCaretPosChange OrElse StillWorking Then Return
 
             StillWorking = True
@@ -980,6 +1080,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Function
 
         Dim asmName As String = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name.ToLower()
+        Friend ExecutionMarker As StatementMarker
 
         Friend Sub GenerateEventHints(genCode As Text.StringBuilder)
 
@@ -1442,14 +1543,14 @@ EndFunction
         End Sub
 
         Public Sub ShowErrors(errors As List(Of [Error]))
-            ' don't use _errorListControl because it can be Nothing
+            ' Don't use _errorListControl at first because it can be Nothing
             ErrorListControl.ErrorTokens.Clear()
             _Errors.Clear()
 
             For Each err As [Error] In errors
                 Dim token = err.Token
                 token.Line = err.Line - sVB.LineOffset
-                ErrorListControl.ErrorTokens.Add(token)
+                _errorListControl.ErrorTokens.Add(token)
                 Dim errMsg As String
 
                 If err.Line = -1 Then
@@ -1461,7 +1562,7 @@ EndFunction
                 End If
             Next
 
-            _errorListControl.SelectError(0)
+            DiagramHelper.Helper.RunLater(_editorControl, Sub() _errorListControl.SelectError(0), 200)
         End Sub
 
         Public Function CompileGlobalModule() As List(Of Parser)

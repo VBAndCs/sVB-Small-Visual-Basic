@@ -17,9 +17,9 @@ Sub Button1_OnClick()
    Next
    
    ' remove the extra empty line
-   txt = TextBox1.Text
-   If txt <> "" Then
-      TextBox1.Text = txt.SubText(1, txt.Length - 2)
+   t = TextBox1.Text
+   If t <> "" Then
+      TextBox1.Text = t.SubText(1, t.Length - 2)
    EndIf
    
 EndSub
@@ -28,7 +28,6 @@ EndSub
 '------------------------------------------------
 Sub Button2_OnClick()
    lines = GetLines(TextBox1.Text)
-   
    ListBox1.RemoveAllItems()
    
    ForEach strLine In lines

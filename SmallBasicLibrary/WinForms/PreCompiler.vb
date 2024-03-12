@@ -150,6 +150,7 @@ Namespace WinForms
                 New ShortcutInfo("Dialog", VariableType.DialogResult),
                 New ShortcutInfo("Type", VariableType.ControlType),
                 New ShortcutInfo("Control", VariableType.Control),
+                New ShortcutInfo("Ctrl", VariableType.Control),
                 New ShortcutInfo("Frm", VariableType.Form),
                 New ShortcutInfo("Form", VariableType.Form),
                 New ShortcutInfo("Txt", VariableType.TextBox),

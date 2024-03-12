@@ -54,7 +54,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Public Overrides Function Execute(runner As ProgramRunner) As statement
             MethodCallExpression.Evaluate(runner)
-            Return Nothing
+            Return If(SmallVisualBasic.Library.Program.IsTerminated, New EndDebugging(), Nothing)
         End Function
     End Class
 End Namespace

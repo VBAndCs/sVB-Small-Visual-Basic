@@ -295,6 +295,44 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Dim highlightCashe As New Dictionary(Of Span, Span())
         Dim callerCashe As New Dictionary(Of Span, CallerInfo)
 
+        Private Function GetTokens(
+                     snapshot As ITextSnapshot,
+                     ByRef startLine As Integer,
+                     ByRef currentLine As Integer,
+                     endLine As Integer) As List(Of Token)
+
+            Dim tokens As New List(Of Token)
+            Dim lineTokens As List(Of Token)
+            Dim nextLineText = snapshot.GetLineFromLineNumber(startLine).GetText()
+            Dim addNextLine = True
+
+            For i = startLine To endLine - 1
+                Dim curLineText = nextLineText
+                nextLineText = snapshot.GetLineFromLineNumber(i + 1).GetText()
+                lineTokens = LineScanner.GetTokens(curLineText, i - startLine)
+                addNextLine = LineScanner.IsLineContinuity(lineTokens, nextLineText)
+
+                If i = currentLine OrElse addNextLine Then
+                    tokens.AddRange(lineTokens)
+                Else
+                    startLine = currentLine 'ignore prev line
+                    If startLine = endLine Then
+                        addNextLine = True
+                        Exit For
+                    End If
+                End If
+            Next
+
+            If addNextLine Then
+                lineTokens = LineScanner.GetTokens(nextLineText, endLine - startLine)
+                tokens.AddRange(lineTokens)
+            End If
+
+            currentLine -= startLine  '  line pos abs for scaned tokens
+            Return tokens
+        End Function
+
+
         Private Sub OnHelpUpdate(sender As Object, e As EventArgs)
             helpUpdateTimer.Stop()
             IsSpectialListVisible = False
@@ -379,7 +417,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     startLine As Integer,
                     currentLine As Integer,
                     endLine As Integer,
-                    symbol As String,
+                    ByRef symbol As String,
                     force As Boolean,
                     ByRef line As ITextSnapshotLine,
                     ByRef column As Integer,
@@ -395,9 +433,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim prevIsSep = False
             Dim currentToken = Token.Illegal
             Dim exactToken = Token.Illegal
+            Dim prevToken As Token
 
             If symbol = "" Then
-                Dim prevToken As Token
                 Dim nextToken As Token
                 Dim n = tokens.Count - 1
                 Dim notFound = True
@@ -412,7 +450,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         If column > token.Column Then
                             currentToken = If(
                                   prevIsSep AndAlso token.ParseType = ParseType.Comment,
-                                  token.Illegal,
+                                  Token.Illegal,
                                   token
                             )
                             nextToken = GetNonCommentToken(tokens, i + 1, False)
@@ -506,20 +544,20 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim editor = CType(textView, AvalonTextView).Editor
                 Dim caller As CallerInfo
 
-                If sourceCodeChanged Then
-                    callerCashe.Clear()
-                    caller = Parser.GetCommaCallerInfo(
-                            editor.Text,
-                            line.LineNumber,
-                            column - If(prevIsSep, 1, 0)
-                    )
-                    callerCashe(span) = caller
-
-                ElseIf callerCashe.ContainsKey(span) Then
+                If Not sourceCodeChanged AndAlso callerCashe.ContainsKey(span) Then
                     caller = callerCashe(span)
-
                 Else
-                    caller = Parser.GetCommaCallerInfo(editor.Text, line.LineNumber, column - If(prevIsSep, 1, 0))
+                    If prevToken.Type = TokenType.LeftParens Then
+                        caller = New CallerInfo(prevToken.Line + startLine, prevToken.Column, 0)
+                        symbol = "("
+                    Else
+                        caller = Parser.GetCommaCallerInfo(
+                                editor.Text,
+                                line.LineNumber,
+                                column - If(prevIsSep, 1, 0)
+                        )
+                    End If
+                    If sourceCodeChanged Then callerCashe.Clear()
                     callerCashe(span) = caller
                 End If
 
@@ -716,42 +754,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Function
 
 
-        Private Function GetTokens(
-                     snapshot As ITextSnapshot,
-                     ByRef startLine As Integer,
-                     ByRef currentLine As Integer,
-                     endLine As Integer) As List(Of Token)
-
-            Dim tokens As New List(Of Token)
-            Dim lineTokens As List(Of Token)
-            Dim nextLineText = snapshot.GetLineFromLineNumber(startLine).GetText()
-            Dim addNextLine = True
-
-            For i = startLine To endLine - 1
-                Dim curLineText = nextLineText
-                nextLineText = snapshot.GetLineFromLineNumber(i + 1).GetText()
-                lineTokens = LineScanner.GetTokens(curLineText, i - startLine)
-                addNextLine = LineScanner.IsLineContinuity(lineTokens, nextLineText)
-
-                If i = currentLine OrElse addNextLine Then
-                    tokens.AddRange(lineTokens)
-                Else
-                    startLine = currentLine 'ignore prev line
-                    If startLine = endLine Then
-                        addNextLine = True
-                        Exit For
-                    End If
-                End If
-            Next
-
-            If addNextLine Then
-                lineTokens = LineScanner.GetTokens(nextLineText, endLine - startLine)
-                tokens.AddRange(lineTokens)
-            End If
-
-            currentLine -= startLine  '  line pos abs for scaned tokens
-            Return tokens
-        End Function
 
         Private Shared Function IsPrevSeparator(
                     currentLine As Integer,

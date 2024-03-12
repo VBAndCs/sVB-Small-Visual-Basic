@@ -16,7 +16,13 @@ Namespace WinForms
         Friend Shared _forms As New ControlsDictionay
         Friend Shared _controls As New ControlsDictionay
 
-        Friend Shared Function GetForm(name As String) As Window
+        ''' <summary>
+        ''' Used internally by the compiler to stop the calssic timer when the form is closed
+        ''' </summary>
+        <HideFromIntellisense>
+        Public Shared Property TimerParentForm As Primitive
+
+        Public Shared Function GetForm(name As String) As Window
             name = name.ToLower()
             Dim wnd As Window
             Dim dictionary = If(name.Contains("."), _controls, _forms)
@@ -260,10 +266,14 @@ Namespace WinForms
         End Function
 
         Friend Shared forceClose As Boolean = False
+
         Friend Shared Sub ForceCloseAll()
             forceClose = True
             For Each w As Window In _forms.Values
-                w.Close()
+                Try
+                    w.Close()
+                Catch
+                End Try
             Next
             forceClose = False
         End Sub
@@ -379,11 +389,12 @@ Namespace WinForms
 
         Private Shared Sub Form_Closed(sender As Object, e As EventArgs)
             If forceClose Then Return
+
             Dim win = CType(sender, Window)
             Dim winName = win.Name.ToLower()
+
             If Form.ClosedHandlers.ContainsKey(winName) Then
                 Dim handler = Form.ClosedHandlers(winName)
-
                 Try
                     [Event]._senderControl = winName
                     Call handler()
@@ -397,19 +408,36 @@ Namespace WinForms
         End Sub
 
         Friend Shared Sub RemoveFormAndControls(formName As String)
+            If TimerParentForm.AsString() = formName Then
+                Timer.Pause()
+                RemoveHandler Timer.Tick, Nothing
+            End If
+
             _forms.Remove(formName)
             formName &= "."
             Dim keys = _controls.Keys
 
             For i = keys.Count - 1 To 0 Step -1
-                If keys(i).StartsWith(formName) Then
-                    _controls.Remove(keys(i))
+                Dim name = keys(i)
+                If name.StartsWith(formName) Then
+                    _controls.Remove(name)
                 End If
             Next
 
-            If _forms.Count = 0 Then
-                Program.End()
-            End If
+            ' If this control is a WinTimer, remove Tick handlers
+            Dim TimerKeys = WinTimer.Timers.Keys
+            For i = TimerKeys.Count - 1 To 0 Step -1
+                Dim name = TimerKeys(i)
+                If name.StartsWith(formName) Then
+                    If WinTimer.TickHandlers.ContainsKey(name) Then
+                        RemoveHandler WinTimer.Timers(name).Tick, WinTimer.TickHandlers(name)
+                        WinTimer.TickHandlers.Remove(name)
+                    End If
+                    WinTimer.Timers.Remove(name)
+                End If
+            Next
+
+            If _forms.Count = 0 Then Program.End()
         End Sub
 
         Private Shared Function LoadContent(xamlPath As String) As Canvas
@@ -466,6 +494,11 @@ Namespace WinForms
         <ReturnValueType(VariableType.Form)>
         Public Shared Function ShowForm(formName As Primitive, argsArr As Primitive) As Primitive
             Dim asm = System.Reflection.Assembly.GetCallingAssembly()
+            DoShowForm(formName, argsArr, Sub() Form.Initialize(formName, asm))
+            Return formName
+        End Function
+
+        Public Shared Sub DoShowForm(formName As Primitive, argsArr As Primitive, InitializeForm As Action)
             App.Invoke(
                   Sub()
                       Try
@@ -477,16 +510,15 @@ Namespace WinForms
 
                           Else
                               Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
-                              Form.Initialize(formName, asm)
+                              InitializeForm()
                           End If
 
                       Catch ex As Exception
                           Form.ReportSubError(formName, "ShowForm", ex)
                       End Try
                   End Sub)
+        End Sub
 
-            Return formName
-        End Function
 
         ''' <summary>
         ''' Loads the form that has the given name if exists in the project, and shows it as a modal dialog.
@@ -497,23 +529,27 @@ Namespace WinForms
         <ReturnValueType(VariableType.DialogResult)>
         Public Shared Function ShowDialog(formName As Primitive, argsArr As Primitive) As Primitive
             Dim asm = System.Reflection.Assembly.GetCallingAssembly()
+            Return DoShowDialog(formName, argsArr, Sub() Form.Initialize(formName, asm))
+        End Function
 
+        Public Shared Function DoShowDialog(formName As Primitive, argsArr As Primitive, InitializeForm As Action) As Primitive
             App.Invoke(
                 Sub()
                     Try
                         If Form.GetIsLoaded(formName) Then
                             Form.SetArgsArr(formName, argsArr)
-                            ShowDialog = Form.ShowDialog(formName)
+                            DoShowDialog = Form.ShowDialog(formName)
                         Else
                             Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
-                            Form.Initialize(formName, asm)
+                            InitializeForm()
                             Control.SetVisible(formName, False)
-                            ShowDialog = Form.ShowDialog(formName)
+                            DoShowDialog = Form.ShowDialog(formName)
                         End If
                     Catch ex As Exception
                         Form.ReportSubError(formName, "ShowForm", ex)
                     End Try
                 End Sub)
         End Function
+
     End Class
 End Namespace

@@ -23,30 +23,35 @@ Namespace Microsoft.Windows.Controls
         End Sub
 
         Public Sub AddStatementMarker(marker As StatementMarker)
+            marker.RefreshMarker = AddressOf RefreshMarker
             _statementMarkerList.Add(marker)
             RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(marker.Span))
         End Sub
 
-        Public Sub AddStatementMarkers(markers1 As IEnumerable(Of StatementMarker))
-            Dim textSnapshot1 As ITextSnapshot = _textView.TextSnapshot
-            Dim num As Integer = _textView.TextSnapshot.Length
-            Dim num2 As Integer = 0
+        Private Sub RefreshMarker(marker As StatementMarker)
+            RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(marker.Span))
+        End Sub
 
-            For Each marker As StatementMarker In markers1
-                Dim span1 As Span = marker.Span.GetSpan(textSnapshot1)
-                If num > span1.Start Then
-                    num = span1.Start
+        Public Sub AddStatementMarkers(markers As IEnumerable(Of StatementMarker))
+            Dim snapshot = _textView.TextSnapshot
+            Dim spanStart = _textView.TextSnapshot.Length
+            Dim spanEnd = 0
+
+            For Each marker As StatementMarker In markers
+                Dim span = marker.Span.GetSpan(snapshot)
+                If spanStart > span.Start Then
+                    spanStart = span.Start
                 End If
 
-                If num2 < span1.End Then
-                    num2 = span1.End
+                If spanEnd < span.End Then
+                    spanEnd = span.End
                 End If
 
                 _statementMarkerList.Add(marker)
             Next
 
-            If num < num2 Then
-                RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(New TextSpan(textSnapshot1, num, num2 - num, SpanTrackingMode.EdgeInclusive)))
+            If spanStart < spanEnd Then
+                RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(New TextSpan(snapshot, spanStart, spanEnd - spanStart, SpanTrackingMode.EdgeInclusive)))
             End If
         End Sub
 
@@ -68,18 +73,29 @@ Namespace Microsoft.Windows.Controls
         End Function
 
         Public Shared Function GetStatementMarkerProvider(textView As ITextView) As StatementMarkerProvider
-            Dim [property] As StatementMarkerProvider = Nothing
-            If Not textView.Properties.TryGetProperty(GetType(StatementMarkerProvider), [property]) Then
-                [property] = New StatementMarkerProvider(textView)
-                textView.Properties.AddProperty(GetType(StatementMarkerProvider), [property])
+            Dim provider As StatementMarkerProvider = Nothing
+            If Not textView.Properties.TryGetProperty(GetType(StatementMarkerProvider), provider) Then
+                provider = New StatementMarkerProvider(textView)
+                textView.Properties.AddProperty(GetType(StatementMarkerProvider), provider)
             End If
 
-            Return [property]
+            Return provider
         End Function
 
         Public Sub RemoveMarker(marker As StatementMarker)
+            If marker Is Nothing Then Return
             _statementMarkerList.Remove(marker)
             RaiseEvent AdornmentsChanged(Me, New AdornmentsChangedEventArgs(marker.Span))
         End Sub
+
+        Public Function GetMarker(lineNumber As Integer) As StatementMarker
+            Dim snapshot = _textView.TextSnapshot
+            For Each marker In _statementMarkerList
+                If marker.LineNumber = lineNumber Then
+                    Return marker
+                End If
+            Next
+            Return Nothing
+        End Function
     End Class
 End Namespace

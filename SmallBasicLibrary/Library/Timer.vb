@@ -45,9 +45,17 @@ Namespace Library
             End RaiseEvent
         End Event
 
+        Private Shared _isRunnning As Boolean
+        Friend Shared ReadOnly Property IsRunnning As Boolean
+            Get
+                Return _isRunnning AndAlso tickHandler IsNot Nothing
+            End Get
+        End Property
+
         Shared Sub New()
             _interval = 100000000
             _threadTimer = New Threading.Timer(AddressOf ThreadTimerCallback)
+            _isRunnning = True
         End Sub
 
         ''' <summary>
@@ -55,6 +63,7 @@ Namespace Library
         ''' </summary>
         Public Shared Sub Pause()
             _threadTimer.Change(-1, -1)
+            _isRunnning = False
         End Sub
 
         ''' <summary>
@@ -62,6 +71,7 @@ Namespace Library
         ''' </summary>
         Public Shared Sub [Resume]()
             _threadTimer.Change(_interval, _interval)
+            _isRunnning = True
         End Sub
 
         Private Shared Sub ThreadTimerCallback(tag As Object)

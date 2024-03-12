@@ -11,7 +11,7 @@
 '    lblResult: Label
 '}
 
-Me = "frmCalc"
+Me = "frmcalc"
 lblNum1 = "frmcalc.lblnum1"
 txtNum1 = "frmcalc.txtnum1"
 lblNum2 = "frmcalc.lblnum2"
@@ -21,9 +21,10 @@ btnSubtract = "frmcalc.btnsubtract"
 btnMultply = "frmcalc.btnmultply"
 btnDivide = "frmcalc.btndivide"
 lblResult = "frmcalc.lblresult"
-frmCalc = Forms.LoadForm("frmCalc", "frmcalc.xaml")
+_path = Program.Directory + "\frmcalc.xaml"
+frmCalc = Forms.LoadForm("frmCalc", _path)
+Form.SetArgsArr(frmcalc, Stack.PopValue("_frmcalc_argsArr"))
 Form.Show(frmCalc)
-
 '#Events{
 '    btnAdd: OnClick
 '    btnSubtract: OnClick

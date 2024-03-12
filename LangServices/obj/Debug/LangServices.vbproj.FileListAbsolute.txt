@@ -69,7 +69,6 @@ F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\bin\Debug\sVBCompiler.exe.config
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\bin\Debug\SmallVisualBasicLibrary.pdb
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\bin\Debug\SmallVisualBasicLibrary.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\bin\Debug\ToolFramework.pdb
-F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Debug\LangServices.vbproj.AssemblyReference.cache
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Debug\CircularList.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Debug\CircularList.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Debug\CompletionSurface.g.vb
@@ -85,3 +84,4 @@ F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Debug\LangServices.vbproj.Copy
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Debug\LanguageService.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Debug\LanguageService.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Debug\LanguageService.pdb
+F:\_VS.NET\Small Basic IDE\sVB\1\LangServices\obj\Debug\LangServices.vbproj.AssemblyReference.cache

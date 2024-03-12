@@ -397,7 +397,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         End Sub
 
-        Public Overrides Function Execute(runner As ProgramRunner) As statement
+        Public Overrides Function Execute(runner As ProgramRunner) As Statement
             Dim hasParams = Params IsNot Nothing AndAlso Params.Count > 0
             Dim argsStack As New Library.Primitive
             Dim subName = Name.LCaseText
@@ -414,7 +414,12 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 Next
             End If
 
-            runner.Execute(Body)
+            runner.CheckForExecutionBreakAtLine(SubToken.Line, True)
+            Dim canStepOver = runner.DoStepOver AndAlso SubToken.Line <> runner.StepOverLineNumber
+            If canStepOver Then runner.Depth += 1
+            Dim result = runner.Execute(Body)
+            If canStepOver Then runner.Depth -= 1
+            If TypeOf result Is EndDebugging Then Return result
 
             If hasParams Then ' Pop args
                 If n > 0 Then
@@ -428,6 +433,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 End If
             End If
 
+            runner.CheckForExecutionBreakAtLine(EndSubToken.Line, canStepOver)
             Return Nothing
         End Function
     End Class

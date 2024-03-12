@@ -78,6 +78,7 @@ F:\_VS.NET\Wpf Samples\WpfDialogs\WpfDialogs\obj\Debug\WpfDialogs.pdb
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\bin\Debug\WpfDialogs.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\bin\Debug\WpfDialogs.pdb
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\bin\Debug\WpfDialogs.xml
+F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Debug\WpfDialogs.vbproj.AssemblyReference.cache
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Debug\Font\WndFont.baml
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Debug\Brush\ImageBrushPicker.g.vb
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Debug\Brush\TileBrushPicker.g.vb
@@ -102,4 +103,3 @@ F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Debug\WpfDialogs.vbproj.CoreComp
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Debug\WpfDialogs.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Debug\WpfDialogs.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Debug\WpfDialogs.pdb
-F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Debug\WpfDialogs.vbproj.AssemblyReference.cache

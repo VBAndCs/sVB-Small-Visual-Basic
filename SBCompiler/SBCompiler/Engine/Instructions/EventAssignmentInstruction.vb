@@ -17,7 +17,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Public Overrides Function Execute(runner As ProgramRunner) As String
             Dim subInstructs = runner.SubroutineInstructions(_SubroutineName)
-            _EventInfo.AddEventHandler(Nothing, Sub() runner.ExecuteInstructions(subInstructs))
+            '_EventInfo.AddEventHandler(Nothing, Sub() runner.ExecuteInstructions(subInstructs))
             Return Nothing
         End Function
     End Class

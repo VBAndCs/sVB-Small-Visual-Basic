@@ -126,6 +126,7 @@
     <Compile Include="Statements\AssignmentStatement.vb" />
     <Compile Include="Statements\ElseIfStatement.vb" />
     <Compile Include="Statements\EmptyStatement.vb" />
+    <Compile Include="Statements\EndDebugging.vb" />
     <Compile Include="Statements\ForEachStatement.vb" />
     <Compile Include="Statements\JumpLoopStatement.vb" />
     <Compile Include="Statements\ForStatement.vb" />

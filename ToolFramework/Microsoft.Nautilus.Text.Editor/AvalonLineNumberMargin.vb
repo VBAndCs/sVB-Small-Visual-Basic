@@ -8,7 +8,7 @@ Imports System.Windows.Media.TextFormatting
 Imports Microsoft.Nautilus.Text.Operations
 
 Namespace Microsoft.Nautilus.Text.Editor
-    Friend NotInheritable Class AvalonLineNumberMargin
+    Public NotInheritable Class AvalonLineNumberMargin
         Inherits Canvas
         Implements IAvalonTextViewMargin, ITextViewMargin
 
@@ -78,20 +78,48 @@ Namespace Microsoft.Nautilus.Text.Editor
 
             MyBase.Cursor = Cursors.Arrow
             _textFormatter = TextFormatter.Create()
-            Dim textLine1 As TextLine = _textFormatter.FormatLine(New AvalonLineNumberMarginTextSource("88888", _formatting), 0, 50.0, New TextFormattingParagraphProperties, Nothing)
-            MyBase.MinWidth = textLine1.Width
+            Dim textLine = _textFormatter.FormatLine(New AvalonLineNumberMarginTextSource("8888", _formatting), 0, 50.0, New TextFormattingParagraphProperties, Nothing)
+            MyBase.MinWidth = textLine.Width
             RegisterEvents()
         End Sub
 
         Private Function SelectLine(mouseLocation As Point, extendSelection As Boolean) As Boolean
-            Dim textLineContainingYCoordinate As ITextLine = _textView.FormattedTextLines.GetTextLineContainingYCoordinate(mouseLocation.Y)
-            If textLineContainingYCoordinate IsNot Nothing Then
-                Dim lineNumberFromPosition As Integer = _textView.TextSnapshot.GetLineNumberFromPosition(textLineContainingYCoordinate.LineSpan.Start)
-                _editorOperations.SelectLine(lineNumberFromPosition, extendSelection)
-                Return True
-            End If
-            Return False
+            Dim textLine = _textView.FormattedTextLines.GetTextLineContainingYCoordinate(mouseLocation.Y)
+            If textLine Is Nothing Then Return False
+
+            Dim lineNumber = _textView.TextSnapshot.GetLineNumberFromPosition(textLine.LineSpan.Start)
+            _editorOperations.SelectLine(lineNumber, extendSelection)
+            Return True
         End Function
+
+        Public Event LineBreakpointChanged(ByRef lineNumber As Integer, ByRef showBreeakPoint As Boolean)
+
+        Private Sub ToogleBreakpoint(mouseLocation As Point)
+            Dim textLine = _textView.FormattedTextLines.GetTextLineContainingYCoordinate(mouseLocation.Y)
+            If textLine Is Nothing Then Return
+
+            Dim lineNumber = _textView.TextSnapshot.GetLineNumberFromPosition(textLine.LineSpan.Start)
+            Dim showBreeakPoint As Boolean
+            RaiseEvent LineBreakpointChanged(lineNumber, showBreeakPoint)
+            If lineNumber > -1 Then DrawBreakpoint(lineNumber, showBreeakPoint)
+        End Sub
+
+        Public Sub ClearBreakpoint()
+            For Each visual As AvalonLineNumberMarginDrawingVisual In MyBase.Children
+                visual.ShowBreakpoint = False
+            Next
+        End Sub
+
+        Public Sub DrawBreakpoint(lineNumber As Integer, showBreeakPoint As Boolean)
+            lineNumber += 1
+            For Each visual As AvalonLineNumberMarginDrawingVisual In MyBase.Children
+                If visual.LineNumber = lineNumber Then
+                    visual.ShowBreakpoint = showBreeakPoint
+                    Return
+                End If
+            Next
+        End Sub
+
 
         Private Sub RegisterEvents()
             AddHandler _textView.LayoutChanged, AddressOf OnEditorLayoutChanged
@@ -109,45 +137,45 @@ Namespace Microsoft.Nautilus.Text.Editor
 
         Friend Sub UpdateLineNumbers()
             _layoutNeeded = False
-            Dim formattedTextLines1 As IFormattedTextLineCollection = _textView.FormattedTextLines
-            If formattedTextLines1.Count <= 0 Then Return
+            Dim formattedTextLines = _textView.FormattedTextLines
+            If formattedTextLines.Count <= 0 Then Return
 
-            Dim num As Integer = Integer.MaxValue
-            Dim num2 As Integer = Integer.MinValue
+            Dim start As Integer = Integer.MaxValue
+            Dim [end] As Integer = Integer.MinValue
             If MyBase.Children.Count > 0 Then
-                num = CType(MyBase.Children(0), AvalonLineNumberMarginDrawingVisual).LineNumber
-                num2 = CType(MyBase.Children(MyBase.Children.Count - 1), AvalonLineNumberMarginDrawingVisual).LineNumber
+                start = CType(MyBase.Children(0), AvalonLineNumberMarginDrawingVisual).LineNumber
+                [end] = CType(MyBase.Children(MyBase.Children.Count - 1), AvalonLineNumberMarginDrawingVisual).LineNumber
             End If
 
-            Dim list1 As New List(Of AvalonLineNumberMarginDrawingVisual)
-            Dim num3 As Integer = -1
-            For Each item As ITextLine In formattedTextLines1
-                Dim num4 As Integer = _textView.TextSnapshot.GetLineNumberFromPosition(item.LineSpan.Start) + 1
-                If num4 = num3 Then Continue For
+            Dim visuals As New List(Of AvalonLineNumberMarginDrawingVisual)
+            Dim prevLineNum As Integer = -1
+            For Each formattedTextLine As ITextLine In formattedTextLines
+                Dim lineNum = _textView.TextSnapshot.GetLineNumberFromPosition(formattedTextLine.LineSpan.Start) + 1
+                If lineNum = prevLineNum Then Continue For
 
-                num3 = num4
-                Dim avalonLineNumberMarginDrawingVisual1 As AvalonLineNumberMarginDrawingVisual
-                If num <= num4 AndAlso num4 <= num2 Then
-                    avalonLineNumberMarginDrawingVisual1 = CType(MyBase.Children(num4 - num), AvalonLineNumberMarginDrawingVisual)
-                    Dim point1 As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, item.Top + item.Height), Me)
-                    Dim point2 As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, item.Top), Me)
-                    avalonLineNumberMarginDrawingVisual1.Update(point1.Y - point2.Y, point2.Y)
+                prevLineNum = lineNum
+                Dim lineMarginVisual As AvalonLineNumberMarginDrawingVisual
+                If start <= lineNum AndAlso lineNum <= [end] Then
+                    lineMarginVisual = CType(MyBase.Children(lineNum - start), AvalonLineNumberMarginDrawingVisual)
+                    Dim bottom = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top + formattedTextLine.Height), Me)
+                    Dim top = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top), Me)
+                    lineMarginVisual.Update(bottom.Y - top.Y, top.Y)
                 Else
-                    Dim text As String = num4.ToString(CultureInfo.InvariantCulture.NumberFormat)
-                    If text.Length > "88888".Length Then
-                        text = text.Substring(text.Length - "88888".Length)
+                    Dim text = lineNum.ToString(CultureInfo.InvariantCulture.NumberFormat)
+                    If text.Length > "8888".Length Then
+                        text = text.Substring(text.Length - "8888".Length)
                     End If
-                    Dim textLine1 As TextLine = _textFormatter.FormatLine(New AvalonLineNumberMarginTextSource(text, _formatting), 0, MyBase.MinWidth, New TextFormattingParagraphProperties, Nothing)
-                    Dim point3 As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, item.Top + item.Height), Me)
-                    Dim point4 As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, item.Top), Me)
-                    avalonLineNumberMarginDrawingVisual1 = New AvalonLineNumberMarginDrawingVisual(num4, textLine1, MyBase.MinWidth - textLine1.Width, point3.Y - point4.Y, point4.Y)
+                    Dim textLine = _textFormatter.FormatLine(New AvalonLineNumberMarginTextSource(text, _formatting), 0, MyBase.MinWidth, New TextFormattingParagraphProperties, Nothing)
+                    Dim bottom As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top + formattedTextLine.Height), Me)
+                    Dim top As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top), Me)
+                    lineMarginVisual = New AvalonLineNumberMarginDrawingVisual(lineNum, textLine, MyBase.MinWidth - textLine.Width, bottom.Y - top.Y, top.Y)
                 End If
-                list1.Add(avalonLineNumberMarginDrawingVisual1)
+                visuals.Add(lineMarginVisual)
             Next
 
             MyBase.Children.Clear()
-            For Each item2 As AvalonLineNumberMarginDrawingVisual In list1
-                MyBase.Children.Add(item2)
+            For Each lineMarginVisual As AvalonLineNumberMarginDrawingVisual In visuals
+                MyBase.Children.Add(lineMarginVisual)
             Next
         End Sub
 
@@ -159,7 +187,7 @@ Namespace Microsoft.Nautilus.Text.Editor
         Private Overloads Sub OnMouseMove(sender As Object, e As MouseEventArgs)
             If e.LeftButton <> MouseButtonState.Pressed Then Return
 
-            Dim position As Point = e.GetPosition(Me)
+            Dim position = e.GetPosition(Me)
             If Not SelectLine(position, extendSelection:=True) Then
                 If position.Y <= 0.0 Then
                     _editorOperations.MoveLineUp([select]:=True)
@@ -171,9 +199,14 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Overloads Sub OnMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs)
-            CaptureMouse()
-            Dim extendSelection As Boolean = (Keyboard.Modifiers And ModifierKeys.Shift) = ModifierKeys.Shift
-            SelectLine(e.GetPosition(Me), extendSelection)
+            If e.ClickCount > 1 Then
+                ToogleBreakpoint(e.GetPosition(Me))
+                e.Handled = True
+            Else
+                CaptureMouse()
+                Dim extendSelection = (Keyboard.Modifiers And ModifierKeys.Shift) = ModifierKeys.Shift
+                SelectLine(e.GetPosition(Me), extendSelection)
+            End If
         End Sub
 
         Private Overloads Sub OnMouseLeftButtonUp(sender As Object, e As MouseButtonEventArgs)

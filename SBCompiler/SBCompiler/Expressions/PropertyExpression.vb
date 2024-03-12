@@ -83,15 +83,20 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Function
 
         Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
+            Dim tName = _TypeName.LCaseText
             If IsDynamic Then
                 Dim arrExpr As New ArrayExpression() With {
                       .LeftHand = New IdentifierExpression() With {.Identifier = _TypeName},
-                      .Indexer = New IdentifierExpression() With {.Identifier = _PropertyName},
+                      .Indexer = New LiteralExpression($"""{_PropertyName.Text}"""),
                       .Parent = Me.Parent
-                  }
+                }
                 Return arrExpr.Evaluate(runner)
+
+            ElseIf tName = "global" Then
+                Return runner.GetGlobalField(_PropertyName.LCaseText)
+
             Else
-                Dim typeInfo = runner.TypeInfoBag.Types(_TypeName.LCaseText)
+                Dim typeInfo = runner.TypeInfoBag.Types(tName)
                 Dim propertyInfo = typeInfo.Properties(_PropertyName.LCaseText)
                 Return CType(propertyInfo.GetValue(Nothing, Nothing), Primitive)
             End If

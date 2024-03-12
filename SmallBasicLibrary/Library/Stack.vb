@@ -5,7 +5,7 @@ Namespace Library
     ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class Stack
-        Private Shared _stackMap As New Dictionary(Of Primitive, Stack(Of Primitive))
+        Friend Shared _stackMap As New Dictionary(Of Primitive, Stack(Of Primitive))
 
         ''' <summary>
         ''' Pushes a value to the specified stack.
@@ -42,6 +42,20 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Removees all items from the specified stack.
+        ''' </summary>
+        ''' <param name="stackName">The name of the stack.</param>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Sub Clear(stackName As Primitive)
+            Dim stack As Stack(Of Primitive) = Nothing
+            stackName = stackName.ToString().ToLower()
+            If _stackMap.TryGetValue(stackName, stack) Then
+                stack.Clear()
+            End If
+        End Sub
+
+
+        ''' <summary>
         ''' Pops the value from the specified stack.
         ''' </summary>
         ''' <param name="stackName">The name of the stack.</param>
@@ -51,9 +65,8 @@ Namespace Library
         Public Shared Function PopValue(stackName As Primitive) As Primitive
             Dim stack As Stack(Of Primitive) = Nothing
             If _stackMap.TryGetValue(stackName.ToString().ToLower(), stack) Then
-                Return stack.Pop()
+                If stack.Count > 0 Then Return stack.Pop()
             End If
-
             Return ""
         End Function
     End Class

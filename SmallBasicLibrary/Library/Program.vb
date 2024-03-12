@@ -12,6 +12,9 @@ Namespace Library
     Public NotInheritable Class Program
         Private Shared args As String() = Environment.GetCommandLineArgs()
         Public Shared AppDir As Primitive
+        Public Shared IsTerminated As Boolean
+
+        Public Shared Event ProgramTerminated()
 
         Public Shared Sub DoNothing()
             ' To be used as a fake removel hander for events
@@ -79,6 +82,7 @@ Namespace Library
         ''' </summary>
         Public Shared Sub [End]()
             SmallBasicApplication.End()
+            RaiseEvent ProgramTerminated()
         End Sub
 
         ''' <summary>

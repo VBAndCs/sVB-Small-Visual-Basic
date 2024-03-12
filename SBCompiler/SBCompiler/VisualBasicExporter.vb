@@ -12,7 +12,7 @@ Namespace Microsoft.SmallVisualBasic
         Private indentationLevel As Integer
         Private writer As TextWriter
         Private parser As Parser
-        Private compiler As Compiler
+        Private parsers As List(Of Parser)
         Private keywords As List(Of String) = New List(Of String) From {
             "addhandler",
             "addressof",
@@ -158,15 +158,13 @@ Namespace Microsoft.SmallVisualBasic
             "array"
         }
 
-        Public Sub New(compiler As Compiler)
-            If compiler Is Nothing Then
-                Throw New ArgumentNullException("compiler")
+        Public Sub New(parsers As List(Of Parser))
+            If parsers Is Nothing Then
+                Throw New ArgumentNullException("parsers")
             End If
 
-            Me.compiler = compiler
-            parser = compiler.Parser
-
-            If parser.Errors.Count > 0 Then
+            Me.parsers = parsers
+            If parsers.Count = 0 Then
                 Throw New InvalidOperationException()
             End If
         End Sub

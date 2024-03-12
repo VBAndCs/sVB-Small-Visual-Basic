@@ -125,6 +125,18 @@ Namespace Microsoft.SmallVisualBasic
             GetType(MainWindow)
         )
 
+        Public Shared DebugCommand As New RoutedUICommand(
+            ResourceHelper.GetString("DebugCommand"),
+            ResourceHelper.GetString("DebugCommand"),
+            GetType(MainWindow)
+         )
+
+        Public Shared ToggleBreakpointCommand As New RoutedUICommand(
+            "Toggle Breakpoint",
+            "ToggleBreakpointCommand",
+            GetType(MainWindow)
+        )
+
         Public Shared EndProgramCommand As New RoutedUICommand(
             ResourceHelper.GetString("EndProgramCommand"),
             ResourceHelper.GetString("EndProgramCommand"),
@@ -137,15 +149,15 @@ Namespace Microsoft.SmallVisualBasic
             GetType(MainWindow)
         )
 
+        Public Shared StepIntoCommand As New RoutedUICommand(
+            "Step Into",
+            "StepIntoCommand",
+            GetType(MainWindow)
+        )
+
         Public Shared BreakpointCommand As New RoutedUICommand(
             ResourceHelper.GetString("BreakpointCommand"),
             ResourceHelper.GetString("BreakpointCommand"),
-            GetType(MainWindow)
-         )
-
-        Public Shared DebugCommand As New RoutedUICommand(
-            ResourceHelper.GetString("DebugCommand"),
-            ResourceHelper.GetString("DebugCommand"),
             GetType(MainWindow)
          )
 
@@ -438,35 +450,23 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub OnStepOver(sender As Object, e As RoutedEventArgs)
-            ActiveDocument.Errors.Clear()
-            Compile(ActiveDocument.Text, ActiveDocument.Errors)
+            Dim debugger = GetDebugger()
+            debugger.StepOver()
+        End Sub
 
-            If ActiveDocument.Errors.Count = 0 Then
-                Dim debugger = ProgramDebugger.GetDebugger(ActiveDocument)
-                debugger.StepOver()
-            End If
+        Private Sub OnStepInto(sender As Object, e As RoutedEventArgs)
+            Dim debugger = GetDebugger()
+            debugger.StepInto()
         End Sub
 
         Private Sub OnToggleBreakpoint(sender As Object, e As RoutedEventArgs)
-            Dim debugger = ProgramDebugger.GetDebugger(ActiveDocument)
-            Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(ActiveDocument.EditorControl.TextView)
-            Dim line = ActiveDocument.TextBuffer.CurrentSnapshot.GetLineFromPosition(ActiveDocument.EditorControl.TextView.Caret.Position.CharacterIndex)
-
-            If debugger.Breakpoints.Contains(line.LineNumber) Then
-                debugger.Breakpoints.Remove(line.LineNumber)
-                Dim array As StatementMarker() = stMarkerProvider.Markers.ToArray()
-
-                For Each statementMarker In array
-                    Dim containingLine As ITextSnapshotLine = statementMarker.Span.GetStartPoint(ActiveDocument.TextBuffer.CurrentSnapshot).GetContainingLine()
-
-                    If containingLine.LineNumber = line.LineNumber Then
-                        stMarkerProvider.RemoveMarker(statementMarker)
-                    End If
-                Next
-            Else
-                debugger.Breakpoints.Add(line.LineNumber)
-                stMarkerProvider.AddStatementMarker(New StatementMarker(New TextSpan(ActiveDocument.TextBuffer.CurrentSnapshot, line.Start, line.Length, SpanTrackingMode.EdgeInclusive), Colors.Red))
-            End If
+            Dim doc = ActiveDocument
+            Dim pos = doc.EditorControl.TextView.Caret.Position.CharacterIndex
+            Dim line = doc.TextBuffer.CurrentSnapshot.GetLineFromPosition(pos)
+            Dim lineNumber = line.LineNumber
+            Dim showBreakpoint As Boolean
+            doc.ToggleBreakpoint(lineNumber, showBreakpoint)
+            doc.EditorControl.LineNumberMargin.DrawBreakpoint(lineNumber, showBreakpoint)
         End Sub
 
         Private Sub CanWebSave(sender As Object, e As CanExecuteRoutedEventArgs)
@@ -480,7 +480,6 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub OnWebLoad(sender As Object, e As RoutedEventArgs)
             ImportDocument()
         End Sub
-
 
         Function CloseDocument(docIndex As Integer) As Boolean
             Dim item = mdiViews(docIndex)
@@ -659,22 +658,34 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Private Sub RunProgram(Optional buildOnly As Boolean = False)
-            'DebugProgram()
-            'Return
-            Mouse.OverrideCursor = Cursors.Wait
-            BuildAndRun(buildOnly)
-            Mouse.OverrideCursor = Nothing
+            Dim debugger = GetDebugger()
+            If debugger.IsDebuggerActive Then
+                debugger.Continue()
+            Else
+                Mouse.OverrideCursor = Cursors.Wait
+                BuildAndRun(buildOnly)
+                Mouse.OverrideCursor = Nothing
+            End If
         End Sub
 
-        Private Sub DebugProgram()
-            Dim compiler = BuildAndRun(True)
-            If compiler Is Nothing Then Return
-            Dim programEngine As New Engine.ProgramEngine(compiler)
-            programEngine.RunProgram()
+        Private Function GetDebugger() As ProgramDebugger
+            Dim doc = ActiveDocument
+            Dim key As String
+            If doc.Form = "" AndAlso Not doc.IsTheGlobalFile Then
+                key = doc.File
+            Else
+                key = ProjExplorer.ProjectDirectory
+            End If
+            Return ProgramDebugger.GetDebugger(key)
+        End Function
+
+        Private Sub OnDebugProgram()
+            Dim debugger = GetDebugger()
+            debugger.Run(False)
         End Sub
 
 
-        Friend Function BuildAndRun(buildOnly As Boolean) As Compiler
+        Friend Function BuildAndRun(buildOnly As Boolean) As List(Of Parser)
             Dim doc As TextDocument
 
             If tabDesigner.IsSelected Then
@@ -724,6 +735,7 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             Dim parsers As List(Of Parser)
+            sVB.ClassName = ""
 
             Try
                 If formNames.Count = 0 Then  ' Classic SB file without a form
@@ -791,12 +803,13 @@ Namespace Microsoft.SmallVisualBasic
                                 code = ""
                             End If
 
+                            sVB.ClassName = "_SmallVisualBasic_" & fName.ToLower()
                             errors = sVB.Compile(genCode, code, False, False, formNames)
 
                             If errors.Count = 0 Then
                                 Dim parser = sVB.Compiler.Parser
+                                parser.DocPath = sbCodeFile
                                 parser.IsMainForm = (fName = doc.Form)
-                                parser.ClassName = "_SmallVisualBasic_" & fName.ToLower()
                                 parsers.Add(parser)
 
                             Else
@@ -844,7 +857,7 @@ Namespace Microsoft.SmallVisualBasic
                 Return Nothing
             End If
 
-            If buildOnly Then Return sVB.Compiler
+            If buildOnly Then Return parsers
 
             currentProgramProcess = Process.Start(outputFileName)
             currentProgramProcess.EnableRaisingEvents = True
@@ -865,7 +878,7 @@ Namespace Microsoft.SmallVisualBasic
             Me.programRunningOverlay.Visibility = Visibility.Visible
             Me.endProgramButton.Focus()
 
-            Return sVB.Compiler
+            Return parsers
         End Function
 
         Private Sub PublishDocument(document As TextDocument)
@@ -1184,6 +1197,8 @@ Namespace Microsoft.SmallVisualBasic
             ' Window is closed normally
             SaveSetting("SmallVisualBasic", "Backup", "LastProject", "")
             SaveSetting("SmallVisualBasic", "Backup", "ProccessID", "")
+            SmallVisualBasic.Library.Program.End()
+            SmallVisualBasic.Library.TextWindow.Close()
         End Sub
 
         Sub DeleteTempProjects(tempDir As String)
@@ -1265,13 +1280,6 @@ Namespace Microsoft.SmallVisualBasic
 
             AddHandler DiagramHelper.Designer.PageShown, AddressOf FormDesigner_CurrentPageChanged
             AddHandler DiagramHelper.Designer.OnMenuItemClicked, AddressOf FormDesigner_OnMenuItemClicked
-
-            'DiagramHelper.Designer.SetDefaultPropertiesSub =
-            '    Sub()
-            '        DiagramHelper.Designer.SetDefaultProperties()
-            '        'Set any defaults you want here
-
-            '    End Sub
 
         End Sub
 
@@ -1597,7 +1605,7 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
             If Not formDesigner.SetControlName(controlIndex, newName) Then
-                ExitSelectionChanged=True
+                ExitSelectionChanged = True
                 tabCode.IsSelected = False
                 tabDesigner.IsSelected = True
                 ExitSelectionChanged = False
@@ -1926,8 +1934,6 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub BtnRun_Click(sender As Object, e As RoutedEventArgs)
             RunProgram()
         End Sub
-
-
     End Class
 
 

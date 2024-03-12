@@ -372,16 +372,28 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Function
 
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
-            Dim key = runner.GetKey(Iterator)
+            Dim iteratorKey = runner.GetKey(Iterator)
             Dim start = _InitialValue.Evaluate(runner)
             Dim [end] = _FinalValue.Evaluate(runner)
             Dim [step] = If(_StepValue Is Nothing,
                                         New Library.Primitive(1),
                                         _StepValue.Evaluate(runner)
                                   )
-            For i = start To [end] Step [step]
-                runner.Fields(key) = i
+
+            Dim startLine = ForToken.Line
+            Dim endLine = EndLoopToken.Line
+            Dim i = start
+            Do
+                If [step] > 0 Then
+                    If i > [end] Then Exit Do
+                ElseIf i < [end] Then
+                    Exit Do
+                End If
+
+                runner.Fields(iteratorKey) = i
                 Dim result = runner.Execute(Body)
+                If TypeOf result Is EndDebugging Then Return result
+
                 If TypeOf result Is JumpLoopStatement Then
                     Dim jumpSt = CType(result, JumpLoopStatement)
                     If jumpSt.StartToken.Type = TokenType.ExitLoop Then
@@ -396,14 +408,25 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         jumpSt.UpLevel -= 1
                         Return jumpSt
                     Else
-                        jumpSt.UpLevel = 0
-                        Continue For
+                        jumpSt.UpLevel = 0 ' continue current for.
                     End If
 
                 ElseIf TypeOf result Is ReturnStatement Then
                     Return result
+                ElseIf TypeOf result Is GotoStatement Then
+                    Dim label = CType(result, GotoStatement).Label
+                    If label.Line > EndLoopToken.Line OrElse label.Line < ForToken.Line Then
+                        Return result
+                    End If
                 End If
-            Next
+
+                runner.CheckForExecutionBreakAtLine(endLine)
+                ' iterator can be modified in loop body, so we need to update it
+                i = runner.Fields(iteratorKey)
+                i += [step]
+                runner.CheckForExecutionBreakAtLine(startLine)
+            Loop
+
             Return Nothing
         End Function
     End Class

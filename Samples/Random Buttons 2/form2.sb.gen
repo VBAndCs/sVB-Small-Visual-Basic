@@ -2,7 +2,8 @@
 '#Form2{
 '}
 
-Me = "Form2"
-Form2 = Forms.LoadForm("Form2", "form2.xaml")
+Me = "form2"
+_path = Program.Directory + "\form2.xaml"
+Form2 = Forms.LoadForm("Form2", _path)
 Form.SetArgsArr(form2, Stack.PopValue("_form2_argsArr"))
 Form.Show(Form2)

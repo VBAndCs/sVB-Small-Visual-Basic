@@ -15,6 +15,13 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             _Literal = literal
         End Sub
 
+        Public Sub New(literal As String)
+            _Literal = New Token() With {
+                .Text = literal,
+                .Type = TokenType.StringLiteral
+            }
+        End Sub
+
         Public Property Literal As Token
 
         Public Shared ReadOnly Zero As New LiteralExpression(

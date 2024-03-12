@@ -16,10 +16,19 @@ Class sVB
         Compiler.CreateNewParser()
         _compiler.Parser.FormNames = formNames
 
-        hints = WinForms.PreCompiler.ParseFormHints(genCode)
-        AddCodeLines(genCode)
-        LineOffset = If(lines.Count = 0, 0, lines.Count)
+        If genCode = "" Then
+            LineOffset = 0
+        Else
+            hints = WinForms.PreCompiler.ParseFormHints(genCode)
+            AddCodeLines(genCode)
+            LineOffset = If(lines.Count = 0, 0, lines.Count)
+        End If
+
         AddCodeLines(code)
+        _compiler.Parser.DocStartLine = LineOffset
+        If ClassName <> "" Then
+            _compiler.Parser.ClassName = ClassName
+        End If
     End Sub
 
     Sub AddCodeLines(code As String)
@@ -57,6 +66,7 @@ Class sVB
     End Property
 
     Private Shared _mainWindow As MainWindow
+    Friend Shared ClassName As String
 
     Private Shared ReadOnly Property MainWindow As MainWindow
         Get
@@ -116,6 +126,7 @@ Class sVB
         Dim parsers As New List(Of Parser)
 
         If IO.File.Exists(globalFile) Then
+            _compiler = New Compiler()
             Compiler.ExeFile = outputFileName
             Dim globalDoc = MainWindow.GetDocIfOpened(globalFile)
             Dim compileGlobal = True
@@ -165,6 +176,12 @@ Class sVB
             End If
         End If
 
+        If parsers.Count > 0 Then
+            parsers(0).DocPath = globalFile
+        End If
+
+        ' Note that return nothing means there are errors in code
+        ' but returning empty list of parsers mean ther is no global file
         Return parsers
     End Function
 
@@ -179,6 +196,7 @@ Class sVB
         Dim errors = Compile(genCode, code)
 
         If errors.Count = 0 Then
+            Compiler.Parser.DocPath = doc.File
             parsers.Add(Compiler.Parser)
             Return True
         Else

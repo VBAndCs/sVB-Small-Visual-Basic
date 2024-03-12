@@ -7,87 +7,113 @@ Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Microsoft.SmallVisualBasic.Engine
     Public Class ProgramEngine
-        Inherits MarshalByRefObject
 
-        Public ReadOnly Property Breakpoints As List(Of Integer)
-
-        Public Property DebuggerAppDomain As AppDomain
-
-        Public Property Compiler As Compiler
+        Public Property Parsers As List(Of Parser)
 
         Public Property CurrentDebuggerState As DebuggerState
 
-        Public Property CurrentInstruction As Instruction
+        Public ReadOnly Property CurrentLineNumber As Integer
+            Get
+                Return CurrentRunner.CurrentLineNumber
+            End Get
+        End Property
 
         Public Property Translator As ProgramTranslator
 
-        Public Property Runner As ProgramRunner
+        Public Property CurrentRunner As ProgramRunner
+        Public runners As Dictionary(Of Parser, ProgramRunner)
 
-        Public Event DebuggerStateChanged As EventHandler
-        Public Event EngineUnloaded As EventHandler
-        Public Event LineNumberChanged As EventHandler
-
-        Public Sub New(compiler As Compiler)
-            Me.Compiler = compiler
-            '_Translator = New ProgramTranslator(Me.Compiler)
-            '_Translator.TranslateProgram()
-            Dim info As New AppDomainSetup() With {
-                .LoaderOptimization = LoaderOptimization.MultiDomain
-            }
-            _DebuggerAppDomain = AppDomain.CreateDomain("Debuggee", Nothing, info)
-            _DebuggerAppDomain.SetData("ProgramEngine", Me)
-            _DebuggerAppDomain.DoCallBack(AddressOf InitializeRunner)
-            AddHandler _DebuggerAppDomain.DomainUnload, Sub() RaiseEvent EngineUnloaded(Me, EventArgs.Empty)
+        Public Sub New(parsers As List(Of Parser))
+            Me.Parsers = parsers
+            InitializeRunner()
         End Sub
 
+        Friend GlobalParser As Parser
+
         Private Sub InitializeRunner()
-            _Runner = New ProgramRunner(_DebuggerAppDomain)
-            AddHandler _Runner.DebuggerStateChanged, Sub() RaiseDebuggerStateChangedEvent(Runner.DebuggerState)
-            AddHandler _Runner.LineNumberChanged, Sub() RaiseLineNumberChangedEvent(Runner.CurrentInstruction)
+            Dim mainParser, formParsr As Parser
+
+            For Each p In Parsers
+                If p.IsMainForm Then
+                    mainParser = p
+                    Exit For
+                ElseIf p.IsGlobal Then
+                    GlobalParser = p
+                Else
+                    formParsr = p
+                End If
+            Next
+
+            If mainParser Is Nothing Then mainParser = formParsr
+            runners = New Dictionary(Of Parser, ProgramRunner)
+            _CurrentRunner = New ProgramRunner(Me, mainParser)
+            If GlobalParser IsNot Nothing Then
+                Dim __ = New ProgramRunner(Me, GlobalParser)
+            End If
         End Sub
 
         Public Sub AddBreakpoint(lineNumber As Integer)
-            DebuggerAppDomain.DoCallBack(Sub() Runner.Breakpoints.Add(lineNumber))
+            CurrentRunner.Breakpoints.Add(lineNumber)
         End Sub
 
         Public Sub [Continue]()
-            DebuggerAppDomain.DoCallBack(Sub() Runner.Continue())
+            CurrentRunner.DebuggerCommand = DebuggerCommand.Run
+            CurrentRunner.Continue()
         End Sub
 
         Public Sub Pause()
-            DebuggerAppDomain.DoCallBack(Sub() Runner.Pause())
+            CurrentRunner.Pause()
         End Sub
 
-        Private Sub RaiseDebuggerStateChangedEvent(currentState As DebuggerState)
-            CurrentDebuggerState = currentState
-            RaiseEvent DebuggerStateChanged(Me, EventArgs.Empty)
-        End Sub
-
-        Private Sub RaiseLineNumberChangedEvent(currentInstruction As Instruction)
-            Me.CurrentInstruction = currentInstruction
-            RaiseEvent LineNumberChanged(Me, EventArgs.Empty)
-        End Sub
 
         Public Sub StepInto()
-            DebuggerAppDomain.DoCallBack(Sub() Runner.StepInto())
+            CurrentRunner.StepInto()
         End Sub
 
         Public Sub StepOver()
-            DebuggerAppDomain.DoCallBack(Sub() Runner.StepOver())
+            CurrentRunner.StepOver()
         End Sub
 
         Public Sub Reset()
-            DebuggerAppDomain.DoCallBack(Sub() Runner.Reset())
+            CurrentRunner.Reset()
         End Sub
 
-        Public Sub RunProgram()
-            _DebuggerAppDomain.DoCallBack(
-                Sub() Runner.RunProgram(stopOnFirstInstruction:=False)
-            )
+
+        Friend StopOnFirstStaement As Boolean
+
+        Public Sub RunProgram(Optional stopOnFirstStaement As Boolean = False)
+            Me.StopOnFirstStaement = stopOnFirstStaement
+            DoRunProgram()
         End Sub
 
-        Public Sub RunProgram(stopOnFirstInstruction As Boolean)
-            DebuggerAppDomain.DoCallBack(Sub() Runner.RunProgram(stopOnFirstInstruction:=True))
+        Private Sub DoRunProgram()
+            Dim debuggerThread As New Thread(
+                Sub()
+                    WinForms.GeometricPath.CreatePath()
+                    Try
+                        Library.TextWindow.ClearIfLoaded()
+                    Catch
+                    End Try
+
+                    Library.Program.IsTerminated = False
+                    CurrentRunner.currentThread = Thread.CurrentThread
+                    Dim result = CurrentRunner.Execute(CurrentRunner.currentParser.ParseTree)
+                    CurrentRunner.DoStepOver = False ' Allow event hanlers to break
+
+                    Try
+                        Library.TextWindow.PauseThenClose()
+                    Catch
+                    End Try
+                End Sub
+             )
+            debuggerThread.IsBackground = True
+            debuggerThread.Start()
+        End Sub
+
+        Public Sub Disopese()
+            Me.Parsers = Nothing
+            Me.CurrentRunner = Nothing
+            Me.GlobalParser = Nothing
         End Sub
     End Class
 

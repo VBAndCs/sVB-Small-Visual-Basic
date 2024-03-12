@@ -22,7 +22,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 runner.Pause()
             End If
 
-            runner.ExecuteInstructions(runner.SubroutineInstructions(_SubroutineName))
+            'runner.ExecuteInstructions(runner.SubroutineInstructions(_SubroutineName))
             runner.DebuggerCommand = command
             Return Nothing
         End Function

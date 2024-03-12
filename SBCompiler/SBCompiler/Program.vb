@@ -1,9 +1,7 @@
-﻿Imports System
-Imports System.IO
+﻿Imports System.IO
 
 Namespace Microsoft.SmallVisualBasic
     Friend NotInheritable Class Program
-
         Private _text3 As String = "
 i = 15
 j = 23
@@ -140,5 +138,6 @@ EndSub"
                 Console.WriteLine()
             End While
         End Sub
+
     End Class
 End Namespace

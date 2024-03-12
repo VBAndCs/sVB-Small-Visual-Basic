@@ -201,11 +201,11 @@ Namespace Microsoft.SmallVisualBasic
             iLGenerator.EmitCall(OpCodes.Call, beginProgram, Nothing)
             iLGenerator.EmitCall(OpCodes.Call, mainFormInit, Nothing)
 
-            Dim pauseIfVisible = GetType(TextWindow).GetMethod(
-                "PauseIfVisible",
+            Dim pauseThenClose = GetType(TextWindow).GetMethod(
+               NameOf(TextWindow.PauseThenClose),
                 BindingFlags.Static Or BindingFlags.Public
              )
-            iLGenerator.EmitCall(OpCodes.Call, pauseIfVisible, Nothing)
+            iLGenerator.EmitCall(OpCodes.Call, pauseThenClose, Nothing)
 
             iLGenerator.Emit(OpCodes.Ret)
             Return True

@@ -122,8 +122,20 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Function
 
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
+            Dim firstTime = True
+            Dim startLine = WhileToken.Line
+            Dim endLine = EndLoopToken.Line
+
             Do While Condition.Evaluate(runner)
+                If firstTime Then
+                    firstTime = False
+                Else
+                    runner.CheckForExecutionBreakAtLine(startLine)
+                End If
+
                 Dim result = runner.Execute(Body)
+                If TypeOf result Is EndDebugging Then Return result
+
                 If TypeOf result Is JumpLoopStatement Then
                     Dim jumpSt = CType(result, JumpLoopStatement)
                     If jumpSt.StartToken.Type = TokenType.ExitLoop Then
@@ -144,8 +156,21 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                 ElseIf TypeOf result Is ReturnStatement Then
                     Return result
+
+                ElseIf TypeOf result Is GotoStatement Then
+                    Dim label = CType(result, GotoStatement).Label
+                    If label.Line > EndLoopToken.Line OrElse label.Line < WhileToken.Line Then
+                        Return result
+                    End If
                 End If
+
+                runner.CheckForExecutionBreakAtLine(endLine)
             Loop
+
+            If Not firstTime Then
+                ' Stop at while for last ckecl for the false condition
+            End If
+
             Return Nothing
         End Function
     End Class
