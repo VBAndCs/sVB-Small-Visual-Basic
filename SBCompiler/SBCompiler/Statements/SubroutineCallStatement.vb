@@ -117,7 +117,17 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
 
             Dim subroutine = targetRunner.SymbolTable.Subroutines(subName)
+            If IsGlobalFunc Then
+                If runner.DebuggerCommand = DebuggerCommand.StepInto Then
+                    targetRunner.DebuggerCommand = DebuggerCommand.StepInto
+                End If
+                targetRunner.CurrentThread = Threading.Thread.CurrentThread
+                runner.Engine.CurrentRunner = targetRunner
+            End If
+
             Dim result = subroutine.Parent.Execute(targetRunner)
+            runner.Engine.CurrentRunner = runner
+            runner.PauseAtReturn = True
             Return If(TypeOf result Is EndDebugging, result, Nothing)
         End Function
     End Class

@@ -235,37 +235,56 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
             Dim result As Statement = Nothing
             Dim done = False
+            Dim stepOut = False
+            runner.IncreaseDepthOfShortSteps(stepOut)
 
             If CBool(Condition.Evaluate(runner)) Then
                 result = runner.Execute(ThenStatements)
+                runner.DecreaseDepthOfShortStepOut(stepOut)
                 done = True
 
             ElseIf ElseIfStatements.Count > 0 Then
                 For i = 0 To ElseIfStatements.Count - 1
                     Dim st = ElseIfStatements(i)
                     runner.CheckForExecutionBreakAtLine(st.ElseIfToken.Line)
+                    runner.IncreaseDepthOfShortSteps(stepOut)
                     If CBool(st.Condition.Evaluate(runner)) Then
                         result = st.Execute(runner)
+                        runner.DecreaseDepthOfShortStepOut(stepOut)
                         done = True
                         Exit For
                     End If
                 Next
             End If
 
-            If Not done AndAlso ElseStatements.Count > 0 Then
+            If Not done AndAlso Not ElseToken.IsIllegal Then
                 runner.CheckForExecutionBreakAtLine(ElseToken.Line)
-                result = runner.Execute(ElseStatements)
+                runner.IncreaseDepthOfShortSteps(stepOut)
+                If ElseStatements.Count > 0 Then
+                    result = runner.Execute(ElseStatements)
+                    runner.DecreaseDepthOfShortStepOut(stepOut)
+                End If
             End If
 
             If TypeOf result Is EndDebugging OrElse
                         TypeOf result Is GotoStatement OrElse
                         TypeOf result Is ReturnStatement OrElse
                         TypeOf result Is JumpLoopStatement Then
+                If stepOut Then runner.Depth -= 1
                 Return result
+
             Else
                 runner.CheckForExecutionBreakAtLine(EndIfToken.Line)
+
+                If Not (runner.DebuggerCommand = DebuggerCommand.ShortStepOut AndAlso
+                        runner.StepOverLineNumber = EndIfToken.Line) Then
+                    runner.DecreaseDepthOfShortStepOut(stepOut)
+                    If stepOut Then runner.Depth -= 1
+                End If
+
                 Return Nothing
             End If
         End Function
+
     End Class
 End Namespace

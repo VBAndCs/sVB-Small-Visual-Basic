@@ -11707,7 +11707,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 2.9.0.7"
+        "ProductName" = "8:Small Visual Basic 2.9.7"
         "ProductCode" = "8:{CEDD10BD-0D95-48A0-B7CE-130A91C1C017}"
         "PackageCode" = "8:{6505187B-38E6-4768-877C-C413DFF2B3C4}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -11901,7 +11901,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 2.9.0.7"
+            "Name" = "8:sVB 2.9.7"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -11929,7 +11929,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 2.9.0.7"
+            "Name" = "8:sVB 2.9.7"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -11943,7 +11943,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 2.9.0.7"
+            "Name" = "8:sVB 2.9.7"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

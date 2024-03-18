@@ -284,26 +284,38 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         Else
                             Dim subExpr = TryCast(RightValue, IdentifierExpression)
                             Dim subroutine = runner.SymbolTable.Subroutines(subExpr.Identifier.LCaseText)
-                            eventInfo.GetAddMethod().Invoke(Nothing, {
-                                 CType(Sub()
-                                           Dim handlerThread As New Threading.Thread(
-                                                Sub()
-                                                    If runner.DebuggerState = DebuggerState.Paused Then
-                                                        If typeInfo.Name.EndsWith("Timer") AndAlso eventInfo.Name.EndsWith("Tick") Then
-                                                            Return
-                                                        Else
-                                                            MsgBox("You are running the program in debug mode, and it is curreuntly paused, so you can't do anything before resuming execution. You will be switched to the current line that has the break point.")
-                                                            runner.RaiseDebuggerStateChanged()
-                                                        End If
-                                                    Else
-                                                        runner.CurrentThread = Threading.Thread.CurrentThread
-                                                        subroutine.Parent.Execute(runner)
-                                                    End If
-                                                    runner.DoStepOver = False
-                                                End Sub)
-                                           handlerThread.IsBackground = True
-                                           handlerThread.Start()
-                                       End Sub, SmallVisualBasicCallback)
+                            eventInfo.GetAddMethod().Invoke(Nothing, {CType(
+                                   Sub()
+                                       If runner.Engine.BreakMode Then
+                                           If Not (typeInfo.Name.EndsWith("Timer") AndAlso eventInfo.Name.EndsWith("Tick")) Then
+                                               MsgBox("You are running the program in debug mode, and it is curreuntly paused, so you can't do anything before resuming execution. You will be switched to the current line that has the break point.")
+                                               runner.Engine.RaiseDebuggerStateChangedEvent()
+                                           End If
+                                           Return
+                                       End If
+
+                                       If runner.EventTreads.ContainsKey(eventInfo) Then
+                                           If runner.EventTreads(eventInfo) Then Return
+                                       End If
+                                       runner.EventTreads(eventInfo) = True
+
+                                       Dim handlerThread As New Threading.Thread(
+                                            Sub()
+                                                runner.CurrentThread = Threading.Thread.CurrentThread
+                                                subroutine.Parent.Execute(runner)
+                                                Dim dc = runner.DebuggerCommand
+                                                If dc = DebuggerCommand.StepOut OrElse
+                                                            dc = DebuggerCommand.StopOnNextLine Then
+                                                    runner.DebuggerCommand = DebuggerCommand.Run
+                                                End If
+                                                runner.StepAround = False
+                                                runner.Engine.BreakMode = False
+                                                runner.EventTreads(eventInfo) = False
+                                            End Sub)
+
+                                       handlerThread.IsBackground = True
+                                       handlerThread.Start()
+                                   End Sub, SmallVisualBasicCallback)
                             })
                         End If
 
@@ -325,9 +337,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             If idExpr IsNot Nothing Then
                 Dim arrName = runner.GetKey(idExpr.Identifier)
                 Dim arr As Primitive = Nothing
-                If Not fields.TryGetValue(arrName, arr) Then
-                    arr = Nothing
-                End If
+                fields.TryGetValue(arrName, arr)
                 fields(arrName) = Primitive.SetArrayValue(value, arr, arrExpr.Indexer.Evaluate(runner))
 
             Else
@@ -335,7 +345,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 If arrExpr2 IsNot Nothing Then
                     Dim arr2 = Primitive.SetArrayValue(
                           value,
-                          arrExpr.Evaluate(runner),
+                          arrExpr2.Evaluate(runner),
                           arrExpr.Indexer.Evaluate(runner)
                     )
                     SetArrayValue(runner, arrExpr2, arr2)

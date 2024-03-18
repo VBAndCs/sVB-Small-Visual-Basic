@@ -13,6 +13,7 @@ Namespace WinForms
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class MainMenu
+
         Private Shared Function GetMenu(menuName As String) As Wpf.Menu
             Dim c = Control.GetControl(menuName)
             Dim m = TryCast(c, Wpf.Menu)

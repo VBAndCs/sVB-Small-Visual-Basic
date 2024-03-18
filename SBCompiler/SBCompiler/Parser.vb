@@ -17,7 +17,7 @@ Namespace Microsoft.SmallVisualBasic
         Private lineOffset As Integer
 
         Public DocStartLine As Integer
-        Public ClassName As String = "_SmallVisualBasic_Module1"
+        Public ClassName As String = WinForms.Forms.FormPrefix & "Module1"
         Public IsMainForm As Boolean
         Public IsGlobal As Boolean
         Public FormNames As List(Of String)
@@ -483,12 +483,12 @@ Namespace Microsoft.SmallVisualBasic
                 If assignStatement.RightValue Is Nothing Then
                     If commaLine = -2 Then Return Nothing
                     AddError(tokenEnum.Current, ResourceHelper.GetString("ExpressionExpected"))
-                ElseIf assignStatement.StartToken.LCaseText = "timer" AndAlso ClassName.Length > 18 Then
+                ElseIf assignStatement.StartToken.LCaseText = "timer" AndAlso ClassName.Length > WinForms.Forms.FormPrefix.Length Then
                     Dim propExpr = TryCast(assignStatement.LeftValue, PropertyExpression)
                     If propExpr IsNot Nothing AndAlso propExpr.PropertyName.LCaseText = "tick" Then
                         Dim p As New Parser()
                         p.lineOffset = assignStatement.StartToken.Line
-                        p.Parse(New List(Of String) From {$"Forms.TimerParentForm = ""{ClassName.Substring(18).ToLower()}"""})
+                        p.Parse(New List(Of String) From {$"Forms.TimerParentForm = ""{ClassName.Substring(WinForms.Forms.FormPrefix.Length).ToLower()}"""})
                         _ParseTree.Add(p.ParseTree(0))
                     End If
 
@@ -541,7 +541,7 @@ Namespace Microsoft.SmallVisualBasic
             Return BuildExpression(tokenEnum, includeLogical:=True)
         End Function
 
-        Private Function BuildExpression(tokenEnum As TokenEnumerator, includeLogical As Boolean) As Expression
+        Friend Function BuildExpression(tokenEnum As TokenEnumerator, includeLogical As Boolean) As Expression
             If tokenEnum.IsEnd Then
                 Return Nothing
             End If

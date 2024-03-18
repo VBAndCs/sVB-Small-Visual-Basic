@@ -28,8 +28,11 @@ Namespace Microsoft.SmallVisualBasic.Utility
         Private _membersStyle As Style
         Private _linkStyle As Style
 
+        Dim IsDebugging As Boolean
+        Dim debugger As ProgramDebugger
         Dim gotoRun As New TextRun()
         Dim WithEvents gotoDefinintion As New Hyperlink(gotoRun)
+        Friend DontShowHelp As Boolean
 
         Public Property CompletionItemWrapper As CompletionItemWrapper
             Get
@@ -37,13 +40,18 @@ Namespace Microsoft.SmallVisualBasic.Utility
             End Get
 
             Set(value As CompletionItemWrapper)
+                If DontShowHelp Then
+                    DontShowHelp = False
+                    Return
+                End If
+
                 _itemWrapper = value
                 Dim item = value.CompletionItem
+                If item.Key = "" Then item.Key = item.DisplayName.ToLower()
 
-
-                Dim doc = MainWindow.ActiveDocument
+                Dim doc = mainWindow.ActiveDocument
                 Dim textView = CType(doc.EditorControl.TextView, Nautilus.Text.Editor.AvalonTextView)
-                Dim popHelp = MainWindow.PopHelp
+                Dim popHelp = mainWindow.PopHelp
 
                 If App.CntxMenuIsOpened OrElse CompletionItemWrapper.Documentation Is Nothing Then
                     popHelp.IsOpen = False
@@ -53,21 +61,28 @@ Namespace Microsoft.SmallVisualBasic.Utility
                 helpDocument.Blocks.Clear()
                 methodType = _itemWrapper.Documentation?.Suffix
 
+                debugger = mainWindow.GetDebugger(True)
+                IsDebugging = debugger IsNot Nothing AndAlso debugger.IsActive
+
                 Select Case value.SymbolType
                     Case SymbolType.Method, SymbolType.Subroutine
                         FillInfo(True)
 
-                    Case SymbolType.Control, SymbolType.GlobalModule,
-                             SymbolType.DynamicProperty,
-                             SymbolType.Label, SymbolType.Literal,
-                             SymbolType.GlobalVariable, SymbolType.LocalVariable
+                    Case SymbolType.GlobalModule, SymbolType.Label,
+                             SymbolType.Literal
                         FillInfo(False)
 
-                    Case SymbolType.Property, SymbolType.Event
-                        Dim type = value.SymbolType.ToString() & ": " & GetTypeDisplayName()
-                        Dim definition As New Span()
-                        FillTitle(definition)
-                        FillDescription(definition, If(type = "", "", type & "."))
+                    Case SymbolType.Control, SymbolType.DynamicProperty,
+                             SymbolType.GlobalVariable, SymbolType.LocalVariable
+                        FillInfo(False)
+                        If IsDebugging Then AddRuntimeValue()
+
+                    Case SymbolType.Property
+                        FillPtoperty()
+                        If IsDebugging Then AddRuntimeValue()
+
+                    Case SymbolType.Event
+                        FillPtoperty()
 
                     Case SymbolType.Type
                         methodType = " Type"
@@ -83,17 +98,74 @@ Namespace Microsoft.SmallVisualBasic.Utility
 
                 FillExample()
 
-                popHelp.PlacementTarget = textView
-                Dim caret = textView.Caret
-                popHelp.HorizontalOffset = 10
-                popHelp.MaxWidth = textView.ActualWidth - 20
-                popHelp.MaxHeight = Math.Min(250, textView.ActualHeight - caret.Top)
-                popHelp.VerticalOffset = caret.Top + caret.Height + 5
-                popHelp.IsOpen = True
-                popHelp.Tag = textView
-                AddHandler textView.ScrollChaged, AddressOf OnScrollChaged
+                ShowPopup()
+
             End Set
         End Property
+
+        Sub ShowPopup()
+            Dim doc = mainWindow.ActiveDocument
+            Dim textView = CType(doc.EditorControl.TextView, Nautilus.Text.Editor.AvalonTextView)
+            Dim popHelp = mainWindow.PopHelp
+            popHelp.PlacementTarget = textView
+            Dim caret = textView.Caret
+            popHelp.HorizontalOffset = 10
+            popHelp.MaxWidth = textView.ActualWidth - 20
+            popHelp.MaxHeight = Math.Min(250, textView.ActualHeight - caret.Top)
+            popHelp.VerticalOffset = caret.Top + caret.Height + 5
+            popHelp.IsOpen = True
+            popHelp.Tag = textView
+            AddHandler textView.ScrollChaged, AddressOf OnScrollChaged
+        End Sub
+
+        Private Sub FillPtoperty()
+            Dim type = _itemWrapper.SymbolType.ToString() & ": " & GetTypeDisplayName()
+            Dim definition As New Span()
+            FillTitle(definition)
+            FillDescription(definition, If(type = "", "", type & "."))
+        End Sub
+
+        Private Sub AddRuntimeValue()
+            Dim item = _itemWrapper.CompletionItem
+            Dim objectName = item.ObjectName
+            item.ObjectName = _itemWrapper.ObjectName
+            Dim runtimeValue = debugger.Evaluate(item)
+            item.ObjectName = objectName
+
+            If runtimeValue.HasValue Then
+                FillRuntimeValue(runtimeValue.Value)
+            End If
+        End Sub
+
+        Private Sub FillRuntimeValue(value As Library.Primitive)
+            Dim p = New Paragraph() With {.Margin = New Thickness(0, 0, 0, 5)}
+            helpDocument.Blocks.Add(p)
+            Dim inlines = p.Inlines
+            inlines.Add(New TextRun With {
+                .Text = "Value: ",
+                .Style = _typeStyle
+            })
+
+            Dim strValue As String
+            If value.IsEmpty Then
+                strValue = ChrW(34) & ChrW(34)
+            ElseIf value.IsArray Then
+                strValue = Library.Text.ToStr(value)
+            ElseIf value.IsDate Then
+                strValue = New Date(CDec(value)).ToString()
+            ElseIf value.IsTimeSpan Then
+                strValue = New TimeSpan(CDec(value)).ToString()
+            ElseIf value.IsNumber OrElse value.IsBoolean Then
+                strValue = CStr(value)
+            Else
+                strValue = ChrW(34) & CStr(value) & ChrW(34)
+            End If
+
+            inlines.Add(New TextRun With {
+                .Text = strValue,
+                .Style = _selectedStyle
+            })
+        End Sub
 
         Private Function GetTypeDisplayName() As String
             Dim type = _itemWrapper.CompletionItem.MemberInfo?.DeclaringType
@@ -201,12 +273,10 @@ Namespace Microsoft.SmallVisualBasic.Utility
             FillDescription(definition, If(name = "", documentation.Prefix, name & "."), addAllParams)
 
             ' Add param Info
-            If params.Count > 0 Then
-
+            If params.Count > 0 AndAlso Not (IsDebugging AndAlso (addAllParams OrElse paramIndex = params.Count)) Then
                 Dim paramsDocs As New Paragraph With {
                     .Margin = New Thickness(15, 0, 0, 5)
                 }
-
                 Dim inlines = paramsDocs.Inlines
                 Dim n = params.Count - 1
 
@@ -226,6 +296,14 @@ Namespace Microsoft.SmallVisualBasic.Utility
                             })
                     End If
                 Next
+
+                If IsDebugging AndAlso paramIndex > -1 AndAlso paramIndex < params.Count Then
+                    Dim key = item.DisplayName.ToLower & "." & params(paramIndex).ToLower()
+                    Dim fields = debugger.ProgramEngine.CurrentRunner.Fields()
+                    If fields.ContainsKey(key) Then
+                        FillRuntimeValue(fields(key))
+                    End If
+                End If
 
                 If inlines.Count > 0 Then
                     If addAllParams Then
@@ -256,6 +334,35 @@ Namespace Microsoft.SmallVisualBasic.Utility
                         .Style = _paramsDescriptionStyle
                     })
             End If
+        End Sub
+
+        Friend Sub ShowExpression(expression As String, value As Library.Primitive)
+            DontShowHelp = True
+            Dim doc = mainWindow.ActiveDocument
+            Dim textView = CType(doc.EditorControl.TextView, Nautilus.Text.Editor.AvalonTextView)
+            Dim popHelp = mainWindow.PopHelp
+
+            If App.CntxMenuIsOpened Then
+                popHelp.IsOpen = False
+                Return
+            End If
+
+            helpDocument.Blocks.Clear()
+            If expression.Length > 50 Then expression = expression.Substring(0, 50) & " ..."
+            Dim definition As New Span()
+            definition.Inlines.Add(New TextRun() With {
+                    .Text = "Expression: ",
+                    .Style = _typeStyle
+            })
+            definition.Inlines.Add(New TextRun() With {
+                    .Text = expression,
+                    .Style = _linkStyle
+            })
+            Dim p = New Paragraph()
+            p.Inlines.Add(definition)
+            helpDocument.Blocks.Add(p)
+            FillRuntimeValue(value)
+            ShowPopup()
         End Sub
 
         Private Sub FillParams(definition As Span)

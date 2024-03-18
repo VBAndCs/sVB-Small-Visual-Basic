@@ -3,6 +3,7 @@ Imports System.ComponentModel
 Imports System.Windows.Markup
 Imports System.Xml
 Imports ItemPair = System.Tuple(Of System.Windows.Controls.ListBoxItem, DiagramHelper.DiagramPanel)
+
 Public Class Designer
     Inherits ListBox
 
@@ -407,6 +408,7 @@ Public Class Designer
         CurrentPage = New Designer()
         PagesGrid.Children.Add(CurrentPage)
         Helper.UpdateControl(CurrentPage)
+        Helper.UpdateControl(PagesGrid)
     End Sub
 
     Public Shared Function OpenNewPage(Optional UpdateCurrentPage As Boolean = True) As String
@@ -701,81 +703,85 @@ Public Class Designer
         End If
 
         For Each child In canvas.Children
-            Dim diagram = TryCast(Helper.Clone(child), FrameworkElement)
-            If diagram Is Nothing Then Continue For
+            Me.Dispatcher.BeginInvoke(
+                Sub()
+                    Dim diagram = TryCast(Helper.Clone(child), FrameworkElement)
+                    If diagram Is Nothing Then Return
 
-            If TypeOf diagram Is Menu Then
-                Me.SetValue(MainMenuProperty, diagram)
-                Continue For
-            End If
+                    If TypeOf diagram Is Menu Then
+                        Me.SetValue(MainMenuProperty, diagram)
+                        Return
+                    End If
 
-            If diagram.Name = "__FORM__PROPS__" Then
-                Me.DesignerCanvas.MinWidth = diagram.MinWidth
-                Me.DesignerCanvas.MinHeight = diagram.MinHeight
-                Me.DesignerCanvas.MaxWidth = diagram.MaxWidth
-                Me.DesignerCanvas.MaxHeight = diagram.MaxHeight
-                Me.Tag = diagram.Tag
-                Me.PageToolTip = diagram.ToolTip
-                Me.PageLeft = diagram.GetValue(Canvas.LeftProperty)
-                Me.PageTop = diagram.GetValue(Canvas.TopProperty)
-                Continue For
-            End If
+                    If diagram.Name = "__FORM__PROPS__" Then
+                        Me.DesignerCanvas.MinWidth = diagram.MinWidth
+                        Me.DesignerCanvas.MinHeight = diagram.MinHeight
+                        Me.DesignerCanvas.MaxWidth = diagram.MaxWidth
+                        Me.DesignerCanvas.MaxHeight = diagram.MaxHeight
+                        Me.Tag = diagram.Tag
+                        Me.PageToolTip = diagram.ToolTip
+                        Me.PageLeft = diagram.GetValue(Canvas.LeftProperty)
+                        Me.PageTop = diagram.GetValue(Canvas.TopProperty)
+                        Return
+                    End If
 
-            Me.Items.Add(diagram)
-            Helper.UpdateControl(Me)
+                    Me.Items.Add(diagram)
+                    CurrentPage.UpdateLayout()
 
-            ' Restore the GroupID and DiagramText properties
-            Dim txt = Automation.AutomationProperties.GetHelpText(diagram)
-            If txt <> "" Then
-                SetControlText(diagram, txt)
-                diagram.ClearValue(Automation.AutomationProperties.HelpTextProperty)
-            End If
+                    ' Restore the GroupID and DiagramText properties
+                    Dim txt = Automation.AutomationProperties.GetHelpText(diagram)
+                    If txt <> "" Then
+                        SetControlText(diagram, txt)
+                        diagram.ClearValue(Automation.AutomationProperties.HelpTextProperty)
+                    End If
 
-            Dim gId = Automation.AutomationProperties.GetAutomationId(diagram)
-            If gId = "" Then
-                diagram.ClearValue(GroupIDProperty)
-            Else
-                SetGroupID(diagram, gId)
-                diagram.ClearValue(Automation.AutomationProperties.AutomationIdProperty)
-            End If
+                    Dim gId = Automation.AutomationProperties.GetAutomationId(diagram)
+                    If gId = "" Then
+                        diagram.ClearValue(GroupIDProperty)
+                    Else
+                        SetGroupID(diagram, gId)
+                        diagram.ClearValue(Automation.AutomationProperties.AutomationIdProperty)
+                    End If
 
-            ' the diagram must be visible and enanled at design time, so store actual values in attached properties
-            diagram.SetValue(DiagramPanel.IsDiagramEnabledProperty, diagram.IsEnabled)
-            diagram.IsEnabled = True
-            diagram.SetValue(DiagramPanel.IsDiagramVisibleProperty, diagram.Visibility = Visibility.Visible)
-            diagram.Visibility = Visibility.Visible
+                    ' the diagram must be visible and enanled at design time, so store actual values in attached properties
+                    diagram.SetValue(DiagramPanel.IsDiagramEnabledProperty, diagram.IsEnabled)
+                    diagram.IsEnabled = True
+                    diagram.SetValue(DiagramPanel.IsDiagramVisibleProperty, diagram.Visibility = Visibility.Visible)
+                    diagram.Visibility = Visibility.Visible
 
-            Dim pnl = Helper.GetDiagramPanel(diagram)
-            pnl.MaxWidth = diagram.MaxWidth
-            diagram.MaxWidth = Double.PositiveInfinity
-            pnl.MaxHeight = diagram.MaxHeight
-            diagram.MaxHeight = Double.PositiveInfinity
+                    Dim pnl = Helper.GetDiagramPanel(diagram)
+                    If pnl IsNot Nothing Then
+                        pnl.MaxWidth = diagram.MaxWidth
+                        diagram.MaxWidth = Double.PositiveInfinity
+                        pnl.MaxHeight = diagram.MaxHeight
+                        diagram.MaxHeight = Double.PositiveInfinity
+                        pnl.SetSize(diagram.Width, diagram.Height)
+                    End If
+                    diagram.ClearValue(WidthProperty)
+                    diagram.ClearValue(HeightProperty)
 
-            pnl.SetSize(diagram.Width, diagram.Height)
-            diagram.ClearValue(WidthProperty)
-            diagram.ClearValue(HeightProperty)
+                    Dim left = Canvas.GetLeft(diagram)
+                    If Double.IsNaN(left) Then left = 0
+                    SetLeft(diagram, left)
 
-            Dim left = Canvas.GetLeft(diagram)
-            If Double.IsNaN(left) Then left = 0
-            SetLeft(diagram, left)
+                    Dim top = Canvas.GetTop(diagram)
+                    If Double.IsNaN(top) Then top = 0
+                    Designer.SetTop(diagram, top)
 
-            Dim top = Canvas.GetTop(diagram)
-            If Double.IsNaN(top) Then top = 0
-            Designer.SetTop(diagram, top)
+                    Dim RotateTransform = TryCast(diagram.RenderTransform, RotateTransform)
+                    If RotateTransform Is Nothing Then
+                        Designer.SetRotationAngle(diagram, 0)
+                    Else
+                        Dim angle = RotateTransform.Angle
+                        diagram.RenderTransform = Nothing
+                        Designer.SetRotationAngle(diagram, angle)
+                    End If
 
-            Dim RotateTransform = TryCast(diagram.RenderTransform, RotateTransform)
-            If RotateTransform Is Nothing Then
-                Designer.SetRotationAngle(diagram, 0)
-            Else
-                Dim angle = RotateTransform.Angle
-                diagram.RenderTransform = Nothing
-                Designer.SetRotationAngle(diagram, angle)
-            End If
-
-            Dim lt = diagram.LayoutTransform
-            diagram.LayoutTransform = Nothing
-            Helper.UpdateControl(diagram)
-            diagram.LayoutTransform = lt
+                    Dim lt = diagram.LayoutTransform
+                    diagram.LayoutTransform = Nothing
+                    Helper.UpdateControl(diagram)
+                    diagram.LayoutTransform = lt
+                End Sub)
         Next
 
         If Not Double.IsNaN(canvas.Width) Then Me.PageWidth = canvas.Width
@@ -1253,13 +1259,24 @@ Public Class Designer
     End Sub
 
     Public Shared Sub Open()
-        ' Configure open file dialog box 
+        Dim sVBSamplesDir = GetSetting("SmallVisualBasic", "Files", "Open")
+        If sVBSamplesDir = "" Then
+            sVBSamplesDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            Dim samplesDir = IO.Path.Combine(sVBSamplesDir, "sVB Samples")
+            If IO.Directory.Exists(samplesDir) Then
+                sVBSamplesDir = samplesDir
+            End If
+        End If
+
         Dim dlg As New Microsoft.Win32.OpenFileDialog With {
             .DefaultExt = ".xaml", ' Default file extension
             .Filter = "Diagram Pages|*.xaml",
-            .Title = "Open Diagram Design Page"
+            .Title = "Open Diagram Design Page",
+            .InitialDirectory = sVBSamplesDir
         }
+
         If dlg.ShowDialog() = True Then
+            SaveSetting("SmallVisualBasic", "Files", "Open", IO.Path.GetDirectoryName(dlg.FileName))
             If Not CurrentPage.IsDirty AndAlso
                     CurrentPage.IsNew AndAlso Pages.Count = 1 Then
                 ClosePage(False, True)

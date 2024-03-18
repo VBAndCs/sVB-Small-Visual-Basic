@@ -154,7 +154,14 @@ Namespace Library
             Return If(_stringValue, "")
         End Function
 
-        Friend ReadOnly Property IsArray As Boolean
+        Public ReadOnly Property IsBoolean As Boolean
+            Get
+                Dim s = AsString().ToLower()
+                Return s = "false" OrElse s = "true"
+            End Get
+        End Property
+
+        Public ReadOnly Property IsArray As Boolean
             Get
                 If _isArray Then Return True
                 ConstructArrayMap()
@@ -162,7 +169,7 @@ Namespace Library
             End Get
         End Property
 
-        Friend ReadOnly Property IsEmpty As Boolean
+        Public ReadOnly Property IsEmpty As Boolean
             Get
                 Return _stringValue = "" AndAlso
                         Not _decimalValue.HasValue AndAlso
@@ -170,7 +177,7 @@ Namespace Library
             End Get
         End Property
 
-        Friend ReadOnly Property IsNumber As Boolean
+        Public ReadOnly Property IsNumber As Boolean
             Get
                 If _arrayMap?.Count > 0 Then Return False
                 If _stringValue = "" Then Return True ' Consider it 0
@@ -273,9 +280,9 @@ Namespace Library
             Return New Primitive(AsString() & addend.AsString())
         End Function
 
-        Public Function ContainsKey(key1 As Primitive) As Primitive
+        Public Function ContainsKey(key As Primitive) As Primitive
             ConstructArrayMap()
-            Return _arrayMap.ContainsKey(key1)
+            Return _arrayMap.ContainsKey(key)
         End Function
 
         Public Function ContainsValue(value As Primitive) As Primitive
@@ -361,7 +368,7 @@ Namespace Library
             Return New Primitive(AsDecimal() / divisor.AsDecimal())
         End Function
 
-        Friend ReadOnly Property IsTimeSpan As Boolean
+        Public ReadOnly Property IsTimeSpan As Boolean
             Get
                 Return numberType = NumberType.TimeSpan
             End Get
@@ -371,7 +378,7 @@ Namespace Library
             Return AsDecimal() < comparer.AsDecimal()
         End Function
 
-        Friend ReadOnly Property IsDate As Boolean
+        Public ReadOnly Property IsDate As Boolean
             Get
                 Return numberType = NumberType.Date
             End Get

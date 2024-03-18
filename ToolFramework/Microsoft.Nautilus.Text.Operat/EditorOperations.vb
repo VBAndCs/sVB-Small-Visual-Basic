@@ -753,6 +753,7 @@ Namespace Microsoft.Nautilus.Text.Operations
             If Not extendSelection OrElse _TextView.Selection.IsEmpty Then
                 _TextView.Selection.ActiveSnapshotSpan = New SnapshotSpan(snapshot, New Span(line.Start, line.LengthIncludingLineBreak))
                 _TextView.Selection.IsActiveSpanReversed = False
+                Console.WriteLine("end")
                 _TextView.Caret.MoveTo(line.EndIncludingLineBreak)
                 _TextView.Caret.EnsureVisible()
 

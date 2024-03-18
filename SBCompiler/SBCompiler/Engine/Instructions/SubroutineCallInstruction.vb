@@ -19,7 +19,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
             If command = DebuggerCommand.StepOver Then
                 command = DebuggerCommand.Run
             ElseIf command = DebuggerCommand.StepInto Then
-                runner.Pause()
+                'runner.Pause()
             End If
 
             'runner.ExecuteInstructions(runner.SubroutineInstructions(_SubroutineName))

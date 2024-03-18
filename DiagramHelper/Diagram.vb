@@ -7,13 +7,11 @@ Public Class DiagramObject
     Dim Dsn As Designer
     Dim Canv As Canvas
     Dim Scv As ScrollViewer
-
-    Friend Shared Diagrams As New Dictionary(Of FrameworkElement, DiagramObject)
-
     Dim DraggingDiagram As Boolean = False
     Dim DraggingStartPoint As Point
     Dim OldPropertyState As PropertyState
     Dim Unit As UndoRedoUnit
+    Friend Shared Diagrams As New Dictionary(Of FrameworkElement, DiagramObject)
 
     Private Sub New(Diagram As FrameworkElement)
         Me.Diagram = Diagram
@@ -46,7 +44,6 @@ Public Class DiagramObject
 
         DiagramObj.Pnl = Helper.GetDiagramPanel(Diagram)
         DiagramObj.DesignerItem = Helper.GetListBoxItem(DiagramObj.Pnl)
-
         Return DiagramObj
     End Function
 

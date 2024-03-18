@@ -11,6 +11,26 @@ Imports System.Windows.Threading
 Namespace Microsoft.SmallVisualBasic.Documents
     Public Class ProgramDebugger
 
+
+        Private Shared debuggers As New Dictionary(Of String, ProgramDebugger)
+
+        Private Sub New()
+
+        End Sub
+
+        Public Shared Function GetDebugger(project As String, acceptNull As Boolean) As ProgramDebugger
+            Dim key = project.ToLower()
+            If debuggers.ContainsKey(key) Then
+                Return debuggers(key)
+            ElseIf acceptNull Then
+                Return Nothing
+            Else
+                Dim debugger As New ProgramDebugger()
+                debuggers(key) = debugger
+                Return debugger
+            End If
+        End Function
+
         Public ReadOnly Property Dispatcher As Dispatcher
             Get
                 Return Document.EditorControl.Dispatcher
@@ -26,7 +46,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End Get
         End Property
 
-        Public Property IsDebuggerActive As Boolean
+        Public Property IsActive As Boolean
 
         Public Property ProgramEngine As ProgramEngine
 
@@ -37,7 +57,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
                 _ProgramEngine = New Engine.ProgramEngine(parsers)
                 AddHandler Library.Program.ProgramTerminated, AddressOf OnProgramTerminated
-                AddHandler _ProgramEngine.CurrentRunner.DebuggerStateChanged, AddressOf OnDebuggerCurrentStateChanged
+                AddHandler _ProgramEngine.DebuggerStateChanged, AddressOf OnDebuggerCurrentStateChanged
             End If
             Return _ProgramEngine
         End Function
@@ -49,54 +69,109 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End Get
         End Property
 
+        Friend Function Evaluate(item As Completion.CompletionItem) As Library.Primitive?
+            If item.ObjectName Is Nothing OrElse
+                        item.ItemType = Completion.CompletionItemType.Control OrElse
+                        item.ItemType = Completion.CompletionItemType.LocalVariable OrElse
+                        item.ItemType = Completion.CompletionItemType.GlobalVariable Then
+                Dim runner = _ProgramEngine.CurrentRunner
+                Dim key = runner.GetKey(item.DefinitionIdintifier)
+                If key = "" Then
+                    key = item.DisplayName.ToLower()
+                End If
+                Return GetValue(key, runner.Fields)
+
+            ElseIf item.ObjectName.ToLower() = "global" Then
+                Dim key = item.DisplayName.ToLower()
+                Return GetValue(key, _ProgramEngine.GlobalRunner.Fields)
+
+            ElseIf item.ItemType = Completion.CompletionItemType.DynamicPropertyName Then
+                Dim subName = Document.GetCurrentSubName()
+                Dim arrKey = If(subName = "", item.ObjectName, $"{subName}.{item.ObjectName}").ToLower()
+                Dim arr = GetValue(arrKey, _ProgramEngine.CurrentRunner.Fields)
+
+                If arr.HasValue Then
+                    Return Library.Primitive.GetArrayValue(arr.Value, item.DisplayName)
+                ElseIf subName <> "" Then
+                    arrKey = item.ObjectName.ToLower()
+                    arr = GetValue(arrKey, _ProgramEngine.CurrentRunner.Fields)
+                    If arr.HasValue Then
+                        Return Library.Primitive.GetArrayValue(arr.Value, item.DisplayName)
+                    End If
+                End If
+
+            Else
+                Dim runner = _ProgramEngine.CurrentRunner
+                Dim key = item.DisplayName.ToLower()
+                Dim objectName As New Token() With {.Text = item.ObjectName, .Type = TokenType.Identifier}
+                Dim type = runner.currentParser.SymbolTable.GetTypeInfo(objectName)
+
+                Dim propInfo = TryCast(item.MemberInfo, Reflection.PropertyInfo)
+                If propInfo IsNot Nothing Then
+                    Return CType(propInfo.GetValue(Nothing, Nothing), Library.Primitive)
+                Else
+                    Dim name = GetValue(objectName.LCaseText, runner.Fields)
+                    If name Is Nothing Then
+                        Dim subName = Document.GetCurrentSubName()
+                        If subName = "" Then Return Nothing
+                        Dim objKey = $"{subName}.{item.ObjectName}".ToLower()
+                        name = GetValue(objKey, runner.Fields)
+                    End If
+
+                    If name IsNot Nothing Then
+                        Dim methodName = "get" & key
+                        If Not type.Methods.ContainsKey(methodName) Then
+                            type = runner.TypeInfoBag.Types("control")
+                        End If
+                        Dim methodInfo = type.Methods(methodName)
+                        Return CType(methodInfo.Invoke(Nothing, New Object() {name}), Library.Primitive)
+                    End If
+                End If
+            End If
+
+            Return Nothing
+        End Function
+
+        Private Function GetValue(key As String, fields As Dictionary(Of String, Library.Primitive)) As Library.Primitive?
+            If fields.ContainsKey(key) Then
+                Return fields(key)
+            Else
+                Return Nothing
+            End If
+        End Function
+
         Public ReadOnly Property TextView As ITextView
             Get
                 Return Document.EditorControl.TextView
             End Get
         End Property
 
-        Dim _project As String
-
-        Private Sub New(project As String)
-            _project = project.ToLower()
-        End Sub
-
-
-        Private Shared debuggers As New Dictionary(Of String, ProgramDebugger)
-
-        Public Shared Function GetDebugger(project As String) As ProgramDebugger
-            Dim key = project.ToLower()
-            If debuggers.ContainsKey(key) Then Return debuggers(key)
-
-            Dim debugger As New ProgramDebugger(project)
-            debuggers(key) = debugger
-            Return debugger
-        End Function
-
         Public Sub Run(breakOnStart As Boolean)
-            If IsDebuggerActive Then
+            If IsActive Then
                 _ProgramEngine.Continue()
             Else
                 _ProgramEngine = CreateEngine()
                 If _ProgramEngine IsNot Nothing Then
                     _ProgramEngine.RunProgram(breakOnStart)
-                    _ProgramEngine.CurrentRunner.Breakpoints = Document.Breakpoints
-                    _IsDebuggerActive = True
-                    Document.ReadOnlyRegion = TextBuffer.ReadOnlyRegionManager.CreateReadOnlyRegion(0, TextBuffer.CurrentSnapshot.Length, SpanTrackingMode.EdgeInclusive)
+                    Dim doc = Document
+                    _ProgramEngine.CurrentRunner.Breakpoints = doc.Breakpoints
+                    _IsActive = True
+                    doc.ReadOnly = True
                 End If
             End If
         End Sub
 
-        Private Sub OnDebuggerCurrentStateChanged(sender As Object, e As EventArgs)
+        Dim lastDoc As TextDocument
+
+        Private Sub OnDebuggerCurrentStateChanged()
             Dim offset = _ProgramEngine.CurrentRunner.DocLineOffset
             Dim lineNumber = _ProgramEngine.CurrentLineNumber - offset
             Dim currentState = _ProgramEngine.CurrentDebuggerState
 
             Helper.MainWindow.Dispatcher.BeginInvoke(
                 Sub()
-                    Dim doc = Document
-                    Dim tv = TextView
-                    Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(tv)
+                    Dim doc = If(lastDoc, Document)
+                    Dim stMarkerProvider = doc.StatementMarkerProvider
                     Dim marker = doc.ExecutionMarker
 
                     If marker IsNot Nothing Then
@@ -108,12 +183,21 @@ Namespace Microsoft.SmallVisualBasic.Documents
                         End If
                     End If
 
+                    If lastDoc IsNot Nothing Then
+                        doc = Document
+                        stMarkerProvider = doc.StatementMarkerProvider
+                    End If
+
+                    doc.ReadOnly = True
+
                     If currentState = DebuggerState.Paused Then
                         Dim line = doc.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber)
 
                         If doc.Breakpoints.Contains(lineNumber) Then
                             marker = stMarkerProvider.GetMarker(lineNumber)
-                            marker.MarkerColor = Colors.DarkGoldenrod
+                            If marker IsNot Nothing Then
+                                marker.MarkerColor = Colors.DarkGoldenrod
+                            End If
                         Else
                             Dim span = doc.GetFullStatementSpan(lineNumber)
                             marker = New StatementMarker(span, lineNumber, Colors.Gold)
@@ -122,9 +206,10 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
                         doc.ExecutionMarker = marker
                         doc.EnsureLineVisible(line)
+                        doc.Activate()
+                        lastDoc = doc
                     End If
                 End Sub)
-
 
             ActivateDoc()
         End Sub
@@ -143,10 +228,26 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Public Sub StepInto()
-            If _IsDebuggerActive Then
+            If _IsActive Then
                 _ProgramEngine.StepInto()
             Else
                 Run(breakOnStart:=True)
+            End If
+        End Sub
+
+        Public Sub StepOut()
+            If _IsActive Then
+                _ProgramEngine.StepOut()
+            Else
+                Run(breakOnStart:=False)
+            End If
+        End Sub
+
+        Friend Sub ShortStepOut()
+            If _IsActive Then
+                _ProgramEngine.ShortStepOut()
+            Else
+                Run(breakOnStart:=False)
             End If
         End Sub
 
@@ -155,29 +256,65 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Public Sub StepOver()
-            If _IsDebuggerActive Then
+            If _IsActive Then
                 _ProgramEngine.StepOver()
             Else
                 Run(breakOnStart:=True)
             End If
         End Sub
 
+        Public Sub ShortStepOver()
+            If _IsActive Then
+                _ProgramEngine.ShortStepOver()
+            Else
+                Run(breakOnStart:=True)
+            End If
+        End Sub
+
+        Public Function EvaluateExpression(ByRef text As String) As Library.Primitive?
+            If Not IsActive Then Return Nothing
+            Dim subName = Helper.MainWindow.ActiveDocument.GetCurrentSubToken
+            Return _ProgramEngine.CurrentRunner.EvaluateExpression(text, subName)
+        End Function
+
         Private Sub OnProgramTerminated()
-            RemoveHandler _ProgramEngine.CurrentRunner.DebuggerStateChanged, AddressOf OnDebuggerCurrentStateChanged
+            RemoveHandler _ProgramEngine.DebuggerStateChanged, AddressOf OnDebuggerCurrentStateChanged
             RemoveHandler Library.Program.ProgramTerminated, AddressOf OnProgramTerminated
 
-            _IsDebuggerActive = False
+            _IsActive = False
             _ProgramEngine.Disopese()
             _ProgramEngine = Nothing
 
             For Each view As Shell.MdiView In Helper.MainWindow.viewsControl.Items
                 Dim doc = view.Document
-                doc.ReadOnlyRegion?.Remove()
                 doc.EditorControl.Dispatcher.BeginInvoke(
                     Sub()
-                        Dim sMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(doc.EditorControl.TextView)
-                        sMarkerProvider.ClearAllMarkers()
+                        doc.ReadOnly = False
+                        Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(doc.EditorControl.TextView)
+                        Dim marker = doc.ExecutionMarker
+                        If marker IsNot Nothing Then
+                            doc.ExecutionMarker = Nothing
+                            If doc.Breakpoints.Contains(marker.LineNumber) Then
+                                marker.MarkerColor = Colors.Red
+                            Else
+                                stMarkerProvider.RemoveMarker(marker)
+                            End If
+                        End If
                     End Sub)
+            Next
+        End Sub
+
+        Friend Shared Sub LockRunningDoc(doc As TextDocument)
+            Dim docPath = doc.File.ToLower()
+            For Each debugger In debuggers.Values
+                If debugger.IsActive Then
+                    For Each parser In debugger.ProgramEngine.Parsers
+                        If parser.DocPath.ToLower() = docPath Then
+                            doc.ReadOnly = True
+                            Return
+                        End If
+                    Next
+                End If
             Next
         End Sub
     End Class

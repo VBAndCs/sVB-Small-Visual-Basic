@@ -8,6 +8,8 @@ Imports Microsoft.SmallVisualBasic.Library
 Namespace Microsoft.SmallVisualBasic.Engine
     Public Class ProgramEngine
 
+        Public Event DebuggerStateChanged()
+
         Public Property Parsers As List(Of Parser)
 
         Public Property CurrentDebuggerState As DebuggerState
@@ -21,7 +23,8 @@ Namespace Microsoft.SmallVisualBasic.Engine
         Public Property Translator As ProgramTranslator
 
         Public Property CurrentRunner As ProgramRunner
-        Public runners As Dictionary(Of Parser, ProgramRunner)
+
+        Public Runners As Dictionary(Of Parser, ProgramRunner)
 
         Public Sub New(parsers As List(Of Parser))
             Me.Parsers = parsers
@@ -29,6 +32,13 @@ Namespace Microsoft.SmallVisualBasic.Engine
         End Sub
 
         Friend GlobalParser As Parser
+
+        Public ReadOnly Property GlobalRunner() As ProgramRunner
+            Get
+                Return CurrentRunner.GlobalRunner
+            End Get
+        End Property
+
 
         Private Sub InitializeRunner()
             Dim mainParser, formParsr As Parser
@@ -52,6 +62,10 @@ Namespace Microsoft.SmallVisualBasic.Engine
             End If
         End Sub
 
+        Friend Sub RaiseDebuggerStateChangedEvent()
+            RaiseEvent DebuggerStateChanged()
+        End Sub
+
         Public Sub AddBreakpoint(lineNumber As Integer)
             CurrentRunner.Breakpoints.Add(lineNumber)
         End Sub
@@ -70,8 +84,20 @@ Namespace Microsoft.SmallVisualBasic.Engine
             CurrentRunner.StepInto()
         End Sub
 
+        Public Sub StepOut()
+            CurrentRunner.StepOut()
+        End Sub
+
+        Public Sub ShortStepOut()
+            CurrentRunner.ShortStepOut()
+        End Sub
+
         Public Sub StepOver()
             CurrentRunner.StepOver()
+        End Sub
+
+        Public Sub ShortStepOver()
+            CurrentRunner.ShortStepOver()
         End Sub
 
         Public Sub Reset()
@@ -80,6 +106,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
 
         Friend StopOnFirstStaement As Boolean
+        Public BreakMode As Boolean
 
         Public Sub RunProgram(Optional stopOnFirstStaement As Boolean = False)
             Me.StopOnFirstStaement = stopOnFirstStaement
@@ -98,7 +125,13 @@ Namespace Microsoft.SmallVisualBasic.Engine
                     Library.Program.IsTerminated = False
                     CurrentRunner.currentThread = Thread.CurrentThread
                     Dim result = CurrentRunner.Execute(CurrentRunner.currentParser.ParseTree)
-                    CurrentRunner.DoStepOver = False ' Allow event hanlers to break
+
+                    ' Allow event hanlers to break
+                    If CurrentRunner.DebuggerCommand = DebuggerCommand.StepOut Then
+                        CurrentRunner.DebuggerCommand = DebuggerCommand.Run
+                    End If
+                    CurrentRunner.StepAround = False
+                    BreakMode = False
 
                     Try
                         Library.TextWindow.PauseThenClose()
@@ -115,6 +148,8 @@ Namespace Microsoft.SmallVisualBasic.Engine
             Me.CurrentRunner = Nothing
             Me.GlobalParser = Nothing
         End Sub
+
+
     End Class
 
 

@@ -237,24 +237,26 @@ Namespace Microsoft.SmallVisualBasic.Shell
         Dim LastselectedView As MdiView
         Private Shared dispatcher As System.Windows.Threading.Dispatcher = Application.Current.Dispatcher
 
-        Friend Sub ChangeSelection(selectedView As MdiView)
-            If selectedView Is LastselectedView Then Return
+        Friend Sub ChangeSelection(selectedView As MdiView, Optional force As Boolean = False)
+            If Not force AndAlso selectedView Is LastselectedView Then Return
 
             LastselectedView = selectedView
 
             If selectedView Is Nothing Then
-                Dim num = 0
+                Dim z = 0
                 _SelectedItem = Nothing
 
                 For Each item In Items
                     Dim mdiView = TryCast(item, MdiView)
                     Dim zIndex = Panel.GetZIndex(mdiView)
 
-                    If zIndex > num Then
-                        num = zIndex
+                    If zIndex > z Then
+                        z = zIndex
                         selectedView = mdiView
                     End If
                 Next
+
+                lastZIndex = z
                 RaiseEvent ActiveDocumentChanged()
 
             ElseIf selectedView IsNot _SelectedItem Then
@@ -263,8 +265,9 @@ Namespace Microsoft.SmallVisualBasic.Shell
                     mdiView.IsSelected = mdiView Is selectedView
                 Next
 
-                Panel.SetZIndex(selectedView, lastZIndex)
                 lastZIndex += 1
+                Panel.SetZIndex(selectedView, lastZIndex)
+
                 _SelectedItem = selectedView
                 selectedView.IsSelected = True
 

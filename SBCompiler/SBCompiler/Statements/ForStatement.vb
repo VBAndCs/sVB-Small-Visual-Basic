@@ -292,7 +292,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                             .DisplayName = Iterator.Text,
                             .ItemType = CompletionItemType.GlobalVariable,
                             .DefinitionIdintifier = completionBag.SymbolTable.GlobalVariables(Iterator.LCaseText)
-                         })
+                        })
                     Else
                         CompletionHelper.FillGlobalVariables(completionBag)
                     End If
@@ -380,9 +380,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
                                         _StepValue.Evaluate(runner)
                                   )
 
+            Dim stepOut = False
             Dim startLine = ForToken.Line
             Dim endLine = EndLoopToken.Line
             Dim i = start
+
             Do
                 If [step] > 0 Then
                     If i > [end] Then Exit Do
@@ -390,13 +392,23 @@ Namespace Microsoft.SmallVisualBasic.Statements
                     Exit Do
                 End If
 
+                If i <> start Then runner.CheckForExecutionBreakAtLine(startLine)
+                runner.IncreaseDepthOfShortSteps(stepOut)
+
                 runner.Fields(iteratorKey) = i
                 Dim result = runner.Execute(Body)
-                If TypeOf result Is EndDebugging Then Return result
+                runner.DecreaseDepthOfShortStepOut(stepOut)
+
+                If TypeOf result Is EndDebugging Then
+                    If stepOut Then runner.Depth -= 1
+                    Return result
+                End If
 
                 If TypeOf result Is JumpLoopStatement Then
                     Dim jumpSt = CType(result, JumpLoopStatement)
                     If jumpSt.StartToken.Type = TokenType.ExitLoop Then
+                        If stepOut Then runner.Depth -= 1
+
                         If jumpSt.UpLevel > 0 Then
                             jumpSt.UpLevel -= 1
                             Return jumpSt
@@ -406,27 +418,33 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                     ElseIf jumpSt.UpLevel > 0 Then
                         jumpSt.UpLevel -= 1
+                        If stepOut Then runner.Depth -= 1
                         Return jumpSt
                     Else
                         jumpSt.UpLevel = 0 ' continue current for.
                     End If
 
                 ElseIf TypeOf result Is ReturnStatement Then
+                    If stepOut Then runner.Depth -= 1
                     Return result
+
                 ElseIf TypeOf result Is GotoStatement Then
                     Dim label = CType(result, GotoStatement).Label
                     If label.Line > EndLoopToken.Line OrElse label.Line < ForToken.Line Then
+                        If stepOut Then runner.Depth -= 1
                         Return result
                     End If
                 End If
 
                 runner.CheckForExecutionBreakAtLine(endLine)
+                runner.IncreaseDepthOfShortSteps(stepOut)
+
                 ' iterator can be modified in loop body, so we need to update it
                 i = runner.Fields(iteratorKey)
                 i += [step]
-                runner.CheckForExecutionBreakAtLine(startLine)
             Loop
 
+            If stepOut Then runner.Depth -= 1
             Return Nothing
         End Function
     End Class

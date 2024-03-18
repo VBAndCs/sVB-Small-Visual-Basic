@@ -644,11 +644,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         End If
                     End If
 
+                    Dim objectName = item.ObjectName
                     If byConventionName <> "" Then
                         item.ObjectName = byConventionName
                     End If
 
                     Dim wrapper = New CompletionItemWrapper(item, bag)
+                    wrapper.ObjectName = objectName
+
                     If item.ParamIndex > -1 AndAlso
                                 (symbol = "(" OrElse symbol = ",") AndAlso
                                 wrapper.Documentation IsNot Nothing Then

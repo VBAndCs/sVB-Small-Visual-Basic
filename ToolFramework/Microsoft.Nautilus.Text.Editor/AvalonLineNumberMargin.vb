@@ -69,12 +69,12 @@ Namespace Microsoft.Nautilus.Text.Editor
             MyBase.Background = New LinearGradientBrush(
                   Color.FromArgb(0, 100, 157, 180),
                   Color.FromArgb(Byte.MaxValue, 100, 157, 180), 0.0
-                ) With {
-                     .GradientStops = New GradientStopCollection From {
+            ) With {
+                    .GradientStops = New GradientStopCollection From {
                           New GradientStop(Color.FromArgb(48, 100, 157, 180), 0.9999),
                           New GradientStop(Color.FromArgb(Byte.MaxValue, 100, 157, 180), 0.9999)
-                     }
-                  }
+                    }
+            }
 
             MyBase.Cursor = Cursors.Arrow
             _textFormatter = TextFormatter.Create()
@@ -84,6 +84,8 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Function SelectLine(mouseLocation As Point, extendSelection As Boolean) As Boolean
+            If isDblClick Then Return False
+
             Dim textLine = _textView.FormattedTextLines.GetTextLineContainingYCoordinate(mouseLocation.Y)
             If textLine Is Nothing Then Return False
 
@@ -101,23 +103,22 @@ Namespace Microsoft.Nautilus.Text.Editor
             Dim lineNumber = _textView.TextSnapshot.GetLineNumberFromPosition(textLine.LineSpan.Start)
             Dim showBreeakPoint As Boolean
             RaiseEvent LineBreakpointChanged(lineNumber, showBreeakPoint)
-            If lineNumber > -1 Then DrawBreakpoint(lineNumber, showBreeakPoint)
+            If lineNumber > -1 Then
+                DrawBreakpoint(lineNumber, showBreeakPoint)
+                _editorOperations.ResetSelection()
+                Console.WriteLine("start")
+                _textView.Caret.MoveTo(textLine.LineSpan.Start)
+            End If
         End Sub
 
         Public Sub ClearBreakpoint()
-            For Each visual As AvalonLineNumberMarginDrawingVisual In MyBase.Children
+            For Each visual In cashedLines.Values
                 visual.ShowBreakpoint = False
             Next
         End Sub
 
         Public Sub DrawBreakpoint(lineNumber As Integer, showBreeakPoint As Boolean)
-            lineNumber += 1
-            For Each visual As AvalonLineNumberMarginDrawingVisual In MyBase.Children
-                If visual.LineNumber = lineNumber Then
-                    visual.ShowBreakpoint = showBreeakPoint
-                    Return
-                End If
-            Next
+            cashedLines(lineNumber + 1).ShowBreakpoint = showBreeakPoint
         End Sub
 
 
@@ -135,17 +136,12 @@ Namespace Microsoft.Nautilus.Text.Editor
             RemoveHandler MyBase.MouseMove, AddressOf OnMouseMove
         End Sub
 
+        Dim cashedLines As New Dictionary(Of Integer, AvalonLineNumberMarginDrawingVisual)
+
         Friend Sub UpdateLineNumbers()
             _layoutNeeded = False
             Dim formattedTextLines = _textView.FormattedTextLines
             If formattedTextLines.Count <= 0 Then Return
-
-            Dim start As Integer = Integer.MaxValue
-            Dim [end] As Integer = Integer.MinValue
-            If MyBase.Children.Count > 0 Then
-                start = CType(MyBase.Children(0), AvalonLineNumberMarginDrawingVisual).LineNumber
-                [end] = CType(MyBase.Children(MyBase.Children.Count - 1), AvalonLineNumberMarginDrawingVisual).LineNumber
-            End If
 
             Dim visuals As New List(Of AvalonLineNumberMarginDrawingVisual)
             Dim prevLineNum As Integer = -1
@@ -155,26 +151,29 @@ Namespace Microsoft.Nautilus.Text.Editor
 
                 prevLineNum = lineNum
                 Dim lineMarginVisual As AvalonLineNumberMarginDrawingVisual
-                If start <= lineNum AndAlso lineNum <= [end] Then
-                    lineMarginVisual = CType(MyBase.Children(lineNum - start), AvalonLineNumberMarginDrawingVisual)
+                If cashedLines.ContainsKey(lineNum) Then
+                    lineMarginVisual = cashedLines(lineNum)
                     Dim bottom = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top + formattedTextLine.Height), Me)
                     Dim top = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top), Me)
                     lineMarginVisual.Update(bottom.Y - top.Y, top.Y)
+
                 Else
                     Dim text = lineNum.ToString(CultureInfo.InvariantCulture.NumberFormat)
                     If text.Length > "8888".Length Then
                         text = text.Substring(text.Length - "8888".Length)
                     End If
+
                     Dim textLine = _textFormatter.FormatLine(New AvalonLineNumberMarginTextSource(text, _formatting), 0, MyBase.MinWidth, New TextFormattingParagraphProperties, Nothing)
                     Dim bottom As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top + formattedTextLine.Height), Me)
                     Dim top As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top), Me)
                     lineMarginVisual = New AvalonLineNumberMarginDrawingVisual(lineNum, textLine, MyBase.MinWidth - textLine.Width, bottom.Y - top.Y, top.Y)
+                    cashedLines(lineNum) = lineMarginVisual
                 End If
                 visuals.Add(lineMarginVisual)
             Next
 
             MyBase.Children.Clear()
-            For Each lineMarginVisual As AvalonLineNumberMarginDrawingVisual In visuals
+            For Each lineMarginVisual In visuals
                 MyBase.Children.Add(lineMarginVisual)
             Next
         End Sub
@@ -185,7 +184,7 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Private Overloads Sub OnMouseMove(sender As Object, e As MouseEventArgs)
-            If e.LeftButton <> MouseButtonState.Pressed Then Return
+            If isDblClick OrElse e.LeftButton <> MouseButtonState.Pressed Then Return
 
             Dim position = e.GetPosition(Me)
             If Not SelectLine(position, extendSelection:=True) Then
@@ -198,11 +197,14 @@ Namespace Microsoft.Nautilus.Text.Editor
             End If
         End Sub
 
+        Dim isDblClick As Boolean = False
         Private Overloads Sub OnMouseLeftButtonDown(sender As Object, e As MouseButtonEventArgs)
             If e.ClickCount > 1 Then
+                isDblClick = True
                 ToogleBreakpoint(e.GetPosition(Me))
                 e.Handled = True
             Else
+                isDblClick = False
                 CaptureMouse()
                 Dim extendSelection = (Keyboard.Modifiers And ModifierKeys.Shift) = ModifierKeys.Shift
                 SelectLine(e.GetPosition(Me), extendSelection)

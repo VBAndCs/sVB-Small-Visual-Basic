@@ -177,7 +177,7 @@ Namespace Microsoft.SmallVisualBasic
 
         End Sub
 
-        Friend Function GetTypeInfo(ByRef typeName As Token) As TypeInfo
+        Public Function GetTypeInfo(ByRef typeName As Token) As TypeInfo
             If typeName.IsIllegal Then Return Nothing
 
             Dim type As TypeInfo

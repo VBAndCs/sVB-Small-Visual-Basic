@@ -57,6 +57,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Private isGlobal As Boolean
 
         Public NavigateTo As NavigateTo
+        Public ObjectName As String
 
         Public ReadOnly Property SymbolType As SymbolType
             Get

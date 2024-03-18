@@ -20,18 +20,57 @@ This book can help you to introduce sVB to your kid:
 * [sVB for kids](https://github.com/VBAndCs/sVB-Small-Visual-Basic#svb-for-kids)
 * [Conclusions](https://github.com/VBAndCs/sVB-Small-Visual-Basic#conclusions)
 
-#What's new In sVB 2.9:
+# What's new In sVB 2.9.7:
+* The sVB debugger is almost completed and ready for testing. Use these shortcuts to interact with the debugger until sVB 3.0 adds some toolbar commands:
+1. F9: Toggle the breakpoint marker at the current line. You can also do this by double-clicking the line number margin.
+2. Ctrl+F5: Start debugging.
+3. F10: Step over any subroutine call. It also pauses the debugger if its is running.
+4. Ctr+F10: Step over the inner block, which will step over the body of If, For, ForEach and While statements.
+5. F11: Step into. It also pauses the debugger if its is running.
+6. F12: Step out from the current subroutine. It also pauses the debugger if its is running.
+7. Ctr+F12: Step out the parent block, which will step out from If, For, ForEach and While statements.
+8. F5: If the app is not running, pressing F5 runs it without debugging. If it is running in debug mode and currently in break mode, pressing F5 will continue running it in debug mode.
+
+In debug mode, you can move the caret to any variable or property to show its current value in the popup info window.
+You can also select any expression (including function and method calls or ant operations) to evaluate it and display its value in the popup info window.
+
+* You can show a fully or semi transparent Graphics window. To do that you should set the GW background color before showing it (remember that using any property or method of the GW shows it!). For example, this code will draw a text and use the turtle to draw a circle on a half transparent GW:
+```
+GW.BackgroundColor = Color.FromARGB(128, 0, 255, 255)
+GW.Width = 700
+GW.Height = 500
+GW.Left = 150
+GW.Top = 100
+Turtle.Speed = 50
+GW.FontSize = 30
+GW.BrushColor = Colors.DarkRed
+GW.DrawText(200, 50, "Half Transparent GW")
+
+GW.PenWidth = 10
+GW.PenColor = Colors.Gold
+Turtle.Width = 32
+Turtle.X = 250
+Turtle.Y = 300
+For I = 1 To 360
+   Turtle.Move(2)
+   Turtle.Turn(1)
+Next
+```
+
+You can also set the GW.BackgroundColor to `Color.None` or `Color.Transparent` to totally remove the GW background, and directly draw on the desktop!
+
+# What's new In sVB 2.9:
 The form designer now has a menu designer, which allows you to add menu items and set their properties like name, title, and shortcut keys. To show the menu designer, right-click the form surface and click the "Menu Designer" command from the context menu.
 After closing the menu designer, menu items will appear on top of the form designer, where you can click any of them to add its OnClick event handler to the code editor. You can also double-click main menu items to add its OnOpen event handler to the code editor.
 Using the designer to set the shortcut keys for the menu items makes the form auto-handle these keys for you without having to write any more code for them.
 See the "sVB Notepad 2" application in the samples folder, where the menus are created by the menu designer, and compare that to the  rewrote the "sVB Notepad" application where they are crated by code.
 
-#What's new In sVB 2.8.9:
+# What's new In sVB 2.8.9:
 It is the 3rd anniversary since I announced the first prove of concept of sVB, and now sVB reached its 2.8.9 version, which finally got a small properties window. To show the properties window, right-click the form surface or on a control and click the "Properties" command from the context menu.
 Also, sVB got the string concatenation operator &
 Happy birth day sVB!
  
-#What's new In sVB 2.8.8:
+# What's new In sVB 2.8.8:
 * Fixing some reported bugs.
 * In the form designer, you can drag images from your file system and drop them on the form design surface to show them in labels.
 * In code, you can use the * operator to duplicate strings like in Python. Ex:

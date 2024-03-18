@@ -95,10 +95,29 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             ElseIf tName = "global" Then
                 Return runner.GetGlobalField(_PropertyName.LCaseText)
 
-            Else
+            ElseIf runner.TypeInfoBag.Types.ContainsKey(tName) Then
                 Dim typeInfo = runner.TypeInfoBag.Types(tName)
                 Dim propertyInfo = typeInfo.Properties(_PropertyName.LCaseText)
                 Return CType(propertyInfo.GetValue(Nothing, Nothing), Primitive)
+
+            Else
+                Dim type = runner.SymbolTable.GetTypeInfo(_TypeName)
+                Dim memberInfo = runner.SymbolTable.GetMemberInfo(_PropertyName, type, False)
+                If memberInfo Is Nothing Then Return "???"
+
+                Dim propInfo = TryCast(memberInfo, PropertyInfo)
+                If propInfo IsNot Nothing Then
+                    Return CType(propInfo.GetValue(Nothing, Nothing), Primitive)
+                End If
+
+                Dim methodInfo = TryCast(memberInfo, MethodInfo)
+                If methodInfo IsNot Nothing Then
+                    Dim key = runner.GetKey(_TypeName)
+                    If Not runner.Fields.ContainsKey(key) Then Return "This object is not set yet"
+                    Return CType(methodInfo.Invoke(Nothing, New Object() {runner.Fields(key)}), Primitive)
+                End If
+
+                Return "Event Handler"
             End If
         End Function
 

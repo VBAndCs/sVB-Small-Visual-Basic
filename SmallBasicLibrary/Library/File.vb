@@ -717,13 +717,13 @@ Namespace Library
                 .Filter = filter,
                 .Title = "Open File",
                 .RestoreDirectory = False,
-                .InitialDirectory = GetSetting("sVB", "OpenFile", key, ""),
-                .FilterIndex = CInt(GetSetting("sVB", "OpenFile", key & "_FilterIndex", "1"))
+                .InitialDirectory = GetSetting("SmallVisualBasic", "OpenFile", key, ""),
+                .FilterIndex = CInt(GetSetting("SmallVisualBasic", "OpenFile", key & "_FilterIndex", "1"))
             }
 
             If dlg.ShowDialog() = True Then
-                SaveSetting("sVB", "OpenFile", key, IO.Path.GetDirectoryName(dlg.FileName))
-                SaveSetting("sVB", "OpenFile", key & "_FilterIndex", dlg.FilterIndex.ToString())
+                SaveSetting("SmallVisualBasic", "OpenFile", key, IO.Path.GetDirectoryName(dlg.FileName))
+                SaveSetting("SmallVisualBasic", "OpenFile", key & "_FilterIndex", dlg.FilterIndex.ToString())
                 Return dlg.FileName
             Else
                 Return ""
@@ -746,7 +746,7 @@ Namespace Library
                 Sub()
                     Dim folder = GeIinitialFolder(initialFolder.AsString())
                     If folder = "" Then folder = GeIinitialFolder(System.Windows.Clipboard.GetText())
-                    If folder = "" Then folder = GeIinitialFolder(GetSetting("sVB", "OpenFolder", "LastFolder", ""))
+                    If folder = "" Then folder = GeIinitialFolder(GetSetting("SmallVisualBasic", "OpenFolder", "LastFolder", ""))
 
                     Dim th As New Threading.Thread(
                          Sub()
@@ -761,7 +761,7 @@ Namespace Library
                      }
 
                     If dlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-                        SaveSetting("sVB", "OpenFolder", "LastFolder", dlg.SelectedPath)
+                        SaveSetting("SmallVisualBasic", "OpenFolder", "LastFolder", dlg.SelectedPath)
                         OpenFolderDialog = dlg.SelectedPath
                     End If
                 End Sub)
@@ -828,7 +828,7 @@ Namespace Library
                 name = IO.Path.GetFileName(file)
 
                 If file = "" OrElse file.ToLower() = name.ToLower() Then
-                    d = GetSetting("sVB", "SaveFile", key, "")
+                    d = GetSetting("SmallVisualBasic", "SaveFile", key, "")
                 Else
                     d = IO.Path.GetDirectoryName(file)
                 End If
@@ -861,7 +861,7 @@ Namespace Library
             }
 
             If dlg.ShowDialog() = True Then
-                SaveSetting("sVB", "SaveFile", key, IO.Path.GetDirectoryName(dlg.FileName))
+                SaveSetting("SmallVisualBasic", "SaveFile", key, IO.Path.GetDirectoryName(dlg.FileName))
                 Return dlg.FileName
             Else
                 Return ""

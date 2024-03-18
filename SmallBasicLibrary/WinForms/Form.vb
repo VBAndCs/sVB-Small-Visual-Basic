@@ -45,7 +45,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim frm = formName.AsString().ToLower()
-                        Dim frmName = "_SmallVisualBasic_" & frm
+                        Dim frmName = Forms.FormPrefix & frm
                         Dim frmType = asm.GetType(frmName)
                         Dim methods = frmType?.GetMethods(System.Reflection.BindingFlags.Public Or System.Reflection.BindingFlags.Static)
                         If methods Is Nothing Then Return
@@ -107,7 +107,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim frmName = "_SmallVisualBasic_" & formName.ToLower()
+                        Dim frmName = Forms.FormPrefix & formName.ToLower()
                         Dim frm = asm.GetType(frmName)
                         If frm Is Nothing Then
                             frm = System.Reflection.Assembly.GetEntryAssembly.GetType(frmName)
@@ -1265,7 +1265,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        System.Windows.MessageBox.Show(Forms.GetForm(ownerFormName), message.ToString(), title.ToString())
+                        System.Windows.MessageBox.Show(message.ToString(), title.ToString())
                     Catch ex As Exception
                         ReportSubError(ownerFormName, "ShowMessage", ex)
                     End Try

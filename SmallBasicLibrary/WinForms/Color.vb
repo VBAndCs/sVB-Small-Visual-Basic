@@ -267,7 +267,7 @@ Namespace WinForms
         Private Shared customColorsStr As String
 
         Shared Sub New()
-            customColorsStr = GetSetting("sVB", "Colors", "CustomColors", "")
+            customColorsStr = GetSetting("SmallVisualBasic", "Colors", "CustomColors", "")
             If customColorsStr <> "" Then
                 customColors.AddRange(
                         From s In customColorsStr.Split(",")
@@ -327,7 +327,7 @@ Namespace WinForms
                 Dim x = String.Join(",", customColors.ToArray())
                 If x <> customColorsStr Then
                     customColorsStr = x
-                    SaveSetting("sVB", "Colors", "CustomColors", x)
+                    SaveSetting("SmallVisualBasic", "Colors", "CustomColors", x)
                 End If
 
 

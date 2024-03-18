@@ -977,7 +977,7 @@ Namespace Library
         ''' <param name="title">The title for the message box.</param>
         Public Shared Sub ShowMessage(text As Primitive, title As Primitive)
             VerifyAccess()
-            Invoke(Sub() MessageBox.Show(_window, text, title))
+            Invoke(Sub() MessageBox.Show(text, title))
         End Sub
 
         ''' <summary>
@@ -1007,7 +1007,11 @@ Namespace Library
                         _fullScreen = New Primitive(False)
                         _windowCreated = True
 
-                        Dim allowsTransparency = (_backgroundColor = WinForms.Colors.Transparent OrElse _backgroundColor = WinForms.Colors.None)
+                        Dim allowsTransparency = (
+                                 _backgroundColor = WinForms.Colors.Transparent OrElse
+                                _backgroundColor = WinForms.Colors.None OrElse
+                                WinForms.Color.GetTransparency(_backgroundColor) > 0
+                        )
                         _window = New Window() With {
                             .Title = "sVB Graphics Window",
                             .AllowsTransparency = allowsTransparency,

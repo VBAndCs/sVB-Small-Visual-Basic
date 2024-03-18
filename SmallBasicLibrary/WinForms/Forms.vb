@@ -54,10 +54,11 @@ Namespace WinForms
                 Next
             Else
                 Dim asm = System.Reflection.Assembly.GetEntryAssembly()
+                Dim progModule = FormPrefix & "Program"
 
                 For Each frmType In asm.GetTypes()
-                    If frmType.Name.StartsWith("_SmallVisualBasic_") AndAlso frmType.Name <> "_SmallVisualBasic_Program" Then
-                        map(num) = frmType.Name.Substring(18).ToLower()
+                    If frmType.Name.StartsWith(FormPrefix) AndAlso frmType.Name <> progModule Then
+                        map(num) = frmType.Name.Substring(FormPrefix.Length).ToLower()
                         num += 1
                     End If
                 Next
@@ -266,6 +267,7 @@ Namespace WinForms
         End Function
 
         Friend Shared forceClose As Boolean = False
+        Public Const FormPrefix As String = "_SmallVisualBasic_"
 
         Friend Shared Sub ForceCloseAll()
             forceClose = True
@@ -479,7 +481,10 @@ Namespace WinForms
         ''' <param name="title">the title to display of the dialog box</param>
         Public Shared Sub ShowMessage(message As Primitive, title As Primitive)
             Try
-                SmallBasicApplication.Invoke(Sub() System.Windows.MessageBox.Show(message.ToString(), title.ToString()))
+                SmallBasicApplication.Invoke(
+                    Sub()
+                        System.Windows.MessageBox.Show(message.ToString(), title.ToString())
+                    End Sub)
             Catch ex As Exception
                 ReportError("ShowMessage caused this error: " & ex.Message, ex)
             End Try

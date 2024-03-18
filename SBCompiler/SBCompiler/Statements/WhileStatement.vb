@@ -125,6 +125,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim firstTime = True
             Dim startLine = WhileToken.Line
             Dim endLine = EndLoopToken.Line
+            Dim stepOut = False
 
             Do While Condition.Evaluate(runner)
                 If firstTime Then
@@ -132,13 +133,20 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 Else
                     runner.CheckForExecutionBreakAtLine(startLine)
                 End If
+                runner.IncreaseDepthOfShortSteps(stepOut)
 
                 Dim result = runner.Execute(Body)
-                If TypeOf result Is EndDebugging Then Return result
+                runner.DecreaseDepthOfShortStepOut(stepOut)
+
+                If TypeOf result Is EndDebugging Then
+                    If stepOut Then runner.Depth -= 1
+                    Return result
+                End If
 
                 If TypeOf result Is JumpLoopStatement Then
                     Dim jumpSt = CType(result, JumpLoopStatement)
                     If jumpSt.StartToken.Type = TokenType.ExitLoop Then
+                        If stepOut Then runner.Depth -= 1
                         If jumpSt.UpLevel > 0 Then
                             jumpSt.UpLevel -= 1
                             Return jumpSt
@@ -148,6 +156,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                     ElseIf jumpSt.UpLevel > 0 Then
                         jumpSt.UpLevel -= 1
+                        If stepOut Then runner.Depth -= 1
                         Return jumpSt
                     Else
                         jumpSt.UpLevel = 0
@@ -155,22 +164,22 @@ Namespace Microsoft.SmallVisualBasic.Statements
                     End If
 
                 ElseIf TypeOf result Is ReturnStatement Then
+                    If stepOut Then runner.Depth -= 1
                     Return result
 
                 ElseIf TypeOf result Is GotoStatement Then
                     Dim label = CType(result, GotoStatement).Label
                     If label.Line > EndLoopToken.Line OrElse label.Line < WhileToken.Line Then
+                        If stepOut Then runner.Depth -= 1
                         Return result
                     End If
                 End If
 
                 runner.CheckForExecutionBreakAtLine(endLine)
+                runner.IncreaseDepthOfShortSteps(stepOut)
             Loop
 
-            If Not firstTime Then
-                ' Stop at while for last ckecl for the false condition
-            End If
-
+            If stepOut Then runner.Depth -= 1
             Return Nothing
         End Function
     End Class

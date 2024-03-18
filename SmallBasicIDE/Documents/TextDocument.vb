@@ -36,9 +36,30 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Public LastModified As Date = Date.Now
 
-        Friend ReadOnlyRegion As IReadOnlyRegionHandle
+        Private ReadOnlyRegion As IReadOnlyRegionHandle
+
+        Public Property [ReadOnly] As Boolean
+            Get
+                Return ReadOnlyRegion IsNot Nothing
+            End Get
+
+            Set(value As Boolean)
+                If value Then
+                    If ReadOnlyRegion Is Nothing Then
+                        ReadOnlyRegion = TextBuffer.ReadOnlyRegionManager.CreateReadOnlyRegion(
+                               0, TextBuffer.CurrentSnapshot.Length,
+                               SpanTrackingMode.EdgeInclusive,
+                               EdgeInsertionMode.Deny)
+                    End If
+                ElseIf ReadOnlyRegion IsNot Nothing Then
+                    ReadOnlyRegion.Remove()
+                    ReadOnlyRegion = Nothing
+                End If
+            End Set
+        End Property
 
         Dim _breakpoints As List(Of Integer)
+
         Friend ReadOnly Property Breakpoints As List(Of Integer)
             Get
                 If _breakpoints Is Nothing Then _breakpoints = New List(Of Integer)
@@ -96,6 +117,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End Get
         End Property
 
+        Friend StatementMarkerProvider As StatementMarkerProvider
+
         Public ReadOnly Property EditorControl As CodeEditorControl
             Get
                 If _editorControl Is Nothing Then
@@ -114,6 +137,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     _editorControl.Focus()
 
                     AddHandler _editorControl.TextView.Caret.PositionChanged, AddressOf OnCaretPositionChanged
+                    StatementMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(_editorControl.TextView)
+                    AddHandler _editorControl.LineNumberMargin.LineBreakpointChanged, AddressOf ToggleBreakpoint
 
                     _editorControl.Dispatcher.BeginInvoke(DispatcherPriority.Render,
                           CType(Function()
@@ -124,15 +149,15 @@ Namespace Microsoft.SmallVisualBasic.Documents
                                 DispatcherOperationCallback), Nothing)
                 End If
 
-                AddHandler _editorControl.LineNumberMargin.LineBreakpointChanged, AddressOf ToggleBreakpoint
                 Return _editorControl
             End Get
         End Property
 
         Private Sub ClearBreakpoint()
-            Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(_editorControl.TextView)
-            stMarkerProvider.ClearAllMarkers()
-            _editorControl.LineNumberMargin.ClearBreakpoint()
+            If StatementMarkerProvider.Markers.Count > 0 Then
+                StatementMarkerProvider.ClearAllMarkers()
+                _editorControl.LineNumberMargin.ClearBreakpoint()
+            End If
         End Sub
 
         Friend Sub ToggleBreakpoint(ByRef lineNumber As Integer, ByRef showBreakpoint As Boolean)
@@ -144,29 +169,49 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Return
             End If
 
-            Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(_editorControl.TextView)
             If Breakpoints.Contains(lineNumber) Then
                 _breakpoints.Remove(lineNumber)
                 showBreakpoint = False
-                Dim marker = stMarkerProvider.GetMarker(lineNumber)
-                If marker.MarkerColor = System.Windows.Media.Colors.DarkGoldenrod Then
-                    marker.MarkerColor = System.Windows.Media.Colors.Gold
-                Else
-                    stMarkerProvider.RemoveMarker(marker)
+                Dim marker = StatementMarkerProvider.GetMarker(lineNumber)
+                If marker IsNot Nothing Then
+                    If marker.MarkerColor = System.Windows.Media.Colors.DarkGoldenrod Then
+                        marker.MarkerColor = System.Windows.Media.Colors.Gold
+                    Else
+                        StatementMarkerProvider.RemoveMarker(marker)
+                    End If
                 End If
 
             Else
+                Dim line = _textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber)
+                Dim token = LineScanner.GetFirstToken(line.GetText(), 0)
+                If token.Type = TokenType.Comment Then
+                    lineNumber = -1 ' We can't break on comment lines
+                    Beep()
+                    Return
+                End If
+
                 _breakpoints.Add(lineNumber)
                 showBreakpoint = True
-                Dim marker = stMarkerProvider.GetMarker(lineNumber)
+                Dim marker = StatementMarkerProvider.GetMarker(lineNumber)
 
                 If marker Is Nothing Then
                     marker = New StatementMarker(span, lineNumber, System.Windows.Media.Colors.Red)
-                    stMarkerProvider.AddStatementMarker(marker)
+                    StatementMarkerProvider.AddStatementMarker(marker)
                 Else
                     marker.MarkerColor = System.Windows.Media.Colors.DarkGoldenrod
                 End If
             End If
+        End Sub
+
+        Friend Sub Activate()
+            Dim viewsControl = Helper.MainWindow.viewsControl
+            viewsControl.Dispatcher.BeginInvoke(
+                Sub()
+                    viewsControl.ChangeSelection(_MdiView, True)
+                    Focus(False)
+                End Sub,
+                DispatcherPriority.Background
+            )
         End Sub
 
         Public ReadOnly Property ErrorListControl As ErrorListControl
@@ -246,13 +291,20 @@ Namespace Microsoft.SmallVisualBasic.Documents
             AddProperty("Document", Me)
         End Sub
 
-
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
             stopFormatingLine = -1
             If IgnoreCaretPosChange OrElse StillWorking Then Return
             If _formatting Then
                 _formatting = False
                 Return
+            End If
+
+            If Input.Mouse.LeftButton = Input.MouseButtonState.Released Then
+                Dim sel = EditorControl.TextView.Selection
+                If Not sel.IsEmpty Then
+                    Dim m = Helper.MainWindow
+                    m.Dispatcher.BeginInvoke(Sub() m.EvaluateExpression(sel.ActiveSnapshotSpan.GetText()))
+                End If
             End If
 
             EditorControl.Dispatcher.BeginInvoke(
@@ -1336,7 +1388,7 @@ EndFunction
             sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
         End Sub
 
-        Public Function GetCurrentSubName() As String
+        Friend Function GetCurrentSubToken() As Token
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
             Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
@@ -1348,15 +1400,20 @@ EndFunction
                 Dim token = Tokens.Current.Type
                 If token = TokenType.Sub OrElse token = TokenType.Function Then
                     If Tokens.MoveNext() AndAlso Tokens.Current.Type = TokenType.Identifier Then
-                        Return Tokens.Current.Text
+                        Return Tokens.Current
                     End If
 
                 ElseIf (token = TokenType.EndSub OrElse token = TokenType.EndFunction) AndAlso lineNumber <> i Then
-                    Return ""
+                    Return SmallVisualBasic.Token.Illegal
                 End If
             Next
 
-            Return ""
+            Return SmallVisualBasic.Token.Illegal
+        End Function
+
+        Public Function GetCurrentSubName() As String
+            Dim token = GetCurrentSubToken()
+            Return If(token.IsIllegal, "", token.Text)
         End Function
 
         Sub FormatSub()

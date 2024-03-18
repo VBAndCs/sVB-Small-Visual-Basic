@@ -149,9 +149,27 @@ Namespace Microsoft.SmallVisualBasic
             GetType(MainWindow)
         )
 
+        Public Shared ShortStepOverCommand As New RoutedUICommand(
+            "Short Step Over",
+            "ShortStepOverCommand",
+            GetType(MainWindow)
+        )
+
         Public Shared StepIntoCommand As New RoutedUICommand(
             "Step Into",
             "StepIntoCommand",
+            GetType(MainWindow)
+        )
+
+        Public Shared StepOutCommand As New RoutedUICommand(
+            "Step Out",
+            "StepOutCommand",
+            GetType(MainWindow)
+        )
+
+        Public Shared ShortStepOutCommand As New RoutedUICommand(
+            "Short Step Out",
+            "ShortStepOutCommand",
             GetType(MainWindow)
         )
 
@@ -289,6 +307,16 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub OnCloseItem(sender As Object, e As RequestCloseEventArgs)
             Dim mdiView = TryCast(e.Item, MdiView)
             CloseView(mdiView)
+        End Sub
+
+        Friend Sub EvaluateExpression(text As String)
+            Dim debugger = GetDebugger(True)
+            If debugger IsNot Nothing Then
+                Dim result = debugger.EvaluateExpression(text)
+                If result.HasValue Then
+                    HelpPanel.ShowExpression(text, result.Value)
+                End If
+            End If
         End Sub
 
         Public Sub CloseView(mdiView As MdiView)
@@ -450,13 +478,23 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub OnStepOver(sender As Object, e As RoutedEventArgs)
-            Dim debugger = GetDebugger()
-            debugger.StepOver()
+            GetDebugger(False).StepOver()
+        End Sub
+
+        Private Sub OnShortStepOver(sender As Object, e As RoutedEventArgs)
+            GetDebugger(False).ShortStepOver()
         End Sub
 
         Private Sub OnStepInto(sender As Object, e As RoutedEventArgs)
-            Dim debugger = GetDebugger()
-            debugger.StepInto()
+            GetDebugger(False).StepInto()
+        End Sub
+
+        Private Sub OnStepOut(sender As Object, e As RoutedEventArgs)
+            GetDebugger(False).StepOut()
+        End Sub
+
+        Private Sub OnShortStepOut(sender As Object, e As RoutedEventArgs)
+            GetDebugger(False).ShortStepOut()
         End Sub
 
         Private Sub OnToggleBreakpoint(sender As Object, e As RoutedEventArgs)
@@ -641,7 +679,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Function CloseDocument(document As TextDocument) As Boolean
             If document.IsDirty Then
                 tabCode.IsSelected = True
-                document.Focus()
+                document.Activate()
                 PopHelp.IsOpen = False
 
                 Select Case Utility.MessageBox.Show(ResourceHelper.GetString("SaveDocumentBeforeClosing"), ResourceHelper.GetString("Title"), document.Title & ResourceHelper.GetString("DocumentModified"), Nf.Cancel Or Nf.No Or Nf.Yes, NotificationIcon.Information)
@@ -658,8 +696,8 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Private Sub RunProgram(Optional buildOnly As Boolean = False)
-            Dim debugger = GetDebugger()
-            If debugger.IsDebuggerActive Then
+            Dim debugger = GetDebugger(True)
+            If debugger?.IsActive Then
                 debugger.Continue()
             Else
                 Mouse.OverrideCursor = Cursors.Wait
@@ -668,7 +706,7 @@ Namespace Microsoft.SmallVisualBasic
             End If
         End Sub
 
-        Private Function GetDebugger() As ProgramDebugger
+        Friend Function GetDebugger(acceptNull As Boolean) As ProgramDebugger
             Dim doc = ActiveDocument
             Dim key As String
             If doc.Form = "" AndAlso Not doc.IsTheGlobalFile Then
@@ -676,11 +714,11 @@ Namespace Microsoft.SmallVisualBasic
             Else
                 key = ProjExplorer.ProjectDirectory
             End If
-            Return ProgramDebugger.GetDebugger(key)
+            Return ProgramDebugger.GetDebugger(key, acceptNull)
         End Function
 
         Private Sub OnDebugProgram()
-            Dim debugger = GetDebugger()
+            Dim debugger = GetDebugger(False)
             debugger.Run(False)
         End Sub
 
@@ -803,7 +841,7 @@ Namespace Microsoft.SmallVisualBasic
                                 code = ""
                             End If
 
-                            sVB.ClassName = "_SmallVisualBasic_" & fName.ToLower()
+                            sVB.ClassName = WinForms.Forms.FormPrefix & fName.ToLower()
                             errors = sVB.Compile(genCode, code, False, False, formNames)
 
                             If errors.Count = 0 Then
@@ -1004,16 +1042,20 @@ Namespace Microsoft.SmallVisualBasic
         Function OpenDocIfNot(filePath As String) As TextDocument
             If filePath = "" Then Return Nothing
 
-            Dim docPath = Path.GetFullPath(filePath)
+            Dim doc As TextDocument
+            Dim docPath = Path.GetFullPath(filePath).ToLower()
             For Each view As MdiView In Me.viewsControl.Items
-                If view.Document.File.ToLower() = docPath.ToLower() Then
+                doc = view.Document
+                If doc.File.ToLower() = docPath Then
                     viewsControl.ChangeSelection(view)
-                    Return view.Document
+                    ProgramDebugger.LockRunningDoc(doc)
+                    Return doc
                 End If
             Next
 
-            Dim doc = OpenCodeFile(docPath)
-            doc.IsNew = tempProjectPath <> "" AndAlso docPath.ToLower().StartsWith(tempProjectPath)
+            doc = OpenCodeFile(docPath)
+            doc.IsNew = (tempProjectPath <> "" AndAlso docPath.StartsWith(tempProjectPath))
+            ProgramDebugger.LockRunningDoc(doc)
             Return doc
         End Function
 
@@ -1842,6 +1884,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub PopHelp_Closed(sender As Object, e As EventArgs)
             closePopHelp.IsEnabled = False
+            HelpPanel.DontShowHelp = False
         End Sub
 
         Private Sub TxtControlName_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtControlName.GotFocus

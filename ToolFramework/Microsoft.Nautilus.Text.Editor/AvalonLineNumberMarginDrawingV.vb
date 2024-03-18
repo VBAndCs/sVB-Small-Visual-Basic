@@ -74,14 +74,16 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Protected Overrides Sub OnRender(drawingContext As DrawingContext)
-            Dim origin = New Point(_horizontalOffset, _VerticalOffset)
-            _textLine.Draw(drawingContext, origin, InvertAxes.None)
             If _ShowBreakpoint Then
-                Dim w = (CType(Me.Parent, Controls.Canvas).ActualWidth - _textLine.Width) / 2
+                Dim w = (CType(Me.Parent, Controls.Canvas).ActualWidth) / 2
                 Dim h = _textLine.Height / 2
                 Dim center = New Point(w, _VerticalOffset + h)
                 drawingContext.DrawEllipse(Brushes.DarkRed, Nothing, center, h, h)
             End If
+
+            Dim origin = New Point(_horizontalOffset, _VerticalOffset)
+            _textLine.Draw(drawingContext, origin, InvertAxes.None)
+
         End Sub
     End Class
 End Namespace

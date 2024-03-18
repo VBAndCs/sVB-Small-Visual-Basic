@@ -2,21 +2,21 @@
 
 Namespace Microsoft.SmallVisualBasic
     Public Class TokenEnumerator
-        Private _tokenList As List(Of Token)
+        Friend TokensList As List(Of Token)
         Private _currentIndex As Integer
 
         Public Property LineNumber As Integer
 
         Public ReadOnly Property IsEnd As Boolean
             Get
-                Return _currentIndex = _tokenList.Count
+                Return _currentIndex = TokensList.Count
             End Get
         End Property
 
 
         Public ReadOnly Property IsEndOrComment As Boolean
             Get
-                If _currentIndex = _tokenList.Count Then Return True
+                If _currentIndex = TokensList.Count Then Return True
                 Return _Current.ParseType = ParseType.Comment
             End Get
         End Property
@@ -24,7 +24,7 @@ Namespace Microsoft.SmallVisualBasic
         Public ReadOnly Property Current As Token
 
         Public Sub New(tokenList As List(Of Token))
-            _tokenList = tokenList
+            TokensList = tokenList
 
             If tokenList.Count > 0 Then
                 _Current = tokenList(0)
@@ -32,22 +32,22 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Public Function PeekNext() As Token
-            If _currentIndex < _tokenList.Count - 1 Then
-                Return _tokenList(_currentIndex + 1)
+            If _currentIndex < TokensList.Count - 1 Then
+                Return TokensList(_currentIndex + 1)
             End If
 
             Return Token.Illegal
         End Function
 
         Public Function MoveNext() As Boolean
-            If _currentIndex >= _tokenList.Count Then
+            If _currentIndex >= TokensList.Count Then
                 Return False
             End If
 
             _currentIndex += 1
 
-            If _currentIndex < _tokenList.Count Then
-                _Current = _tokenList(_currentIndex)
+            If _currentIndex < TokensList.Count Then
+                _Current = TokensList(_currentIndex)
                 Return True
             End If
 
@@ -62,7 +62,7 @@ Namespace Microsoft.SmallVisualBasic
             _currentIndex -= 1
 
             If _currentIndex >= 0 Then
-                _Current = _tokenList(_currentIndex)
+                _Current = TokensList(_currentIndex)
                 Return True
             End If
 
@@ -71,7 +71,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Public Sub Reset()
             _currentIndex = 0
-            _Current = If(_currentIndex < _tokenList.Count, _tokenList(_currentIndex), Nothing)
+            _Current = If(_currentIndex < TokensList.Count, TokensList(_currentIndex), Nothing)
         End Sub
 
     End Class

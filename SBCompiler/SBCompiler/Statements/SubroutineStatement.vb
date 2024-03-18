@@ -9,7 +9,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Inherits Statement
 
         Friend Shared Current As SubroutineStatement
-
         Public SubToken As Token
         Public Name As Token
         Public Params As List(Of Token)
@@ -415,16 +414,34 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
 
             runner.CheckForExecutionBreakAtLine(SubToken.Line, True)
-            Dim canStepOver = runner.DoStepOver AndAlso SubToken.Line <> runner.StepOverLineNumber
+            Dim canStepOver = runner.StepAround AndAlso SubToken.Line <> runner.StepOverLineNumber
             If canStepOver Then runner.Depth += 1
             Dim result = runner.Execute(Body)
-            If canStepOver Then runner.Depth -= 1
+            Dim stepOut = (runner.DebuggerCommand = DebuggerCommand.StepOut OrElse runner.DebuggerCommand = DebuggerCommand.ShortStepOut)
+            If canStepOver OrElse stepOut Then runner.Depth -= 1
             If TypeOf result Is EndDebugging Then Return result
+
+            If stepOut AndAlso runner.Depth = 0 Then
+                runner.DebuggerCommand = DebuggerCommand.StopOnNextLine
+                runner.Depth = 0
+                runner.StepAround = False
+            Else
+                runner.CheckForExecutionBreakAtLine(EndSubToken.Line, canStepOver)
+                If EndSubToken.Line = runner.StepOverLineNumber Then
+                    If runner.DebuggerCommand <> DebuggerCommand.Run Then
+                        runner.DebuggerCommand = DebuggerCommand.StepInto
+                    End If
+                    runner.Depth = 0
+                    runner.StepAround = False
+                End If
+            End If
 
             If hasParams Then ' Pop args
                 If n > 0 Then
                     argsStack = Library.Array.RemoveItem(argsStack, argsStack.GetItemCount())
                     runner.Fields(subKey) = argsStack
+                    If n = 1 Then Return Nothing
+
                     Dim LastValues = argsStack.Items(n - 1)
                     For i = 0 To Params.Count - 1
                         Dim argKey = $"{subName}.{Params(i).LCaseText}"
@@ -433,7 +450,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 End If
             End If
 
-            runner.CheckForExecutionBreakAtLine(EndSubToken.Line, canStepOver)
             Return Nothing
         End Function
     End Class

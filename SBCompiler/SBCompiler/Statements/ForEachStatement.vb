@@ -120,7 +120,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return _parser.ParseTree
         End Function
 
-
         Public Overrides Sub PrepareForEmit(scope As CodeGenScope)
             If scope.ForGlobalHelp Then Return
 
@@ -146,7 +145,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 CType(whileStatement.Last, WhileStatement).ContinueLabel = value
             End Set
         End Property
-
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
             If scope.ForGlobalHelp Then Return
@@ -243,18 +241,25 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim [end] = keys.GetItemCount()
             Dim startLine = ForEachToken.Line
             Dim endLine = EndLoopToken.Line
+            Dim stepOut = False
 
             For i = start To [end]
+                If i <> start Then runner.CheckForExecutionBreakAtLine(startLine)
+                runner.IncreaseDepthOfShortSteps(stepOut)
                 runner.Fields(key) = arr.Items(keys.Items(i))
-                If i <> start Then
-                    runner.CheckForExecutionBreakAtLine(startLine)
-                End If
+
                 Dim result = runner.Execute(Body)
-                If TypeOf result Is EndDebugging Then Return result
+                runner.DecreaseDepthOfShortStepOut(stepOut)
+
+                If TypeOf result Is EndDebugging Then
+                    If stepOut Then runner.Depth -= 1
+                    Return result
+                End If
 
                 If TypeOf result Is JumpLoopStatement Then
                     Dim jumpSt = CType(result, JumpLoopStatement)
                     If jumpSt.StartToken.Type = TokenType.ExitLoop Then
+                        If stepOut Then runner.Depth -= 1
                         If jumpSt.UpLevel > 0 Then
                             jumpSt.UpLevel -= 1
                             Return jumpSt
@@ -264,6 +269,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                     ElseIf jumpSt.UpLevel > 0 Then
                         jumpSt.UpLevel -= 1
+                        If stepOut Then runner.Depth -= 1
                         Return jumpSt
                     Else
                         jumpSt.UpLevel = 0
@@ -271,17 +277,22 @@ Namespace Microsoft.SmallVisualBasic.Statements
                     End If
 
                 ElseIf TypeOf result Is ReturnStatement Then
+                    If stepOut Then runner.Depth -= 1
                     Return result
 
                 ElseIf TypeOf result Is GotoStatement Then
                     Dim label = CType(result, GotoStatement).Label
                     If label.Line > EndLoopToken.Line OrElse label.Line < ForEachToken.Line Then
+                        If stepOut Then runner.Depth -= 1
                         Return result
                     End If
                 End If
+
                 runner.CheckForExecutionBreakAtLine(endLine)
+                runner.IncreaseDepthOfShortSteps(stepOut)
             Next
 
+            If stepOut Then runner.Depth -= 1
             Return Nothing
         End Function
     End Class

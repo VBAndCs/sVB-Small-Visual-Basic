@@ -12,15 +12,20 @@ Namespace Microsoft.Nautilus.Text
             _buffer = buffer
         End Sub
 
-        Public Overrides Function CreateReadOnlyRegion(span1 As Span, trackingMode As SpanTrackingMode, edgeInsertionMode1 As EdgeInsertionMode) As IReadOnlyRegionHandle
+        Public Overrides Function CreateReadOnlyRegion(
+                              span As Span,
+                              trackingMode As SpanTrackingMode,
+                              edgeInsertionMode As EdgeInsertionMode
+                   ) As IReadOnlyRegionHandle
+
             Dim currentSnapshot1 = _buffer.CurrentSnapshot
 
-            If span1.End > currentSnapshot1.Length Then
+            If span.End > currentSnapshot1.Length Then
                 Throw New ArgumentOutOfRangeException("span")
             End If
 
-            Dim readOnlyRegionHandle As IReadOnlyRegionHandle = CreateReadOnlyRegion(currentSnapshot1, span1, trackingMode, edgeInsertionMode1)
-            Dim newReadOnlySpan As New ReadOnlySpan(currentSnapshot1, span1, trackingMode, edgeInsertionMode1, edgeInsertionMode1)
+            Dim readOnlyRegionHandle = CreateReadOnlyRegion(currentSnapshot1, span, trackingMode, edgeInsertionMode)
+            Dim newReadOnlySpan As New ReadOnlySpan(currentSnapshot1, span, trackingMode, edgeInsertionMode, edgeInsertionMode)
             Dim list1 As List(Of ReadOnlySpan) = _readOnlySpans.FindAll(Function(s As ReadOnlySpan) s.Intersects(newReadOnlySpan))
 
             If list1.Count = 0 Then

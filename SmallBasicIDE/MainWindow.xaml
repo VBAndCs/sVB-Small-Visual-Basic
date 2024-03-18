@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v2.9.0.7" Loaded="Window_Loaded"
+        Title="Small Visual Basic v2.9.7" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -113,8 +113,14 @@
                     Executed="OnToggleBreakpoint" />
         <CommandBinding Command="{x:Static l:MainWindow.StepOverCommand}" 
                     CanExecute="CanRunProgram" Executed="OnStepOver" />
+        <CommandBinding Command="{x:Static l:MainWindow.ShortStepOverCommand}" 
+                    CanExecute="CanRunProgram" Executed="OnShortStepOver" />        
         <CommandBinding Command="{x:Static l:MainWindow.StepIntoCommand}" 
                     CanExecute="CanRunProgram" Executed="OnStepInto" />
+        <CommandBinding Command="{x:Static l:MainWindow.StepOutCommand}" 
+                    CanExecute="CanRunProgram" Executed="OnStepOut" />
+        <CommandBinding Command="{x:Static l:MainWindow.ShortStepOutCommand}" 
+                    CanExecute="CanRunProgram" Executed="OnShortStepOut" />
         <CommandBinding Command="{x:Static l:MainWindow.EndProgramCommand}" 
                     Executed="OnProgramEnd" />
         <CommandBinding Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" 
@@ -162,8 +168,14 @@
                 Gesture="F9" />
         <KeyBinding Command="{x:Static l:MainWindow.StepOverCommand}" 
                 Gesture="F10" />
+        <KeyBinding Command="{x:Static l:MainWindow.ShortStepOverCommand}" 
+                Gesture="Ctrl+F10" />        
         <KeyBinding Command="{x:Static l:MainWindow.StepIntoCommand}" 
                 Gesture="F11" />
+        <KeyBinding Command="{x:Static l:MainWindow.StepOutCommand}" 
+                Gesture="F12" />  
+        <KeyBinding Command="{x:Static l:MainWindow.ShortStepOutCommand}" 
+                Gesture="Ctrl+F12" />         
     </UIElement.InputBindings>
 
     <Grid>

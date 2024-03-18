@@ -17,23 +17,41 @@ Namespace Microsoft.Nautilus.Text
             Return CreateReadOnlyRegion(New Span(position, length))
         End Function
 
-        Public Function CreateReadOnlyRegion(span1 As Span) As IReadOnlyRegionHandle
-            Return CreateReadOnlyRegion(span1, SpanTrackingMode.EdgeExclusive)
+        Public Function CreateReadOnlyRegion(span As Span) As IReadOnlyRegionHandle
+            Return CreateReadOnlyRegion(span, SpanTrackingMode.EdgeExclusive)
         End Function
 
-        Public Function CreateReadOnlyRegion(position As Integer, length As Integer, trackingMode As SpanTrackingMode) As IReadOnlyRegionHandle
-            Return CreateReadOnlyRegion(New Span(position, length), trackingMode)
+        Public Function CreateReadOnlyRegion(
+                     position As Integer,
+                     length As Integer,
+                     trackingMode As SpanTrackingMode
+                ) As IReadOnlyRegionHandle
+
+            Return CreateReadOnlyRegion(
+                New Span(position, length),
+                trackingMode
+            )
         End Function
 
-        Public Function CreateReadOnlyRegion(span1 As Span, trackingMode As SpanTrackingMode) As IReadOnlyRegionHandle
-            Return CreateReadOnlyRegion(span1, trackingMode, EdgeInsertionMode.Allow)
+        Public Function CreateReadOnlyRegion(span As Span, trackingMode As SpanTrackingMode) As IReadOnlyRegionHandle
+            Return CreateReadOnlyRegion(span, trackingMode, EdgeInsertionMode.Allow)
         End Function
 
-        Public Function CreateReadOnlyRegion(position As Integer, length As Integer, trackingMode As SpanTrackingMode, edgeInsertionMode1 As EdgeInsertionMode) As IReadOnlyRegionHandle
-            Return CreateReadOnlyRegion(New Span(position, length), trackingMode, edgeInsertionMode1)
+        Public Function CreateReadOnlyRegion(
+                            position As Integer,
+                            length As Integer,
+                            trackingMode As SpanTrackingMode,
+                            edgeInsertionMode As EdgeInsertionMode
+                    ) As IReadOnlyRegionHandle
+
+            Return CreateReadOnlyRegion(New Span(position, length), trackingMode, edgeInsertionMode)
         End Function
 
-        Public MustOverride Function CreateReadOnlyRegion(span1 As Span, trackingMode As SpanTrackingMode, edgeInsertionMode1 As EdgeInsertionMode) As IReadOnlyRegionHandle
+        Public MustOverride Function CreateReadOnlyRegion(
+                          span As Span,
+                          trackingMode As SpanTrackingMode,
+                          edgeInsertionMode As EdgeInsertionMode
+                   ) As IReadOnlyRegionHandle
 
         Public Function GetReadOnlyExtents(position As Integer, length As Integer) As IList(Of Span)
             Return GetReadOnlyExtents(New Span(position, length))

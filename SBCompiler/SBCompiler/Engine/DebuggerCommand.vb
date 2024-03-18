@@ -4,8 +4,11 @@ Namespace Microsoft.SmallVisualBasic.Engine
     <Serializable>
     Public Enum DebuggerCommand
         Run
-        BreakOnNextLine
+        StepOut
         StepOver
         StepInto
+        StopOnNextLine
+        ShortStepOver
+        ShortStepOut
     End Enum
 End Namespace

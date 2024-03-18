@@ -119,9 +119,15 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
                 Dim retKey = $"{MName}.return"
                 If isGlobalFunc Then
-                    Return runner.GetGlobalField(retKey)
-                Else
+                    If runner.GetGlobalField(retKey) Then
+                        Return runner.GetGlobalField(retKey)
+                    Else
+                        Return "A subroutine call doesn't return any value!"
+                    End If
+                ElseIf runner.Fields.ContainsKey(retKey) Then
                     Return runner.Fields(retKey)
+                Else
+                    Return "A subroutine call doesn't return any value!"
                 End If
             End If
 
@@ -159,9 +165,23 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Return childFormName
             End If
 
-            Dim typeInfo = runner.TypeInfoBag.Types(tName)
-            Dim methodInfo = typeInfo.Methods(_MethodName.LCaseText)
-            Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
+            Dim methodInfo As MethodInfo
+            If runner.TypeInfoBag.Types.ContainsKey(tName) Then
+                Dim typeInfo = runner.TypeInfoBag.Types(tName)
+                methodInfo = typeInfo.Methods(_MethodName.LCaseText)
+                Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
+            End If
+
+            Dim type = runner.SymbolTable.GetTypeInfo(_TypeName)
+            Dim memberInfo = runner.SymbolTable.GetMemberInfo(_MethodName, type, True)
+            If memberInfo Is Nothing Then Return "???"
+
+            methodInfo = TryCast(memberInfo, MethodInfo)
+            If methodInfo Is Nothing Then Return "???"
+
+            Dim key = runner.GetKey(_TypeName)
+            If Not runner.Fields.ContainsKey(key) Then Return "This object is not set yet"
+            Return CType(methodInfo.Invoke(Nothing, New Object() {runner.Fields(key)}), Primitive)
         End Function
 
     End Class
