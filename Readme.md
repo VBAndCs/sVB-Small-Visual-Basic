@@ -5,7 +5,9 @@ This book can help you to introduce sVB to your kid:
 [Small Visual Basic Kid Programmer](https://www.amazon.com/dp/B0CVK1BMC9)
 </p>
 <p align="center">
+<a href="https://www.amazon.com/dp/B0CVK1BMC9">
 <img src="https://m.media-amazon.com/images/I/71lXMgYqprL._SY522_.jpg"/>
+</a>
 </p>
 
 
