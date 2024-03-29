@@ -439,10 +439,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim nextToken As Token
                 Dim n = tokens.Count - 1
                 Dim notFound = True
+                Dim emptySelection = textView.Selection.IsEmpty
 
                 For i = 0 To n
                     Dim token = tokens(i)
-                    If token.Contains(currentLine, column, Not textView.Selection.IsEmpty) Then
+                    If token.Contains(currentLine, column, Not emptySelection) Then
                         prevToken = GetNonCommentToken(tokens, i - 1, True)
                         prevIsSep = IsPrevSeparator(currentLine, symbol, prevToken, prevChar)
                         exactToken = token
@@ -455,9 +456,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             )
                             nextToken = GetNonCommentToken(tokens, i + 1, False)
 
-                        ElseIf Not (prevIsSep AndAlso textView.Selection.IsEmpty) Then
+                        ElseIf Not (prevIsSep AndAlso emptySelection) Then
                             currentToken = token
-                            nextToken = GetNonCommentToken(tokens, i + 1, False)
+                            Return True
+                            'nextToken = GetNonCommentToken(tokens, i + 1, False)
                         End If
 
                         notFound = False
@@ -516,6 +518,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     If (currentToken.IsIllegal OrElse currentToken.Type = TokenType.NumericLiteral OrElse currentToken.Type = TokenType.StringLiteral) AndAlso symbol = "" Then
                         line = snapshot.GetLineFromLineNumber(prevToken.Line + startLine)
                         column = prevToken.EndColumn
+                    ElseIf symbol = "" Then
+                        prevIsSep = False
                     End If
 
                 ElseIf symbol = "" Then
@@ -527,7 +531,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 line = snapshot.GetLineFromLineNumber(validToken.Line + startLine)
                                 column = validToken.Column
                             End If
+                        Case TokenType.NumericLiteral, TokenType.StringLiteral
+                            currentChar = NULL
                         Case Else
+                            If Not currentToken.IsIllegal Then prevIsSep = False
                             currentChar = NULL
                     End Select
 
@@ -551,11 +558,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         caller = New CallerInfo(prevToken.Line + startLine, prevToken.Column, 0)
                         symbol = "("
                     Else
+                        Dim lineNumber = line.LineNumber
+                        Dim startLineNum = FindCurrentSubStart(snapshot, lineNumber)
+                        Dim start = snapshot.GetLineFromLineNumber(startLineNum).Start
+                        Dim [end] = snapshot.GetLineFromLineNumber(FindCurrentSubEnd(snapshot, lineNumber)).End
                         caller = Parser.GetCommaCallerInfo(
-                                editor.Text,
-                                line.LineNumber,
+                                editor.Text.Substring(start, Math.Min([end], editor.Text.Length - 1) - start + 1),
+                                lineNumber - startLineNum,
                                 column - If(prevIsSep, 1, 0)
                         )
+                        If caller IsNot Nothing Then caller.Line += startLineNum
                     End If
                     If sourceCodeChanged Then callerCashe.Clear()
                     callerCashe(span) = caller

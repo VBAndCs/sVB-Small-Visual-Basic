@@ -254,7 +254,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Case "If", "ElseIf", "Else", "EndIf",
                              "For", "ForEach", "Next", "EndFor",
                              "While", "Wend", "EndWhile",
-                             "ExitLoop", "ContinueLoop", "GoTo",
+                             "ExitLoop", "ContinueLoop", "GoTo", "Stop",
                              "Function", "EndFunction", "Sub", "EndSub", "Return"
                         Return False
                 End Select

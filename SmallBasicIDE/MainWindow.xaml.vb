@@ -173,6 +173,12 @@ Namespace Microsoft.SmallVisualBasic
             GetType(MainWindow)
         )
 
+        Public Shared PauseCommand As New RoutedUICommand(
+            "Pause",
+            "PauseCommand",
+            GetType(MainWindow)
+        )
+
         Public Shared BreakpointCommand As New RoutedUICommand(
             ResourceHelper.GetString("BreakpointCommand"),
             ResourceHelper.GetString("BreakpointCommand"),
@@ -244,6 +250,7 @@ Namespace Microsoft.SmallVisualBasic
             openFileDialog.Filter = ResourceHelper.GetString("SmallBasicFileFilter") & "|*.sb;*.smallbasic"
 
             If openFileDialog.ShowDialog() = True Then
+                SaveSetting("SmallVisualBasic", "Files", "Open", IO.Path.GetDirectoryName(openFileDialog.FileName))
                 OpenDocIfNot(openFileDialog.FileName).Focus()
             End If
 
@@ -462,7 +469,10 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub CanRunProgram(sender As Object, e As CanExecuteRoutedEventArgs)
-            e.CanExecute = ActiveDocument IsNot Nothing
+            Dim debugger = GetDebugger(True)
+            e.CanExecute = tabDesigner.IsSelected OrElse
+                     ActiveDocument IsNot Nothing OrElse
+                     (debugger IsNot Nothing AndAlso debugger.IsActive)
         End Sub
 
         Private Sub OnProgramRun(sender As Object, e As RoutedEventArgs)
@@ -470,7 +480,10 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub OnProgramEnd(sender As Object, e As RoutedEventArgs)
-            If currentProgramProcess IsNot Nothing AndAlso Not currentProgramProcess.HasExited Then
+            Dim debugger = GetDebugger(True)
+            If debugger?.IsActive Then
+                debugger.Stop()
+            ElseIf currentProgramProcess IsNot Nothing AndAlso Not currentProgramProcess.HasExited Then
                 currentProgramProcess.Kill()
                 currentProgramProcess = Nothing
                 Me.programRunningOverlay.Visibility = Visibility.Hidden
@@ -495,6 +508,10 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub OnShortStepOut(sender As Object, e As RoutedEventArgs)
             GetDebugger(False).ShortStepOut()
+        End Sub
+
+        Private Sub OnPause(sender As Object, e As RoutedEventArgs)
+            GetDebugger(False).Pause()
         End Sub
 
         Private Sub OnToggleBreakpoint(sender As Object, e As RoutedEventArgs)
@@ -554,7 +571,7 @@ Namespace Microsoft.SmallVisualBasic
             MyBase.OnClosing(e)
         End Sub
 
-        Private Function OpenCodeFile(filePath As String) As TextDocument
+        Private Function OpenCodeFile(filePath As String, Optional focus As Boolean = True) As TextDocument
             Dim doc = ActiveDocument
             If doc IsNot Nothing Then
                 If doc.IsNew AndAlso Not doc.IsDirty Then
@@ -576,7 +593,7 @@ Namespace Microsoft.SmallVisualBasic
             Canvas.SetLeft(mdiView, 10)
             mdiViews.Add(mdiView)
             mdiView.IsSelected = True
-            doc.Focus(True)
+            If focus Then doc.Focus(True)
 
             Return doc
         End Function
@@ -626,6 +643,7 @@ Namespace Microsoft.SmallVisualBasic
                 Try
                     Dim fileName = saveFileDialog.FileName
                     Dim projectDir = IO.Path.GetDirectoryName(fileName)
+                    SaveSetting("SmallVisualBasic", "Files", "Open", projectDir)
 
                     If document.PageKey <> "" Then
                         Dim formName = document.Form.ToLower()
@@ -707,13 +725,20 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Friend Function GetDebugger(acceptNull As Boolean) As ProgramDebugger
-            Dim doc = ActiveDocument
             Dim key As String
-            If doc.Form = "" AndAlso Not doc.IsTheGlobalFile Then
-                key = doc.File
-            Else
+
+            If tabDesigner.IsSelected Then
                 key = ProjExplorer.ProjectDirectory
+            Else
+                Dim doc = ActiveDocument
+                If doc IsNot Nothing AndAlso doc.Form = "" AndAlso Not doc.IsTheGlobalFile Then
+                    ' Single code file. Use it as a key
+                    Key = doc.File
+                Else ' A file within a project. Use the folder as a key
+                    Key = ProjExplorer.ProjectDirectory
+                End If
             End If
+
             Return ProgramDebugger.GetDebugger(key, acceptNull)
         End Function
 
@@ -1039,7 +1064,7 @@ Namespace Microsoft.SmallVisualBasic
             Process.Start("http://smallbasic.com/download.aspx")
         End Sub
 
-        Function OpenDocIfNot(filePath As String) As TextDocument
+        Function OpenDocIfNot(filePath As String, Optional focus As Boolean = True) As TextDocument
             If filePath = "" Then Return Nothing
 
             Dim doc As TextDocument
@@ -1053,7 +1078,7 @@ Namespace Microsoft.SmallVisualBasic
                 End If
             Next
 
-            doc = OpenCodeFile(docPath)
+            doc = OpenCodeFile(docPath, focus)
             doc.IsNew = (tempProjectPath <> "" AndAlso docPath.StartsWith(tempProjectPath))
             ProgramDebugger.LockRunningDoc(doc)
             Return doc
@@ -1867,7 +1892,11 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub MainWindow_PreviewKeyDown(sender As Object, e As KeyEventArgs) Handles Me.PreviewKeyDown
             If e.Key = Key.Escape Then
-                PopHelp.IsOpen = False
+                If PopHelp.IsOpen Then
+                    PopHelp.IsOpen = False
+                Else
+                    PopError.IsOpen = False
+                End If
             End If
         End Sub
 
@@ -1876,7 +1905,7 @@ Namespace Microsoft.SmallVisualBasic
                  DispatcherPriority.Background,
                  Sub() PopHelp.IsOpen = False,
                  dispatcher
-            )
+        )
 
         Private Sub PopHelp_Opened(sender As Object, e As EventArgs)
             closePopHelp.IsEnabled = True
@@ -1926,7 +1955,11 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub tabDesigner_PreviewKeyDown(sender As Object, e As KeyEventArgs)
             If e.Key = Key.F5 Then
-                RunProgram()
+                If Input.Keyboard.Modifiers = ModifierKeys.Control Then
+                    OnDebugProgram()
+                Else
+                    RunProgram()
+                End If
                 e.Handled = True
             End If
         End Sub

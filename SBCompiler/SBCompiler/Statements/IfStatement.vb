@@ -277,7 +277,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 runner.CheckForExecutionBreakAtLine(EndIfToken.Line)
 
                 If Not (runner.DebuggerCommand = DebuggerCommand.ShortStepOut AndAlso
-                        runner.StepOverLineNumber = EndIfToken.Line) Then
+                        runner.StepLineNumber = EndIfToken.Line) Then
                     runner.DecreaseDepthOfShortStepOut(stepOut)
                     If stepOut Then runner.Depth -= 1
                 End If

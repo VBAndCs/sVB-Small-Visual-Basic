@@ -98,7 +98,7 @@ Namespace WinForms
                         }
 
                     Catch ex As Exception
-                        Control.ReportError(labelName, "Image", imageFile, ex)
+                        Control.ReportPropertyError(labelName, "Image", imageFile, ex)
                     End Try
                 End Sub)
         End Sub

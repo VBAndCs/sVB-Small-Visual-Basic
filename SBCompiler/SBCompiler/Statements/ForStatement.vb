@@ -386,16 +386,16 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim i = start
 
             Do
+                runner.Fields(iteratorKey) = i
+                If i <> start Then runner.CheckForExecutionBreakAtLine(startLine)
+
                 If [step] > 0 Then
                     If i > [end] Then Exit Do
                 ElseIf i < [end] Then
                     Exit Do
                 End If
 
-                If i <> start Then runner.CheckForExecutionBreakAtLine(startLine)
                 runner.IncreaseDepthOfShortSteps(stepOut)
-
-                runner.Fields(iteratorKey) = i
                 Dim result = runner.Execute(Body)
                 runner.DecreaseDepthOfShortStepOut(stepOut)
 

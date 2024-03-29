@@ -119,15 +119,20 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
                 Dim retKey = $"{MName}.return"
                 If isGlobalFunc Then
-                    If runner.GetGlobalField(retKey) Then
-                        Return runner.GetGlobalField(retKey)
-                    Else
+                    Dim result = runner.GetGlobalField(retKey)
+                    If result.HasValue Then
+                        Return result.Value
+                    ElseIf runner.Engine.Evaluating Then
                         Return "A subroutine call doesn't return any value!"
+                    Else
+                        Return New Primitive()
                     End If
                 ElseIf runner.Fields.ContainsKey(retKey) Then
                     Return runner.Fields(retKey)
-                Else
+                ElseIf runner.Engine.Evaluating Then
                     Return "A subroutine call doesn't return any value!"
+                Else
+                    Return New Primitive()
                 End If
             End If
 
@@ -140,15 +145,26 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 If mName = "showform" Then
                     Dim formName = CType(args(0), Library.Primitive)
                     Dim argsArr = CType(args(1), Library.Primitive)
-                    WinForms.Forms.DoShowForm(
-                        formName, argsArr, Sub() runner.RunForm(formName))
+                    If WinForms.Form.GetIsLoaded(formName) Then
+                        WinForms.Forms.ShowForm(formName, argsArr)
+                    Else
+                        Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
+                        runner.RunForm(formName)
+                    End If
                     Return formName
 
                 ElseIf mName = "showdialog" Then
                     Dim formName = CType(args(0), Library.Primitive)
                     Dim argsArr = CType(args(1), Library.Primitive)
-                    Return WinForms.Forms.DoShowDialog(
-                        formName, argsArr, Sub() runner.RunForm(formName))
+                    If WinForms.Form.GetIsLoaded(formName) Then
+                        WinForms.Form.SetArgsArr(formName, argsArr)
+                        Return WinForms.Form.ShowDialog(formName)
+                    Else
+                        Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
+                        runner.RunForm(formName)
+                        WinForms.Control.SetVisible(formName, False)
+                        Return WinForms.Form.ShowDialog(formName)
+                    End If
                 End If
 
             ElseIf tName = "form" AndAlso mName = "showchildform" Then
@@ -156,12 +172,13 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Dim childFormName = CType(args(1), Library.Primitive)
                 Dim argsArr = CType(args(2), Library.Primitive)
 
-                WinForms.Form.DoShowChildForm(
-                    parentFormName,
-                    childFormName,
-                    argsArr,
-                    Sub() runner.RunForm(childFormName)
-                )
+                If WinForms.Form.GetIsLoaded(childFormName) Then
+                    WinForms.Form.ShowChildForm(parentFormName, childFormName, argsArr)
+                Else
+                    Stack.PushValue("_" & CStr(childFormName).ToLower() & "_argsArr", argsArr)
+                    runner.RunForm(childFormName)
+                    WinForms.Form.SetOwner(childFormName, parentFormName)
+                End If
                 Return childFormName
             End If
 
@@ -169,7 +186,11 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             If runner.TypeInfoBag.Types.ContainsKey(tName) Then
                 Dim typeInfo = runner.TypeInfoBag.Types(tName)
                 methodInfo = typeInfo.Methods(_MethodName.LCaseText)
-                Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
+                If runner.Engine.Evaluating AndAlso methodInfo.ReturnType Is GetType(System.Void) Then
+                    Return "A subroutine call doesn't return any value!"
+                Else
+                    Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
+                End If
             End If
 
             Dim type = runner.SymbolTable.GetTypeInfo(_TypeName)
@@ -181,7 +202,12 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
             Dim key = runner.GetKey(_TypeName)
             If Not runner.Fields.ContainsKey(key) Then Return "This object is not set yet"
-            Return CType(methodInfo.Invoke(Nothing, New Object() {runner.Fields(key)}), Primitive)
+            args.Insert(0, runner.Fields(key))
+            Try
+                Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
+            Catch ex As Exception
+            End Try
+            Return "Can't evaluate this method call at this time. Calling some methods twice can cause errors like when you try to add the same control again on the form"
         End Function
 
     End Class

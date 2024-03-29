@@ -63,20 +63,19 @@
             </Style>
         </ResourceDictionary>
     </FrameworkElement.Resources>
-    
-        <Border Background="AliceBlue" CornerRadius="1" 
+    <Border x:Name="DocBorder" Background="AliceBlue" CornerRadius="1" 
                 BorderBrush="#d0dfefff" 
                 BorderThickness="1" 
                 Grid.Column="2"
-                HorizontalAlignment="Left">
-            
-              <FlowDocumentScrollViewer Padding="0" Margin="5">
-            <FlowDocument Name="helpDocument" 
-                            FontFamily="Segoe UI" FontSize="16" 
-                            PagePadding="4" TextAlignment="Left"
-                            FlowDirection="{x:Static sb:App.FlowDirection}">
-            </FlowDocument>
-        </FlowDocumentScrollViewer>
-        </Border>
+                HorizontalAlignment="Stretch">
 
+             <FlowDocumentScrollViewer x:Name="ScrView"
+                 Padding="1" Margin="5">
+                 <FlowDocument Name="helpDocument"
+                                FontFamily="Segoe UI" FontSize="16" 
+                                PagePadding="1" TextAlignment="Left"
+                                FlowDirection="{x:Static sb:App.FlowDirection}">
+                </FlowDocument>
+            </FlowDocumentScrollViewer>
+        </Border>
 </Grid>

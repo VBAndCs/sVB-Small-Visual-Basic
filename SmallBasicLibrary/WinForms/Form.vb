@@ -121,6 +121,20 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        Public Shared Sub SetOwner(childFormName As String, parentFormName As String)
+            App.Invoke(
+                 Sub()
+                     Try
+                         Dim childWnd = Forms.GetForm(childFormName)
+                         Dim parentWnd = Forms.GetForm(parentFormName)
+                         childWnd.Owner = parentWnd
+
+                     Catch ex As Exception
+                         ReportSubError(childFormName, "Owner", ex)
+                     End Try
+                 End Sub)
+        End Sub
+
         ''' <summary>
         ''' Adds a new TextBox control to the form
         ''' </summary>
@@ -303,7 +317,6 @@ Namespace WinForms
                                 .Tag = timerName,
                                 .Interval = TimeSpan.FromMilliseconds(interval)
                             }
-
                             WinTimer.Timers(key) = t
                             t.Start()
 
@@ -1033,7 +1046,7 @@ Namespace WinForms
                            Dim frm = Forms.GetForm(formName)
                            frm.SetValue(ArgsArrProperty, value.AsString())
                        Catch ex As Exception
-                           Control.ReportPropertyError(formName, "ArgsArr", value, ex)
+                           ReportError(formName, "ArgsArr", value, ex)
                        End Try
                    End Sub)
         End Sub
@@ -1115,7 +1128,7 @@ Namespace WinForms
                     Try
                         GetIcon = CType(Forms.GetForm(formName).Icon, Imaging.BitmapImage).UriSource.AbsolutePath
                     Catch ex As Exception
-                        Control.ReportError(formName, "Icon", ex)
+                        ReportError(formName, "Icon", ex)
                     End Try
                 End Sub)
         End Function
@@ -1130,7 +1143,7 @@ Namespace WinForms
                         Forms.GetForm(formName).Icon = New Imaging.BitmapImage(New Uri(imageFile))
 
                     Catch ex As Exception
-                        Control.ReportError(formName, "Icon", imageFile, ex)
+                        ReportError(formName, "Icon", imageFile, ex)
                     End Try
                 End Sub)
         End Sub
@@ -1145,6 +1158,7 @@ Namespace WinForms
                     Try
                         Dim wnd = Forms.GetForm(formName)
                         wnd.Show()
+                        wnd.WindowState = WindowState.Normal
                         wnd.Activate()
                     Catch ex As Exception
                         ReportSubError(formName, "Show", ex)
@@ -1198,11 +1212,6 @@ Namespace WinForms
         <ExMethod>
         Public Shared Function ShowChildForm(parentFormName As Primitive, childFormName As Primitive, argsArr As Primitive) As Primitive
             Dim asm = System.Reflection.Assembly.GetCallingAssembly()
-            DoShowChildForm(parentFormName, childFormName, argsArr, Sub() Form.Initialize(childFormName, asm))
-            Return childFormName
-        End Function
-
-        Public Shared Sub DoShowChildForm(parentFormName As Primitive, childFormName As Primitive, argsArr As Primitive, InitializeForm As Action)
             App.Invoke(
                  Sub()
                      Try
@@ -1214,9 +1223,9 @@ Namespace WinForms
                              SetArgsArr(childFormName, argsArr)
                              Show(childFormName)
                              childWnd.RaiseEvent(New RoutedEventArgs(OnFormShownEvent))
-                         Else
+                         ElseIf Not App.IsDebugging Then
                              Stack.PushValue("_" & childFormName.AsString().ToLower() & "_argsArr", argsArr)
-                             InitializeForm()
+                             Form.Initialize(childFormName, asm)
                              Dim childWnd = Forms.GetForm(childFormName)
                              childWnd.Owner = parentWnd
                          End If
@@ -1225,7 +1234,10 @@ Namespace WinForms
                          Form.ReportSubError(childFormName, "ShowChildForm", ex)
                      End Try
                  End Sub)
-        End Sub
+
+            Return childFormName
+        End Function
+
 
         ''' <summary>
         ''' Gets or sets the name of the button that the user clicked when he closes the dialog form.
@@ -1345,6 +1357,34 @@ Namespace WinForms
                         Forms.GetForm(formName).Title = value
                     Catch ex As Exception
                         ReportError(formName, "Text", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Gets or sets whether or not the form is the top most window that always appears on top of all other desktop windows even when it is not the active window.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetTopmost(formName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetTopmost = Forms.GetForm(formName).Topmost
+                    Catch ex As Exception
+                        ReportError(formName, "Topmost", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetTopmost(formName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Forms.GetForm(formName).Topmost = CBool(value)
+                    Catch ex As Exception
+                        ReportError(formName, "Topmost", value, ex)
                     End Try
                 End Sub)
         End Sub

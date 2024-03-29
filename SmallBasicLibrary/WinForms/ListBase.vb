@@ -62,7 +62,7 @@ Namespace WinForms
                     Try
                         GetSelector(listName).SelectedItem = CStr(item)
                     Catch ex As Exception
-                        Control.ReportError(listName, "SelectedItem", item, ex)
+                        Control.ReportPropertyError(listName, "SelectedItem", item, ex)
                     End Try
                 End Sub)
         End Sub
@@ -99,7 +99,7 @@ Namespace WinForms
                         lst.SelectedIndex = i
 
                     Catch ex As Exception
-                        Control.ReportError(listName, "SelectedIndex", index, ex)
+                        Control.ReportPropertyError(listName, "SelectedIndex", index, ex)
                     End Try
                 End Sub)
         End Sub

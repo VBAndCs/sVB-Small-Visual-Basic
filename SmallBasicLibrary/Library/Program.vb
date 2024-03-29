@@ -2,6 +2,7 @@
 Imports System.IO
 Imports System.Reflection
 Imports System.Threading
+Imports System.Windows
 Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
@@ -13,7 +14,8 @@ Namespace Library
         Private Shared args As String() = Environment.GetCommandLineArgs()
         Public Shared AppDir As Primitive
         Public Shared IsTerminated As Boolean
-
+        Public Shared Exception As Exception
+        Friend Shared ActiveWindow As Window
         Public Shared Event ProgramTerminated()
 
         Public Shared Sub DoNothing()
@@ -81,6 +83,8 @@ Namespace Library
         ''' Ends the program.
         ''' </summary>
         Public Shared Sub [End]()
+            ActiveWindow = Nothing
+            Exception = Nothing
             SmallBasicApplication.End()
             RaiseEvent ProgramTerminated()
         End Sub
@@ -124,6 +128,27 @@ Namespace Library
         Public Shared Sub SaveSetting(section As Primitive, name As Primitive, value As Primitive)
             Dim appName = "sVB_" & IO.Path.GetDirectoryName(Directory).Replace(" ", "_")
             Interaction.SaveSetting(appName, section, name, value)
+        End Sub
+
+        Public Shared Sub ActivateWindow()
+            SmallBasicApplication.BeginInvoke(
+                Sub()
+                    If ActiveWindow IsNot Nothing AndAlso WinForms.Forms._forms.Values.Contains(ActiveWindow) Then
+                        Try
+                            ActiveWindow.Activate()
+                            ActiveWindow.Focus()
+                        Catch
+                            ActiveWindow = Nothing
+                        End Try
+                    ElseIf TextWindow._windowVisible Then
+                        TextWindow.Show()
+                    ElseIf GraphicsWindow._windowVisible Then
+                        GraphicsWindow._window.Activate()
+                        GraphicsWindow._window.Focus()
+                    Else
+                        ActiveWindow = Nothing
+                    End If
+                End Sub)
         End Sub
     End Class
 End Namespace

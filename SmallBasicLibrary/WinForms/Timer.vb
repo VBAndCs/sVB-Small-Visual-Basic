@@ -50,7 +50,7 @@ Namespace WinForms
                         t.Interval = TimeSpan.FromMilliseconds(value)
                         t.Start()
                     Catch ex As Exception
-                        Control.ReportError(timerName, "Interval", value, ex)
+                        Control.ReportPropertyError(timerName, "Interval", value, ex)
                     End Try
                 End Sub)
         End Sub
@@ -94,7 +94,7 @@ Namespace WinForms
         Public Shared Custom Event OnTick As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Try
-                    Dim name = [Event].SenderControl
+                    Dim name = LCase([Event].SenderControl)
                     Dim _sender = GetTimer(name)
                     Dim h = Sub(Sender As Object, e As EventArgs)
                                 Try
@@ -105,7 +105,7 @@ Namespace WinForms
                                 End Try
                             End Sub
 
-                    If TickHandlers.ContainsKey(name) Then
+                    If TickHandlers.ContainsKey(name) AndAlso TickHandlers(name) IsNot Nothing Then
                         RemoveHandler _sender.Tick, TickHandlers(name)
                     End If
 
@@ -118,11 +118,25 @@ Namespace WinForms
             End AddHandler
 
             RemoveHandler(handler As SmallVisualBasicCallback)
+                RemoveOnTickHandler([Event].SenderControl)
             End RemoveHandler
 
             RaiseEvent()
             End RaiseEvent
         End Event
 
+        ''' <summary>
+        ''' Removes the OnTick hamdler of the current timer.
+        ''' Ulternatively, you can set the OnTick event to Nothing to remove its handler:
+        ''' myTimer.OnTick = Nothing
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub RemoveOnTickHandler(timerName As Primitive)
+            Dim name = LCase(timerName)
+            If TickHandlers.ContainsKey(name) AndAlso TickHandlers(name) IsNot Nothing Then
+                RemoveHandler GetTimer(name).Tick, TickHandlers(name)
+            End If
+            TickHandlers(name) = Nothing
+        End Sub
     End Class
 End Namespace

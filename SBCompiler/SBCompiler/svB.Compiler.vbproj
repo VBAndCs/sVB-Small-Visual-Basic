@@ -139,6 +139,7 @@
     <Compile Include="Statements\ReturnStatement.vb" />
     <Compile Include="Statements\MethodCallStatement.vb" />
     <Compile Include="Statements\Statement.vb" />
+    <Compile Include="Statements\StopStatement.vb" />
     <Compile Include="Statements\SubroutineCallStatement.vb" />
     <Compile Include="Statements\SubroutineStatement.vb" />
     <Compile Include="Statements\WhileStatement.vb" />

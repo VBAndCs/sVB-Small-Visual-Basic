@@ -56,6 +56,21 @@ Namespace Library
         Private Shared _isHidden As Boolean
         Private Shared _syncLock As New Object
 
+        ''' <summary>
+        ''' Gets or sets whether or not the Graphics Window is the top most window that always appears on top of all other desktop windows even when it is not the active window.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property Topmost As Primitive
+            Get
+                VerifyAccess()
+                BeginInvoke(Sub() Topmost = _window.Topmost)
+            End Get
+
+            Set(value As Primitive)
+                VerifyAccess()
+                BeginInvoke(Sub() _window.Topmost = CBool(value))
+            End Set
+        End Property
 
         ''' <summary>
         ''' Gets or sets the Background color of the Graphics Window.
@@ -645,16 +660,16 @@ Namespace Library
             VerifyAccess()
             BeginInvoke(
                 Sub()
-                    Dim drawingContext = _mainDrawing.Append()
+                    Dim dc = _mainDrawing.Append()
                     Dim w = CDbl(width) / 2
                     Dim h = CDbl(height) / 2
-                    drawingContext.DrawEllipse(
+                    dc.DrawEllipse(
                         Nothing,
                         _pen, New System.Windows.Point(CDbl(x) + w, CDbl(y) + h),
                         w,
                         h
                     )
-                    drawingContext.Close()
+                    dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
         End Sub
@@ -693,12 +708,16 @@ Namespace Library
         ''' <param name="y2">The y co-ordinate of the second point.</param>
         ''' <param name="x3">The x co-ordinate of the third point.</param>
         ''' <param name="y3">The y co-ordinate of the third point.</param>
-        Public Shared Sub DrawTriangle(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive, x3 As Primitive, y3 As Primitive)
+        Public Shared Sub DrawTriangle(
+                         x1 As Primitive, y1 As Primitive,
+                         x2 As Primitive, y2 As Primitive,
+                         x3 As Primitive, y3 As Primitive)
+
             VerifyAccess()
             BeginInvoke(
                 Sub()
-                    Dim dc As DrawingContext = _mainDrawing.Append()
-                    Dim value As New PathFigure With {
+                    Dim dc = _mainDrawing.Append()
+                    Dim figure As New PathFigure With {
                             .StartPoint = New System.Windows.Point(x1, y1),
                             .IsClosed = True,
                             .Segments = New PathSegmentCollection From {
@@ -706,11 +725,11 @@ Namespace Library
                                     CType(New LineSegment(New System.Windows.Point(x3, y3), isStroked:=True), PathSegment)
                             }
                     }
-                    Dim figures As New PathFigureCollection From {value}
-                    Dim pathGeometry1 As New PathGeometry
-                    pathGeometry1.Figures = figures
-                    pathGeometry1.Freeze()
-                    dc.DrawGeometry(Nothing, _pen, pathGeometry1)
+                    Dim figures As New PathFigureCollection From {figure}
+                    Dim pg As New PathGeometry
+                    pg.Figures = figures
+                    pg.Freeze()
+                    dc.DrawGeometry(Nothing, _pen, pg)
                     dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
@@ -730,7 +749,7 @@ Namespace Library
             BeginInvoke(
                 Sub()
                     Dim dc As DrawingContext = _mainDrawing.Append()
-                    Dim value As New PathFigure With {
+                    Dim figure As New PathFigure With {
                             .StartPoint = New System.Windows.Point(x1, y1),
                             .IsClosed = True,
                             .Segments = New PathSegmentCollection From {
@@ -738,11 +757,147 @@ Namespace Library
                                     CType(New LineSegment(New System.Windows.Point(x3, y3), isStroked:=True), PathSegment)
                             }
                     }
-                    Dim figures As New PathFigureCollection From {value}
+                    Dim figures As New PathFigureCollection From {figure}
                     Dim pathGeometry1 As New PathGeometry
                     pathGeometry1.Figures = figures
                     pathGeometry1.Freeze()
                     dc.DrawGeometry(_fillBrush, Nothing, pathGeometry1)
+                    dc.Close()
+                    AddRasterizeOperationToQueue()
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Draws a cubic Bezier curve between the given start and end points, and passing through the two given control points.
+        ''' </summary>
+        ''' <param name="x1">The x co-ordinate of the start point.</param>
+        ''' <param name="y1">The y co-ordinate of the start point.</param>
+        ''' <param name="x2">The x co-ordinate of the first control point.</param>
+        ''' <param name="y2">The y co-ordinate of the first control point.</param>
+        ''' <param name="x3">The x co-ordinate of the second control point.</param>
+        ''' <param name="y3">The y co-ordinate of the second control point.</param>
+        ''' <param name="x4">The x co-ordinate of the end point.</param>
+        ''' <param name="y4">The y co-ordinate of the end point.</param>
+        Public Shared Sub DrawBezierCurve(
+                         x1 As Primitive, y1 As Primitive,
+                         x2 As Primitive, y2 As Primitive,
+                         x3 As Primitive, y3 As Primitive,
+                         x4 As Primitive, y4 As Primitive
+                   )
+
+            VerifyAccess()
+            BeginInvoke(
+                Sub()
+                    Dim dc = _mainDrawing.Append()
+                    Dim figure As New PathFigure With {
+                            .StartPoint = New System.Windows.Point(x1, y1),
+                            .IsClosed = False,
+                            .Segments = New PathSegmentCollection From {
+                                New BezierSegment(
+                                        New System.Windows.Point(x2, y2),
+                                        New System.Windows.Point(x3, y3),
+                                        New System.Windows.Point(x4, y4),
+                                        True
+                                )
+                            }
+                    }
+                    Dim figures As New PathFigureCollection From {figure}
+                    Dim pg As New PathGeometry
+                    pg.Figures = figures
+                    pg.Freeze()
+                    dc.DrawGeometry(Nothing, _pen, pg)
+                    dc.Close()
+                    AddRasterizeOperationToQueue()
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Draws a quadratic Bezier curve, from the given start point, passing through the given control point, and ending at the given end point.
+        ''' </summary>
+        ''' <param name="x1">The x co-ordinate of the start point.</param>
+        ''' <param name="y1">The y co-ordinate of the start point.</param>
+        ''' <param name="x2">The x co-ordinate of the control point.</param>
+        ''' <param name="y2">The y co-ordinate of the control point.</param>
+        ''' <param name="x3">The x co-ordinate of the end point.</param>
+        ''' <param name="y3">The y co-ordinate of the end point.</param>
+        Public Shared Sub DrawQuadraticBezierCurve(
+                         x1 As Primitive, y1 As Primitive,
+                         x2 As Primitive, y2 As Primitive,
+                         x3 As Primitive, y3 As Primitive
+                   )
+
+            VerifyAccess()
+            BeginInvoke(
+                Sub()
+                    Dim dc = _mainDrawing.Append()
+                    Dim figure As New PathFigure With {
+                            .StartPoint = New System.Windows.Point(x1, y1),
+                            .IsClosed = False,
+                            .Segments = New PathSegmentCollection From {
+                                New QuadraticBezierSegment(
+                                        New System.Windows.Point(x2, y2),
+                                        New System.Windows.Point(x3, y3),
+                                        True
+                                )
+                            }
+                    }
+                    Dim figures As New PathFigureCollection From {figure}
+                    Dim pg As New PathGeometry
+                    pg.Figures = figures
+                    pg.Freeze()
+                    dc.DrawGeometry(Nothing, _pen, pg)
+                    dc.Close()
+                    AddRasterizeOperationToQueue()
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Draws an arc from between the given start and end points. 
+        ''' This arc is a part of the ellipse that has the given radius and passes through these tow points.
+        ''' </summary>
+        ''' <param name="x1">The x co-ordinate of the start point.</param>
+        ''' <param name="y1">The y co-ordinate of the start point.</param>
+        ''' <param name="x2">The x co-ordinate of the end point of the arc.</param>
+        ''' <param name="y2">The y co-ordinate of the end point of the arc.</param>
+        ''' <param name="xRadius">The horizontal radius of the arc</param>
+        ''' <param name="yRadius">The vertical radius of the arc</param>
+        ''' <param name="angle">The x-axis rotation of the ellipse</param>
+        ''' <param name="isLargArc">Use True if the arc should be greater than 180 degrees, or False otherwise</param>
+        ''' <param name="isClockwise">Use True to draw the arc in a positive angle direction, or False otherwise</param>
+        Public Shared Sub DrawArc(
+                       x1 As Primitive,
+                       y1 As Primitive,
+                       x2 As Primitive,
+                       y2 As Primitive,
+                       xRadius As Primitive,
+                       yRadius As Primitive,
+                       angle As Primitive,
+                       isLargArc As Primitive,
+                       isClockwise As Primitive
+                   )
+            VerifyAccess()
+            BeginInvoke(
+                Sub()
+                    Dim dc = _mainDrawing.Append()
+                    Dim figure As New PathFigure With {
+                            .StartPoint = New System.Windows.Point(x1, y1),
+                            .IsClosed = False,
+                            .Segments = New PathSegmentCollection From {
+                                    New ArcSegment(
+                                         New System.Windows.Point(x2, y2),
+                                         New System.Windows.Size(xRadius, yRadius),
+                                         angle,
+                                         isLargArc,
+                                         If(isClockwise, SweepDirection.Clockwise, SweepDirection.Counterclockwise),
+                                         True
+                                    )
+                            }
+                    }
+                    Dim figures As New PathFigureCollection From {figure}
+                    Dim pg As New PathGeometry
+                    pg.Figures = figures
+                    pg.Freeze()
+                    dc.DrawGeometry(Nothing, _pen, pg)
                     dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
@@ -1021,7 +1176,10 @@ Namespace Library
                             .Width = 640.0
                         }
 
-                        If Not _isHidden Then _window.Show()
+                        If Not _isHidden Then
+                            _windowVisible = True
+                            _window.Show()
+                        End If
 
                         AddHandler _window.SourceInitialized,
                              Sub()

@@ -587,9 +587,15 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Case TokenType.Subtraction
                         If notLastToken Then
                             Dim prevType = If(i = 0, ParseType.Illegal, tokens(i - 1).ParseType)
-                            If i = 0 OrElse prevType = ParseType.Operator OrElse
-                                        prevType = ParseType.Keyword Then
+                            If i = 0 Then
                                 FixSpaces(textEdit, line, token, nextToken, 0)
+                            ElseIf prevType = ParseType.Operator OrElse prevType = ParseType.Keyword Then
+                                Select Case tokens(i - 1).Type
+                                    Case TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
+                                        FixSpaces(textEdit, line, token, nextToken, 1)
+                                    Case Else
+                                        FixSpaces(textEdit, line, token, nextToken, 0)
+                                End Select
                             Else
                                 FixSpaces(textEdit, line, token, nextToken, If(nextToken.Type = TokenType.Subtraction, 0, 1))
                             End If

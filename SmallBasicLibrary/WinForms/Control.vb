@@ -39,7 +39,7 @@ Namespace WinForms
             ReportError(names(0), names(1), memberName, ex)
         End Sub
 
-        Shared Sub ReportError(formName As String, controlName As String, memberName As String, ex As Exception)
+        Private Shared Sub ReportError(formName As String, controlName As String, memberName As String, ex As Exception)
             If controlName.ToLower() = formName.ToLower Then
                 Helper.ReportError($"Reading {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
             Else
@@ -1600,8 +1600,12 @@ Namespace WinForms
         ''' <param name="eventName">The name of the event to remove its handler</param>
         <ExMethod>
         Public Shared Sub RemoveEventHandler(controlName As Primitive, eventName As Primitive)
-            senderAssembly = Reflection.Assembly.GetCallingAssembly().GetName().Name
-            RemovePrevEventHandler(controlName, eventName, Nothing)
+            If LCase(eventName) = "ontick" Then
+                WinTimer.RemoveOnTickHandler(controlName)
+            Else
+                senderAssembly = Reflection.Assembly.GetCallingAssembly().GetName().Name
+                RemovePrevEventHandler(controlName, eventName, Nothing)
+            End If
         End Sub
 
 

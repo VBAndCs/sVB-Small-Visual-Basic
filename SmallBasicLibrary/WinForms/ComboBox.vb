@@ -100,7 +100,7 @@ Namespace WinForms
                     Try
                         GetComboBox(comboBoxName).IsEditable = CBool(item)
                     Catch ex As Exception
-                        Control.ReportError(comboBoxName, "AllowEdit", item, ex)
+                        Control.ReportPropertyError(comboBoxName, "AllowEdit", item, ex)
                     End Try
                 End Sub)
         End Sub

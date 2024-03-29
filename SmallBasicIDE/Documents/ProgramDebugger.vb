@@ -19,6 +19,12 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Public Shared Function GetDebugger(project As String, acceptNull As Boolean) As ProgramDebugger
+            ' Only one active debugger is allowed, so return it if found.
+            ' This will prevent running a new project while debigging another
+            For Each debugger In debuggers.Values
+                If debugger.IsActive Then Return debugger
+            Next
+
             Dim key = project.ToLower()
             If debuggers.ContainsKey(key) Then
                 Return debuggers(key)
@@ -39,9 +45,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Public ReadOnly Property Document As TextDocument
             Get
-                Dim docPath = ProgramEngine.CurrentRunner.currentParser.DocPath
+                Dim docPath = ProgramEngine.CurrentRunner.Parser.DocPath
                 Dim m = Helper.MainWindow
-                Dim doc = If(docPath = "", m.ActiveDocument, m.OpenDocIfNot(docPath))
+                Dim doc = If(docPath = "", m.ActiveDocument, m.OpenDocIfNot(docPath, False))
                 Return doc
             End Get
         End Property
@@ -57,7 +63,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
                 _ProgramEngine = New Engine.ProgramEngine(parsers)
                 AddHandler Library.Program.ProgramTerminated, AddressOf OnProgramTerminated
-                AddHandler _ProgramEngine.DebuggerStateChanged, AddressOf OnDebuggerCurrentStateChanged
+                AddHandler _ProgramEngine.DebuggerStateChanged, AddressOf OnCurrentStateChanged
             End If
             Return _ProgramEngine
         End Function
@@ -70,50 +76,63 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Property
 
         Friend Function Evaluate(item As Completion.CompletionItem) As Library.Primitive?
+            If ProgramEngine.Evaluating Then Return Nothing
+
+            Dim doc = Helper.MainWindow.ActiveDocument
+            Dim runner = _ProgramEngine.GetRunner(doc.File)
+            If runner Is Nothing Then Return Nothing
+
+            ProgramEngine.Evaluating = True
+            Dim result? As Library.Primitive = Nothing
+
             If item.ObjectName Is Nothing OrElse
                         item.ItemType = Completion.CompletionItemType.Control OrElse
                         item.ItemType = Completion.CompletionItemType.LocalVariable OrElse
                         item.ItemType = Completion.CompletionItemType.GlobalVariable Then
-                Dim runner = _ProgramEngine.CurrentRunner
+
                 Dim key = runner.GetKey(item.DefinitionIdintifier)
                 If key = "" Then
                     key = item.DisplayName.ToLower()
                 End If
-                Return GetValue(key, runner.Fields)
+                result = GetValue(key, runner.Fields)
 
             ElseIf item.ObjectName.ToLower() = "global" Then
                 Dim key = item.DisplayName.ToLower()
-                Return GetValue(key, _ProgramEngine.GlobalRunner.Fields)
+                result = GetValue(key, _ProgramEngine.GlobalRunner.Fields)
 
             ElseIf item.ItemType = Completion.CompletionItemType.DynamicPropertyName Then
-                Dim subName = Document.GetCurrentSubName()
+                Dim subName = doc.GetCurrentSubName()
                 Dim arrKey = If(subName = "", item.ObjectName, $"{subName}.{item.ObjectName}").ToLower()
-                Dim arr = GetValue(arrKey, _ProgramEngine.CurrentRunner.Fields)
+                Dim arr = GetValue(arrKey, runner.Fields)
 
                 If arr.HasValue Then
-                    Return Library.Primitive.GetArrayValue(arr.Value, item.DisplayName)
+                    result = Library.Primitive.GetArrayValue(arr.Value, item.DisplayName)
+
                 ElseIf subName <> "" Then
                     arrKey = item.ObjectName.ToLower()
-                    arr = GetValue(arrKey, _ProgramEngine.CurrentRunner.Fields)
+                    arr = GetValue(arrKey, runner.Fields)
                     If arr.HasValue Then
-                        Return Library.Primitive.GetArrayValue(arr.Value, item.DisplayName)
+                        result = Library.Primitive.GetArrayValue(arr.Value, item.DisplayName)
                     End If
                 End If
 
             Else
-                Dim runner = _ProgramEngine.CurrentRunner
                 Dim key = item.DisplayName.ToLower()
                 Dim objectName As New Token() With {.Text = item.ObjectName, .Type = TokenType.Identifier}
-                Dim type = runner.currentParser.SymbolTable.GetTypeInfo(objectName)
+                Dim type = runner.Parser.SymbolTable.GetTypeInfo(objectName)
 
                 Dim propInfo = TryCast(item.MemberInfo, Reflection.PropertyInfo)
                 If propInfo IsNot Nothing Then
-                    Return CType(propInfo.GetValue(Nothing, Nothing), Library.Primitive)
+                    result = CType(propInfo.GetValue(Nothing, Nothing), Library.Primitive)
                 Else
                     Dim name = GetValue(objectName.LCaseText, runner.Fields)
                     If name Is Nothing Then
-                        Dim subName = Document.GetCurrentSubName()
-                        If subName = "" Then Return Nothing
+                        Dim subName = doc.GetCurrentSubName()
+                        If subName = "" Then
+                            ProgramEngine.Evaluating = False
+                            Return Nothing
+                        End If
+
                         Dim objKey = $"{subName}.{item.ObjectName}".ToLower()
                         name = GetValue(objKey, runner.Fields)
                     End If
@@ -124,12 +143,13 @@ Namespace Microsoft.SmallVisualBasic.Documents
                             type = runner.TypeInfoBag.Types("control")
                         End If
                         Dim methodInfo = type.Methods(methodName)
-                        Return CType(methodInfo.Invoke(Nothing, New Object() {name}), Library.Primitive)
+                        result = CType(methodInfo.Invoke(Nothing, New Object() {name}), Library.Primitive)
                     End If
                 End If
             End If
 
-            Return Nothing
+            ProgramEngine.Evaluating = False
+            Return result
         End Function
 
         Private Function GetValue(key As String, fields As Dictionary(Of String, Library.Primitive)) As Library.Primitive?
@@ -140,37 +160,63 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End If
         End Function
 
-        Public ReadOnly Property TextView As ITextView
-            Get
-                Return Document.EditorControl.TextView
-            End Get
-        End Property
+        Public Sub Pause()
+            If IsActive Then _ProgramEngine.Pause()
+        End Sub
+
+        Public Sub [Stop]()
+            If IsActive Then Library.Program.End()
+        End Sub
 
         Public Sub Run(breakOnStart As Boolean)
             If IsActive Then
                 _ProgramEngine.Continue()
             Else
-                _ProgramEngine = CreateEngine()
-                If _ProgramEngine IsNot Nothing Then
-                    _ProgramEngine.RunProgram(breakOnStart)
-                    Dim doc = Document
-                    _ProgramEngine.CurrentRunner.Breakpoints = doc.Breakpoints
-                    _IsActive = True
-                    doc.ReadOnly = True
-                End If
+                Dim m = Helper.MainWindow
+                m.tabCode.IsSelected = True
+                m.tabDesigner.IsEnabled = False
+                m.Dispatcher.BeginInvoke(
+                    DispatcherPriority.Background,
+                    Sub()
+                        _ProgramEngine = CreateEngine()
+                        If _ProgramEngine IsNot Nothing Then
+                            _ProgramEngine.RunProgram(breakOnStart)
+                            For Each parser In _ProgramEngine.Parsers
+                                Dim doc = m.GetDocIfOpened(parser.DocPath)
+                                If doc IsNot Nothing Then
+                                    If _ProgramEngine.Runners.ContainsKey(parser) Then
+                                        _ProgramEngine.Runners(parser).Breakpoints = doc.Breakpoints
+                                    ElseIf doc.Breakpoints.Count > 0 Then
+                                        Dim r = New ProgramRunner(_ProgramEngine, parser)
+                                        r.Breakpoints = doc.Breakpoints
+                                        _ProgramEngine.Runners(parser) = r
+                                    End If
+                                    doc.ReadOnly = True
+                                End If
+                            Next
+                            _IsActive = True
+                        End If
+                    End Sub)
             End If
         End Sub
 
         Dim lastDoc As TextDocument
 
-        Private Sub OnDebuggerCurrentStateChanged()
-            Dim offset = _ProgramEngine.CurrentRunner.DocLineOffset
-            Dim lineNumber = _ProgramEngine.CurrentLineNumber - offset
-            Dim currentState = _ProgramEngine.CurrentDebuggerState
-
-            Helper.MainWindow.Dispatcher.BeginInvoke(
+        Private Sub OnCurrentStateChanged(runner As ProgramRunner)
+            Dim m = Helper.MainWindow
+            m.Dispatcher.Invoke(
                 Sub()
-                    Dim doc = If(lastDoc, Document)
+                    Dim docPath = runner.Parser.DocPath.ToLower()
+                    Dim CurDoc = If(
+                            docPath = "" OrElse docPath = m.ActiveDocument.File.ToLower(),
+                            m.ActiveDocument,
+                            m.OpenDocIfNot(docPath, False)
+                    )
+                    Dim offset = runner.DocLineOffset
+                    Dim lineNumber = runner.CurrentLineNumber - offset
+                    Dim currentState = runner.DebuggerState
+                    Dim markLine = (currentState = DebuggerState.Paused OrElse currentState = DebuggerState.Error)
+                    Dim doc = If(lastDoc, CurDoc)
                     Dim stMarkerProvider = doc.StatementMarkerProvider
                     Dim marker = doc.ExecutionMarker
 
@@ -183,14 +229,17 @@ Namespace Microsoft.SmallVisualBasic.Documents
                         End If
                     End If
 
+                    If _ProgramEngine Is Nothing Then Return ' Program ended
+
                     If lastDoc IsNot Nothing Then
-                        doc = Document
+                        doc = CurDoc
                         stMarkerProvider = doc.StatementMarkerProvider
                     End If
 
                     doc.ReadOnly = True
 
-                    If currentState = DebuggerState.Paused Then
+                    If markLine Then
+                        ActivateIDE()
                         Dim line = doc.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber)
 
                         If doc.Breakpoints.Contains(lineNumber) Then
@@ -204,26 +253,32 @@ Namespace Microsoft.SmallVisualBasic.Documents
                             stMarkerProvider.AddStatementMarker(marker)
                         End If
 
-                        doc.ExecutionMarker = marker
-                        doc.EnsureLineVisible(line)
+                        If currentState = DebuggerState.Error Then
+                            DiagramHelper.Helper.RunLater(m,
+                                Sub()
+                                    doc.EnsureLineVisible(line, True)
+                                    Helper.MainWindow.ErrorPanel.ShowError(runner.Exception)
+                                End Sub, 200)
+                        Else
+                            doc.EnsureLineVisible(line)
+                        End If
+
                         doc.Activate()
                         lastDoc = doc
+                        doc.ExecutionMarker = marker
                     End If
                 End Sub)
-
-            ActivateDoc()
         End Sub
 
-        Public Sub ActivateDoc()
+        Public Sub ActivateIDE()
             Dim m = Helper.MainWindow
-            m.Dispatcher.BeginInvoke(
+            m.Dispatcher.Invoke(
                   Sub()
                       If m.WindowState = System.Windows.WindowState.Minimized Then
                           m.WindowState = System.Windows.WindowState.Maximized
                       End If
                       m.Activate()
                       m.Focus()
-                      m.tabCode.IsSelected = True
                   End Sub)
         End Sub
 
@@ -272,36 +327,84 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Public Function EvaluateExpression(ByRef text As String) As Library.Primitive?
-            If Not IsActive Then Return Nothing
-            Dim subName = Helper.MainWindow.ActiveDocument.GetCurrentSubToken
-            Return _ProgramEngine.CurrentRunner.EvaluateExpression(text, subName)
+            If Not IsActive OrElse text.Trim() = "" Then Return Nothing
+            If ProgramEngine.Evaluating Then Return Nothing
+
+            ProgramEngine.Evaluating = True
+            Dim doc = Helper.MainWindow.ActiveDocument
+            Dim runner = _ProgramEngine.GetRunner(doc.File)
+            If runner Is Nothing Then
+                ProgramEngine.Evaluating = False
+                Return Nothing
+            End If
+
+            Dim span = doc.EditorControl.TextView.Selection.ActiveSnapshotSpan
+            Dim line = span.Snapshot.GetLineFromPosition(span.Start)
+            If line.Start < span.Start Then
+                Dim c = span.Snapshot(span.Start)
+                If c = "_" OrElse Char.IsLetter(c) Then
+                    Dim prevChar = span.Snapshot(span.Start - 1)
+                    If prevChar = "_"c OrElse prevChar = "."c OrElse Char.IsLetter(prevChar) Then
+                        ProgramEngine.Evaluating = False
+                        Return Nothing
+                    End If
+                End If
+            End If
+
+            line = span.Snapshot.GetLineFromPosition(span.End)
+            If line.End > span.End Then
+                Dim c = span.Snapshot(span.End - 1)
+                If c = "_" OrElse Char.IsLetter(c) Then
+                    Dim nextChar = span.Snapshot(span.End)
+                    If nextChar = "_"c OrElse nextChar = "."c OrElse Char.IsLetter(nextChar) Then
+                        ProgramEngine.Evaluating = False
+                        Return Nothing
+                    End If
+                End If
+            End If
+
+            Dim result? As Library.Primitive
+            Try
+                result = runner.EvaluateExpression(text, doc.GetCurrentSubToken())
+            Catch ex As Exception
+                result = "Expression caused an error: " & ex.Message
+            End Try
+
+            ProgramEngine.Evaluating = False
+            Return result
         End Function
 
         Private Sub OnProgramTerminated()
-            RemoveHandler _ProgramEngine.DebuggerStateChanged, AddressOf OnDebuggerCurrentStateChanged
-            RemoveHandler Library.Program.ProgramTerminated, AddressOf OnProgramTerminated
+            Dim m = Helper.MainWindow
+            m.Dispatcher.Invoke(
+                Sub()
+                    RemoveHandler _ProgramEngine.DebuggerStateChanged, AddressOf OnCurrentStateChanged
+                    RemoveHandler Library.Program.ProgramTerminated, AddressOf OnProgramTerminated
 
-            _IsActive = False
-            _ProgramEngine.Disopese()
-            _ProgramEngine = Nothing
+                    _IsActive = False
+                    _ProgramEngine.Disopese()
+                    _ProgramEngine = Nothing
+                    m.PopError.IsOpen = False
+                    m.tabDesigner.IsEnabled = True
 
-            For Each view As Shell.MdiView In Helper.MainWindow.viewsControl.Items
-                Dim doc = view.Document
-                doc.EditorControl.Dispatcher.BeginInvoke(
-                    Sub()
-                        doc.ReadOnly = False
-                        Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(doc.EditorControl.TextView)
-                        Dim marker = doc.ExecutionMarker
-                        If marker IsNot Nothing Then
-                            doc.ExecutionMarker = Nothing
-                            If doc.Breakpoints.Contains(marker.LineNumber) Then
-                                marker.MarkerColor = Colors.Red
-                            Else
-                                stMarkerProvider.RemoveMarker(marker)
-                            End If
-                        End If
-                    End Sub)
-            Next
+                    For Each view As Shell.MdiView In m.viewsControl.Items
+                        Dim doc = view.Document
+                        doc.EditorControl.Dispatcher.BeginInvoke(
+                             Sub()
+                                 doc.ReadOnly = False
+                                 Dim stMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(doc.EditorControl.TextView)
+                                 Dim marker = doc.ExecutionMarker
+                                 If marker IsNot Nothing Then
+                                     doc.ExecutionMarker = Nothing
+                                     If doc.Breakpoints.Contains(marker.LineNumber) Then
+                                         marker.MarkerColor = Colors.Red
+                                     Else
+                                         stMarkerProvider.RemoveMarker(marker)
+                                     End If
+                                 End If
+                             End Sub)
+                    Next
+                End Sub)
         End Sub
 
         Friend Shared Sub LockRunningDoc(doc As TextDocument)

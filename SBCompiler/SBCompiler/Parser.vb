@@ -861,7 +861,7 @@ Namespace Microsoft.SmallVisualBasic
 
                         Dim obj = IdExpr.Identifier
                         Dim typeInfo = SymbolTable.GetTypeInfo(obj)
-                        If Not typeInfo.Events.ContainsKey(eventName) Then
+                        If typeInfo IsNot Nothing AndAlso Not typeInfo.Events.ContainsKey(eventName) Then
                             typeInfo = Compiler.TypeInfoBag.Types("control")
                             If Not typeInfo.Events.ContainsKey(eventName) Then
                                 AddError(strLit.Literal, $"''{obj.Text}"" doesn't contain an event named {eventToken.Text}")
@@ -917,9 +917,17 @@ Namespace Microsoft.SmallVisualBasic
             Do
                 Dim current = tokenEnum.Current
                 If current.Type = closeToken Then
-                    If current.Line = commaLine AndAlso (current.Column = commaColumn OrElse (current.EndColumn = commaColumn AndAlso tokenEnum.PeekNext.Type <> TokenType.Comma)) Then
+                    If current.Line = commaLine AndAlso (
+                                current.Column = commaColumn OrElse (
+                                    current.EndColumn = commaColumn AndAlso
+                                    tokenEnum.PeekNext.Type <> TokenType.Comma)
+                            ) Then
                         If caller IsNot Nothing Then
-                            callerInfo = New CallerInfo(caller.Line, caller.EndColumn, items.Count - 1)
+                            callerInfo = New CallerInfo(
+                                caller.Line,
+                                caller.EndColumn,
+                                items.Count - 1
+                            )
                             commaLine = -2
                             Return Nothing
                         End If
@@ -942,9 +950,16 @@ Namespace Microsoft.SmallVisualBasic
                 If expression Is Nothing Then
                     If commaLine = -2 Then
                         Return Nothing
-                    ElseIf current.Line = commaLine AndAlso (current.Column = commaColumn OrElse current.EndColumn = commaColumn) Then
+                    ElseIf current.Line = commaLine AndAlso (
+                                current.Column >= commaColumn OrElse
+                                current.EndColumn = commaColumn
+                            ) Then
                         If caller IsNot Nothing Then
-                            callerInfo = New CallerInfo(caller.Line, caller.EndColumn, items.Count)
+                            callerInfo = New CallerInfo(
+                                     caller.Line,
+                                     caller.EndColumn,
+                                     items.Count - If(current.Column > commaColumn, 1, 0)
+                            )
                             commaLine = -2
                             Return Nothing
                         End If
@@ -961,9 +976,16 @@ Namespace Microsoft.SmallVisualBasic
                 Dim comma = tokenEnum.Current
                 If EatOptionalToken(tokenEnum, TokenType.Comma) Then
                     exprExpected = True
-                    If comma.Line = commaLine AndAlso (comma.Column = commaColumn OrElse comma.EndColumn = commaColumn) Then
+                    If comma.Line = commaLine AndAlso (
+                                comma.Column >= commaColumn OrElse
+                                comma.EndColumn = commaColumn
+                             ) Then
                         If caller IsNot Nothing Then
-                            callerInfo = New CallerInfo(caller.Line, caller.EndColumn, items.Count)
+                            callerInfo = New CallerInfo(
+                                caller.Line,
+                                caller.EndColumn,
+                                items.Count - If(comma.Column > commaColumn, 1, 0)
+                            )
                             commaLine = -2
                             Return Nothing
                         End If
@@ -1293,6 +1315,7 @@ Namespace Microsoft.SmallVisualBasic
         Dim loweredLines() As String
         Dim loweredIndex As Integer = -1
         Public DocPath As String
+        Friend ParentSubroutine As SubroutineStatement
 
         Friend Function ReadNextLine() As TokenEnumerator
             If _rewindRequested Then
@@ -1409,6 +1432,11 @@ Namespace Microsoft.SmallVisualBasic
                         .StartToken = tokenEnum.Current,
                         .UpLevel = GetLevel(tokenEnum)
                     }
+
+                Case TokenType.Stop
+                    statement = New StopStatement With {.StartToken = tokenEnum.Current}
+                    tokenEnum.MoveNext()
+                    ExpectEndOfLine(tokenEnum)
             End Select
 
             If statement Is Nothing Then

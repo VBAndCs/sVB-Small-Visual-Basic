@@ -93,11 +93,15 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Return arrExpr.Evaluate(runner)
 
             ElseIf tName = "global" Then
-                Return runner.GetGlobalField(_PropertyName.LCaseText)
+                Dim result = runner.GetGlobalField(_PropertyName.LCaseText)
+                Return If(result, New Primitive("???"))
 
             ElseIf runner.TypeInfoBag.Types.ContainsKey(tName) Then
                 Dim typeInfo = runner.TypeInfoBag.Types(tName)
-                Dim propertyInfo = typeInfo.Properties(_PropertyName.LCaseText)
+                Dim propKey = _PropertyName.LCaseText
+                If Not typeInfo.Properties.ContainsKey(propKey) Then Return "???"
+
+                Dim propertyInfo = typeInfo.Properties(propKey)
                 Return CType(propertyInfo.GetValue(Nothing, Nothing), Primitive)
 
             Else

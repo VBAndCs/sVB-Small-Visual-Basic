@@ -117,9 +117,8 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             If count = 0 Then Return Array.EmptyArray()
 
             Dim arr As New Primitive()
-            arr.Items(1) = Arguments(0).Evaluate(runner)
-            For i = 1 To count - 1
-                Array.Append(arr, Arguments(i).Evaluate(runner))
+            For i = 0 To count - 1
+                arr = Array.AddItem(arr, Arguments(i).Evaluate(runner))
             Next
             Return arr
         End Function

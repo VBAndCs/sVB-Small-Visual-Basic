@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v2.9.7" Loaded="Window_Loaded"
+        Title="Small Visual Basic v2.9.9.6" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -108,7 +108,7 @@
         <CommandBinding Command="{x:Static l:MainWindow.RunCommand}" 
                     CanExecute="CanRunProgram" Executed="OnProgramRun" />
         <CommandBinding Command="{x:Static l:MainWindow.DebugCommand}" 
-                    CanExecute="CanRunProgram" Executed="OnDebugProgram" />        
+                    CanExecute="CanRunProgram" Executed="OnDebugProgram" />
         <CommandBinding Command="{x:Static l:MainWindow.ToggleBreakpointCommand}" 
                     Executed="OnToggleBreakpoint" />
         <CommandBinding Command="{x:Static l:MainWindow.StepOverCommand}" 
@@ -121,6 +121,8 @@
                     CanExecute="CanRunProgram" Executed="OnStepOut" />
         <CommandBinding Command="{x:Static l:MainWindow.ShortStepOutCommand}" 
                     CanExecute="CanRunProgram" Executed="OnShortStepOut" />
+        <CommandBinding Command="{x:Static l:MainWindow.PauseCommand}" 
+                    CanExecute="CanRunProgram" Executed="OnPause" />
         <CommandBinding Command="{x:Static l:MainWindow.EndProgramCommand}" 
                     Executed="OnProgramEnd" />
         <CommandBinding Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" 
@@ -163,7 +165,9 @@
         <KeyBinding Command="{x:Static l:MainWindow.RunCommand}" 
                 Gesture="F5" />
         <KeyBinding Command="{x:Static l:MainWindow.DebugCommand}" 
-                Gesture="Ctrl+F5" />        
+                Gesture="Ctrl+F5" />
+        <KeyBinding Command="{x:Static l:MainWindow.EndProgramCommand}" 
+                Gesture="Shift+F5" />
         <KeyBinding Command="{x:Static l:MainWindow.ToggleBreakpointCommand}" 
                 Gesture="F9" />
         <KeyBinding Command="{x:Static l:MainWindow.StepOverCommand}" 
@@ -172,6 +176,8 @@
                 Gesture="Ctrl+F10" />        
         <KeyBinding Command="{x:Static l:MainWindow.StepIntoCommand}" 
                 Gesture="F11" />
+        <KeyBinding Command="{x:Static l:MainWindow.PauseCommand}" 
+                Gesture="Ctrl+F11" />        
         <KeyBinding Command="{x:Static l:MainWindow.StepOutCommand}" 
                 Gesture="F12" />  
         <KeyBinding Command="{x:Static l:MainWindow.ShortStepOutCommand}" 
@@ -182,8 +188,7 @@
         <TabControl x:Name="sVBTabs">
             <TabItem x:Name="tabDesigner" Header="Form Design"
                      Selector.Selected="tabDesigner_Selected"
-                     PreviewMouseDoubleClick="tabDesigner_PreviewMouseDoubleClick"
-                     PreviewKeyDown="tabDesigner_PreviewKeyDown">
+                     PreviewMouseDoubleClick="tabDesigner_PreviewMouseDoubleClick">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"/>
@@ -381,8 +386,14 @@
                                    StaysOpen="True" Placement="Relative"
                                    Opened="PopHelp_Opened"  
                                    Closed="PopHelp_Closed">
-                                <lu:HelpPanel x:Name="HelpPanel" Width="Auto"/>
+                                <lu:HelpPanel x:Name="HelpPanel" 
+                                              Width="Auto"/>
                             </Popup>
+                            
+                            <Popup x:Name="PopError" MaxHeight="250" 
+                                   StaysOpen="True" Placement="Relative">
+                                <lu:HelpPanel x:Name="ErrorPanel" MaxWidth="500"/>
+                            </Popup>                            
                         </Grid>
                     </Grid>
 

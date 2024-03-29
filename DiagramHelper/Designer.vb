@@ -1144,6 +1144,7 @@ Public Class Designer
         If dlg.ShowDialog() = True Then
             oldPath = _xamlFile
             _xamlFile = dlg.FileName ' don't use FileName property to keep the old code file path
+            SaveSetting("SmallVisualBasic", "Files", "Open", IO.Path.GetDirectoryName(_xamlFile))
             If SavePage(oldPath, True) Then
                 XamlFile = _xamlFile ' Update the old code file path
                 oldPath = ""
@@ -1259,12 +1260,12 @@ Public Class Designer
     End Sub
 
     Public Shared Sub Open()
-        Dim sVBSamplesDir = GetSetting("SmallVisualBasic", "Files", "Open")
-        If sVBSamplesDir = "" Then
-            sVBSamplesDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            Dim samplesDir = IO.Path.Combine(sVBSamplesDir, "sVB Samples")
+        Dim lastDir = GetSetting("SmallVisualBasic", "Files", "Open")
+        If lastDir = "" Then
+            lastDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            Dim samplesDir = IO.Path.Combine(lastDir, "sVB Samples")
             If IO.Directory.Exists(samplesDir) Then
-                sVBSamplesDir = samplesDir
+                lastDir = samplesDir
             End If
         End If
 
@@ -1272,7 +1273,7 @@ Public Class Designer
             .DefaultExt = ".xaml", ' Default file extension
             .Filter = "Diagram Pages|*.xaml",
             .Title = "Open Diagram Design Page",
-            .InitialDirectory = sVBSamplesDir
+            .InitialDirectory = lastDir
         }
 
         If dlg.ShowDialog() = True Then

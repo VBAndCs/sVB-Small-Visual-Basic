@@ -223,21 +223,23 @@ Namespace Library
         ''' Waits for user to press any key to close the window.
         ''' </summary>
         Public Shared Sub PauseThenClose()
-            If _windowVisible Then
-                Console.WriteLine("Press any key to close the window...")
-                Try
+            Try
+                If _windowVisible Then
+                    Console.WriteLine("Press any key to close the window...")
+
                     Console.ReadKey(intercept:=True)
-                    If WinForms.Forms._forms.Count = 0 AndAlso Not GraphicsWindow._windowVisible Then
-                        Program.End()
-                    Else
-                        Hide()
-                    End If
-                Catch
-                    Console.WriteLine("An error occured.")
-                    Console.WriteLine("If you are debugging this sVB projet in VS.NET in its debugging mode, thee console window will nor work correctly.")
-                    Console.WriteLine("Stop the VS debugger the Press Ctrl+F5 to run sVB im VS without debugging, then debug your project in sVB.")
-                End Try
-            End If
+                End If
+
+                If WinForms.Forms._forms.Count = 0 AndAlso Not GraphicsWindow._windowVisible Then
+                    Program.End()
+                Else
+                    Hide()
+                End If
+            Catch
+                Console.WriteLine("An error occured.")
+                Console.WriteLine("If you are debugging this sVB projet in VS.NET in its debugging mode, thee console window will nor work correctly.")
+                Console.WriteLine("Stop the VS debugger the Press Ctrl+F5 to run sVB im VS without debugging, then debug your project in sVB.")
+            End Try
         End Sub
 
         ''' <summary>

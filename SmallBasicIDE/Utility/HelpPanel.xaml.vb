@@ -50,6 +50,7 @@ Namespace Microsoft.SmallVisualBasic.Utility
                 If item.Key = "" Then item.Key = item.DisplayName.ToLower()
 
                 Dim doc = mainWindow.ActiveDocument
+                If doc Is Nothing Then Return
                 Dim textView = CType(doc.EditorControl.TextView, Nautilus.Text.Editor.AvalonTextView)
                 Dim popHelp = mainWindow.PopHelp
 
@@ -97,22 +98,27 @@ Namespace Microsoft.SmallVisualBasic.Utility
                 End Select
 
                 FillExample()
-
                 ShowPopup()
-
             End Set
         End Property
 
-        Sub ShowPopup()
+        Sub ShowPopup(Optional isError As Boolean = False)
             Dim doc = mainWindow.ActiveDocument
             Dim textView = CType(doc.EditorControl.TextView, Nautilus.Text.Editor.AvalonTextView)
-            Dim popHelp = mainWindow.PopHelp
+            Dim popHelp = CType(Me.Parent, Popup)
             popHelp.PlacementTarget = textView
             Dim caret = textView.Caret
-            popHelp.HorizontalOffset = 10
-            popHelp.MaxWidth = textView.ActualWidth - 20
-            popHelp.MaxHeight = Math.Min(250, textView.ActualHeight - caret.Top)
+
+            If isError Then
+                DocBorder.Background = System.Windows.Media.Brushes.LightYellow
+                popHelp.HorizontalOffset = caret.Left + 10
+            Else
+                popHelp.HorizontalOffset = 10
+            End If
+
             popHelp.VerticalOffset = caret.Top + caret.Height + 5
+            popHelp.MaxWidth = Math.Max(textView.ActualWidth - 10, 600)
+            popHelp.MaxHeight = Math.Min(250, textView.ActualHeight - caret.Top)
             popHelp.IsOpen = True
             popHelp.Tag = textView
             AddHandler textView.ScrollChaged, AddressOf OnScrollChaged
@@ -148,15 +154,27 @@ Namespace Microsoft.SmallVisualBasic.Utility
 
             Dim strValue As String
             If value.IsEmpty Then
-                strValue = ChrW(34) & ChrW(34)
+                Select Case LCase(methodType).Trim()
+                    Case "as array"
+                        strValue = "{}"
+                    Case "as double"
+                        strValue = "0"
+                    Case Else
+                        strValue = ChrW(34) & ChrW(34)
+                End Select
+
             ElseIf value.IsArray Then
                 strValue = Library.Text.ToStr(value)
+
             ElseIf value.IsDate Then
                 strValue = New Date(CDec(value)).ToString()
+
             ElseIf value.IsTimeSpan Then
                 strValue = New TimeSpan(CDec(value)).ToString()
+
             ElseIf value.IsNumber OrElse value.IsBoolean Then
                 strValue = CStr(value)
+
             Else
                 strValue = ChrW(34) & CStr(value) & ChrW(34)
             End If
@@ -173,7 +191,7 @@ Namespace Microsoft.SmallVisualBasic.Utility
         End Function
 
         Private Sub OnScrollChaged(senmder As Object, e As ScrollEventArgs)
-            Dim popHelp = MainWindow.PopHelp
+            Dim popHelp = CType(Me.Parent, Popup)
             popHelp.IsOpen = False
             Dim textView = CType(popHelp.Tag, Microsoft.Nautilus.Text.Editor.IAvalonTextView)
             If textView IsNot Nothing Then
@@ -272,8 +290,10 @@ Namespace Microsoft.SmallVisualBasic.Utility
 
             FillDescription(definition, If(name = "", documentation.Prefix, name & "."), addAllParams)
 
+            Dim showValue = IsDebugging AndAlso paramIndex > -1 AndAlso paramIndex < params.Count
+
             ' Add param Info
-            If params.Count > 0 AndAlso Not (IsDebugging AndAlso (addAllParams OrElse paramIndex = params.Count)) Then
+            If params.Count > 0 AndAlso Not (showValue AndAlso (addAllParams OrElse paramIndex = params.Count)) Then
                 Dim paramsDocs As New Paragraph With {
                     .Margin = New Thickness(15, 0, 0, 5)
                 }
@@ -297,7 +317,7 @@ Namespace Microsoft.SmallVisualBasic.Utility
                     End If
                 Next
 
-                If IsDebugging AndAlso paramIndex > -1 AndAlso paramIndex < params.Count Then
+                If showValue Then
                     Dim key = item.DisplayName.ToLower & "." & params(paramIndex).ToLower()
                     Dim fields = debugger.ProgramEngine.CurrentRunner.Fields()
                     If fields.ContainsKey(key) Then
@@ -334,6 +354,29 @@ Namespace Microsoft.SmallVisualBasic.Utility
                         .Style = _paramsDescriptionStyle
                     })
             End If
+        End Sub
+
+        Friend Sub ShowError(ex As Exception)
+            helpDocument.Blocks.Clear()
+            Dim definition As New Span()
+            definition.Inlines.Add(New TextRun() With {
+                    .Text = "Runtime Error: ",
+                    .Style = _typeStyle
+            })
+            definition.Inlines.Add(New TextRun() With {
+                    .Text = ex.GetType().Name,
+                    .Style = _linkStyle
+            })
+            Dim p = New Paragraph()
+            p.Inlines.Add(definition)
+            helpDocument.Blocks.Add(p)
+            p = New Paragraph() With {.Margin = New Thickness(0, 0, 0, 5)}
+            helpDocument.Blocks.Add(p)
+            p.Inlines.Add(New TextRun With {
+                .Text = ex.Message,
+                .Style = _selectedStyle
+            })
+            ShowPopup(True)
         End Sub
 
         Friend Sub ShowExpression(expression As String, value As Library.Primitive)

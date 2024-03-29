@@ -108,26 +108,44 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 Dim key = $"{subName}.args"
                 Dim argsStack As New Library.Primitive
                 targetRunner.Fields.TryGetValue(key, argsStack)
-                If argsStack.GetItemCount() = 0 Then
-                    argsStack.Items(1) = values
-                Else
-                    Library.Array.Append(argsStack, values)
-                End If
+                argsStack = Library.Array.AddItem(argsStack, values)
                 targetRunner.Fields(key) = argsStack
             End If
 
             Dim subroutine = targetRunner.SymbolTable.Subroutines(subName)
             If IsGlobalFunc Then
-                If runner.DebuggerCommand = DebuggerCommand.StepInto Then
+                targetRunner.HasBeenPaused = False
+                targetRunner.StepAround = False
+                targetRunner.Depth = 0
+                targetRunner.DebuggerState = DebuggerState.Running
+                If runner.DebuggerCommand = DebuggerCommand.StepInto OrElse runner.DebuggerCommand = DebuggerCommand.StopOnNextLine Then
                     targetRunner.DebuggerCommand = DebuggerCommand.StepInto
+                    runner.DebuggerCommand = DebuggerCommand.Run
+                Else
+                    targetRunner.DebuggerCommand = DebuggerCommand.Run
                 End If
                 targetRunner.CurrentThread = Threading.Thread.CurrentThread
                 runner.Engine.CurrentRunner = targetRunner
             End If
 
             Dim result = subroutine.Parent.Execute(targetRunner)
+
+            If IsGlobalFunc Then
+                Dim dc = targetRunner.DebuggerCommand
+                If dc <> DebuggerCommand.Run Then
+                    runner.DebuggerCommand = DebuggerCommand.StepInto
+                    runner.StepAround = False
+                    runner.Depth = 0
+                ElseIf targetRunner.HasBeenPaused Then
+                    runner.DebuggerCommand = dc
+                End If
+
+                targetRunner.ChangeDebuggerState(DebuggerState.Finished)
+                targetRunner.ContinueAll()
+            End If
+
+            runner.PauseAtReturn = targetRunner.HasBeenPaused
             runner.Engine.CurrentRunner = runner
-            runner.PauseAtReturn = True
             Return If(TypeOf result Is EndDebugging, result, Nothing)
         End Function
     End Class

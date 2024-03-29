@@ -140,6 +140,7 @@ Namespace Microsoft.SmallVisualBasic
                 Case "-", "*"
                     If tokens(0).Type = TokenType.ContinueLoop OrElse
                             tokens(0).Type = TokenType.ExitLoop OrElse
+                            tokens(0).Type = TokenType.Stop OrElse
                             IsABlockToken(nextLineFirstToken.Type) Then
                         Return False
                     End If
@@ -173,7 +174,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Shared Function IsABlockToken(nextTokenType) As Boolean
             Select Case nextTokenType
                 Case TokenType.If, TokenType.Else, TokenType.ElseIf, TokenType.EndIf,
-                         TokenType.Goto, TokenType.ExitLoop, TokenType.ContinueLoop, TokenType.Return,
+                         TokenType.Goto, TokenType.ExitLoop, TokenType.ContinueLoop, TokenType.Stop, TokenType.Return,
                          TokenType.While, TokenType.EndWhile, TokenType.Wend,
                          TokenType.For, TokenType.ForEach, TokenType.Next, TokenType.EndFor,
                          TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
@@ -493,6 +494,8 @@ Namespace Microsoft.SmallVisualBasic
                     Return TokenType.ForEach
                 Case "goto"
                     Return TokenType.Goto
+                Case "stop"
+                    Return TokenType.Stop
                 Case "if"
                     Return TokenType.If
                 Case "in"
@@ -549,7 +552,7 @@ Namespace Microsoft.SmallVisualBasic
                          TokenType.Wend, TokenType.For, TokenType.ForEach,
                          TokenType.Goto, TokenType.Return,
                          TokenType.ExitLoop, TokenType.ContinueLoop,
-                         TokenType.If, TokenType.Step,
+                         TokenType.If, TokenType.Step, TokenType.Stop,
                          TokenType.Sub, TokenType.Function,
                          TokenType.Then, TokenType.To, TokenType.In, TokenType.While,
                          TokenType.True, TokenType.False, TokenType.Nothing

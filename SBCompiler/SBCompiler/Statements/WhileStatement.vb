@@ -122,17 +122,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Function
 
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
-            Dim firstTime = True
             Dim startLine = WhileToken.Line
             Dim endLine = EndLoopToken.Line
             Dim stepOut = False
 
             Do While Condition.Evaluate(runner)
-                If firstTime Then
-                    firstTime = False
-                Else
-                    runner.CheckForExecutionBreakAtLine(startLine)
-                End If
                 runner.IncreaseDepthOfShortSteps(stepOut)
 
                 Dim result = runner.Execute(Body)
@@ -177,6 +171,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                 runner.CheckForExecutionBreakAtLine(endLine)
                 runner.IncreaseDepthOfShortSteps(stepOut)
+                runner.CheckForExecutionBreakAtLine(startLine)
             Loop
 
             If stepOut Then runner.Depth -= 1

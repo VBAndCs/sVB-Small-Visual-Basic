@@ -459,12 +459,16 @@ Class sVB
                 Else ' Event
                     Dim ModuleName = propInfo.Module
                     If tokens(tokens.Count - 1).Type = TokenType.Nothing Then
-                        lines(lineNum) = $"Control.RemoveEventHandler({obj}, ""{tokens(2).Text}"")"
+                        Dim t = _compiler.Parser.SymbolTable.GetInferedType(obj)
+                        If t = VariableType.WinTimer Then
+                            lines(lineNum) = $"WinTimer.RemoveOnTickHandler({obj})"
+                        Else
+                            lines(lineNum) = $"Control.RemoveEventHandler({obj}, ""{tokens(2).Text}"")"
+                        End If
                     Else
                         lines(lineNum) = $"Control.HandleEvents({obj})" & vbLf &
                                                    prevText & $"{ModuleName}.{nextText}"
                     End If
-
                     errors.RemoveAt(i)
                     ReRun = True
                 End If

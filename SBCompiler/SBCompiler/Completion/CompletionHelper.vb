@@ -156,7 +156,8 @@ Namespace Microsoft.SmallVisualBasic.Completion
                                 TokenType.While,
                                 TokenType.Return,
                                 TokenType.ExitLoop,
-                                TokenType.ContinueLoop
+                                TokenType.ContinueLoop,
+                                TokenType.Stop
                         }, True
                       )
             Else

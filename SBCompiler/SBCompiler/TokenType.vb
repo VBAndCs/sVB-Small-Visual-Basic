@@ -23,6 +23,7 @@
         [For]
         ForEach
         [Goto]
+        [Stop]
         [If]
         [In]
         [Step]

@@ -82,7 +82,8 @@ Namespace Library
             IsVisible = True
             _currentX = 320.0
             _currentY = 240.0
-            _speed = 15
+            _speed = 5
+            _useAnimation = True
             _angle = 0.0
             _width = 16.0
             _height = 16.0
@@ -93,8 +94,7 @@ Namespace Library
 
         ''' <summary>
         ''' Specifies how fast the turtle should move. 
-        ''' Valid values are 1 to 50.
-        ''' The default value is 15.
+        ''' Valid values are 1 to 50. The default value is 5.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Speed As Primitive
@@ -111,7 +111,6 @@ Namespace Library
                 End If
             End Set
         End Property
-
 
         Private Shared _useAnimation As Boolean = True
 

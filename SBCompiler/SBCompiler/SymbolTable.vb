@@ -236,6 +236,8 @@ Namespace Microsoft.SmallVisualBasic
                           isMethod As Boolean
                     ) As System.Reflection.MemberInfo
 
+            If type Is Nothing Then Return Nothing
+
             Dim memberKey = memberName.LCaseText
             Dim memberInfo As System.Reflection.MemberInfo
 
@@ -429,7 +431,7 @@ Namespace Microsoft.SmallVisualBasic
             Return $"{Subroutine.Name.LCaseText}.{variableName}"
         End Function
 
-        Friend Function GetKey(identifier As Token) As String
+        Public Function GetKey(identifier As Token) As String
             Dim variableName = identifier.LCaseText
             Dim Subroutine = identifier.SubroutineName?.ToLower()
             If Subroutine = "" Then Return variableName

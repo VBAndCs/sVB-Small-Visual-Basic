@@ -82,39 +82,38 @@ Namespace Library.Internal
 
 
         Friend Shared Sub [End]()
-            Timer.Pause()
-            RemoveHandler Timer.Tick, Nothing
-            Program.IsTerminated = True
-
-            If IsDebugging Then
-                If GraphicsWindow._window IsNot Nothing Then
-                    Try
-                        GraphicsWindow._windowCreated = False
-                        GraphicsWindow._window.Close()
-                    Catch
-                    End Try
-                End If
-
-                Stack._stackMap = New Dictionary(Of Primitive, Stack(Of Primitive))
-                TextWindow.Hide()
-                WinForms.Forms.ForceCloseAll()
-                Return
-            End If
-
-                If GraphicsWindow._window Is Nothing Then
-                Try
-                    GraphicsWindow._window.Close()
-                Catch
-                End Try
-            End If
-
             Invoke(
                 Sub()
+                    Timer.Pause()
+                    RemoveHandler Timer.Tick, Nothing
+                    Program.IsTerminated = True
+
+                    If IsDebugging Then
+                        If GraphicsWindow._window IsNot Nothing Then
+                            Try
+                                GraphicsWindow._windowCreated = False
+                                GraphicsWindow._window.Close()
+                            Catch
+                            End Try
+                        End If
+
+                        Stack._stackMap = New Dictionary(Of Primitive, Stack(Of Primitive))
+                        TextWindow.Hide()
+                        WinForms.Forms.ForceCloseAll()
+                        Return
+                    End If
+
+                    If GraphicsWindow._window Is Nothing Then
+                        Try
+                            GraphicsWindow._window.Close()
+                        Catch
+                        End Try
+                    End If
+
                     _application.Shutdown()
                     _Dispatcher.InvokeShutdown()
+                    Process.GetCurrentProcess().Kill()
                 End Sub)
-
-            Process.GetCurrentProcess().Kill()
         End Sub
 
         Friend Shared Sub BeginInvoke(invokeDelegate As InvokeHelper)
@@ -135,75 +134,70 @@ Namespace Library.Internal
         End Function
 
         Private Shared Sub HandleException(sender As Object, e As UnhandledExceptionEventArgs)
-            Dim exception1 As Exception = TryCast(e.ExceptionObject, Exception)
-            If exception1 IsNot Nothing Then
-                Invoke(
-                    Sub()
-                        Dim window1 As New Window With {
-                           .Title = "Error in Small Basic Program",
-                           .SizeToContent = SizeToContent.WidthAndHeight,
-                           .WindowStyle = WindowStyle.SingleBorderWindow,
-                           .ShowInTaskbar = False,
-                           .ResizeMode = ResizeMode.NoResize,
-                           .Topmost = True,
-                           .WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                           .Content =
-                                 Function() As StackPanel
-                                     Dim stackPanel As New StackPanel With {.Margin = New Thickness(4.0)}
-                                     stackPanel.Children.Add(
-                                           Function() As DockPanel
-                                               Dim dockPanel1 As New DockPanel
-                                               dockPanel1.Children.Add(New Image With {
-                                                          .Source = New BitmapImage(New Uri("pack://application:,,/SmallVisualBasicLibrary;component/Resources/Error.png")),
-                                                          .Width = 48.0,
-                                                          .Height = 48.0,
-                                                          .Margin = New Thickness(8.0),
-                                                          .VerticalAlignment = VerticalAlignment.Top
-                                               })
-                                               dockPanel1.Children.Add(
-                                                       Function() As StackPanel
-                                                           Dim stackPanel1 As New StackPanel
-                                                           stackPanel1.Children.Add(New TextBlock With {
-                                                                    .Text = exception1.Message,
-                                                                    .TextWrapping = TextWrapping.Wrap,
-                                                                    .Margin = New Thickness(4.0),
-                                                                    .FontSize = 16.0,
-                                                                    .Foreground = New SolidColorBrush(Color.FromArgb(Byte.MaxValue, 0, 42, 181))
-                                                           })
-                                                           stackPanel1.Children.Add(New TextBox With {
-                                                                    .Text = exception1.StackTrace,
-                                                                    .FontFamily = New FontFamily("Consolas"),
-                                                                    .IsReadOnly = True,
-                                                                    .MaxWidth = 650,
-                                                                    .Margin = New Thickness(4.0),
-                                                                    .HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-                                                                    .VerticalScrollBarVisibility = ScrollBarVisibility.Auto
-                                                           })
-                                                           Return stackPanel1
-                                                       End Function())
-                                               Return dockPanel1
-                                           End Function())
-                                     stackPanel.Children.Add(
-                                          Function() As StackPanel
-                                              Dim stackPanel2 As New StackPanel With {
-                                                    .Orientation = Orientation.Horizontal,
-                                                    .HorizontalAlignment = HorizontalAlignment.Right
-                                              }
-                                              stackPanel2.Children.Add(New Button With {
-                                                     .Content = "OK",
-                                                     .Margin = New Thickness(4.0),
-                                                      .Width = 60.0,
-                                                      .IsCancel = True
-                                               })
-                                              Return stackPanel2
-                                          End Function())
-                                     Return stackPanel
-                                 End Function()
-                        }
-                        window1.ShowDialog()
-                    End Sub)
+            Dim ex = TryCast(e.ExceptionObject, Exception)
+            If ex IsNot Nothing Then
+                ShowErrorWindow(ex.Message, ex.StackTrace)
             End If
+        End Sub
 
+        Friend Shared Sub ShowErrorWindow(message As String, stackTrace As String)
+            Invoke(
+                Sub()
+                    Dim wind As New Window With {
+                       .Title = "Error in Small Visual Basic Program",
+                       .SizeToContent = SizeToContent.WidthAndHeight,
+                       .WindowStyle = WindowStyle.SingleBorderWindow,
+                       .ShowInTaskbar = False,
+                       .ResizeMode = ResizeMode.NoResize,
+                       .Topmost = True,
+                       .WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                       .Content =
+                             Function() As StackPanel
+                                 Dim stackPanel As New StackPanel With {.Margin = New Thickness(4.0)}
+                                 stackPanel.Children.Add(
+                                       Function() As DockPanel
+                                           Dim dockPanel1 As New DockPanel
+                                           dockPanel1.Children.Add(New Image With {
+                                                      .Source = New BitmapImage(New Uri("pack://application:,,/SmallVisualBasicLibrary;component/Resources/Error.png")),
+                                                      .Width = 48.0,
+                                                      .Height = 48.0,
+                                                      .Margin = New Thickness(8.0),
+                                                      .VerticalAlignment = VerticalAlignment.Top
+                                           })
+                                           dockPanel1.Children.Add(
+                                                   Function() As StackPanel
+                                                       Dim stackPanel1 As New StackPanel
+                                                       stackPanel1.Children.Add(New TextBlock With {
+                                                                .Text = message & vbCrLf &
+                                                                            "You can press Ctrl+F5 in Small Visual Basic IDE to debug the project where ot will stop at the line that causes the error." & vbCrLf &
+                                                                            "Press Esc to close this window and end the program.",
+                                                                .TextWrapping = TextWrapping.Wrap,
+                                                                .Margin = New Thickness(4.0),
+                                                                .MaxWidth = 650,
+                                                                .FontSize = 16.0,
+                                                                .Foreground = New SolidColorBrush(Color.FromArgb(Byte.MaxValue, 0, 42, 181))
+                                                       })
+                                                       Return stackPanel1
+                                                   End Function())
+                                           Return dockPanel1
+                                       End Function())
+                                 stackPanel.Children.Add(New TextBox With {
+                                       .Text = stackTrace,
+                                       .FontFamily = New FontFamily("Consolas"),
+                                       .IsReadOnly = True,
+                                       .MaxWidth = 650,
+                                       .MaxHeight = 500,
+                                       .HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                                       .VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                                 })
+                                 Return stackPanel
+                             End Function()
+                    }
+                    AddHandler wind.PreviewKeyDown,
+                        Sub(obj As Object, info As Input.KeyEventArgs) If info.Key = Input.Key.Escape Then wind.Close()
+                    wind.ShowDialog()
+                    Program.End()
+                End Sub)
         End Sub
 
         Friend Shared Sub Invoke(invokeDelegate As InvokeHelper)

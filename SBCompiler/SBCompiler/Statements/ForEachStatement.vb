@@ -237,17 +237,15 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim key = runner.GetKey(Iterator)
             Dim arr = ArrayExpression.Evaluate(runner)
             Dim keys = Library.Array.GetAllIndices(arr)
-            Dim start = New Library.Primitive(1)
             Dim [end] = keys.GetItemCount()
             Dim startLine = ForEachToken.Line
             Dim endLine = EndLoopToken.Line
             Dim stepOut = False
+            Dim i As New Library.Primitive(1)
 
-            For i = start To [end]
-                If i <> start Then runner.CheckForExecutionBreakAtLine(startLine)
-                runner.IncreaseDepthOfShortSteps(stepOut)
+            Do Until i > [end]
                 runner.Fields(key) = arr.Items(keys.Items(i))
-
+                runner.IncreaseDepthOfShortSteps(stepOut)
                 Dim result = runner.Execute(Body)
                 runner.DecreaseDepthOfShortStepOut(stepOut)
 
@@ -273,7 +271,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         Return jumpSt
                     Else
                         jumpSt.UpLevel = 0
-                        Continue For
+                        Continue Do
                     End If
 
                 ElseIf TypeOf result Is ReturnStatement Then
@@ -290,7 +288,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
                 runner.CheckForExecutionBreakAtLine(endLine)
                 runner.IncreaseDepthOfShortSteps(stepOut)
-            Next
+                i += 1
+            Loop
 
             If stepOut Then runner.Depth -= 1
             Return Nothing

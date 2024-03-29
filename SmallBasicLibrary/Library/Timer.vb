@@ -45,8 +45,22 @@ Namespace Library
             End RaiseEvent
         End Event
 
-        Private Shared _isRunnning As Boolean
-        Friend Shared ReadOnly Property IsRunnning As Boolean
+        ''' <summary>
+        ''' Removes the Tick hamdler of the timer.
+        ''' Ulternatively, you can set the Tick event to Nothing to remove its handler:
+        ''' Timer.Tick = Nothing
+        ''' </summary>
+        Public Shared Sub RemoveTickHandler()
+            tickHandler = Nothing
+        End Sub
+
+
+        Public Shared _isRunnning As Boolean
+
+        ''' <summary>
+        ''' Returns True is the timer is currently working (has an event handler and not paused), or False otherwise.
+        ''' </summary>
+        Public Shared ReadOnly Property IsRunnning As Boolean
             Get
                 Return _isRunnning AndAlso tickHandler IsNot Nothing
             End Get
@@ -66,6 +80,7 @@ Namespace Library
             _isRunnning = False
         End Sub
 
+
         ''' <summary>
         ''' Resumes the timer from a paused state.  Tick events will now be raised.
         ''' </summary>
@@ -75,7 +90,7 @@ Namespace Library
         End Sub
 
         Private Shared Sub ThreadTimerCallback(tag As Object)
-            RaiseEvent Tick()
+            If tickHandler IsNot Nothing Then tickHandler.Invoke()
         End Sub
     End Class
 End Namespace

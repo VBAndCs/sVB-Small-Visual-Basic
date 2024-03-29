@@ -122,11 +122,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Public ReadOnly Property EditorControl As CodeEditorControl
             Get
                 If _editorControl Is Nothing Then
-                    _editorControl = New CodeEditorControl With {
-                        .TextBuffer = TextBuffer
-                    }
+                    _editorControl = New CodeEditorControl With {.TextBuffer = TextBuffer}
                     AddHandler _editorControl.KeyUp, AddressOf AutoCompleteBlocks
-
                     App.GlobalDomain.AddComponent(_editorControl)
                     App.GlobalDomain.Bind()
                     _editorControl.HighlightSearchHits = True
@@ -201,6 +198,11 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     marker.MarkerColor = System.Windows.Media.Colors.DarkGoldenrod
                 End If
             End If
+
+            Dim debugger = Helper.MainWindow.GetDebugger(True)
+            If debugger IsNot Nothing AndAlso debugger.IsActive Then
+                debugger.ProgramEngine.UpdateBreakpoints(_breakpoints, Me.File)
+            End If
         End Sub
 
         Friend Sub Activate()
@@ -230,10 +232,11 @@ Namespace Microsoft.SmallVisualBasic.Documents
             EnsureLineVisible(line)
         End Sub
 
-        Friend Sub EnsureLineVisible(line As ITextSnapshotLine)
+        Friend Sub EnsureLineVisible(line As ITextSnapshotLine, Optional moveToEnd As Boolean = False)
             Dim tv = _editorControl.TextView
-            tv.Caret.MoveTo(line.Start)
+            tv.Caret.MoveTo(If(moveToEnd, line.End, line.Start))
             tv.ViewScroller.EnsureSpanVisible(New Span(line.Start, line.Length), 0.0, 00.0)
+            Helper.MainWindow.HelpPanel.DontShowHelp = True
         End Sub
 
         Public ReadOnly Property Text As String
@@ -292,6 +295,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Private Sub OnCaretPositionChanged(sender As Object, e As CaretPositionChangedEventArgs)
+            Helper.MainWindow.HelpPanel.DontShowHelp = False
             stopFormatingLine = -1
             If IgnoreCaretPosChange OrElse StillWorking Then Return
             If _formatting Then
@@ -361,7 +365,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
                                 If sourceCodeChanged Then
                                     sourceCodeChanged = False
-                                    needsToreCompile = True
+                                    needsToReCompile = True
                                     _editorControl.ClearHighlighting()
                                 End If
 
@@ -549,11 +553,18 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Public Function GetFullStatementSpan(ByRef lineNumber As Integer) As TextSpan
             Dim snapshot = TextBuffer.CurrentSnapshot
-            Dim source As New TextBufferReader(snapshot)
             Dim line = snapshot.GetLineFromLineNumber(lineNumber)
             If Trim(line.GetText()) = "" Then Return Nothing
 
-            Dim currentLine = lineNumber
+            Dim startLineNum = FindCurrentSubStart(snapshot, lineNumber)
+            Dim start = snapshot.GetLineFromLineNumber(startLineNum).Start
+            Dim [end] = snapshot.GetLineFromLineNumber(FindCurrentSubEnd(snapshot, lineNumber)).End
+            Dim source As New StringReader(
+                  Me.Text.Substring(start,
+                        Math.Min([end], Me.Text.Length - 1) - start + 1)
+            )
+
+            Dim currentLine = lineNumber - startLineNum
             Dim codeLines As New List(Of String)
             Dim tokens As List(Of Token)
 
@@ -564,18 +575,18 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Loop
 
             For i = 0 To codeLines.Count - 1
-                lineNumber = i
+                lineNumber = i + startLineNum
                 tokens = LineScanner.GetTokens(codeLines(i), i, codeLines)
                 If tokens.Count = 0 Then Continue For
 
                 If tokens(0).EndLine >= currentLine Then
-                    Dim Line1 = snapshot.GetLineFromLineNumber(tokens(0).Line)
-                    Dim Line2 = snapshot.GetLineFromLineNumber(tokens(0).EndLine)
+                    Dim Line1 = snapshot.GetLineFromLineNumber(tokens(0).Line + startLineNum)
+                    Dim Line2 = snapshot.GetLineFromLineNumber(tokens(0).EndLine + startLineNum)
                     Return New TextSpan(
-                                        Line1.TextSnapshot,
-                                        Line1.Start,
-                                        Line2.End - Line1.Start + 1,
-                                        SpanTrackingMode.EdgeExclusive)
+                              snapshot,
+                              Line1.Start,
+                              Line2.End - Line1.Start + 1,
+                              SpanTrackingMode.EdgeExclusive)
                 End If
             Next
 

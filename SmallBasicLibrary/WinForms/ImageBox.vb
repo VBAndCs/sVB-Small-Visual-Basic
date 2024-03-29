@@ -52,7 +52,7 @@ Namespace WinForms
                         End If
                         GetImageBox(ImageBoxName).Source = New BitmapImage(New Uri(imageFile))
                     Catch ex As Exception
-                        Control.ReportError(ImageBoxName, "Text", imageFile, ex)
+                        Control.ReportPropertyError(ImageBoxName, "Text", imageFile, ex)
                     End Try
                 End Sub)
         End Sub

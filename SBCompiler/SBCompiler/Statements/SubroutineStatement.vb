@@ -414,25 +414,26 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
 
             runner.CheckForExecutionBreakAtLine(SubToken.Line, True)
-            Dim canStepOver = runner.StepAround AndAlso SubToken.Line <> runner.StepOverLineNumber
+            Dim canStepOver = runner.StepAround AndAlso SubToken.Line <> runner.StepLineNumber
             If canStepOver Then runner.Depth += 1
+
             Dim result = runner.Execute(Body)
+
             Dim stepOut = (runner.DebuggerCommand = DebuggerCommand.StepOut OrElse runner.DebuggerCommand = DebuggerCommand.ShortStepOut)
             If canStepOver OrElse stepOut Then runner.Depth -= 1
             If TypeOf result Is EndDebugging Then Return result
 
             If stepOut AndAlso runner.Depth = 0 Then
                 runner.DebuggerCommand = DebuggerCommand.StopOnNextLine
-                runner.Depth = 0
                 runner.StepAround = False
             Else
                 runner.CheckForExecutionBreakAtLine(EndSubToken.Line, canStepOver)
-                If EndSubToken.Line = runner.StepOverLineNumber Then
+                If EndSubToken.Line = runner.StepLineNumber Then
                     If runner.DebuggerCommand <> DebuggerCommand.Run Then
                         runner.DebuggerCommand = DebuggerCommand.StepInto
+                        runner.Depth = 0
+                        runner.StepAround = False
                     End If
-                    runner.Depth = 0
-                    runner.StepAround = False
                 End If
             End If
 

@@ -6,5 +6,6 @@ Namespace Microsoft.SmallVisualBasic.Engine
         Running
         Paused
         Finished
+        [Error]
     End Enum
 End Namespace

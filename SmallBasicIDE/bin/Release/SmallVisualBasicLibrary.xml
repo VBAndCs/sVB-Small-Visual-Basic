@@ -1161,6 +1161,11 @@ Converts the given array to a string
  The GraphicsWindow provides graphics related input and output functionality.  For example, using this class, it is possible to draw and fill circles and rectangles.
  </summary>
 </member>
+<member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.Topmost">
+ <summary>
+ Gets or sets whether or not the Graphics Window is the top most window that always appears on top of all other desktop windows even when it is not the active window.
+ </summary>
+</member>
 <member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.BackgroundColor">
  <summary>
  Gets or sets the Background color of the Graphics Window.
@@ -1354,6 +1359,45 @@ Converts the given array to a string
  <param name="y2">The y co-ordinate of the second point.</param>
  <param name="x3">The x co-ordinate of the third point.</param>
  <param name="y3">The y co-ordinate of the third point.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.DrawBezierCurve(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Draws a cubic Bezier curve between the given start and end points, and passing through the two given control points.
+ </summary>
+ <param name="x1">The x co-ordinate of the start point.</param>
+ <param name="y1">The y co-ordinate of the start point.</param>
+ <param name="x2">The x co-ordinate of the first control point.</param>
+ <param name="y2">The y co-ordinate of the first control point.</param>
+ <param name="x3">The x co-ordinate of the second control point.</param>
+ <param name="y3">The y co-ordinate of the second control point.</param>
+ <param name="x4">The x co-ordinate of the end point.</param>
+ <param name="y4">The y co-ordinate of the end point.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.DrawQuadraticBezierCurve(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Draws a quadratic Bezier curve, from the given start point, passing through the given control point, and ending at the given end point.
+ </summary>
+ <param name="x1">The x co-ordinate of the start point.</param>
+ <param name="y1">The y co-ordinate of the start point.</param>
+ <param name="x2">The x co-ordinate of the control point.</param>
+ <param name="y2">The y co-ordinate of the control point.</param>
+ <param name="x3">The x co-ordinate of the end point.</param>
+ <param name="y3">The y co-ordinate of the end point.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.DrawArc(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Draws an arc from between the given start and end points. 
+ This arc is a part of the ellipse that has the given radius and passes through these tow points.
+ </summary>
+ <param name="x1">The x co-ordinate of the start point.</param>
+ <param name="y1">The y co-ordinate of the start point.</param>
+ <param name="x2">The x co-ordinate of the end point of the arc.</param>
+ <param name="y2">The y co-ordinate of the end point of the arc.</param>
+ <param name="xRadius">The horizontal radius of the arc</param>
+ <param name="yRadius">The vertical radius of the arc</param>
+ <param name="angle">The x-axis rotation of the ellipse</param>
+ <param name="isLargArc">Use True if the arc should be greater than 180 degrees, or False otherwise</param>
+ <param name="isClockwise">Use True to draw the arc in a positive angle direction, or False otherwise</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.DrawLine(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
@@ -6452,6 +6496,11 @@ It is useful when you use one sub to handle many events, to get info about the c
  Gets or sets the title of the form
  </summary>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Form.GetTopmost(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets or sets whether or not the form is the top most window that always appears on top of all other desktop windows even when it is not the active window.
+ </summary>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Form.AllowTransparency(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Call this method to allow using transparent colors on the form background.
@@ -6624,6 +6673,7 @@ It is useful when you use one sub to handle many events, to get info about the c
 <member name="M:Microsoft.SmallVisualBasic.WinForms.GeometricPath.AddArcSegment(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Adds an arc segment to the current figure in the geometric path, starting from the last point in the figure to the given point.
+ This arc is a part of the ellipse that has the given radius and passes through these tow points.
  </summary>
  <param name="x">The x co-ordinate of the end point of the arc segment.</param>
  <param name="y">The y co-ordinate of the end point of the arc segment.</param>
@@ -6636,7 +6686,7 @@ It is useful when you use one sub to handle many events, to get info about the c
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.GeometricPath.AddBezierSegment(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
- Adds a cubic Bezier curve segment to the current figure in the geometric path, starting from the last point in the figure, passing throw the two given, and ending at the given end point control points.
+ Adds a cubic Bezier curve segment to the current figure in the geometric path, starting from the last point in the figure, passing through the  two given control points, and ending at the given end point.
  </summary>
  <param name="x1">The x co-ordinate of the first control point.</param>
  <param name="y1">The y co-ordinate of the first control point.</param>
@@ -6648,7 +6698,7 @@ It is useful when you use one sub to handle many events, to get info about the c
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.GeometricPath.AddQuadraticBezierSegment(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
- Adds a cubic quadratic Bezier curve segment to the current figure in the geometric path, starting from the last point in the figure, passing throw the given control point and ending at the given end point.
+ Adds a cubic quadratic Bezier curve segment to the current figure in the geometric path, starting from the last point in the figure, passing through the given control point and ending at the given end point.
  </summary>
  <param name="x1">The x co-ordinate of the control point.</param>
  <param name="y1">The y co-ordinate of the control point.</param>
