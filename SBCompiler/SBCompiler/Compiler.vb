@@ -447,6 +447,7 @@ Namespace Microsoft.SmallVisualBasic
             _TypeInfoBag.Subtract = typeFromHandle.GetMethod("op_Subtraction")
             _TypeInfoBag.Multiply = typeFromHandle.GetMethod("op_Multiply")
             _TypeInfoBag.Divide = typeFromHandle.GetMethod("op_Division")
+            _TypeInfoBag.Remainder = typeFromHandle.GetMethod("op_Modulus")
             _TypeInfoBag.GreaterThan = typeFromHandle.GetMethod("op_GreaterThan")
             _TypeInfoBag.GreaterThanOrEqualTo = typeFromHandle.GetMethod("op_GreaterThanOrEqual")
             _TypeInfoBag.LessThan = typeFromHandle.GetMethod("op_LessThan")

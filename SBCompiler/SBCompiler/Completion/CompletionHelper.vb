@@ -24,7 +24,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 Case TokenType.NumericLiteral
                     Return NameOf(WinForms.MathEx)
 
-                Case TokenType.RightCurlyBracket
+                Case TokenType.RightBrace
                     Return NameOf(WinForms.ArrayEx)
 
                 Case Else
@@ -202,6 +202,13 @@ Namespace Microsoft.SmallVisualBasic.Completion
                     .DefinitionIdintifier = nameToken
                 })
             Next
+
+            bag.CompletionItems.Add(New CompletionItem() With {
+                .Key = "msgbox",
+                .DisplayName = "MsgBox",
+                .ReplacementText = "MsgBox",
+                .ItemType = CompletionItemType.SubroutineName
+            })
         End Sub
 
 
@@ -238,7 +245,12 @@ Namespace Microsoft.SmallVisualBasic.Completion
                     .Key = "And",
                     .DisplayName = "And",
                     .ItemType = CompletionItemType.Keyword
-                }
+               },
+                New CompletionItem() With {
+                    .Key = "Mod",
+                    .DisplayName = "Mod",
+                    .ItemType = CompletionItemType.Keyword
+               }
         }
 
         Public Shared Sub FillBooleanLitrals(bag As CompletionBag)
@@ -250,6 +262,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
             If Not bag.NextToOperator Then
                 bag.CompletionItems.Add(booleanLitrals(2)) ' Or
                 bag.CompletionItems.Add(booleanLitrals(3)) ' And
+                bag.CompletionItems.Add(booleanLitrals(4)) ' Mod
             End If
         End Sub
 
@@ -364,13 +377,14 @@ Namespace Microsoft.SmallVisualBasic.Completion
 
                 For Each method In typeInfo.Methods
                     If Not IsHiddenFromIntellisense(method.Value) Then
+                        Dim mName = method.Value.Name
                         Dim completionItem As New CompletionItem() With {
                                 .Key = method.Key,
-                                .DisplayName = method.Value.Name,
+                                .DisplayName = mName,
                                 .ObjectName = objName,
                                 .ItemType = CompletionItemType.MethodName,
                                 .MemberInfo = method.Value,
-                                .ReplacementText = method.Value.Name & "("
+                                .ReplacementText = mName & "("
                          }
 
                         If method.Value.GetParameters().Length = 0 Then
@@ -383,9 +397,10 @@ Namespace Microsoft.SmallVisualBasic.Completion
 
                 For Each [property] In typeInfo.Properties
                     If Not IsHiddenFromIntellisense([property].Value) Then
+                        Dim propName = [property].Value.Name
                         members.Add(New CompletionItem() With {
                                 .Key = [property].Key,
-                                .DisplayName = [property].Value.Name,
+                                .DisplayName = propName,
                                 .ObjectName = objName,
                                 .ItemType = CompletionItemType.PropertyName,
                                 .MemberInfo = [property].Value

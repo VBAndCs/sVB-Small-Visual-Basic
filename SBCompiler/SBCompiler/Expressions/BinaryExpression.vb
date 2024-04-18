@@ -24,6 +24,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 RightHandSide.Parent = Me.Parent
                 RightHandSide.AddSymbols(symbolTable)
             End If
+
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
@@ -41,17 +42,19 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                     methodInfo = scope.TypeInfoBag.Multiply
                 Case TokenType.Division
                     methodInfo = scope.TypeInfoBag.Divide
-                Case TokenType.Equals
+                Case TokenType.Mod
+                    methodInfo = scope.TypeInfoBag.Remainder
+                Case TokenType.EqualsTo
                     methodInfo = scope.TypeInfoBag.EqualTo
-                Case TokenType.NotEqualTo
+                Case TokenType.NotEqualsTo
                     methodInfo = scope.TypeInfoBag.NotEqualTo
                 Case TokenType.GreaterThan
                     methodInfo = scope.TypeInfoBag.GreaterThan
-                Case TokenType.GreaterThanEqualTo
+                Case TokenType.GreaterThanOrEqualsTo
                     methodInfo = scope.TypeInfoBag.GreaterThanOrEqualTo
                 Case TokenType.LessThan
                     methodInfo = scope.TypeInfoBag.LessThan
-                Case TokenType.LessThanEqualTo
+                Case TokenType.LessThanOrEqualsTo
                     methodInfo = scope.TypeInfoBag.LessThanOrEqualTo
                 Case TokenType.And
                     methodInfo = scope.TypeInfoBag.And
@@ -91,8 +94,17 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             Dim rightType = RightHandSide.InferType(symbolTable)
 
             Select Case [Operator].Type
-                Case TokenType.Multiplication, TokenType.Division
+                Case TokenType.Division, TokenType.Mod
                     Return VariableType.Double
+
+                Case TokenType.Multiplication ' We can use * to repeat a string
+                    If leftType = VariableType.String OrElse rightType = VariableType.String OrElse
+                            leftType = VariableType.Array OrElse rightType = VariableType.Array OrElse
+                            leftType >= VariableType.Control OrElse rightType >= VariableType.Control Then
+                        Return VariableType.String
+                    Else
+                        Return VariableType.Double
+                    End If
 
                 Case TokenType.Concatenation
                     Return VariableType.String
@@ -103,10 +115,8 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                             leftType = VariableType.Array OrElse rightType = VariableType.Array OrElse
                             leftType >= VariableType.Control OrElse rightType >= VariableType.Control Then
                         Return VariableType.String
-
                     ElseIf leftType = VariableType.Date OrElse rightType = VariableType.Date Then
                         Return VariableType.Date
-
                     Else
                         Return VariableType.Double
                     End If
@@ -121,7 +131,6 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Case Else
                     Return VariableType.Boolean
             End Select
-
         End Function
 
         Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
@@ -137,19 +146,21 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                     Return Primitive.op_And(leftExpr, rightExpr)
                 Case TokenType.Division
                     Return leftExpr.Divide(rightExpr)
-                Case TokenType.Equals
+                Case TokenType.Mod
+                    Return leftExpr.Remainder(rightExpr)
+                Case TokenType.EqualsTo
                     Return leftExpr.EqualTo(rightExpr)
                 Case TokenType.GreaterThan
                     Return leftExpr.GreaterThan(rightExpr)
-                Case TokenType.GreaterThanEqualTo
+                Case TokenType.GreaterThanOrEqualsTo
                     Return leftExpr.GreaterThanOrEqualTo(rightExpr)
                 Case TokenType.LessThan
                     Return leftExpr.LessThan(rightExpr)
-                Case TokenType.LessThanEqualTo
+                Case TokenType.LessThanOrEqualsTo
                     Return leftExpr.LessThanOrEqualTo(rightExpr)
                 Case TokenType.Multiplication
                     Return leftExpr.Multiply(rightExpr)
-                Case TokenType.NotEqualTo
+                Case TokenType.NotEqualsTo
                     Return leftExpr.NotEqualTo(rightExpr)
                 Case TokenType.Or
                     Return Primitive.op_Or(leftExpr, rightExpr)

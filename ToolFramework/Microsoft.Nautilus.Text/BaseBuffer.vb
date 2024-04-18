@@ -243,10 +243,10 @@ Namespace Microsoft.Nautilus.Text
                 applied = True
                 If changes.Count > 0 Then
                     Return _baseBuffer.FinishChangeApplication(
-                                    normalizedChanges:=_baseBuffer.ApplyChanges(changes, sourceToken),
-                                    originSnapshot,
-                                    sourceToken
-                                 )
+                          _baseBuffer.ApplyChanges(changes, sourceToken),
+                          originSnapshot,
+                          sourceToken
+                    )
                 End If
 
                 Return _baseBuffer._CurrentSnapshot
@@ -261,6 +261,12 @@ Namespace Microsoft.Nautilus.Text
                     Throw New InvalidOperationException("Cannot cancel an applied edit")
                 End If
                 canceled = True
+            End Sub
+
+            Public Sub RemoveLastChange() Implements ITextEdit.RemoveLastChange
+                If changes.Count > 0 Then
+                    changes.RemoveAt(changes.Count - 1)
+                End If
             End Sub
         End Class
 

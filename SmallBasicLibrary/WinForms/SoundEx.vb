@@ -8,7 +8,6 @@ Imports Microsoft.SmallVisualBasic.Library.Internal
 Namespace WinForms
     ''' <summary>
     ''' The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
-    ''' The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
     ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>

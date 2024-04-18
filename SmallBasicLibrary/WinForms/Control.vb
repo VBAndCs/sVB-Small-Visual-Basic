@@ -1258,7 +1258,8 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetControl(controlName).FontSize = value * 4 / 3
+                        Dim size = System.Math.Max(1, value.AsDecimal)
+                        GetControl(controlName).FontSize = size * 4 / 3
                     Catch ex As Exception
                         ReportPropertyError(controlName, "FontSize", value, ex)
                     End Try

@@ -6,6 +6,7 @@
     [Date]
     [Boolean]
     Sound
+    Shape
     Color
     Key
     DialogResult

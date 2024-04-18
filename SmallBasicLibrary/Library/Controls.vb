@@ -133,9 +133,9 @@ Namespace Library
                 Return
             End If
 
-            Dim button1 As Button = TryCast(value, Button)
+            Dim button1 = TryCast(value, Button)
             If button1 IsNot Nothing Then
-                GraphicsWindow.BeginInvoke(Sub() button1.Content = caption)
+                GraphicsWindow.Invoke(Sub() button1.Content = caption)
             End If
         End Sub
 
@@ -628,9 +628,9 @@ Namespace Library
             If Not GraphicsWindow._objectsMap.TryGetValue(textBoxName, value) Then
                 Return
             End If
-            Dim textBox1 As TextBox = TryCast(value, TextBox)
+            Dim textBox1 = TryCast(value, TextBox)
             If textBox1 IsNot Nothing Then
-                GraphicsWindow.BeginInvoke(Sub() textBox1.Text = text)
+                GraphicsWindow.Invoke(Sub() textBox1.Text = text)
             End If
         End Sub
 
@@ -663,7 +663,7 @@ Namespace Library
             Dim obj As UIElement = Nothing
             If GraphicsWindow._objectsMap.TryGetValue(control, obj) Then
                 _positionMap(control) = New Point(x, y)
-                GraphicsWindow.BeginInvoke(
+                GraphicsWindow.Invoke(
                     Sub()
                         obj.BeginAnimation(Canvas.LeftProperty, Nothing)
                         obj.BeginAnimation(Canvas.TopProperty, Nothing)
@@ -686,9 +686,9 @@ Namespace Library
             If Not GraphicsWindow._objectsMap.TryGetValue(control, value) Then
                 Return
             End If
-            Dim element As FrameworkElement = TryCast(value, FrameworkElement)
+            Dim element = TryCast(value, FrameworkElement)
             If element IsNot Nothing Then
-                GraphicsWindow.BeginInvoke(
+                GraphicsWindow.Invoke(
                     Sub()
                         element.Width = width
                         element.Height = height

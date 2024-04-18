@@ -20,7 +20,9 @@ Namespace Microsoft.Nautilus.Text
         Protected Overrides Function ApplyChanges(changes As List(Of TextChange), sourceToken As Object) As NormalizedTextChangeCollection
             Dim normalizedChanges As New NormalizedTextChangeCollection(changes)
             For Each change In normalizedChanges
-                builder = builder.Replace(New Span(change.Position, change.OldLength), change.NewText)
+                builder = builder.Replace(
+                    New Span(change.Position, change.OldLength),
+                    change.NewText)
             Next
             Return normalizedChanges
         End Function

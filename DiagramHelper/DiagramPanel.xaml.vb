@@ -2,7 +2,6 @@
 Imports System.Globalization
 
 Public Class DiagramPanel
-
     Friend ConnectorsGrid As Grid
     Friend FocusRectangle As Rectangle
     Friend Dsn As Designer
@@ -271,7 +270,7 @@ Public Class DiagramPanel
                 Dim B = Commands.ChangeBorderBrush(Diagram)
                 If B IsNot Nothing Then ApplyLastChangeToSelected()
                 e.Handled = True
-            Case Key.F4
+            Case Key.F1
                 Commands.ApplyLastChangeTo(Diagram)
                 ApplyLastChangeToSelected()
                 e.Handled = True
@@ -719,6 +718,10 @@ Public Class DiagramPanel
 
 
     Private Sub PropertiesMenuItem_Click(sender As Object, e As RoutedEventArgs)
+        ShowProps()
+    End Sub
+
+    Friend Sub ShowProps()
         Dim WndProps As New WndProperties
         With WndProps
             .Show() ' Apply the templates
@@ -1095,7 +1098,7 @@ Public Class DiagramPanel
             If onCanvus Then
                 If Not AreEquals(CDbl(Helper.GetListBoxItem(fw).GetValue(dp)), value) Then Return Nothing
             ElseIf Not AreEquals(CDbl(Helper.GetDiagramPanel(fw).GetValue(dp)), value) Then
-                    Return Nothing
+                Return Nothing
             End If
         Next
 

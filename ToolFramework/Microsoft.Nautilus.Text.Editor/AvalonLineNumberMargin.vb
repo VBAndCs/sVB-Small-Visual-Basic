@@ -118,6 +118,7 @@ Namespace Microsoft.Nautilus.Text.Editor
         End Sub
 
         Public Sub DrawBreakpoint(lineNumber As Integer, showBreeakPoint As Boolean)
+            If lineNumber = -1 Then Return
             cashedLines(lineNumber + 1).ShowBreakpoint = showBreeakPoint
         End Sub
 

@@ -1269,6 +1269,8 @@ Namespace WinForms
 
         ''' <summary>
         ''' Shows a message box dialog on the owner form.
+        ''' Use MsgBox as a shorcut name to show the message box. Ex:
+        ''' MsgBox "Hello!"
         ''' </summary>
         ''' <param name="message">the text to dislpay on the message box</param>
         ''' <param name="title">the title to display of the dialog box</param>

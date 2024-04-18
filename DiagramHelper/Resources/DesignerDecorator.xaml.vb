@@ -44,7 +44,6 @@
 
     End Sub
 
-
     Friend Sub SaveMenuItem_Click(sender As Object, e As RoutedEventArgs)
         GetDesigner(sender).Save()
     End Sub
@@ -116,6 +115,10 @@
 
     Private Sub PropertiesMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim Dsn = GetDesigner(sender)
+        Dsn = ShowProperies(Dsn)
+    End Sub
+
+    Friend Shared Function ShowProperies(Dsn As Designer) As Designer
         Dim canvas = Dsn.DesignerCanvas
         Dim WndProps As New WndProperties
 
@@ -219,7 +222,9 @@
                 If unit.Count > 0 Then Dsn.UndoStack.ReportChanges(unit)
             End If
         End With
-    End Sub
+
+        Return Dsn
+    End Function
 
     Private Sub AllowTransparencyMenuItem_Checked(sender As Object, e As RoutedEventArgs)
         Dim dsn = GetDesigner(sender)

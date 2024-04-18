@@ -50,6 +50,23 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
         End Sub
 
+        Private Shared _keyNames As New List(Of CompletionItem)
+        ReadOnly Property KeyNames As List(Of CompletionItem)
+            Get
+                If _keyNames.Count = 0 Then
+                    Dim typeInfo As TypeInfo
+                    Compiler.TypeInfoBag.Types.TryGetValue("keys", typeInfo)
+                    For Each prop In typeInfo.Properties.Values
+                        _keyNames.Add(New CompletionItem() With {
+                            .DisplayName = prop.Name,
+                            .ReplacementText = $"""{prop.Name}"""
+                        })
+                    Next
+                End If
+                Return _keyNames
+            End Get
+        End Property
+
         Private Shared _fontNames As New List(Of CompletionItem)
         ReadOnly Property FontNames As List(Of CompletionItem)
             Get
@@ -150,7 +167,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 If replaceSpan.Length = 0 And replaceSpan.Start > 0 Then
                     Select Case textView.TextSnapshot(replaceSpan.Start - 1)
-                        Case "=", "<", ">", "+", "-", "*", "/"
+                        Case "="c, "<"c, ">"c, "+"c, "-"c, "*"c, "/"c, "%"c
                             repWith = " " + repWith
                     End Select
                 End If
@@ -201,7 +218,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             For i = 0 To n
                 If tokens(i).ParseType = ParseType.Operator Then
-                    If tokens(i).Type = TokenType.Or OrElse tokens(i).Type = TokenType.And Then
+                    Dim type = tokens(i).Type
+                    If type = TokenType.Or OrElse type = TokenType.And Or type = TokenType.Mod Then
                         Exit For
                     ElseIf i < n Then
                         newStart = start + tokens(i + 1).Column
@@ -218,7 +236,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim [end] = span.End
             For i = n To startIndex + 1 Step -1
                 If tokens(i).ParseType = ParseType.Operator Then
-                    If tokens(i).Type = TokenType.Or OrElse tokens(i).Type = TokenType.And Then
+                    Dim type = tokens(i).Type
+                    If type = TokenType.Or OrElse type = TokenType.And OrElse type = TokenType.Mod Then
                         Exit For
                     ElseIf i > 0 Then
                         [end] = start + tokens(i - 1).EndColumn
@@ -1037,20 +1056,26 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 ElseIf currentToken.Type = TokenType.StringLiteral Then
                     If Not forHelp AndAlso (
-                                prevToken.Type = TokenType.Equals OrElse
+                                prevToken.Type = TokenType.EqualsTo OrElse
                                 prevToken.Type = TokenType.LeftParens
                             ) Then
                         Dim method = b4PrevToken.LCaseText
                         If method.Contains("fontname") Then
                             newBag.CompletionItems.AddRange(FontNames)
+
+                        ElseIf method.EndsWith("key") Then
+                            newBag.CompletionItems.AddRange(KeyNames)
+
                         ElseIf method.Contains("showform") OrElse
                                    method.Contains("showdialog") OrElse
                                    method.Contains("showchildform") OrElse
                                    method.Contains("runformtests") OrElse
                                    method.Contains("formname") Then
                             newBag.CompletionItems.AddRange(FormNames)
+
                         ElseIf method.Contains("color") Then
                             newBag.CompletionItems.AddRange(ColorNames)
+
                         ElseIf method = "removeeventhandler" Then
                             If index > 3 Then
                                 FillEventNames(newBag, GetTypeName(tokens(index - 4), controlsInfo))
@@ -1133,7 +1158,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     Dim bag = compHelper.GetCompletionItems(
                         line.LineNumber, column,
-                        prevToken.Type = TokenType.Equals OrElse currentToken.Type = TokenType.Equals,
+                        prevToken.Type = TokenType.EqualsTo OrElse currentToken.Type = TokenType.EqualsTo,
                         IsCompletionOperator(prevToken) OrElse IsCompletionOperator(currentToken),
                         forHelp,
                         gp
@@ -1200,7 +1225,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 If token.Column > column Then Exit For
                 If column >= token.Column AndAlso column <= token.EndColumn Then
                     If token.ParseType = ParseType.Operator Then
-                        If column = token.Column AndAlso (token.Type = TokenType.RightBracket OrElse token.Type = TokenType.RightParens OrElse token.Type = TokenType.RightCurlyBracket) Then
+                        If column = token.Column AndAlso (token.Type = TokenType.RightBracket OrElse token.Type = TokenType.RightParens OrElse token.Type = TokenType.RightBrace) Then
                             Exit For
                         ElseIf i < n AndAlso tokens(i + 1).Column = token.EndColumn AndAlso tokens(i + 1).ParseType <> ParseType.Operator Then
                             b4PrevToken = currentToken
@@ -1249,9 +1274,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Function
 
         Private Function IsCompletionOperator(token As Token) As Boolean
-            ' `Return False` means we can ahow `And` and `Or`
+            ' `Return False` means we can show `And` and `Or`
             If token.Type = TokenType.RightBracket Then Return False
-            If token.Type = TokenType.RightCurlyBracket Then Return False
+            If token.Type = TokenType.RightBrace Then Return False
             If token.Type = TokenType.RightParens Then Return False
 
             If token.Type = TokenType.True Then Return False
@@ -1305,9 +1330,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     End If
 
                     Select Case tokens(n).Type
-                        Case TokenType.Equals, TokenType.NotEqualTo,
-                             TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
-                             TokenType.LessThan, TokenType.LessThanEqualTo
+                        Case TokenType.EqualsTo, TokenType.NotEqualsTo,
+                             TokenType.GreaterThan, TokenType.GreaterThanOrEqualsTo,
+                             TokenType.LessThan, TokenType.LessThanOrEqualsTo
 
                             Dim index = n - 1
                             curToken = tokens(n)
@@ -1317,7 +1342,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                             If especialItem = "" Then
                                 especialItem = InferEspType(token, line)
-                                If especialItem = "" AndAlso Not ctrlSpace Then
+                                If (especialItem = "Boolean" AndAlso tokens.Last.Type = TokenType.StringLiteral) OrElse (
+                                        especialItem = "" AndAlso Not ctrlSpace) Then
                                     Return
                                 End If
                             End If
@@ -1325,6 +1351,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
 
 LineShow:
+                If n > 2 AndAlso especialItem = "Keys" Then
+                    Dim id = tokens(n - 3).LCaseText
+                    If id = "gw" OrElse id = "graphicswindow" Then especialItem = "GW.Keys"
+                End If
+
                 If especialItem = "" Then
                     bag = GetCompletionBag(line, caretPosition - line.Start, curToken)
                     canGetOriginalBag = False
@@ -1389,7 +1420,8 @@ LineShow:
         Private Function GetEspecialItem(name As String) As String
             If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
                 Return "Colors"
-            ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse name.EndsWith("keys") Then
+            ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse
+                    name.EndsWith("keys") Then
                 Return "Keys"
             ElseIf name = "showdialog" OrElse name.Contains("dialogresult") Then
                 Return "DialogResults"
@@ -1425,7 +1457,7 @@ LineShow:
                     matchingPair1 = "]"c
                     matchingPair2 = "["c
 
-                Case TokenType.RightCurlyBracket
+                Case TokenType.RightBrace
                     matchingPair1 = "}"c
                     matchingPair2 = "{"c
 
@@ -1556,18 +1588,23 @@ LineShow:
                     })
                     especialItem = "" ' Don't offer any other global items
 
+                Case "GW.Keys"
+                    bag.CompletionItems.AddRange(KeyNames)
+                    especialItem = "*"
+
                 Case Else
                     Dim typeInfo As TypeInfo = Nothing
                     If bag.TypeInfoBag.Types.TryGetValue(especialItem.ToLower(), typeInfo) Then
                         CompletionHelper.FillMemberNames(bag, typeInfo, "")
-                        bag.CompletionItems.Sort(
-                            Function(ci1, ci2)
-                                Return ci1.DisplayName.CompareTo(ci2.DisplayName)
-                            End Function)
                     End If
             End Select
 
             If bag IsNot Nothing Then
+                bag.CompletionItems.Sort(
+                       Function(ci1, ci2)
+                           Return ci1.DisplayName.CompareTo(ci2.DisplayName)
+                       End Function
+                )
                 bag.SelectEspecialItem = especialItem
             End If
 
@@ -1712,6 +1749,7 @@ LineShow:
                          NameOf(WinForms.MathEx),
                          NameOf(WinForms.DateEx),
                          NameOf(WinForms.SoundEx),
+                         NameOf(WinForms.ShapesEx),
                          NameOf(WinForms.WinTimer)
 
                 Case Else

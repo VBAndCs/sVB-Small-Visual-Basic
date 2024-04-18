@@ -112,31 +112,35 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Dim subroutine As New Statements.SubroutineCallStatement() With {
                     .Name = _MethodName,
                     .Args = _Arguments,
-                    .IsGlobalFunc = isGlobalFunc
+                    .IsGlobalFunc = isGlobalFunc,
+                    .DontExecuteSub = runner.Evaluating
                 }
 
                 subroutine.Execute(runner)
+                If subroutine.DontExecuteSub Then
+                    Return "A subroutine call doesn't return any value!"
+                End If
 
-                Dim retKey = $"{MName}.return"
-                If isGlobalFunc Then
-                    Dim result = runner.GetGlobalField(retKey)
-                    If result.HasValue Then
-                        Return result.Value
-                    ElseIf runner.Engine.Evaluating Then
+                Dim retKey = $"{mName}.return"
+                    If isGlobalFunc Then
+                        Dim result = runner.GetGlobalField(retKey)
+                        If result.HasValue Then
+                            Return result.Value
+                        ElseIf runner.Evaluating Then
+                            Return "A subroutine call doesn't return any value!"
+                        Else
+                            Return New Primitive()
+                        End If
+                    ElseIf runner.Fields.ContainsKey(retKey) Then
+                        Return runner.Fields(retKey)
+                    ElseIf runner.Evaluating Then
                         Return "A subroutine call doesn't return any value!"
                     Else
                         Return New Primitive()
                     End If
-                ElseIf runner.Fields.ContainsKey(retKey) Then
-                    Return runner.Fields(retKey)
-                ElseIf runner.Engine.Evaluating Then
-                    Return "A subroutine call doesn't return any value!"
-                Else
-                    Return New Primitive()
                 End If
-            End If
 
-            Dim args As New List(Of Object)()
+                Dim args As New List(Of Object)()
             For Each argument In _Arguments
                 args.Add(argument.Evaluate(runner))
             Next
@@ -144,49 +148,65 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             If tName = "forms" Then
                 If mName = "showform" Then
                     Dim formName = CType(args(0), Library.Primitive)
-                    Dim argsArr = CType(args(1), Library.Primitive)
-                    If WinForms.Form.GetIsLoaded(formName) Then
-                        WinForms.Forms.ShowForm(formName, argsArr)
-                    Else
-                        Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
-                        runner.RunForm(formName)
+                    If Not runner.Evaluating Then
+                        Dim argsArr = CType(args(1), Library.Primitive)
+                        If WinForms.Form.GetIsLoaded(formName) Then
+                            WinForms.Forms.ShowForm(formName, argsArr)
+                        Else
+                            Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
+                            runner.RunForm(formName)
+                        End If
                     End If
                     Return formName
 
                 ElseIf mName = "showdialog" Then
                     Dim formName = CType(args(0), Library.Primitive)
                     Dim argsArr = CType(args(1), Library.Primitive)
+
                     If WinForms.Form.GetIsLoaded(formName) Then
                         WinForms.Form.SetArgsArr(formName, argsArr)
-                        Return WinForms.Form.ShowDialog(formName)
                     Else
                         Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
                         runner.RunForm(formName)
                         WinForms.Control.SetVisible(formName, False)
-                        Return WinForms.Form.ShowDialog(formName)
                     End If
+
+                    Return WinForms.Form.ShowDialog(formName)
                 End If
 
-            ElseIf tName = "form" AndAlso mName = "showchildform" Then
-                Dim parentFormName = CType(args(0), Library.Primitive)
-                Dim childFormName = CType(args(1), Library.Primitive)
-                Dim argsArr = CType(args(2), Library.Primitive)
-
-                If WinForms.Form.GetIsLoaded(childFormName) Then
-                    WinForms.Form.ShowChildForm(parentFormName, childFormName, argsArr)
-                Else
-                    Stack.PushValue("_" & CStr(childFormName).ToLower() & "_argsArr", argsArr)
-                    runner.RunForm(childFormName)
-                    WinForms.Form.SetOwner(childFormName, parentFormName)
+            ElseIf mName = "showchildform" Then
+                Dim showFrom As Boolean = False
+                If tName = "form" Then
+                    showFrom = True
+                ElseIf runner.SymbolTable.GetInferedType(tName) = VariableType.Form Then
+                    showFrom = True
+                    Dim formKey = runner.GetKey(_TypeName)
+                    args.Insert(0, runner.Fields(formKey))
                 End If
-                Return childFormName
+
+                If showFrom Then
+                    Dim childFormName = CType(args(1), Library.Primitive)
+                    If Not runner.Evaluating Then
+                        Dim parentFormName = CType(args(0), Library.Primitive)
+                        Dim argsArr = CType(args(2), Library.Primitive)
+
+                        If WinForms.Form.GetIsLoaded(childFormName) Then
+                            WinForms.Form.ShowChildForm(parentFormName, childFormName, argsArr)
+                        Else
+                            Stack.PushValue("_" & CStr(childFormName).ToLower() & "_argsArr", argsArr)
+                            runner.RunForm(childFormName)
+                            WinForms.Form.SetOwner(childFormName, parentFormName)
+                        End If
+                    End If
+                    Return childFormName
+                End If
             End If
 
             Dim methodInfo As MethodInfo
             If runner.TypeInfoBag.Types.ContainsKey(tName) Then
                 Dim typeInfo = runner.TypeInfoBag.Types(tName)
                 methodInfo = typeInfo.Methods(_MethodName.LCaseText)
-                If runner.Engine.Evaluating AndAlso methodInfo.ReturnType Is GetType(System.Void) Then
+                If runner.Evaluating AndAlso methodInfo.ReturnType Is GetType(System.Void) Then
                     Return "A subroutine call doesn't return any value!"
                 Else
                     Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
@@ -199,6 +219,9 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
             methodInfo = TryCast(memberInfo, MethodInfo)
             If methodInfo Is Nothing Then Return "???"
+            If runner.Evaluating AndAlso methodInfo.ReturnType Is GetType(System.Void) Then
+                Return "A subroutine call doesn't return any value!"
+            End If
 
             Dim key = runner.GetKey(_TypeName)
             If Not runner.Fields.ContainsKey(key) Then Return "This object is not set yet"

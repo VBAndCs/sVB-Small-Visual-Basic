@@ -1244,7 +1244,8 @@ Converts the given array to a string
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.LastKey">
  <summary>
- Gets the last key that was pressed or released.
+ Gets the last key name that was pressed or released. 
+ You cant compare this property to the values of th Keys enum, which is valid only for the Event.LastKey and Keyboard.LastKey properties.
  </summary>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.LastText">
@@ -2950,12 +2951,26 @@ Returns true if the given text is empty, or returns false otherwise.
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.Timer.Interval">
  <summary>
- Gets or sets the interval (in milliseconds) specifying how often the timer should raise the Tick event.  This value can range from 10 to 100000000
+ Gets or sets the interval (in milliseconds) specifying how often the timer should raise the Tick event.  
+ This value can range from 10 to 100000000.
+ Note that setting the interval resumes the timer.
  </summary>
 </member>
 <member name="E:Microsoft.SmallVisualBasic.Library.Timer.Tick">
  <summary>
  Raises an event when the timer ticks.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Timer.RemoveTickHandler">
+ <summary>
+ Removes the Tick hamdler of the timer.
+ Ulternatively, you can set the Tick event to Nothing to remove its handler:
+ Timer.Tick = Nothing
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Library.Timer.IsRunnning">
+ <summary>
+ Returns True is the timer is currently working (has an event handler and not paused), or False otherwise.
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Timer.Pause">
@@ -2988,8 +3003,7 @@ Returns true if the given text is empty, or returns false otherwise.
 <member name="P:Microsoft.SmallVisualBasic.Library.Turtle.Speed">
  <summary>
  Specifies how fast the turtle should move. 
- Valid values are 1 to 50.
- The default value is 15.
+ Valid values are 1 to 50. The default value is 5.
  </summary>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.Turtle.UseAnimation">
@@ -8551,12 +8565,17 @@ Returns true if the current text is empty, or returns false otherwise.
 <member name="M:Microsoft.SmallVisualBasic.WinForms.WinTimer.GetInterval(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Gets or sets the interval (in milliseconds) specifying how often the timer should raise the Tick event.  
- Setting this property will start the timer and tick events will be raised.
+ Setting this property will start or resume the timer and tick events will be raised.
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.WinTimer.Pause(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Pauses the timer. Tick events will not be raised.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.WinTimer.GetIsEnabled(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Returns false if the timer is paused, or True otherwise.
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.WinTimer.Resume(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -8567,6 +8586,13 @@ Returns true if the current text is empty, or returns false otherwise.
 <member name="E:Microsoft.SmallVisualBasic.WinForms.WinTimer.OnTick">
  <summary>
  Fired when user releases the left mouse-button
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.WinTimer.RemoveOnTickHandler(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Removes the OnTick hamdler of the current timer.
+ Ulternatively, you can set the OnTick event to Nothing to remove its handler:
+ myTimer.OnTick = Nothing
  </summary>
 </member>
 <member name="T:Microsoft.SmallVisualBasic.WinForms.ToggleButton">

@@ -18,6 +18,7 @@ Namespace Microsoft.SmallVisualBasic
         Public Subtract As MethodInfo
         Public Multiply As MethodInfo
         Public Divide As MethodInfo
+        Public Remainder As MethodInfo
         Public EqualTo As MethodInfo
         Public NotEqualTo As MethodInfo
         Public LessThan As MethodInfo

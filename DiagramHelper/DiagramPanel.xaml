@@ -89,8 +89,8 @@
                 <MenuItem Header="Skew" InputGestureText="Ctrl+K" Click="SkewMenuItem_Click"  />
             </MenuItem>
             <Separator/>
-            <MenuItem Header="Apply Last Change" InputGestureText="F4" Click="ApplyLastChangeMenuItem_Click"  />
-            <MenuItem Header="Properties" Click="PropertiesMenuItem_Click"  />
+            <MenuItem Header="Apply Last Change" InputGestureText="F1" Click="ApplyLastChangeMenuItem_Click"  />
+            <MenuItem Header="Properties" InputGestureText="F4" Click="PropertiesMenuItem_Click"  />
 
         </ContextMenu>
     </UserControl.ContextMenu>

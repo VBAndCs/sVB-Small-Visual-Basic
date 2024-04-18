@@ -7,7 +7,7 @@ Imports System.Windows.Shapes
 
 Namespace Library
     ''' <summary>
-    ''' The Shape object allows you to add, move and rotate shapes to the Graphics window.
+    ''' The Shape object allows you to add, move and rotate shapes on the Graphics window.
     ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class Shapes
@@ -23,8 +23,9 @@ Namespace Library
         ''' <param name="height">The height of the rectangle shape.</param>
         ''' <returns>
         ''' The Rectangle shape that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        <WinForms.ReturnValueType(VariableType.Shape)>
         Public Shared Function AddRectangle(width As Primitive, height As Primitive) As Primitive
             Dim name As String = GenerateNewName("Rectangle")
             GraphicsWindow.Invoke(
@@ -43,27 +44,24 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' Add the geometic path that you create using the GeometricPath type to shapes.
+        ''' Adds the geometic path, last created using the GeometricPath type, to shapes.
+        ''' This will draw the path on the graphics window using its pen and brush.
         ''' </summary>
-        ''' <param name="penColor">The color used to draw the shape outline</param>
-        ''' <param name="penWidth">The width of the shape outline</param>
-        ''' <param name="brushColor">The color used to fill the shape</param>
-        ''' <returns>The geometic path that was just added to the Graphics Window</returns>
-        <WinForms.ReturnValueType(VariableType.String)>
-        Public Shared Function AddGeometricPath(
-                         penColor As Primitive,
-                         penWidth As Primitive,
-                         brushColor As Primitive
-                    ) As Primitive
+        ''' <returns>
+        ''' The geometic path that was just added to the Graphics Window
+        '''You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Shape)>
+        Public Shared Function AddGeometricPath() As Primitive
 
             Dim name = GenerateNewName("GeoPath")
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim path = WinForms.GeometricPath._path
-                    path.Fill = WinForms.Color.GetBrush(brushColor)
-                    path.Stroke = WinForms.Color.GetBrush(penColor)
-                    path.StrokeThickness = penWidth
+                    path.Fill = GraphicsWindow._fillBrush
+                    path.Stroke = GraphicsWindow._pen.Brush
+                    path.StrokeThickness = GraphicsWindow._pen.Thickness
                     GraphicsWindow.AddShape(name, path)
                 End Sub)
             Return name
@@ -81,8 +79,9 @@ Namespace Library
         ''' </param>
         ''' <returns>
         ''' The Ellipse shape that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        <WinForms.ReturnValueType(VariableType.Shape)>
         Public Shared Function AddEllipse(width As Primitive, height As Primitive) As Primitive
             Dim name As String = GenerateNewName("Ellipse")
             GraphicsWindow.Invoke(
@@ -123,8 +122,9 @@ Namespace Library
         ''' </param>
         ''' <returns>
         ''' The Triangle shape that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)        
         ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        <WinForms.ReturnValueType(VariableType.Shape)>
         Public Shared Function AddTriangle(
                          x1 As Primitive, y1 As Primitive,
                          x2 As Primitive, y2 As Primitive,
@@ -154,8 +154,9 @@ Namespace Library
         ''' <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
         ''' <returns>
         ''' The polygon shape that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        <WinForms.ReturnValueType(VariableType.Shape)>
         Public Shared Function AddPolygon(
                          pointsArr As Primitive
                     ) As Primitive
@@ -201,8 +202,9 @@ Namespace Library
         ''' </param>
         ''' <returns>
         ''' The line that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        <WinForms.ReturnValueType(VariableType.Shape)>
         Public Shared Function AddLine(
                           x1 As Primitive, y1 As Primitive,
                           x2 As Primitive, y2 As Primitive
@@ -231,8 +233,9 @@ Namespace Library
         ''' </param>
         ''' <returns>
         ''' The image that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        <WinForms.ReturnValueType(VariableType.Shape)>
         Public Shared Function AddImage(imageName As Primitive) As Primitive
             Dim name As String = GenerateNewName("Image")
             GraphicsWindow.Invoke(
@@ -259,8 +262,9 @@ Namespace Library
         ''' </param>
         ''' <returns>
         ''' The text shape that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
-        <WinForms.ReturnValueType(VariableType.String)>
+        <WinForms.ReturnValueType(VariableType.Shape)>
         Public Shared Function AddText(text As Primitive) As Primitive
             Dim name As String = GenerateNewName("Text")
             GraphicsWindow.Invoke(
@@ -280,31 +284,46 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' Sets the text of a text shape. 
+        ''' Gets the text of a text shape added by the AddText method. 
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the text shape.
-        ''' </param>
-        ''' <param name="text">
-        ''' The new text value to set.
-        ''' </param>
+        ''' <param name="shapeName">The name of the text shape.</param>
+        ''' <returns>The shape text if it is a text shape, or "" otherwise.</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function GetText(shapeName As Primitive) As Primitive
+            Dim value As UIElement = Nothing
+            If GraphicsWindow._objectsMap.TryGetValue(shapeName, value) Then
+                GraphicsWindow.Invoke(
+                     Sub()
+                         If TypeOf value Is TextBlock Then
+                             GetText = New Primitive(CType(value, TextBlock).Text)
+                         Else
+                             GetText = New Primitive()
+                         End If
+                     End Sub)
+            Else
+                GetText = New Primitive()
+            End If
+        End Function
+
+        ''' <summary>
+        ''' Sets the text of a text shape added by the AddText method. 
+        ''' </summary>
+        ''' <param name="shapeName">The name of the text shape.</param>
+        ''' <param name="text">The new text value to set.</param>
         Public Shared Sub SetText(shapeName As Primitive, text As Primitive)
             Dim value As UIElement = Nothing
-            If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, value) Then
-                Return
-            End If
-            Dim textBlock1 As TextBlock = TryCast(value, TextBlock)
-            If textBlock1 IsNot Nothing Then
-                GraphicsWindow.BeginInvoke(Sub() textBlock1.Text = text)
+            If GraphicsWindow._objectsMap.TryGetValue(shapeName, value) Then
+                Dim tb = TryCast(value, TextBlock)
+                If tb IsNot Nothing Then
+                    GraphicsWindow.Invoke(Sub() tb.Text = text)
+                End If
             End If
         End Sub
 
         ''' <summary>
         ''' Removes a shape from the Graphics Window.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape that needs to be removed.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape that needs to be removed.</param>
         Public Shared Sub Remove(shapeName As Primitive)
             GraphicsWindow.RemoveShape(shapeName)
         End Sub
@@ -312,9 +331,7 @@ Namespace Library
         ''' <summary>
         ''' Moves the shape with the specified name to a new position.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape to move.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape to move.</param>
         ''' <param name="x">
         ''' The x co-ordinate of the new position.
         ''' </param>
@@ -322,34 +339,30 @@ Namespace Library
         ''' The y co-ordinate of the new position.
         ''' </param>
         Public Shared Sub Move(shapeName As Primitive, x As Primitive, y As Primitive)
-            Dim obj As UIElement = Nothing
-            If GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
-                _positionMap(shapeName) = New Point(x, y)
-                GraphicsWindow.BeginInvoke(
-                    Sub()
-                        obj.BeginAnimation(Canvas.LeftProperty, Nothing)
-                        obj.BeginAnimation(Canvas.TopProperty, Nothing)
-                        Canvas.SetLeft(obj, x)
-                        Canvas.SetTop(obj, y)
-                    End Sub)
-            End If
+            GraphicsWindow.Invoke(
+                Sub()
+                    Dim shape As UIElement = Nothing
+                    If GraphicsWindow._objectsMap.TryGetValue(shapeName, shape) Then
+                        _positionMap(shapeName) = New Point(x, y)
+                        shape.BeginAnimation(Canvas.LeftProperty, Nothing)
+                        shape.BeginAnimation(Canvas.TopProperty, Nothing)
+                        Canvas.SetLeft(shape, x)
+                        Canvas.SetTop(shape, y)
+                    End If
+                End Sub)
         End Sub
 
         ''' <summary>
         ''' Rotates the shape with the specified name to the specified angle.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape to rotate.
-        ''' </param>
-        ''' <param name="angle">
-        ''' The angle to rotate the shape.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape to rotate.</param>
+        ''' <param name="angle">The angle to rotate the shape.</param>
         Public Shared Sub Rotate(shapeName As Primitive, angle As Primitive)
             Dim obj As UIElement = Nothing
             If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
                 Return
             End If
-            GraphicsWindow.BeginInvoke(
+            GraphicsWindow.Invoke(
                 Sub()
                     If Not (TypeOf obj.RenderTransform Is TransformGroup) Then
                         obj.RenderTransform = New TransformGroup
@@ -373,15 +386,9 @@ Namespace Library
         ''' <summary>
         ''' Scales the shape using the specified zoom levels.  Minimum is 0.1 and maximum is 20.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape to zoom.
-        ''' </param>
-        ''' <param name="scaleX">
-        ''' The x-axis zoom level.
-        ''' </param>
-        ''' <param name="scaleY">
-        ''' The y-axis zoom level.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape to zoom.</param>
+        ''' <param name="scaleX">The x-axis zoom level.</param>
+        ''' <param name="scaleY">The y-axis zoom level.</param>
         Public Shared Sub Zoom(shapeName As Primitive, scaleX As Primitive, scaleY As Primitive)
             Dim obj As UIElement = Nothing
             If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
@@ -389,7 +396,7 @@ Namespace Library
             End If
             scaleX = Math.Min(Math.Max(scaleX, 0.1), 20.0)
             scaleY = Math.Min(Math.Max(scaleY, 0.1), 20.0)
-            GraphicsWindow.BeginInvoke(
+            GraphicsWindow.Invoke(
                 Sub()
                     If Not (TypeOf obj.RenderTransform Is TransformGroup) Then
                         obj.RenderTransform = New TransformGroup
@@ -414,18 +421,10 @@ Namespace Library
         ''' <summary>
         ''' Animates a shape with the specified name to a new position.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape to move.
-        ''' </param>
-        ''' <param name="x">
-        ''' The x co-ordinate of the new position.
-        ''' </param>
-        ''' <param name="y">
-        ''' The y co-ordinate of the new position.
-        ''' </param>
-        ''' <param name="duration">
-        ''' The time for the animation, in milliseconds.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape to move.</param>
+        ''' <param name="x">The x co-ordinate of the new position.</param>
+        ''' <param name="y">The y co-ordinate of the new position.</param>
+        ''' <param name="duration">The time for the animation, in milliseconds.</param>
         Public Shared Sub Animate(shapeName As Primitive, x As Primitive, y As Primitive, duration As Primitive)
             Dim obj As UIElement = Nothing
             If GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
@@ -441,9 +440,7 @@ Namespace Library
         ''' <summary>
         ''' Gets the left co-ordinate of the specified shape.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape.</param>
         ''' <returns>
         ''' The left co-ordinate of the shape.
         ''' </returns>
@@ -463,11 +460,28 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Changes the left position of the specified shape
+        ''' </summary>
+        ''' <param name="shapeName">The name of the shape.</param>
+        ''' <param name="x">the new position of the shape left</param>
+        Public Shared Sub SetLeft(shapeName As Primitive, x As Primitive)
+            GraphicsWindow.Invoke(
+                Sub()
+                    Dim shape As UIElement = Nothing
+                    If GraphicsWindow._objectsMap.TryGetValue(shapeName, shape) Then
+                        Dim y = Canvas.GetTop(shape)
+                        _positionMap(shapeName) = New Point(x, y)
+                        shape.BeginAnimation(Canvas.LeftProperty, Nothing)
+                        shape.BeginAnimation(Canvas.TopProperty, Nothing)
+                        Canvas.SetLeft(shape, x)
+                    End If
+                End Sub)
+        End Sub
+
+        ''' <summary>
         ''' Gets the top co-ordinate of the specified shape.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape.</param>
         ''' <returns>
         ''' The top co-ordinate of the shape.
         ''' </returns>
@@ -485,6 +499,25 @@ Namespace Library
 
             Return 0
         End Function
+
+        ''' <summary>
+        ''' Changes the top position of the specified shape
+        ''' </summary>
+        ''' <param name="shapeName">The name of the shape.</param>
+        ''' <param name="y">The new position of the shape top</param>
+        Public Shared Sub SetTop(shapeName As Primitive, y As Primitive)
+            GraphicsWindow.Invoke(
+                Sub()
+                    Dim shape As UIElement = Nothing
+                    If GraphicsWindow._objectsMap.TryGetValue(shapeName, shape) Then
+                        Dim x = Canvas.GetLeft(shape)
+                        _positionMap(shapeName) = New Point(x, y)
+                        shape.BeginAnimation(Canvas.LeftProperty, Nothing)
+                        shape.BeginAnimation(Canvas.TopProperty, Nothing)
+                        Canvas.SetTop(shape, y)
+                    End If
+                End Sub)
+        End Sub
 
         ''' <summary>
         ''' Gets the opacity of a shape.
@@ -508,12 +541,8 @@ Namespace Library
         ''' <summary>
         ''' Sets how opaque a shape should render.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape.
-        ''' </param>
-        ''' <param name="level">
-        ''' The opacity level ranging from 0 to 100.  0 is completely transparent and 100 is completely opaque.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape.</param>
+        ''' <param name="level">The opacity level ranging from 0 to 100.  0 is completely transparent and 100 is completely opaque.</param>
         Public Shared Sub SetOpacity(shapeName As Primitive, level As Primitive)
             Dim obj As UIElement = Nothing
             If GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
@@ -524,9 +553,7 @@ Namespace Library
         ''' <summary>
         ''' Hides an already added shape.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape.</param>
         Public Shared Sub HideShape(shapeName As Primitive)
             Dim obj As UIElement = Nothing
             If GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
@@ -537,9 +564,7 @@ Namespace Library
         ''' <summary>
         ''' Shows a previously hidden shape.
         ''' </summary>
-        ''' <param name="shapeName">
-        ''' The name of the shape.
-        ''' </param>
+        ''' <param name="shapeName">The name of the shape.</param>
         Public Shared Sub ShowShape(shapeName As Primitive)
             Dim obj As UIElement = Nothing
             If GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then

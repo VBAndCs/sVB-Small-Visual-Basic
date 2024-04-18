@@ -134,7 +134,7 @@ Namespace Microsoft.SmallVisualBasic
 
             tokenEnum.MoveNext()
             If EatSimpleIdentifier(tokenEnum, forStatement.Iterator) AndAlso
-                    EatToken(tokenEnum, TokenType.Equals, forStatement.EqualsToken) AndAlso
+                    EatToken(tokenEnum, TokenType.EqualsTo, forStatement.EqualsToken) AndAlso
                     EatExpression(tokenEnum, forStatement.InitialValue) AndAlso
                     EatToken(tokenEnum, TokenType.To, forStatement.ToToken) AndAlso
                     EatExpression(tokenEnum, forStatement.FinalValue) AndAlso
@@ -477,7 +477,7 @@ Namespace Microsoft.SmallVisualBasic
                 .LeftValue = expression
             }
 
-            If EatOptionalToken(tokenEnum, TokenType.Equals, assignStatement.EqualsToken) Then
+            If EatOptionalToken(tokenEnum, TokenType.EqualsTo, assignStatement.EqualsToken) Then
                 assignStatement.RightValue = BuildArithmeticExpression(tokenEnum)
 
                 If assignStatement.RightValue Is Nothing Then
@@ -577,27 +577,27 @@ Namespace Microsoft.SmallVisualBasic
             Select Case tokenEnum.Current.Type
                 Case TokenType.StringLiteral, TokenType.NumericLiteral, TokenType.DateLiteral, TokenType.True, TokenType.False
                     expression = New LiteralExpression(tokenEnum.Current)
-                    expression.Precedence = 9
+                    expression.Precedence = 10
                     tokenEnum.MoveNext()
 
                 Case TokenType.Nothing
                     expression = New NothingExpression(tokenEnum.Current)
-                    expression.Precedence = 9
+                    expression.Precedence = 10
                     tokenEnum.MoveNext()
 
                 Case TokenType.LeftParens
                     tokenEnum.MoveNext()
                     expression = BuildExpression(tokenEnum, includeLogical)
                     If expression Is Nothing Then Return Nothing
-                    expression.Precedence = 9
+                    expression.Precedence = 10
                     If Not EatToken(tokenEnum, TokenType.RightParens) Then Return Nothing
 
-                Case TokenType.LeftCurlyBracket
+                Case TokenType.LeftBrace
                     tokenEnum.MoveNext()
                     Dim closeTokenFound = False
                     Dim initExpr As New InitializerExpression(
-                        precedence:=9,
-                        arguments:=ParseCommaSeparatedList(tokenEnum, TokenType.RightCurlyBracket, closeTokenFound, Nothing, False)
+                        precedence:=10,
+                        arguments:=ParseCommaSeparatedList(tokenEnum, TokenType.RightBrace, closeTokenFound, Nothing, False)
                     )
 
                     If commaLine = -2 Then Return Nothing
@@ -620,7 +620,7 @@ Namespace Microsoft.SmallVisualBasic
                     expression = New NegativeExpression() With {
                         .Negation = tokenEnum.Current,
                         .Expression = expression2,
-                        .Precedence = 9
+                        .Precedence = 10
                     }
             End Select
 
@@ -706,7 +706,7 @@ Namespace Microsoft.SmallVisualBasic
                     Dim closeTokenFound = False
                     Dim methodCallExpression As New MethodCallExpression(
                         startToken:=current,
-                        precedence:=9,
+                        precedence:=10,
                         typeName:=current,
                         methodName:=variable,
                         arguments:=ParseCommaSeparatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
@@ -725,7 +725,7 @@ Namespace Microsoft.SmallVisualBasic
                 Return New PropertyExpression() With {
                     .StartToken = current,
                     .EndToken = variable,
-                    .Precedence = 9,
+                    .Precedence = 10,
                     .TypeName = current,
                     .PropertyName = variable,
                     .IsDynamic = (tokenType = TokenType.Lookup)
@@ -737,7 +737,7 @@ Namespace Microsoft.SmallVisualBasic
                     .StartToken = current,
                     .Identifier = current,
                     .EndToken = current,
-                    .Precedence = 9,
+                    .Precedence = 10,
                     .Subroutine = SubroutineStatement.Current
                 }
 
@@ -762,7 +762,7 @@ Namespace Microsoft.SmallVisualBasic
                     Dim arrayExpression As New ArrayExpression() With {
                         .StartToken = current,
                         .EndToken = tokenEnum.Current,
-                        .Precedence = 9,
+                        .Precedence = 10,
                         .LeftHand = leftHand,
                         .Indexer = indexerExpression
                     }
@@ -772,7 +772,7 @@ Namespace Microsoft.SmallVisualBasic
                 Return New ArrayExpression() With {
                     .StartToken = current,
                     .EndToken = tokenEnum.Current,
-                    .Precedence = 9,
+                    .Precedence = 10,
                     .LeftHand = leftHand,
                     .Indexer = indexerExpression
                 }
@@ -790,7 +790,7 @@ Namespace Microsoft.SmallVisualBasic
                 Dim closeTokenFound = False
                 Dim methodCallExpression As New MethodCallExpression(
                         startToken:=current,
-                        precedence:=9,
+                        precedence:=10,
                         typeName:=Token.Illegal,
                         methodName:=current,
                         arguments:=ParseCommaSeparatedList(tokenEnum, TokenType.RightParens, closeTokenFound, caller, False)
@@ -810,7 +810,7 @@ Namespace Microsoft.SmallVisualBasic
             Return New IdentifierExpression() With {
                 .StartToken = current,
                 .EndToken = current,
-                .Precedence = 9,
+                .Precedence = 10,
                 .Identifier = current,
                 .Subroutine = SubroutineStatement.Current
             }
@@ -872,6 +872,31 @@ Namespace Microsoft.SmallVisualBasic
             End If
         End Sub
 
+        Public Shared Function ParseCommaSeparatedList(Tokens As List(Of Token), startAt As Integer) As List(Of Expression)
+            If startAt >= Tokens.Count Then Return New List(Of Expression)
+
+            Dim tokenEnum = New TokenEnumerator(Tokens, startAt)
+            Dim parser As New Parser()
+            Dim closeTokenFound = False
+            Dim args = parser.ParseCommaSeparatedList(
+                tokenEnum,
+                TokenType.Stop, '  it willl be never found! This is used to parse arg list for the ? shortcut
+                closeTokenFound,
+                Nothing,
+                False
+            )
+
+            If args.Count = 1 Then
+                Dim last = Tokens.Count - 1
+                If Tokens(last).Type = TokenType.Comma OrElse
+                    Tokens(last).IsIllegal AndAlso Tokens(last - 1).Type = TokenType.Comma Then
+                    args.Add(Nothing) ' just increassing the args count
+                End If
+            End If
+            Return args
+        End Function
+
+
         Public Shared Function ParseArgumentList(
                           args As String,
                           lineNumber As Integer,
@@ -887,9 +912,9 @@ Namespace Microsoft.SmallVisualBasic
                 Case TokenType.LeftBracket
                     args = "[" + args
                     closeToken = TokenType.RightBracket
-                Case TokenType.LeftCurlyBracket
+                Case TokenType.LeftBrace
                     args = "{" + args
-                    closeToken = TokenType.RightCurlyBracket
+                    closeToken = TokenType.RightBrace
             End Select
 
             Dim tokens = LineScanner.GetTokenEnumerator(args, lineNumber, lines)
@@ -964,8 +989,18 @@ Namespace Microsoft.SmallVisualBasic
                             Return Nothing
                         End If
                     End If
+
                     AddError(tokenEnum.Current, ResourceHelper.GetString("ExpressionExpected"))
-                    Exit Do
+                    Select Case tokenEnum.Current.Type
+                        Case TokenType.Question, TokenType.HashQuestion
+                            tokenEnum.MoveNext()
+                            If tokenEnum.Current.Type = TokenType.Colon Then
+                                tokenEnum.MoveNext()
+                            End If
+                            expression = New LiteralExpression("?")
+                        Case Else
+                            Exit Do
+                    End Select
                 End If
 
                 items.Add(expression)
@@ -1004,7 +1039,7 @@ Namespace Microsoft.SmallVisualBasic
                             End If
                             closeTokenFound = True
 
-                        Case TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
+                        Case TokenType.RightBracket, TokenType.RightBrace, TokenType.RightParens
                             ' outer list is closed, and the inner list misses the closeToken
                         Case Else
                             TokenIsExpected(tokenEnum, TokenType.Comma)
@@ -1038,7 +1073,7 @@ Namespace Microsoft.SmallVisualBasic
             Select Case expectedToken
                 Case TokenType.RightBracket
                     expectedChar = "]"
-                Case TokenType.RightCurlyBracket
+                Case TokenType.RightBrace
                     expectedChar = "}"
                 Case TokenType.RightParens
                     expectedChar = ")"
@@ -1092,13 +1127,15 @@ Namespace Microsoft.SmallVisualBasic
 
         Friend Shared Function GetOperatorPriority(token As TokenType) As Integer
             Select Case token
-                Case TokenType.Division, TokenType.Multiplication
+                Case TokenType.Division, TokenType.Mod, TokenType.Multiplication
+                    Return 9
+                Case TokenType.Mod
                     Return 8
                 Case TokenType.Concatenation, TokenType.Addition, TokenType.Subtraction
                     Return 7
-                Case TokenType.LessThan, TokenType.LessThanEqualTo, TokenType.GreaterThan, TokenType.GreaterThanEqualTo
+                Case TokenType.LessThan, TokenType.LessThanOrEqualsTo, TokenType.GreaterThan, TokenType.GreaterThanOrEqualsTo
                     Return 6
-                Case TokenType.Equals, TokenType.NotEqualTo
+                Case TokenType.EqualsTo, TokenType.NotEqualsTo
                     Return 5
                 Case TokenType.And
                     Return 4
@@ -1316,6 +1353,7 @@ Namespace Microsoft.SmallVisualBasic
         Dim loweredIndex As Integer = -1
         Public DocPath As String
         Friend ParentSubroutine As SubroutineStatement
+        Friend EvaluationRunner As Engine.ProgramRunner
 
         Friend Function ReadNextLine() As TokenEnumerator
             If _rewindRequested Then
@@ -1493,63 +1531,6 @@ Namespace Microsoft.SmallVisualBasic
         Friend Sub AddError(token As Token, errorDescription As String)
             _Errors.Add(New [Error](token, errorDescription))
         End Sub
-
-        Public Shared Function EvaluateExpression(expression As Expression) As Primitive
-            Try
-                Dim literalExpression = TryCast(expression, LiteralExpression)
-
-                If literalExpression IsNot Nothing Then
-                    Return New Primitive(literalExpression.Literal.Text)
-                End If
-
-                Dim negativeExpression As NegativeExpression = TryCast(expression, NegativeExpression)
-
-                If negativeExpression IsNot Nothing Then
-                    Return -EvaluateExpression(negativeExpression.Expression)
-                End If
-
-                Dim binaryExpression As BinaryExpression = TryCast(expression, BinaryExpression)
-
-                If binaryExpression IsNot Nothing Then
-                    Dim primitive = EvaluateExpression(binaryExpression.LeftHandSide)
-                    Dim primitive2 = EvaluateExpression(binaryExpression.RightHandSide)
-
-                    Select Case binaryExpression.Operator.Type
-                        Case TokenType.Concatenation
-                            Return primitive & primitive2
-                        Case TokenType.Addition
-                            Return primitive + primitive2
-                        Case TokenType.Subtraction
-                            Return primitive - primitive2
-                        Case TokenType.Multiplication
-                            Return primitive * primitive2
-                        Case TokenType.Division
-                            Return primitive / primitive2
-                        Case TokenType.NotEqualTo
-                            Return primitive.NotEqualTo(primitive2)
-                        Case TokenType.Equals
-                            Return primitive.EqualTo(primitive2)
-                        Case TokenType.And
-                            Return Primitive.op_And(primitive, primitive2)
-                        Case TokenType.Or
-                            Return Primitive.op_Or(primitive, primitive2)
-                        Case TokenType.LessThan
-                            Return primitive.LessThan(primitive2)
-                        Case TokenType.LessThanEqualTo
-                            Return primitive.LessThanOrEqualTo(primitive2)
-                        Case TokenType.GreaterThan
-                            Return primitive.GreaterThan(primitive2)
-                        Case TokenType.GreaterThanEqualTo
-                            Return primitive.GreaterThanOrEqualTo(primitive2)
-                        Case TokenType.Dot, TokenType.Lookup, TokenType.LeftParens, TokenType.RightParens, TokenType.LeftBracket, TokenType.RightBracket
-                    End Select
-                End If
-
-            Catch
-            End Try
-
-            Return 0
-        End Function
 
         Friend Function EatToken(tokenEnum As TokenEnumerator, expectedToken As TokenType, <Out> ByRef token As Token) As Boolean
             If Not tokenEnum.IsEnd AndAlso tokenEnum.Current.Type = expectedToken Then

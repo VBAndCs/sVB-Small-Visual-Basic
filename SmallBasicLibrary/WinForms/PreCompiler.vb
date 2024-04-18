@@ -36,6 +36,7 @@ Namespace WinForms
             FillModuleMembers(GetType(ColorEx))
             FillModuleMembers(GetType(DateEx))
             FillModuleMembers(GetType(SoundEx))
+            FillModuleMembers(GetType(ShapesEx))
 
             deafaultControlEvents(NameOf(Form).ToLower()) = "OnShown"
             deafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
@@ -70,6 +71,9 @@ Namespace WinForms
                 Case VariableType.Sound
                     Return NameOf(SoundEx)
 
+                Case VariableType.Shape
+                    Return NameOf(ShapesEx)
+
                 Case VariableType.Any, VariableType.Boolean,
                          VariableType.Key, VariableType.DialogResult,
                          VariableType.ControlType
@@ -103,6 +107,9 @@ Namespace WinForms
 
                 Case NameOf(SoundEx)
                     Return NameOf(Sound)
+
+                Case NameOf(ShapesEx)
+                    Return NameOf(Shapes)
 
                 Case Else
                     Return type.Name
@@ -261,6 +268,7 @@ Namespace WinForms
             defaultProperties(NameOf(Mouse).ToLower()) = "x"
             defaultProperties(NameOf(Sound).ToLower()) = "load"
             defaultProperties(NameOf(SoundEx).ToLower()) = "play"
+            defaultProperties(NameOf(ShapesEx).ToLower()) = "Move"
             defaultProperties("unittest") = "assertequal"
             defaultProperties("_m") = "me"
 

@@ -7,7 +7,7 @@ Timer.Tick = OnTick
 Timer.Pause()
 BoingSound = Sound.Load("boing.wav")
 
-
+' ---------------------------------------------------------
 Sub TimerButton_OnClick()
    If TimerButton.Text = "Start" Then
       TimerButton.Text = "Stop"
@@ -20,6 +20,7 @@ Sub TimerButton_OnClick()
    EndIf
 EndSub
 
+' ---------------------------------------------------------
 Sub HideBalls()
    ForEach control1 In Me.Controls
       If control1.TypeName = ControlTypes.Label Then
@@ -28,24 +29,24 @@ Sub HideBalls()
    Next
 EndSub
 
-
+' ---------------------------------------------------------
 Sub InitializeBalls()
    ForEach ballLabel In Me.Controls
       If ballLabel.TypeName = ControlTypes.Label Then
-         ballLabel.Left = Math.GetRandomNumber(Me.Width - BallW) -1
-         ballLabel.Top = Math.GetRandomNumber(Me.Width - BallW) -1
+         ballLabel.Left = Math.GetRandomNumber(Me.Width - BallW) - 1
+         ballLabel.Top = Math.GetRandomNumber(Me.Width - BallW) - 1
          ballLabel.Width = BallW
          ballLabel.Height = BallH
          ballLabel.Tag = {
-            Math.GetRandomNumber(30) -10,
-            Math.GetRandomNumber(40) -15
+            Math.GetRandomNumber(30) - 10,  ' x speed
+            Math.GetRandomNumber(40) - 15   ' y speed
          }
          ballLabel.Visible = True
       EndIf
    Next
 EndSub
 
-
+' ---------------------------------------------------------
 Sub OnTick
    ForEach control1 In Me.Controls
       If control1.TypeName = ControlTypes.Label Then
@@ -54,6 +55,7 @@ Sub OnTick
    Next
 EndSub
 
+' ---------------------------------------------------------
 Sub MoveBall(ballLabel)
    ballSpeed = ballLabel.Tag
    ballLabel.Left = ballLabel.Left + ballSpeed[1]
@@ -62,25 +64,25 @@ Sub MoveBall(ballLabel)
    If ballLabel.Top + BallH >= Me.Height Then
       ballLabel.Top = Me.Height - BallH
       ballLabel.Tag = {ballSpeed[1], -ballSpeed[2]}
-      'Sound.PlayMusic("OC")
+      ' Sound.PlayMusic("OC")
       BoingSound.Play()
       
    ElseIf ballLabel.Top <= 0 Then
       ballLabel.Top = 0
       ballLabel.Tag = {ballSpeed[1], -ballSpeed[2]}
-      'Sound.PlayMusic("OD")
+      ' Sound.PlayMusic("OD")
       BoingSound.Play()
       
    ElseIf ballLabel.Left <= 0 Then
       ballLabel.Left = 0
       ballLabel.Tag = {-ballSpeed[1], ballSpeed[2]}
-      'Sound.PlayMusic("OE")
+      ' Sound.PlayMusic("OE")
       BoingSound.Play()
       
    ElseIf ballLabel.Left + BallW >= Me.Width Then
       ballLabel.Left = Me.Width - BallW
       ballLabel.Tag = {-ballSpeed[1], ballSpeed[2]}
-      'Sound.PlayMusic("OF")
+      ' Sound.PlayMusic("OF")
       BoingSound.Play()
    EndIf
 EndSub

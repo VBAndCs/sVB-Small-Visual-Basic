@@ -213,7 +213,7 @@
         End If
     End Sub
 
-    Private Shared Sub ClearShortcutandCkecked(item As ItemsControl)
+    Private Shared Sub ClearShortcutAndCkecked(item As ItemsControl)
         Dim m = TryCast(item, MenuItem)
         If m IsNot Nothing Then
             m.InputGestureText = ""
@@ -246,18 +246,20 @@
                 e.Handled = True
 
             Case Key.Up
-                If cancelUpAndDown Then Return
                 If e.KeyboardDevice.Modifiers = ModifierKeys.Control Then
                     DecreaseIndex()
+                ElseIf cancelUpAndDown Then
+                    Return
                 Else
                     SelectPrevItem()
                 End If
                 e.Handled = True
 
             Case Key.Down
-                If cancelUpAndDown Then Return
                 If e.KeyboardDevice.Modifiers = ModifierKeys.Control Then
                     IncreaseIndex()
+                ElseIf cancelUpAndDown Then
+                    Return
                 ElseIf _CurrrentMenuItem.Parent Is MainMenu Then
                     SelectChild()
                 Else
@@ -266,9 +268,10 @@
                 e.Handled = True
 
             Case Key.Left
-                If cancelLeftAndRight Then Return
                 If e.KeyboardDevice.Modifiers = ModifierKeys.Control Then
                     DecreaseDepth()
+                ElseIf cancelLeftAndRight Then
+                    Return
                 ElseIf _CurrrentMenuItem.Parent Is MainMenu Then
                     SelectPrevItem()
                 Else
@@ -277,9 +280,10 @@
                 e.Handled = True
 
             Case Key.Right
-                If cancelLeftAndRight Then Return
                 If e.KeyboardDevice.Modifiers = ModifierKeys.Control Then
                     IncreaseDepth()
+                ElseIf cancelLeftAndRight Then
+                    Return
                 ElseIf _CurrrentMenuItem.Parent Is MainMenu Then
                     SelectNextItem()
                 Else

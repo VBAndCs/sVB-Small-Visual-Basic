@@ -6,6 +6,19 @@ Namespace Microsoft.SmallVisualBasic.Shell
             DefaultStyleKeyProperty.OverrideMetadata(GetType(Ribbon), New FrameworkPropertyMetadata(GetType(Ribbon)))
         End Sub
 
+        Public Shared Function GetVisible(ByVal element As DependencyObject) As Visibility
+            Return element.GetValue(VisibleProperty)
+        End Function
+
+        Public Shared Sub SetVisible(ByVal element As DependencyObject, ByVal value As Visibility)
+            element.SetValue(VisibleProperty, value)
+        End Sub
+
+        Public Shared ReadOnly VisibleProperty As _
+                               DependencyProperty = DependencyProperty.RegisterAttached("Visible",
+                               GetType(Visibility), GetType(Ribbon),
+                               New PropertyMetadata(Visibility.Visible))
+
 
         Public Shared ReadOnly ParameterProperty As DependencyProperty = DependencyProperty.RegisterAttached("Parameter", GetType(Object), GetType(Ribbon))
 

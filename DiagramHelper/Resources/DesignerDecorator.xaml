@@ -52,7 +52,7 @@
                                         <MenuItem Name="AllowTransparencyMenuItem" Header="Allow Transoarency" InputGestureText="Ctrl+T" IsCheckable="True" Checked="AllowTransparencyMenuItem_Checked" Unchecked="AllowTransparencyMenuItem_Checked"/>
                                         <Separator/>
                                         <MenuItem Header="Menu Designer" Click="MenuDesignerMenuItem_Click"/>
-                                        <MenuItem Header="Properties" Click="PropertiesMenuItem_Click"/>
+                                        <MenuItem Header="Properties" InputGestureText="F4" Click="PropertiesMenuItem_Click"/>
                                     </ContextMenu>
                                 </Border.ContextMenu>
 

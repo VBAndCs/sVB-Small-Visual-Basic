@@ -193,10 +193,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     filteredCompletionItems.Clear()
                     Return
 
-                ElseIf bag.IsBackSpace OrElse items(0).Display.ToLower() = inputText Then
+                ElseIf bag.IsBackSpace Then
                     filteredCompletionItems.Clear()
                     _Adornment?.Dismiss(True)
                     Return
+                    'ElseIf items(0).Display.ToLower() = inputText Then
                 End If
             End If
             ' Completion list must contain 7 items at least
@@ -299,7 +300,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             ElseIf token.ParseType = ParseType.Operator Then
                 Select Case token.Type
-                    Case TokenType.Or, TokenType.And
+                    Case TokenType.Or, TokenType.And, TokenType.Mod
 
                     Case Else
                         Return ""

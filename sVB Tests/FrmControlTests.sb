@@ -185,8 +185,8 @@ Function Test_FontSize()
    
    Return UnitTest.AssertEqual(
       results,
-      {fontSize, fontSize, 0.5, 1, 15, 20.5, 100, 150},
-      "Control.FontName"
+      {1, 1, 1, 1, 15, 20.5, 100, 150},
+      "Control.FontSize"
    )
 EndFunction
 
@@ -520,7 +520,7 @@ EndFunction
 
 '------------------------------------------------
 Function Test_Tag()
-   Me.Tag = me
+   Me.Tag = Me
    results = {}
    allControls = Me.Controls
    
@@ -531,7 +531,7 @@ Function Test_Tag()
    
    Return UnitTest.AssertEqual(
       {Me.Tag, results},
-      {me, allControls},
+      {Me, allControls},
       "Control.Tag"
    )
 EndFunction
@@ -539,7 +539,7 @@ EndFunction
 
 '------------------------------------------------
 Function Test_ToolTip()
-   Me.ToolTip = me
+   Me.ToolTip = Me
    results = {}
    allControls = Me.Controls
    
@@ -554,7 +554,7 @@ Function Test_ToolTip()
    
    Return UnitTest.AssertEqual(
       {Me.ToolTip, results},
-      {me, allControls},
+      {Me, allControls},
       "Control.ToolTip"
    )
 EndFunction

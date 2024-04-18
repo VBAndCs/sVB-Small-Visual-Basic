@@ -35,7 +35,7 @@ Namespace Library
         Friend Shared _windowCreated As Boolean = False
         Friend Shared _window As Window
         Friend Shared _pen As Media.Pen
-        Friend Shared _fillBrush As SolidColorBrush = Media.Brushes.SlateBlue
+        Friend Shared _fillBrush As Media.Brush = Media.Brushes.SlateBlue
         Friend Shared _fontFamily As Media.FontFamily
         Friend Shared _fontSize As Double = 12.0
         Friend Shared _fontStyle As System.Windows.FontStyle = FontStyles.Normal
@@ -63,12 +63,12 @@ Namespace Library
         Public Shared Property Topmost As Primitive
             Get
                 VerifyAccess()
-                BeginInvoke(Sub() Topmost = _window.Topmost)
+                Invoke(Sub() Topmost = _window.Topmost)
             End Get
 
             Set(value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub() _window.Topmost = CBool(value))
+                Invoke(Sub() _window.Topmost = CBool(value))
             End Set
         End Property
 
@@ -85,14 +85,37 @@ Namespace Library
             Set(Value As Primitive)
                 _backgroundColor = Value
                 VerifyAccess(True)
-                BeginInvoke(
+                Invoke(
                     Sub()
                         _window.Background = WinForms.Color.GetBrush(Value)
                     End Sub)
             End Set
         End Property
 
+        ''' <summary>
+        ''' Fills the Graphics Window background with a gradient brush that starts with its background color and ends with the given color.
+        ''' </summary>
+        ''' <param name="endColor">The end color of the gradient brush</param>
+        Public Shared Sub FillGradiantBackground(endColor As Primitive)
+            VerifyAccess()
+            Invoke(
+                    Sub()
+                        If WinForms.Color.IsNone(endColor) Then
+                            ' Use a solid brush
+                            _window.Background = WinForms.Color.GetBrush(_backgroundColor)
+                        Else
+                            _window.Background = New System.Windows.Media.LinearGradientBrush(
+                                 WinForms.Color.FromString(_backgroundColor),
+                                 WinForms.Color.FromString(endColor),
+                                 New System.Windows.Point(0, 0),
+                                 New System.Windows.Point(1, 0)
+                            )
+                        End If
+                    End Sub)
+        End Sub
+
         Private Shared _brushColor As Primitive = WinForms.Colors.CornflowerBlue
+        Private Shared _gradientEndColor As Primitive = WinForms.Colors.None
 
         ''' <summary>
         ''' Gets or sets the brush color to be used to fill shapes drawn on the Graphics Window.
@@ -107,13 +130,44 @@ Namespace Library
             Set(Value As Primitive)
                 VerifyAccess()
                 _brushColor = Value
-                BeginInvoke(
-                    Sub()
-                        _fillBrush = WinForms.Color.GetBrush(Value)
-                        _fillBrush?.Freeze()
-                    End Sub)
+                CreateBrush()
             End Set
         End Property
+
+        ''' <summary>
+        ''' Gets Or sets the end color for the gradient brush. Use the BrushColor property  to set the start color of this gradient brush.
+        ''' The Default value Is Colors.None, which means that the BrushColor will be used alone To create a solid brush.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Color)>
+        Public Shared Property GradientEndColor As Primitive
+            Get
+                VerifyAccess()
+                Return _gradientEndColor
+            End Get
+
+            Set(Value As Primitive)
+                VerifyAccess()
+                _gradientEndColor = Value
+                CreateBrush()
+            End Set
+        End Property
+
+        Private Shared Sub CreateBrush()
+            Invoke(
+                Sub()
+                    If WinForms.Color.IsNone(_gradientEndColor) Then
+                        _fillBrush = WinForms.Color.GetBrush(_brushColor)
+                    Else
+                        _fillBrush = New System.Windows.Media.LinearGradientBrush(
+                             WinForms.Color.FromString(_brushColor),
+                             WinForms.Color.FromString(_gradientEndColor),
+                             New System.Windows.Point(0, 0),
+                             New System.Windows.Point(1, 0)
+                        )
+                    End If
+                    _fillBrush?.Freeze()
+                End Sub)
+        End Sub
 
         ''' <summary>
         ''' Specifies whether or not the Graphics Window can be resized by the user.
@@ -130,7 +184,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(
+                Invoke(
                     Sub()
                         If CBool(Value) Then
                             _window.ResizeMode = ResizeMode.CanResize
@@ -156,11 +210,7 @@ Namespace Library
             Set(Value As Primitive)
                 VerifyAccess()
                 _penWidth = Value
-                BeginInvoke(
-                    Sub()
-                        _pen = New Media.Pen(_pen.Brush, Value)
-                        _pen.Freeze()
-                    End Sub)
+                CreatePen()
             End Set
         End Property
 
@@ -179,17 +229,21 @@ Namespace Library
             Set(Value As Primitive)
                 VerifyAccess()
                 _penColor = Value
-                BeginInvoke(
-                    Sub()
-                        If WinForms.Color.IsNone(Value) Then
-                            _pen = Nothing
-                        Else
-                            _pen = New Media.Pen(WinForms.Color.GetBrush(Value), _penWidth)
-                            _pen.Freeze()
-                        End If
-                    End Sub)
+                CreatePen()
             End Set
         End Property
+
+        Private Shared Sub CreatePen()
+            Invoke(
+                Sub()
+                    If WinForms.Color.IsNone(_penColor) Then
+                        _pen = Nothing
+                    Else
+                        _pen = New Media.Pen(WinForms.Color.GetBrush(_penColor), _penWidth)
+                        _pen.Freeze()
+                    End If
+                End Sub)
+        End Sub
 
         ''' <summary>
         ''' Gets or sets the Font Name to be used when drawing text on the Graphics Window.
@@ -204,9 +258,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                BeginInvoke(Sub()
-                                _fontFamily = New Media.FontFamily(Value)
-                            End Sub)
+                Invoke(Sub() _fontFamily = New Media.FontFamily(Value))
             End Set
         End Property
 
@@ -220,7 +272,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                BeginInvoke(Sub() _fontSize = Value)
+                Invoke(Sub() _fontSize = Value)
             End Set
         End Property
 
@@ -234,7 +286,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                BeginInvoke(
+                Invoke(
                     Sub()
                         If CBool(Value) Then
                             _fontWeight = FontWeights.Bold
@@ -255,7 +307,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                BeginInvoke(
+                Invoke(
                     Sub()
                         If CBool(Value) Then
                             _fontStyle = FontStyles.Italic
@@ -281,7 +333,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub() _window.Title = Value)
+                Invoke(Sub() _window.Title = Value)
             End Set
         End Property
 
@@ -300,7 +352,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(
+                Invoke(
                     Sub()
                         _window.WindowState = WindowState.Normal
                         _window.Height = Value + (_window.ActualHeight - _mainCanvas.ActualHeight)
@@ -323,7 +375,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(
+                Invoke(
                     Sub()
                         _window.WindowState = WindowState.Normal
                         _window.Width = Value + (_window.ActualWidth - _mainCanvas.ActualWidth)
@@ -346,7 +398,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub() _window.Left = Value)
+                Invoke(Sub() _window.Left = Value)
             End Set
         End Property
 
@@ -365,7 +417,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 VerifyAccess()
-                BeginInvoke(Sub() _window.Top = Value)
+                Invoke(Sub() _window.Top = Value)
             End Set
         End Property
 
@@ -390,7 +442,7 @@ Namespace Library
             Set(value As Primitive)
                 VerifyAccess()
                 _fullScreen = value
-                BeginInvoke(
+                Invoke(
                     Sub()
                         If CBool(value) Then
                             windPosX = _window.Left
@@ -422,9 +474,10 @@ Namespace Library
 
 
         ''' <summary>
-        ''' Gets the last key that was pressed or released.
+        ''' Gets the last key name that was pressed or released. 
+        ''' You cant compare this property to the values of th Keys enum, which is valid only for the Event.LastKey and Keyboard.LastKey properties.
         ''' </summary>
-        <WinForms.ReturnValueType(VariableType.Key)>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property LastKey As Primitive
             Get
                 Return _lastKey.ToString()
@@ -588,7 +641,7 @@ Namespace Library
         Public Shared Sub Show()
             If Not _windowCreated Then
                 CreateWindow()
-                BeginInvoke(Sub() _window.WindowState = WindowState.Maximized)
+                Invoke(Sub() _window.WindowState = WindowState.Maximized)
             End If
             _isHidden = False
             Invoke(
@@ -622,7 +675,7 @@ Namespace Library
         ''' <param name="height">The height of the rectangle.</param>
         Public Shared Sub DrawRectangle(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc As DrawingContext = _mainDrawing.Append()
                     dc.DrawRectangle(Nothing, _pen, New System.Windows.Rect(CInt(x), CInt(y), width, height))
@@ -640,7 +693,7 @@ Namespace Library
         ''' <param name="height">The height of the rectangle.</param>
         Public Shared Sub FillRectangle(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
                     dc.DrawRectangle(_fillBrush, Nothing, New System.Windows.Rect(x, y, width, height))
@@ -658,7 +711,7 @@ Namespace Library
         ''' <param name="height">The height of the ellipse.</param>
         Public Shared Sub DrawEllipse(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
                     Dim w = CDbl(width) / 2
@@ -674,6 +727,106 @@ Namespace Library
                 End Sub)
         End Sub
 
+
+        ''' <summary>
+        ''' Draws the polygon that is represented by the given points array with the pen of the graphics window.
+        ''' </summary>
+        ''' <param name="xOffset">The horizontal offest to add to the x-cordinate of each point of the polygon.</param>
+        ''' <param name="yOffset">The vertical offest to add to the y-cordinate of each point of the polygon.</param> 
+        ''' <param name="xScale">The factor to multiply the polygon width by.</param>
+        ''' <param name="yScale">The factor to multiply the polygon height by.</param>
+        ''' <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
+        Public Shared Sub DrawPolygon(
+                   xOffset As Primitive,
+                   yOffset As Primitive,
+                   xScale As Primitive,
+                   yScale As Primitive,
+                   pointsArr As Primitive)
+
+            VerifyAccess() ' must be here to create the pen
+            CreatePolygon(xOffset, yOffset, xScale, yScale, pointsArr, _pen, Nothing)
+        End Sub
+
+        ''' <summary>
+        ''' Fills the polygon that is represented by the given points array with the brush of the graphics window.
+        ''' </summary>
+        ''' <param name="xOffset">The horizontal offest to add to the x-cordinate of each point of the polygon.</param>
+        ''' <param name="yOffset">The vertical offest to add to the y-cordinate of each point of the polygon.</param> 
+        ''' <param name="xScale">The factor to multiply the polygon width by.</param>
+        ''' <param name="yScale">The factor to multiply the polygon height by.</param>
+        ''' <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
+        Public Shared Sub FillPolygon(
+                   xOffset As Primitive,
+                   yOffset As Primitive,
+                   xScale As Primitive,
+                   yScale As Primitive,
+                   pointsArr As Primitive)
+
+            VerifyAccess() ' must be here to create the brush
+            CreatePolygon(xOffset, yOffset, xScale, yScale, pointsArr, Nothing, _fillBrush)
+        End Sub
+
+        Private Shared Sub CreatePolygon(
+                   xOffset As Primitive,
+                   yOffset As Primitive,
+                   xScale As Primitive,
+                   yScale As Primitive,
+                   pointsArr As Primitive,
+                   pen As Media.Pen,
+                   brush As Media.Brush)
+
+            GraphicsWindow.Invoke(
+                Sub()
+                    If pointsArr.IsEmpty OrElse Not pointsArr.IsArray Then Return
+
+                    Dim dc = _mainDrawing.Append()
+                    Dim Points As New PointCollection()
+                    Dim x1, x2, y1, y2 As Double
+
+                    For Each point In pointsArr._arrayMap.Values
+                        Dim x As Double = point.Items(1)
+                        Dim y As Double = point.Items(2)
+                        Points.Add(New System.Windows.Point(x, y))
+
+                        If x < x1 Then
+                            x1 = x
+                        ElseIf x > x2 Then
+                            x2 = x
+                        End If
+
+                        If y < y1 Then
+                            y1 = y
+                        ElseIf y > y2 Then
+                            y2 = y
+                        End If
+                    Next
+
+                    Dim polygon As New System.Windows.Shapes.Polygon With {
+                        .Points = Points,
+                        .Fill = brush
+                    }
+
+                    If pen IsNot Nothing Then
+                        polygon.Stroke = pen.Brush
+                        polygon.StrokeThickness = pen.Thickness
+                    End If
+
+                    dc.DrawRectangle(
+                        New VisualBrush(polygon), Nothing,
+                        New System.Windows.Rect(
+                                x1 + xOffset,
+                                y1 + yOffset,
+                                (x2 - x1) * xScale,
+                                (y2 - y1) * yScale
+                        )
+                    )
+
+                    dc.Close()
+                    AddRasterizeOperationToQueue()
+                End Sub)
+        End Sub
+
+
         ''' <summary>
         ''' Fills an ellipse on the screen using the selected Brush.
         ''' </summary>
@@ -683,20 +836,20 @@ Namespace Library
         ''' <param name="height">The height of the ellipse.</param>
         Public Shared Sub FillEllipse(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
             VerifyAccess()
-            BeginInvoke(Sub()
-                            Dim drawingContext = _mainDrawing.Append()
-                            Dim w = CDbl(width) / 2
-                            Dim h = CDbl(height) / 2
-                            drawingContext.DrawEllipse(
+            Invoke(Sub()
+                       Dim drawingContext = _mainDrawing.Append()
+                       Dim w = CDbl(width) / 2
+                       Dim h = CDbl(height) / 2
+                       drawingContext.DrawEllipse(
                                 _fillBrush,
                                 Nothing,
                                 New System.Windows.Point(CDbl(x) + w, CDbl(y) + h),
                                 w,
                                 h
                             )
-                            drawingContext.Close()
-                            AddRasterizeOperationToQueue()
-                        End Sub)
+                       drawingContext.Close()
+                       AddRasterizeOperationToQueue()
+                   End Sub)
         End Sub
 
         ''' <summary>
@@ -714,7 +867,7 @@ Namespace Library
                          x3 As Primitive, y3 As Primitive)
 
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
                     Dim figure As New PathFigure With {
@@ -726,10 +879,10 @@ Namespace Library
                             }
                     }
                     Dim figures As New PathFigureCollection From {figure}
-                    Dim pg As New PathGeometry
-                    pg.Figures = figures
-                    pg.Freeze()
-                    dc.DrawGeometry(Nothing, _pen, pg)
+                    Dim triangle As New PathGeometry
+                    triangle.Figures = figures
+                    triangle.Freeze()
+                    dc.DrawGeometry(Nothing, _pen, triangle)
                     dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
@@ -746,7 +899,7 @@ Namespace Library
         ''' <param name="y3">The y co-ordinate of the third point.</param>
         Public Shared Sub FillTriangle(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive, x3 As Primitive, y3 As Primitive)
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc As DrawingContext = _mainDrawing.Append()
                     Dim figure As New PathFigure With {
@@ -758,10 +911,10 @@ Namespace Library
                             }
                     }
                     Dim figures As New PathFigureCollection From {figure}
-                    Dim pathGeometry1 As New PathGeometry
-                    pathGeometry1.Figures = figures
-                    pathGeometry1.Freeze()
-                    dc.DrawGeometry(_fillBrush, Nothing, pathGeometry1)
+                    Dim triangle As New PathGeometry
+                    triangle.Figures = figures
+                    triangle.Freeze()
+                    dc.DrawGeometry(_fillBrush, Nothing, triangle)
                     dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
@@ -786,7 +939,7 @@ Namespace Library
                    )
 
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
                     Dim figure As New PathFigure With {
@@ -827,7 +980,7 @@ Namespace Library
                    )
 
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
                     Dim figure As New PathFigure With {
@@ -876,7 +1029,7 @@ Namespace Library
                        isClockwise As Primitive
                    )
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
                     Dim figure As New PathFigure With {
@@ -912,7 +1065,7 @@ Namespace Library
         ''' <param name="y2">The y co-ordinate of the second point.</param>
         Public Shared Sub DrawLine(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive)
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc As DrawingContext = _mainDrawing.Append()
                     dc.DrawLine(
@@ -934,7 +1087,7 @@ Namespace Library
         Public Shared Sub DrawText(x As Primitive, y As Primitive, text As Primitive)
             If Not text.IsEmpty Then
                 VerifyAccess()
-                BeginInvoke(
+                Invoke(
                     Sub()
                         Dim dc = _mainDrawing.Append()
                         Dim formattedText1 As New FormattedText(
@@ -962,7 +1115,7 @@ Namespace Library
         Public Shared Sub DrawBoundText(x As Primitive, y As Primitive, width As Primitive, text As Primitive)
             If Not text.IsEmpty Then
                 VerifyAccess()
-                BeginInvoke(
+                Invoke(
                     Sub()
                         Dim dc = _mainDrawing.Append()
                         Dim fontTypeFace = New Typeface(
@@ -1007,7 +1160,7 @@ Namespace Library
             VerifyAccess()
             Dim image1 As BitmapSource = ImageList.GetBitmap(imageName)
             If image1 IsNot Nothing Then
-                BeginInvoke(
+                Invoke(
                     Sub()
                         Dim dc As DrawingContext = _mainDrawing.Append()
                         dc.DrawImage(image1, New System.Windows.Rect(x, y, width, height))
@@ -1029,7 +1182,7 @@ Namespace Library
             VerifyAccess()
             Dim image1 = ImageList.GetBitmap(imageName)
             If image1 IsNot Nothing Then
-                BeginInvoke(
+                Invoke(
                     Sub()
                         Dim dc As DrawingContext = _mainDrawing.Append()
                         dc.DrawImage(image1, New System.Windows.Rect(x, y, image1.PixelWidth, image1.PixelHeight))
@@ -1047,7 +1200,7 @@ Namespace Library
         ''' <param name="color">The color of the pixel to set.</param>
         Public Shared Sub SetPixel(x As Primitive, y As Primitive, color As Primitive)
             VerifyAccess()
-            BeginInvoke(
+            Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
                     dc.DrawRectangle(New SolidColorBrush(GetColorFromString(color)), Nothing, New System.Windows.Rect(x, y, 1.0, 1.0))
@@ -1127,12 +1280,14 @@ Namespace Library
 
         ''' <summary>
         ''' Displays a message box to the user.
+        ''' Use MsgBox as a shorcut name to show the message box. Ex:
+        ''' MsgBox "Hello!"
         ''' </summary>
-        ''' <param name="text">The text to be displayed on the message box.</param>
+        ''' <param name="message">The text to be displayed on the message box.</param>
         ''' <param name="title">The title for the message box.</param>
-        Public Shared Sub ShowMessage(text As Primitive, title As Primitive)
+        Public Shared Sub ShowMessage(message As Primitive, title As Primitive)
             VerifyAccess()
-            Invoke(Sub() MessageBox.Show(text, title))
+            Invoke(Sub() MessageBox.Show(message, title))
         End Sub
 
         ''' <summary>
@@ -1227,19 +1382,19 @@ Namespace Library
                     If e.Key = Key.F11 Then
                         FullScreen = Not CBool(FullScreen)
                     End If
-                    BeginInvoke(Sub() RaiseEvent KeyDown())
+                    Invoke(Sub() RaiseEvent KeyDown())
                 End Sub
 
             AddHandler _window.TextInput,
                 Sub(sender As Object, e As TextCompositionEventArgs)
                     _lastText = e.Text
-                    BeginInvoke(Sub() RaiseEvent TextInput())
+                    Invoke(Sub() RaiseEvent TextInput())
                 End Sub
 
             AddHandler _window.KeyUp,
                 Sub(sender As Object, e As KeyEventArgs)
                     _lastKey = e.Key
-                    BeginInvoke(Sub() RaiseEvent KeyUp())
+                    Invoke(Sub() RaiseEvent KeyUp())
                 End Sub
 
         End Sub
@@ -1308,7 +1463,7 @@ Namespace Library
         Friend Shared Sub VerifyAccess(Optional keepValue As Boolean = False)
             If Not _windowCreated Then
                 CreateWindow(keepValue)
-                BeginInvoke(Sub() _window.WindowState = WindowState.Maximized)
+                Invoke(Sub() _window.WindowState = WindowState.Maximized)
             End If
         End Sub
 
@@ -1421,5 +1576,7 @@ Namespace Library
             VerifyAccess()
             Invoke(Sub() _window.Cursor = cursor1)
         End Sub
+
+
     End Class
 End Namespace

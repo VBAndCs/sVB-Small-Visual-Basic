@@ -26,7 +26,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Gets or sets the interval (in milliseconds) specifying how often the timer should raise the Tick event.  
-        ''' Setting this property will start the timer and tick events will be raised.
+        ''' Setting this property will start or resume the timer and tick events will be raised.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
@@ -47,7 +47,8 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim t = GetTimer(timerName)
-                        t.Interval = TimeSpan.FromMilliseconds(value)
+                        Dim v = System.Math.Max(0, value)
+                        t.Interval = TimeSpan.FromMilliseconds(v)
                         t.Start()
                     Catch ex As Exception
                         Control.ReportPropertyError(timerName, "Interval", value, ex)
@@ -71,6 +72,22 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
+        ''' Returns false if the timer is paused, or True otherwise.
+        ''' </summary>
+        <ExProperty>
+        Public Shared Function GetIsEnabled(timerName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetIsEnabled = GetTimer(timerName).IsEnabled
+                    Catch ex As Exception
+                        Control.ReportSubError(timerName, "IsEnabled", ex)
+                    End Try
+                End Sub)
+        End Function
+
+
+        ''' <summary>
         ''' Resumes the timer from a paused state.  Tick events will now be raised.
         ''' </summary>
         <ExMethod>
@@ -78,7 +95,8 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetTimer(timerName).Start()
+                        Dim t = GetTimer(timerName)
+                        If Not t.IsEnabled Then t.Start()
                     Catch ex As Exception
                         Control.ReportSubError(timerName, "Pause", ex)
                     End Try

@@ -1,0 +1,4 @@
+﻿<Line xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:d="clr-namespace:DiagramHelper;assembly=DiagramHelper"
+d:Designer.FrameWidth="50" d:Designer.FrameHeight="50"
+Stretch="Fill" X1="0" Y1="0" X2="20" Y2="20" Stroke="Black" StrokeThickness="2"/>

@@ -140,6 +140,12 @@ Namespace Library
 
                     Case Else
                         _stringValue = If(_stringValue <> "", _stringValue, _decimalValue.Value.ToString())
+                        If _stringValue.Contains(".") Then
+                            _stringValue = _stringValue.TrimEnd("0"c)
+                            If _stringValue.EndsWith(".") Then
+                                _stringValue = _stringValue.TrimEnd("."c)
+                            End If
+                        End If
                 End Select
 
             ElseIf _arrayMap IsNot Nothing AndAlso _arrayMap.Count > 0 Then
@@ -366,6 +372,9 @@ Namespace Library
 
         Public Function Divide(divisor As Primitive) As Primitive
             Return New Primitive(AsDecimal() / divisor.AsDecimal())
+        End Function
+        Public Function Remainder(divisor As Primitive) As Primitive
+            Return New Primitive(Decimal.Remainder(AsDecimal(), divisor.AsDecimal()))
         End Function
 
         Public ReadOnly Property IsTimeSpan As Boolean
@@ -659,6 +668,10 @@ Namespace Library
 
         Public Shared Operator /(primitive1 As Primitive, primitive2 As Primitive) As Primitive
             Return primitive1.Divide(primitive2)
+        End Operator
+
+        Public Shared Operator Mod(primitive1 As Primitive, primitive2 As Primitive) As Primitive
+            Return primitive1.Remainder(primitive2)
         End Operator
 
         Public Shared Operator -(primitive1 As Primitive) As Primitive

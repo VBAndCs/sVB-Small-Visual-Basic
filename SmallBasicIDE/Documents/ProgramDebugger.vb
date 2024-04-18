@@ -75,14 +75,15 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End Get
         End Property
 
+        Dim isEvaluating As Boolean
         Friend Function Evaluate(item As Completion.CompletionItem) As Library.Primitive?
-            If ProgramEngine.Evaluating Then Return Nothing
+            If isEvaluating Then Return Nothing
 
             Dim doc = Helper.MainWindow.ActiveDocument
-            Dim runner = _ProgramEngine.GetRunner(doc.File)
+            Dim runner = _ProgramEngine.GetEvaluationRunner(doc.File)
             If runner Is Nothing Then Return Nothing
 
-            ProgramEngine.Evaluating = True
+            isEvaluating = True
             Dim result? As Library.Primitive = Nothing
 
             If item.ObjectName Is Nothing OrElse
@@ -129,7 +130,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     If name Is Nothing Then
                         Dim subName = doc.GetCurrentSubName()
                         If subName = "" Then
-                            ProgramEngine.Evaluating = False
+                            isEvaluating = False
                             Return Nothing
                         End If
 
@@ -148,7 +149,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 End If
             End If
 
-            ProgramEngine.Evaluating = False
+            isEvaluating = False
             Return result
         End Function
 
@@ -164,7 +165,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             If IsActive Then _ProgramEngine.Pause()
         End Sub
 
-        Public Sub [Stop]()
+        Public Sub [End]()
             If IsActive Then Library.Program.End()
         End Sub
 
@@ -175,6 +176,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Dim m = Helper.MainWindow
                 m.tabCode.IsSelected = True
                 m.tabDesigner.IsEnabled = False
+                m.DisplayDebugCommands(True)
                 m.Dispatcher.BeginInvoke(
                     DispatcherPriority.Background,
                     Sub()
@@ -268,6 +270,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                         doc.ExecutionMarker = marker
                     End If
                 End Sub)
+
         End Sub
 
         Public Sub ActivateIDE()
@@ -328,13 +331,13 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Public Function EvaluateExpression(ByRef text As String) As Library.Primitive?
             If Not IsActive OrElse text.Trim() = "" Then Return Nothing
-            If ProgramEngine.Evaluating Then Return Nothing
+            If isEvaluating Then Return Nothing
 
-            ProgramEngine.Evaluating = True
+            isEvaluating = True
             Dim doc = Helper.MainWindow.ActiveDocument
-            Dim runner = _ProgramEngine.GetRunner(doc.File)
+            Dim runner = _ProgramEngine.GetEvaluationRunner(doc.File)
             If runner Is Nothing Then
-                ProgramEngine.Evaluating = False
+                isEvaluating = False
                 Return Nothing
             End If
 
@@ -345,7 +348,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 If c = "_" OrElse Char.IsLetter(c) Then
                     Dim prevChar = span.Snapshot(span.Start - 1)
                     If prevChar = "_"c OrElse prevChar = "."c OrElse Char.IsLetter(prevChar) Then
-                        ProgramEngine.Evaluating = False
+                        isEvaluating = False
                         Return Nothing
                     End If
                 End If
@@ -357,7 +360,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 If c = "_" OrElse Char.IsLetter(c) Then
                     Dim nextChar = span.Snapshot(span.End)
                     If nextChar = "_"c OrElse nextChar = "."c OrElse Char.IsLetter(nextChar) Then
-                        ProgramEngine.Evaluating = False
+                        isEvaluating = False
                         Return Nothing
                     End If
                 End If
@@ -370,19 +373,20 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 result = "Expression caused an error: " & ex.Message
             End Try
 
-            ProgramEngine.Evaluating = False
+            isEvaluating = False
             Return result
         End Function
 
         Private Sub OnProgramTerminated()
             Dim m = Helper.MainWindow
+            m.DisplayDebugCommands(False)
             m.Dispatcher.Invoke(
                 Sub()
                     RemoveHandler _ProgramEngine.DebuggerStateChanged, AddressOf OnCurrentStateChanged
                     RemoveHandler Library.Program.ProgramTerminated, AddressOf OnProgramTerminated
 
                     _IsActive = False
-                    _ProgramEngine.Disopese()
+                    _ProgramEngine.Dispose()
                     _ProgramEngine = Nothing
                     m.PopError.IsOpen = False
                     m.tabDesigner.IsEnabled = True

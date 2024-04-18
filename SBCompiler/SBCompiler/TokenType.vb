@@ -33,7 +33,7 @@
         [To]
         [While]
         [And]
-        Equals
+        EqualsTo
         [Or]
         Dot
         Lookup
@@ -41,22 +41,26 @@
         Addition
         Subtraction
         Division
+        [Mod]
         Multiplication
+        LineContinuity
         LeftParens
         RightParens
         LeftBracket
         RightBracket
-        LeftCurlyBracket
-        RightCurlyBracket
+        LeftBrace
+        RightBrace
         LessThan
-        LessThanEqualTo
+        LessThanOrEqualsTo
         GreaterThan
-        GreaterThanEqualTo
-        NotEqualTo
+        GreaterThanOrEqualsTo
+        NotEqualsTo
         Comma
         Colon
         SingleQuote
         DoubleQuote
         ContinueLoop
+        Question
+        HashQuestion
     End Enum
 End Namespace

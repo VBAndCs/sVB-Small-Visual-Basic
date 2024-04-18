@@ -51,44 +51,51 @@ Namespace Microsoft.Nautilus.Text
                 Return New ITextChange() {}
             End If
 
-            Dim array As TextChange() = StableSort(changes)
-            Dim num As Integer = 0
-            Dim num2 As Integer = 0
-            Dim num3 As Integer = 1
+            Dim sortedChanges = StableSort(changes)
+            Dim delta = 0
+            Dim curIndex = 0
+            Dim nextIndex = 1
 
-            While num3 < array.Length
-                Dim textChange1 As TextChange = array(num2)
-                Dim textChange2 As TextChange = array(num3)
-                Dim num4 As Integer = textChange2.Position - textChange1.OldEnd
-                If num4 > 0 Then
-                    textChange1.Position += num
-                    num += textChange1.Delta
-                    num2 = num3
-                    num3 += 1
+            While nextIndex < sortedChanges.Length
+                Dim curChange = sortedChanges(curIndex)
+                Dim nextChange = sortedChanges(nextIndex)
+                Dim distance = nextChange.Position - curChange.OldEnd
+
+                If distance > 0 Then
+                    curChange.Position += delta
+                    delta += curChange.Delta
+                    curIndex = nextIndex
+                    nextIndex += 1
                     Continue While
                 End If
 
-                Catenate(textChange1.NewText, textChange2.NewText)
-                If num4 = 0 Then
-                    Catenate(textChange1.OldText, textChange2.OldText)
-                ElseIf textChange1.OldEnd < textChange2.OldEnd Then
-                    Dim startIndex As Integer = textChange1.OldEnd - textChange2.Position
-                    Catenate(textChange1.OldText, textChange2.OldText.Substring(startIndex))
+                If curChange.Position = nextChange.Position AndAlso
+                         curChange.Delta = 0 AndAlso nextChange.Delta = 0 Then
+                    curChange._NewText = nextChange.NewText
+                Else
+                    Catenate(curChange._NewText, nextChange.NewText)
+                    If distance = 0 Then
+                        Catenate(curChange._OldText, nextChange.OldText)
+                    ElseIf curChange.OldEnd < nextChange.OldEnd Then
+                        Dim startIndex = curChange.OldEnd - nextChange.Position
+                        Catenate(curChange._OldText, nextChange.OldText.Substring(startIndex))
+                    End If
                 End If
-                array(num3) = Nothing
-                num3 += 1
+
+                sortedChanges(nextIndex) = Nothing
+                nextIndex += 1
             End While
 
-            array(num2).Position += num
-            Dim list1 As New List(Of ITextChange)
+            sortedChanges(curIndex).Position += delta
+            Dim normalizedChanges As New List(Of ITextChange)
 
-            For i As Integer = 0 To array.Length - 1
-                If array(i) IsNot Nothing Then
-                    list1.Add(array(i))
+            For i As Integer = 0 To sortedChanges.Length - 1
+                If sortedChanges(i) IsNot Nothing Then
+                    normalizedChanges.Add(sortedChanges(i))
                 End If
             Next
 
-            Return list1
+            Return normalizedChanges
         End Function
     End Class
 End Namespace

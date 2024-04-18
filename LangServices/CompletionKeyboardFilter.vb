@@ -25,6 +25,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         textView.VisualElement.Focus()
                         args.Handled = True
 
+                    Case Key.OemQuotes
+                        completionSurface.Adornment.Dismiss(force:=True)
+                        textView.VisualElement.Focus()
+
                     Case Key.Up
                         completionListBox.MoveUp()
                         args.Handled = True
@@ -41,7 +45,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     Case Key.OemPeriod
                         If Keyboard.Modifiers = 0 Then CommitConditionally(textView, completionSurface)
-
                 End Select
 
             Else
@@ -87,14 +90,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             If textView.Properties.TryGetProperty(GetType(CompletionSurface), completionSurface) Then
                 If completionSurface.IsAdornmentVisible Then
                     Select Case args.Text
-                        Case "+", "-", "*", "/"
+                        Case "+", "-", "*", "/", "%"
                             args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ")
 
                         Case "="
                             Dim pos = textView.Caret.Position.CharacterIndex
                             Select Case textView.TextSnapshot.GetText(pos - 1, 1)
                                 Case ">", "<"
-
+                                    ' >= or <=
                                 Case Else
                                     args.Handled = CommitConditionally(textView, completionSurface, " = ", True)
                             End Select
@@ -168,7 +171,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim leadingSpace = ""
                 If replaceSpan.Length = 0 And replaceSpan.Start > 0 Then
                     Select Case textView.TextSnapshot(replaceSpan.Start - 1)
-                        Case "=", "<", ">", "+", "-", "*", "/"
+                        Case "="c, "<"c, ">"c, "+"c, "-"c, "*"c, "/"c, "%"c
                             leadingSpace = " "
                     End Select
                 End If

@@ -8,6 +8,8 @@ Namespace Library
     <SmallVisualBasicType>
     Public NotInheritable Class TextWindow
         Friend Shared _windowVisible As Boolean
+        Private Shared addLine As Boolean = False
+
 
         ''' <summary>
         ''' Gets or sets the foreground color of the text to be output in the text window.
@@ -220,13 +222,16 @@ Namespace Library
         End Sub
 
         ''' <summary>
-        ''' Waits for user to press any key to close the window.
+        ''' Waits for user to press any key to close the window, otherwise it closes it directly.
         ''' </summary>
         Public Shared Sub PauseThenClose()
             Try
                 If _windowVisible Then
-                    Console.WriteLine("Press any key to close the window...")
-
+                    If addLine Then
+                        Console.WriteLine(vbCrLf & "Press any key to close the window...")
+                    Else
+                        Console.WriteLine("Press any key to close the window...")
+                    End If
                     Console.ReadKey(intercept:=True)
                 End If
 
@@ -235,6 +240,7 @@ Namespace Library
                 Else
                     Hide()
                 End If
+
             Catch
                 Console.WriteLine("An error occured.")
                 Console.WriteLine("If you are debugging this sVB projet in VS.NET in its debugging mode, thee console window will nor work correctly.")
@@ -255,10 +261,9 @@ Namespace Library
 
         ''' <summary>
         ''' Reads a line of text from the text window.  This function will not return until the user hits ENTER.
+        ''' Use ? as a shortcut name for this method.
         ''' </summary>
-        ''' <returns>
-        ''' The text that was read from the text window
-        ''' </returns>
+        ''' <returns>The text that was read from the text window</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Read() As Primitive
             VerifyAccess()
@@ -281,25 +286,25 @@ Namespace Library
 
         ''' <summary>
         ''' Reads a number from the text window.  This function will not return until the user hits ENTER.
+        ''' Use #? as a shortcut name for this method.
         ''' </summary>
-        ''' <returns>
-        ''' The number that was read from the text window
-        ''' </returns>
+        ''' <returns>The number that was read from the text window</returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ReadNumber() As Primitive
             VerifyAccess()
             Dim sbNumber As New StringBuilder
-            Dim dotExists As Boolean = False
+            Dim exists As Boolean = False
             Dim count As Integer = 0
 
             Do
                 Dim keyInfo = Console.ReadKey(intercept:=True)
                 Dim c As Char = keyInfo.KeyChar
                 Dim isValid As Boolean = False
-                If (c = "-"c AndAlso count = 0) OrElse (c >= "0"c AndAlso c <= "9"c) Then
+                If (c = "-"c AndAlso count = 0) OrElse
+                        (c >= "0"c AndAlso c <= "9"c) Then
                     isValid = True
-                ElseIf c = "."c AndAlso Not dotExists Then
-                    dotExists = True
+                ElseIf c = "."c AndAlso Not exists Then
+                    exists = True
                     isValid = True
                 End If
 
@@ -313,9 +318,7 @@ Namespace Library
                     Console.CursorLeft -= 1
                     count -= 1
                     c = sbNumber(count)
-                    If c = "."c Then
-                        dotExists = False
-                    End If
+                    If c = "."c Then exists = False
                     sbNumber.Remove(count, 1)
                 ElseIf keyInfo.Key = ConsoleKey.Enter Then
                     Exit Do
@@ -332,15 +335,18 @@ Namespace Library
 
         ''' <summary>
         ''' Writes text or number to the text window.  A new line character will be appended to the output, so that the next time something is written to the text window, it will go in a new line.
+        ''' Use ? as a shortcut name for this method.
         ''' </summary>
         ''' <param name="data">The text or number to write to the text window.</param>
         Public Shared Sub WriteLine(data As Primitive)
             VerifyAccess()
             Console.WriteLine(data.AsString())
+            addLine = False
         End Sub
 
         ''' <summary>
         ''' Writes the items of the given array to the TextWindow, and appends a new line after each of them.
+        ''' Use ? as a shortcut name for this method, followed by an array initializer or a direct comman separated values
         ''' </summary>
         ''' <param name="lines">An array of text lines</param>
         Public Shared Sub WriteLines(lines As Primitive)
@@ -357,18 +363,19 @@ Namespace Library
             Else
                 Console.WriteLine(CStr(lines))
             End If
+            addLine = False
         End Sub
 
         ''' <summary>
         ''' Writes text or number to the text window.  Unlike WriteLine, this will not append a new line character, which means, anything written to the text window after this call will be on the same line.
+        ''' Use ?: as a shortcut name for this method.
         ''' </summary>
-        ''' <param name="data">
-        ''' The text or number to write to the text window
-        ''' </param>
+        ''' <param name="data">The text or number to write to the text window</param>
         Public Shared Sub Write(data As Primitive)
             VerifyAccess()
             Dim x As String = data
             Console.Write(x)
+            addLine = True
         End Sub
 
         ''' <summary>

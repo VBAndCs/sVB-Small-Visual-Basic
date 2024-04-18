@@ -1,0 +1,5 @@
+﻿<Path xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:d="clr-namespace:DiagramHelper;assembly=DiagramHelper"
+d:Designer.FrameWidth="50" d:Designer.FrameHeight="50"
+Fill="DarkCyan" Stretch="Fill" 
+Data="M21.56,0.50 L63.56,0.50 L84.50,37.50 L63.56,74.50 L21.56,74.50 L0.50,37.50 z"/>

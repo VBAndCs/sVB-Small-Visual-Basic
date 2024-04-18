@@ -1,0 +1,23 @@
+' Small Visual Basic Waved Text
+' By M. Hamdy
+
+W = 700
+GW.Width = W
+GW.FontSize = 20
+Txt = "Hello all from Small Visual Basic."
+S = W / Txt.Length
+I = 1
+GraphicsWindow.PenColor = Colors.LightGray
+GraphicsWindow.DrawLine(0, 225, W, 200)
+For X = 0 To W Step S
+   If Txt[I] = " " Then
+      C = "*"
+      GW.BrushColor = Colors.Red
+   Else
+      C = Txt[I]
+      GW.BrushColor = Colors.Blue
+   EndIf
+   
+   GW.DrawText(X, 200 + Math.Sin(Math.GetRadians(X)) * 50, C)
+   I = I + 1
+Next

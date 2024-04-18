@@ -13,11 +13,11 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Friend PreviousLineNumber As Integer = -1
         Public CurrentLineNumber As Integer
-        Friend BreakMode As Boolean
         Public DocLineOffset As Integer
         Friend SymbolTable As SymbolTable
         Public TypeInfoBag As TypeInfoBag
         Public Parser As Parser
+        Friend Evaluating As Boolean
         Friend EventThreads As New Collections.Concurrent.ConcurrentDictionary(Of String, Boolean)()
 
         Friend Function CreateSubRunner() As ProgramRunner
@@ -26,7 +26,8 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 ._DebuggerCommand = _DebuggerCommand,
                 ._DebuggerState = _DebuggerState,
                 .Fields = Fields,
-                .isSubRunner = True
+                .isSubRunner = True,
+                .Evaluating = Evaluating
             }
             _Engine.SubRunners(Parser) = runner
             Return runner
@@ -41,12 +42,41 @@ Namespace Microsoft.SmallVisualBasic.Engine
             If Not isSubRunner Then _Engine.Runners(Me.Parser) = Me
         End Sub
 
+
+        Friend Function GetEvaluationRunner() As ProgramRunner
+            Dim runner As ProgramRunner
+            If Parser.EvaluationRunner Is Nothing Then
+                runner = New ProgramRunner(_Engine, Parser, True)
+                runner.Evaluating = True
+                runner.isGlobalInitialized = isGlobalInitialized
+                runner.CurrentThread = CurrentThread
+                runner.isSubRunner = True
+                Parser.EvaluationRunner = runner
+            Else
+                runner = Parser.EvaluationRunner
+            End If
+
+            runner.Fields = New Dictionary(Of String, Library.Primitive)(Me.Fields)
+            Return runner
+        End Function
+
         Dim isGlobalInitialized As Boolean = False
+
         Friend HasBeenPaused As Boolean
 
         Friend ReadOnly Property GlobalRunner As ProgramRunner
             Get
-                Dim gRunner = _Engine.Runners(_Engine.GlobalParser)
+                Dim gRunner As ProgramRunner
+                If Evaluating Then
+                    If _Engine.GlobalParser.EvaluationRunner Is Nothing Then
+                        gRunner = _Engine.Runners(_Engine.GlobalParser).GetEvaluationRunner()
+                    Else
+                        gRunner = _Engine.GlobalParser.EvaluationRunner
+                    End If
+                Else
+                    gRunner = _Engine.Runners(_Engine.GlobalParser)
+                End If
+
                 If Not gRunner.isGlobalInitialized Then
                     gRunner.isGlobalInitialized = True
                     gRunner.StepAround = False
@@ -59,22 +89,25 @@ Namespace Microsoft.SmallVisualBasic.Engine
                         gRunner.DebuggerCommand = DebuggerCommand.Run
                     End If
 
-                    gRunner.CurrentThread = CurrentThread
                     _Engine.CurrentRunner = gRunner
                     gRunner.HasBeenPaused = False
 
+                    gRunner.CurrentThread = CurrentThread
                     gRunner.Execute(_Engine.GlobalParser.ParseTree)
 
-                    Dim dc = gRunner.DebuggerCommand
-                    If dc <> DebuggerCommand.Run Then
-                        DebuggerCommand = DebuggerCommand.StepInto
-                    ElseIf gRunner.HasBeenPaused Then
-                        DebuggerCommand = dc
-                    End If
+                    If Not Evaluating Then
+                        Dim dc = gRunner.DebuggerCommand
+                        If dc <> DebuggerCommand.Run Then
+                            DebuggerCommand = DebuggerCommand.StepInto
+                        ElseIf gRunner.HasBeenPaused Then
+                            DebuggerCommand = dc
+                        End If
 
-                    PauseAtReturn = gRunner.HasBeenPaused
-                    _Engine.CurrentRunner = Me
+                        PauseAtReturn = gRunner.HasBeenPaused
+                        _Engine.CurrentRunner = Me
+                    End If
                 End If
+
                 Return gRunner
             End Get
         End Property
@@ -128,9 +161,12 @@ Namespace Microsoft.SmallVisualBasic.Engine
                             Return "A subroutine call doesn't return any value!"
                         End If
                     End If
+                Else
+
                 End If
             End If
 
+            _Engine.ResetEvaluationRunners()
             Return expr.Evaluate(Me)
         End Function
 
@@ -162,29 +198,36 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 formRunner = New ProgramRunner(_Engine, formParser)
             End If
 
-            formRunner.HasBeenPaused = False
-            formRunner.StepAround = False
-            formRunner.Depth = 0
-            If DebuggerCommand = DebuggerCommand.StepInto OrElse DebuggerCommand = DebuggerCommand.StopOnNextLine Then
-                formRunner.DebuggerCommand = DebuggerCommand.StepInto
-                DebuggerCommand = DebuggerCommand.Run
+            If Evaluating Then
+                formRunner = formRunner.GetEvaluationRunner()
             Else
-                formRunner.DebuggerCommand = DebuggerCommand.Run
+                formRunner.HasBeenPaused = False
+                formRunner.StepAround = False
+                formRunner.Depth = 0
+                If DebuggerCommand = DebuggerCommand.StepInto OrElse DebuggerCommand = DebuggerCommand.StopOnNextLine Then
+                    formRunner.DebuggerCommand = DebuggerCommand.StepInto
+                    DebuggerCommand = DebuggerCommand.Run
+                Else
+                    formRunner.DebuggerCommand = DebuggerCommand.Run
+                End If
+
+                _Engine.CurrentRunner = formRunner
             End If
 
             formRunner.CurrentThread = CurrentThread
-            _Engine.CurrentRunner = formRunner
             formRunner.Execute(formParser.ParseTree)
 
-            Dim dc = formRunner.DebuggerCommand
-            If dc <> DebuggerCommand.Run Then
-                DebuggerCommand = DebuggerCommand.StepInto
-            ElseIf formRunner.HasBeenPaused Then
-                DebuggerCommand = dc
-            End If
+            If Not Evaluating Then
+                Dim dc = formRunner.DebuggerCommand
+                If dc <> DebuggerCommand.Run Then
+                    DebuggerCommand = DebuggerCommand.StepInto
+                ElseIf formRunner.HasBeenPaused Then
+                    DebuggerCommand = dc
+                End If
 
-            PauseAtReturn = formRunner.hasBeenPaused
-            _Engine.CurrentRunner = Me
+                PauseAtReturn = formRunner.HasBeenPaused
+                _Engine.CurrentRunner = Me
+            End If
         End Sub
 
         Friend Sub SetGlobalField(name As String, value As Library.Primitive)
@@ -192,8 +235,9 @@ Namespace Microsoft.SmallVisualBasic.Engine
         End Sub
 
         Friend Function GetGlobalField(name As String) As Library.Primitive?
-            If GlobalRunner.Fields.ContainsKey(name) Then
-                Return GlobalRunner.Fields(name)
+            Dim gRunner = GlobalRunner
+            If gRunner.Fields.ContainsKey(name) Then
+                Return gRunner.Fields(name)
             Else
                 Return Nothing
             End If
@@ -244,7 +288,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
         End Sub
 
         Private Sub CheckForExecutionBreak(isFirstStatement As Boolean, CurrentStatement As Statement)
-            If _Engine.Evaluating Then Return
+            If Evaluating Then Return
 
             If isFirstStatement AndAlso _Engine.StopOnFirstStaement Then
                 _Engine.StopOnFirstStaement = False
@@ -279,14 +323,15 @@ Namespace Microsoft.SmallVisualBasic.Engine
             End Try
 
             If all Then ContinueAll()
+            _Engine.BreakMode = False
         End Sub
 
-        Dim isPaused As Boolean
+        Friend IsPaused As Boolean
         Dim forcedToBreak As Boolean
 
         Private Sub Pause(Optional isError As Boolean = False)
             If Library.Program.IsTerminated Then Return
-            BreakMode = True
+            _Engine.BreakMode = True
             StepAround = False
             isPaused = True
 
@@ -335,8 +380,8 @@ Namespace Microsoft.SmallVisualBasic.Engine
                         runner.CurrentThread.Resume()
                     Catch
                     End Try
+                    runner.IsPaused = False
                 End If
-                runner.BreakMode = False
             Next
         End Sub
 

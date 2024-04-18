@@ -23,11 +23,12 @@ Namespace Microsoft.SmallVisualBasic
 
         Public ReadOnly Property Current As Token
 
-        Public Sub New(tokenList As List(Of Token))
+        Public Sub New(tokenList As List(Of Token), Optional startAt As Integer = 0)
             TokensList = tokenList
 
             If tokenList.Count > 0 Then
-                _Current = tokenList(0)
+                _currentIndex = startAt
+                _Current = tokenList(startAt)
             End If
         End Sub
 

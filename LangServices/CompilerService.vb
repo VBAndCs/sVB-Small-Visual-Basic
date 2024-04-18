@@ -131,17 +131,22 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Next
 
             Using textEdit = textBuffer.CreateEdit()
+                Dim comments As New List(Of Token)
+
                 For lineNum = 0 To lines.Count - 1
                     Dim line = snapshot.GetLineFromLineNumber(lineNum + start)
                     ' (lineNum) to send it not to be changed ByRef
                     Dim tokens = LineScanner.GetTokens(lines(lineNum), (lineNum), lines)
+                    comments.AddRange(LineScanner.SubLineComments)
 
                     If tokens.Count = 0 Then
                         AdjustIndentation(textEdit, line, indentationLevel, lines(lineNum).Length)
                         Continue For
                     End If
 
-                    If prettyListing OrElse lineNum <> lineNumber Then FormatLine(textEdit, line, tokens, 0)
+                    If prettyListing OrElse lineNum <> lineNumber Then
+                        FormatLine(textEdit, line, tokens, 0)
+                    End If
 
                     Dim firstCharPos = tokens(0).Column
 
@@ -154,7 +159,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             indentationLevel = 0
                             AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
 
-                        Case TokenType.If, TokenType.For, TokenType.ForEach, TokenType.While
+                        Case TokenType.If
+                            AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                            indentationLevel += 1
+                            AddThen(snapshot, start, textEdit, lineNum, line, tokens)
+                        Case TokenType.For, TokenType.ForEach, TokenType.While
                             AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
                             indentationLevel += 1
 
@@ -162,13 +171,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             AdjustIndentation(textEdit, line, 0, firstCharPos)
                             indentationLevel = 1
 
-                        Case TokenType.Else, TokenType.ElseIf
+                        Case TokenType.Else
                             indentationLevel -= 1
                             AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
                             indentationLevel += 1
 
+                        Case TokenType.ElseIf
+                            indentationLevel -= 1
+                            AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                            indentationLevel += 1
+                            AddThen(snapshot, start, textEdit, lineNum, line, tokens)
+
                         Case Else
-                            If tokens.Count > 1 AndAlso tokens(1).Type = TokenType.Colon Then
+                            If tokens.Count > 1 AndAlso tokens(0).Type <> TokenType.Question AndAlso tokens(1).Type = TokenType.Colon Then
                                 AdjustIndentation(textEdit, line, Integer.MaxValue, firstCharPos)
                             Else
                                 AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
@@ -187,8 +202,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         Dim t = tokens(i)
                         If t.subLine > subLine Then
                             lineStart = True
-                            lineNum += 1
-                            line = snapshot.GetLineFromLineNumber(lineNum + start)
+                            Do
+                                lineNum += 1
+                                line = snapshot.GetLineFromLineNumber(lineNum + start)
+                                If t.subLine - subLine > 1 Then
+                                    ' An empty subline that contains only a hyphen and maybe a comment
+                                    AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, line.GetText().IndexOf("_"))
+                                    Dim commentToken = GetSublineComment(lineNum)
+                                    If Not commentToken.IsIllegal Then FormatComment(textEdit, line, commentToken)
+                                    subLine += 1
+                                Else
+                                    Exit Do
+                                End If
+                            Loop
                             If prettyListing OrElse lineNum <> lineNumber Then FormatLine(textEdit, line, tokens, i)
                         Else
                             lineStart = False
@@ -198,14 +224,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         lineEnd = (i = n OrElse tokens(i + 1).subLine > subLine)
 
                         Select Case t.Type
-                            Case TokenType.LeftParens, TokenType.LeftBracket, TokenType.LeftCurlyBracket
+                            Case TokenType.LeftParens, TokenType.LeftBracket, TokenType.LeftBrace
                                 If lineStart Then AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
                                 If Not lineEnd Then
                                     subLineOffset += 1
                                     indentStack.Push(subLineOffset)
                                 End If
 
-                            Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightCurlyBracket
+                            Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightBrace
                                 If Not lineEnd Then
                                     If indentStack.Count = 0 Then
                                         subLineOffset = Math.Max(0, subLineOffset - 1)
@@ -221,14 +247,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
                                 End If
 
-                            Case TokenType.Concatenation, TokenType.Addition, TokenType.Subtraction, TokenType.Multiplication, TokenType.Division, TokenType.Or, TokenType.And
+                            Case TokenType.Concatenation, TokenType.Addition,
+                                    TokenType.Subtraction, TokenType.Multiplication,
+                                    TokenType.Division, TokenType.Mod,
+                                    TokenType.Or, TokenType.And
                                 If lineStart Then
                                     subLineOffset = Math.Max(1, subLineOffset)
                                     AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
                                 End If
 
                             Case Else
-                                If lineStart Then AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
+                                If lineStart Then
+                                    AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
+                                End If
                         End Select
 
                         If Not lineEnd Then Continue For
@@ -241,30 +272,42 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             Continue For
                         End If
 
-                        Select Case tokens(last).LCaseText
-                            Case ","
+                        Select Case tokens(last).Type
+                            Case TokenType.Comma
                                 If indentStack.Count = 0 Then
                                     If subLineOffset = 0 Then subLineOffset = 1
                                 Else
                                     subLineOffset = indentStack.Peek()
                                 End If
 
-                            Case "_", "&", "+", "-", "*", "/", "and", "or"
+                            Case TokenType.Concatenation
+                                If n > 1 AndAlso tokens(last - 1).Type <> TokenType.Question Then
+                                    subLineOffset = Math.Max(1, subLineOffset)
+                                End If
+
+                            Case TokenType.Addition,
+                                 TokenType.Subtraction, TokenType.Multiplication,
+                                 TokenType.Division, TokenType.Mod,
+                                 TokenType.And, TokenType.Or, TokenType.LineContinuity
                                 subLineOffset = Math.Max(1, subLineOffset)
 
-                            Case "="
+                            Case TokenType.EqualsTo
                                 subLineOffset += 1
 
-                            Case "(", "{", "["
+                            Case TokenType.LeftParens, TokenType.LeftBrace, TokenType.LeftBracket
                                 subLineOffset += 1
                                 indentStack.Push(subLineOffset)
 
-                            Case ")", "}", "]"
+                            Case TokenType.RightParens, TokenType.RightBrace, TokenType.RightBracket
                                 If indentStack.Count > 0 Then indentStack.Pop()
+
+                            Case Else
+                                If tokens(last).Comment?.StartsWith("_") Then
+                                    ' line ends with a hyphen
+                                    subLineOffset += 1
+                                End If
                         End Select
-
                     Next
-
                 Next
 
                 textEdit.Apply()
@@ -274,9 +317,56 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             FixIdentifiers(textBuffer, start, [end])
         End Sub
 
+        Private Function GetSublineComment(lineNum As Integer) As Token
+            For Each token In LineScanner.SubLineComments
+                If token.Line = lineNum Then Return token
+            Next
+            Return Nothing
+        End Function
+
+        Private Sub FormatComment(
+                     textEdit As ITextEdit,
+                     line As ITextSnapshotLine,
+                     token As Token)
+
+            Dim comment = token.Text
+            If comment.Length > 1 Then
+                If Char.IsWhiteSpace(comment(1)) Then
+                    Dim n = 0
+                    For j = 2 To comment.Length - 1
+                        If Char.IsWhiteSpace(comment(j)) Then
+                            n += 1
+                        Else
+                            Exit For
+                        End If
+                    Next
+                    If n > 0 Then textEdit.Replace(line.Start + token.Column + 2, n, "")
+                Else
+                    textEdit.Insert(line.Start + token.Column + 1, " ")
+                End If
+            End If
+        End Sub
+
+        Private Sub AddThen(snapshot As ITextSnapshot, start As Integer, textEdit As ITextEdit, lineNum As Integer, line As ITextSnapshotLine, tokens As List(Of Token))
+            If tokens.Count > 1 Then
+                Dim lastToken = tokens(tokens.Count - 1)
+                If Not lastToken.IsIllegal AndAlso lastToken.Type <> TokenType.Then Then
+                    Dim thenLine = If(lastToken.Line = lineNum, line, snapshot.GetLineFromLineNumber(lastToken.Line + start))
+                    textEdit.Insert(thenLine.Start + lastToken.EndColumn, " Then")
+                    tokens.Add(New Token() With {
+                        .Column = lastToken.EndColumn + 1,
+                        .Text = "Then",
+                        .Line = lastToken.Line,
+                        .subLine = lastToken.subLine,
+                        .Type = TokenType.Then
+                    })
+                End If
+            End If
+        End Sub
+
         Private Function IsClosingSymbol(token As Token) As Boolean
             Select Case token.Type
-                Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightCurlyBracket
+                Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightBrace
                     Return True
                 Case Else
                     Return False
@@ -292,22 +382,152 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Next
 
             Using textEdit = textBuffer.CreateEdit()
+                Dim moveCaret = False
+
                 For lineNum = 0 To lines.Count - 1
                     Dim tokens = LineScanner.GetTokens(lines(lineNum), lineNum, lines)
+                    Dim n = tokens.Count
 
-                    For Each token In tokens
-                        If token.ParseType = ParseType.Keyword OrElse token.Type = TokenType.And OrElse token.Type = TokenType.Or Then
+                    For i = 0 To n - 1
+                        Dim token = tokens(i)
+                        Dim line = snapshot.GetLineFromLineNumber(token.Line + start)
+                        If token.Type = TokenType.LineContinuity Then Continue For
+                        If token.Type = TokenType.Colon Then Continue For
+
+                        If token.Type = TokenType.Question Then
+                            If i = 0 Then
+                                If n = 1 Then
+                                    textEdit.Replace(line.Start + token.Column, 1, "TW.WriteLine("""")")
+                                ElseIf tokens(1).Type = TokenType.Colon AndAlso (n = 2 OrElse tokens(2).IsIllegal) Then
+                                    textEdit.Replace(line.Start + token.Column, tokens(1).EndColumn - token.Column, "TW.Write("""")")
+                                Else
+                                    Dim lastToken = tokens(tokens.Count - 1)
+                                    If lastToken.IsIllegal AndAlso lastToken.subLine > token.subLine Then
+                                        If (tokens.Count < 3) Then Continue For
+                                        lastToken = tokens(tokens.Count - 2)
+                                    End If
+
+                                    If lastToken.Type = TokenType.Comment Then
+                                        If n < 3 Then Continue For
+                                        lastToken = tokens(tokens.Count - 2)
+                                    End If
+
+                                    Dim length As Integer
+                                    Dim method As String
+                                    Dim closingChar = ")"
+
+                                    Select Case tokens(1).Type
+                                        Case TokenType.Colon
+                                            length = tokens(2).Column - token.Column
+                                            method = "TW.Write("
+                                        Case TokenType.LeftBrace
+                                            length = tokens(1).Column - token.Column
+                                            method = "TW.WriteLines("
+                                        Case Else
+                                            length = tokens(1).Column - token.Column
+                                            Dim args = Parser.ParseCommaSeparatedList(tokens, 1)
+                                            If args.Count > 1 Then
+                                                method = "TW.WriteLines({"
+                                                closingChar = "})"
+                                            Else
+                                                method = "TW.WriteLine("
+                                            End If
+                                    End Select
+
+                                    textEdit.Replace(line.Start + token.Column, length, method)
+                                    ' Use actual last token
+                                    lastToken = tokens(tokens.Count - 1)
+                                    Dim lineStart = If(
+                                         lastToken.subLine = 0,
+                                         line.Start,
+                                         snapshot.GetLineFromLineNumber(lastToken.Line + start).Start
+                                     )
+
+                                    textEdit.Insert(lineStart + lastToken.EndColumn, closingChar)
+                                    If lastToken.IsIllegal AndAlso closingChar.Length = 2 Then
+                                        moveCaret = True
+                                    End If
+                                End If
+
+                            ElseIf tokens(i - 1).ParseType = ParseType.Operator OrElse
+                                     tokens(i - 1).Type = TokenType.Question OrElse
+                                     tokens(i - 1).Type = TokenType.To Then
+                                textEdit.Replace(line.Start + token.Column, 1, "TW.Read()")
+                            End If
+
+                        ElseIf token.Type = TokenType.HashQuestion Then
+                            If i = 0 OrElse tokens(i - 1).ParseType = ParseType.Operator OrElse
+                                      tokens(i - 1).Type = TokenType.Question OrElse
+                                      tokens(i - 1).Type = TokenType.To Then
+                                Dim st = token.Column
+                                textEdit.Replace(line.Start + st, token.EndColumn - st, "TW.ReadNumber()")
+                            End If
+
+                        ElseIf i = 0 AndAlso token.Type = TokenType.Identifier AndAlso token.LCaseText = "msgbox" Then
+                            Dim length = 0
+                            Dim startsWithLeftParens = False
+                            Dim needsClosing = TokenCount(tokens, TokenType.LeftParens) > TokenCount(tokens, TokenType.RightParens)
+                            ' Use actual last token
+                            Dim lastToken = tokens(tokens.Count - 1)
+
+                            If tokens(1).Type = TokenType.LeftParens AndAlso (
+                                    needsClosing OrElse lastToken.Type = TokenType.RightParens) Then
+                                length = If(tokens.Count > 2, tokens(2).Column, tokens(1).EndColumn) - token.Column
+                                startsWithLeftParens = True
+                            Else
+                                length = tokens(1).Column - token.Column
+                            End If
+
+                            textEdit.Replace(line.Start + token.Column, length, "Forms.ShowMessage(")
+                            Dim lineStart = If(
+                                lastToken.subLine = 0,
+                                line.Start,
+                                snapshot.GetLineFromLineNumber(lastToken.Line + start).Start
+                            )
+                            Dim args = Parser.ParseCommaSeparatedList(tokens, If(startsWithLeftParens, 2, 1))
+                            If args.Count > 1 Then
+                                If Not startsWithLeftParens OrElse lastToken.Type <> TokenType.RightParens OrElse
+                                        needsClosing Then
+                                    textEdit.Insert(lineStart + lastToken.EndColumn, ")")
+                                End If
+                            ElseIf startsWithLeftParens AndAlso
+                                        lastToken.Type = TokenType.RightParens AndAlso
+                                        TokenCount(tokens, TokenType.LeftParens) = TokenCount(tokens, TokenType.RightParens) Then
+                                textEdit.Insert(lineStart + lastToken.Column, ", ""Message""")
+                            Else
+                                textEdit.Insert(lineStart + lastToken.EndColumn, ", ""Message"")")
+                            End If
+
+                        ElseIf token.ParseType = ParseType.Keyword OrElse
+                                        token.Type = TokenType.And OrElse
+                                        token.Type = TokenType.Or OrElse
+                                        token.Type = TokenType.Mod Then
                             Dim keyword = token.Type.ToString()
                             If token.Text <> keyword Then
-                                Dim line = snapshot.GetLineFromLineNumber(token.Line + start)
                                 textEdit.Replace(line.Start + token.Column, token.EndColumn - token.Column, keyword)
                             End If
                         End If
                     Next
                 Next
+
                 textEdit.Apply()
+                If moveCaret Then
+                    Dim document = textBuffer.Properties.GetProperty("Document")
+                    If document IsNot Nothing Then
+                        Dim textView = CType(document.EditorControl.TextView, Editor.ITextView)
+                        textView.Caret.MoveTo(textView.Caret.Position.TextInsertionIndex - 2)
+                    End If
+                End If
             End Using
         End Sub
+
+        Private Function TokenCount(tokens As List(Of Token), type As TokenType) As Object
+            Dim n = 0
+            For Each token In tokens
+                If token.Type = type Then n += 1
+            Next
+            Return n
+        End Function
 
         Private Sub FixIdentifiers(
                             textBuffer As ITextBuffer,
@@ -316,7 +536,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                      )
 
             Dim snapshot = textBuffer.CurrentSnapshot
-            Dim symbolTable = GetsymbolTable(textBuffer)
+            Dim symbolTable = GetSymbolTable(textBuffer)
 
             Using textEdit = textBuffer.CreateEdit()
                 ' fix lib types and members
@@ -381,8 +601,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     If id.SymbolType = CompletionItemType.LocalVariable Then
                         Dim subName = Statements.SubroutineStatement.GetSubroutine(id)?.Name.LCaseText
                         Dim key = $"{subName}.{id.LCaseText}"
-                        Dim name = symbolTable.LocalVariables(key).Identifier.Text
-                        If id.Text <> name Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, name)
+                        Dim definition = symbolTable.LocalVariables(key).Identifier
+                        If id.Line <> definition.Line OrElse id.Column <> definition.Column Then
+                            Dim name = definition.Text
+                            If id.Text <> name Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, name)
+                        End If
                         Continue For
                     End If
 
@@ -392,10 +615,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             Continue For
                         End If
 
-                        If ControlNames IsNot Nothing Then
+                        If controlNames IsNot Nothing Then
                             ' fix control names usage
                             Dim controlId = id.LCaseText
-                            For Each controlName In ControlNames
+                            For Each controlName In controlNames
                                 If controlName.ToLower() = controlId Then
                                     If id.Text <> controlName Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, controlName)
                                     Continue For
@@ -457,9 +680,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             If key.StartsWith("__foreach__") Then Return True
 
             If dictionary.ContainsKey(key) Then
-                Dim name = dictionary(key).Text
-                If token.Text <> name Then textEdit.Replace(lineStart + token.Column, token.EndColumn - token.Column, name)
-                Return True
+                Dim defenition = dictionary(key)
+                If defenition.Line <> token.Line OrElse defenition.Column <> token.Column Then
+                    Dim name = defenition.Text
+                    If token.Text <> name Then textEdit.Replace(lineStart + token.Column, token.EndColumn - token.Column, name)
+                    Return True
+                End If
             End If
 
             Return False
@@ -487,7 +713,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Next
         End Sub
 
-        Private Function GetsymbolTable(buffer As ITextBuffer) As SymbolTable
+        Private Function GetSymbolTable(buffer As ITextBuffer) As SymbolTable
             DummyCompiler.Compile(New TextBufferReader(buffer.CurrentSnapshot), True)
             Dim symbolTable = _compiler.Parser.SymbolTable
             symbolTable.ModuleNames = buffer.Properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
@@ -546,7 +772,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             For i = startAt To endAt
                 Dim token = tokens(i)
-                If token.subLine <> subLine Then Return
+                If token.subLine <> subLine Then
+                    token = GetSublineComment(tokens(i - 1).Line)
+                    If Not token.IsIllegal Then
+                        FixSpaces(textEdit, line, tokens(i - 1), token, 1)
+                        FormatComment(textEdit, line, token)
+                    End If
+                    Return
+                End If
 
                 Dim nextToken As Token
                 Dim notLastToken = False
@@ -555,25 +788,64 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     notLastToken = nextToken.subLine = subLine
                 End If
 
-                Dim FixLiterals = Sub()
-                                      If notLastToken Then
-                                          Select Case nextToken.Type
-                                              Case TokenType.Dot, TokenType.Lookup, TokenType.Comma, TokenType.Colon,
-                                                      TokenType.LeftBracket, TokenType.LeftCurlyBracket, TokenType.LeftParens,
-                                                      TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
-                                                  FixSpaces(textEdit, line, token, nextToken, 0)
-                                              Case Else
-                                                  FixSpaces(textEdit, line, token, nextToken, 1)
-                                          End Select
-                                      End If
-                                  End Sub
+                Dim FixLiterals =
+                    Sub()
+                        If notLastToken Then
+                            Select Case nextToken.Type
+                                Case TokenType.Dot, TokenType.Lookup, TokenType.Comma, TokenType.Colon,
+                                         TokenType.LeftBracket, TokenType.LeftBrace, TokenType.LeftParens,
+                                         TokenType.RightBracket, TokenType.RightBrace, TokenType.RightParens
+                                    FixSpaces(textEdit, line, token, nextToken, 0)
+                                Case Else
+                                    FixSpaces(textEdit, line, token, nextToken, 1)
+                            End Select
+                        End If
+                    End Sub
 
                 Select Case token.Type
-                    Case TokenType.Equals, TokenType.NotEqualTo, TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
-                                   TokenType.LessThanEqualTo,
-                                   TokenType.And, TokenType.Or,
-                                   TokenType.Concatenation, TokenType.Addition, TokenType.Multiplication, TokenType.Division
+                    Case TokenType.EqualsTo, TokenType.NotEqualsTo,
+                             TokenType.GreaterThan, TokenType.GreaterThanOrEqualsTo,
+                             TokenType.LessThanOrEqualsTo, ' Note that < can be followeed by >
+                             TokenType.And, TokenType.Or,
+                             TokenType.Concatenation, TokenType.Multiplication,
+                             TokenType.Division, TokenType.Mod
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 1)
+
+                    Case TokenType.Addition
+                        ' Remove unary + sign, because the compiler doeesn't recognize it
+                        Dim deleted = False
+                        If i = 0 Then
+                            textEdit.Delete(line.Start + token.Column, 1)
+                            deleted = True
+                        Else
+                            Select Case tokens(i - 1).Type
+                                Case TokenType.Identifier,
+                                         TokenType.DateLiteral, TokenType.NumericLiteral, TokenType.StringLiteral,
+                                         TokenType.RightBrace, TokenType.RightBracket, TokenType.RightParens,
+                                         TokenType.HashQuestion
+                                    ' Additon allowed
+
+                                Case TokenType.Question
+                                    If i = 1 Then ' WriteLine( + )
+                                        textEdit.Delete(line.Start + token.Column, 1)
+                                        deleted = True
+                                    End If
+
+                                Case TokenType.Colon
+                                    If i = 2 AndAlso tokens(0).Type = TokenType.Question Then ' Write( + )
+                                        textEdit.Delete(line.Start + token.Column, 1)
+                                        deleted = True
+                                    End If
+
+                                Case Else
+                                    textEdit.Delete(line.Start + token.Column, 1)
+                                    deleted = True
+                            End Select
+                        End If
+
+                        If Not deleted AndAlso notLastToken Then
+                            FixSpaces(textEdit, line, token, nextToken, 1)
+                        End If
 
                     Case TokenType.LessThan
                         If notLastToken Then
@@ -591,23 +863,27 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 FixSpaces(textEdit, line, token, nextToken, 0)
                             ElseIf prevType = ParseType.Operator OrElse prevType = ParseType.Keyword Then
                                 Select Case tokens(i - 1).Type
-                                    Case TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
+                                    Case TokenType.RightBracket, TokenType.RightBrace, TokenType.RightParens
                                         FixSpaces(textEdit, line, token, nextToken, 1)
                                     Case Else
                                         FixSpaces(textEdit, line, token, nextToken, 0)
                                 End Select
                             Else
-                                FixSpaces(textEdit, line, token, nextToken, If(nextToken.Type = TokenType.Subtraction, 0, 1))
+                                FixSpaces(textEdit, line, token, nextToken, 1)
                             End If
                         End If
 
-                    Case TokenType.LeftBracket, TokenType.LeftCurlyBracket, TokenType.LeftParens
+                    Case TokenType.LeftBracket, TokenType.LeftBrace, TokenType.LeftParens
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 0)
 
-                    Case TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
+                    Case TokenType.RightBracket, TokenType.RightBrace, TokenType.RightParens,
+                             TokenType.Question, TokenType.HashQuestion
                         If notLastToken Then
                             Select Case nextToken.Type
-                                Case TokenType.Comma, TokenType.LeftBracket, TokenType.LeftCurlyBracket, TokenType.LeftParens, TokenType.RightBracket, TokenType.RightCurlyBracket, TokenType.RightParens
+                                Case TokenType.Comma,
+                                     TokenType.LeftBracket, TokenType.RightBracket,
+                                     TokenType.LeftBrace, TokenType.RightBrace,
+                                     TokenType.LeftParens, TokenType.RightParens
                                     FixSpaces(textEdit, line, token, nextToken, 0)
                                 Case Else
                                     FixSpaces(textEdit, line, token, nextToken, 1)
@@ -661,6 +937,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Case TokenType.Dot, TokenType.Lookup
                         If notLastToken Then FixSpaces(textEdit, line, token, nextToken, 0)
 
+                    Case TokenType.Comment
+                        FormatComment(textEdit, line, token)
+
                     Case Else
                         If token.ParseType = ParseType.Keyword Then
                             If notLastToken Then
@@ -672,7 +951,17 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             End If
                         End If
                 End Select
+
+                If Not notLastToken Then
+                    If token.Comment?.StartsWith("_") Then
+                        Dim column = CInt(token.Comment.Substring(1))
+                        If column = token.EndColumn Then
+                            textEdit.Insert(line.Start + token.EndColumn, " ")
+                        End If
+                    End If
+                End If
             Next
+
         End Sub
 
         Private Sub FixSpaces(
@@ -683,7 +972,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                        requiredSpaces As Integer
                 )
 
-            If token2.Type = TokenType.Comment Then Return
+            If token2.Type = TokenType.Comment AndAlso
+                token2.Column > token1.EndColumn Then Return
 
             Dim spaces = token2.Column - token1.EndColumn
             If spaces < 0 OrElse spaces = requiredSpaces Then Return

@@ -1261,7 +1261,7 @@ Public Class Designer
 
     Public Shared Sub Open()
         Dim lastDir = GetSetting("SmallVisualBasic", "Files", "Open")
-        If lastDir = "" Then
+        If lastDir = "" OrElse Not IO.Directory.Exists(lastDir) Then
             lastDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             Dim samplesDir = IO.Path.Combine(lastDir, "sVB Samples")
             If IO.Directory.Exists(samplesDir) Then
@@ -2185,6 +2185,17 @@ Public Class Designer
             SetValue(PageTopProperty, value)
         End Set
     End Property
+
+    Public Sub ShowProperties()
+        If SelectedItems.Count = 0 Then
+            DesignerDecorator.ShowProperies(Me)
+            Me.Focus()
+        Else
+            Dim pnl = Helper.GetDiagramPanel(SelectedItems(0))
+            pnl.ShowProps()
+            CType(SelectedItems(0), FrameworkElement).Focus()
+        End If
+    End Sub
 
     Public Shared ReadOnly PageTopProperty As DependencyProperty =
                            DependencyProperty.Register("PageTop",

@@ -74,18 +74,22 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         b4PrevToken As Token
                     ) As IClassificationType
 
-
             Select Case token.Type
                 Case TokenType.Dot, TokenType.Lookup
                     Return keywordType
+                Case TokenType.Question
+                    Return literalType
+                Case TokenType.HashQuestion
+                    Return numericType
             End Select
 
             If token.ParseType = ParseType.Identifier Then
                 Dim text = token.LCaseText
 
-                If text = "me" OrElse text = "global" Then
-                    Return keywordType
-                End If
+                Select Case text
+                    Case "me", "global"
+                        Return keywordType
+                End Select
 
                 If (prevToken.Type = TokenType.Dot OrElse prevToken.Type = TokenType.Lookup) Then
                     If b4PrevToken.ParseType = ParseType.Identifier Then
@@ -114,7 +118,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Case ParseType.NumericLiteral
                     Return numericType
                 Case ParseType.Operator
-                    Return operatorType
+                    Select Case token.Type
+                        Case TokenType.And, TokenType.Or, TokenType.Mod
+                            Return keywordType
+                        Case Else
+                            Return operatorType
+                    End Select
                 Case ParseType.StringLiteral, ParseType.DateLiteral
                     Return stringType
                 Case Else

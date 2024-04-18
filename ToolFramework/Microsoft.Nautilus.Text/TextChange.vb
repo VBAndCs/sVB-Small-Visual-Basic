@@ -25,9 +25,20 @@ Namespace Microsoft.Nautilus.Text
             End Get
         End Property
 
+        Friend _OldText As String
         Public ReadOnly Property OldText As String Implements ITextChange.OldText
+            Get
+                Return _OldText
+            End Get
+        End Property
+
+        Friend _NewText As String
 
         Public ReadOnly Property NewText As String Implements ITextChange.NewText
+            Get
+                Return _NewText
+            End Get
+        End Property
 
         Public ReadOnly Property NewLength As Integer Implements ITextChange.NewLength
             Get

@@ -145,10 +145,10 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Public Function GetInferedType(key As String) As VariableType
-            If InferedTypes.ContainsKey(key) Then
-                Return InferedTypes(key)
-            ElseIf ModuleNames?.ContainsKey(key) Then
+            If ModuleNames?.ContainsKey(key) Then
                 Return [Enum].Parse(GetType(VariableType), ModuleNames(key))
+            ElseIf InferedTypes.ContainsKey(key) Then
+                Return InferedTypes(key)
             Else
                 Return VariableType.Any
             End If
@@ -463,10 +463,7 @@ Namespace Microsoft.SmallVisualBasic
                 Case varDeclaration.Line
                     Return identifier.Column = varDeclaration.Column
                 Case Else
-                    ' a global var prevents defining a local var with the sam name,
-                    ' but a for iterator wuth the same name can be defined next as a local var,
-                    ' and in this case the var seems to be used before defined but it is ok
-                    Return identifier.Line > varDeclaration.Line OrElse _GlobalVariables.ContainsKey(var)
+                    Return identifier.Line > varDeclaration.Line
             End Select
 
         End Function

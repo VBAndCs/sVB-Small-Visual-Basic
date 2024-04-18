@@ -20,6 +20,8 @@ Namespace Microsoft.Nautilus.Text
 
         Function Replace(startPosition As Integer, charsToReplace As Integer, replaceWith As String) As Boolean
 
+        Sub RemoveLastChange()
+
         Function Apply() As ITextSnapshot
 
         Sub Cancel()

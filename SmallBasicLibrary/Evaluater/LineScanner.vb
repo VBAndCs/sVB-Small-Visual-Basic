@@ -98,24 +98,22 @@ Namespace Evaluator
 
                     If Char.IsLetter(currentChar) OrElse currentChar = "_"c Then
                         _currentIndex -= 1
-                        Dim text = ReadKeywordOrIdentifier()
-                        token.Type = If(text = "mod", TokenType.Mod, TokenType.Identifier)
-                        token.Text = text
+                        Dim word = ReadKeywordOrIdentifier()
+                        token.Type = If(word = "mod", TokenType.Mod, TokenType.Identifier)
+                        token.Text = word
 
                     ElseIf Char.IsDigit(currentChar) OrElse currentChar = "-"c OrElse currentChar = _decimalSeparator AndAlso Char.IsDigit(nextChar2) Then
                         _currentIndex -= 1
-                        Dim text2 As String = ReadNumericLiteral()
+                        Dim literal As String = ReadNumericLiteral()
                         token.Type = TokenType.NumericLiteral
-                        token.Text = text2
+                        token.Text = literal
 
                     Else
                         _currentIndex -= 1
-                        Dim text3 As String = ReadUntilNextSpace()
+                        Dim illegal As String = ReadUntilNextSpace()
                         token.Type = TokenType.Illegal
-                        token.Text = text3
+                        token.Text = illegal
                     End If
-
-                    Exit Select
             End Select
 
             Return True

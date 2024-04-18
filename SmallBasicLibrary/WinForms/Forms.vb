@@ -126,7 +126,6 @@ Namespace WinForms
                             _forms(form_Name) = wnd
 
                             ' Add control names:
-                            'Dim controls = GetChildren(canvas).ToList()
                             Dim menu As Menu = Nothing
 
                             Dim elements = canvas.Children
@@ -222,6 +221,7 @@ Namespace WinForms
                                             .RenderTransform = Nothing
                                      }
 
+                                    Panel.SetZIndex(lb, Panel.GetZIndex(fw))
                                     Control.SetAngle(lb, angle)
                                     fw.ClearValue(FrameworkElement.WidthProperty)
                                     fw.ClearValue(FrameworkElement.HeightProperty)
@@ -494,6 +494,8 @@ Namespace WinForms
 
         ''' <summary>
         ''' Shows a message box dialog.
+        ''' Use MsgBox as a shorcut name to show the message box. Ex:
+        ''' MsgBox "Hello!"
         ''' </summary>
         ''' <param name="message">the text to dislpay on the message box</param>
         ''' <param name="title">the title to display of the dialog box</param>

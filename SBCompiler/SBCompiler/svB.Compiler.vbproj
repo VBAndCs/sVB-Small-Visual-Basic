@@ -123,6 +123,7 @@
     <Compile Include="Expressions\MethodCallExpression.vb" />
     <Compile Include="Expressions\NegativeExpression.vb" />
     <Compile Include="Expressions\PropertyExpression.vb" />
+    <Compile Include="Program.vb" />
     <Compile Include="Statements\AssignmentStatement.vb" />
     <Compile Include="Statements\ElseIfStatement.vb" />
     <Compile Include="Statements\EmptyStatement.vb" />
@@ -150,7 +151,6 @@
     <Compile Include="Engine\Instructions\InstructionType.vb" />
     <Compile Include="LineScanner.vb" />
     <Compile Include="Parser.vb" />
-    <Compile Include="Program.vb" />
     <Compile Include="SemanticAnalyzer.vb" />
     <Compile Include="SymbolTable.vb" />
     <Compile Include="TokenType.vb" />

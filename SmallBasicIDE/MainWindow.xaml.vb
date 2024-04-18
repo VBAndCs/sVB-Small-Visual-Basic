@@ -120,19 +120,19 @@ Namespace Microsoft.SmallVisualBasic
         )
 
         Public Shared RunCommand As New RoutedUICommand(
-            ResourceHelper.GetString("RunProgramCommand"),
-            ResourceHelper.GetString("RunProgramCommand"),
+            "Run",
+            "RunProgramCommand",
             GetType(MainWindow)
         )
 
         Public Shared DebugCommand As New RoutedUICommand(
-            ResourceHelper.GetString("DebugCommand"),
-            ResourceHelper.GetString("DebugCommand"),
+            "Debug",
+            "DebugCommand",
             GetType(MainWindow)
          )
 
         Public Shared ToggleBreakpointCommand As New RoutedUICommand(
-            "Toggle Breakpoint",
+            "Breakpoint",
             "ToggleBreakpointCommand",
             GetType(MainWindow)
         )
@@ -150,7 +150,7 @@ Namespace Microsoft.SmallVisualBasic
         )
 
         Public Shared ShortStepOverCommand As New RoutedUICommand(
-            "Short Step Over",
+            "Block Over",
             "ShortStepOverCommand",
             GetType(MainWindow)
         )
@@ -168,7 +168,7 @@ Namespace Microsoft.SmallVisualBasic
         )
 
         Public Shared ShortStepOutCommand As New RoutedUICommand(
-            "Short Step Out",
+            "Block Out",
             "ShortStepOutCommand",
             GetType(MainWindow)
         )
@@ -203,10 +203,6 @@ Namespace Microsoft.SmallVisualBasic
             GetType(MainWindow)
         )
 
-        ''' <summary>
-        ''' DocumentTracker
-        ''' </summary>
-        ''' <returns></returns>
         Public ReadOnly Property DocumentTracker As New DocumentTracker()
 
         Public ReadOnly Property ActiveDocument As TextDocument
@@ -482,7 +478,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub OnProgramEnd(sender As Object, e As RoutedEventArgs)
             Dim debugger = GetDebugger(True)
             If debugger?.IsActive Then
-                debugger.Stop()
+                debugger.End()
             ElseIf currentProgramProcess IsNot Nothing AndAlso Not currentProgramProcess.HasExited Then
                 currentProgramProcess.Kill()
                 currentProgramProcess = Nothing
@@ -512,6 +508,66 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub OnPause(sender As Object, e As RoutedEventArgs)
             GetDebugger(False).Pause()
+        End Sub
+
+        Public Sub DisplayDebugCommands(show As Boolean)
+            Dim v1, v2 As Visibility
+            If show Then
+                v1 = Visibility.Visible
+                v2 = Visibility.Collapsed
+            Else
+                v1 = Visibility.Collapsed
+                v2 = Visibility.Visible
+            End If
+
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(StepOverCommand), v1)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(ShortStepOverCommand), v1)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(StepOutCommand), v1)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(ShortStepOutCommand), v1)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(PauseCommand), v1)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(EndProgramCommand), v1)
+
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(NewCommand), v2)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(SaveCommand), v2)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(SaveAsCommand), v2)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(CutCommand), v2)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(PasteCommand), v2)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(UndoCommand), v2)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(RedoCommand), v2)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(DebugCommand), v2)
+            Ribbon.SetVisible(RoutedRibbonCommand.Commands(ExportToVisualBasicCommand), v2)
+        End Sub
+
+        Private Sub CanToggleBreakpoint(sender As Object, e As CanExecuteRoutedEventArgs)
+            Dim doc = ActiveDocument
+            If doc Is Nothing Then
+                e.CanExecute = False
+                Return
+            End If
+
+            Dim pos = doc.EditorControl.TextView.Caret.Position.CharacterIndex
+            If pos < 0 Then
+                e.CanExecute = False
+                Return
+            End If
+
+            Dim line = doc.TextBuffer.CurrentSnapshot.GetLineFromPosition(pos)
+            If line.GetText().Trim() = "" Then
+                e.CanExecute = False
+                Return
+            End If
+
+            Dim lineNumber = line.LineNumber
+            Dim span = doc.GetFullStatementSpan(lineNumber)
+
+            If span Is Nothing Then
+                e.CanExecute = False
+            ElseIf doc.Breakpoints.Contains(lineNumber) Then
+                e.CanExecute = True
+            Else
+                Dim token = LineScanner.GetFirstToken(line.GetText(), 0)
+                e.CanExecute = token.Type <> TokenType.Comment
+            End If
         End Sub
 
         Private Sub OnToggleBreakpoint(sender As Object, e As RoutedEventArgs)
@@ -743,8 +799,7 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Private Sub OnDebugProgram()
-            Dim debugger = GetDebugger(False)
-            debugger.Run(False)
+            GetDebugger(False).Run(False)
         End Sub
 
 
@@ -1891,13 +1946,16 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub MainWindow_PreviewKeyDown(sender As Object, e As KeyEventArgs) Handles Me.PreviewKeyDown
-            If e.Key = Key.Escape Then
-                If PopHelp.IsOpen Then
-                    PopHelp.IsOpen = False
-                Else
-                    PopError.IsOpen = False
-                End If
-            End If
+            Select Case e.Key
+                Case Key.Escape
+                    If PopHelp.IsOpen Then
+                        PopHelp.IsOpen = False
+                    Else
+                        PopError.IsOpen = False
+                    End If
+                Case Key.F4
+                    formDesigner.ShowProperties()
+            End Select
         End Sub
 
         Dim closePopHelp As New DispatcherTimer(
@@ -2010,7 +2068,13 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub BtnRun_Click(sender As Object, e As RoutedEventArgs)
             RunProgram()
         End Sub
+
+        Private Sub BtnDebug_Click(sender As Object, e As RoutedEventArgs)
+            OnDebugProgram()
+        End Sub
+
+        Private Sub BtnProps_Click(sender As Object, e As RoutedEventArgs)
+            formDesigner.ShowProperties()
+        End Sub
     End Class
-
-
 End Namespace

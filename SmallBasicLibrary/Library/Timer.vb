@@ -11,7 +11,9 @@ Namespace Library
         Private Shared _threadTimer As Threading.Timer
 
         ''' <summary>
-        ''' Gets or sets the interval (in milliseconds) specifying how often the timer should raise the Tick event.  This value can range from 10 to 100000000
+        ''' Gets or sets the interval (in milliseconds) specifying how often the timer should raise the Tick event.  
+        ''' This value can range from 10 to 100000000.
+        ''' Note that setting the interval resumes the timer.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Interval As Primitive
@@ -85,8 +87,10 @@ Namespace Library
         ''' Resumes the timer from a paused state.  Tick events will now be raised.
         ''' </summary>
         Public Shared Sub [Resume]()
-            _threadTimer.Change(_interval, _interval)
-            _isRunnning = True
+            If Not _isRunnning Then
+                _threadTimer.Change(_interval, _interval)
+                _isRunnning = True
+            End If
         End Sub
 
         Private Shared Sub ThreadTimerCallback(tag As Object)

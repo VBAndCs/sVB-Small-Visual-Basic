@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v2.9.9.6" Loaded="Window_Loaded"
+        Title="Small Visual Basic v3.0" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -110,7 +110,7 @@
         <CommandBinding Command="{x:Static l:MainWindow.DebugCommand}" 
                     CanExecute="CanRunProgram" Executed="OnDebugProgram" />
         <CommandBinding Command="{x:Static l:MainWindow.ToggleBreakpointCommand}" 
-                    Executed="OnToggleBreakpoint" />
+                    CanExecute="CanToggleBreakpoint" Executed="OnToggleBreakpoint" />
         <CommandBinding Command="{x:Static l:MainWindow.StepOverCommand}" 
                     CanExecute="CanRunProgram" Executed="OnStepOver" />
         <CommandBinding Command="{x:Static l:MainWindow.ShortStepOverCommand}" 
@@ -122,7 +122,7 @@
         <CommandBinding Command="{x:Static l:MainWindow.ShortStepOutCommand}" 
                     CanExecute="CanRunProgram" Executed="OnShortStepOut" />
         <CommandBinding Command="{x:Static l:MainWindow.PauseCommand}" 
-                    CanExecute="CanRunProgram" Executed="OnPause" />
+                    Executed="OnPause" />
         <CommandBinding Command="{x:Static l:MainWindow.EndProgramCommand}" 
                     Executed="OnProgramEnd" />
         <CommandBinding Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" 
@@ -250,7 +250,7 @@
                                 <RowDefinition  />
                             </Grid.RowDefinitions>
 
-                            <shell:Ribbon x:Name="rib" Grid.RowSpan="2"
+                            <shell:Ribbon Grid.RowSpan="2"
                                           DockPanel.Dock="Top" Margin="0,-8,0,0">
                                 <shell:RibbonTabCollection>
                                     <shell:RibbonTab>
@@ -258,25 +258,29 @@
                                             <shell:LargeCommandGroup>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.NewCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileNew.png" Width="32" Height="32" />
+                                                        <Image ToolTip="New (Ctrl+N)"
+                                                               Source="pack://application:,,/sVB;component/Resources/FileNew.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
 
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.OpenCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileOpen.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Open (Ctrl+O)" 
+                                                               Source="pack://application:,,/sVB;component/Resources/FileOpen.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
 
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Save (Ctrl+S)"
+                                                            Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
 
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.SaveAsCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/FileSaveAs.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Save As"
+                                                               Source="pack://application:,,/sVB;component/Resources/FileSaveAs.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                             </shell:LargeCommandGroup>
@@ -288,34 +292,42 @@
                                                         Command="{x:Static l:MainWindow.WebLoadCommand}"
                                                         ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/WebOpen.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Import"
+                                                               Source="pack://application:,,/sVB;component/Resources/WebOpen.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
+                                                
                                                 <shell:RoutedRibbonCommand 
                                                         Command="{x:Static l:MainWindow.WebSaveCommand}" 
                                                         ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/WebSave.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Export"
+                                                               Source="pack://application:,,/sVB;component/Resources/WebSave.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                             </shell:LargeCommandGroup>
                                         </shell:CommandChunk>
 
-                                        <shell:CommandChunk Name="{lu:Localized ClipboardGroup}">
+                                        <shell:CommandChunk Name="ClipboardGroup">
                                             <shell:LargeCommandGroup>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CutCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditCut.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Cut (Ctrl+X)"
+                                                               Source="pack://application:,,/sVB;component/Resources/EditCut.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
+                                                
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.CopyCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditCopy.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Copy (Ctrl+C)"
+                                                               Source="pack://application:,,/sVB;component/Resources/EditCopy.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
+                                                
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.PasteCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditPaste.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Paste (Ctrl+V)"
+                                                               Source="pack://application:,,/sVB;component/Resources/EditPaste.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                             </shell:LargeCommandGroup>
@@ -323,12 +335,15 @@
                                             <shell:LargeCommandGroup>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.UndoCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditUndo.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Undo (Ctrl+Z)"
+                                                               Source="pack://application:,,/sVB;component/Resources/EditUndo.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
+                                                
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RedoCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/EditRedo.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Redo (Ctrl+Y)"
+                                                            Source="pack://application:,,/sVB;component/Resources/EditRedo.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                             </shell:LargeCommandGroup>
@@ -338,13 +353,84 @@
                                             <shell:LargeCommandGroup>
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.RunCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/ProgramRun.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Run (F5)"
+                                                            Source="pack://application:,,/sVB;component/Resources/ProgramRun.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+                                                
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.DebugCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image ToolTip="Debug (Ctrl+F5)"
+                                                            Source="pack://application:,,/sVB;component/Resources/debug.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
 
+                                                <shell:RoutedRibbonCommand shell:Ribbon.Visible="Collapsed"
+                                                    Command="{x:Static l:MainWindow.PauseCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image ToolTip="Break (Ctrl+F11)"
+                                                            Source="pack://application:,,/sVB;component/Resources/break.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+
+                                                <shell:RoutedRibbonCommand shell:Ribbon.Visible="Collapsed"
+                                                    Command="{x:Static l:MainWindow.EndProgramCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image ToolTip="End Debuggiing(Shift+F5)"
+                                                            Source="pack://application:,,/sVB;component/Resources/end.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+                                                
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.StepIntoCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image ToolTip="Step Into (F11)"
+                                                            Source="pack://application:,,/sVB;component/Resources/stepinto.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+
+                                                <shell:RoutedRibbonCommand shell:Ribbon.Visible="Collapsed"
+                                                    Command="{x:Static l:MainWindow.StepOverCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image ToolTip="Step Over (F10)"
+                                                            Source="pack://application:,,/sVB;component/Resources/stepover.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+
+                                                <shell:RoutedRibbonCommand shell:Ribbon.Visible="Collapsed"
+                                                    Command="{x:Static l:MainWindow.ShortStepOverCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image ToolTip="Block Over (Ctrl+F10)"
+                                                            Source="pack://application:,,/sVB;component/Resources/blockover.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+
+                                                <shell:RoutedRibbonCommand shell:Ribbon.Visible="Collapsed"
+                                                    Command="{x:Static l:MainWindow.StepOutCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image ToolTip="Step out (F12)"
+                                                            Source="pack://application:,,/sVB;component/Resources/stepout.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+
+                                                <shell:RoutedRibbonCommand shell:Ribbon.Visible="Collapsed"
+                                                    Command="{x:Static l:MainWindow.ShortStepOutCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image ToolTip="Block Out (Ctrl+F12)" 
+                                                            Source="pack://application:,,/sVB;component/Resources/blockout.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>
+
+                                                <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.ToggleBreakpointCommand}" ShowCommandText="True">
+                                                    <shell:Ribbon.LargeIcon>
+                                                        <Image ToolTip="Toggle Breakpoint (F9)&#x0a;or dbl-click the line margin"
+                                                            Source="pack://application:,,/sVB;component/Resources/breakpoint.png" Width="32" Height="32" />
+                                                    </shell:Ribbon.LargeIcon>
+                                                </shell:RoutedRibbonCommand>   
+                                                
                                                 <shell:RoutedRibbonCommand Command="{x:Static l:MainWindow.ExportToVisualBasicCommand}" ShowCommandText="True">
                                                     <shell:Ribbon.LargeIcon>
-                                                        <Image Source="pack://application:,,/sVB;component/Resources/VBExport.png" Width="32" Height="32" />
+                                                        <Image ToolTip="Export To Visual Basic"
+                                                               Source="pack://application:,,/sVB;component/Resources/VBExport.png" Width="32" Height="32" />
                                                     </shell:Ribbon.LargeIcon>
                                                 </shell:RoutedRibbonCommand>
                                             </shell:LargeCommandGroup>
@@ -386,8 +472,7 @@
                                    StaysOpen="True" Placement="Relative"
                                    Opened="PopHelp_Opened"  
                                    Closed="PopHelp_Closed">
-                                <lu:HelpPanel x:Name="HelpPanel" 
-                                              Width="Auto"/>
+                                <lu:HelpPanel x:Name="HelpPanel" Width="Auto"/>
                             </Popup>
                             
                             <Popup x:Name="PopError" MaxHeight="250" 
@@ -429,10 +514,20 @@
                         Click="BtnSavePage_Click">
                     <Image Source="pack://application:,,/sVB;component/Resources/FileSave.png" Width="24" Height="24" />
                 </Button>
-                <Button x:Name="BtnRun" Margin="5,0,20,0" ToolTip="Run Program (F5)"
+                <Button x:Name="BtnProps"  ToolTip="Properties (F4)"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Click="BtnProps_Click">
+                    <Image Source="pack://application:,,/sVB;component/Resources/properties.png" Width="24" Height="24" />
+                </Button>                
+                <Button x:Name="BtnRun" Margin="10,0,0,0" ToolTip="Run Program (F5)"
                         Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                         Click="BtnRun_Click">
                     <Image Source="pack://application:,,/sVB;component/Resources/ProgramRun.png" Width="24" Height="24" />
+                </Button>
+                <Button x:Name="BtnDebug" Margin="0,0,20,0" ToolTip="Debug(Ctrl+F5)"
+                        Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                        Click="BtnDebug_Click">
+                    <Image Source="pack://application:,,/sVB;component/Resources/debug.png" Width="24" Height="24" />
                 </Button>                
             </StackPanel>
             

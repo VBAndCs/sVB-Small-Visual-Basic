@@ -10,7 +10,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Public Event DebuggerStateChanged(runner As ProgramRunner)
 
-        Public Property Parsers As List(Of Parser)
+        Public ReadOnly Property Parsers As List(Of Parser)
 
         Public ReadOnly Property CurrentLineNumber As Integer
             Get
@@ -18,16 +18,24 @@ Namespace Microsoft.SmallVisualBasic.Engine
             End Get
         End Property
 
-
-        Public Property Translator As ProgramTranslator
+        Dim _CurrentRunner As ProgramRunner
 
         Public Property CurrentRunner As ProgramRunner
+            Get
+                Return _CurrentRunner
+            End Get
+
+            Set(runner As ProgramRunner)
+                If runner Is Nothing OrElse Not runner.Evaluating Then
+                    _CurrentRunner = runner
+                End If
+            End Set
+        End Property
 
         Public Property PausedRunner As ProgramRunner
 
         Public Runners As Dictionary(Of Parser, ProgramRunner)
         Public SubRunners As Dictionary(Of Parser, ProgramRunner)
-        Public Evaluating As Boolean
 
         Public Sub New(parsers As List(Of Parser))
             Me.Parsers = parsers
@@ -46,7 +54,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
             Get
                 If _PausedRunner Is Nothing Then
                     For Each runner In Runners.Values
-                        If runner.BreakMode Then
+                        If runner.isPaused Then
                             _PausedRunner = runner
                             Return True
                         End If
@@ -94,7 +102,6 @@ Namespace Microsoft.SmallVisualBasic.Engine
             If CanRun Then
                 _PausedRunner.DebuggerCommand = DebuggerCommand.Run
                 _PausedRunner.ChangeDebuggerState(DebuggerState.Running)
-                _PausedRunner.BreakMode = False
                 _PausedRunner.Continue(True)
             End If
         End Sub
@@ -118,7 +125,6 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 CurrentRunner.StepInto()
             End If
         End Sub
-
 
         Public Sub StepInto()
             If CanRun Then
@@ -157,20 +163,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Friend StopOnFirstStaement As Boolean
 
-        Public ReadOnly Property BreakMode As Boolean
-            Get
-                For Each runner In Runners.Values
-                    If runner.BreakMode Then Return True
-                Next
-
-                For Each runner In SubRunners.Values
-                    If runner.BreakMode Then Return True
-                Next
-
-                Return False
-            End Get
-        End Property
-
+        Public Property BreakMode As Boolean
 
         Public Sub RunProgram(Optional stopOnFirstStaement As Boolean = False)
             Me.StopOnFirstStaement = stopOnFirstStaement
@@ -195,7 +188,6 @@ Namespace Microsoft.SmallVisualBasic.Engine
                     If Library.Program.IsTerminated Then Return
 
                     MainRunner.ChangeDebuggerState(DebuggerState.Running)
-                    MainRunner.BreakMode = False
                     If TypeOf result Is Statements.EndDebugging Then Return
 
                     ' Allow event handlers to break
@@ -219,34 +211,80 @@ Namespace Microsoft.SmallVisualBasic.Engine
             debuggerThread.Start()
         End Sub
 
-        Public Sub Disopese()
-            Me.Parsers = Nothing
+        Private Sub [End]()
+            For Each runner In Runners.Values
+                Abort(runner.CurrentThread)
+            Next
+
+            For Each runner In SubRunners.Values
+                Abort(runner.CurrentThread)
+            Next
+
+            For Each parser In Parsers
+                Try
+                    Abort(parser.EvaluationRunner?.CurrentThread)
+                Catch ex As Exception
+                End Try
+            Next
+        End Sub
+
+        Private Sub Abort(thread As Thread)
+            If thread Is Nothing Then Return
+
+            If (thread.ThreadState And ThreadState.Aborted) <> 0 OrElse
+                   (thread.ThreadState And ThreadState.AbortRequested) <> 0 OrElse
+                   (thread.ThreadState And ThreadState.Unstarted) <> 0 Then
+                Return
+            ElseIf (thread.ThreadState And ThreadState.Suspended) <> 0 OrElse
+                    (thread.ThreadState And ThreadState.SuspendRequested) <> 0 Then
+                Try
+                    thread.Resume()
+                Catch ex As Exception
+                End Try
+            End If
+
+            Try
+                thread.Abort()
+            Catch ex As Exception
+            End Try
+        End Sub
+
+        Friend Sub ResetEvaluationRunners()
+            For Each parser In Parsers
+                parser.EvaluationRunner = Nothing
+            Next
+        End Sub
+
+        Public Sub Dispose()
+            [End]()
+            Me.Parsers.Clear()
             Me.CurrentRunner = Nothing
             Me.GlobalParser = Nothing
             Me.Runners.Clear()
             Me.SubRunners.Clear()
         End Sub
 
-        Public Function GetRunner(file As String) As ProgramRunner
+        Public Function GetEvaluationRunner(file As String) As ProgramRunner
             For Each r In Runners.Values
                 If r.Parser.DocPath.ToLower = file.ToLower() Then
-                    Dim runner As New ProgramRunner(Me, r.Parser, True)
-                    runner.Fields = New Dictionary(Of String, Primitive)(r.Fields)
-                    Return runner
+                    Return r.GetEvaluationRunner()
                 End If
             Next
             Return Nothing
         End Function
 
+
         Public Sub UpdateBreakpoints(breakpoints As List(Of Integer), file As String)
+            file = file.ToLower()
+
             For Each runner In Runners.Values
-                If runner.Parser.DocPath.ToLower = file.ToLower() Then
+                If runner.Parser.DocPath.ToLower() = file Then
                     runner.Breakpoints = breakpoints
                 End If
             Next
 
             For Each runner In SubRunners.Values
-                If runner.Parser.DocPath.ToLower = file.ToLower() Then
+                If runner.Parser.DocPath.ToLower() = file Then
                     runner.Breakpoints = breakpoints
                 End If
             Next

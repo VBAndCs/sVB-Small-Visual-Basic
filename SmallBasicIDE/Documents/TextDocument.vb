@@ -19,6 +19,7 @@ Imports System.Linq
 Imports Microsoft.SmallVisualBasic.LanguageService
 Imports System.Windows
 Imports Microsoft.SmallBasic
+Imports System.Windows.Input
 
 Namespace Microsoft.SmallVisualBasic.Documents
     Public Class TextDocument
@@ -123,7 +124,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Get
                 If _editorControl Is Nothing Then
                     _editorControl = New CodeEditorControl With {.TextBuffer = TextBuffer}
-                    AddHandler _editorControl.KeyUp, AddressOf AutoCompleteBlocks
+                    AddHandler _editorControl.KeyUp, AddressOf OnKeyUp
+                    AddHandler _editorControl.PreviewTextInput, AddressOf OnTextInput
+
                     App.GlobalDomain.AddComponent(_editorControl)
                     App.GlobalDomain.Bind()
                     _editorControl.HighlightSearchHits = True
@@ -155,6 +158,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 StatementMarkerProvider.ClearAllMarkers()
                 _editorControl.LineNumberMargin.ClearBreakpoint()
             End If
+            _breakpoints?.Clear()
         End Sub
 
         Friend Sub ToggleBreakpoint(ByRef lineNumber As Integer, ByRef showBreakpoint As Boolean)
@@ -426,7 +430,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     matchingPair1 = "["c
                     matchingPair2 = "]"c
 
-                Case TokenType.LeftCurlyBracket
+                Case TokenType.LeftBrace
                     matchingPair1 = "{"c
                     matchingPair2 = "}"c
 
@@ -440,7 +444,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     matchingPair2 = "["c
                     direction = -1
 
-                Case TokenType.RightCurlyBracket
+                Case TokenType.RightBrace
                     matchingPair1 = "}"c
                     matchingPair2 = "{"c
                     direction = -1
@@ -615,10 +619,10 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Function
 
         Private Sub CompileForHighlight()
-            If GetProperty(Of Boolean)("GlobalChanged") Then needsToreCompile = True
+            If GetProperty(Of Boolean)("GlobalChanged") Then needsToReCompile = True
             CompileGlobalModule()
-            If needsToreCompile Then
-                needsToreCompile = False
+            If needsToReCompile Then
+                needsToReCompile = False
                 highlightCompiler.Compile(New StringReader(Me.Text), True)
             End If
         End Sub
@@ -679,7 +683,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Public Overrides Sub Close()
             RemoveHandler _editorControl.TextView.Caret.PositionChanged, AddressOf OnCaretPositionChanged
-            RemoveHandler _editorControl.KeyUp, AddressOf AutoCompleteBlocks
+            RemoveHandler _editorControl.KeyUp, AddressOf OnKeyUp
             RemoveHandler _editorControl.LineNumberMargin.LineBreakpointChanged, AddressOf ToggleBreakpoint
             RemoveHandler _textBuffer.Changed, AddressOf OnTextBufferChanged
             RemoveHandler _undoHistory.UndoRedoHappened, AddressOf UndoRedoHappened
@@ -762,7 +766,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Dim _formatting As Boolean
-
         Dim sourceCodeChanged As Boolean = True
         Dim needsToReCompile As Boolean
         Dim needsToFormat As Boolean = True
@@ -824,51 +827,110 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         End Sub
 
-        Private Sub AutoCompleteBlocks(sender As Object, e As System.Windows.Input.KeyEventArgs)
-            If (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Control) <> 0 Then Return
-
+        Private Sub OnKeyUp(sender As Object, e As System.Windows.Input.KeyEventArgs)
             Dim textView = EditorControl.TextView
-            Dim text = textView.TextSnapshot
+            Dim snapshot = textView.TextSnapshot
             Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
-            If insertionIndex = 0 Then Return
-
-            Dim c = text.GetText(insertionIndex - 1, 1)
-            If Char.IsLetterOrDigit(c) OrElse c = "_" Then Return
-            Dim line = text.GetLineFromPosition(insertionIndex)
+            Dim line = snapshot.GetLineFromPosition(insertionIndex)
             Dim code = line.GetText()
 
             Select Case e.Key
-                Case System.Windows.Input.Key.Enter, System.Windows.Input.Key.Space, System.Windows.Input.Key.Tab
-                    ' Commit chars
+                Case Input.Key.F1
+                    Dim m = Helper.MainWindow
+                    Dim sel = textView.Selection
 
-                Case System.Windows.Input.Key.Up, System.Windows.Input.Key.Down, System.Windows.Input.Key.PageUp, System.Windows.Input.Key.PageDown
+                    If Not sel.IsEmpty AndAlso m.GetDebugger(True)?.IsActive AndAlso
+                            (Not m.PopHelp.IsOpen OrElse Not m.HelpPanel.DontShowHelp) Then
+                        m.Dispatcher.BeginInvoke(Sub() m.EvaluateExpression(sel.ActiveSnapshotSpan.GetText()))
+                    End If
+
+                Case Input.Key.Up, Input.Key.Down,
+                         Input.Key.PageUp, Input.Key.PageDown
                     If code.Trim(" "c, vbTab) = "" Then
                         textView.Caret.MoveTo(line.End)
                     End If
-                    Return
 
-                Case Else
-                    If c <> "("c Then Return
+                Case Key.Enter
+                    e.Handled = AutoComplete(True, False)
+
+                Case Key.Space, Key.Tab
+                    e.Handled = AutoComplete(False, False)
 
             End Select
 
+        End Sub
+
+        Private Sub OnTextInput(sender As Object, e As TextCompositionEventArgs)
+            Select Case e.Text
+                Case "("
+                    e.Handled = AutoComplete(False, True)
+                    AddClosingChar("("c, ")"c)
+
+                Case "["
+                    AddClosingChar("["c, "]"c)
+
+                Case "{"
+                    AddClosingChar("{"c, "}"c)
+
+                Case _QUOTE
+                    If CheckAdded(_QUOTE) Then
+                        e.Handled = True
+                    Else
+                        AddClosingChar(_QUOTE, _QUOTE)
+                    End If
+
+                Case ")"c
+                    e.Handled = CheckAdded("("c)
+                Case "]"c
+                    e.Handled = CheckAdded("["c)
+                Case "}"c
+                    e.Handled = CheckAdded("{"c)
+            End Select
+        End Sub
+
+        Private Function CheckAdded(openingChar As Char) As Boolean
+            Dim t = Now
+            Dim textView = EditorControl.TextView
+            Dim snapshot = textView.TextSnapshot
+            Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
+            If insertionIndex = 0 Then Return False
+
+            If snapshot(insertionIndex - 1) = openingChar Then
+                If (t - lastAdded(openingChar)).TotalMilliseconds < 500 Then
+                    ' user is writing 2 suceesive quotes and we shold remove the auto added one
+                    textView.Caret.MoveTo(insertionIndex + 1)
+                    Return True
+                End If
+            End If
+
+            Return False
+        End Function
+
+        Private Function AutoComplete(newLine As Boolean, LeftParan As Boolean) As Boolean
+            Dim textView = EditorControl.TextView
+            Dim snapshot = textView.TextSnapshot
+            Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
+            If insertionIndex = 0 Then Return False
+
+            Dim line = snapshot.GetLineFromPosition(insertionIndex)
+            Dim code = line.GetText()
+
             Try
                 If code.Trim = "" Then
-                    If e.Key = System.Windows.Input.Key.Enter Then
-                        line = text.GetLineFromLineNumber(line.LineNumber - 1)
+                    If newLine Then
+                        line = snapshot.GetLineFromLineNumber(line.LineNumber - 1)
                         code = line.GetText()
                     Else
-                        Return
+                        Return False
                     End If
                 End If
 
                 Dim keyword = code.Trim(" "c, vbTab(0), "("c).ToLower()
-                Dim paran = If(c = "(", "(", "")
-                e.Handled = True
+                Dim paran = If(LeftParan, "(", "")
 
                 Select Case keyword
                     Case ""
-                        Return
+                        Return False
 
                     Case "if"
                         AutoCompleteBlock(textView, line, code, keyword, $"If {paran} Then#   ", "EndIf", paran.Length)
@@ -877,7 +939,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                         AutoCompleteBlock(textView, line, code, keyword, $"ElseIf {paran} Then#   ", "", paran.Length)
 
                     Case "for"
-                        AutoCompleteBlock(textView, line, code, keyword, $"For  = ? To ?#   ", "Next", paran.Length)
+                        AutoCompleteBlock(textView, line, code, keyword, $"For i = 1 To 1#   ", "Next", paran.Length)
 
                     Case "foreach"
                         AutoCompleteBlock(textView, line, code, keyword, $"ForEach  In ?#   ", "Next", paran.Length)
@@ -892,12 +954,78 @@ Namespace Microsoft.SmallVisualBasic.Documents
                         AutoCompleteBlock(textView, line, code, keyword, $"Function #   ", "EndFunction", paran.Length)
 
                     Case Else
-                        e.Handled = False
-
+                        Return False
                 End Select
 
             Catch
             End Try
+
+            Return True
+        End Function
+
+        Const _QUOTE = ChrW(34)
+        Dim lastAdded As New Dictionary(Of Char, Date) From {
+                {"("c, Nothing},
+                {"["c, Nothing},
+                {"{"c, Nothing},
+                {_QUOTE, Nothing}
+            }
+
+        Private Sub AddClosingChar(openingChar As Char, closingChar As Char)
+            Dim t = Now
+            Dim textView = EditorControl.TextView
+            Dim snapshot = textView.TextSnapshot
+            Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
+            Dim line = snapshot.GetLineFromPosition(insertionIndex)
+            Dim code = line.GetText()
+            Dim addQuote = False
+
+            If insertionIndex < snapshot.Length Then
+                Dim nextChar = snapshot(insertionIndex)
+                Select Case nextChar
+                    Case vbCr, vbLf
+                        addQuote = True
+
+                    Case "("c, "["c, "{"c, "_"c, _QUOTE
+                        Return
+
+                    Case Else
+                        If (closingChar <> _QUOTE OrElse nextChar <> closingChar) AndAlso
+                                Not Char.IsLetterOrDigit(nextChar) Then
+                            addQuote = True
+                        End If
+                End Select
+            Else
+                addQuote = True
+            End If
+
+            If addQuote Then
+                Dim tokens = LineScanner.GetTokens(code.Substring(0, insertionIndex - line.Start), 0)
+                If tokens.Count > 0 Then
+                    Select Case tokens(tokens.Count - 1).ParseType
+                        Case ParseType.Operator, ParseType.Keyword
+                            ' add extra quote
+                        Case Else
+                            Select Case tokens(tokens.Count - 1).Type
+                                Case TokenType.Question, TokenType.Colon
+                                       ' add extra quote
+                                Case TokenType.Identifier
+                                    If tokens(tokens.Count - 1).LCaseText <> "msgbox" Then
+                                        Return
+                                    End If
+                                Case Else
+                                    Return
+                            End Select
+                    End Select
+                End If
+
+                Using textEdit = TextBuffer.CreateEdit()
+                    textEdit.Insert(insertionIndex, closingChar)
+                    textEdit.Apply()
+                    textView.Caret.MoveTo(insertionIndex)
+                    lastAdded(openingChar) = t
+                End Using
+            End If
         End Sub
 
         Dim stopFormatingLine As Integer = -1
@@ -981,8 +1109,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
             )
 
             textView.Caret.MoveTo(line.Start + indent + Len(keyword) + 1 + n)
+            If keyword = "for" Then _editorControl.EditorOperations.SelectCurrentWord()
             stopFormatingLine = line.LineNumber
-            '_formatting = False
         End Sub
 
         Friend Sub Focus(Optional moveToStart As Boolean = False)

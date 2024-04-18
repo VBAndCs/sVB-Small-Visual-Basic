@@ -218,14 +218,16 @@ Namespace WinForms
 
         ''' <summary>
         ''' Divides the first number by the second and returns the remainder.
+        ''' Note that you can directly use the Mod operator to get the same result.
         ''' </summary>
         ''' <param name="divisor">
-        ''' The number that divides.
+        ''' The number that divides. It can be positive or negative, but it can't be zero, otherwise this methodd will caause an error.
         ''' </param>
         ''' <returns>
-        ''' The remainder after the division.
+        ''' The remainder after the division. It can be positive, negative or zero.
+        ''' An example of a negative remainder is Remaibder(-10, -3) which returns -1, because
+        ''' -10 = -3 * 3 - 1
         ''' </returns>
-        <ReturnValueType(VariableType.Double)>
         <ExMethod>
         Public Shared Function Remainder(dividend As Primitive, divisor As Primitive) As Primitive
             Return Math.Remainder(dividend, divisor)

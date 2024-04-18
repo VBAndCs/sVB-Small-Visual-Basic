@@ -231,6 +231,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         symbolTable = bag.SymbolTable
                     End If
 
+                    Dim Comment = item.DefinitionIdintifier.Comment
                     _docs = New CompletionItemDocumentation() With {
                             .Prefix = "Global Variable: ",
                             .Suffix = If(
@@ -238,26 +239,29 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     InferType(item.Key, symbolTable),
                                     $" As {item.ObjectName}"
                             ),
-                            .Summary = item.DefinitionIdintifier.Comment
+                            .Summary = Comment & If(Comment = "", "", vbCrLf) &
+                                    $"Note that you can use this variable as an object using the syntax: {item.DisplayName}.MemberName"
                     }
 
                 Case SymbolType.LocalVariable
                     Dim vars = bag.SymbolTable.LocalVariables
                     Dim var = item.Key
                     If Not vars.ContainsKey(var) Then Return
-                    Dim varExpr = vars(var)
 
+                    Dim varExpr = vars(var)
+                    Dim emptyOrFroms = item.ObjectName = "" OrElse item.ObjectName = "Forms"
+                    Dim comment = varExpr.Identifier.Comment
                     _docs = New CompletionItemDocumentation() With {
                             .Prefix = If(varExpr.IsParam,
                                 "Parameter: " & varExpr.Subroutine.Name.Text & ".",
                                 "Local Variable: "
                             ),
-                            .Suffix = If(
-                                item.ObjectName = "" OrElse item.ObjectName = "Forms",
+                            .Suffix = If(emptyOrFroms,
                                 InferType(item.Key, bag.SymbolTable),
                                 $" As {item.ObjectName}"
                             ),
-                            .Summary = varExpr.Identifier.Comment
+                            .Summary = comment & If(comment = "", "", vbCrLf) &
+                                   $"Note that you can use this variable as an object using the syntax: {item.DisplayName}.MemberName"
                     }
 
                 Case SymbolType.GlobalModule
@@ -278,8 +282,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             .Prefix = "Global Variable: ",
                             .Suffix = If(item.ObjectName = "", "", $" As {item.ObjectName}"),
                             .Summary = If(item.DisplayName = "Me",
-                                 $"Me is a global variable that referes to the current form, which is {item.Key} in this context",
-                                 $"A global variable that referes to a {item.ObjectName} control that you created by the form designer"
+                                 $"Me is a global variable that referes to the current form, which is {item.Key} in this context. " &
+                                 $"You can use this variable as an object like Me.Left = 0",
+                                 $"A global variable that referes to a {item.ObjectName} control that you created by the form designer. " &
+                                 $"You can use this variable as an object like {item.DisplayName}.Left = 0"
                             )
                     }
 

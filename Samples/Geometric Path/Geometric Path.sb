@@ -11,9 +11,12 @@ GeometricPath.AddLineSegment(200, 200, False)
 GeometricPath.AddLineSegment(250, 150, True)
 GeometricPath.AddLineSegment(200, 100, True)
 ' No need to close the figure because we sent True to the CreateFigure and it will close the figure for us.
-'GeometricPath.AddLineSegment(100, 100, True)
+' GeometricPath.AddLineSegment(100, 100, True)
 
-Sh1 = Shapes.AddGeometricPath(Colors.Red, 3, Colors.AliceBlue)
+GW.PenColor = Colors.Red
+GW.PenWidth = 3
+GW.BrushColor = Colors.AliceBlue
+Sh1 = Shapes.AddGeometricPath()
 Shapes.Rotate(Sh1, 45)
 
 
@@ -45,7 +48,10 @@ GeometricPath.AddQuadraticBezierSegment(
 )
 
 
-Sh2 = Shapes.AddGeometricPath(Colors.Blue, 5, 0)
+GW.PenColor = Colors.Blue
+GW.PenWidth = 5
+GW.BrushColor = Colors.None
+Sh2 = Shapes.AddGeometricPath()
 Shapes.Move(Sh2, 130, 100)
 
 
@@ -60,6 +66,10 @@ GeometricPath.AddTriangle(
    400, 400
 )
 
-Sh3 = Shapes.AddGeometricPath(Colors.Black, 1, Colors.Yellow)
+GW.PenColor = Colors.Black
+GW.PenWidth = 1
+GW.BrushColor = Colors.Yellow
+GW.GradientEndColor = Colors.Gold
+Sh3 = Shapes.AddGeometricPath()
 Shapes.Move(Sh3, 300, 0)
 Shapes.Rotate(Sh3, 45)

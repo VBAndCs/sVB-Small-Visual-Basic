@@ -70,7 +70,7 @@ Sub MainLoop()
       YPosDelta = 0
       While done = False
          Pause()
-         
+         MovePiece()
          If YPosDelta > 0 Then
             YPosDelta = YPosDelta - 1  ' used to create freespin, when the piece is rotated
          Else
@@ -78,7 +78,6 @@ Sub MainLoop()
             ' Check if the piece should stop.
             done = CheckStop()
          EndIf
-         MovePiece()
       Wend
    Wend
 EndSub
@@ -97,8 +96,8 @@ EndSub
 Sub MoveX()
    If ValidateMove() = 0 Then
       Xpos = Xpos + MoveDirection
+      MovePiece()
    EndIf
-   MovePiece()
 EndSub
 
 '-------------------------------------------------------
@@ -256,18 +255,16 @@ Function ValidateMove()
    template = Templates[0]
    For i = 1 To BOXES
       v = template[i]
-      x = Math.Floor(v / 10) + 1
-      y = Math.Remainder(v, 10) + 1
-      x1 = x + Xpos + MoveDirection + 1
-      y1 = y + Ypos + 1
+      x = Math.Floor(v / 10) + Xpos + MoveDirection + 2
+      y = Math.Remainder(v, 10) + Ypos + 1
       
-      If x1 < 1 Then
+      If x < 1 Then
          Return -1
-      ElseIf x1 > CWIDTH Then
+      ElseIf x > CWIDTH Then
          Return 1
-      ElseIf y1 = 0 And Ypos = -1 Then
+      ElseIf y = 0 And Ypos = -1 Then
          ' ignore
-      ElseIf Canvas[x1][y1] <> "." Then
+      ElseIf Canvas[x][y] <> "." Then
          Return 2
       EndIf
    Next
@@ -282,13 +279,10 @@ Function CheckStop()
    
    For i = 1 To BOXES
       v = template[i]
-      x = Math.Floor(v / 10) + 1
-      y = Math.Remainder(v, 10) + 1
-      x1 = x + Xpos + 1
-      y1 = y + Ypos + 1
+      x = Math.Floor(v / 10) + Xpos + 2
+      y = Math.Remainder(v, 10) + Ypos + 1
       
-      If y + Ypos > CHEIGHT Or
-            Canvas[x1][y1] <> "." Then
+      If y > CHEIGHT Or Canvas[x][y] <> "." Then
          done = True
          ExitLoop
       EndIf
@@ -299,7 +293,7 @@ Function CheckStop()
       For i = 1 To BOXES
          v = template[i]
          x = Math.Floor(v / 10) + Xpos + 2
-         y = Math.Remainder(v, 10) + Ypos + 1
+         y = Math.Remainder(v, 10) + Ypos
          Canvas[x][y] = ThisPiece[i]
       Next
       
@@ -348,7 +342,7 @@ Sub DeleteLines()
             Next
          Next
          
-         ' recheck the current line because it is shofted down
+         ' recheck the current line because it is shifted down
          y = y + 1
       EndIf
    Next

@@ -52,16 +52,16 @@ Sub MoveX
    If BallX >= x Then
       BallX = x
       BallXSpeed = -BallXSpeed
-      'Sound.PlayChimes()
-      'Sound.PlayMusic("O4L16 ML CDEFGAB")
+      ' Sound.PlayChimes()
+      ' Sound.PlayMusic("O4L16 ML CDEFGAB")
       
       Sound.Play(BoingSound)
       
    ElseIf (BallX <= 0) Then
       BallX = 0
       BallXSpeed = -BallXSpeed
-      'Sound.PlayBellRingAndWait()
-      'Sound.PlayMusic("O6L16 ML CDEFGAB")
+      ' Sound.PlayBellRingAndWait()
+      ' Sound.PlayMusic("O6L16 ML CDEFGAB")
       
       Sound.Play(BoingSound)
    EndIf
@@ -75,16 +75,16 @@ Sub MoveY()
    If BallY >= y Then
       BallY = y
       BallYSpeed = -BallYSpeed
-      'Sound.PlayChimes()
-      'Sound.PlayMusic("O4L16 ML CDEFGAB")
+      ' Sound.PlayChimes()
+      ' Sound.PlayMusic("O4L16 ML CDEFGAB")
       
       Sound.Play(BoingSound)
       
    ElseIf (BallY <= 0) Then
       BallY = 0
       BallYSpeed = -BallYSpeed
-      'Sound.PlayBellRingAndWait()
-      'Sound.PlayMusic("O6L16 ML CDEFGAB")
+      ' Sound.PlayBellRingAndWait()
+      ' Sound.PlayMusic("O6L16 ML CDEFGAB")
       
       Sound.Play(BoingSound)
    EndIf

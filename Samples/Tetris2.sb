@@ -1,0 +1,598 @@
+BOXES = 4      ' number of boxes per piece
+BWIDTH = 25    ' box width in pixels
+XOffset = 30   ' Screen X offset in pixels of where the board starts
+YOffset = 20   ' Screen Y offset in pixels of where the board starts
+CWIDTH = 10    ' Canvas Width, in number of boxes
+CHEIGHT = 22   ' Canvas Height, in number of boxes.
+StartDelay = 800
+EndDelay = 175
+PREVIEW_xpos = 13
+PREVIEW_ypos = 2
+
+GraphicsWindow.BackgroundColor = Color.FromRGB(253, 252, 251)
+GraphicsWindow.KeyDown = OnKeyDown
+GraphicsWindow.KeyUp = OnKeyUp
+Timer.Interval = 35
+Timer.Pause()
+Timer.Tick = MoveX
+PeiceTimer = Controls.AddTimer(800)
+PeiceTimer.OnTick = MoveY
+PeiceTimer.Pause()
+
+Xpos = 0
+Ypos = 0
+YPosDelta = 0
+Score = 0
+MoveDirection = 0
+Canvas = {}
+NextPiece = {}
+Templates = {}
+ThisPiece = {}
+CreateNewGame()
+SessionDelay = StartDelay
+
+Sub CreateNewGame()
+   Xpos = 0
+   Ypos = 0
+   YPosDelta = 0
+   Score = 0
+   MoveDirection = 0
+   Canvas = {}
+   
+   GraphicsWindow.Clear()
+   GraphicsWindow.Title = "sVB Tetris"
+   GraphicsWindow.Height = 580
+   GraphicsWindow.Width = 675
+   GraphicsWindow.CanResize = False
+   GraphicsWindow.Top = 10
+   
+   SetupCanvas()
+   Templates = {}
+   SetupTemplates()
+   ThisPiece = {}
+   NextPiece = CreatePiece()
+   DrawPreviewPiece()
+   SessionDelay = StartDelay
+   StartNextPeice()
+EndSub
+
+'-------------------------------------------------------
+Sub StartNextPeice()
+   Timer.Pause()
+   ThisPiece = NextPiece
+   Templates[0] = Templates[ThisPiece[0]]
+   Ypos = 0
+   Xpos = 3
+   MovePiece()
+   NextPiece = CreatePiece()
+   DrawPreviewPiece()
+   
+   If CheckStop() Then
+      Ypos = Ypos - 1
+      MovePiece()
+      GraphicsWindow.ShowMessage("Game Over", "Small Basic Tetris")
+      CreateNewGame()
+      Return
+   EndIf
+   
+   YPosDelta = 0
+   If SessionDelay > EndDelay Then
+      SessionDelay = SessionDelay - 1
+      PeiceTimer.Interval = SessionDelay
+   Else
+      PeiceTimer.Resume()
+   EndIf
+EndSub
+
+
+'------------------------------------------------
+Sub MoveY()
+   MovePiece()
+   
+   If YPosDelta > 0 Then
+      YPosDelta = YPosDelta - 1  ' used to create freespin, when the piece is rotated
+   Else
+      Ypos = Ypos + 1            ' otherwise, move the piece down.
+      ' Check if the piece should stop.
+      If CheckStop() Then
+         PeiceTimer.Pause()
+         StartNextPeice()
+         Return
+      EndIf
+   EndIf
+EndSub
+
+'------------------------------------------------
+Sub MoveX()
+   If ValidateMove() = 0 Then
+      Xpos = Xpos + MoveDirection
+      MovePiece()
+   EndIf
+EndSub
+
+'-------------------------------------------------------
+Sub OnKeyUp()
+   If Event.LastKey = Keys.Left Or Event.LastKey = Keys.Right Then
+      Timer.Pause()
+   ElseIf Event.LastKey = Keys.Down Then
+      PeiceTimer.Interval = SessionDelay
+   EndIf
+EndSub
+
+'-------------------------------------------------------
+
+
+Sub OnKeyDown()
+   ' Stop game
+   If Event.LastKey = Keys.Escape Then
+      Program.End()
+   EndIf
+   
+   
+   
+   ' Move piece left
+   If Event.LastKey = Keys.Left Then
+      MoveDirection = -1
+      Timer.Resume()
+      
+   ElseIf Event.LastKey = Keys.Right Then
+      MoveDirection = 1
+      Timer.Resume()
+      
+   ElseIf Event.LastKey = Keys.Down Then
+      PeiceTimer.Interval = 20
+      
+   ElseIf Event.LastKey = Keys.Space Then
+      PeiceTimer.Interval = 0
+      
+   ElseIf Event.LastKey = Keys.Up Then
+      Rotate("CW")
+   ElseIf Event.LastKey = Keys.Z Then
+      Rotate("CCW")
+   EndIf
+EndSub
+
+'-------------------------------------------------------
+Sub Rotate(direction)
+   CopyPiece(direction)
+   MoveDirection = 0
+   invalidMove = ValidateMove()
+   
+   ' See if it can be moved so that it will rotate.
+   xposbk = Xpos
+   YPosDelta = 0
+   While YPosDelta = 0 And Math.Abs(xposbk - Xpos) < 3 ' move up to 3 times only
+      If invalidMove = 0 Then
+         ThisPiece[0] = 0  ' Use the rotated peice afterwards
+         YPosDelta = 1 ' Don't move down if we rotate
+         MovePiece()
+      ElseIf invalidMove = 2 Then
+         ' Don't support shifting piece when hitting another piece to the right or left.
+         ExitLoop
+      Else
+         ' if the rotated piece can't be placed, move it left or right and try again.
+         Xpos = Xpos - invalidMove
+         invalidMove = ValidateMove()
+      EndIf
+   EndWhile
+   
+   If invalidMove = 0 Then
+      MovePiece()
+   Else
+      Xpos = xposbk
+   EndIf
+EndSub
+
+'-------------------------------------------------------
+Sub DrawPreviewPiece()
+   template = Templates[NextPiece[0]]
+   For i = 1 To BOXES
+      v = template[i]
+      x = Math.Floor(v / 10) + 1
+      y = Math.Remainder(v, 10) + 1
+      
+      ' xpos/ypos = are topleft of shape.  x/y is the box offset within the shape.
+      Shapes.Move(
+         NextPiece[i],
+         5 + template!PviewX + (PREVIEW_xpos + x) * BWIDTH,
+         -5 + template!PviewY + (PREVIEW_ypos + y) * BWIDTH
+      )
+   Next
+EndSub
+
+'-------------------------------------------------------
+' creates template that's a rotated basetemplate
+Sub CopyPiece(rotation)
+   baseTemplate = Templates[0]
+   template = {}
+   l = baseTemplate!dim
+   
+   If rotation = "CW" Then
+      For i = 1 To BOXES '      x' = y     y' = L - 1 - x
+         v = baseTemplate[i]
+         x = Math.Remainder(v, 10)
+         y = l - 1 - Math.Floor(v / 10)
+         template[i] = x * 10 + y
+      Next
+      
+      ' Count-Cockwise is not currently used
+   ElseIf rotation = "CCW" Then
+      For i = 1 To BOXES '      x' = L - 1 - y     y' = x
+         v = baseTemplate[i]
+         x = (l - 1 - Math.Remainder(v, 10))
+         y = Math.Floor(v / 10)
+         template[i] = x * 10 + y
+      Next
+   ElseIf rotation = "COPY" Then
+      For i = 1 To BOXES
+         template[i] = Array.GetValue(baseTemplate, i)
+      Next
+   Else
+      GraphicsWindow.ShowMessage("invalid parameter", "Error")
+      Program.End()
+   EndIf
+   
+   ' Copy the remain properties from basetemplate to template.
+   template!Color = baseTemplate!Color
+   template!Dim = baseTemplate!Dim
+   template!PviewX = baseTemplate!pviewX
+   template!PviewY = baseTemplate!pviewY
+   Templates[0] = template
+EndSub
+
+'-------------------------------------------------------
+Function CreatePiece()
+   GraphicsWindow.PenWidth = 1
+   GraphicsWindow.PenColor = Colors.Black
+   n = Math.GetRandomNumber(7)
+   template = Templates[n]
+   GraphicsWindow.BrushColor = template!Color
+   
+   piece[0] = n
+   For i = 1 To BOXES
+      s = Shapes.AddRectangle(BWIDTH, BWIDTH)
+      Shapes.Move(s, -BWIDTH, -BWIDTH) ' move off screen
+      piece[i] = s
+   Next
+   
+   Return piece
+EndFunction
+
+'-------------------------------------------------------
+Sub MovePiece()
+   template = Templates[0]
+   For i = 1 To BOXES
+      v = template[i]
+      x = Math.Floor(v / 10) + Xpos + 1
+      y = Math.Remainder(v, 10) + Ypos ' one is already added to move down
+      
+      ' xpos/ypos = are topleft of shape.  x/y is the box offset within the shape.
+      Shapes.Move(
+         ThisPiece[i],
+         XOffset + x * BWIDTH,
+         YOffset + y * BWIDTH)
+   Next
+EndSub
+
+'-------------------------------------------------------
+Function ValidateMove()
+   template = Templates[0]
+   For i = 1 To BOXES
+      v = template[i]
+      x = Math.Floor(v / 10) + Xpos + MoveDirection + 2
+      y = Math.Remainder(v, 10) + Ypos + 1
+      
+      If x < 1 Then
+         Return -1
+      ElseIf x > CWIDTH Then
+         Return 1
+      ElseIf Canvas[x][y] <> "." Then
+         Return 2
+      EndIf
+   Next
+   
+   Return 0
+EndFunction
+
+'-------------------------------------------------------
+Function CheckStop()
+   done = False
+   template = Templates[0]
+   
+   For i = 1 To BOXES
+      v = template[i]
+      x = Math.Floor(v / 10) + Xpos + 2
+      y = Math.Remainder(v, 10) + Ypos + 1
+      
+      If y > CHEIGHT Or Canvas[x][y] <> "." Then
+         done = True
+         ExitLoop
+      EndIf
+   Next
+   
+   ' If we need to stop the piece, move the box handles to the canvas
+   If done Then
+      For i = 1 To BOXES
+         v = template[i]
+         x = Math.Floor(v / 10) + Xpos + 2
+         y = Math.Remainder(v, 10) + Ypos
+         Canvas[x][y] = ThisPiece[i]
+      Next
+      
+      ' 1 points for every piece successfully dropped
+      Score = Score + 1
+      PrintScore()
+      
+      ' Delete clared lines
+      DeleteLines()
+   EndIf
+   
+   Return done
+EndFunction
+
+'-------------------------------------------------------
+Sub DeleteLines()
+   linesCleared = 0
+   
+   ' Iterate over each row, starting from the bottom
+   For y = CHEIGHT To 1 Step -1
+      ' Check to see if the whole row is filled
+      isFilled = True
+      For x = 1 To CWIDTH
+         If Canvas[x][y] = "." Then
+            isFilled = False
+            ExitLoop
+         EndIf
+      Next
+      
+      If isFilled Then
+         linesCleared = linesCleared + 1
+         ' Delete the line
+         For x1 = 1 To CWIDTH
+            Shapes.Remove(Canvas[x1][y])
+         Next
+         
+         ' Move everything else down one.
+         For y1 = y - 1 To 1 Step -1
+            For x1 = 1 To CWIDTH
+               cell = Canvas[x1][y1]
+               Canvas[x1][y1 + 1] = cell
+               Shapes.Move(
+                  cell,
+                  Shapes.GetLeft(cell),
+                  Shapes.GetTop(cell) + BWIDTH
+               )
+            Next
+         Next
+         
+         ' recheck the current line because it is shifted down
+         y = y + 1
+      EndIf
+   Next
+   
+   If linesCleared > 0 Then
+      Score = Score + 100 * Math.Round(linesCleared * 2.15 - 1)
+      PrintScore()
+   EndIf
+EndSub
+
+'-------------------------------------------------------
+Sub SetupCanvas()
+   GW.BrushColor = Colors.White
+   GW.FillRectangle(
+      XOffset,
+      YOffset,
+      CWIDTH * BWIDTH,
+      CHEIGHT * BWIDTH
+   )
+   
+   GW.PenWidth = 1
+   GW.PenColor = Colors.Pink
+   For x = 1 To CWIDTH
+      For y = 1 To CHEIGHT
+         Canvas[x][y] = "."             ' "." indicates spot is free
+         GraphicsWindow.DrawRectangle(
+            XOffset + (x - 1) * BWIDTH,
+            YOffset + (y - 1) * BWIDTH,
+            BWIDTH, BWIDTH
+         )
+      Next
+   Next
+   
+   GW.PenWidth = 4
+   GW.PenColor = Colors.Black
+   GW.DrawLine(
+      XOffset,
+      YOffset,
+      XOffset,
+      YOffset + CHEIGHT * BWIDTH
+   )
+   GW.DrawLine(
+      XOffset + CWIDTH * BWIDTH,
+      YOffset,
+      XOffset + CWIDTH * BWIDTH,
+      YOffset + CHEIGHT * BWIDTH
+   )
+   GW.DrawLine(
+      XOffset,
+      YOffset + CHEIGHT * BWIDTH,
+      XOffset + CWIDTH * BWIDTH,
+      YOffset + CHEIGHT * BWIDTH
+   )
+   GW.PenColor = Colors.Lime
+   GW.DrawLine(
+      XOffset - 4,
+      YOffset,
+      XOffset - 4,
+      YOffset + CHEIGHT * BWIDTH + 6
+   )
+   GW.DrawLine(
+      XOffset + CWIDTH * BWIDTH + 4,
+      YOffset,
+      XOffset + CWIDTH * BWIDTH + 4,
+      YOffset + CHEIGHT * BWIDTH + 6
+   )
+   GW.DrawLine(
+      XOffset - 4,
+      YOffset + CHEIGHT * BWIDTH + 4,
+      XOffset + CWIDTH * BWIDTH + 4,
+      YOffset + CHEIGHT * BWIDTH + 4
+   )
+   GW.PenColor = Colors.Black
+   GW.BrushColor = Colors.Pink
+   x = XOffset + PREVIEW_xpos * BWIDTH - BWIDTH
+   y = YOffset + PREVIEW_ypos * BWIDTH - BWIDTH
+   GW.FillRectangle(
+      x, y,
+      BWIDTH * 5, BWIDTH * 6
+   )
+   GW.DrawRectangle(
+      x, y,
+      BWIDTH * 5, BWIDTH * 6
+   )
+   GW.FillRectangle(
+      x, y + 190,
+      310, 170
+   )
+   GW.DrawRectangle(
+      x, y + 190,
+      310, 170
+   )
+   GW.BrushColor = Colors.Black
+   GW.FontItalic = False
+   GW.FontName = "Comic Sans MS"
+   GW.FontSize = 16
+   GW.DrawText(
+      x + 10, y + 200,
+      "Game control keys:"
+   )
+   GW.DrawText(
+      x + 25, y + 220,
+      "Left Arrow = Move piece left"
+   )
+   GW.DrawText(
+      x + 25, y + 240,
+      "Right Arrow = Move piece right"
+   )
+   GW.DrawText(
+      x + 25, y + 260,
+      "Up Arrow = Rotate piece"
+   )
+   GW.DrawText(
+      x + 25, y + 280,
+      "Down Arrow = Drop piece"
+   )
+   GW.DrawText(
+      x + 10, y + 320,
+      "Press Esc to stop game"
+   )
+   
+   GW.BrushColor = Colors.Black
+   GW.FontName = "Georgia"
+   GW.FontItalic = True
+   GW.FontSize = 36
+   GW.DrawText(
+      x + 60,
+      y + 400,
+      "sVB Tetris"
+   )
+   
+   GW.FontSize = 20
+   GW.DrawText(
+      x + 58,
+      y + 440,
+      "Based on SB Tetris"
+   )
+   Score = 0
+   PrintScore()
+EndSub
+
+
+'-------------------------------------------------------
+Sub PrintScore()
+   GW.FontItalic = False
+   GW.FontName = "Times New Roman"
+   GW.FontSize = 26
+   GW.BrushColor = Colors.Blue
+   GW.FontBold = True
+   GW.DrawText(495, 60, "Your Score:")
+   GW.PenWidth = 4
+   GW.BrushColor = Colors.Pink
+   GW.FillRectangle(485, 100, 153, 50)
+   GW.BrushColor = Colors.Black
+   GW.DrawRectangle(485, 100, 153, 50)
+   GW.FontSize = 32
+   GW.FontName = "Impact"
+   GW.BrushColor = Colors.DarkBlue
+   GW.DrawText(
+      490, 105,
+      Text.GetSubText(
+         "00000000",
+         1,
+         8 - Text.GetLength(Score)
+      ) & Score
+   )
+EndSub
+
+
+'-------------------------------------------------------
+Sub AddTemplate(blockArr, colour, dim, pviewX, pviewY)
+   For i = 1 To blockArr.Count
+      template[i] = blockArr[i]
+   Next
+   
+   template!Color = colour
+   template!Dim = dim
+   template!PviewX = pviewX
+   template!PviewY = pviewY
+   Templates = Templates.AddItem(template)
+EndSub
+
+'-------------------------------------------------------
+Sub SetupTemplates()
+   ' each piece has 4 boxes.
+   ' the index of each entry within a piece represents the box number (1-4)
+   ' the value of each entry represents to box zero-based box coordinate within the piece: tens place is x, ones place y
+   
+   '_X_
+   '_X_
+   '_XX
+   AddTemplate({0, 1, 2, 12}, Colors.Gold, 3, 12, 12)
+   
+   '_X_
+   '_X_
+   'XX_
+   AddTemplate({10, 11, 12, 2}, Colors.Magenta, 3, 12, 12)
+   
+   
+   '_X_
+   'XXX
+   '_
+   AddTemplate({10, 1, 11, 21}, Colors.Gray, 3, 0, 25)
+   
+   
+   'XX_
+   'XX_
+   '_
+   AddTemplate({0, 10, 1, 11}, Colors.Cyan, 2, 12, 25)
+   
+   
+   'XX_
+   '_XX
+   '_
+   AddTemplate({0, 10, 11, 21}, Colors.Green, 3, 0, 25)
+   
+   
+   '_XX
+   'XX_
+   '_
+   AddTemplate({10, 20, 1, 11}, Colors.Blue, 3, 0, 25)
+   
+   
+   '_X
+   '_X
+   '_X
+   '_X
+   AddTemplate({10, 11, 12, 13}, Colors.Red, 4, 0, 0)
+EndSub
+

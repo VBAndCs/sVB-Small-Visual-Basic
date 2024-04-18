@@ -23,7 +23,7 @@
     </sws:Export>
   
     <sws:Export Name='ClassificationFormat'>
-        <mntcd:ClassificationFormat ForegroundBrush='#FFdd6633'>
+        <mntcd:ClassificationFormat ForegroundBrush='#FF0000'>
             <mntcd:ClassificationFormat.ClassificationTypes>
                 <sys:String>SB_Numeric</sys:String>
             </mntcd:ClassificationFormat.ClassificationTypes>
@@ -63,8 +63,9 @@
     </sws:Export>
   
     <sws:Export Name='ClassificationFormat'>
-        <mntcd:ClassificationFormat 
-          ForegroundBrush='#FFcc6633'>
+        <mntcd:ClassificationFormat
+          ForegroundBrush='#DF1111'
+          FontWeight='UltraBold' >
             <mntcd:ClassificationFormat.ClassificationTypes>
                 <sys:String>SB_String</sys:String>
                 <sys:String>SB_Literal</sys:String>

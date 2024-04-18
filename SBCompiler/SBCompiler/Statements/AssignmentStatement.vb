@@ -358,6 +358,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                                     handlerRunner.DebuggerCommand = DebuggerCommand.Run
                                 Else
                                     handlerRunner.DebuggerCommand = DebuggerCommand.StepInto
+                                    ProgramRunner.EventsCommand = DebuggerCommand.Run
                                 End If
 
                                 subroutine.Parent.Execute(handlerRunner)
@@ -372,7 +373,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
                                 End If
 
                                 handlerRunner.StepAround = False
-                                handlerRunner.BreakMode = False
                                 handlerRunner.ChangeDebuggerState(DebuggerState.Finished)
                                 handlerRunner.ContinueAll()
                                 runner.EventThreads(handlerKey) = False

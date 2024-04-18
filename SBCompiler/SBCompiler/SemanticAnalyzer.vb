@@ -99,12 +99,30 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub AnalyzeBinaryExpression(binaryExpression As BinaryExpression, leaveValueInStack As Boolean, mustBeAssignable As Boolean)
-            If binaryExpression.LeftHandSide IsNot Nothing Then
-                AnalyzeExpression(binaryExpression.LeftHandSide, leaveValueInStack, mustBeAssignable)
+            Dim leftSide = binaryExpression.LeftHandSide
+            Dim rightSide = binaryExpression.RightHandSide
+
+            If leftSide IsNot Nothing Then
+                AnalyzeExpression(leftSide, leaveValueInStack, mustBeAssignable)
             End If
 
-            If binaryExpression.RightHandSide IsNot Nothing Then
-                AnalyzeExpression(binaryExpression.RightHandSide, leaveValueInStack, mustBeAssignable)
+            If rightSide IsNot Nothing Then
+                AnalyzeExpression(rightSide, leaveValueInStack, mustBeAssignable)
+            End If
+
+            Dim propExpr1 = TryCast(leftSide, PropertyExpression)
+            If propExpr1 IsNot Nothing Then
+                Dim type = propExpr1.TypeName.LCaseText
+                If (type = "gw" OrElse type = "graphicswindow") AndAlso
+                            propExpr1.PropertyName.LCaseText = "lastkey" Then
+                    Dim propExpr2 = TryCast(rightSide, PropertyExpression)
+                    If propExpr2 IsNot Nothing AndAlso
+                            propExpr2.TypeName.LCaseText = "keys" Then
+                        _symbolTable.Errors.Add(New [Error](propExpr2.TypeName,
+                             "The keys enum returns the key number so it can't be compared to the" & vbCrLf &
+                             "GW.LastKey property which returns the string name of the key"))
+                    End If
+                End If
             End If
         End Sub
 

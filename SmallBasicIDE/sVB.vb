@@ -410,7 +410,7 @@ Class sVB
                     Exit Sub
                 End If
 
-                If objId + 3 >= tokens.Count OrElse tokens(objId + 3).Type <> TokenType.Equals Then
+                If objId + 3 >= tokens.Count OrElse tokens(objId + 3).Type <> TokenType.EqualsTo Then
                     errors.Clear()
                     errors.Add(New [Error](nameToken, $"Expected `=` And a value to set the property"))
                     Exit Sub

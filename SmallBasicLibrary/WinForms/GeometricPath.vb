@@ -64,7 +64,9 @@ Namespace WinForms
             GraphicsWindow.Invoke(
                 Sub()
                     Dim r As New Rect(CInt(x), CInt(y), width, height)
-                    Group.Children.Add(New RectangleGeometry(r))
+                    Dim rg As New RectangleGeometry(r)
+                    Group.Children.Add(rg)
+                    rg.Freeze()
                 End Sub)
         End Sub
 
@@ -82,7 +84,9 @@ Namespace WinForms
                     Dim w = CDbl(width) / 2
                     Dim h = CDbl(height) / 2
                     Dim p As New Point(CDbl(x) + w, CDbl(y) + h)
-                    Group.Children.Add(New EllipseGeometry(p, w, h))
+                    Dim eg As New EllipseGeometry(p, w, h)
+                    Group.Children.Add(eg)
+                    eg.Freeze()
                 End Sub)
         End Sub
 
@@ -129,11 +133,12 @@ Namespace WinForms
         Public Shared Sub AddLine(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive)
             GraphicsWindow.Invoke(
                 Sub()
-                    Group.Children.Add(New LineGeometry(
+                    Dim lg = New LineGeometry(
                             New Point(x1, y1),
                             New Point(x2, y2)
                         )
-                    )
+                    Group.Children.Add(lg)
+                    lg.Freeze()
                 End Sub)
         End Sub
 
@@ -163,11 +168,12 @@ Namespace WinForms
         Public Shared Sub AddLineSegment(x As Primitive, y As Primitive, usePen As Primitive)
             GraphicsWindow.Invoke(
                 Sub()
-                    PathFigure.Segments.Add(New LineSegment(
+                    Dim ls As New LineSegment(
                             New Point(x, y),
                             usePen
                         )
-                    )
+                    PathFigure.Segments.Add(ls)
+                    ls.Freeze()
                 End Sub)
         End Sub
 
@@ -196,7 +202,7 @@ Namespace WinForms
 
             GraphicsWindow.Invoke(
                 Sub()
-                    PathFigure.Segments.Add(New ArcSegment(
+                    Dim arcSeg As New ArcSegment(
                             New Point(x, y),
                             New Size(xRadius, yRadius),
                             angle,
@@ -204,7 +210,8 @@ Namespace WinForms
                             If(isClockwise, SweepDirection.Clockwise, SweepDirection.Counterclockwise),
                             usePen
                         )
-                    )
+                    PathFigure.Segments.Add(arcSeg)
+                    arcSeg.Freeze()
                 End Sub)
         End Sub
 
@@ -227,13 +234,14 @@ Namespace WinForms
 
             GraphicsWindow.Invoke(
                 Sub()
-                    PathFigure.Segments.Add(New BezierSegment(
+                    Dim bs As New BezierSegment(
                             New Point(x1, y1),
                             New Point(x2, y2),
                             New Point(x3, y3),
                             usePen
                         )
-                    )
+                    PathFigure.Segments.Add(bs)
+                    bs.Freeze()
                 End Sub)
         End Sub
 
@@ -253,12 +261,13 @@ Namespace WinForms
 
             GraphicsWindow.Invoke(
                 Sub()
-                    PathFigure.Segments.Add(New QuadraticBezierSegment(
+                    Dim qbs As New QuadraticBezierSegment(
                             New Point(x1, y1),
                             New Point(x2, y2),
                             usePen
                         )
-                    )
+                    PathFigure.Segments.Add(qbs)
+                    qbs.Freeze()
                 End Sub)
         End Sub
 

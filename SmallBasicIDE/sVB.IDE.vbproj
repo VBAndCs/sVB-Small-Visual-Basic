@@ -317,5 +317,27 @@
     <Resource Include="Splash\splash.png" />
     <Resource Include="Splash\sVB.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\debug.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\breakpoint.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\stepinto.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\blockout.png" />
+    <Resource Include="Resources\blockover.png" />
+    <Resource Include="Resources\stepout.png" />
+    <Resource Include="Resources\stepover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\break.png" />
+    <Resource Include="Resources\end.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\properties.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

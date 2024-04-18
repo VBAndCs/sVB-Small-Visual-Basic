@@ -283,12 +283,12 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="{x:Type ToolTip}" TargetType="{x:Type ToolTip}">
+            <!--<Style x:Key="{x:Type ToolTip}" TargetType="{x:Type ToolTip}">
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Padding" Value="0" />
                 <Setter Property="Background" Value="{x:Null}" />
                 <Setter Property="MaxWidth" Value="200" />
-            </Style>
+            </Style>-->
 
             <Style x:Key="ChunkStyle" TargetType="{x:Type HeaderedContentControl}">
                 <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -497,6 +497,7 @@
                                     Style="{DynamicResource LargeActionCommandStyle}" 
                                     CommandParameter="{Binding Path=(m:Ribbon.Parameter)}" 
                                     Command="{Binding}" 
+                                    Visibility="{Binding Path=(m:Ribbon.Visible)}" 
                                     AutomationProperties.AutomationId="{Binding Path=(AutomationProperties.AutomationId)}">
                                 <StackPanel>
                                     <ContentControl HorizontalAlignment="Center" Content="{Binding Path=(m:Ribbon.LargeIcon)}" />

@@ -64,8 +64,7 @@ Namespace Microsoft.SmallVisualBasic
                               If(lineNumber < lines.Count - 1,
                                   lines(lineNumber + 1),
                                   ""
-                              )
-                         ) Then
+                              )) Then
                         ' Scan the next line as a part of this line
                         lineNumber += 1
                         _lineText = lines(lineNumber)
@@ -112,7 +111,6 @@ Namespace Microsoft.SmallVisualBasic
 
             Dim comment = -1
             Dim currentToken = tokens(last)
-            Dim lastToken As Token
 
             If currentToken.ParseType = ParseType.Comment Then
                 comment = last
@@ -120,44 +118,61 @@ Namespace Microsoft.SmallVisualBasic
                 If last = -1 Then Return False
             End If
 
-            lastToken = tokens(last)
-
+            Dim lastToken = tokens(last)
             ' comment lines are not allowed as sublines
             If currentToken.Line > lastToken.Line Then Return False
 
-            Dim nextLineFirstToken = GetFirstToken(nextLine, 0)
-            Dim nextLineFirstTokenText = nextLineFirstToken.LCaseText
-
-            Select Case lastToken.LCaseText
-                Case "_"
-                    If last = 0 OrElse tokens(last - 1).Text = "." OrElse nextLineFirstTokenText = "." Then
-                        Return False
-                    Else
+            Dim nextLineFirstTokenType = GetFirstToken(nextLine, 0).Type
+            Select Case lastToken.Type
+                Case TokenType.LineContinuity
+                    If last = 0 Then
                         tokens.RemoveAt(last) ' remove the Hyphen
                         comment -= 1
+                    Else
+                        Dim prevTokenType = tokens(last - 1).Type
+                        If last = 0 OrElse
+                            prevTokenType = TokenType.Dot OrElse
+                            nextLineFirstTokenType = TokenType.Dot OrElse
+                            prevTokenType = TokenType.Lookup OrElse
+                            nextLineFirstTokenType = TokenType.Lookup Then
+                            Return False
+                        Else
+                            Dim prev = tokens(last - 1)
+                            prev.Comment = "_" & lastToken.Column ' Tells the formatter that there is a removed hyphen
+                            tokens(last - 1) = prev
+                            tokens.RemoveAt(last) ' remove the Hyphen
+                            comment -= 1
+                        End If
                     End If
 
-                Case "-", "*"
-                    If tokens(0).Type = TokenType.ContinueLoop OrElse
-                            tokens(0).Type = TokenType.ExitLoop OrElse
-                            tokens(0).Type = TokenType.Stop OrElse
-                            IsABlockToken(nextLineFirstToken.Type) Then
-                        Return False
-                    End If
+                Case TokenType.Subtraction, TokenType.Multiplication
+                    Select Case tokens(0).Type
+                        Case TokenType.ContinueLoop, TokenType.ExitLoop ', TokenType.Stop
+                            Return False
+                        Case Else
+                            If IsBlockToken(nextLineFirstTokenType) Then Return False
+                    End Select
 
-                Case ",", "{", "(", "[",
-                     "&", "+", "-", "\", "/",
-                     "=", "<>", ">", ">=", "<", "<=",
-                     "or", "and"
-                    If IsABlockToken(nextLineFirstToken.Type) Then Return False
+                Case TokenType.Comma, TokenType.LeftBrace,
+                         TokenType.LeftParens, TokenType.LeftBracket,
+                         TokenType.Concatenation, TokenType.Addition, TokenType.Subtraction,
+                         TokenType.Division, TokenType.Mod,
+                         TokenType.EqualsTo, TokenType.NotEqualsTo,
+                         TokenType.GreaterThan, TokenType.GreaterThanOrEqualsTo,
+                         TokenType.LessThan, TokenType.LessThanOrEqualsTo,
+                         TokenType.Or, TokenType.And
+                    If IsBlockToken(nextLineFirstTokenType) Then Return False
 
                 Case Else
-                    Select Case nextLineFirstTokenText
-                        Case ")", "]", "}",
-                             "&", "+", "-", "*", "\", "/",
-                             "=", "<>", ">", ">=", "<", "<=",
-                             "or", "and"
-
+                    Select Case nextLineFirstTokenType
+                        Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightBrace,
+                                 TokenType.Concatenation, TokenType.Addition, TokenType.Subtraction,
+                                 TokenType.Multiplication, TokenType.Division, TokenType.Mod,
+                                 TokenType.EqualsTo, TokenType.NotEqualsTo,
+                                 TokenType.GreaterThan, TokenType.GreaterThanOrEqualsTo,
+                                 TokenType.LessThan, TokenType.LessThanOrEqualsTo,
+                                 TokenType.Or, TokenType.And
+                            ' It is a line continuity
                         Case Else
                             Return False
                     End Select
@@ -171,15 +186,15 @@ Namespace Microsoft.SmallVisualBasic
             Return True
         End Function
 
-        Private Shared Function IsABlockToken(nextTokenType) As Boolean
+        Private Shared Function IsBlockToken(nextTokenType As TokenType) As Boolean
             Select Case nextTokenType
                 Case TokenType.If, TokenType.Else, TokenType.ElseIf, TokenType.EndIf,
                          TokenType.Goto, TokenType.ExitLoop, TokenType.ContinueLoop, TokenType.Stop, TokenType.Return,
                          TokenType.While, TokenType.EndWhile, TokenType.Wend,
                          TokenType.For, TokenType.ForEach, TokenType.Next, TokenType.EndFor,
                          TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
-                    Return True ' a start or end of a block can't be a line continuty
-
+                    ' a start or end of a block can't be a line continuty
+                    Return True
                 Case Else
                     Return False
             End Select
@@ -212,6 +227,10 @@ Namespace Microsoft.SmallVisualBasic
                     token.Type = TokenType.Division
                     token.Text = "/"
 
+                Case "%"c
+                    token.Type = TokenType.Mod
+                    token.Text = "%"
+
                 Case "*"c
                     token.Type = TokenType.Multiplication
                     token.Text = "*"
@@ -233,11 +252,11 @@ Namespace Microsoft.SmallVisualBasic
                     token.Text = "]"
 
                 Case "{"c
-                    token.Type = TokenType.LeftCurlyBracket
+                    token.Type = TokenType.LeftBrace
                     token.Text = "{"
 
                 Case "}"c
-                    token.Type = TokenType.RightCurlyBracket
+                    token.Type = TokenType.RightBrace
                     token.Text = "}"
 
                 Case ":"c
@@ -248,13 +267,17 @@ Namespace Microsoft.SmallVisualBasic
                     token.Type = TokenType.Comma
                     token.Text = ","
 
+                Case "?"c
+                    token.Type = TokenType.Question
+                    token.Text = "?"
+
                 Case "<"c
                     Select Case GetNextChar()
                         Case "="c
-                            token.Type = TokenType.LessThanEqualTo
+                            token.Type = TokenType.LessThanOrEqualsTo
                             token.Text = "<="
                         Case ">"c
-                            token.Type = TokenType.NotEqualTo
+                            token.Type = TokenType.NotEqualsTo
                             token.Text = "<>"
                         Case Else
                             _currentIndex -= 1
@@ -265,7 +288,7 @@ Namespace Microsoft.SmallVisualBasic
                 Case ">"c
                     currentChar = GetNextChar()
                     If currentChar = "="c Then
-                        token.Type = TokenType.GreaterThanEqualTo
+                        token.Type = TokenType.GreaterThanOrEqualsTo
                         token.Text = ">="
                     Else
                         _currentIndex -= 1
@@ -274,7 +297,7 @@ Namespace Microsoft.SmallVisualBasic
                     End If
 
                 Case "="c
-                    token.Type = TokenType.Equals
+                    token.Type = TokenType.EqualsTo
                     token.Text = "="
 
                 Case "'"c
@@ -291,6 +314,7 @@ Namespace Microsoft.SmallVisualBasic
                     _currentIndex -= 1
                     token.Type = TokenType.DateLiteral
                     token.Text = ReadLiteral(currentChar)
+                    If token.Text = "#?" Then token.Type = TokenType.HashQuestion
 
                 Case Else
                     Dim nextChar2 As Char = GetNextChar()
@@ -298,15 +322,15 @@ Namespace Microsoft.SmallVisualBasic
 
                     If Char.IsLetter(currentChar) OrElse currentChar = "_"c Then
                         _currentIndex -= 1
-                        Dim text As String = ReadKeywordOrIdentifier()
-                        token.Type = GetTokenType(text)
-                        token.Text = text
+                        Dim word As String = ReadKeywordOrIdentifier()
+                        token.Type = GetTokenType(word)
+                        token.Text = word
 
                     ElseIf Char.IsDigit(currentChar) OrElse currentChar = "-"c OrElse currentChar = _decimalSeparator AndAlso Char.IsDigit(nextChar2) Then
                         _currentIndex -= 1
-                        Dim text2 As String = ReadNumericLiteral()
+                        Dim literal As String = ReadNumericLiteral()
                         token.Type = TokenType.NumericLiteral
-                        token.Text = text2
+                        token.Text = literal
 
                     ElseIf currentChar = "."c Then
                         token.Type = TokenType.Dot
@@ -318,13 +342,11 @@ Namespace Microsoft.SmallVisualBasic
 
                     Else
                         _currentIndex -= 1
-                        Dim text3 As String = ReadUntilNextSpace()
+                        Dim illegal As String = ReadUntilNextSpace()
                         token.Type = TokenType.Illegal
                         token.ParseType = ParseType.Illegal
-                        token.Text = text3
+                        token.Text = illegal
                     End If
-
-                    Exit Select
             End Select
 
             token.ParseType = GetParseType(token.Type)
@@ -402,6 +424,14 @@ Namespace Microsoft.SmallVisualBasic
         Private Shared Function ReadLiteral(closingChar As Char) As String
             Dim stringBuilder As New StringBuilder()
             Dim currentChar = GetNextChar()
+
+            If closingChar = "#"c AndAlso _currentIndex < _lineLength AndAlso
+                        _lineText(_currentIndex) = "?" Then
+                ' #? shortcut for TW.ReadNumber
+                _currentIndex += 1
+                Return "#?"
+            End If
+
             stringBuilder.Append(currentChar)
             currentChar = GetNextChar()
             Dim flag = False
@@ -520,6 +550,10 @@ Namespace Microsoft.SmallVisualBasic
                     Return TokenType.False
                 Case "nothing"
                     Return TokenType.Nothing
+                Case "mod"
+                    Return TokenType.Mod
+                Case "_"
+                    Return TokenType.LineContinuity
                 Case Else
                     Return TokenType.Identifier
             End Select
@@ -553,21 +587,21 @@ Namespace Microsoft.SmallVisualBasic
                          TokenType.Goto, TokenType.Return,
                          TokenType.ExitLoop, TokenType.ContinueLoop,
                          TokenType.If, TokenType.Step, TokenType.Stop,
-                         TokenType.Sub, TokenType.Function,
+                         TokenType.Sub, TokenType.Function, TokenType.Colon,
                          TokenType.Then, TokenType.To, TokenType.In, TokenType.While,
-                         TokenType.True, TokenType.False, TokenType.Nothing
+                         TokenType.True, TokenType.False, TokenType.Nothing, TokenType.LineContinuity
                     Return ParseType.Keyword
 
                 Case TokenType.And, TokenType.Or,
-                         TokenType.Equals, TokenType.NotEqualTo,
-                         TokenType.LessThan, TokenType.LessThanEqualTo,
-                         TokenType.GreaterThan, TokenType.GreaterThanEqualTo,
+                         TokenType.EqualsTo, TokenType.NotEqualsTo,
+                         TokenType.LessThan, TokenType.LessThanOrEqualsTo,
+                         TokenType.GreaterThan, TokenType.GreaterThanOrEqualsTo,
                          TokenType.Concatenation, TokenType.Addition, TokenType.Subtraction,
-                         TokenType.Division, TokenType.Multiplication,
-                         TokenType.Dot, TokenType.Lookup, TokenType.Comma, TokenType.Colon,
+                         TokenType.Division, TokenType.Mod, TokenType.Multiplication,
+                         TokenType.Dot, TokenType.Lookup, TokenType.Comma,
                          TokenType.LeftParens, TokenType.RightParens,
                          TokenType.LeftBracket, TokenType.RightBracket,
-                         TokenType.LeftCurlyBracket, TokenType.RightCurlyBracket
+                         TokenType.LeftBrace, TokenType.RightBrace
                     Return ParseType.Operator
 
                 Case Else
