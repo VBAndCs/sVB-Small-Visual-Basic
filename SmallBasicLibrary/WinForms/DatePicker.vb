@@ -51,7 +51,6 @@ Namespace WinForms
                 End Sub)
         End Sub
 
-
         ''' <summary>
         ''' Fired when the selected date is changed.
         ''' </summary>

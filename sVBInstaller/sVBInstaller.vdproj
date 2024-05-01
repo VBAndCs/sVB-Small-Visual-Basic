@@ -39,6 +39,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_04C19DD565714259BEC807CF044F00BA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_04F01FE8E8BC4A7B98E2E5BFB213C998"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0504A2E152D347C8B32FA7F3C2D6BE96"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -165,6 +177,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_1505DE9AF0D44BCBBA506AA4D3324A5F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_15A01C7C0B8748758DA54304CE9A2620"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -262,12 +280,6 @@
         "Entry"
         {
         "MsmKey" = "8:_1F282C8A9E9E4410AF6696342E87EE84"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1FDF22EB34CB43619021B4C0890C4188"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -507,6 +519,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_34854D37743B4AE9A0497E7417137471"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3489DF3BD77749DB916CBFBAFB1B5D52"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -520,6 +538,12 @@
         "Entry"
         {
         "MsmKey" = "8:_369E3B3AEC594315BA6D0A5266641F9B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_36C3B0572FC247288A0E5E8DB0DE66C4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -879,6 +903,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_648884B42CF942E8AAE8ED1CD629A71D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_64C744964B664A6080F18BB4CCAC8630"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -982,6 +1012,12 @@
         "Entry"
         {
         "MsmKey" = "8:_7242B1C3170E45A498F28B9F1A3F336F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_72618E508C0D465A8015E60797EDF661"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1216,6 +1252,12 @@
         "Entry"
         {
         "MsmKey" = "8:_86AE666951C34324A13CA2698CF2BC07"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8732F0D946414654AEE08D030541E392"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1611,6 +1653,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_AC0B13A88E384516AD7A26DE52A91A3E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_AC189B45903E45DD9038A5A151523496"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1672,6 +1720,18 @@
         "Entry"
         {
         "MsmKey" = "8:_B059FE62EEAE4C8582592C40D0AB8516"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B0C3163E356640CEAB947E09D542AD77"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B1146901331249ED81DAD9058C2D7B30"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1941,6 +2001,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_CD043345B53242FBAE479047BA9177AE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_CD76A335BFF74C3C849A048650AF85C9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1954,6 +2020,12 @@
         "Entry"
         {
         "MsmKey" = "8:_CEE696E671244B6089E0A33CF68C1DB5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D08316F9BCB54637ACCC66DE3800BECB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2350,6 +2422,12 @@
         "Entry"
         {
         "MsmKey" = "8:_F22E1B6C938442E0B12CE8D5658FEB0E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F26004B39E0745A1B27D3F063FE93954"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2786,6 +2864,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_04C19DD565714259BEC807CF044F00BA"
+            {
+            "SourcePath" = "8:..\\Samples\\Spirals\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_28B3B263D74741FE8192BB1091043C1B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_04F01FE8E8BC4A7B98E2E5BFB213C998"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom & Jerry 1\\tom.png"
+            "TargetName" = "8:tom.png"
+            "Tag" = "8:"
+            "Folder" = "8:_3B26DF9CEC96477381BD132D774DF192"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0504A2E152D347C8B32FA7F3C2D6BE96"
             {
             "SourcePath" = "8:..\\Samples\\TextChanged\\Form1.xaml"
@@ -3208,11 +3326,31 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1505DE9AF0D44BCBBA506AA4D3324A5F"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom and Jerry\\Jerry.png"
+            "TargetName" = "8:Jerry.png"
+            "Tag" = "8:"
+            "Folder" = "8:_8707A841590A4E10B6398739928D534E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_15A01C7C0B8748758DA54304CE9A2620"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:UnitTest, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Unittest, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_15A01C7C0B8748758DA54304CE9A2620"
@@ -3545,26 +3683,6 @@
             "TargetName" = "8:form3.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_61C3BDFC4470400D94A7328450753DA4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1FDF22EB34CB43619021B4C0890C4188"
-            {
-            "SourcePath" = "8:sVB Kid Programmer.url"
-            "TargetName" = "8:sVB Kid Programmer.url"
-            "Tag" = "8:"
-            "Folder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -4359,6 +4477,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_34854D37743B4AE9A0497E7417137471"
+            {
+            "SourcePath" = "8:..\\Samples\\Spirals\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_28B3B263D74741FE8192BB1091043C1B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3489DF3BD77749DB916CBFBAFB1B5D52"
             {
             "SourcePath" = "8:..\\sVB Tests\\FrmCharsTests.sb.gen"
@@ -4405,6 +4543,26 @@
             "TargetName" = "8:Global.sb"
             "Tag" = "8:"
             "Folder" = "8:_594F8A428FED4D328A10C984C662522B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_36C3B0572FC247288A0E5E8DB0DE66C4"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom & Jerry 1\\FrmGame.xaml"
+            "TargetName" = "8:FrmGame.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_3B26DF9CEC96477381BD132D774DF192"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -5590,6 +5748,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_648884B42CF942E8AAE8ED1CD629A71D"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom and Jerry\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_8707A841590A4E10B6398739928D534E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_64C744964B664A6080F18BB4CCAC8630"
             {
             "SourcePath" = "8:..\\Samples\\Dialogs\\FrmInput.xaml"
@@ -5936,6 +6114,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_2D6084D483FB4DF180A36EFE83733436"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_72618E508C0D465A8015E60797EDF661"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom & Jerry 1\\FrmGame.sb.gen"
+            "TargetName" = "8:FrmGame.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_3B26DF9CEC96477381BD132D774DF192"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6738,6 +6936,26 @@
             "TargetName" = "8:CheckBox.xaml"
             "Tag" = "8:"
             "Folder" = "8:_8BD34D234F094C07B3CD431D3C229EAA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8732F0D946414654AEE08D030541E392"
+            {
+            "SourcePath" = "8:..\\Samples\\Spirals\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_28B3B263D74741FE8192BB1091043C1B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7923,6 +8141,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AC0B13A88E384516AD7A26DE52A91A3E"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom & Jerry 1\\FrmGame.sb"
+            "TargetName" = "8:FrmGame.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_3B26DF9CEC96477381BD132D774DF192"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AC189B45903E45DD9038A5A151523496"
             {
             "SourcePath" = "8:..\\Samples\\Form Rotation\\Form1.sb.gen"
@@ -8131,6 +8369,46 @@
             "TargetName" = "8:Draw Sin & Cos Curves.sb"
             "Tag" = "8:"
             "Folder" = "8:_E1D209B6CD70408080033442617F01DB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B0C3163E356640CEAB947E09D542AD77"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom and Jerry\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_8707A841590A4E10B6398739928D534E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B1146901331249ED81DAD9058C2D7B30"
+            {
+            "SourcePath" = "8:sVB Kid Programmer.mht"
+            "TargetName" = "8:sVB Kid Programmer.mht"
+            "Tag" = "8:"
+            "Folder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9005,6 +9283,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD043345B53242FBAE479047BA9177AE"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom & Jerry 1\\Jerry.png"
+            "TargetName" = "8:Jerry.png"
+            "Tag" = "8:"
+            "Folder" = "8:_3B26DF9CEC96477381BD132D774DF192"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_CD76A335BFF74C3C849A048650AF85C9"
             {
             "AssemblyRegister" = "3:1"
@@ -9062,6 +9360,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_C80CC551AE644FA595D8399938BFD2A6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D08316F9BCB54637ACCC66DE3800BECB"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom and Jerry\\Tom.png"
+            "TargetName" = "8:Tom.png"
+            "Tag" = "8:"
+            "Folder" = "8:_8707A841590A4E10B6398739928D534E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10367,6 +10685,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F26004B39E0745A1B27D3F063FE93954"
+            {
+            "SourcePath" = "8:..\\Samples\\Tom and Jerry\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_8707A841590A4E10B6398739928D534E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F27D04AB8BD948FCB3A76016E4FEE074"
             {
             "SourcePath" = "8:..\\Samples\\sVB Notepad\\frmMain.sb.gen"
@@ -11070,6 +11408,17 @@
                                 {
                                 }
                             }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_28B3B263D74741FE8192BB1091043C1B"
+                            {
+                            "Name" = "8:Spirals"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_73604DDDD8A141F193042196D71662A6"
+                                "Folders"
+                                {
+                                }
+                            }
                             "{9EF0B969-E518-4E46-987F-47570745A589}:_29915520335640D7BBB556201973FAA1"
                             {
                             "Name" = "8:Custom Styles"
@@ -11143,6 +11492,17 @@
                             "Condition" = "8:"
                             "Transitive" = "11:FALSE"
                             "Property" = "8:_7F2425B5A1664AB185CE783B7CCD265D"
+                                "Folders"
+                                {
+                                }
+                            }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_3B26DF9CEC96477381BD132D774DF192"
+                            {
+                            "Name" = "8:Tom & Jerry 1"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_29FC7B40AF99400282E8AACF0F131748"
                                 "Folders"
                                 {
                                 }
@@ -11385,6 +11745,17 @@
                             "Condition" = "8:"
                             "Transitive" = "11:FALSE"
                             "Property" = "8:_3BB18D0F6ABF4C92A13AD9F4CBE16F29"
+                                "Folders"
+                                {
+                                }
+                            }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_8707A841590A4E10B6398739928D534E"
+                            {
+                            "Name" = "8:Tom and Jerry"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_FD781BDC67B04099AB25E24F9F49BE79"
                                 "Folders"
                                 {
                                 }
@@ -11926,16 +12297,16 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 2.9.9.9"
-        "ProductCode" = "8:{CEDD10BD-0D95-48A0-B7CE-130A91C1C017}"
-        "PackageCode" = "8:{6505187B-38E6-4768-877C-C413DFF2B3C4}"
+        "ProductName" = "8:Small Visual Basic 3.0"
+        "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
+        "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.9"
+        "ProductVersion" = "8:3.0"
         "Manufacturer" = "8:Small Visual Basic"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -12048,7 +12419,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_58A60766A8FB47BE9779CAB2A65AD0E7"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_68FCBD3175FC4A74BF8936BA53C467F3"
             {
             "Name" = "8:sVB Kid Programmer"
             "Arguments" = "8:"
@@ -12056,13 +12427,13 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_1FDF22EB34CB43619021B4C0890C4188"
+            "Target" = "8:_B1146901331249ED81DAD9058C2D7B30"
             "Folder" = "8:_57E649E5DD7D47328FA49ED3E67CC196"
             "WorkingFolder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
             "Icon" = "8:_8EB67FDA626A45C5A22962A14FA6EEF1"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_88C829FAE19F4AB8940BEF8A87E6EE7E"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8481B2E38FD24B589087C99131A73B5C"
             {
             "Name" = "8:sVB Kid Programmer"
             "Arguments" = "8:"
@@ -12070,7 +12441,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_1FDF22EB34CB43619021B4C0890C4188"
+            "Target" = "8:_B1146901331249ED81DAD9058C2D7B30"
             "Folder" = "8:_45AF70F6A9AB4B84A7B68CC624BC02FD"
             "WorkingFolder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
             "Icon" = "8:_8EB67FDA626A45C5A22962A14FA6EEF1"
@@ -12120,7 +12491,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 2.9.9.9"
+            "Name" = "8:sVB 3.0"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -12148,7 +12519,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 2.9.9.9"
+            "Name" = "8:sVB 3.0"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -12162,7 +12533,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 2.9.9.9"
+            "Name" = "8:sVB 3.0"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

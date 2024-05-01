@@ -285,7 +285,6 @@ Namespace Microsoft.SmallVisualBasic
                             )
                         )
                     End If
-
                 End If
             Next
         End Sub

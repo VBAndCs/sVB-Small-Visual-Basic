@@ -1,7 +1,7 @@
 Errors = {} ' Array contaning the test errors.
 _HasErrors = False
 
-'------------------------------------------------
+' ------------------------------------------------
 ' Add a test error to the Errors array
 Sub AddError(
       msg ' The message that describs the test error.
@@ -10,46 +10,66 @@ Sub AddError(
    Errors[Errors.Count + 1] = msg
 EndSub
 
-'-----------------------------------------------
+' -----------------------------------------------
 ' Runs the tests of the given form
 Sub RunFormTests(
       formName ' The name of the tested form
    )
    
    _HasErrors = False
-   _TestForm(formName, "", "")
+   _TestForm(formName, "", "", False)
 EndSub
 
-'-----------------------------------------------
+' -----------------------------------------------
+' Runs the tests of the tests of the global.sb file and shows the results on the given form
+Sub RunGlobalTests(
+      formName ' The name of the form that will display the results
+   )
+   
+   _HasErrors = False
+   _TestForm(formName, "", "", True)
+EndSub
+
+' -----------------------------------------------
 ' Runs all the tests of all forms
 Sub RunAllTests(
-      resultsTextBox '  The textbox that will deisplay the test results.
+      resultsTextBox ' The textbox that will deisplay the test results.
    )
    
    startTime = Date.Now
    resultsTextBox.Text = ""
    _HasErrors = False
    resultsForm = resultsTextBox.ParentForm
-   
    testsCount = 0
+   
+   ' Run global teests:
+   testsCount = _TestForm(resultsForm, resultsForm, resultsTextBox, True)
+   
    ForEach frm In Forms.GetForms(False)
-      testsCount = testsCount + _TestForm(frm, resultsForm, resultsTextBox)
+      testsCount = testsCount + _TestForm(frm, resultsForm, resultsTextBox, False)
    Next
    
    t = Date.GetTotalSeconds(Date.Now - startTime)
    If _HasErrors = False Then
-      resultsTextBox.AppendLine("")
-      resultsTextBox.AppendLine(
-         "All " + testsCount
-         + " tests passed successfully. "
-         + "Total time: "
-         + t.Round(3) + " seconds."
-      )
+      If testsCount = 0 Then
+         resultsTextBox.Text = "No tests found. This can happen due to any of these reasons:" & Text.NewLine &
+            "1. You didn't add any test functions to the global.sb file or to any form in your project." & Text.NewLine &
+            "2. Your test function names don't start with the Test_ prefix." & Text.NewLine &
+            "3. Your test functions have parameters" & Text.NewLine &
+            "4. Your test functions don't return results or return an empty string."
+      Else
+         resultsTextBox.AppendLine("")
+         resultsTextBox.AppendLine(
+            "All " + testsCount
+            + " tests passed successfully. "
+            + "Total time: "
+            + t.Round(3) + " seconds."
+         )
+      EndIf
    EndIf
-   
 EndSub
 
-'------------------------------------------------
+' ------------------------------------------------
 ' Checks if the test actual value is the expected value
 Function AssertEqual(
       actualValue, ' The actual value of the test
@@ -77,7 +97,7 @@ EndFunction
 
 
 
-'------------------------------------------------
+' ------------------------------------------------
 ' Checks if the test actual value is true
 Function AssertTrue(
       actualValue, ' The actual value of the test
@@ -97,7 +117,7 @@ Function AssertTrue(
    Return AssertEqual(actualValue, expectedValue, testName)
 EndFunction
 
-'------------------------------------------------
+' ------------------------------------------------
 ' Checks if the test actual value is false
 Function AssertFalse(
       actualValue, ' The actual value of the test
@@ -116,7 +136,7 @@ Function AssertFalse(
    Return AssertEqual(actualValue, expectedValue, testName)
 EndFunction
 
-'------------------------------------------------
+' ------------------------------------------------
 Function _Repeat(str, count)
    If count < 1 Then
       Return ""
@@ -132,25 +152,44 @@ Function _Repeat(str, count)
    Return x
 EndFunction
 
-
-'------------------------------------------------
-Function _TestForm(testForm, resultsForm, resultsTextBox)
+' ------------------------------------------------
+Function _TestForm(testForm, resultsForm, resultsTextBox, isGlobal)
    Forms.ShowForm(testForm, "")
    Errors = {}
-   testsCount = testForm.RunTests()
+   testTitle = ""
+   testFormName = Text.ToLower(testForm)
+   
+   If isGlobal Then
+      testTitle = "Global tests"
+      testsCount = testForm.RunGlobalTests()
+   Else
+      If testForm.IsLoaded And testForm.Text <> "" Then
+         testTitle = testForm.Text
+      Else
+         testTitle = testForm & " Tests"
+      EndIf
+      
+      testsCount = testForm.RunTests()
+   EndIf
    
    If resultsForm = "" Then
       Return 0
    EndIf
    
-   testName = testForm.Text
-   spaces = _Repeat(" ", 53 - Text.GetLength(testName)) + Chars.Tab
+   spaces = _Repeat(" ", 53 - testTitle.Length) + Chars.Tab
+   
+   If testsCount > 0 And isGlobal And testFormName = resultsForm Then
+      ' running global tests can add txtTest over the resultsTextBox, so we should hide it
+      txtTest = resultsForm & ".txttest"
+      txtTest.Visible = (txtTest = resultsTextBox)
+      resultsTextBox.Text = ""
+   EndIf
    
    If Errors.Count > 0 Then
       resultsTextBox.AppendLine("")
       resultsTextBox.AppendLine("--------------------------------")
       resultsTextBox.AppendLine(
-         testForm.Text + ": "
+         testTitle + ": "
          + spaces
          + (testsCount - Errors.Count)
             + " tests passed."
@@ -167,16 +206,18 @@ Function _TestForm(testForm, resultsForm, resultsTextBox)
       
    ElseIf testsCount > 0 Then
       resultsTextBox.AppendLine(
-         testName + ": "
+         testTitle + ": "
          + spaces
          + testsCount + " tests passed."
       )
    EndIf
    
    
-   If testForm <> resultsForm Then
+   If testFormName <> resultsForm And testForm.IsLoaded Then
       testForm.Close()
    EndIf
    
    Return testsCount
 EndFunction
+
+

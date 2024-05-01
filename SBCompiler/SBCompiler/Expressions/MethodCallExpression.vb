@@ -2,7 +2,9 @@
 Imports System.Reflection
 Imports System.Reflection.Emit
 Imports System.Text
+Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.Library
+Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.Expressions
     <Serializable>
@@ -115,92 +117,19 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                     .IsGlobalFunc = isGlobalFunc,
                     .DontExecuteSub = runner.Evaluating
                 }
+                Return EvaluateFunction(runner, subroutine)
+            End If
 
-                subroutine.Execute(runner)
-                If subroutine.DontExecuteSub Then
-                    Return "A subroutine call doesn't return any value!"
-                End If
+            If runner.Evaluating AndAlso
+                    (tName = "tw" OrElse tName = "textwindow") AndAlso
+                    (mName = "read" OrElse mName = "readnumber") Then
+                Return "This method can't be evaluated at this time beecause it expects the user to enter a value in the text window."
+            End If
 
-                Dim retKey = $"{mName}.return"
-                    If isGlobalFunc Then
-                        Dim result = runner.GetGlobalField(retKey)
-                        If result.HasValue Then
-                            Return result.Value
-                        ElseIf runner.Evaluating Then
-                            Return "A subroutine call doesn't return any value!"
-                        Else
-                            Return New Primitive()
-                        End If
-                    ElseIf runner.Fields.ContainsKey(retKey) Then
-                        Return runner.Fields(retKey)
-                    ElseIf runner.Evaluating Then
-                        Return "A subroutine call doesn't return any value!"
-                    Else
-                        Return New Primitive()
-                    End If
-                End If
-
-                Dim args As New List(Of Object)()
+            Dim args As New List(Of Object)()
             For Each argument In _Arguments
                 args.Add(argument.Evaluate(runner))
             Next
-
-            If tName = "forms" Then
-                If mName = "showform" Then
-                    Dim formName = CType(args(0), Library.Primitive)
-                    If Not runner.Evaluating Then
-                        Dim argsArr = CType(args(1), Library.Primitive)
-                        If WinForms.Form.GetIsLoaded(formName) Then
-                            WinForms.Forms.ShowForm(formName, argsArr)
-                        Else
-                            Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
-                            runner.RunForm(formName)
-                        End If
-                    End If
-                    Return formName
-
-                ElseIf mName = "showdialog" Then
-                    Dim formName = CType(args(0), Library.Primitive)
-                    Dim argsArr = CType(args(1), Library.Primitive)
-
-                    If WinForms.Form.GetIsLoaded(formName) Then
-                        WinForms.Form.SetArgsArr(formName, argsArr)
-                    Else
-                        Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
-                        runner.RunForm(formName)
-                        WinForms.Control.SetVisible(formName, False)
-                    End If
-
-                    Return WinForms.Form.ShowDialog(formName)
-                End If
-
-            ElseIf mName = "showchildform" Then
-                Dim showFrom As Boolean = False
-                If tName = "form" Then
-                    showFrom = True
-                ElseIf runner.SymbolTable.GetInferedType(tName) = VariableType.Form Then
-                    showFrom = True
-                    Dim formKey = runner.GetKey(_TypeName)
-                    args.Insert(0, runner.Fields(formKey))
-                End If
-
-                If showFrom Then
-                    Dim childFormName = CType(args(1), Library.Primitive)
-                    If Not runner.Evaluating Then
-                        Dim parentFormName = CType(args(0), Library.Primitive)
-                        Dim argsArr = CType(args(2), Library.Primitive)
-
-                        If WinForms.Form.GetIsLoaded(childFormName) Then
-                            WinForms.Form.ShowChildForm(parentFormName, childFormName, argsArr)
-                        Else
-                            Stack.PushValue("_" & CStr(childFormName).ToLower() & "_argsArr", argsArr)
-                            runner.RunForm(childFormName)
-                            WinForms.Form.SetOwner(childFormName, parentFormName)
-                        End If
-                    End If
-                    Return childFormName
-                End If
-            End If
 
             Dim methodInfo As MethodInfo
             If runner.TypeInfoBag.Types.ContainsKey(tName) Then
@@ -231,6 +160,34 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             Catch ex As Exception
             End Try
             Return "Can't evaluate this method call at this time. Calling some methods twice can cause errors like when you try to add the same control again on the form"
+        End Function
+
+        Friend Shared Function EvaluateFunction(
+                         runner As ProgramRunner,
+                         subroutine As SubroutineCallStatement) As Primitive
+
+            subroutine.Execute(runner)
+            If subroutine.DontExecuteSub Then
+                Return "A subroutine call doesn't return any value!"
+            End If
+
+            Dim retKey = $"{subroutine.Name.LCaseText}.return"
+            If subroutine.IsGlobalFunc Then ' OrElse _TypeName.LCaseText = "global" 
+                Dim result = runner.GetGlobalField(retKey)
+                If result.HasValue Then
+                    Return result.Value
+                ElseIf runner.Evaluating Then
+                    Return "A subroutine call doesn't return any value!"
+                Else
+                    Return New Primitive()
+                End If
+            ElseIf runner.Fields.ContainsKey(retKey) Then
+                Return runner.Fields(retKey)
+            ElseIf runner.Evaluating Then
+                Return "A subroutine call doesn't return any value!"
+            Else
+                Return New Primitive()
+            End If
         End Function
 
     End Class

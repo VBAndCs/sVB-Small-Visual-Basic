@@ -861,6 +861,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Private Sub OnTextInput(sender As Object, e As TextCompositionEventArgs)
+            Dim completionSurface = _editorControl.TextView.Properties.GetProperty(Of CompletionSurface)()
+            If completionSurface?.IsAdornmentVisible Then Return
+
             Select Case e.Text
                 Case "("
                     e.Handled = AutoComplete(False, True)
@@ -942,7 +945,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                         AutoCompleteBlock(textView, line, code, keyword, $"For i = 1 To 1#   ", "Next", paran.Length)
 
                     Case "foreach"
-                        AutoCompleteBlock(textView, line, code, keyword, $"ForEach  In ?#   ", "Next", paran.Length)
+                        AutoCompleteBlock(textView, line, code, keyword, $"ForEach  In Array#   ", "Next", paran.Length)
 
                     Case "while"
                         AutoCompleteBlock(textView, line, code, keyword, $"While {paran}#   ", "Wend", paran.Length)
@@ -978,6 +981,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Dim insertionIndex = textView.Caret.Position.TextInsertionIndex
             Dim line = snapshot.GetLineFromPosition(insertionIndex)
             Dim code = line.GetText()
+            If insertionIndex < code.Length - 1 AndAlso textView.Selection?.ActiveSpan.GetSpan(snapshot).Length > 0 Then
+                insertionIndex += 1
+            End If
             Dim addQuote = False
 
             If insertionIndex < snapshot.Length Then
@@ -1780,12 +1786,22 @@ EndFunction
             For Each xamlFile In Directory.GetFiles(inputDir, "*.xaml")
                 Dim name = DiagramHelper.Helper.GetFormNameFromXaml(xamlFile)
                 If name = "" Then Continue For
-                name = name.ToLower()
-                If forms.Contains(name) Then
+
+                Dim x = name.ToLower()
+                Dim found = False
+                For Each f In forms
+                    If f.ToLower() = x Then
+                        found = True
+                        Exit For
+                    End If
+                Next
+
+                If found Then
                     _Errors.Add(xamlFile)
                     _Errors.Add(name)
                     Return Nothing
                 End If
+
                 forms.Add(name)
             Next
 

@@ -24,7 +24,7 @@ Namespace WinForms
             End Get
         End Property
 
-        Private Shared ReadOnly Property PathGeometry As PathGeometry
+        Friend Shared ReadOnly Property PathGeometry As PathGeometry
             Get
                 If _geometry Is Nothing Then CreatePath()
                 Return _geometry

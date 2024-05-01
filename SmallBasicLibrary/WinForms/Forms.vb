@@ -6,6 +6,7 @@ Imports ControlsDictionay = System.Collections.Generic.Dictionary(Of String, Sys
 Imports System.Windows.Controls
 Imports System.Windows
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
+Imports System.Reflection
 
 Namespace WinForms
     ''' <summary>
@@ -47,13 +48,15 @@ Namespace WinForms
         Public Shared Function GetForms(loadedFormsOnly As Primitive) As Primitive
             Dim map = New Dictionary(Of Primitive, Primitive)
             Dim num = 1
+            Dim formNames As IEnumerable
 
             If loadedFormsOnly Then
-                For Each key In _forms.Keys
-                    map(num) = key
+                For Each name In _forms.Keys
+                    map(num) = name
                     num += 1
                 Next
-            Else
+
+            ElseIf Not App.IsDebugging Then
                 Dim asm = System.Reflection.Assembly.GetEntryAssembly()
                 Dim progModule = FormPrefix & "Program"
 
@@ -63,7 +66,16 @@ Namespace WinForms
                         num += 1
                     End If
                 Next
+
+            ElseIf Program.FormNames Is Nothing Then
+                Return Nothing
+            Else
+                For Each name In Program.FormNames
+                    map(num) = name.ToLower()
+                    num += 1
+                Next
             End If
+
             Return Primitive.ConvertFromMap(map)
         End Function
 
@@ -186,6 +198,7 @@ Namespace WinForms
                                     Control.SetAngle(ui, angle)
 
                                     Dim c = CType(ui, Wpf.Control)
+                                    If c.Focusable Then AddHandler c.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
                                     c.SetValue(Control.BorderThicknessProperty, c.BorderThickness)
                                     c.SetValue(Control.BorderBrushProperty, c.BorderBrush)
                                     c.SetValue(Control.TipProperty, c.ToolTip)
@@ -336,7 +349,7 @@ Namespace WinForms
             Dim d = If(fileName = "",
                 Program.Directory.AsString(),
                 IO.Path.GetDirectoryName(fileName)
-            ).ToLower() & IO.Path.DirectorySeparatorChar
+            ).ToLower().Replace("&", "&amp;") & IO.Path.DirectorySeparatorChar
 
             xaml = xaml.Replace("Source=""\", $"Source=""{d}")
             xaml = xaml.Replace("FileName=""\", $"FileName=""{d}")
@@ -419,7 +432,7 @@ Namespace WinForms
                 End Try
             End If
 
-            RemoveFormAndControls(win.Name.ToLower())
+            App.BeginInvoke(Sub() RemoveFormAndControls(win.Name.ToLower()))
         End Sub
 
         Friend Shared Sub RemoveFormAndControls(formName As String)
@@ -446,6 +459,7 @@ Namespace WinForms
                 End If
             Next
 
+            Dim RemoveEventHandlers = Control.RemoveEventHandlerActions
             _forms.Remove(formName)
             formName &= "."
             Dim keys = _controls.Keys
@@ -453,6 +467,13 @@ Namespace WinForms
             For i = keys.Count - 1 To 0 Step -1
                 Dim name = keys(i)
                 If name.StartsWith(formName) Then
+                    For j = RemoveEventHandlers.Count - 1 To 0 Step -1
+                        Dim key = RemoveEventHandlers.Keys(j)
+                        If key.Contains($":{name}.") Then
+                            RemoveEventHandlers.Values(j)?.Invoke()
+                            RemoveEventHandlers.Remove(key)
+                        End If
+                    Next
                     _controls.Remove(name)
                 End If
             Next
@@ -510,6 +531,8 @@ Namespace WinForms
             End Try
         End Sub
 
+        Public Shared Event DebugShowForm(formName As String, argsArr As Primitive)
+
         ''' <summary>
         ''' Shows the form that has the given name if exists in the project.
         ''' </summary>
@@ -518,27 +541,39 @@ Namespace WinForms
         ''' <returns>the form name</returns>
         <ReturnValueType(VariableType.Form)>
         Public Shared Function ShowForm(formName As Primitive, argsArr As Primitive) As Primitive
-            Dim asm = System.Reflection.Assembly.GetCallingAssembly()
-            App.Invoke(
-                  Sub()
-                      Try
-                          If Form.GetIsLoaded(formName) Then
-                              Form.SetArgsArr(formName, argsArr)
-                              Form.Show(formName)
-                              Dim wind = GetForm(formName)
-                              wind.RaiseEvent(New RoutedEventArgs(Form.OnFormShownEvent))
-                          Else
-                              Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
-                              Form.Initialize(formName, asm)
-                          End If
+            If App.IsDebugging Then
+                RaiseEvent DebugShowForm(LCase(formName), argsArr)
+            Else
+                Dim asm = System.Reflection.Assembly.GetCallingAssembly()
+                App.Invoke(
+                      Sub()
+                          Try
+                              If Form.GetIsLoaded(formName) Then
+                                  DoShowForm(formName, argsArr)
+                              Else
+                                  Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
+                                  Form.Initialize(formName, asm)
+                              End If
+                          Catch ex As Exception
+                              Form.ReportSubError(formName, "ShowForm", ex)
+                          End Try
+                      End Sub)
+            End If
 
-                      Catch ex As Exception
-                          Form.ReportSubError(formName, "ShowForm", ex)
-                      End Try
-                  End Sub)
             Return formName
         End Function
 
+        Public Shared Sub DoShowForm(formName As Primitive, argsArr As Primitive)
+            Form.SetArgsArr(formName, argsArr)
+            Form.Show(formName)
+            App.Invoke(
+                 Sub()
+                     Dim wind = GetForm(formName)
+                     wind.RaiseEvent(New RoutedEventArgs(Form.OnFormShownEvent))
+                 End Sub)
+        End Sub
+
+        Public Shared Event DebugShowDialog(formName As String, argsArr As Primitive)
 
         ''' <summary>
         ''' Loads the form that has the given name if exists in the project, and shows it as a modal dialog.
@@ -548,6 +583,11 @@ Namespace WinForms
         ''' <returns>the dialog result that Represents the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
         <ReturnValueType(VariableType.DialogResult)>
         Public Shared Function ShowDialog(formName As Primitive, argsArr As Primitive) As Primitive
+            If App.IsDebugging Then
+                RaiseEvent DebugShowDialog(LCase(formName), argsArr)
+                Return formName
+            End If
+
             Dim asm = System.Reflection.Assembly.GetCallingAssembly()
             App.Invoke(
                 Sub()

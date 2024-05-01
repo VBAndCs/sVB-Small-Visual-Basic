@@ -58,7 +58,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Private Function CreateEngine() As ProgramEngine
             If _ProgramEngine Is Nothing Then
+                System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait
                 Dim parsers = Helper.MainWindow.BuildAndRun(True)
+                System.Windows.Input.Mouse.OverrideCursor = Nothing
                 If parsers Is Nothing OrElse parsers.Count = 0 Then Return Nothing
 
                 _ProgramEngine = New Engine.ProgramEngine(parsers)
@@ -67,7 +69,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End If
             Return _ProgramEngine
         End Function
-
 
         Public ReadOnly Property TextBuffer As ITextBuffer
             Get
@@ -216,6 +217,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     )
                     Dim offset = runner.DocLineOffset
                     Dim lineNumber = runner.CurrentLineNumber - offset
+                    If lineNumber < 0 Then Return
+
                     Dim currentState = runner.DebuggerState
                     Dim markLine = (currentState = DebuggerState.Paused OrElse currentState = DebuggerState.Error)
                     Dim doc = If(lastDoc, CurDoc)

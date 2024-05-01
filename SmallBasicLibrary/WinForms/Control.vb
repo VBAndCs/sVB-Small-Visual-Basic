@@ -679,6 +679,8 @@ Namespace WinForms
                 End Sub)
         End Function
 
+        Private Shared focusTimes As Integer
+
         ''' <summary>
         ''' Moves focus to the control, so it beccomes the active control that recives the keybored keys.
         ''' </summary>
@@ -2002,7 +2004,32 @@ Namespace WinForms
             End RaiseEvent
         End Event
 
-        Private Shared focusTime As Date = Now
+
+        Friend Shared Function GetHasFocus(ByVal element As DependencyObject) As Boolean
+            If element Is Nothing Then
+                Throw New ArgumentNullException("element")
+            End If
+
+            Return element.GetValue(HasFocusProperty)
+        End Function
+
+        Friend Shared Sub SetHasFocus(ByVal element As DependencyObject, ByVal value As Boolean)
+            If element Is Nothing Then
+                Throw New ArgumentNullException("element")
+            End If
+
+            element.SetValue(HasFocusProperty, value)
+        End Sub
+
+        Public Shared ReadOnly HasFocusProperty As _
+                               DependencyProperty = DependencyProperty.RegisterAttached("HasFocus",
+                               GetType(Boolean), GetType(Control),
+                               New PropertyMetadata(False))
+
+        Friend Shared Sub OnLostKeyboardFocus(sender As Object, e As Input.KeyboardFocusChangedEventArgs)
+            Dim c = CType(sender, Wpf.Control)
+            If Not c.IsKeyboardFocusWithin Then Control.SetHasFocus(c, False)
+        End Sub
 
         ''' <summary>
         ''' Fired when the control gets the focus.
@@ -2011,6 +2038,8 @@ Namespace WinForms
             AddHandler(handler As SmallVisualBasicCallback)
                 Dim _sender = GetSender(NameOf(OnGotFocus))
                 Dim h = Sub(Sender As Object, e As RoutedEventArgs)
+                            If GetHasFocus(Sender) Then Return
+                            SetHasFocus(Sender, True)
                             [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
                         End Sub
 
@@ -2036,9 +2065,10 @@ Namespace WinForms
             AddHandler(handler As SmallVisualBasicCallback)
                 Dim _sender = GetSender(NameOf(OnLostFocus))
                 Dim h = Sub(Sender As Object, e As RoutedEventArgs)
-                            [Event].HandleEvent(
-                                    CType(Sender, FrameworkElement),
-                                    e, handler)
+                            Dim fw = CType(Sender, FrameworkElement)
+                            If Not fw.IsKeyboardFocusWithin Then
+                                [Event].HandleEvent(fw, e, handler)
+                            End If
                         End Sub
 
                 RemovePrevEventHandler(

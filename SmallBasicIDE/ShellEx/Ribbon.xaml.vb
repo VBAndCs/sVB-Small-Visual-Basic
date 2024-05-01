@@ -11,7 +11,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
         End Function
 
         Public Shared Sub SetVisible(ByVal element As DependencyObject, ByVal value As Visibility)
-            element.SetValue(VisibleProperty, value)
+            element.Dispatcher.Invoke(Sub() element.SetValue(VisibleProperty, value))
         End Sub
 
         Public Shared ReadOnly VisibleProperty As _

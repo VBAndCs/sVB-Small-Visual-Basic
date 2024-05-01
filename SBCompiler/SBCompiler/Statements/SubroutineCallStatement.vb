@@ -138,7 +138,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 End If
             End If
 
-            targetRunner.CurrentThread = runner.CurrentThread
+            targetRunner.runnerThread = runner.runnerThread
             Dim result = subToken.Parent.Execute(targetRunner)
 
             If IsGlobalFunc Then

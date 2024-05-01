@@ -11,10 +11,10 @@ Namespace Library
     ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class Shapes
-        Private Shared _nameGenerationMap As New Dictionary(Of String, Integer)
-        Private Shared _rotateTransformMap As New Dictionary(Of String, RotateTransform)
-        Private Shared _scaleTransformMap As New Dictionary(Of String, ScaleTransform)
-        Private Shared _positionMap As New Dictionary(Of String, Point)
+        Friend Shared _nameGenerationMap As New Dictionary(Of String, Integer)
+        Friend Shared _rotateTransformMap As New Dictionary(Of String, RotateTransform)
+        Friend Shared _scaleTransformMap As New Dictionary(Of String, ScaleTransform)
+        Friend Shared _positionMap As New Dictionary(Of String, Point)
 
         ''' <summary>
         ''' Adds a rectangle shape with the specified width and height.
@@ -425,7 +425,12 @@ Namespace Library
         ''' <param name="x">The x co-ordinate of the new position.</param>
         ''' <param name="y">The y co-ordinate of the new position.</param>
         ''' <param name="duration">The time for the animation, in milliseconds.</param>
-        Public Shared Sub Animate(shapeName As Primitive, x As Primitive, y As Primitive, duration As Primitive)
+        Public Shared Sub Animate(
+                   shapeName As Primitive,
+                   x As Primitive,
+                   y As Primitive,
+                   duration As Primitive)
+
             Dim obj As UIElement = Nothing
             If GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
                 _positionMap(shapeName) = New Point(x, y)
@@ -436,6 +441,39 @@ Namespace Library
                     End Sub)
             End If
         End Sub
+
+        ' Not used
+        Private Shared Sub AnimateOnPath(
+                   shapeName As Primitive,
+                   duration As Primitive)
+
+            Dim shape As UIElement = Nothing
+            If GraphicsWindow._objectsMap.TryGetValue(shapeName, shape) Then
+                ' _positionMap(shapeName) = New Point(x, y)
+                GraphicsWindow.Invoke(
+                    Sub()
+                        Dim pathGeo = WinForms.GeometricPath.PathGeometry
+                        If pathGeo Is Nothing Then Return
+
+                        Dim matrixTransform As New MatrixTransform()
+                        shape.RenderTransform = matrixTransform
+                        Dim wnd = GraphicsWindow._window
+                        NameScope.SetNameScope(wnd, New NameScope())
+                        wnd.RegisterName(shapeName & "_MatrixTransform", matrixTransform)
+                        Dim matrixAnimation As New Animation.MatrixAnimationUsingPath()
+                        matrixAnimation.PathGeometry = pathGeo
+                        matrixAnimation.Duration = TimeSpan.FromMilliseconds(duration)
+                        matrixAnimation.DoesRotateWithTangent = True
+
+                        Animation.Storyboard.SetTargetName(matrixAnimation, shapeName & "_MatrixTransform")
+                        Animation.Storyboard.SetTargetProperty(matrixAnimation, New PropertyPath(MatrixTransform.MatrixProperty))
+                        Dim storyboard As New Animation.Storyboard()
+                        storyboard.Children.Add(matrixAnimation)
+                        storyboard.Begin(shape)
+                    End Sub)
+            End If
+        End Sub
+
 
         ''' <summary>
         ''' Gets the left co-ordinate of the specified shape.

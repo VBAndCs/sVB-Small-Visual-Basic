@@ -177,10 +177,15 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 Return
             End If
 
-            Dim domain = If(Name.Text.StartsWith("_"),
-                MethodAttributes.Private,
-                MethodAttributes.Public
-            )
+            Dim subName = Name.LCaseText
+            Dim domain As MethodAttributes
+            If subName.StartsWith("_") Then
+                domain = MethodAttributes.Private
+            ElseIf subName.StartsWith("test_") Then
+                domain = MethodAttributes.Assembly
+            Else
+                domain = MethodAttributes.Public
+            End If
 
             Dim methodBuilder = scope.TypeBuilder.DefineMethod(
                 Name.Text,
@@ -214,7 +219,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 )
             Next
 
-            Dim returntype = scope.SymbolTable.GetInferedType(Name.LCaseText)
+            Dim returntype = scope.SymbolTable.GetInferedType(subName)
             If returntype <> VariableType.Any Then
                 Dim ctorParams = New Type() {GetType(VariableType)}
                 Dim ctorInfo = GetType(WinForms.ReturnValueTypeAttribute).GetConstructor(ctorParams)
@@ -226,7 +231,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 )
             End If
 
-            scope.MethodBuilders.Add(Name.LCaseText, methodBuilder)
+            scope.MethodBuilders.Add(subName, methodBuilder)
 
             Dim codeGenScope As New CodeGenScope() With {
                 .ILGenerator = methodBuilder.GetILGenerator(),

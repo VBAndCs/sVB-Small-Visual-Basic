@@ -918,6 +918,16 @@ Namespace WinForms
         Public Shared ReadOnly Property Purple As Primitive = "#FF800080"
 
         ''' <summary>
+        ''' Returns a random color from the list of well-known colors, that contains 139 colors.
+        ''' </summary>
+        <ReturnValueType(VariableType.Color)>
+        Public Shared ReadOnly Property Random As Primitive
+            Get
+                Return Color.GetRandomColor()
+            End Get
+        End Property
+
+        ''' <summary>
         ''' Red Color:
         ''' Hex: "#FFFF0000"
         ''' R=255, G=0, B=0
@@ -1217,7 +1227,6 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the background color for a menu bar, as defined on the user system.
         ''' </summary>
-        '     The background color for a menu bar, as defined on the user system.
         <ReturnValueType(VariableType.Color)>
         Public Shared ReadOnly Property SystemMenuBar As Primitive
             Get

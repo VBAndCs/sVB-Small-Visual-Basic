@@ -10,8 +10,8 @@ Imports System.Runtime.InteropServices
 
 <Assembly: AssemblyTitle("Small Visual Basic")>
 <Assembly: AssemblyDescription("Small Visual Basic: Created by Mohammed Hamdy Ghanem, based on MS Small Basic")>
-<Assembly: AssemblyCompany("msvbnet@hotnail.com")>
-<Assembly: AssemblyProduct("")>
+<Assembly: AssemblyCompany("Small Visual Basic")>
+<Assembly: AssemblyProduct("Small Visual Basic")>
 <Assembly: AssemblyCopyright("Copyright ©  2021")>
 <Assembly: AssemblyTrademark("")>
 

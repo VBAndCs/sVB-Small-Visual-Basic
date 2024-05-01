@@ -154,7 +154,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
                         Return jumpSt
                     Else
                         jumpSt.UpLevel = 0
-                        Continue Do
                     End If
 
                 ElseIf TypeOf result Is ReturnStatement Then

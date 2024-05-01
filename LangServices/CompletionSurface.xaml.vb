@@ -243,6 +243,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Case Else
                         Return False
                 End Select
+
+            ElseIf displayName.StartsWith("Test_") Then
+                Return False ' Hide test functions
             End If
 
             Select Case displayName
@@ -287,8 +290,23 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Dim replaceSpan = _Adornment.ReplaceSpan
             Dim text = replaceSpan.GetText(textView.TextSnapshot)
             If text.Length = 0 Then
-                text = CType(textView, AvalonTextView).Editor.EditorOperations.GetCurrentWord
-                If text.Trim.Length = 0 OrElse text.StartsWith(".") OrElse text.StartsWith("!") Then Return ""
+                Dim editorControl = CType(textView, AvalonTextView).Editor
+                text = editorcontrol.EditorOperations.GetCurrentWord
+                If text.Trim.Length = 0 OrElse text.StartsWith(".") OrElse text.StartsWith("!") Then
+                    Return ""
+                Else
+                    Dim pos = textView.Caret.Position.TextInsertionIndex - 1
+                    If pos > 0 Then
+                        Dim c = textView.TextSnapshot(pos)
+                        If c <> "_" AndAlso Not Char.IsLetterOrDigit(c) Then
+                            If _Adornment.CompletionBag.CtrlSpace OrElse _Adornment.CompletionBag.SelectEspecialItem <> "" Then
+                                Return ""
+                            Else
+                                Return "don't display items"
+                            End If
+                        End If
+                    End If
+                End If
             End If
 
             Dim tokens = LineScanner.GetTokens(text, 0)
@@ -301,7 +319,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             ElseIf token.ParseType = ParseType.Operator Then
                 Select Case token.Type
                     Case TokenType.Or, TokenType.And, TokenType.Mod
-
+                        ' OK
                     Case Else
                         Return ""
                 End Select

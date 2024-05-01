@@ -366,5 +366,24 @@ Namespace WinForms
                 End Sub)
         End Function
 
+        Friend Shared Sub AddOnSelectHandler(handler As SmallVisualBasicCallback)
+            Try
+                Dim name = [Event].SenderControl
+                Dim _sender = GetSelector(name)
+                Dim h = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs)
+                            [Event].HandleEvent(CType(Sender, System.Windows.FrameworkElement), e, handler)
+                        End Sub
+
+                Control.RemovePrevEventHandler(
+                        name,
+                        "OnSelection",
+                        Sub() RemoveHandler _sender.SelectionChanged, h
+                )
+                AddHandler _sender.SelectionChanged, h
+
+            Catch ex As Exception
+                [Event].ShowErrorMessage("OnSelection", ex)
+            End Try
+        End Sub
     End Class
 End Namespace

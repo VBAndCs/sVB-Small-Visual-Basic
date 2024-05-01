@@ -661,7 +661,7 @@ Converts the given array to a string
  <summary>
  Displays the font dialog to allow the user to choose font name, size and other font properties.
  </summary>
- <param name="font">The initial font to show its properties in the dialog.</param>
+ <param name="font">An array that  contains the initial properties to display in the dialog. You can get this arry from the font property of the control that you show the font dialog for.</param>
  <returns>an array containing the font properties under the keys Name, Size, Bold, Italic, Underlined and Color, or returns an empty string "" if the user canceled the operation</returns>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.Desktop.FontNames">
@@ -1236,6 +1236,17 @@ Converts the given array to a string
 <member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.Width">
  <summary>
  Gets or sets the Width of the graphics window.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.IsClosed">
+ <summary>
+ Returns True is the GW is closed, otherwise False.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.AutoShow">
+ <summary>
+ Set this property to False to prevent showing the Graphics Window when any of its methods is called.
+ The Default value is True
  </summary>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.Left">
@@ -4464,6 +4475,11 @@ Creates a color from its alpha, red, green, and blue components.
  R=128, G=0, B=128
  </summary>
 </member>
+<member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.Random">
+ <summary>
+ Returns a random color from the list of well-known colors, that contains 139 colors.
+ </summary>
+</member>
 <member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.Red">
  <summary>
  Red Color:
@@ -4696,6 +4712,11 @@ Creates a color from its alpha, red, green, and blue components.
 <member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.SystemMenuHighlight">
  <summary>
  Gets the color used to highlight a menu item, as defined on the user system.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.SystemMenuBar">
+ <summary>
+ Gets the background color for a menu bar, as defined on the user system.
  </summary>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.SystemMenu">
@@ -6234,6 +6255,17 @@ It is useful when you use one sub to handle many events, to get info about the c
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Form.RunTests(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Runs the test functions written in the current form, and shows the test results in the TxtTest textbox. If the form doesn't contain a textbox with this name, it will be added at run time to show the results.
+ The test function must follow these rules:
+ 1. Its name must start with `Test_`, like `Test_FindNames`.
+ 2. It must be a function not a sub, and it can't have any parameters.
+ 3. The function return value should be a string containing the test result like "passed" or "failed". 
+ See the tests written in the "UnitTest Sample" project in the samples folder.
+ </summary>
+ <returns>the number of tests that have been run.</returns>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Form.RunGlobalTests(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Runs the test functions written in the global.sb file, and shows the test results in the TxtTest textbox on the current form. If the form doesn't contain a textbox with this name, it will be added at run time to show the results.
  The test function must follow these rules:
  1. Its name must start with `Test_`, like `Test_FindNames`.
  2. It must be a function not a sub, and it can't have any parameters.

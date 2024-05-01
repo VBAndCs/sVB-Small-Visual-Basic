@@ -33,12 +33,12 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
 
-        Friend Function GetLocalBuilder(Subroutine As Statements.SubroutineStatement, varIdentifier As Token) As LocalBuilder
+        Friend Function GetLocalBuilder(subroutine As Statements.SubroutineStatement, varIdentifier As Token) As LocalBuilder
             Dim key = ""
-            If Subroutine Is Nothing Then
+            If subroutine Is Nothing Then
                 key = varIdentifier.LCaseText
             Else
-                key = $"{Subroutine.Name.LCaseText}.{varIdentifier.LCaseText}"
+                key = $"{subroutine.Name.LCaseText}.{varIdentifier.LCaseText}"
             End If
 
             If Not _SymbolTable.LocalVariables.ContainsKey(key) Then Return Nothing

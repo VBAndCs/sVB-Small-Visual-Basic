@@ -32,7 +32,6 @@ Namespace Evaluator
             End While
 
             leftHandExpr.StartToken = current
-            leftHandExpr.EndToken = tokenEnum.Current
             Return leftHandExpr
         End Function
 
@@ -87,7 +86,6 @@ Namespace Evaluator
             End If
 
             expression.StartToken = current
-            expression.EndToken = tokenEnum.Current
             Return expression
         End Function
 
@@ -99,7 +97,6 @@ Namespace Evaluator
                     .Operator = operatorToken,
                     .Precedence = operatorPriority,
                     .StartToken = leftHandExpr.StartToken,
-                    .EndToken = rightHandExpr.EndToken,
                     .LeftHandSide = leftHandExpr,
                     .RightHandSide = rightHandExpr
                 }
@@ -118,14 +115,12 @@ Namespace Evaluator
                         .Operator = operatorToken,
                         .Precedence = operatorPriority,
                         .StartToken = rightHandSide.StartToken,
-                        .EndToken = rightHandExpr.EndToken,
                         .LeftHandSide = rightHandSide,
                         .RightHandSide = rightHandExpr
                     }
                 End If
 
                 binaryExpression.RightHandSide = expression
-                binaryExpression.EndToken = rightHandExpr.EndToken
                 Return binaryExpression
             End If
 
@@ -146,14 +141,12 @@ Namespace Evaluator
                         arguments:=ParseCommaSepaeatedList(tokenEnum, TokenType.RightParens, closeTokenFound, False)
                 )
 
-                methodCallExpression.EndToken = tokenEnum.Current
                 If closeTokenFound Then tokenEnum.MoveNext()
                 Return methodCallExpression
             End If
 
             Return New IdentifierExpression() With {
                 .StartToken = current,
-                .EndToken = current,
                 .Precedence = 9,
                 .Identifier = current
             }
@@ -242,16 +235,15 @@ Namespace Evaluator
                 Case TokenType.Comma
                     expectedChar = ","
             End Select
-            AddError(token, $"`{expectedChar}` is expected here but not found")
+            AddError(token, $"`{expectedChar}` is expected at pos {token.Column} but not found")
         End Sub
 
         Private Function IsValidOperator(tokenType As TokenType) As Boolean
             Dim operatorPriority = GetOperatorPriority(tokenType)
-            If operatorPriority = 0 Then
+            If operatorPriority = 0 AndAlso tokenType = TokenType.Illegal Then
                 Dim t = _currentLineEnum.Current
-                AddError(t, $"Unrecognized operator {t.Text}")
+                AddError(t, $"Unrecognized operator {t.Text} at pos {t.Column}")
             End If
-
             Return operatorPriority >= 5
         End Function
 
@@ -284,7 +276,15 @@ Namespace Evaluator
             _Errors.Clear()
             Dim line = MathExpression.Replace(vbCr, " ").Replace(vbLf, " ")
             _currentLineEnum = LineScanner.GetTokenEnumerator(line)
-            Return BuildExpression(_currentLineEnum)
+            Dim ParsedExpr = BuildExpression(_currentLineEnum)
+
+            If ParsedExpr Is Nothing OrElse Not _currentLineEnum.IsEnd Then
+                Dim t = _currentLineEnum.Current
+                AddError(t, $"Unrecognized operator {t.Text} at pos {t.Column}")
+                Return Nothing
+            Else
+                Return ParsedExpr
+            End If
         End Function
 
         Friend Sub AddError(token As Token, errorDescription As String)
@@ -299,7 +299,7 @@ Namespace Evaluator
             End If
 
             token = Token.Illegal
-            AddError(tokenEnum.Current, String.Format("A {0} token is expected here", expectedToken))
+            AddError(tokenEnum.Current, String.Format("A {0} token is expected at pos {1}", expectedToken, tokenEnum.Current.Column))
             Return False
         End Function
 

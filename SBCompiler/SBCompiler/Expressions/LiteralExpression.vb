@@ -129,7 +129,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
             Select Case Literal.Type
                 Case TokenType.StringLiteral
-                    Return New Library.Primitive(text.Substring(1, text.Length - 2))
+                    Return New Library.Primitive(GetString(Literal.Text, """"))
 
                 Case TokenType.DateLiteral
                     Dim result = Parser.ParseDateLiteral(Literal.Text)

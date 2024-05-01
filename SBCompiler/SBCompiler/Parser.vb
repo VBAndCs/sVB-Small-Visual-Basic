@@ -842,8 +842,17 @@ Namespace Microsoft.SmallVisualBasic
 
                     If formName = "" Then
                         AddError(strLit.Literal, $"Please provide a form name.")
-                    ElseIf Not FormNames.Contains(formName) Then
-                        AddError(strLit.Literal, $"The project doesn't contain a form named {formToken.Text}")
+                    Else
+                        Dim found = False
+                        For Each f In FormNames
+                            If f.ToLower() = formName Then
+                                found = True
+                                Exit For
+                            End If
+                        Next
+                        If Not found Then
+                            AddError(strLit.Literal, $"The project doesn't contain a form named {formToken.Text}")
+                        End If
                     End If
                 End If
 

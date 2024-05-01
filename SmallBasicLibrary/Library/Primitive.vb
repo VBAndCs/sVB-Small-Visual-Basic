@@ -811,10 +811,9 @@ Namespace Library
         End Function
 
         Public Shared Function ConvertFromMap(map As Dictionary(Of Primitive, Primitive)) As Primitive
-            Dim result = CType(Nothing, Primitive)
-            result._stringValue = Nothing
-            result._decimalValue = Nothing
+            Dim result As Primitive
             result._arrayMap = map
+            result._isArray = True
             Return result
         End Function
 

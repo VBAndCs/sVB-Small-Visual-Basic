@@ -77,19 +77,21 @@ Namespace Library
                 End Sub)
         End Sub
 
-        Friend Shared Sub Initialize()
+        Friend Shared Sub Initialize(Optional resetSpeed As Boolean = True)
             _initialized = False
             IsVisible = True
             _currentX = 320.0
             _currentY = 240.0
-            _speed = 5
-            _useAnimation = True
             _angle = 0.0
             _width = 16.0
             _height = 16.0
             _penDown = True
             _toShow = False
             _turtle = Nothing
+            If resetSpeed Then
+                _speed = 5
+                _useAnimation = True
+            End If
         End Sub
 
         ''' <summary>
@@ -286,6 +288,8 @@ Namespace Library
             End If
 
             VerifyAccess()
+            If Not GraphicsWindow._windowCreated Then Return
+
             Dim d = CDbl(distance)
             Dim animateTime = 1
             If _speed < 50 Then
@@ -348,6 +352,8 @@ Namespace Library
         ''' </param>
         Public Shared Sub DirectMove(distance As Primitive)
             VerifyAccess()
+            If Not GraphicsWindow._windowCreated Then Return
+
             Dim d = CDbl(distance)
             Dim angle = _angle / 180.0 * System.Math.PI
             Dim newY = _currentY - d * System.Math.Cos(angle)
@@ -467,6 +473,8 @@ Namespace Library
             End If
 
             VerifyAccess()
+            If Not GraphicsWindow._windowCreated Then Return
+
             Dim a = CDbl(angle)
             Dim animateTime = If(_speed = 10, 1.0, System.Math.Abs(a * 200.0 / (_speed ^ 2)))
             _angle += a
@@ -491,6 +499,8 @@ Namespace Library
         ''' </param>
         Public Shared Sub DirectTurn(angle As Primitive)
             VerifyAccess()
+            If Not GraphicsWindow._windowCreated Then Return
+
             _angle += CDbl(angle)
 
             GraphicsWindow.Invoke(

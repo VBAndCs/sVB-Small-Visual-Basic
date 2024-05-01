@@ -11,21 +11,19 @@
     
     <Grid>
         <Image  Source="splash.png" Stretch="Uniform"/>
-        <Image  Source="sVB.png" Stretch="Uniform" 
-                Margin="110,200"
+        <StackPanel Margin="0,100,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Image  Source="sVB.png" Stretch="Uniform" 
+                Margin="0,10,0,0"
                 Width="100" Height="100"
                 VerticalAlignment="Top"
-                HorizontalAlignment="Right"/>
-        <StackPanel Margin="0,-30,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock HorizontalAlignment="Center"  FontSize="48" FontWeight="Bold" 
-                       Foreground="Yellow">Small Visual Basic </TextBlock>
+                HorizontalAlignment="Center"/>
 
-            <TextBlock HorizontalAlignment="Center"  FontSize="28" FontWeight="Bold" 
-                       Foreground="Yellow">v3.0</TextBlock>
-
-            <TextBlock HorizontalAlignment="Center" FontSize="16" FontWeight="Bold" 
-                       Margin="0,50"
-                       Foreground="White">@ Mohammad Hamdy Ghanem</TextBlock>
+            <TextBlock HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" 
+                       Margin="0,10"
+                       Foreground="White">Happy BASIC 60th Anniversary For All</TextBlock>
+            
+            <TextBlock HorizontalAlignment="Center"  FontSize="40" FontWeight="Bold" 
+                       Foreground="Yellow">Small Visual Basic 3.0</TextBlock>
 
             <TextBlock HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" 
                       Foreground="Yellow">Based on:</TextBlock>

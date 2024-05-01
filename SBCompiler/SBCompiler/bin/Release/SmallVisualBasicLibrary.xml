@@ -661,7 +661,7 @@ Converts the given array to a string
  <summary>
  Displays the font dialog to allow the user to choose font name, size and other font properties.
  </summary>
- <param name="font">The initial font to show its properties in the dialog.</param>
+ <param name="font">An array that  contains the initial properties to display in the dialog. You can get this arry from the font property of the control that you show the font dialog for.</param>
  <returns>an array containing the font properties under the keys Name, Size, Bold, Italic, Underlined and Color, or returns an empty string "" if the user canceled the operation</returns>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.Desktop.FontNames">
@@ -1171,9 +1171,21 @@ Converts the given array to a string
  Gets or sets the Background color of the Graphics Window.
  </summary>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.FillGradiantBackground(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Fills the Graphics Window background with a gradient brush that starts with its background color and ends with the given color.
+ </summary>
+ <param name="endColor">The end color of the gradient brush</param>
+</member>
 <member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.BrushColor">
  <summary>
  Gets or sets the brush color to be used to fill shapes drawn on the Graphics Window.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.GradientEndColor">
+ <summary>
+ Gets Or sets the end color for the gradient brush. Use the BrushColor property  to set the start color of this gradient brush.
+ The Default value Is Colors.None, which means that the BrushColor will be used alone To create a solid brush.
  </summary>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.CanResize">
@@ -1224,6 +1236,17 @@ Converts the given array to a string
 <member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.Width">
  <summary>
  Gets or sets the Width of the graphics window.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.IsClosed">
+ <summary>
+ Returns True is the GW is closed, otherwise False.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.AutoShow">
+ <summary>
+ Set this property to False to prevent showing the Graphics Window when any of its methods is called.
+ The Default value is True
  </summary>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.Library.GraphicsWindow.Left">
@@ -1329,6 +1352,26 @@ Converts the given array to a string
  <param name="y">The y co-ordinate of the ellipse.</param>
  <param name="width">The width of the ellipse.</param>
  <param name="height">The height of the ellipse.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.DrawPolygon(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Draws the polygon that is represented by the given points array with the pen of the graphics window.
+ </summary>
+ <param name="xOffset">The horizontal offest to add to the x-cordinate of each point of the polygon.</param>
+ <param name="yOffset">The vertical offest to add to the y-cordinate of each point of the polygon.</param> 
+ <param name="xScale">The factor to multiply the polygon width by.</param>
+ <param name="yScale">The factor to multiply the polygon height by.</param>
+ <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.FillPolygon(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Fills the polygon that is represented by the given points array with the brush of the graphics window.
+ </summary>
+ <param name="xOffset">The horizontal offest to add to the x-cordinate of each point of the polygon.</param>
+ <param name="yOffset">The vertical offest to add to the y-cordinate of each point of the polygon.</param> 
+ <param name="xScale">The factor to multiply the polygon width by.</param>
+ <param name="yScale">The factor to multiply the polygon height by.</param>
+ <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.FillEllipse(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
@@ -1485,8 +1528,10 @@ Converts the given array to a string
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.ShowMessage(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Displays a message box to the user.
+ Use MsgBox as a shorcut name to show the message box. Ex:
+ MsgBox "Hello!"
  </summary>
- <param name="text">The text to be displayed on the message box.</param>
+ <param name="message">The text to be displayed on the message box.</param>
  <param name="title">The title for the message box.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.GraphicsWindow.AsForm">
@@ -1937,15 +1982,18 @@ Converts the given array to a string
 <member name="M:Microsoft.SmallVisualBasic.Library.Math.Remainder(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Divides the first number by the second and returns the remainder.
+ Note that you can directly use the Mod operator to get the same result.
  </summary>
  <param name="dividend">
- The number to divide.
+ The number to divide. This can be positive, negative or zero.
  </param>
  <param name="divisor">
- The number that divides.
+ The number that divides. It can be positive or negative, but it can't be zero, otherwise this methodd will caause an error.
  </param>
  <returns>
- The remainder after the division.
+ The remainder after the division. It can be positive, negative or zero.
+ An example of a negative remainder is Remaibder(-10, -3) which returns -1, because
+ -10 = -3 * 3 - 1
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Math.GetRandomNumber(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -2130,7 +2178,7 @@ Converts the given array to a string
 </member>
 <member name="T:Microsoft.SmallVisualBasic.Library.Shapes">
  <summary>
- The Shape object allows you to add, move and rotate shapes to the Graphics window.
+ The Shape object allows you to add, move and rotate shapes on the Graphics window.
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.AddRectangle(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -2141,16 +2189,18 @@ Converts the given array to a string
  <param name="height">The height of the rectangle shape.</param>
  <returns>
  The Rectangle shape that was just added to the Graphics Window.
+ You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
  </returns>
 </member>
-<member name="M:Microsoft.SmallVisualBasic.Library.Shapes.AddGeometricPath(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+<member name="M:Microsoft.SmallVisualBasic.Library.Shapes.AddGeometricPath">
  <summary>
- Add the geometic path that you create using the GeometricPath type to shapes.
+ Adds the geometic path, last created using the GeometricPath type, to shapes.
+ This will draw the path on the graphics window using its pen and brush.
  </summary>
- <param name="penColor">The color used to draw the shape outline</param>
- <param name="penWidth">The width of the shape outline</param>
- <param name="brushColor">The color used to fill the shape</param>
- <returns>The geometic path that was just added to the Graphics Window</returns>
+ <returns>
+ The geometic path that was just added to the Graphics Window
+You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
+ </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.AddEllipse(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
@@ -2164,6 +2214,7 @@ Converts the given array to a string
  </param>
  <returns>
  The Ellipse shape that was just added to the Graphics Window.
+ You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.AddTriangle(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -2190,6 +2241,7 @@ Converts the given array to a string
  </param>
  <returns>
  The Triangle shape that was just added to the Graphics Window.
+ You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)        
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.AddPolygon(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -2199,6 +2251,7 @@ Converts the given array to a string
  <param name="pointsArr">An array of points representing the heads of the polygn. Each item in this array is an array containing the x and y of the point.</param>
  <returns>
  The polygon shape that was just added to the Graphics Window.
+ You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.AddLine(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -2219,6 +2272,7 @@ Converts the given array to a string
  </param>
  <returns>
  The line that was just added to the Graphics Window.
+ You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.AddImage(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -2230,6 +2284,7 @@ Converts the given array to a string
  </param>
  <returns>
  The image that was just added to the Graphics Window.
+ You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.AddText(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -2241,34 +2296,34 @@ Converts the given array to a string
  </param>
  <returns>
  The text shape that was just added to the Graphics Window.
+ You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
  </returns>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Shapes.GetText(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets the text of a text shape added by the AddText method. 
+ </summary>
+ <param name="shapeName">The name of the text shape.</param>
+ <returns>The shape text if it is a text shape, or "" otherwise.</returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.SetText(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
- Sets the text of a text shape. 
+ Sets the text of a text shape added by the AddText method. 
  </summary>
- <param name="shapeName">
- The name of the text shape.
- </param>
- <param name="text">
- The new text value to set.
- </param>
+ <param name="shapeName">The name of the text shape.</param>
+ <param name="text">The new text value to set.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.Remove(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Removes a shape from the Graphics Window.
  </summary>
- <param name="shapeName">
- The name of the shape that needs to be removed.
- </param>
+ <param name="shapeName">The name of the shape that needs to be removed.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.Move(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Moves the shape with the specified name to a new position.
  </summary>
- <param name="shapeName">
- The name of the shape to move.
- </param>
+ <param name="shapeName">The name of the shape to move.</param>
  <param name="x">
  The x co-ordinate of the new position.
  </param>
@@ -2280,65 +2335,57 @@ Converts the given array to a string
  <summary>
  Rotates the shape with the specified name to the specified angle.
  </summary>
- <param name="shapeName">
- The name of the shape to rotate.
- </param>
- <param name="angle">
- The angle to rotate the shape.
- </param>
+ <param name="shapeName">The name of the shape to rotate.</param>
+ <param name="angle">The angle to rotate the shape.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.Zoom(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Scales the shape using the specified zoom levels.  Minimum is 0.1 and maximum is 20.
  </summary>
- <param name="shapeName">
- The name of the shape to zoom.
- </param>
- <param name="scaleX">
- The x-axis zoom level.
- </param>
- <param name="scaleY">
- The y-axis zoom level.
- </param>
+ <param name="shapeName">The name of the shape to zoom.</param>
+ <param name="scaleX">The x-axis zoom level.</param>
+ <param name="scaleY">The y-axis zoom level.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.Animate(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Animates a shape with the specified name to a new position.
  </summary>
- <param name="shapeName">
- The name of the shape to move.
- </param>
- <param name="x">
- The x co-ordinate of the new position.
- </param>
- <param name="y">
- The y co-ordinate of the new position.
- </param>
- <param name="duration">
- The time for the animation, in milliseconds.
- </param>
+ <param name="shapeName">The name of the shape to move.</param>
+ <param name="x">The x co-ordinate of the new position.</param>
+ <param name="y">The y co-ordinate of the new position.</param>
+ <param name="duration">The time for the animation, in milliseconds.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.GetLeft(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Gets the left co-ordinate of the specified shape.
  </summary>
- <param name="shapeName">
- The name of the shape.
- </param>
+ <param name="shapeName">The name of the shape.</param>
  <returns>
  The left co-ordinate of the shape.
  </returns>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Shapes.SetLeft(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Changes the left position of the specified shape
+ </summary>
+ <param name="shapeName">The name of the shape.</param>
+ <param name="x">the new position of the shape left</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.GetTop(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Gets the top co-ordinate of the specified shape.
  </summary>
- <param name="shapeName">
- The name of the shape.
- </param>
+ <param name="shapeName">The name of the shape.</param>
  <returns>
  The top co-ordinate of the shape.
  </returns>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.Library.Shapes.SetTop(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Changes the top position of the specified shape
+ </summary>
+ <param name="shapeName">The name of the shape.</param>
+ <param name="y">The new position of the shape top</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.GetOpacity(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
@@ -2353,28 +2400,20 @@ Converts the given array to a string
  <summary>
  Sets how opaque a shape should render.
  </summary>
- <param name="shapeName">
- The name of the shape.
- </param>
- <param name="level">
- The opacity level ranging from 0 to 100.  0 is completely transparent and 100 is completely opaque.
- </param>
+ <param name="shapeName">The name of the shape.</param>
+ <param name="level">The opacity level ranging from 0 to 100.  0 is completely transparent and 100 is completely opaque.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.HideShape(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Hides an already added shape.
  </summary>
- <param name="shapeName">
- The name of the shape.
- </param>
+ <param name="shapeName">The name of the shape.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Shapes.ShowShape(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Shows a previously hidden shape.
  </summary>
- <param name="shapeName">
- The name of the shape.
- </param>
+ <param name="shapeName">The name of the shape.</param>
 </member>
 <member name="T:Microsoft.SmallVisualBasic.Library.SmallVisualBasicCallback">
  <summary>
@@ -2383,7 +2422,6 @@ Converts the given array to a string
 </member>
 <member name="T:Microsoft.SmallVisualBasic.Library.Sound">
  <summary>
- The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
  The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
  </summary>
 </member>
@@ -2887,7 +2925,7 @@ Returns true if the given text is empty, or returns false otherwise.
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.PauseThenClose">
  <summary>
- Waits for user to press any key to close the window.
+ Waits for user to press any key to close the window, otherwise it closes it directly.
  </summary>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.PauseWithoutMessage">
@@ -2898,10 +2936,9 @@ Returns true if the given text is empty, or returns false otherwise.
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.Read">
  <summary>
  Reads a line of text from the text window.  This function will not return until the user hits ENTER.
+ Use ? as a shortcut name for this method.
  </summary>
- <returns>
- The text that was read from the text window
- </returns>
+ <returns>The text that was read from the text window</returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.ReadKey">
  <summary>
@@ -2914,30 +2951,30 @@ Returns true if the given text is empty, or returns false otherwise.
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.ReadNumber">
  <summary>
  Reads a number from the text window.  This function will not return until the user hits ENTER.
+ Use #? as a shortcut name for this method.
  </summary>
- <returns>
- The number that was read from the text window
- </returns>
+ <returns>The number that was read from the text window</returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.WriteLine(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Writes text or number to the text window.  A new line character will be appended to the output, so that the next time something is written to the text window, it will go in a new line.
+ Use ? as a shortcut name for this method.
  </summary>
  <param name="data">The text or number to write to the text window.</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.WriteLines(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Writes the items of the given array to the TextWindow, and appends a new line after each of them.
+ Use ? as a shortcut name for this method, followed by an array initializer or a direct comman separated values
  </summary>
  <param name="lines">An array of text lines</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.Write(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Writes text or number to the text window.  Unlike WriteLine, this will not append a new line character, which means, anything written to the text window after this call will be on the same line.
+ Use ?: as a shortcut name for this method.
  </summary>
- <param name="data">
- The text or number to write to the text window
- </param>
+ <param name="data">The text or number to write to the text window</param>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.TextWindow.VerifyAccess">
  <summary>
@@ -4438,6 +4475,11 @@ Creates a color from its alpha, red, green, and blue components.
  R=128, G=0, B=128
  </summary>
 </member>
+<member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.Random">
+ <summary>
+ Returns a random color from the list of well-known colors, that contains 139 colors.
+ </summary>
+</member>
 <member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.Red">
  <summary>
  Red Color:
@@ -4670,6 +4712,11 @@ Creates a color from its alpha, red, green, and blue components.
 <member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.SystemMenuHighlight">
  <summary>
  Gets the color used to highlight a menu item, as defined on the user system.
+ </summary>
+</member>
+<member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.SystemMenuBar">
+ <summary>
+ Gets the background color for a menu bar, as defined on the user system.
  </summary>
 </member>
 <member name="P:Microsoft.SmallVisualBasic.WinForms.Colors.SystemMenu">
@@ -6216,6 +6263,17 @@ It is useful when you use one sub to handle many events, to get info about the c
  </summary>
  <returns>the number of tests that have been run.</returns>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Form.RunGlobalTests(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Runs the test functions written in the global.sb file, and shows the test results in the TxtTest textbox on the current form. If the form doesn't contain a textbox with this name, it will be added at run time to show the results.
+ The test function must follow these rules:
+ 1. Its name must start with `Test_`, like `Test_FindNames`.
+ 2. It must be a function not a sub, and it can't have any parameters.
+ 3. The function return value should be a string containing the test result like "passed" or "failed". 
+ See the tests written in the "UnitTest Sample" project in the samples folder.
+ </summary>
+ <returns>the number of tests that have been run.</returns>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Form.AddTextBox(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Adds a new TextBox control to the form
@@ -6485,6 +6543,8 @@ It is useful when you use one sub to handle many events, to get info about the c
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Form.ShowMessage(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Shows a message box dialog on the owner form.
+ Use MsgBox as a shorcut name to show the message box. Ex:
+ MsgBox "Hello!"
  </summary>
  <param name="message">the text to dislpay on the message box</param>
  <param name="title">the title to display of the dialog box</param>
@@ -6598,6 +6658,8 @@ It is useful when you use one sub to handle many events, to get info about the c
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Forms.ShowMessage(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Shows a message box dialog.
+ Use MsgBox as a shorcut name to show the message box. Ex:
+ MsgBox "Hello!"
  </summary>
  <param name="message">the text to dislpay on the message box</param>
  <param name="title">the title to display of the dialog box</param>
@@ -7940,12 +8002,15 @@ It is useful when you use one sub to handle many events, to get info about the c
 <member name="M:Microsoft.SmallVisualBasic.WinForms.MathEx.Remainder(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Divides the first number by the second and returns the remainder.
+ Note that you can directly use the Mod operator to get the same result.
  </summary>
  <param name="divisor">
- The number that divides.
+ The number that divides. It can be positive or negative, but it can't be zero, otherwise this methodd will caause an error.
  </param>
  <returns>
- The remainder after the division.
+ The remainder after the division. It can be positive, negative or zero.
+ An example of a negative remainder is Remaibder(-10, -3) which returns -1, because
+ -10 = -3 * 3 - 1
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.MathEx.GetRandom(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -8144,6 +8209,74 @@ It is useful when you use one sub to handle many events, to get info about the c
  Fired when the scrollBar value changes.
  </summary>
 </member>
+<member name="T:Microsoft.SmallVisualBasic.WinForms.ShapesEx">
+ <summary>
+ The Shape object allows you to add, move and rotate shapes on the Graphics window.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.GetText(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets or sets the text of the shape, if it is a text object.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.Remove(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Removes the shape from the Graphics Window.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.Move(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Moves the shape to a new position.
+ </summary>
+ <param name="x">The x co-ordinate of the new position.</param>
+ <param name="y">The y co-ordinate of the new position.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.Rotate(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Rotates the shape to the specified angle.
+ </summary>
+ <param name="angle">The angle to rotate the shape.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.Zoom(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Scales the shape using the specified zoom levels. Minimum is 0.1 and maximum is 20.
+ </summary>
+ <param name="scaleX">The x-axis zoom level.</param>
+ <param name="scaleY">The y-axis zoom level.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.Animate(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Animates a shape to a new position.
+ </summary>
+ <param name="x">The x co-ordinate of the new position.</param>
+ <param name="y">The y co-ordinate of the new position.</param>
+ <param name="duration">The time for the animation, in milliseconds.</param>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.GetLeft(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets or sets the left co-ordinate of the shape.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.GetTop(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets or sets the top co-ordinate of the shape.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.GetOpacity(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets or sets the opacity of a shape. Valid values are between 0 and 100, where 0 is completely transparent and 100 is completely opaque.
+ </summary>        
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.Hide(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Hides the shape.
+ </summary>
+</member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.ShapesEx.Show(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Shows the shape if it is hidden.
+ </summary>
+</member>
 <member name="T:Microsoft.SmallVisualBasic.WinForms.Slider">
  <summary>
  Represents the Slider control, that allows the user to choose a value within a range.
@@ -8197,7 +8330,6 @@ It is useful when you use one sub to handle many events, to get info about the c
 </member>
 <member name="T:Microsoft.SmallVisualBasic.WinForms.SoundEx">
  <summary>
- The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
  The Sound object provides operations that allow the playback of sounds.  Some sample sounds are provided along with the library.
  </summary>
 </member>

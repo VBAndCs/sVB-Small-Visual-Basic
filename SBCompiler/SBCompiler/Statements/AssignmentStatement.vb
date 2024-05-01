@@ -322,6 +322,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim subExpr = TryCast(RightValue, IdentifierExpression)
             Dim subroutine = runner.SymbolTable.Subroutines(subExpr.Identifier.LCaseText)
             Dim handlerKey As String
+            Dim engine = runner.Engine
+
             If typeInfo.Type.FullName.StartsWith("Microsoft.SmallVisualBasic.WinForms") Then
                 handlerKey = $"{WinForms.Event.SenderControl}.{eventInfo.Name}".ToLower()
             Else
@@ -331,11 +333,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
             eventInfo.GetAddMethod().Invoke(Nothing, {CType(
                    Sub()
-                       If runner.Engine.BreakMode Then
-                           If Not (typeInfo.Name.EndsWith("Timer") AndAlso eventInfo.Name.EndsWith("Tick")) Then
-                               MsgBox("You are running the program in debug mode, and it is curreuntly paused, so you can't do anything before resuming execution. You will be switched to the current line that has the break point.")
-                               runner.Engine.RaiseDebuggerStateChangedEvent(Nothing)
-                           End If
+                       Dim eventName = eventInfo.Name
+                       If engine.BreakMode AndAlso (eventName.EndsWith("Click") OrElse eventName.Contains("Key") OrElse eventName.Contains("Mouse")) Then
+                           MsgBox("You are running the program in debug mode, and it is curreuntly paused, so you can't do anything before resuming execution. You will be switched to the current line that has the break point.")
+                           engine.RaiseDebuggerStateChangedEvent(Nothing)
                            Return
                        End If
 
@@ -344,42 +345,64 @@ Namespace Microsoft.SmallVisualBasic.Statements
                        End If
 
                        runner.EventThreads(handlerKey) = True
+                       Dim invokerRunner = engine.CurrentRunner
+                       Dim dc = invokerRunner.DebuggerCommand
+                       Dim isTimerTick = typeInfo.Name.EndsWith("Timer") AndAlso eventInfo.Name.EndsWith("Tick")
+                       If Not isTimerTick AndAlso invokerRunner.DebuggerState = DebuggerState.Running Then
+                           Try
+                               invokerRunner.runnerThread.Suspend()
+                               invokerRunner.IsPaused = True
+                           Catch ex As Exception
+                           End Try
+                       End If
+
                        Dim handlerThread As New Threading.Thread(
                             Sub()
-                                handlerRunner.Engine.CurrentRunner = handlerRunner
                                 handlerRunner.HasBeenPaused = False
                                 handlerRunner.StepAround = False
                                 handlerRunner.Depth = 0
                                 handlerRunner.Breakpoints = runner.Breakpoints
                                 handlerRunner.DebuggerState = DebuggerState.Running
 
-                                Dim dc = ProgramRunner.EventsCommand
-                                If dc = DebuggerCommand.Run Then
+                                If dc = DebuggerCommand.Run AndAlso ProgramRunner.EventsCommand = DebuggerCommand.Run Then
                                     handlerRunner.DebuggerCommand = DebuggerCommand.Run
                                 Else
                                     handlerRunner.DebuggerCommand = DebuggerCommand.StepInto
                                     ProgramRunner.EventsCommand = DebuggerCommand.Run
                                 End If
 
+                                engine.CurrentRunner = handlerRunner
                                 subroutine.Parent.Execute(handlerRunner)
 
                                 dc = handlerRunner.DebuggerCommand
+                                handlerRunner.DebuggerCommand = DebuggerCommand.Run
                                 If dc = DebuggerCommand.Run Then
                                     ProgramRunner.EventsCommand = dc
                                 Else
                                     ProgramRunner.EventsCommand = DebuggerCommand.StepInto
-                                    runner.StepAround = False
-                                    runner.Depth = 0
+                                    invokerRunner.StepAround = False
+                                    invokerRunner.Depth = 0
                                 End If
 
                                 handlerRunner.StepAround = False
                                 handlerRunner.ChangeDebuggerState(DebuggerState.Finished)
                                 handlerRunner.ContinueAll()
+                                If invokerRunner.IsPaused Then
+                                    engine.PausedRunner = invokerRunner
+                                    If ProgramRunner.EventsCommand = DebuggerCommand.Run Then
+                                        invokerRunner.DebuggerCommand = DebuggerCommand.Run
+                                        invokerRunner.Continue()
+                                    Else
+                                        ProgramRunner.EventsCommand = DebuggerCommand.Run
+                                        invokerRunner.DebuggerCommand = DebuggerCommand.StepInto
+                                        invokerRunner.ChangeDebuggerState(DebuggerState.Paused)
+                                    End If
+                                End If
                                 runner.EventThreads(handlerKey) = False
                             End Sub)
 
                        handlerThread.IsBackground = True
-                       handlerRunner.CurrentThread = handlerThread
+                       handlerRunner.runnerThread = handlerThread
                        handlerThread.Start()
                    End Sub, SmallVisualBasicCallback)
             })

@@ -201,24 +201,7 @@ Namespace WinForms
         ''' </summary>
         Public Shared Custom Event OnSelection As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
-                Try
-                    Dim name = [Event].SenderControl
-                    Dim _sender = GetListBox(name)
-                    Dim h = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
-                                [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
-                            End Sub
-
-                    Control.RemovePrevEventHandler(
-                            name,
-                            NameOf(OnSelection),
-                            Sub() RemoveHandler _sender.SelectionChanged, h
-                     )
-                    AddHandler _sender.SelectionChanged, h
-
-                Catch ex As Exception
-                    [Event].ShowErrorMessage(NameOf(OnSelection), ex)
-                End Try
-
+                ListBase.AddOnSelectHandler(handler)
             End AddHandler
 
             RemoveHandler(handler As SmallVisualBasicCallback)
@@ -227,6 +210,5 @@ Namespace WinForms
             RaiseEvent()
             End RaiseEvent
         End Event
-
     End Class
 End Namespace

@@ -192,7 +192,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetDegrees(angle As Primitive) As Primitive
-            Return System.Math.Round(180.0 * angle.AsDecimal / System.Math.PI, 5) Mod 360.0
+            Return Decimal.Remainder(System.Math.Round(180D * angle.AsDecimal / System.Math.PI, 5), 360D)
         End Function
 
         ''' <summary>
@@ -206,7 +206,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetRadians(angle As Primitive) As Primitive
-            Return DoubleToDecimal((angle.AsDecimal Mod 360.0) * System.Math.PI / 180.0)
+            Return DoubleToDecimal((angle.AsDecimal Mod 360D) * System.Math.PI / 180.0)
         End Function
 
         ''' <summary>

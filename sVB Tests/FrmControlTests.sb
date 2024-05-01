@@ -1,6 +1,6 @@
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Angle()
    angles[1] = Button1.Angle
    Button1.Angle = 45
@@ -15,7 +15,7 @@ Function Test_Angle()
    angles[6] = ComboBox1.Angle
    
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       angles,
       {0, 45, 315, 40, 344, 260},
       "Control.Angle"
@@ -23,7 +23,7 @@ Function Test_Angle()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_BackColor()
    ListBox1.BackColor = Colors.Yellow
    results[1] = ListBox1.BackColor
@@ -36,7 +36,7 @@ Function Test_BackColor()
    ListBox1.BackColor = Colors.None
    results[5] = ListBox1.BackColor
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {"#FFFFFF00", "#FFFF0000", "#8000FF00", "#FF0000FF", "None"},
       "Control.BackColor"
@@ -44,13 +44,13 @@ Function Test_BackColor()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Enabled()
    Me.Enabled = False
    x = Me.Enabled
    Me.Enabled = True
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       {x, Me.Enabled},
       {False, True},
       "Control.Enabled"
@@ -58,7 +58,7 @@ Function Test_Enabled()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Error()
    ComboBox1.Error = "test"
    results[1] = {ComboBox1.Error, ComboBox1.ToolTip}
@@ -70,7 +70,7 @@ Function Test_Error()
    results[4] = {ComboBox1.Error, ComboBox1.ToolTip}
    
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {
          {"test", ""},
@@ -83,7 +83,7 @@ Function Test_Error()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_FitContent()
    Label1.FitContentSize()
    w = Label1.Width
@@ -107,7 +107,7 @@ Function Test_FitContent()
    Label1.FitContentSize()
    results[6] = {Label1.Width < w, Label1.Height = h}
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {
          True, True, True,
@@ -120,7 +120,7 @@ Function Test_FitContent()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Font()
    font!Name = Me.FontName
    font!Size = 20
@@ -139,7 +139,7 @@ Function Test_Font()
    font = Label1.Font
    Label1.Font = {}
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       {font, Label1.Font},
       {font2, font2},
       "Control.Font"
@@ -147,7 +147,7 @@ Function Test_Font()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_FontName()
    TextBox1.FontName = ""
    results[1] = TextBox1.FontName
@@ -156,14 +156,14 @@ Function Test_FontName()
    TextBox1.FontName = "Times New Roman"
    results[3] = TextBox1.FontName
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {"", "test", "Times New Roman"},
       "Control.FontName"
    )
 EndFunction
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_FontSize()
    fontSize = TextBox1.FontSize
    TextBox1.FontSize = -1
@@ -183,7 +183,7 @@ Function Test_FontSize()
    TextBox1.FontSize = 150
    results[8] = TextBox1.FontSize
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {1, 1, 1, 1, 15, 20.5, 100, 150},
       "Control.FontSize"
@@ -191,7 +191,7 @@ Function Test_FontSize()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_FontBold()
    Button1.FontBold = False
    results[1] = Button1.FontBold
@@ -199,7 +199,7 @@ Function Test_FontBold()
    results[2] = Button1.FontBold
    
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {False, True},
       "Control.FontBold"
@@ -207,7 +207,7 @@ Function Test_FontBold()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_FontItalic()
    Button1.FontItalic = False
    results[1] = Button1.FontItalic
@@ -215,7 +215,7 @@ Function Test_FontItalic()
    results[2] = Button1.FontItalic
    
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {False, True},
       "Control.FontItalic"
@@ -223,7 +223,7 @@ Function Test_FontItalic()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_ForeColor()
    RadioButton1.ForeColor = Colors.Yellow
    results[1] = RadioButton1.ForeColor
@@ -236,7 +236,7 @@ Function Test_ForeColor()
    RadioButton1.ForeColor = Colors.None
    results[5] = RadioButton1.ForeColor
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {"#FFFFFF00", "#FFFF0000", "#8000FF00", "#FF0000FF", "None"},
       "Control.ForeColor"
@@ -244,7 +244,7 @@ Function Test_ForeColor()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Height()
    h = TextBox1.Height
    TextBox1.Text = "line1" + Chars.CrLf + "line2"
@@ -258,14 +258,14 @@ Function Test_Height()
    TextBox1.MaxHeight = 0
    results[5] = TextBox1.Height
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {h, True, h, h, 500},
       "Control.Height"
    )
 EndFunction
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Left
    l = ScrollBar1.Left
    ScrollBar1.Left = -ScrollBar1.Width
@@ -281,7 +281,7 @@ Function Test_Left
    ScrollBar1.Left = l
    results[6] = ScrollBar1.Left
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {-ScrollBar1.Width, -10, 0, 100.4, Me.Width, l},
       "Control.Left"
@@ -289,7 +289,7 @@ Function Test_Left
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_MaxHeight()
    Button1.Height = 100
    results[1] = {Button1.Height, Button1.MaxHeight}
@@ -310,7 +310,7 @@ Function Test_MaxHeight()
    Button1.MaxHeight = 0
    results[6] = {Button1.Height, Button1.MaxHeight}
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {
          {100, 0},
@@ -325,7 +325,7 @@ Function Test_MaxHeight()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_MaxWidth()
    Button1.Width = 100
    results[1] = {Button1.Width, Button1.MaxWidth}
@@ -346,7 +346,7 @@ Function Test_MaxWidth()
    Button1.MaxWidth = 0
    results[6] = {Button1.Width, Button1.MaxWidth}
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {
          {100, 0},
@@ -361,10 +361,10 @@ Function Test_MaxWidth()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Name()
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       {
          {Button1, Button1.Name},
          {CheckBox1, CheckBox1.Name},
@@ -394,28 +394,29 @@ Function Test_Name()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 FocusedControls = {}
 
 Function Test_OnGotFocus()
    FocusedControls = {}
    ForEach _control In Me.Controls
-      _control.OnGotFocus = GotFocus
-      _control.Focus()
+      If Text.ToLower(_control.Name) <> "txttest" Then
+         _control.OnGotFocus = GotFocus
+         _control.Focus()
+      EndIf
    Next
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       FocusedControls,
       {
          "Button1",
-         "txttest",
          "RadioButton1",
          "ToggleButton1",
          "TextBox1",
          "Slider1",
          "ListBox1",
-         "DatePicker1", "DatePicker1",
-         "ComboBox1", "ComboBox1",
+         "DatePicker1",
+         "ComboBox1",
          "CheckBox1"
       },
       "Control.OnGotFocus"
@@ -423,7 +424,7 @@ Function Test_OnGotFocus()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub GotFocus()
    senderControl = Event.SenderControl
    FocusedControls = FocusedControls.AddItem(senderControl.Name)
@@ -431,57 +432,73 @@ EndSub
 
 
 
-'------------------------------------------------
+' ------------------------------------------------
 UnFocusedControls = {}
 
 Function Test_OnLostFocus()
    UnFocusedControls = {}
+   txtTest = Text.ToLower(Me) + ".txttest"
    ForEach _control In Me.Controls
-      _control.OnLostFocus = LostFocus
-      _control.Focus()
+      If _control <> txtTest Then
+         _control.OnLostFocus = LostFocus
+         _control.Focus()
+         txtTest.Focus() ' Force the _control to lose focus
+      EndIf
    Next
-   Button1.Focus()
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       UnFocusedControls,
       {
          "Button1",
-         "txttest",
          "RadioButton1",
          "ToggleButton1",
          "TextBox1",
          "Slider1",
          "ListBox1",
-         "DatePicker1", "DatePicker1",
-         "ComboBox1", "ComboBox1",
+         "DatePicker1",
+         "ComboBox1",
          "CheckBox1"
       },
       "Control.OnLostFocus"
    )
 EndFunction
 
-
-'------------------------------------------------
+' ------------------------------------------------
 Sub LostFocus()
    senderControl = Event.SenderControl
    UnFocusedControls = UnFocusedControls.AddItem(senderControl.Name)
    senderControl.Error = "Invalid"
 EndSub
 
-'------------------------------------------------
+' ------------------------------------------------
+Function Test_Validate()
+   results = {}
+   expected = {}
+   ForEach _control In Me.Controls
+      If UnFocusedControls.ContainsValue(_control) Then
+         results = results.AddItem(_control.Validate())
+         expected = expected.AddItem(False)
+         _control.Error = ""
+      EndIf
+   Next
+   
+   Return Unittest.AssertEqual(results, expected, "Control.Validate")
+EndFunction
+
+' ------------------------------------------------
 Function Test_Rotate()
    ProgressBar1.Rotate(130)
    ProgressBar1.Rotate(-30)
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       ProgressBar1.Angle, 100, "Control.Rotate"
    )
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_SetResourceDictionary()
    Me.SetResourceDictionary("rs.style")
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       {Button1.BackColor, TextBox1.BackColor},
       {Colors.Red, Colors.Yellow},
       "Control.setResDic #1"
@@ -489,20 +506,20 @@ Function Test_SetResourceDictionary()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_SetResourceDictionary2()
    Button1.BackColor = Colors.SystemControl
    TextBox1.BackColor = Colors.White
    
    Button1.SetResourceDictionary("rs.style")
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       {Button1.BackColor, TextBox1.BackColor},
       {Colors.Red, Colors.White},
       "Control.SetResDic #2"
    )
 EndFunction
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_SetStyle()
    txtTest = Me + ".txtTest"
    Control.SetStyle(txtTest, "rs2.style", "BlueTextBox")
@@ -510,7 +527,7 @@ Function Test_SetStyle()
    bc = Control.GetBackColor(txtTest)
    Control.SetBackColor(txtTest, Colors.White)
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       {Button1.BackColor, bc},
       {Colors.Blue, Colors.Blue},
       "Control.SetStyle"
@@ -518,7 +535,7 @@ Function Test_SetStyle()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Tag()
    Me.Tag = Me
    results = {}
@@ -529,7 +546,7 @@ Function Test_Tag()
       results = results.AddItem(_control.Tag)
    Next
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       {Me.Tag, results},
       {Me, allControls},
       "Control.Tag"
@@ -537,7 +554,7 @@ Function Test_Tag()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_ToolTip()
    Me.ToolTip = Me
    results = {}
@@ -552,14 +569,14 @@ Function Test_ToolTip()
       _control.Error = ""
    Next
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       {Me.ToolTip, results},
       {Me, allControls},
       "Control.ToolTip"
    )
 EndFunction
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Top
    l = Slider1.Top
    Slider1.Top = -Slider1.Height
@@ -575,7 +592,7 @@ Function Test_Top
    Slider1.Top = l
    results[6] = Slider1.Top
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {-Slider1.Height, -10, 0, 100.4, Me.Height, l},
       "Control.Top"
@@ -584,14 +601,14 @@ EndFunction
 
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_TypeName()
    results[1] = Me.TypeName
    ForEach _control In Me.Controls
       results = results.AddItem(_control.TypeName)
    Next
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {
          ControlTypes.Form,
@@ -613,27 +630,13 @@ Function Test_TypeName()
    )
 EndFunction
 
-'------------------------------------------------
-Function Test_Validate()
-   results = {}
-   expected = {}
-   ForEach _control In Me.Controls
-      results = results.AddItem(_control.Validate())
-      expected = expected.AddItem(False)
-      _control.Error = ""
-   Next
-   
-   Return UnitTest.AssertEqual(results, expected, "Control.Validate")
-EndFunction
-
-
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Visible()
    RadioButton1.Visible = False
    x = RadioButton1.Visible
    RadioButton1.Visible = True
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       {x, RadioButton1.Visible},
       {False, True},
       "Control.Visible"
@@ -641,7 +644,7 @@ Function Test_Visible()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Test_Width()
    Label1.WordWrap = False
    w = Label1.Width
@@ -656,7 +659,7 @@ Function Test_Width()
    Label1.MaxWidth = 0
    results[5] = Label1.Width
    
-   Return UnitTest.AssertEqual(
+   Return Unittest.AssertEqual(
       results,
       {w, True, w, w, 500},
       "Control.Width"

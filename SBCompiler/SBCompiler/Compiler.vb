@@ -287,7 +287,6 @@ Namespace Microsoft.SmallVisualBasic
                     Catch ex As Exception
                     End Try
                 Next
-
             Next
         End Sub
 
@@ -337,7 +336,6 @@ Namespace Microsoft.SmallVisualBasic
             }
 
             Dim methods = type.GetMethods(BindingFlags.Static Or BindingFlags.Public)
-
             For Each methodInfo In methods
                 If CanAddMethod(methodInfo) Then
                     Dim name = methodInfo.Name.ToLower()
@@ -348,7 +346,6 @@ Namespace Microsoft.SmallVisualBasic
             Next
 
             Dim properties = type.GetProperties(BindingFlags.Static Or BindingFlags.Public)
-
             For Each propertyInfo In properties
                 If CanAddProperty(propertyInfo) Then
                     typeInfo.Properties.Add(propertyInfo.Name.ToLower(), propertyInfo)
@@ -356,7 +353,6 @@ Namespace Microsoft.SmallVisualBasic
             Next
 
             Dim events = type.GetEvents(BindingFlags.Static Or BindingFlags.Public)
-
             For Each eventInfo In events
                 If CanAddEvent(eventInfo) Then
                     typeInfo.Events.Add(eventInfo.Name.ToLower(), eventInfo)

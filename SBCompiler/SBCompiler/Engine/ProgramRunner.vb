@@ -49,7 +49,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 runner = New ProgramRunner(_Engine, Parser, True)
                 runner.Evaluating = True
                 runner.isGlobalInitialized = isGlobalInitialized
-                runner.CurrentThread = CurrentThread
+                runner.runnerThread = runnerThread
                 runner.isSubRunner = True
                 Parser.EvaluationRunner = runner
             Else
@@ -66,16 +66,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Friend ReadOnly Property GlobalRunner As ProgramRunner
             Get
-                Dim gRunner As ProgramRunner
-                If Evaluating Then
-                    If _Engine.GlobalParser.EvaluationRunner Is Nothing Then
-                        gRunner = _Engine.Runners(_Engine.GlobalParser).GetEvaluationRunner()
-                    Else
-                        gRunner = _Engine.GlobalParser.EvaluationRunner
-                    End If
-                Else
-                    gRunner = _Engine.Runners(_Engine.GlobalParser)
-                End If
+                Dim gRunner = GetGlobalRunner()
 
                 If Not gRunner.isGlobalInitialized Then
                     gRunner.isGlobalInitialized = True
@@ -92,7 +83,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
                     _Engine.CurrentRunner = gRunner
                     gRunner.HasBeenPaused = False
 
-                    gRunner.CurrentThread = CurrentThread
+                    gRunner.runnerThread = runnerThread
                     gRunner.Execute(_Engine.GlobalParser.ParseTree)
 
                     If Not Evaluating Then
@@ -104,13 +95,30 @@ Namespace Microsoft.SmallVisualBasic.Engine
                         End If
 
                         PauseAtReturn = gRunner.HasBeenPaused
-                        _Engine.CurrentRunner = Me
                     End If
+                    _Engine.CurrentRunner = Me
                 End If
 
                 Return gRunner
             End Get
         End Property
+
+        Friend Function GetGlobalRunner() As ProgramRunner
+            If _Engine.GlobalParser Is Nothing Then Return Nothing
+
+            Dim gRunner As ProgramRunner
+            If Evaluating Then
+                If _Engine.GlobalParser.EvaluationRunner Is Nothing Then
+                    gRunner = _Engine.Runners(_Engine.GlobalParser).GetEvaluationRunner()
+                Else
+                    gRunner = _Engine.GlobalParser.EvaluationRunner
+                End If
+            Else
+                gRunner = _Engine.Runners(_Engine.GlobalParser)
+            End If
+
+            Return gRunner
+        End Function
 
         Public Function EvaluateExpression(ByRef text As String, subName As Token) As Library.Primitive?
             Dim reader As New IO.StringReader(text)
@@ -177,9 +185,9 @@ Namespace Microsoft.SmallVisualBasic.Engine
             End Get
         End Property
 
-        Friend Sub RunForm(formName As String)
+        Friend Function GetFormRunner(formName As String) As ProgramRunner
             Dim className = (WinForms.Forms.FormPrefix & formName).ToLower()
-            Dim formParser As Parser
+            Dim formParser As Parser = Nothing
             For Each p In _Engine.Parsers
                 If p.ClassName.ToLower() = className Then
                     formParser = p
@@ -191,12 +199,15 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 Throw New Exception("There is no form name {formName} in the project")
             End If
 
-            Dim formRunner As ProgramRunner
             If _Engine.Runners.ContainsKey(formParser) Then
-                formRunner = _Engine.Runners(formParser)
+                Return _Engine.Runners(formParser)
             Else
-                formRunner = New ProgramRunner(_Engine, formParser)
+                Return New ProgramRunner(_Engine, formParser)
             End If
+        End Function
+
+        Friend Sub RunForm(formName As String)
+            Dim formRunner = GetFormRunner(formName)
 
             If Evaluating Then
                 formRunner = formRunner.GetEvaluationRunner()
@@ -214,8 +225,8 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 _Engine.CurrentRunner = formRunner
             End If
 
-            formRunner.CurrentThread = CurrentThread
-            formRunner.Execute(formParser.ParseTree)
+            formRunner.runnerThread = runnerThread
+            formRunner.Execute(formRunner.Parser.ParseTree)
 
             If Not Evaluating Then
                 Dim dc = formRunner.DebuggerCommand
@@ -258,12 +269,12 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Friend Sub ChangeDebuggerState(state As DebuggerState)
             If state = DebuggerState.Running Then
-                isPaused = False
+                IsPaused = False
                 If _DebuggerState = state Then Return
                 Library.Program.ActivateWindow()
 
             ElseIf state = DebuggerState.Finished Then
-                isPaused = False
+                IsPaused = False
                 If _DebuggerState = state OrElse _DebuggerState = DebuggerState.Running Then
                     _DebuggerState = state
                     Return
@@ -287,7 +298,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
             PreviousLineNumber = lineNumber
         End Sub
 
-        Private Sub CheckForExecutionBreak(isFirstStatement As Boolean, CurrentStatement As Statement)
+        Friend Sub CheckForExecutionBreak(isFirstStatement As Boolean, CurrentStatement As Statement)
             If Evaluating Then Return
 
             If isFirstStatement AndAlso _Engine.StopOnFirstStaement Then
@@ -312,14 +323,15 @@ Namespace Microsoft.SmallVisualBasic.Engine
         End Sub
 
 
-        Friend CurrentThread As Thread
+        Friend runnerThread As Thread
 
         Friend Sub [Continue](Optional all As Boolean = False)
             forcedToBreak = False
             ' This maybe a subrunner, so we must resum it
             Try
-                CurrentThread?.Resume()
-            Catch
+                runnerThread?.Resume()
+                IsPaused = False
+            Catch ex As Exception
             End Try
 
             If all Then ContinueAll()
@@ -331,9 +343,10 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Private Sub Pause(Optional isError As Boolean = False)
             If Library.Program.IsTerminated Then Return
+
             _Engine.BreakMode = True
             StepAround = False
-            isPaused = True
+            IsPaused = True
 
             Dim mainRunner = _Engine.MainRunner
             If Me IsNot mainRunner AndAlso Not mainRunner.forcedToBreak AndAlso
@@ -354,7 +367,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
             Try
                 DebuggerCommand = DebuggerCommand.Run ' After resuming
-                CurrentThread.Suspend()
+                runnerThread.Suspend()
             Catch ex As Exception
             End Try
         End Sub
@@ -372,12 +385,12 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Friend Sub ContinueAll()
             For Each runner In _Engine.Runners.Values
-                If runner IsNot Me AndAlso runner.ForcedToBreak AndAlso
-                            runner.CurrentThread IsNot Nothing AndAlso
-                            runner.CurrentThread.IsAlive Then
+                If runner IsNot Me AndAlso runner.forcedToBreak AndAlso
+                            runner.runnerThread IsNot Nothing AndAlso
+                            runner.runnerThread.IsAlive Then
                     runner.forcedToBreak = False
                     Try
-                        runner.CurrentThread.Resume()
+                        runner.runnerThread.Resume()
                     Catch
                     End Try
                     runner.IsPaused = False
@@ -437,14 +450,13 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Public Exception As Exception
         Friend ResumeTrials As Integer
-        Private isSubRunner As Boolean
+        Friend IsSubRunner As Boolean
         Friend Shared EventsCommand As DebuggerCommand
 
         Friend Function Execute(statements As List(Of Statement)) As Statement
             PreviousLineNumber = -1
             If statements.Count = 0 Then Return Nothing
 
-            'CurrentThread = Threading.Thread.CurrentThread
             Dim startLine = statements(0).StartToken.Line
             Dim endLine = statements.Last.StartToken.Line
             Dim isFirstStatement = True
@@ -471,7 +483,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
                     result = st.Execute(Me)
                     Exception = Library.Program.Exception
                     If Exception IsNot Nothing Then
-                        CurrentThread = Thread.CurrentThread
+                        runnerThread = Thread.CurrentThread
                         Pause(isError:=True)
                         Library.Program.End()
                         Return New EndDebugging()
@@ -479,7 +491,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
                 Catch ex As Exception
                     Exception = ex
-                    CurrentThread = Thread.CurrentThread
+                    runnerThread = Thread.CurrentThread
                     Pause(isError:=True)
                     Library.Program.End()
                     Return New EndDebugging()

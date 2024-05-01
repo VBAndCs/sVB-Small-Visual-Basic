@@ -479,11 +479,10 @@ Public Class Designer
             PagesGrid.Children.Remove(CurrentPage)
 
             Dim i = FormKeys.IndexOf(CurrentPage.PageKey)
+            If i = -1 Then Return True
 
-            If i <> -1 Then
-                FormKeys.RemoveAt(i)
-                FormNames.RemoveAt(i)
-            End If
+            FormKeys.RemoveAt(i)
+            FormNames.RemoveAt(i)
 
             Dim nextKey As String
             Dim n = FormKeys.Count - 1
@@ -545,7 +544,14 @@ Public Class Designer
             Next
 
             ' File is not opened. Open it.
-            Open(key)
+            If Not Open(key) Then
+                If CurrentPage Is Nothing Then
+                    OpenNewPage(False)
+                ElseIf CurrentPage.PageKey = "" Then
+                    CurrentPage.PageKey = GetTempKey()
+                End If
+                Return CurrentPage.PageKey
+            End If
         End If
 
         BringPageToFront()
@@ -832,6 +838,14 @@ Public Class Designer
                         Dim label As New Label()
                         label.Width = 200
                         label.Height = 200
+
+                        Dim newFile = IO.Path.Combine(IO.Path.GetDirectoryName(_codeFile), IO.Path.GetFileName(file))
+                        Try
+                            IO.File.Copy(file, newFile)
+                            file = newFile
+                        Catch ex As Exception
+                        End Try
+
                         label.Background = New ImageBrush(New BitmapImage(New Uri(file)))
                         AddToForm(Pos, label, label.GetType(), "Label")
                         SetControlText(label, "", False)
@@ -1214,7 +1228,7 @@ Public Class Designer
     End Function
 
     Private Shared Function FixImageFiles(xaml As String, dirPath As String) As String
-        Dim dir = "file:///" & dirPath.Replace("\", "/").TrimEnd("/"c)
+        Dim dir = "file:///" & dirPath.Replace("\", "/").TrimEnd("/"c).Replace("&", "&amp;")
         xaml = xaml.Replace($"Source=""{dir}/", "Source=""\")
         xaml = xaml.Replace($"FileName=""{dir}/", "FileName=""\")
         dir = dir.Replace("/", "\")
@@ -1288,7 +1302,7 @@ Public Class Designer
     End Sub
 
     ' Use the SwitchTo method to open files. It will call this function and update the form designer
-    Friend Shared Sub Open(fileName As String)
+    Friend Shared Function Open(fileName As String) As Boolean
         Dim fileName2 = fileName.ToLower()
         If fileName2 = Helper.GlobalFileName Then
             fileName = IO.Path.Combine(appDir, Helper.ExactGlobalFileName)
@@ -1296,13 +1310,15 @@ Public Class Designer
 
         If Not IO.File.Exists(fileName) Then
             MsgBox($"File '{fileName}' doesn't exist!")
-            Return
+            Return False
         End If
 
         PagesGrid.Cursor = Cursors.Wait
+        Dim tempPage = CurrentPage
+
         Try
             Dim xaml = IO.File.ReadAllText(fileName, System.Text.Encoding.UTF8)
-            ' Ensure we don't open new page after opneing a file from command line args
+            ' Ensure we don't open new page after opneing a file from command line args            
             If NewPageOpened Then
                 CreateNewDesigner()
             Else
@@ -1327,13 +1343,17 @@ Public Class Designer
 
         Catch ex As Exception
             MsgBox(ex.Message)
+            CurrentPage = tempPage
+            Return False
         Finally
             PagesGrid.Cursor = Nothing
         End Try
-    End Sub
+
+        Return True
+    End Function
 
     Public Shared Function ExpandRelativeImageFiles(xaml As String, fileName As String) As String
-        Dim d = IO.Path.GetDirectoryName(fileName).ToLower() & IO.Path.DirectorySeparatorChar
+        Dim d = IO.Path.GetDirectoryName(fileName).ToLower().Replace("&", "&amp;") & IO.Path.DirectorySeparatorChar
         xaml = xaml.Replace("Source=""\", $"Source=""{d}")
         xaml = xaml.Replace("FileName=""\", $"FileName=""{d}")
         xaml = xaml.Replace("Source=""/", $"Source=""{d}")

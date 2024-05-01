@@ -26,6 +26,8 @@ Namespace WinForms
             Helper.ReportError($"Sending `{value}` to {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
 
+        Public Shared Event DebugRunTests(formName As String, isGlobal As Boolean, ByRef result As Primitive)
+
         ''' <summary>
         ''' Runs the test functions written in the current form, and shows the test results in the TxtTest textbox. If the form doesn't contain a textbox with this name, it will be added at run time to show the results.
         ''' The test function must follow these rules:
@@ -38,69 +40,122 @@ Namespace WinForms
         <ExMethod>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function RunTests(formName As Primitive) As Primitive
+            Dim frm = formName.AsString().ToLower()
+            If App.IsDebugging Then
+                Dim result As New Primitive
+                RaiseEvent DebugRunTests(frm, False, result)
+                Return result
+            End If
+
             Dim asm = System.Reflection.Assembly.GetEntryAssembly()
             RunTests = 0
 
             App.Invoke(
                 Sub()
                     Try
-                        Dim frm = formName.AsString().ToLower()
-                        Dim frmName = Forms.FormPrefix & frm
-                        Dim frmType = asm.GetType(frmName)
-                        Dim methods = frmType?.GetMethods(System.Reflection.BindingFlags.Public Or System.Reflection.BindingFlags.Static)
-                        If methods Is Nothing Then Return
-
-                        Dim testMethods =
-                                From method In methods
-                                Where method.Name.ToLower().StartsWith("test_")
-
-                        If Not testMethods.Any Then Return
-
-                        Dim key = frm & ".txttest"
-                        If Not Forms._controls.ContainsKey(key) Then
-                            Dim wind = CType(Forms._forms(frm), Window)
-                            Dim canv = GetCanvas(wind)
-
-                            AddTextBox(
-                                    formName,
-                                    "txttest",
-                                    5,
-                                    5,
-                                    canv.ActualWidth - 10,
-                                    canv.ActualHeight - 10
-                            )
-                        End If
-
-                        Dim txtTest = CType(Forms._controls(key), Wpf.TextBox)
-                        Dim errMsg = " doesn't return a value. Use a test function and return a text showing the result of the test."
-                        Dim n = 0
-                        txtTest.IsReadOnly = True
-
-                        For Each m In testMethods
-                            Dim testName = m.Name
-                            Try
-                                Dim msg = m.Invoke(Nothing, Nothing)
-
-                                If msg Is Nothing Then
-                                    txtTest.AppendText(testName)
-                                    txtTest.AppendText(errMsg)
-                                Else
-                                    txtTest.AppendText(msg.ToString())
-                                    n += 1
-                                End If
-
-                            Catch ex As Exception
-                                txtTest.AppendText($"{testName} has caused the error: {ex.Message}.")
-                            End Try
-                            txtTest.AppendText(vbCrLf)
-                        Next
-
-                        RunTests = n
-
+                        Dim frmType = asm.GetType(Forms.FormPrefix & frm)
+                        RunTests = DoRunTeests(frmType, frm)
                     Catch ex As Exception
                         ReportSubError(formName, "RunTests", ex)
                     End Try
                 End Sub)
+        End Function
+
+        ''' <summary>
+        ''' Runs the test functions written in the global.sb file, and shows the test results in the TxtTest textbox on the current form. If the form doesn't contain a textbox with this name, it will be added at run time to show the results.
+        ''' The test function must follow these rules:
+        ''' 1. Its name must start with `Test_`, like `Test_FindNames`.
+        ''' 2. It must be a function not a sub, and it can't have any parameters.
+        ''' 3. The function return value should be a string containing the test result like "passed" or "failed". 
+        ''' See the tests written in the "UnitTest Sample" project in the samples folder.
+        ''' </summary>
+        ''' <returns>the number of tests that have been run.</returns>
+        <ReturnValueType(VariableType.Double)>
+        <ExMethod>
+        Public Shared Function RunGlobalTests(formName As Primitive) As Primitive
+            Dim frm = formName.AsString().ToLower()
+            If App.IsDebugging Then
+                Dim result As New Primitive
+                RaiseEvent DebugRunTests(frm, True, result)
+                Return result
+            End If
+
+            Dim asm = System.Reflection.Assembly.GetEntryAssembly()
+            RunGlobalTests = 0
+
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim globalType = asm.GetType("Global")
+                        If globalType IsNot Nothing Then
+                            RunGlobalTests = DoRunTeests(globalType, frm)
+                        End If
+                    Catch ex As Exception
+                        ReportSubError(formName, "RunGlobalTests", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Friend Shared Function DoRunTeests(type As Type, resultForm As String) As Integer
+            Dim methods = type?.GetMethods(
+                    System.Reflection.BindingFlags.Public Or
+                    System.Reflection.BindingFlags.NonPublic Or
+                    System.Reflection.BindingFlags.Static)
+            If methods Is Nothing Then Return 0
+
+            Dim testMethods =
+                                From method In methods
+                                Where method.Name.ToLower().StartsWith("test_")
+
+            If Not testMethods.Any Then Return 0
+
+            Dim key = AddTestTextBox(resultForm)
+            Dim txtTest = CType(Forms._controls(key), Wpf.TextBox)
+            Dim errMsg = " doesn't return a value. Use a test function and return a text showing the result of the test."
+            Dim n = 0
+
+            For Each m In testMethods
+                Dim testName = m.Name
+                Try
+                    Dim msg = m.Invoke(Nothing, Nothing)
+
+                    If msg Is Nothing Then
+                        txtTest.AppendText(testName)
+                        txtTest.AppendText(errMsg)
+                    Else
+                        txtTest.AppendText(msg.ToString())
+                        n += 1
+                    End If
+
+                Catch ex As Exception
+                    txtTest.AppendText($"{testName} has caused the error: {ex.Message}.")
+                End Try
+                txtTest.AppendText(vbCrLf)
+            Next
+            Return n
+        End Function
+
+        Public Shared Function AddTestTextBox(formName As String) As String
+            Dim key = formName & ".txttest"
+            App.Invoke(
+                Sub()
+                    If Not Forms._controls.ContainsKey(key) Then
+                        Dim wind = CType(Forms._forms(formName), Window)
+                        Dim canv = GetCanvas(wind)
+                        AddTextBox(
+                                formName,
+                                "txttest",
+                                5,
+                                5,
+                                canv.ActualWidth - 10,
+                                canv.ActualHeight - 10
+                        )
+                    End If
+
+                    Dim txtTest = CType(Forms._controls(key), Wpf.TextBox)
+                    txtTest.IsReadOnly = True
+                End Sub)
+            Return key
         End Function
 
         Public Shared Sub Initialize(formName As String, asm As System.Reflection.Assembly)
@@ -176,6 +231,7 @@ Namespace WinForms
                          Dim cnv = GetCanvas(frm)
                          cnv.Children.Add(textBox1)
                          Forms._controls(key) = textBox1
+                         AddHandler textBox1.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                      Catch ex As Exception
                          ReportSubError(formName, "AddTextBox", ex)
@@ -282,6 +338,7 @@ Namespace WinForms
                             Dim cnv = GetCanvas(frm)
                             cnv.Children.Add(img)
                             Forms._controls(key) = img
+                            AddHandler img.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                         Catch ex As Exception
                             ReportSubError(formName, "AddImageBox", ex)
@@ -462,6 +519,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(button1)
                           Forms._controls(key) = button1
+                          AddHandler button1.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddButton", ex)
@@ -512,6 +570,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(toggleButton1)
                           Forms._controls(key) = toggleButton1
+                          AddHandler toggleButton1.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddToggleButton", ex)
@@ -568,6 +627,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(ch)
                           Forms._controls(key) = ch
+                          AddHandler ch.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddCheckBox", ex)
@@ -621,6 +681,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(rd)
                           Forms._controls(key) = rd
+                          AddHandler rd.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddRadioButton", ex)
@@ -672,6 +733,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(listBox1)
                           Forms._controls(key) = listBox1
+                          AddHandler listBox1.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddListBox", ex)
@@ -723,6 +785,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(comboBox1)
                           Forms._controls(key) = comboBox1
+                          AddHandler comboBox1.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddComboBox", ex)
@@ -778,6 +841,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(dp)
                           Forms._controls(key) = dp
+                          AddHandler dp.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddDatePicker", ex)
@@ -835,6 +899,7 @@ Namespace WinForms
                           cnv.Children.Add(pb)
                           Forms._controls(key) = pb
                           ProgressBar.SetMaximum(key, maximum)
+                          AddHandler pb.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddProgressBar", ex)
@@ -900,6 +965,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(s)
                           Forms._controls(key) = s
+                          AddHandler s.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddSlider", ex)
@@ -959,6 +1025,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(s)
                           Forms._controls(key) = s
+                          AddHandler s.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
                           ReportSubError(formName, "AddScrollBar", ex)
@@ -1202,6 +1269,9 @@ Namespace WinForms
                End Sub)
         End Function
 
+
+        Public Shared Event DebugShowChildForm(parentFormName As String, childFormName As String, argsArr As Primitive)
+
         ''' <summary>
         ''' Shows the form that has the given name as a child form of the current form.
         ''' </summary>
@@ -1211,30 +1281,31 @@ Namespace WinForms
         <ReturnValueType(VariableType.Form)>
         <ExMethod>
         Public Shared Function ShowChildForm(parentFormName As Primitive, childFormName As Primitive, argsArr As Primitive) As Primitive
-            Dim asm = System.Reflection.Assembly.GetCallingAssembly()
-            App.Invoke(
-                 Sub()
-                     Try
-                         Dim parentWnd = Forms.GetForm(parentFormName)
+            If App.IsDebugging Then
+                RaiseEvent DebugShowChildForm(LCase(parentFormName), LCase(childFormName), argsArr)
+            Else
+                Dim asm = System.Reflection.Assembly.GetCallingAssembly()
+                App.Invoke(
+                    Sub()
+                        Try
+                            If GetIsLoaded(childFormName) Then
+                                Dim childWnd = Forms.GetForm(childFormName)
+                                childWnd.Owner = Forms.GetForm(parentFormName)
+                                SetArgsArr(childFormName, argsArr)
+                                Show(childFormName)
+                                childWnd.RaiseEvent(New RoutedEventArgs(OnFormShownEvent))
+                            Else
+                                Stack.PushValue("_" & childFormName.AsString().ToLower() & "_argsArr", argsArr)
+                                Form.Initialize(childFormName, asm)
+                                Dim childWnd = Forms.GetForm(childFormName)
+                                childWnd.Owner = Forms.GetForm(parentFormName)
+                            End If
 
-                         If GetIsLoaded(childFormName) Then
-                             Dim childWnd = Forms.GetForm(childFormName)
-                             childWnd.Owner = parentWnd
-                             SetArgsArr(childFormName, argsArr)
-                             Show(childFormName)
-                             childWnd.RaiseEvent(New RoutedEventArgs(OnFormShownEvent))
-                         ElseIf Not App.IsDebugging Then
-                             Stack.PushValue("_" & childFormName.AsString().ToLower() & "_argsArr", argsArr)
-                             Form.Initialize(childFormName, asm)
-                             Dim childWnd = Forms.GetForm(childFormName)
-                             childWnd.Owner = parentWnd
-                         End If
-
-                     Catch ex As Exception
-                         Form.ReportSubError(childFormName, "ShowChildForm", ex)
-                     End Try
-                 End Sub)
-
+                        Catch ex As Exception
+                            Form.ReportSubError(childFormName, "ShowChildForm", ex)
+                        End Try
+                    End Sub)
+            End If
             Return childFormName
         End Function
 
@@ -1482,27 +1553,6 @@ Namespace WinForms
             GetType(Window)
         )
 
-        Public Shared Sub AddAttachedActionHandler(
-                     Element As UIElement,
-                     Handler As RoutedEventHandler
-                )
-
-            If Element IsNot Nothing Then
-                Element.AddHandler(OnFormShownEvent, Handler)
-            End If
-        End Sub
-
-        Public Shared Sub RemoveAttachedActionHandler(
-                     Element As System.Windows.UIElement,
-                     Handler As System.Windows.RoutedEventHandler
-                )
-
-            If Element IsNot Nothing Then
-                Element.RemoveHandler(OnFormShownEvent, Handler)
-            End If
-        End Sub
-
-
         ''' <summary>
         ''' Fired when the user presses a keyboard key down on the form or any of its child controls.
         ''' </summary>
@@ -1592,6 +1642,7 @@ Namespace WinForms
 
                          If ShownHandlers.ContainsKey(formName) Then
                              RemoveHandler form.ContentRendered, ShownHandlers(formName)
+                             form.RemoveHandler(OnFormShownEvent, ShownHandlers(formName))
                          End If
 
                          Try
@@ -1608,7 +1659,7 @@ Namespace WinForms
 
                              ShownHandlers(formName) = h
                              AddHandler form.ContentRendered, h
-                             AddAttachedActionHandler(form, h)
+                             form.AddHandler(OnFormShownEvent, h)
 
                          Catch ex As Exception
                              [Event].ShowErrorMessage(NameOf(OnShown), ex)

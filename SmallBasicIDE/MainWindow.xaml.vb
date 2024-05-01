@@ -832,9 +832,11 @@ Namespace Microsoft.SmallVisualBasic
                 filePath,
                 doc.Form = "" AndAlso Not doc.IsTheGlobalFile
             )
-            SmallVisualBasic.Library.Program.AppDir = Path.GetDirectoryName(outputFileName)
+            SmallVisualBasic.Library.Program.AppExe = outputFileName
             doc.Errors.Clear()
             Dim formNames = doc.GetFormNames()
+            Library.Program.FormNames = formNames
+
             If doc.Errors.Count > 0 Then
                 Dim formFile = doc.Errors(0)
                 Dim formName = doc.Errors(1)
@@ -1034,17 +1036,12 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub ImportDocument()
             Try
-                Dim messageBox As New Utility.MessageBox()
-                messageBox.Description = ResourceHelper.GetString("ImportFromWeb")
-                messageBox.Title = ResourceHelper.GetString("Title")
                 Dim stackPanel As New StackPanel()
                 stackPanel.Orientation = Orientation.Vertical
-                Dim stackPanel2 = stackPanel
                 Dim textBlock As New TextBlock With {
                     .Text = ResourceHelper.GetString("ImportLocationOfProgramOnWeb"),
                     .Margin = New Thickness(0.0, 0.0, 4.0, 4.0)
                 }
-                Dim element = textBlock
                 Dim textBox As New TextBox() With {
                     .FontSize = 32.0,
                     .FontWeight = FontWeights.Bold,
@@ -1053,14 +1050,18 @@ Namespace Microsoft.SmallVisualBasic
                     .Margin = New Thickness(0.0, 4.0, 4.0, 4.0),
                     .MinWidth = 300.0
                 }
-                stackPanel2.Children.Add(element)
-                stackPanel2.Children.Add(textBox)
-                messageBox.OptionalContent = stackPanel2
-                messageBox.NotificationButtons = Nf.Cancel Or Nf.OK
-                messageBox.NotificationIcon = NotificationIcon.Information
-                textBox.Focus()
+                stackPanel.Children.Add(textBlock)
+                stackPanel.Children.Add(textBox)
+                Dim messageBox As New Utility.MessageBox() With {
+                    .Description = ResourceHelper.GetString("ImportFromWeb"),
+                    .Title = ResourceHelper.GetString("Title"),
+                    .OptionalContent = stackPanel,
+                    .NotificationButtons = Nf.Cancel Or Nf.OK,
+                    .NotificationIcon = NotificationIcon.Information
+                }
 
                 If messageBox.Display() = Nf.OK Then
+                    Mouse.OverrideCursor = Cursors.Wait
                     Dim service As New Service()
                     Dim baseId As String = textBox.Text.Trim()
                     Dim code = service.LoadProgram(baseId)
@@ -1069,31 +1070,39 @@ Namespace Microsoft.SmallVisualBasic
                         Utility.MessageBox.Show(ResourceHelper.GetString("FailedToImportFromWeb"), ResourceHelper.GetString("Title"), ResourceHelper.GetString("ImportFromWebFailedReason"), NotificationButtons.Close, NotificationIcon.Error)
                     Else
                         code = code.Replace(vbLf, vbCrLf)
-                        Dim newDocument As New TextDocument(Nothing)
-                        newDocument.ContentType = "text.smallbasic"
-                        newDocument.BaseId = baseId
-                        newDocument.TextBuffer.Insert(0, code)
-                        Dim service2 As New Service()
-                        AddHandler service2.GetProgramDetailsCompleted,
+                        Dim newDoc As New TextDocument(Nothing)
+                        _DocumentTracker.TrackDocument(newDoc)
+                        newDoc.ContentType = "text.smallbasic"
+                        newDoc.BaseId = baseId
+                        newDoc.TextBuffer.Insert(0, code)
+                        AddHandler service.GetProgramDetailsCompleted,
                                 Sub(o, e)
                                     Dim result = e.Result
                                     result.Category = ResourceHelper.GetString("Category" & result.Category)
-                                    newDocument.ProgramDetails = result
+                                    newDoc.ProgramDetails = result
                                 End Sub
 
-                        service2.GetProgramDetailsAsync(baseId)
-                        _DocumentTracker.TrackDocument(newDocument)
-                        Dim mdiView As New MdiView()
-                        mdiView.Document = newDocument
+                        service.GetProgramDetailsAsync(baseId)
+                        Dim mdiView As New MdiView() With {
+                            .Document = newDoc,
+                            .Width = Me.Width - 100,
+                            .Height = Me.Height - 350
+                        }
                         mdiViews.Add(mdiView)
-                        newDocument.Focus(True)
+                        Me.UpdateLayout()
+                        textBox.Focus()
+
+                        MainWindow.dispatcher.BeginInvoke(
+                            Sub()
+                                newDoc.Focus(True)
+                            End Sub)
                     End If
                 End If
 
             Catch ex As Exception
                 Utility.MessageBox.Show(ResourceHelper.GetString("FailedToImportFromWeb"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("ReasonForFailure"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
             Finally
-                Cursor = Cursors.Arrow
+                Mouse.OverrideCursor = Nothing
             End Try
         End Sub
 
@@ -1261,20 +1270,16 @@ Namespace Microsoft.SmallVisualBasic
                         formName = DiagramHelper.Designer.GetTempFormName().Replace("KEY", "Form")
                     Loop
                     formPath = Path.Combine(xamlPath, formName)
-
+                    IO.File.Create(formPath & ".sb").Close()
                 Else
                     If doc Is Nothing Then doc = GetDoc(formDesigner.CodeFile, openDoc)
                     formName = formDesigner.Name
                     doc.Form = formName
-
-                    'xamlPath = Path.GetDirectoryName(formDesigner.CodeFilePath)
                     formPath = formDesigner.CodeFile.Substring(0, formDesigner.CodeFile.Length - 3)
                 End If
 
                 formDesigner.Name = formName
                 formDesigner.DoSave(formPath & ".xaml")
-                IO.File.Create(formPath & ".sb").Close()
-
             Else
                 formPath = formDesigner.XamlFile.Substring(0, formDesigner.XamlFile.Length - 5)
 

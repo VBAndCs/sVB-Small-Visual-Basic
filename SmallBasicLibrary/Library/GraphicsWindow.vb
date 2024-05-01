@@ -384,6 +384,24 @@ Namespace Library
         End Property
 
         ''' <summary>
+        ''' Returns True is the GW is closed, otherwise False.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared ReadOnly Property IsClosed As Primitive
+            Get
+                Return Not _windowCreated
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Set this property to False to prevent showing the Graphics Window when any of its methods is called.
+        ''' The Default value is True
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property AutoShow As Primitive = True
+
+
+        ''' <summary>
         ''' Gets or sets the Left Position of the graphics window.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>
@@ -1270,7 +1288,7 @@ Namespace Library
             VerifyAccess()
             Invoke(
                 Sub()
-                    If Turtle.IsVisible Then Turtle.Initialize()
+                    If Turtle.IsVisible Then Turtle.Initialize(False)
                     _mainCanvas.Children.Clear()
                     _renderBitmap.Clear()
                     _mainDrawing.Children.Clear()
@@ -1316,6 +1334,10 @@ Namespace Library
                         _fontFamily = New Media.FontFamily("Tahoma")
                         _fullScreen = New Primitive(False)
                         _windowCreated = True
+                        Shapes._nameGenerationMap.Clear()
+                        Shapes._rotateTransformMap.Clear()
+                        Shapes._scaleTransformMap.Clear()
+                        Shapes._positionMap.Clear()
 
                         Dim allowsTransparency = (
                                  _backgroundColor = WinForms.Colors.Transparent OrElse
@@ -1424,13 +1446,12 @@ Namespace Library
         End Sub
 
         Private Shared Sub WindowClosing(sender As Object, e As CancelEventArgs)
-            If WinForms.Forms._forms.Count = 0 AndAlso
-                Not TextWindow._windowVisible Then
+            _windowCreated = False
+            If WinForms.Forms._forms.Count = 0 AndAlso Not TextWindow._windowVisible Then
                 Program.End()
             End If
 
             WinForms.Forms.RemoveFormAndControls(Controls.GW_NAME)
-            _windowCreated = False
             Turtle.Initialize()
             _mainCanvas.Children.Clear()
             _renderBitmap.Clear()
@@ -1461,7 +1482,14 @@ Namespace Library
         End Sub
 
         Friend Shared Sub VerifyAccess(Optional keepValue As Boolean = False)
-            If Not _windowCreated Then
+            If Not CBool(_AutoShow) Then
+                If _windowCreated Then BeginInvoke(Sub() Return)
+                Return
+            End If
+
+            If _windowCreated Then
+                Show()
+            Else
                 CreateWindow(keepValue)
                 Invoke(Sub() _window.WindowState = WindowState.Maximized)
             End If

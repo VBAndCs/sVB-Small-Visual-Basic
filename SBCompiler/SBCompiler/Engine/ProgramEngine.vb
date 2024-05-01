@@ -18,16 +18,16 @@ Namespace Microsoft.SmallVisualBasic.Engine
             End Get
         End Property
 
-        Dim _CurrentRunner As ProgramRunner
+        Dim _currentRunner As ProgramRunner
 
         Public Property CurrentRunner As ProgramRunner
             Get
-                Return _CurrentRunner
+                Return _currentRunner
             End Get
 
             Set(runner As ProgramRunner)
                 If runner Is Nothing OrElse Not runner.Evaluating Then
-                    _CurrentRunner = runner
+                    _currentRunner = runner
                 End If
             End Set
         End Property
@@ -40,7 +40,97 @@ Namespace Microsoft.SmallVisualBasic.Engine
         Public Sub New(parsers As List(Of Parser))
             Me.Parsers = parsers
             InitializeRunner()
+            AddHandler WinForms.Form.DebugRunTests, AddressOf DebugRunTests
+            AddHandler WinForms.Form.DebugShowChildForm, AddressOf DebugShowChildForm
+            AddHandler WinForms.Forms.DebugShowForm, AddressOf DebugShowForm
+            AddHandler WinForms.Forms.DebugShowDialog, AddressOf DebugShowDialog
         End Sub
+
+        Private Sub DebugShowDialog(formName As String, argsArr As Primitive)
+            If WinForms.Form.GetIsLoaded(formName) Then
+                WinForms.Form.SetArgsArr(formName, argsArr)
+            Else
+                Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
+                _currentRunner.RunForm(formName)
+                WinForms.Control.SetVisible(formName, False)
+            End If
+
+            WinForms.Form.ShowDialog(formName)
+        End Sub
+
+        Private Sub DebugShowForm(formName As String, argsArr As Primitive)
+            If Not _currentRunner.Evaluating Then
+                If WinForms.Form.GetIsLoaded(formName) Then
+                    WinForms.Forms.DoShowForm(formName, argsArr)
+                Else
+                    Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
+                    _currentRunner.RunForm(formName)
+                End If
+            End If
+        End Sub
+
+        Private Sub DebugShowChildForm(parentFormName As String, childFormName As String, argsArr As Primitive)
+            If Not _currentRunner.Evaluating Then
+                Stack.PushValue("_" & CStr(childFormName).ToLower() & "_argsArr", argsArr)
+                _currentRunner.RunForm(childFormName)
+                WinForms.Form.SetOwner(childFormName, parentFormName)
+            End If
+        End Sub
+
+        Private Sub DebugRunTests(formName As String, isGlobal As Boolean, ByRef result As Primitive)
+            Dim runner As ProgramRunner
+            Dim methods As IEnumerable(Of Token)
+            result = 0
+
+            If isGlobal Then
+                runner = _currentRunner
+                methods = runner.GetGlobalRunner()?.SymbolTable.Subroutines.Values
+            Else
+                runner = _currentRunner.GetFormRunner(formName)
+                methods = runner.SymbolTable.Subroutines.Values
+            End If
+
+            If methods Is Nothing Then Return
+
+            Dim testMethods = From method In methods
+                              Let func = CType(method.Parent, Statements.SubroutineStatement)
+                              Where method.Type = TokenType.Function AndAlso
+                                    (func.Params Is Nothing OrElse func.Params.Count = 0) AndAlso
+                                    func.Name.LCaseText.StartsWith("test_")
+                              Select func
+
+            If Not testMethods.Any Then Return
+
+            Dim txtTest = WinForms.Form.AddTestTextBox(formName)
+            Dim errMsg = " doesn't return a value. Use a test function and return a text showing the result of the test."
+            Dim n = 0
+
+            For Each m In testMethods
+                Dim testName = m.Name
+                Try
+                    Dim subroutineCall As New Statements.SubroutineCallStatement() With {
+                        .Name = m.Name,
+                        .IsGlobalFunc = isGlobal,
+                        .DontExecuteSub = _currentRunner.Evaluating
+                    }
+                    Dim msg As String = MethodCallExpression.EvaluateFunction(runner, subroutineCall)
+
+                    If msg = "" Then
+                        WinForms.TextBox.Append(txtTest, testName.Text)
+                        WinForms.TextBox.Append(txtTest, errMsg)
+                    Else
+                        WinForms.TextBox.Append(txtTest, msg)
+                        n += 1
+                    End If
+
+                Catch ex As Exception
+                    WinForms.TextBox.Append(txtTest, $"{testName} has caused the error: {ex.Message}.")
+                End Try
+                WinForms.TextBox.Append(txtTest, vbCrLf)
+            Next
+            result = n
+        End Sub
+
 
         Friend GlobalParser As Parser
 
@@ -183,7 +273,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
                     Library.Program.IsTerminated = False
                     Library.Program.Exception = Nothing
-                    MainRunner.CurrentThread = Thread.CurrentThread
+                    MainRunner.runnerThread = Thread.CurrentThread
                     Dim result = MainRunner.Execute(MainRunner.Parser.ParseTree)
                     If Library.Program.IsTerminated Then Return
 
@@ -213,16 +303,16 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Private Sub [End]()
             For Each runner In Runners.Values
-                Abort(runner.CurrentThread)
+                Abort(runner.runnerThread)
             Next
 
             For Each runner In SubRunners.Values
-                Abort(runner.CurrentThread)
+                Abort(runner.runnerThread)
             Next
 
             For Each parser In Parsers
                 Try
-                    Abort(parser.EvaluationRunner?.CurrentThread)
+                    Abort(parser.EvaluationRunner?.runnerThread)
                 Catch ex As Exception
                 End Try
             Next
@@ -256,7 +346,12 @@ Namespace Microsoft.SmallVisualBasic.Engine
         End Sub
 
         Public Sub Dispose()
-            [End]()
+            RemoveHandler WinForms.Form.DebugRunTests, AddressOf DebugRunTests
+            RemoveHandler WinForms.Form.DebugShowChildForm, AddressOf DebugShowChildForm
+            RemoveHandler WinForms.Forms.DebugShowForm, AddressOf DebugShowForm
+            RemoveHandler WinForms.Forms.DebugShowDialog, AddressOf DebugShowDialog
+
+            Me.End()
             Me.Parsers.Clear()
             Me.CurrentRunner = Nothing
             Me.GlobalParser = Nothing

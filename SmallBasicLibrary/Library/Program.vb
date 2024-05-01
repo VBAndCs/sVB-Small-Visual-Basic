@@ -12,10 +12,11 @@ Namespace Library
     <SmallVisualBasicType>
     Public NotInheritable Class Program
         Private Shared args As String() = Environment.GetCommandLineArgs()
-        Public Shared AppDir As Primitive
+        Public Shared AppExe As Primitive
         Public Shared IsTerminated As Boolean
         Public Shared Exception As Exception
         Friend Shared ActiveWindow As Window
+        Public Shared FormNames As List(Of String)
         Public Shared Event ProgramTerminated()
 
         Public Shared Sub DoNothing()
@@ -39,7 +40,7 @@ Namespace Library
         Public Shared ReadOnly Property Directory As Primitive
             Get
                 If SmallBasicApplication.IsDebugging Then
-                    Return AppDir
+                    Return Path.GetDirectoryName(AppExe)
                 Else
                     Dim asm = Assembly.GetCallingAssembly()
                     Return Path.GetDirectoryName(asm.Location)
@@ -150,5 +151,8 @@ Namespace Library
                     End If
                 End Sub)
         End Sub
+
+
+
     End Class
 End Namespace
