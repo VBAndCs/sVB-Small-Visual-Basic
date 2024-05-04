@@ -661,10 +661,14 @@ Namespace Library
                 CreateWindow()
                 Invoke(Sub() _window.WindowState = WindowState.Maximized)
             End If
+
             _isHidden = False
             Invoke(
                 Sub()
                     If _windowVisible Then
+                        If _window.WindowState = WindowState.Minimized Then
+                            _window.WindowState = WindowState.Normal
+                        End If
                         _window.Activate()
                     Else
                         _window.Show()
@@ -695,7 +699,7 @@ Namespace Library
             VerifyAccess()
             Invoke(
                 Sub()
-                    Dim dc As DrawingContext = _mainDrawing.Append()
+                    Dim dc = _mainDrawing.Append()
                     dc.DrawRectangle(Nothing, _pen, New System.Windows.Rect(CInt(x), CInt(y), width, height))
                     dc.Close()
                     AddRasterizeOperationToQueue()
@@ -1286,13 +1290,17 @@ Namespace Library
         ''' </summary>
         Public Shared Sub Clear()
             VerifyAccess()
+            If Not _windowCreated Then Return
+
             Invoke(
                 Sub()
+                    _mainCanvas.Visibility = Visibility.Hidden
                     If Turtle.IsVisible Then Turtle.Initialize(False)
                     _mainCanvas.Children.Clear()
                     _renderBitmap.Clear()
                     _mainDrawing.Children.Clear()
                     _objectsMap.Clear()
+                    _mainCanvas.Visibility = Visibility.Visible
                 End Sub)
         End Sub
 
@@ -1484,11 +1492,11 @@ Namespace Library
         Friend Shared Sub VerifyAccess(Optional keepValue As Boolean = False)
             If Not CBool(_AutoShow) Then
                 If _windowCreated Then BeginInvoke(Sub() Return)
-                Return
-            End If
-
-            If _windowCreated Then
-                Show()
+            ElseIf _windowCreated Then
+                If _isHidden Then
+                    _window.Show()
+                    _windowVisible = True
+                End If
             Else
                 CreateWindow(keepValue)
                 Invoke(Sub() _window.WindowState = WindowState.Maximized)

@@ -24,7 +24,7 @@ Small Visual Basic is the visual version of Small Basic, and the small version o
 </a>
 </p>
 
-# sVB 3.0 says: Happy BASIC 60th anniversary to all!
+# sVB 3.0 says: Happy BASIC 60th anniversary for all!
 In 1 May, 1964, John G. Kemeny and Thomas E. Kurtz created BASIC, which became the easiest and most popular programming language ever, with more than 300 different dialects that emerged and vanished over time.
 <p align="center">
   <img src="https://modernvbnet.gallerycdn.vsassets.io/extensions/modernvbnet/svbinstaller/3.0/1714546030343/image__4.png"/>
@@ -94,6 +94,14 @@ Let’s see in short points some of what sVB can do. For full details on what you 
 * sVB can create multi-form projects and code libraries.
 
 * sVB can define test functions and you can use the UnitTest library to run them and show the test results.
+
+* sVB Lib folder now includes the LitDev library, so you can use it directly in your code.
+
+* sVB can run a subroutine in a new thread by using it as a handler to the Thread.SubToRun event, which is not actually an event, but it will run the subroutine immediately in a new thread. So, you can set the handler of this event as many times as you need (but don't exceed 100 threads). Ex:
+```
+Thread.SubToRun = Task1
+Thread.SubToRun = Task2
+```
 
 * The sVB source code is fully written with VB .NET and published on [GitHub](https://github.com/VBAndCs/sVB-Small-Visual-Basic). All sVB projects are WPF projects, that target the .NET framework 4.5. You can run the source code in VS.NET 2019 and later. But before running the code, please copy the "Lib" and "Toolbar" folders from the "SmallBasicIDE\SB.Lib" folder to both "SmallBasicIDE\bin\Debug" and "SmallBasicIDE\bin\Release" folders.
 

@@ -1073,7 +1073,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                    method.Contains("formname") Then
                             newBag.CompletionItems.AddRange(FormNames)
 
-                        ElseIf method.Contains("color") Then
+                        ElseIf method.Contains("color") OrElse method.Contains("colour") Then
                             newBag.CompletionItems.AddRange(ColorNames)
 
                         ElseIf method = "removeeventhandler" Then
@@ -1418,7 +1418,9 @@ LineShow:
         End Function
 
         Private Function GetEspecialItem(name As String) As String
-            If name.StartsWith("color") OrElse name.EndsWith("color") OrElse name.EndsWith("colors") Then
+            If name.StartsWith("color") OrElse name.StartsWith("colour") OrElse
+                name.EndsWith("color") OrElse name.EndsWith("colour") OrElse
+                name.EndsWith("colors") OrElse name.EndsWith("colours") Then
                 Return "Colors"
             ElseIf name.StartsWith("key") OrElse name.EndsWith("key") OrElse
                     name.EndsWith("keys") Then

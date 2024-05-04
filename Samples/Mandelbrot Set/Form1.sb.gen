@@ -1,0 +1,90 @@
+'@Form Hints:
+'#Form1{
+'    Button1: Button
+'    Button2: Button
+'    Button3: Button
+'    Button4: Button
+'    Button5: Button
+'    Button6: Button
+'    Button7: Button
+'    Button8: Button
+'    Button9: Button
+'    Button10: Button
+'    BtnStop: Button
+'}
+
+Me = "form1"
+Button1 = "form1.button1"
+Button2 = "form1.button2"
+Button3 = "form1.button3"
+Button4 = "form1.button4"
+Button5 = "form1.button5"
+Button6 = "form1.button6"
+Button7 = "form1.button7"
+Button8 = "form1.button8"
+Button9 = "form1.button9"
+Button10 = "form1.button10"
+BtnStop = "form1.btnstop"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    Button1: OnClick
+'    Button2: OnClick
+'    Button3: OnClick
+'    Button4: OnClick
+'    Button5: OnClick
+'    Button6: OnClick
+'    Button7: OnClick
+'    Button8: OnClick
+'    Button9: OnClick
+'    Button10: OnClick
+'    BtnStop: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+' Button2 Events:
+Control.HandleEvents(Button2)
+Control.OnClick = Button2_OnClick
+
+' Button3 Events:
+Control.HandleEvents(Button3)
+Control.OnClick = Button3_OnClick
+
+' Button4 Events:
+Control.HandleEvents(Button4)
+Control.OnClick = Button4_OnClick
+
+' Button5 Events:
+Control.HandleEvents(Button5)
+Control.OnClick = Button5_OnClick
+
+' Button6 Events:
+Control.HandleEvents(Button6)
+Control.OnClick = Button6_OnClick
+
+' Button7 Events:
+Control.HandleEvents(Button7)
+Control.OnClick = Button7_OnClick
+
+' Button8 Events:
+Control.HandleEvents(Button8)
+Control.OnClick = Button8_OnClick
+
+' Button9 Events:
+Control.HandleEvents(Button9)
+Control.OnClick = Button9_OnClick
+
+' Button10 Events:
+Control.HandleEvents(Button10)
+Control.OnClick = Button10_OnClick
+
+' BtnStop Events:
+Control.HandleEvents(BtnStop)
+Control.OnClick = BtnStop_OnClick
+
+

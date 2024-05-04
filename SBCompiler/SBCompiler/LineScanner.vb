@@ -202,6 +202,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Shared Function ScanNextToken(<Out> ByRef token As Token) As Boolean
             EatSpaces()
+            Dim PrevToken = token
             token = Nothing
             token.Column = _currentIndex
             Dim currentChar As Char = GetNextChar()
@@ -323,7 +324,7 @@ Namespace Microsoft.SmallVisualBasic
                     If Char.IsLetter(currentChar) OrElse currentChar = "_"c Then
                         _currentIndex -= 1
                         Dim word As String = ReadKeywordOrIdentifier()
-                        token.Type = GetTokenType(word)
+                        token.Type = GetTokenType(word, PrevToken)
                         token.Text = word
 
                     ElseIf Char.IsDigit(currentChar) OrElse currentChar = "-"c OrElse currentChar = _decimalSeparator AndAlso Char.IsDigit(nextChar2) Then
@@ -490,7 +491,12 @@ Namespace Microsoft.SmallVisualBasic
             End Select
         End Function
 
-        Public Shared Function GetTokenType(tokenText As String) As TokenType
+        Public Shared Function GetTokenType(tokenText As String, PrevToken As Token) As TokenType
+            Select Case PrevToken.Type
+                Case TokenType.Dot, TokenType.Lookup
+                    Return TokenType.Identifier
+            End Select
+
             Select Case tokenText.ToLower(CultureInfo.InvariantCulture)
                 Case "and"
                     Return TokenType.And

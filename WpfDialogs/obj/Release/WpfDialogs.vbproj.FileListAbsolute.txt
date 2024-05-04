@@ -53,4 +53,3 @@ F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Release\WpfDialogs.vbproj.CoreCo
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Release\WpfDialogs.dll
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Release\WpfDialogs.xml
 F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Release\WpfDialogs.pdb
-F:\_VS.NET\Small Basic IDE\sVB\1\WpfDialogs\obj\Release\WpfDialogs.vbproj.AssemblyReference.cache

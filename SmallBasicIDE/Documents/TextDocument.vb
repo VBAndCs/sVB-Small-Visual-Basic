@@ -396,7 +396,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Dim sel = textView.Selection
             If sel.ActiveSnapshotSpan.Length > 1 Then
                 Dim span = sel.ActiveSnapshotSpan
-                Dim tokenType = LineScanner.GetTokenType(span.GetText().ToLower())
+                Dim tokenType = LineScanner.GetTokenType(span.GetText().ToLower(), Nothing)
                 Dim parseType = LineScanner.GetParseType(tokenType)
 
                 If parseType = ParseType.Keyword Then

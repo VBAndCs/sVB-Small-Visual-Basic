@@ -8686,6 +8686,13 @@ Returns true if the current text is empty, or returns false otherwise.
  </summary>
  <returns>The decimal value the hexa number if it is valid, or an empty string otherwise.</returns>
 </member>
+<member name="E:Microsoft.SmallVisualBasic.WinForms.Thread.SubToRun">
+ <summary>
+ This is not actually an event, but when you set its handler, it will be called immediately in a new thread to allow you to use execute a tast in paralel to your normal code.
+ You can set this handler more than one time to create many threads, but take care not to create too many threeads (at most 100 thrads and the lesser the better) becuase that can make your system hang or block some of these threads.
+ Note also that you can't pass arguments to the handler, so you will need to use global variables. This method will pause your code for 10ms to allow the new thrad to start and read the global variables, but if this is not ebough, you may need to call Program.Delay to increase the delay.
+ </summary>
+</member>
 <member name="T:Microsoft.SmallVisualBasic.WinForms.WinTimer">
  <summary>
  Represents the WinTimer control, which provides an easy way for doing something repeatedly with a constant interval between.

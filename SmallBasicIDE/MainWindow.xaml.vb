@@ -648,8 +648,12 @@ Namespace Microsoft.SmallVisualBasic
             Canvas.SetTop(mdiView, 10)
             Canvas.SetLeft(mdiView, 10)
             mdiViews.Add(mdiView)
-            mdiView.IsSelected = True
-            If focus Then doc.Focus(True)
+            Me.UpdateLayout()
+            dispatcher.BeginInvoke(
+                Sub()
+                    mdiView.IsSelected = True
+                    If focus Then doc.Focus(True)
+                End Sub)
 
             Return doc
         End Function

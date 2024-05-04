@@ -20,7 +20,7 @@
 
             <TextBlock HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" 
                        Margin="0,10"
-                       Foreground="White">Happy BASIC 60th Anniversary For All</TextBlock>
+                       Foreground="White">Happy BASIC 60th Anniversary to All</TextBlock>
             
             <TextBlock HorizontalAlignment="Center"  FontSize="40" FontWeight="Bold" 
                        Foreground="Yellow">Small Visual Basic 3.0</TextBlock>

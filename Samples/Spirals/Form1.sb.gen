@@ -19,7 +19,7 @@ BtnSpring2 = "form1.btnspring2"
 BtnWavySpiral = "form1.btnwavyspiral"
 BtnSpring3 = "form1.btnspring3"
 BtnSpiralRays = "form1.btnspiralrays"
-_path = Program.Directory + "\form1.xaml"
+_path = Program.Directory + "\Form1.xaml"
 Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 Form.Show(Form1)

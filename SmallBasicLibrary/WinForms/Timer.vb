@@ -123,7 +123,7 @@ Namespace WinForms
                                 End Try
                             End Sub
 
-                    If TickHandlers.ContainsKey(name) AndAlso TickHandlers(name) IsNot Nothing Then
+        If TickHandlers.ContainsKey(name) AndAlso TickHandlers(name) IsNot Nothing Then
                         RemoveHandler _sender.Tick, TickHandlers(name)
                     End If
 

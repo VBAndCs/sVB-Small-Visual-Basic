@@ -371,7 +371,7 @@ Namespace WinForms
                         Try
                             Dim frm = CType(Forms._forms(CStr(formName).ToLower), Window)
                             Dim t As New Threading.DispatcherTimer() With {
-                                .Tag = timerName,
+                                .Tag = New Primitive(key),
                                 .Interval = TimeSpan.FromMilliseconds(interval)
                             }
                             WinTimer.Timers(key) = t

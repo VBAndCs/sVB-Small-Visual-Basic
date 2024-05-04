@@ -1,0 +1,162 @@
+
+
+MaxIteration = 100
+MinIteration = MaxIteration / 5
+Scale = 0.005
+OffsetX = -2.2
+OffsetY = -1.5
+_Step = 1
+Interval = 7
+CurY = 0
+_StopDrawing = False
+ThreadCount = 0
+
+' ------------------------------------------------
+Sub ChangeButtonStatus(isEbabled)
+   ForEach _control In Me.Controls
+      _control.Enabled = isEbabled
+   Next
+   BtnStop.Enabled = (isEbabled = False)
+EndSub
+
+' ------------------------------------------------
+Sub Draw()
+   ChangeButtonStatus(False)
+   _StopDrawing = False
+   ThreadCount = 0
+   GW.Show()
+   GW.AutoShow = False
+   GW.Clear()
+   GraphicsWindow.Width = 700
+   GraphicsWindow.Height = Desktop.Height - 50
+   GW.Left = Me.Width + 40
+   GW.Top = 5
+   
+   For y = 0 To GraphicsWindow.Height Step Interval + 1
+      If _StopDrawing Or GW.IsClosed Then
+         ExitLoop
+      EndIf
+      
+      CurY = y
+      ThreadCount = ThreadCount + 1
+      Thread.SubToRun = DrawPixels
+   Next
+EndSub
+
+' ------------------------------------------------
+Sub DrawPixels()
+   start = CurY
+   end = CurY + Interval
+   For y = start To end
+      GW.Title = ThreadCount & " threads"
+      For x = 0 To GraphicsWindow.Width
+         If _StopDrawing Or GW.IsClosed Then
+            ExitLoop -
+         EndIf
+         zx = 0
+         zy = 0
+         cX = (x * Scale) + OffsetX
+         cY = (y * Scale) + OffsetY
+         iteration = 0
+         
+         While (zx * zx + zy * zy < 4) And (iteration < MaxIteration)
+            tempZx = zx * zx - zy * zy
+            zy = 2 * zx * zy + cY
+            zx = tempZx + cX
+            iteration = iteration + _Step
+         Wend
+         
+         If iteration > MinIteration And iteration < MaxIteration Then
+            _color = Color.FromRGB(255 * iteration / MaxIteration, 0, 0)
+            GraphicsWindow.SetPixel(x, y, _color)
+         EndIf
+      Next
+   Next
+   
+   ThreadCount = ThreadCount - 1
+   If ThreadCount = 0 Then
+      GW.Title = "Done"
+      ChangeButtonStatus(True)
+   Else
+      GW.Title = ThreadCount & " threads"
+   EndIf
+   
+EndSub
+
+
+' ------------------------------------------------
+Sub Button1_OnClick()
+   _Step = 1
+   Draw()
+EndSub
+
+
+' ------------------------------------------------
+Sub Button2_OnClick()
+   _Step = 2
+   Draw()
+EndSub
+
+
+' ------------------------------------------------
+Sub Button3_OnClick()
+   _Step = 3
+   Draw()
+EndSub
+
+
+' ------------------------------------------------
+Sub Button4_OnClick()
+   _Step = 4
+   Draw()
+EndSub
+
+
+' ------------------------------------------------
+Sub Button5_OnClick()
+   _Step = 5
+   Draw()
+EndSub
+
+
+' ------------------------------------------------
+Sub Button6_OnClick()
+   _Step = 6
+   Draw()
+EndSub
+
+
+
+' ------------------------------------------------
+Sub Button7_OnClick()
+   _Step = 7
+   Draw()
+EndSub
+
+
+' ------------------------------------------------
+Sub Button8_OnClick()
+   _Step = 8
+   Draw()
+EndSub
+
+
+
+' ------------------------------------------------
+Sub Button9_OnClick()
+   _Step = 9
+   Draw()
+EndSub
+
+
+' ------------------------------------------------
+Sub Button10_OnClick()
+   _Step = 10
+   Draw()
+EndSub
+
+' ------------------------------------------------
+Sub BtnStop_OnClick()
+   _StopDrawing = True
+   ChangeButtonStatus(True)
+EndSub

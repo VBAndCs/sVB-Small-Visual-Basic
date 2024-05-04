@@ -561,6 +561,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_3970B48A8463451DA25B3EEC8EDC730C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_39CA6ECF1A61901FF8EA751D1A32442C"
         "OwnerKey" = "8:_FE73082A3E14C910559E8B3867A5E752"
         "MsmSig" = "8:_UNDEFINED"
@@ -1491,6 +1497,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_985BD320443A448186C967D9C3E37674"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_991E5515100746E9AAE216009680685F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2308,6 +2320,12 @@
         "Entry"
         {
         "MsmKey" = "8:_E94879CA0F134EF0878F3469060DB9DF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EA97162804914468BF5AC29B10E3C6BB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4603,6 +4621,26 @@
             "TargetName" = "8:AddArray.sb"
             "Tag" = "8:"
             "Folder" = "8:_E1D209B6CD70408080033442617F01DB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3970B48A8463451DA25B3EEC8EDC730C"
+            {
+            "SourcePath" = "8:..\\Samples\\Mandelbrot Set\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_DF237356D848418283DDDB646E6C3A58"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7601,6 +7639,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_985BD320443A448186C967D9C3E37674"
+            {
+            "SourcePath" = "8:..\\Samples\\Mandelbrot Set\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_DF237356D848418283DDDB646E6C3A58"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_991E5515100746E9AAE216009680685F"
             {
             "SourcePath" = "8:..\\Samples\\Random Buttons 3\\form2.sb"
@@ -10334,6 +10392,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EA97162804914468BF5AC29B10E3C6BB"
+            {
+            "SourcePath" = "8:..\\Samples\\Mandelbrot Set\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_DF237356D848418283DDDB646E6C3A58"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EAE44424A7664634AC854AD66E337EED"
             {
             "SourcePath" = "8:..\\Samples\\Animation3\\Form1.sb"
@@ -12024,6 +12102,17 @@
                                 {
                                 }
                             }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_DF237356D848418283DDDB646E6C3A58"
+                            {
+                            "Name" = "8:Mandelbrot Set"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_8635E347B23844008054589D6335A4BF"
+                                "Folders"
+                                {
+                                }
+                            }
                             "{9EF0B969-E518-4E46-987F-47570745A589}:_E22BA55ECE6A4EFFAFB0B83DF3DD2F13"
                             {
                             "Name" = "8:Dictionary"
@@ -12297,7 +12386,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.0"
+        "ProductName" = "8:Small Visual Basic 3.0.2"
         "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
         "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -12491,7 +12580,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.0"
+            "Name" = "8:sVB 3.0.2"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -12519,7 +12608,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.0"
+            "Name" = "8:sVB 3.0.2"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -12533,7 +12622,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.0"
+            "Name" = "8:sVB 3.0.2"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
