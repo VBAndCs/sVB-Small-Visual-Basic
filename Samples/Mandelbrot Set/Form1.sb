@@ -39,6 +39,7 @@ Sub Draw()
       
       CurY = y
       ThreadCount = ThreadCount + 1
+      GW.Title = ThreadCount & " threads"
       Thread.SubToRun = DrawPixels
    Next
 EndSub
@@ -48,7 +49,6 @@ Sub DrawPixels()
    start = CurY
    end = CurY + Interval
    For y = start To end
-      GW.Title = ThreadCount & " threads"
       For x = 0 To GraphicsWindow.Width
          If _StopDrawing Or GW.IsClosed Then
             ExitLoop -

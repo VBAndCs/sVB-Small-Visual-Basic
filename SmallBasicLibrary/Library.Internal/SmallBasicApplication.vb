@@ -13,7 +13,7 @@ Namespace Library.Internal
     ''' </summary>
     Public NotInheritable Class SmallBasicApplication
         Private Shared _applicationThread As Thread
-        Private Shared _application As Application
+        Friend Shared _application As Application
         Friend Shared mainThreadActions As Queue(Of InvokeHelper)
         Private Shared _pendingOperations As Integer
 

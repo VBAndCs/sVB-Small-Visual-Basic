@@ -95,7 +95,7 @@ Let’s see in short points some of what sVB can do. For full details on what you 
 
 * sVB can define test functions and you can use the UnitTest library to run them and show the test results.
 
-* sVB Lib folder now includes the LitDev library, so you can use it directly in your code.
+* The sVB Lib folder now includes the LitDev library, so you can use it directly in your code.
 
 * sVB can run a subroutine in a new thread by using it as a handler to the Thread.SubToRun event, which is not actually an event, but it will run the subroutine immediately in a new thread. So, you can set the handler of this event as many times as you need (but don't exceed 100 threads). Ex:
 ```

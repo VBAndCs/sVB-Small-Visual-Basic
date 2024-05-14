@@ -233,9 +233,9 @@ Namespace Microsoft.Nautilus.Text.Operations
         <ExportProperty("CommandName", "Common.Edit.Delete")>
         <Export(GetType(CommandHandler))>
         Public Sub DeleteNextCharacterHandler(textView As IAvalonTextView)
-            Dim editorOperations As IEditorOperations = _editorOperationsProvider.GetEditorOperations(textView)
-            Dim undoHistory1 As UndoHistory = GetUndoHistory(textView.TextBuffer)
-            editorOperations.DeleteCharacterToRight(undoHistory1)
+            Dim editorOperations = _EditorOperationsProvider.GetEditorOperations(textView)
+            Dim undoHistory = GetUndoHistory(textView.TextBuffer)
+            editorOperations.DeleteCharacterToRight(undoHistory)
         End Sub
 
         <ExportProperty("CommandName", "Microsoft.Editor.Delete.PreviousCharacter")>
@@ -375,9 +375,9 @@ Namespace Microsoft.Nautilus.Text.Operations
         <Export(GetType(CommandHandler))>
         <ExportProperty("CommandName", "Common.Edit.Paste")>
         Public Sub PasteHandler(textView As IAvalonTextView)
-            Dim editorOperations As IEditorOperations = _editorOperationsProvider.GetEditorOperations(textView)
-            Dim undoHistory1 = GetUndoHistory(textView.TextBuffer)
-            editorOperations.Paste(undoHistory1)
+            Dim editorOperations = _EditorOperationsProvider.GetEditorOperations(textView)
+            Dim undoHistory = GetUndoHistory(textView.TextBuffer)
+            editorOperations.Paste(undoHistory)
         End Sub
 
         <ExportProperty("CommandName", "Common.Edit.Copy")>
@@ -458,9 +458,8 @@ Namespace Microsoft.Nautilus.Text.Operations
                 dataObj.SetData(DataFormats.Rtf, sbText.ToString())
                 dataObj.SetData(DataFormats.Text, activeSnapshotSpan.GetText())
 
-
             Catch ex As Exception
-                MsgBox("Operation has failed. Please try again.")
+                MsgBox("Operation has failed. Please try again. " & ex.Message)
                 CopyFailed = True
                 Return
             End Try

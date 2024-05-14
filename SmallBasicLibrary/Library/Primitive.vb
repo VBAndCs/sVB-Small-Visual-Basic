@@ -9,11 +9,11 @@ Namespace Library
     Public Structure Primitive
         Friend Class PrimitiveComparer
             Implements IEqualityComparer(Of Primitive)
-            Private Shared _instance As New PrimitiveComparer
+            Private Shared _comparer As New PrimitiveComparer
 
             Public Shared ReadOnly Property Instance As PrimitiveComparer
                 Get
-                    Return _instance
+                    Return _comparer
                 End Get
             End Property
 
@@ -104,15 +104,13 @@ Namespace Library
             End Set
         End Property
 
-        Private Shared enUs As New CultureInfo("en-Us")
-
         Friend Function AsString() As String
             If _decimalValue.HasValue Then
                 Select Case numberType
                     Case NumberType.Date
                         Dim d = New Date(_decimalValue.Value)
                         If d.Day = 1 AndAlso d.Month = 1 AndAlso d.Year = 1 Then
-                            _stringValue = d.ToString("T", enUs)
+                            _stringValue = d.ToString("T", New CultureInfo("en-Us"))
                         Else
                             _stringValue = d.ToString(
                                 "MM/dd/yyyy hh:mm:ss.FFFFFFF tt",

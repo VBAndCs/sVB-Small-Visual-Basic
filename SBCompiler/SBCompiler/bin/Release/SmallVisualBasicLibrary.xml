@@ -8686,11 +8686,19 @@ Returns true if the current text is empty, or returns false otherwise.
  </summary>
  <returns>The decimal value the hexa number if it is valid, or an empty string otherwise.</returns>
 </member>
+<member name="P:Microsoft.SmallVisualBasic.WinForms.Thread.InitializationDelay">
+ <summary>
+ Gets or sets the time in milliseconds that the main thread will be paused for, to allow the new thread to start and read the global variables.
+ The default value is 10, but you can increase it if the the thread needs to read many global variables.        
+ Use 0 if you don't need any delay.
+ </summary>
+</member>
 <member name="E:Microsoft.SmallVisualBasic.WinForms.Thread.SubToRun">
  <summary>
- This is not actually an event, but when you set its handler, it will be called immediately in a new thread to allow you to use execute a tast in paralel to your normal code.
- You can set this handler more than one time to create many threads, but take care not to create too many threeads (at most 100 thrads and the lesser the better) becuase that can make your system hang or block some of these threads.
- Note also that you can't pass arguments to the handler, so you will need to use global variables. This method will pause your code for 10ms to allow the new thrad to start and read the global variables, but if this is not ebough, you may need to call Program.Delay to increase the delay.
+ This is not actually an event, but when you set its handler, it will be called immediately in a new thread to allow you to use execute a task in parallel to your normal code.
+ You can set this handler more than one time to create many threads, but take care not to create too many threads (at most 100 threads and the lesser the better) because that can make your system hang or block some of these threads.
+ Note also that you can't pass arguments to the handler, so you will need to use global variables.
+ Warning: Threads will not be created in debug mode to allow you to trace the code. In this case your program may be slower and some of its logic may not function correctly.
  </summary>
 </member>
 <member name="T:Microsoft.SmallVisualBasic.WinForms.WinTimer">

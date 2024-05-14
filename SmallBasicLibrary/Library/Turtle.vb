@@ -379,9 +379,7 @@ Namespace Library
 
                     If _path IsNot Nothing Then
                         _figure.Segments.Add(New LineSegment(
-                                New Point(newX, newX), _penDown
-                            )
-                        )
+                                New Point(newX, newX), _penDown))
                     End If
                 End Sub)
 

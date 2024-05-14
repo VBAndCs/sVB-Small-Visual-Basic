@@ -1214,6 +1214,8 @@ Namespace Library
             End If
         End Sub
 
+        Private Shared dispatcher As Threading.Dispatcher = SmallBasicApplication.Dispatcher
+
         ''' <summary>
         ''' Draws the pixel specified by the x and y co-ordinates using the specified color.
         ''' </summary>
@@ -1222,14 +1224,28 @@ Namespace Library
         ''' <param name="color">The color of the pixel to set.</param>
         Public Shared Sub SetPixel(x As Primitive, y As Primitive, color As Primitive)
             VerifyAccess()
-            Invoke(
+            dispatcher.Invoke(Threading.DispatcherPriority.Render,
                 Sub()
                     Dim dc = _mainDrawing.Append()
-                    dc.DrawRectangle(New SolidColorBrush(GetColorFromString(color)), Nothing, New System.Windows.Rect(x, y, 1.0, 1.0))
+                    dc.DrawRectangle(
+                        New SolidColorBrush(GetColorFromString(color)),
+                        Nothing,
+                        New System.Windows.Rect(x, y, 1.0, 1.0)
+                    )
                     dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
         End Sub
+
+        'Private Shared _solidBrushes As New Dictionary(Of String, SolidColorBrush)
+        'Private Shared Function GetSolidBrush(color As Primitive) As Media.Brush
+        '    Dim b As SolidColorBrush
+        '    If Not _solidBrushes.TryGetValue(color, b) Then
+        '        b = New SolidColorBrush(GetColorFromString(color))
+        '        _solidBrushes(color) = b
+        '    End If
+        '    Return b
+        'End Function
 
         ''' <summary>
         ''' Gets the color of the pixel at the specified x and y co-ordinates.
@@ -1508,7 +1524,7 @@ Namespace Library
         End Sub
 
         Friend Shared Sub Invoke(invokeDelegate As InvokeHelper)
-            SmallBasicApplication.Invoke(invokeDelegate)
+            dispatcher.Invoke(Threading.DispatcherPriority.Render, invokeDelegate)
         End Sub
 
         Friend Shared Function InvokeWithReturn(invokeDelegate As InvokeHelperWithReturn) As Primitive
@@ -1516,10 +1532,9 @@ Namespace Library
         End Function
 
         Friend Shared Sub AddShape(
-                           name As String,
-                           shape As FrameworkElement,
-                           Optional addToCanvas As Boolean = True
-                    )
+                   name As String,
+                   shape As FrameworkElement,
+                   Optional addToCanvas As Boolean = True)
 
             VerifyAccess()
             If name.StartsWith(Controls.GW_NAME) Then

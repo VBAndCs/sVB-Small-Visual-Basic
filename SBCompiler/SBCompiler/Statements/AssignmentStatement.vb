@@ -324,13 +324,18 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim handlerKey As String
             Dim engine = runner.Engine
 
+            If typeInfo.Name = "Thread" AndAlso eventInfo.Name = "SubToRun" Then
+                subroutine.Parent.Execute(runner)
+                Return
+            End If
+
             If typeInfo.Type.FullName.StartsWith("Microsoft.SmallVisualBasic.WinForms") Then
                 handlerKey = $"{WinForms.Event.SenderControl}.{eventInfo.Name}".ToLower()
             Else
                 handlerKey = $"{typeInfo.Key}.{eventInfo.Name}".ToLower()
             End If
-            Dim handlerRunner = runner.CreateSubRunner()
 
+            Dim handlerRunner = runner.CreateSubRunner()
             eventInfo.GetAddMethod().Invoke(Nothing, {CType(
                    Sub()
                        Dim eventName = eventInfo.Name
@@ -348,6 +353,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                        Dim invokerRunner = engine.CurrentRunner
                        Dim dc = invokerRunner.DebuggerCommand
                        Dim isTimerTick = typeInfo.Name.EndsWith("Timer") AndAlso eventInfo.Name.EndsWith("Tick")
+
                        If Not isTimerTick AndAlso invokerRunner.DebuggerState = DebuggerState.Running Then
                            Try
                                invokerRunner.runnerThread.Suspend()

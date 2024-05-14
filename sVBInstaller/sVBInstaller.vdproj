@@ -87,6 +87,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_09FDB8A054BC4D7E8D9A978E82C8A9EA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0AE4DB3D44C240D68442EDC83483557C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1263,6 +1269,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_86F8683210FA4E9C9CA63B9EB1CA5EE4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8732F0D946414654AEE08D030541E392"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1738,12 +1750,6 @@
         "Entry"
         {
         "MsmKey" = "8:_B0C3163E356640CEAB947E09D542AD77"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B1146901331249ED81DAD9058C2D7B30"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3028,6 +3034,26 @@
             "TargetName" = "8:ListBox.png"
             "Tag" = "8:"
             "Folder" = "8:_8BD34D234F094C07B3CD431D3C229EAA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_09FDB8A054BC4D7E8D9A978E82C8A9EA"
+            {
+            "SourcePath" = "8:sVB_Kid_Programmer.jpg"
+            "TargetName" = "8:sVB_Kid_Programmer.jpg"
+            "Tag" = "8:"
+            "Folder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6988,6 +7014,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_86F8683210FA4E9C9CA63B9EB1CA5EE4"
+            {
+            "SourcePath" = "8:sVB Kid Programmer.htm"
+            "TargetName" = "8:sVB Kid Programmer.htm"
+            "Tag" = "8:"
+            "Folder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8732F0D946414654AEE08D030541E392"
             {
             "SourcePath" = "8:..\\Samples\\Spirals\\Form1.sb"
@@ -8447,26 +8493,6 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_8707A841590A4E10B6398739928D534E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B1146901331249ED81DAD9058C2D7B30"
-            {
-            "SourcePath" = "8:sVB Kid Programmer.mht"
-            "TargetName" = "8:sVB Kid Programmer.mht"
-            "Tag" = "8:"
-            "Folder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12386,7 +12412,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.0.2"
+        "ProductName" = "8:Small Visual Basic 3.0.4"
         "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
         "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -12508,34 +12534,6 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_68FCBD3175FC4A74BF8936BA53C467F3"
-            {
-            "Name" = "8:sVB Kid Programmer"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_B1146901331249ED81DAD9058C2D7B30"
-            "Folder" = "8:_57E649E5DD7D47328FA49ED3E67CC196"
-            "WorkingFolder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
-            "Icon" = "8:_8EB67FDA626A45C5A22962A14FA6EEF1"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8481B2E38FD24B589087C99131A73B5C"
-            {
-            "Name" = "8:sVB Kid Programmer"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_B1146901331249ED81DAD9058C2D7B30"
-            "Folder" = "8:_45AF70F6A9AB4B84A7B68CC624BC02FD"
-            "WorkingFolder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
-            "Icon" = "8:_8EB67FDA626A45C5A22962A14FA6EEF1"
-            "Feature" = "8:"
-            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8D040BDC7DDF4114A7AD2190224D6685"
             {
             "Name" = "8:sVB Samples"
@@ -12580,7 +12578,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.0.2"
+            "Name" = "8:sVB 3.0.4"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -12590,6 +12588,20 @@
             "Folder" = "8:_45AF70F6A9AB4B84A7B68CC624BC02FD"
             "WorkingFolder" = "8:_AE552A268DBF4375AB818E102A6786CD"
             "Icon" = "8:_C1A41205CDA4479E9BADF2A99BD8D2D9"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D269FE6D70884F97A42F72949D296B8D"
+            {
+            "Name" = "8:sVB Kid Programmer"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_86F8683210FA4E9C9CA63B9EB1CA5EE4"
+            "Folder" = "8:_45AF70F6A9AB4B84A7B68CC624BC02FD"
+            "WorkingFolder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
+            "Icon" = "8:_8EB67FDA626A45C5A22962A14FA6EEF1"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D53CF7D5E15E4B4586530283B2756DE3"
@@ -12608,7 +12620,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.0.2"
+            "Name" = "8:sVB 3.0.4"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -12620,9 +12632,23 @@
             "Icon" = "8:_C1A41205CDA4479E9BADF2A99BD8D2D9"
             "Feature" = "8:"
             }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E788D1EDF5D34EB78D096670358CE303"
+            {
+            "Name" = "8:sVB Kid Programmer"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_86F8683210FA4E9C9CA63B9EB1CA5EE4"
+            "Folder" = "8:_57E649E5DD7D47328FA49ED3E67CC196"
+            "WorkingFolder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
+            "Icon" = "8:_8EB67FDA626A45C5A22962A14FA6EEF1"
+            "Feature" = "8:"
+            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.0.2"
+            "Name" = "8:sVB 3.0.4"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -13147,7 +13173,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C1A41205CDA4479E9BADF2A99BD8D2D9"
             {
-            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Debug\\sVB.exe"
+            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Release\\sVB.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"

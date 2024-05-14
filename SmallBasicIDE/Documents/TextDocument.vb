@@ -291,8 +291,10 @@ Namespace Microsoft.SmallVisualBasic.Documents
             _ControlNames.Add("(Global)")
             _GlobalSubs.Add(AddNewFunc)
             _GlobalSubs.Add(AddNewSub)
+            _GlobalSubs.Add(AddNewTest)
             _ControlEvents.Add(AddNewFunc)
             _ControlEvents.Add(AddNewSub)
+            _ControlEvents.Add(AddNewTest)
             ParseFormHints()
             UpdateGlobalSubsList()
             AddProperty("Document", Me)
@@ -1375,24 +1377,46 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Return New TextDocument(filename)
         End Function
 
-        Private Const SubBodyLength As Integer = 19
+        Private Const SubBodyOffset As Integer = 18
         Private Const AddNewSub As String = "(Add New Sub)"
-        Private ReadOnly eventHandlerSub As String = vbCrLf & "
+        Private ReadOnly subDefinition As String = vbCrLf & "
 '------------------------------------------------
-Sub #( )
+Sub #()
    
 EndSub
 "
-
-        Private Const FuncBodyLength As Integer = 37
+        Private Const funcBodyOffset As Integer = 36
         Private Const AddNewFunc As String = "(Add New Function)"
-        Private ReadOnly globalFunc As String = vbCrLf & "
+        Private ReadOnly funcDefinition As String = vbCrLf & "
 '------------------------------------------------
-Function #( )
+Function #()
    
    Return 0
 EndFunction
 "
+
+        Private Const testBodyOffset As Integer = 367
+        Private Const AddNewTest As String = "(Add New Test)"
+        Private ReadOnly testDefinition As String = vbCrLf & "
+'------------------------------------------------
+Function #()   
+   ' To run test functions, call the Form.RunTests or UnitTest.RunAllTests methods
+   Return UnitTest.AssertEqual(
+      {
+         ""Actual Value 1"",
+         ""Actual Value 2"",
+         ""Actual Value 3""
+      },
+      {
+         ""Actual Value 1"",
+         ""Actual Value 2"",
+         ""Actual Value 3""
+      },
+      ""Test Name""
+   )
+EndFunction
+"
+
         Public Property IgnoreCaretPosChange As Boolean
 
         Public Function AddEventHandler(
@@ -1432,29 +1456,37 @@ EndFunction
                 caret.MoveTo(Me.Text.Length)
                 If handlerName = "" Then
                     Dim isSub = (eventName = AddNewSub)
-                    Dim NewName = If(isSub, "NewSub_", "NewFunc_")
+                    Dim isFunc = (eventName = AddNewFunc)
+                    Dim newName = If(isSub, "NewSub_", If(isFunc, "NewFunc_", "Test_"))
                     Dim n = 0
-                    Dim L = NewName.Length
+                    Dim L = newName.Length
                     Try
                         n = Aggregate s In _GlobalSubs
-                                 Where s.StartsWith(NewName)
+                                 Where s.StartsWith(newName)
                                  Let x = s.Substring(L)
                                  Into Max(If(IsNumeric(x), CInt(x), 0))
                     Catch
                     End Try
 
-                    handlerName = NewName & n + 1
-                    Dim name = If(isSub, eventHandlerSub, globalFunc)
+                    handlerName = newName & n + 1
+                    Dim name = If(isSub, subDefinition, If(isFunc, funcDefinition, testDefinition))
                     Dim handler = name.Replace("#", handlerName)
                     _GlobalSubs.Add(handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
-                    caret.MoveTo(Text.Length - If(isSub, SubBodyLength, FuncBodyLength))
-                    If selectSubName Then SelectCurrentWord()
+                    Dim namePos = Text.Length - If(isSub, SubBodyOffset, If(isFunc, funcBodyOffset, testBodyOffset))
+                    caret.MoveTo(namePos)
+                    If selectSubName Then
+                        SelectCurrentWord()
+                        If Not (isSub OrElse isFunc) Then
+                            Dim selLen = handlerName.Length - 5
+                            _editorControl.EditorOperations.Select(namePos - selLen + 1, selLen)
+                        End If
+                    End If
                     _ControlEvents.Add(handlerName)
 
                 Else
                     _EventHandlers(handlerName) = New EventInformation(controlName, eventName)
-                    Dim handler = eventHandlerSub.Replace("#", handlerName)
+                    Dim handler = subDefinition.Replace("#", handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
                     EnsureAtTop(Text.Length - 10)
                     alreadyExists = True
@@ -1482,8 +1514,7 @@ EndFunction
         Public Sub SelectWordAt(
                         line As Integer,
                         column As Integer,
-                        Optional viewAtTop As Boolean = True
-                   )
+                        Optional viewAtTop As Boolean = True)
 
             If line < 0 Then Return
 
@@ -1630,6 +1661,7 @@ EndFunction
             _GlobalSubs.Clear()
             _GlobalSubs.Add(AddNewFunc)
             _GlobalSubs.Add(AddNewSub)
+            _GlobalSubs.Add(AddNewTest)
 
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot

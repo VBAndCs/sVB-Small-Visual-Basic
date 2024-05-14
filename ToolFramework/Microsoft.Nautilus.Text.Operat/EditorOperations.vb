@@ -873,60 +873,59 @@ Namespace Microsoft.Nautilus.Text.Operations
             EditorTrace.TraceTextCopyEnd()
         End Sub
 
-        Public Sub CutSelection(undoHistory1 As UndoHistory) Implements IEditorOperations.CutSelection
+        Public Sub CutSelection(undoHistory As UndoHistory) Implements IEditorOperations.CutSelection
             EditorTrace.TraceTextCutStart()
-            If undoHistory1 Is Nothing Then
+            If undoHistory Is Nothing Then
                 Throw New ArgumentNullException("undoHistory")
             End If
 
             CopySelection()
 
-            Using undoTransaction1 As UndoTransaction = undoHistory1.CreateTransaction("Cut Selection")
-                If DeleteSelection(undoHistory1) Then
-                    _textView.Caret.EnsureVisible()
-                    undoTransaction1.Complete()
+            Using undoTrans = undoHistory.CreateTransaction("Cut Selection")
+                If DeleteSelection(undoHistory) Then
+                    _TextView.Caret.EnsureVisible()
+                    undoTrans.Complete()
                 Else
-                    undoTransaction1.Cancel()
+                    undoTrans.Cancel()
                 End If
             End Using
 
             EditorTrace.TraceTextCutEnd()
         End Sub
 
-        Public Sub Paste(undoHistory1 As UndoHistory) Implements IEditorOperations.Paste
+        Public Sub Paste(undoHistory As UndoHistory) Implements IEditorOperations.Paste
             EditorTrace.TraceTextPasteStart()
-            If undoHistory1 Is Nothing Then
+            If undoHistory Is Nothing Then
                 Throw New ArgumentNullException("undoHistory")
             End If
 
             Dim text As String = Nothing
             Try
-                Dim dataObject1 = Clipboard.GetDataObject()
-                If dataObject1 Is Nothing OrElse Not dataObject1.GetDataPresent(GetType(String)) Then
+                Dim dataObj = Clipboard.GetDataObject()
+                If dataObj Is Nothing OrElse Not dataObj.GetDataPresent(GetType(String)) Then
                     Return
                 End If
 
-                text = CStr(dataObject1.GetData(DataFormats.UnicodeText))
+                text = CStr(dataObj.GetData(DataFormats.UnicodeText))
                 If text Is Nothing Then
-                    text = CStr(dataObject1.GetData(DataFormats.Text))
+                    text = CStr(dataObj.GetData(DataFormats.Text))
                 End If
 
-            Catch
+                If text IsNot Nothing Then
+                    Using undoTrans As UndoTransaction = undoHistory.CreateTransaction("Paste")
+                        If ReplaceSelection(text, TextEditAction.Paste, undoHistory) Then
+                            _TextView.Caret.EnsureVisible()
+                            _TextView.Caret.CapturePreferredBounds()
+                            undoTrans.Complete()
+                        Else
+                            undoTrans.Cancel()
+                        End If
+                    End Using
+                End If
 
+            Catch ex As Exception
+                MsgBox("Paste operation failed. " & ex.Message)
             End Try
-
-            If text IsNot Nothing Then
-                Using undoTransaction1 As UndoTransaction = undoHistory1.CreateTransaction("Paste")
-                    If ReplaceSelection(text, TextEditAction.Paste, undoHistory1) Then
-                        _textView.Caret.EnsureVisible()
-                        _textView.Caret.CapturePreferredBounds()
-                        undoTransaction1.Complete()
-                    Else
-                        undoTransaction1.Cancel()
-                    End If
-                End Using
-            End If
-
             EditorTrace.TraceTextPasteEnd()
         End Sub
 
