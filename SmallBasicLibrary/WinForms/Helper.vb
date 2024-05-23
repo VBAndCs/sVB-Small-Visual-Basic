@@ -10,7 +10,7 @@ Module Helper
 
     Public Sub ReportError(msg As String, ex As Exception)
         If app.IsDebugging Then
-            Program.Exception = ex
+            Program.Exception = New Exception(msg, ex)
             Return
         End If
 

@@ -68,8 +68,8 @@ Namespace Library
             Dim delayTime = CInt(milliSeconds)
             If delayTime <= 0 Then Return
 
-            ' Don't use Thread.Delay, because if could freeze some UI elemnts.
-            ' Instead use a loop to waste time, but allow teh UI to refresh
+            ' Don't use Thread.Delay, because it could freeze some UI elemnts.
+            ' Instead use a loop to waste time, but allow the UI to refresh
             Dim start = Now
             Do While (Now - start).TotalMilliseconds < delayTime
                 System.Windows.Application.Current.Dispatcher.Invoke(

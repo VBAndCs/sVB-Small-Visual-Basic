@@ -177,12 +177,12 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Dim m = Helper.MainWindow
                 m.tabCode.IsSelected = True
                 m.tabDesigner.IsEnabled = False
-                m.DisplayDebugCommands(True)
                 m.Dispatcher.BeginInvoke(
                     DispatcherPriority.Background,
                     Sub()
                         _ProgramEngine = CreateEngine()
                         If _ProgramEngine IsNot Nothing Then
+                            m.DisplayDebugCommands(True)
                             _ProgramEngine.RunProgram(breakOnStart)
                             For Each parser In _ProgramEngine.Parsers
                                 Dim doc = m.GetDocIfOpened(parser.DocPath)
@@ -217,7 +217,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     )
                     Dim offset = runner.DocLineOffset
                     Dim lineNumber = runner.CurrentLineNumber - offset
-                    If lineNumber < 0 Then Return
+                    If lineNumber < 0 Then lineNumber = 0
 
                     Dim currentState = runner.DebuggerState
                     Dim markLine = (currentState = DebuggerState.Paused OrElse currentState = DebuggerState.Error)

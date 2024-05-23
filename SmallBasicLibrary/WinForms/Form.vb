@@ -1230,7 +1230,6 @@ Namespace WinForms
                     Catch ex As Exception
                         ReportSubError(formName, "Show", ex)
                     End Try
-
                 End Sub)
         End Sub
 
@@ -1309,6 +1308,17 @@ Namespace WinForms
             Return childFormName
         End Function
 
+        Public Shared Sub RaiseOnShown(formName As String)
+            App.Invoke(
+                 Sub()
+                     Try
+                         Dim childWnd = Forms.GetForm(formName)
+                         childWnd.RaiseEvent(New RoutedEventArgs(OnFormShownEvent))
+                     Catch ex As Exception
+                         Form.ReportSubError(formName, "RaiseOnShown", ex)
+                     End Try
+                 End Sub)
+        End Sub
 
         ''' <summary>
         ''' Gets or sets the name of the button that the user clicked when he closes the dialog form.
@@ -1604,7 +1614,6 @@ Namespace WinForms
         End Event
 
 
-
         ''' <summary>
         ''' Fired when user moves the mouse wheel ober the form or any of its children
         ''' </summary>
@@ -1640,11 +1649,6 @@ Namespace WinForms
                          Dim formName = [Event].SenderControl.AsString().ToLower()
                          Dim form = CType(Forms.GetForm(formName), System.Windows.Window)
 
-                         If ShownHandlers.ContainsKey(formName) Then
-                             RemoveHandler form.ContentRendered, ShownHandlers(formName)
-                             form.RemoveHandler(OnFormShownEvent, ShownHandlers(formName))
-                         End If
-
                          Try
                              Dim h = Sub(sender As Object, e As EventArgs)
                                          Try
@@ -1657,9 +1661,18 @@ Namespace WinForms
                                          End Try
                                      End Sub
 
-                             ShownHandlers(formName) = h
+                             Dim h1 = CType(h, RoutedEventHandler)
+                             Control.RemovePrevEventHandler(
+                                    [Event].SenderControl,
+                                    NameOf(OnShown),
+                                    Sub()
+                                        RemoveHandler form.ContentRendered, h
+                                        form.RemoveHandler(OnFormShownEvent, h1)
+                                    End Sub
+                             )
+
                              AddHandler form.ContentRendered, h
-                             form.AddHandler(OnFormShownEvent, h)
+                             form.AddHandler(OnFormShownEvent, h1)
 
                          Catch ex As Exception
                              [Event].ShowErrorMessage(NameOf(OnShown), ex)
@@ -1685,10 +1698,6 @@ Namespace WinForms
                          Dim form = Forms.GetForm([Event].SenderControl)
                          Try
                              Dim formName = [Event].SenderControl.AsString().ToLower()
-                             If ClosingHandlers.ContainsKey(formName) Then
-                                 RemoveHandler form.Closing, ClosingHandlers(formName)
-                             End If
-
                              Dim h = Sub(sender As Object, e As ComponentModel.CancelEventArgs)
                                          Try
                                              If Forms.forceClose Then Return
@@ -1707,7 +1716,12 @@ Namespace WinForms
                                          End Try
                                      End Sub
 
-                             ClosingHandlers(formName) = h
+                             Control.RemovePrevEventHandler(
+                                    [Event].SenderControl,
+                                    NameOf(OnClosing),
+                                    Sub() RemoveHandler form.Closing, h
+                             )
+
                              AddHandler form.Closing, h
 
                          Catch ex As Exception
@@ -1724,8 +1738,6 @@ Namespace WinForms
         End Event
 
         Friend Shared ClosedHandlers As New Dictionary(Of String, SmallVisualBasicCallback)
-        Friend Shared ClosingHandlers As New Dictionary(Of String, ComponentModel.CancelEventHandler)
-        Friend Shared ShownHandlers As New Dictionary(Of String, EventHandler)
 
         ''' <summary>
         ''' Fired after the form is closed
@@ -1735,7 +1747,8 @@ Namespace WinForms
                 App.Invoke(
                      Sub()
                          Try
-                             ClosedHandlers([Event].SenderControl.AsString().ToLower()) = handler
+                             Dim frm = [Event].SenderControl.AsString().ToLower()
+                             ClosedHandlers($"{Control.senderAssembly}:{frm}") = handler
                          Catch ex As Exception
                              [Event].ShowErrorMessage(NameOf(OnClosed), ex)
                          End Try
@@ -1743,6 +1756,15 @@ Namespace WinForms
             End AddHandler
 
             RemoveHandler(handler As SmallVisualBasicCallback)
+                App.Invoke(
+                    Sub()
+                        Try
+                            Dim frm = [Event].SenderControl.AsString().ToLower()
+                            ClosedHandlers($"{Control.senderAssembly}:{frm}") = Nothing
+                        Catch ex As Exception
+                            [Event].ShowErrorMessage(NameOf(OnClosed), ex)
+                        End Try
+                    End Sub)
             End RemoveHandler
 
             RaiseEvent()

@@ -575,29 +575,16 @@ Namespace WinForms
                 Try
                     Dim name = [Event].SenderControl
                     Dim _sender = GetTextBox(name)
-                    Dim h = Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
-                                If e.Key = Keys.Space Then
-                                    Keyboard._lastTextInput = " "
-                                    [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
-                                End If
+                    Dim h = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
                             End Sub
 
-                    Dim h2 = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
-                                 [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
-                             End Sub
-
-                    ' Wpf doesn't raise TextInput when space is pressed!
-                    ' We will fix this by raising this special case from the KeyDown event
                     Control.RemovePrevEventHandler(
                         name,
                         NameOf(OnSelection),
-                        Sub()
-                            RemoveHandler _sender.PreviewKeyDown, h
-                            RemoveHandler _sender.SelectionChanged, h
-                        End Sub
+                        Sub() RemoveHandler _sender.SelectionChanged, h
                     )
-                    AddHandler _sender.PreviewKeyDown, h
-                    AddHandler _sender.SelectionChanged, h2
+                    AddHandler _sender.SelectionChanged, h
 
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnSelection), ex)

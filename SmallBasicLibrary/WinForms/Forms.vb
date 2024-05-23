@@ -420,17 +420,25 @@ Namespace WinForms
 
             Dim win = CType(sender, Window)
             Dim winName = win.Name.ToLower()
+            Dim handler As SmallVisualBasicCallback = Nothing
+            Try
+                [Event]._senderControl = winName
+                Dim keys = Form.ClosedHandlers.Keys
+                For i = 0 To Form.ClosedHandlers.Count - 1
+                    Dim key = Keys(i)
+                    If key.EndsWith(":" & winName) Then
+                        handler = Form.ClosedHandlers(key)
+                        If handler IsNot Nothing Then
+                            Form.ClosedHandlers(key) = Nothing
+                            Call handler()
+                        End If
+                    End If
+                Next
+                [Event].Handled = False
 
-            If Form.ClosedHandlers.ContainsKey(winName) Then
-                Dim handler = Form.ClosedHandlers(winName)
-                Try
-                    [Event]._senderControl = winName
-                    Call handler()
-                    [Event].Handled = False
-                Catch ex As Exception
-                    Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `OnClosed` event, caused this error: {ex.Message}", ex)
-                End Try
-            End If
+            Catch ex As Exception
+                Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `OnClosed` event, caused this error: {ex.Message}", ex)
+            End Try
 
             App.BeginInvoke(Sub() RemoveFormAndControls(win.Name.ToLower()))
         End Sub
@@ -459,26 +467,30 @@ Namespace WinForms
                 End If
             Next
 
-            Dim RemoveEventHandlers = Control.RemoveEventHandlerActions
             _forms.Remove(formName)
+            Forms.RemoveEventHandlers(formName)
             formName &= "."
-            Dim keys = _controls.Keys
 
-            For i = keys.Count - 1 To 0 Step -1
-                Dim name = keys(i)
-                If name.StartsWith(formName) Then
-                    For j = RemoveEventHandlers.Count - 1 To 0 Step -1
-                        Dim key = RemoveEventHandlers.Keys(j)
-                        If key.Contains($":{name}.") Then
-                            RemoveEventHandlers.Values(j)?.Invoke()
-                            RemoveEventHandlers.Remove(key)
-                        End If
-                    Next
-                    _controls.Remove(name)
+            For i = _controls.Keys.Count - 1 To 0 Step -1
+                Dim controlKey = _controls.Keys(i)
+                If controlKey.StartsWith(formName) Then
+                    Forms.RemoveEventHandlers(controlKey)
                 End If
             Next
-
             If _forms.Count = 0 Then Program.End()
+        End Sub
+
+        Private Shared Sub RemoveEventHandlers(controlKey As String)
+            Dim RemoveEventHandlers = Control.RemoveEventHandlerActions
+            Dim x = $":{controlKey}."
+            For j = RemoveEventHandlers.Count - 1 To 0 Step -1
+                Dim key = RemoveEventHandlers.Keys(j)
+                If key.Contains(x) Then
+                    RemoveEventHandlers.Values(j)?.Invoke()
+                    RemoveEventHandlers.Remove(key)
+                End If
+            Next
+            _controls.Remove(controlKey)
         End Sub
 
         Private Shared Function LoadContent(xamlPath As String) As Canvas

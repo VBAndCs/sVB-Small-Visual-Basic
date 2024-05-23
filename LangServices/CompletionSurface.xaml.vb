@@ -253,7 +253,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Return False
             End Select
 
-            If Not isFirstToken Then
+            If Not isFirstToken AndAlso item.ObjectName = "" Then
                 Select Case displayName
                     Case "If", "ElseIf", "Else", "EndIf",
                              "For", "ForEach", "Next", "EndFor",
@@ -299,7 +299,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     If pos > 0 Then
                         Dim c = textView.TextSnapshot(pos)
                         If c <> "_" AndAlso Not Char.IsLetterOrDigit(c) Then
-                            If _Adornment.CompletionBag.CtrlSpace OrElse _Adornment.CompletionBag.SelectEspecialItem <> "" Then
+                            If c = "!" OrElse c = "." OrElse _Adornment.CompletionBag.CtrlSpace OrElse _Adornment.CompletionBag.SelectEspecialItem <> "" Then
                                 Return ""
                             Else
                                 Return "don't display items"

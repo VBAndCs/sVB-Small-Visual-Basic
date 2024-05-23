@@ -364,7 +364,7 @@ Namespace Microsoft.SmallVisualBasic.Utility
                     .Style = _typeStyle
             })
             definition.Inlines.Add(New TextRun() With {
-                    .Text = ex.GetType().Name,
+                    .Text = If(ex.InnerException, ex).GetType().Name,
                     .Style = _linkStyle
             })
             Dim p = New Paragraph()

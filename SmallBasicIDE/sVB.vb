@@ -462,6 +462,9 @@ Class sVB
                         Dim t = _compiler.Parser.SymbolTable.GetInferedType(obj)
                         If t = VariableType.WinTimer Then
                             lines(lineNum) = $"WinTimer.RemoveOnTickHandler({obj})"
+                        ElseIf t = VariableType.Form AndAlso tokens(2).Text.ToLower() = "onclosed" Then
+                            lines(lineNum) = $"Control.HandleEvents({obj})" & vbLf &
+                                                        prevText & $"{ModuleName}.{nextText}"
                         Else
                             lines(lineNum) = $"Control.RemoveEventHandler({obj}, ""{tokens(2).Text}"")"
                         End If

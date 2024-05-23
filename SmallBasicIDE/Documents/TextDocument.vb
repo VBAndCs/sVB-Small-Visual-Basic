@@ -1244,7 +1244,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End If
 
             genCode.AppendLine($"Form.SetArgsArr({formName.ToLower}, Stack.PopValue(""_{formName.ToLower()}_argsArr""))")
-            genCode.AppendLine($"Form.Show({formName})")
 
             ' Remove Hamdlers of deleted or renamed controls
             For i = _EventHandlers.Count - 1 To 0 Step -1
@@ -1274,7 +1273,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End If
 
             GenerateEventHints(genCode)
-
             Return genCode.ToString()
         End Function
 
@@ -1315,6 +1313,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 genCode.AppendLine()
                 genCode.AppendLine(sbHandlers.ToString())
             End If
+
+            genCode.AppendLine("Form.Show(Me)")
         End Sub
 
         Sub AddProperty(name As String, value As Object)

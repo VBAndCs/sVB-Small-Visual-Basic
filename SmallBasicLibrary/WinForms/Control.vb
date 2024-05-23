@@ -1558,7 +1558,7 @@ Namespace WinForms
 
         Friend Shared RemoveEventHandlerActions As New Dictionary(Of String, Action)
 
-        Private Shared senderAssembly As String
+        Friend Shared senderAssembly As String
         Friend Shared Sub RemovePrevEventHandler(controlName As String, eventName As String, [removeHandler] As Action)
             Dim key = (senderAssembly & ":" & controlName & "." & eventName).ToLower()
             If RemoveEventHandlerActions.ContainsKey(key) Then

@@ -111,210 +111,214 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                            Optional prettyListing As Boolean = True
                    )
 
-            Dim snapshot = textBuffer.CurrentSnapshot
-            Dim source As New TextBufferReader(snapshot)
+            Try
+                Dim snapshot = textBuffer.CurrentSnapshot
+                Dim source As New TextBufferReader(snapshot)
 
-            Dim indentationLevel = 0
-            Dim start, [end] As Integer
-            If lineNumber = -1 Then
-                start = 0
-                [end] = snapshot.LineCount - 1
-            Else
-                start = FindCurrentSubStart(snapshot, lineNumber)
-                [end] = FindCurrentSubEnd(snapshot, lineNumber)
-            End If
+                Dim indentationLevel = 0
+                Dim start, [end] As Integer
+                If lineNumber = -1 Then
+                    start = 0
+                    [end] = snapshot.LineCount - 1
+                Else
+                    start = FindCurrentSubStart(snapshot, lineNumber)
+                    [end] = FindCurrentSubEnd(snapshot, lineNumber)
+                End If
 
-            Dim lines As New List(Of String)
+                Dim lines As New List(Of String)
 
-            For i = start To [end]
-                lines.Add(snapshot.GetLineFromLineNumber(i).GetText())
-            Next
+                For i = start To [end]
+                    lines.Add(snapshot.GetLineFromLineNumber(i).GetText())
+                Next
 
-            Using textEdit = textBuffer.CreateEdit()
-                Dim comments As New List(Of Token)
+                Using textEdit = textBuffer.CreateEdit()
+                    Dim comments As New List(Of Token)
 
-                For lineNum = 0 To lines.Count - 1
-                    Dim line = snapshot.GetLineFromLineNumber(lineNum + start)
-                    ' (lineNum) to send it not to be changed ByRef
-                    Dim tokens = LineScanner.GetTokens(lines(lineNum), (lineNum), lines)
-                    comments.AddRange(LineScanner.SubLineComments)
+                    For lineNum = 0 To lines.Count - 1
+                        Dim line = snapshot.GetLineFromLineNumber(lineNum + start)
+                        ' (lineNum) to send it not to be changed ByRef
+                        Dim tokens = LineScanner.GetTokens(lines(lineNum), (lineNum), lines)
+                        comments.AddRange(LineScanner.SubLineComments)
 
-                    If tokens.Count = 0 Then
-                        AdjustIndentation(textEdit, line, indentationLevel, lines(lineNum).Length)
-                        Continue For
-                    End If
-
-                    If prettyListing OrElse lineNum <> lineNumber Then
-                        FormatLine(textEdit, line, tokens, 0)
-                    End If
-
-                    Dim firstCharPos = tokens(0).Column
-
-                    Select Case tokens(0).Type
-                        Case TokenType.EndIf, TokenType.Next, TokenType.EndFor, TokenType.Wend, TokenType.EndWhile
-                            indentationLevel -= 1
-                            AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
-
-                        Case TokenType.EndSub, TokenType.EndFunction
-                            indentationLevel = 0
-                            AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
-
-                        Case TokenType.If
-                            AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
-                            indentationLevel += 1
-                            AddThen(snapshot, start, textEdit, lineNum, line, tokens)
-                        Case TokenType.For, TokenType.ForEach, TokenType.While
-                            AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
-                            indentationLevel += 1
-
-                        Case TokenType.Sub, TokenType.Function
-                            AdjustIndentation(textEdit, line, 0, firstCharPos)
-                            indentationLevel = 1
-
-                        Case TokenType.Else
-                            indentationLevel -= 1
-                            AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
-                            indentationLevel += 1
-
-                        Case TokenType.ElseIf
-                            indentationLevel -= 1
-                            AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
-                            indentationLevel += 1
-                            AddThen(snapshot, start, textEdit, lineNum, line, tokens)
-
-                        Case Else
-                            If tokens.Count > 1 AndAlso tokens(0).Type <> TokenType.Question AndAlso tokens(1).Type = TokenType.Colon Then
-                                AdjustIndentation(textEdit, line, Integer.MaxValue, firstCharPos)
-                            Else
-                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
-                            End If
-                    End Select
-
-                    ' format sub lines
-                    Dim lineStart = False, lineEnd = False, subLine = 0
-
-                    Dim subLineOffset = 0
-                    Dim indentStack As New Stack(Of Integer)
-                    Dim firstSubLine = True
-                    Dim n = tokens.Count - 1
-
-                    For i = 1 To n
-                        Dim t = tokens(i)
-                        If t.subLine > subLine Then
-                            lineStart = True
-                            Do
-                                lineNum += 1
-                                line = snapshot.GetLineFromLineNumber(lineNum + start)
-                                If t.subLine - subLine > 1 Then
-                                    ' An empty subline that contains only a hyphen and maybe a comment
-                                    AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, line.GetText().IndexOf("_"))
-                                    Dim commentToken = GetSublineComment(lineNum)
-                                    If Not commentToken.IsIllegal Then FormatComment(textEdit, line, commentToken)
-                                    subLine += 1
-                                Else
-                                    Exit Do
-                                End If
-                            Loop
-                            If prettyListing OrElse lineNum <> lineNumber Then FormatLine(textEdit, line, tokens, i)
-                        Else
-                            lineStart = False
-                        End If
-
-                        subLine = t.subLine
-                        lineEnd = (i = n OrElse tokens(i + 1).subLine > subLine)
-
-                        Select Case t.Type
-                            Case TokenType.LeftParens, TokenType.LeftBracket, TokenType.LeftBrace
-                                If lineStart Then AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
-                                If Not lineEnd Then
-                                    subLineOffset += 1
-                                    indentStack.Push(subLineOffset)
-                                End If
-
-                            Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightBrace
-                                If Not lineEnd Then
-                                    If indentStack.Count = 0 Then
-                                        subLineOffset = Math.Max(0, subLineOffset - 1)
-                                    Else
-                                        Dim l = indentStack.Pop()
-                                        subLineOffset = If(indentStack.Count = 0, Math.Max(0, l - 1), indentStack.Peek())
-                                    End If
-
-                                    If lineStart Then AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
-
-                                ElseIf lineStart Then
-                                    subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), Math.Max(0, indentStack.Peek() - 1))
-                                    AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
-                                End If
-
-                            Case TokenType.Concatenation, TokenType.Addition,
-                                    TokenType.Subtraction, TokenType.Multiplication,
-                                    TokenType.Division, TokenType.Mod,
-                                    TokenType.Or, TokenType.And
-                                If lineStart Then
-                                    subLineOffset = Math.Max(1, subLineOffset)
-                                    AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
-                                End If
-
-                            Case Else
-                                If lineStart Then
-                                    AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
-                                End If
-                        End Select
-
-                        If Not lineEnd Then Continue For
-
-                        'CheckLineEnd:
-                        Dim last = If(tokens(i).ParseType = ParseType.Comment, i - 1, i)
-
-                        If last = -1 Then
-                            subLineOffset = 0
+                        If tokens.Count = 0 Then
+                            AdjustIndentation(textEdit, line, indentationLevel, lines(lineNum).Length)
                             Continue For
                         End If
 
-                        Select Case tokens(last).Type
-                            Case TokenType.Comma
-                                If indentStack.Count = 0 Then
-                                    If subLineOffset = 0 Then subLineOffset = 1
+                        If prettyListing OrElse lineNum <> lineNumber Then
+                            FormatLine(textEdit, line, tokens, 0)
+                        End If
+
+                        Dim firstCharPos = tokens(0).Column
+
+                        Select Case tokens(0).Type
+                            Case TokenType.EndIf, TokenType.Next, TokenType.EndFor, TokenType.Wend, TokenType.EndWhile
+                                indentationLevel -= 1
+                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+
+                            Case TokenType.EndSub, TokenType.EndFunction
+                                indentationLevel = 0
+                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+
+                            Case TokenType.If
+                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                                indentationLevel += 1
+                                AddThen(snapshot, start, textEdit, lineNum, line, tokens)
+                            Case TokenType.For, TokenType.ForEach, TokenType.While
+                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                                indentationLevel += 1
+
+                            Case TokenType.Sub, TokenType.Function
+                                AdjustIndentation(textEdit, line, 0, firstCharPos)
+                                indentationLevel = 1
+
+                            Case TokenType.Else
+                                indentationLevel -= 1
+                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                                indentationLevel += 1
+
+                            Case TokenType.ElseIf
+                                indentationLevel -= 1
+                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                                indentationLevel += 1
+                                AddThen(snapshot, start, textEdit, lineNum, line, tokens)
+
+                            Case Else
+                                If tokens.Count > 1 AndAlso tokens(0).Type <> TokenType.Question AndAlso tokens(1).Type = TokenType.Colon Then
+                                    AdjustIndentation(textEdit, line, Integer.MaxValue, firstCharPos)
                                 Else
-                                    subLineOffset = indentStack.Peek()
+                                    AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
                                 End If
+                        End Select
 
-                            Case TokenType.Concatenation
-                                If n > 1 AndAlso tokens(last - 1).Type <> TokenType.Question Then
-                                    subLineOffset = Math.Max(1, subLineOffset)
-                                End If
+                        ' format sub lines
+                        Dim lineStart = False, lineEnd = False, subLine = 0
 
-                            Case TokenType.Addition,
+                        Dim subLineOffset = 0
+                        Dim indentStack As New Stack(Of Integer)
+                        Dim firstSubLine = True
+                        Dim n = tokens.Count - 1
+
+                        For i = 1 To n
+                            Dim t = tokens(i)
+                            If t.subLine > subLine Then
+                                lineStart = True
+                                Do
+                                    lineNum += 1
+                                    line = snapshot.GetLineFromLineNumber(lineNum + start)
+                                    If t.subLine - subLine > 1 Then
+                                        ' An empty subline that contains only a hyphen and maybe a comment
+                                        AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, line.GetText().IndexOf("_"))
+                                        Dim commentToken = GetSublineComment(lineNum)
+                                        If Not commentToken.IsIllegal Then FormatComment(textEdit, line, commentToken)
+                                        subLine += 1
+                                    Else
+                                        Exit Do
+                                    End If
+                                Loop
+                                If prettyListing OrElse lineNum <> lineNumber Then FormatLine(textEdit, line, tokens, i)
+                            Else
+                                lineStart = False
+                            End If
+
+                            subLine = t.subLine
+                            lineEnd = (i = n OrElse tokens(i + 1).subLine > subLine)
+
+                            Select Case t.Type
+                                Case TokenType.LeftParens, TokenType.LeftBracket, TokenType.LeftBrace
+                                    If lineStart Then AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
+                                    If Not lineEnd Then
+                                        subLineOffset += 1
+                                        indentStack.Push(subLineOffset)
+                                    End If
+
+                                Case TokenType.RightParens, TokenType.RightBracket, TokenType.RightBrace
+                                    If Not lineEnd Then
+                                        If indentStack.Count = 0 Then
+                                            subLineOffset = Math.Max(0, subLineOffset - 1)
+                                        Else
+                                            Dim l = indentStack.Pop()
+                                            subLineOffset = If(indentStack.Count = 0, Math.Max(0, l - 1), indentStack.Peek())
+                                        End If
+
+                                        If lineStart Then AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
+
+                                    ElseIf lineStart Then
+                                        subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), Math.Max(0, indentStack.Peek() - 1))
+                                        AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
+                                    End If
+
+                                Case TokenType.Concatenation, TokenType.Addition,
+                                    TokenType.Subtraction, TokenType.Multiplication,
+                                    TokenType.Division, TokenType.Mod,
+                                    TokenType.Or, TokenType.And
+                                    If lineStart Then
+                                        subLineOffset = Math.Max(1, subLineOffset)
+                                        AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
+                                    End If
+
+                                Case Else
+                                    If lineStart Then
+                                        AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
+                                    End If
+                            End Select
+
+                            If Not lineEnd Then Continue For
+
+                            'CheckLineEnd:
+                            Dim last = If(tokens(i).ParseType = ParseType.Comment, i - 1, i)
+
+                            If last = -1 Then
+                                subLineOffset = 0
+                                Continue For
+                            End If
+
+                            Select Case tokens(last).Type
+                                Case TokenType.Comma
+                                    If indentStack.Count = 0 Then
+                                        If subLineOffset = 0 Then subLineOffset = 1
+                                    Else
+                                        subLineOffset = indentStack.Peek()
+                                    End If
+
+                                Case TokenType.Concatenation
+                                    If n > 1 AndAlso tokens(last - 1).Type <> TokenType.Question Then
+                                        subLineOffset = Math.Max(1, subLineOffset)
+                                    End If
+
+                                Case TokenType.Addition,
                                  TokenType.Subtraction, TokenType.Multiplication,
                                  TokenType.Division, TokenType.Mod,
                                  TokenType.And, TokenType.Or, TokenType.LineContinuity
-                                subLineOffset = Math.Max(1, subLineOffset)
+                                    subLineOffset = Math.Max(1, subLineOffset)
 
-                            Case TokenType.EqualsTo
-                                subLineOffset += 1
-
-                            Case TokenType.LeftParens, TokenType.LeftBrace, TokenType.LeftBracket
-                                subLineOffset += 1
-                                indentStack.Push(subLineOffset)
-
-                            Case TokenType.RightParens, TokenType.RightBrace, TokenType.RightBracket
-                                If indentStack.Count > 0 Then indentStack.Pop()
-
-                            Case Else
-                                If tokens(last).Comment?.StartsWith("_") Then
-                                    ' line ends with a hyphen
+                                Case TokenType.EqualsTo
                                     subLineOffset += 1
-                                End If
-                        End Select
+
+                                Case TokenType.LeftParens, TokenType.LeftBrace, TokenType.LeftBracket
+                                    subLineOffset += 1
+                                    indentStack.Push(subLineOffset)
+
+                                Case TokenType.RightParens, TokenType.RightBrace, TokenType.RightBracket
+                                    If indentStack.Count > 0 Then indentStack.Pop()
+
+                                Case Else
+                                    If tokens(last).Comment?.StartsWith("_") Then
+                                        ' line ends with a hyphen
+                                        subLineOffset += 1
+                                    End If
+                            End Select
+                        Next
                     Next
-                Next
 
-                textEdit.Apply()
-            End Using
+                    textEdit.Apply()
+                End Using
 
-            FixKeywords(textBuffer, start, [end])
-            FixIdentifiers(textBuffer, start, [end])
+                FixKeywords(textBuffer, start, [end])
+                FixIdentifiers(textBuffer, start, [end])
+
+            Catch ex As Exception
+            End Try
         End Sub
 
         Private Function GetSublineComment(lineNum As Integer) As Token

@@ -813,6 +813,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_56DC01A47A2E4DC083B0BC7B8232A91E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_575C4DB6E35045F4A82D531C6453CF9E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -839,6 +845,12 @@
         {
         "MsmKey" = "8:_586A7ECD7984428CA0F96A7AB3C2CD91"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5A220DDC51B7DAA22DC939BB171A01A8"
+        "OwnerKey" = "8:_7E42A9AF731146B08F0C356514A15C4F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -940,6 +952,12 @@
         "Entry"
         {
         "MsmKey" = "8:_6659651D85B34A16B84385548C9DE79D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_66C6E3442FEA46D18D7624B81CE76DA6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1113,6 +1131,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7813304FF96D4148B442892DF4BBDF4C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_78B2A71A99A94BC8A163239A1AFA9DEA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1132,6 +1156,12 @@
         "Entry"
         {
         "MsmKey" = "8:_7997541C2F7B4A1B93BF01AFA41FF355"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7A09A75BE8A14864BF8AAF05B94E2A55"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1204,6 +1234,12 @@
         "Entry"
         {
         "MsmKey" = "8:_7DBF957D1D8E4E5A94384B91D317C821"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7E42A9AF731146B08F0C356514A15C4F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1396,6 +1432,12 @@
         "Entry"
         {
         "MsmKey" = "8:_90E47A155CDDD2B08F2BC44A0E66969A"
+        "OwnerKey" = "8:_7E42A9AF731146B08F0C356514A15C4F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_90E47A155CDDD2B08F2BC44A0E66969A"
         "OwnerKey" = "8:_758C478676164805A88C41F522489C37"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1444,6 +1486,12 @@
         "Entry"
         {
         "MsmKey" = "8:_92E88E9DB9404BDF9497FF00A94E50DE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_92FD57F1BD004D8E80CF1BF1E6D54032"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1521,6 +1569,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_99A1386B6FB3456AAED321DAF5D406B4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9A9E08CEE8DA41FBA73B381E8138CE82"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1577,6 +1631,12 @@
         {
         "MsmKey" = "8:_A209AAE73BF74D8A9540B3940FCD528D"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A24F3A213959A3827696A9AD949AF7EF"
+        "OwnerKey" = "8:_7E42A9AF731146B08F0C356514A15C4F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1659,6 +1719,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_AA017DDDDEDC4F07AC1B1B3B6879E4C6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_AAA4366C6FE643169854B348814EE660"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1713,6 +1779,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_AEA2C095F4A245AB99A489E9380AB74F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_AEA651B94AD259C379D1ECAC3395D9BA"
         "OwnerKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
         "MsmSig" = "8:_UNDEFINED"
@@ -1750,6 +1822,12 @@
         "Entry"
         {
         "MsmKey" = "8:_B0C3163E356640CEAB947E09D542AD77"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B21DAA491E4D4116A7CC0189E580E32A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2638,6 +2716,18 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A24F3A213959A3827696A9AD949AF7EF"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_7E42A9AF731146B08F0C356514A15C4F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_7D861BAE06794EE6A9BC579FA1C823DF"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2645,6 +2735,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_758C478676164805A88C41F522489C37"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5A220DDC51B7DAA22DC939BB171A01A8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -5472,6 +5568,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_56DC01A47A2E4DC083B0BC7B8232A91E"
+            {
+            "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Geometric Shapes\\Line.xaml"
+            "TargetName" = "8:Line.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_A5D1169879DC4E4AAA30BDAFFDD6BB01"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_575C4DB6E35045F4A82D531C6453CF9E"
             {
             "SourcePath" = "8:..\\Samples\\UnitTest Sample\\Form1.sb"
@@ -5570,6 +5686,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5A220DDC51B7DAA22DC939BB171A01A8"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9, processorArchitecture=x86"
+                "ScatterAssemblies"
+                {
+                    "_5A220DDC51B7DAA22DC939BB171A01A8"
+                    {
+                    "Name" = "8:SlimDX.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:SlimDX.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_65961B503FA84C318754C1507FE3DB3C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5AFF2A6E8D254A2099778470C961CA07"
@@ -5898,6 +6045,26 @@
             "TargetName" = "8:form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_AF8EDCD2CEE245DBBB8CE467865EA615"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_66C6E3442FEA46D18D7624B81CE76DA6"
+            {
+            "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Geometric Shapes\\Pentagon.xaml"
+            "TargetName" = "8:Pentagon.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_A5D1169879DC4E4AAA30BDAFFDD6BB01"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6483,6 +6650,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7813304FF96D4148B442892DF4BBDF4C"
+            {
+            "SourcePath" = "8:sVB Channel.url"
+            "TargetName" = "8:sVB Channel.url"
+            "Tag" = "8:"
+            "Folder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_78B2A71A99A94BC8A163239A1AFA9DEA"
             {
             "SourcePath" = "8:..\\Samples\\DemoLib\\DemoLib\\My Project\\AssemblyInfo.vb"
@@ -6549,6 +6736,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_987A0190953D4A0FA22F97E257B99D8A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7A09A75BE8A14864BF8AAF05B94E2A55"
+            {
+            "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Geometric Shapes\\Trapezoid.xaml"
+            "TargetName" = "8:Trapezoid.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_A5D1169879DC4E4AAA30BDAFFDD6BB01"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6800,6 +7007,37 @@
             "TargetName" = "8:5.png"
             "Tag" = "8:"
             "Folder" = "8:_B6A0105D5E054DB39788D5271254A221"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7E42A9AF731146B08F0C356514A15C4F"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:LitDev, Version=1.2.27.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_7E42A9AF731146B08F0C356514A15C4F"
+                    {
+                    "Name" = "8:LitDev.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\Lib\\LitDev.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_65961B503FA84C318754C1507FE3DB3C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7485,6 +7723,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_92FD57F1BD004D8E80CF1BF1E6D54032"
+            {
+            "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Geometric Shapes\\Hexagon.xaml"
+            "TargetName" = "8:Hexagon.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_A5D1169879DC4E4AAA30BDAFFDD6BB01"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_931FB1813D0D492EB2905A4E4414B5BC"
             {
             "SourcePath" = "8:..\\Samples\\Form Rotation\\Form1.xaml"
@@ -7725,6 +7983,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_99A1386B6FB3456AAED321DAF5D406B4"
+            {
+            "SourcePath" = "8:..\\Samples\\3D-perspective-1.sb"
+            "TargetName" = "8:3D-perspective-1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_E1D209B6CD70408080033442617F01DB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9A9E08CEE8DA41FBA73B381E8138CE82"
             {
             "SourcePath" = "8:..\\sVB Tests\\FrmTestResults.sb"
@@ -7923,6 +8201,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A24F3A213959A3827696A9AD949AF7EF"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_A24F3A213959A3827696A9AD949AF7EF"
+                    {
+                    "Name" = "8:System.Net.Http.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:System.Net.Http.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_65961B503FA84C318754C1507FE3DB3C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A2DB1130A4E94623A49061D968917809"
@@ -8185,6 +8494,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AA017DDDDEDC4F07AC1B1B3B6879E4C6"
+            {
+            "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\Lib\\LitDev.xml"
+            "TargetName" = "8:LitDev.xml"
+            "Tag" = "8:"
+            "Folder" = "8:_65961B503FA84C318754C1507FE3DB3C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AAA4366C6FE643169854B348814EE660"
             {
             "SourcePath" = "8:..\\Samples\\sVB Notepad\\FrmOps.xaml"
@@ -8376,6 +8705,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AEA2C095F4A245AB99A489E9380AB74F"
+            {
+            "SourcePath" = "8:youtube.ico"
+            "TargetName" = "8:youtube.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AEA651B94AD259C379D1ECAC3395D9BA"
             {
             "AssemblyRegister" = "3:1"
@@ -8493,6 +8842,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_8707A841590A4E10B6398739928D534E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B21DAA491E4D4116A7CC0189E580E32A"
+            {
+            "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Geometric Shapes\\Star.xaml"
+            "TargetName" = "8:Star.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_A5D1169879DC4E4AAA30BDAFFDD6BB01"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12412,7 +12781,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.0.4"
+        "ProductName" = "8:Small Visual Basic 3.0.6"
         "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
         "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -12534,6 +12903,20 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_29287FDC06E9478BA4815C682F8B3590"
+            {
+            "Name" = "8:sVB Channel"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_7813304FF96D4148B442892DF4BBDF4C"
+            "Folder" = "8:_57E649E5DD7D47328FA49ED3E67CC196"
+            "WorkingFolder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
+            "Icon" = "8:_AEA2C095F4A245AB99A489E9380AB74F"
+            "Feature" = "8:"
+            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8D040BDC7DDF4114A7AD2190224D6685"
             {
             "Name" = "8:sVB Samples"
@@ -12562,6 +12945,20 @@
             "Icon" = "8:"
             "Feature" = "8:"
             }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_BDA02F914C5E45D3B6DDAD31FB0D572D"
+            {
+            "Name" = "8:sVB Channel"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_7813304FF96D4148B442892DF4BBDF4C"
+            "Folder" = "8:_45AF70F6A9AB4B84A7B68CC624BC02FD"
+            "WorkingFolder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
+            "Icon" = "8:_AEA2C095F4A245AB99A489E9380AB74F"
+            "Feature" = "8:"
+            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C026E0A4D1264586BEF1BADC5A13535B"
             {
             "Name" = "8:sVB reference book"
@@ -12578,7 +12975,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.0.4"
+            "Name" = "8:sVB 3.0.6"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -12620,7 +13017,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.0.4"
+            "Name" = "8:sVB 3.0.6"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -12648,7 +13045,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.0.4"
+            "Name" = "8:sVB 3.0.6"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -13173,7 +13570,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C1A41205CDA4479E9BADF2A99BD8D2D9"
             {
-            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Release\\sVB.exe"
+            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Debug\\sVB.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"
