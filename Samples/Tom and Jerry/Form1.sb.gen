@@ -19,3 +19,4 @@ Control.OnKeyDown = Form1_OnKeyDown
 Control.OnKeyUp = Form1_OnKeyUp
 
 
+Form.Show(Me)

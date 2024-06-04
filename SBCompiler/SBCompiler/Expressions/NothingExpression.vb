@@ -52,7 +52,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Function
 
         Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
-            Throw New NotImplementedException()
+            Return Nothing
         End Function
     End Class
 

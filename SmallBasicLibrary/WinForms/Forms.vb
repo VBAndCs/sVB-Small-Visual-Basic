@@ -215,12 +215,12 @@ Namespace WinForms
 
                                     Dim lb As New Wpf.Label() With {
                                             .Name = controlName,
-                                            .Width = fw.Width,
-                                            .Height = fw.Height,
                                             .MinWidth = fw.MinWidth,
                                             .MaxWidth = fw.MaxWidth,
                                             .MinHeight = fw.MinHeight,
                                             .MaxHeight = fw.MaxHeight,
+                                            .Width = fw.Width,
+                                            .Height = fw.Height,
                                             .IsEnabled = fw.IsEnabled,
                                             .Visibility = fw.Visibility,
                                             .FlowDirection = fw.FlowDirection,

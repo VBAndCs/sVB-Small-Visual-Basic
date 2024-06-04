@@ -176,12 +176,12 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Else
                 Dim m = Helper.MainWindow
                 m.tabCode.IsSelected = True
-                m.tabDesigner.IsEnabled = False
                 m.Dispatcher.BeginInvoke(
                     DispatcherPriority.Background,
                     Sub()
                         _ProgramEngine = CreateEngine()
                         If _ProgramEngine IsNot Nothing Then
+                            m.tabDesigner.IsEnabled = False
                             m.DisplayDebugCommands(True)
                             _ProgramEngine.RunProgram(breakOnStart)
                             For Each parser In _ProgramEngine.Parsers

@@ -1816,13 +1816,20 @@ Converts the given array to a string
  The log value of the given number
  </returns>
 </member>
+<member name="P:Microsoft.SmallVisualBasic.Library.Math.UseRadianAngles">
+ <summary>
+ Indicates whither or not to consider angle values to be in radian when sent to Sin, Cos and Tan or returned from ArcSin, ArcCos, and ArcTan.
+ The default value is True, but you can set if to False to use degress instead.
+ Note that this property will also affect how the Evaluator works.
+ </summary>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Math.Cos(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Gets the cosine of the given angle in radians.
  </summary>
  <param name="angle">
  The angle whose cosine is needed (in radians).
- </param>
+ If you have the angle in degrees, use the GetRadians method to convert it to reeadians, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.        ''' </param>
  <returns>
  The cosine of the given angle.
  </returns>
@@ -1833,6 +1840,7 @@ Converts the given array to a string
  </summary>
  <param name="angle">
  The angle whose sine is needed (in radians)
+ If you have the angle in degrees, use the GetRadians method to convert it to reeadians, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.
  </param>
  <returns>
  The sine of the given angle
@@ -1844,7 +1852,7 @@ Converts the given array to a string
  </summary>
  <param name="angle">
  The angle whose tangent is needed (in radians).
- </param>
+ If you have the angle in degrees, use the GetRadians method to convert it to reeadians, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.        ''' </param>
  <returns>
  The tangent of the given angle.
  </returns>
@@ -1858,6 +1866,7 @@ Converts the given array to a string
  </param>
  <returns>
  The angle (in radians) for the given sine Value.
+ Use the GetDegrees method to convert the angle to degrees, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Math.ArcCos(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -1869,6 +1878,7 @@ Converts the given array to a string
  </param>
  <returns>
  The angle (in radians) for the given cosine Value.
+ Use the GetDegrees method to convert the angle to degrees, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Math.ArcTan(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -1880,6 +1890,7 @@ Converts the given array to a string
  </param>
  <returns>
  The angle (in radians) for the given tangent Value.
+ Use the GetDegrees method to convert the angle to degrees, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.
  </returns>
 </member>
 <member name="M:Microsoft.SmallVisualBasic.Library.Math.GetDegrees(Microsoft.SmallVisualBasic.Library.Primitive)">

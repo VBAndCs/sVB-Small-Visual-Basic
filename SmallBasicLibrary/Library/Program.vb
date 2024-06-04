@@ -19,6 +19,7 @@ Namespace Library
         Public Shared FormNames As List(Of String)
         Public Shared Event ProgramTerminated()
 
+        <HideFromIntellisense>
         Public Shared Sub DoNothing()
             ' To be used as a fake removel hander for events
         End Sub
@@ -131,6 +132,7 @@ Namespace Library
             Interaction.SaveSetting(appName, section, name, value)
         End Sub
 
+        <HideFromIntellisense>
         Public Shared Sub ActivateWindow()
             SmallBasicApplication.BeginInvoke(
                 Sub()

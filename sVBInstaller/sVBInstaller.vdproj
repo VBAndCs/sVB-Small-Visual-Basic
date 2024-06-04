@@ -345,6 +345,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_2400DCC2BD7241A1BBB000BF5D465E5D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_24A5AD711B0E4C7997D583BD37D75E69"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -525,6 +531,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_340DDECCFB354BD8BA98F325CA4CC90C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_34854D37743B4AE9A0497E7417137471"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -586,6 +598,12 @@
         "Entry"
         {
         "MsmKey" = "8:_3AF832DC45084A1ABEEDBBAC145B2075"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3B56F19777804379B5169997624B3006"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -909,6 +927,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_61D2FE7928974655B0058326EB3BCAA5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6347914C81004359889F8FB67C0A9E21"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -993,6 +1017,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_68F26F4886264B238112F317090454A0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6B17A977B61F49BFB35F44FC86121A11"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6B198C2169D64E5589394334FCC85206"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1006,6 +1042,12 @@
         "Entry"
         {
         "MsmKey" = "8:_6BD70CE44CD94D448A3DDE14C326C228"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6C3376F2024D4F70B401FB0E6A47DC30"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1365,6 +1407,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_8D96894DC8DB49A9BBF6057899F18479"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8DFAB0BB8D5C49E8B50038567D5D3AC2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1660,6 +1708,12 @@
         "Entry"
         {
         "MsmKey" = "8:_A2FF5EAF304C451F81277626FD698BF2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A3E35EB03B184C71B120A2E16AEA2BE2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2577,6 +2631,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_F811FF990F084DD2A606CEA4F4F852F3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F8A1453031E84B768B1BF3C095D19891"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2896,9 +2956,9 @@
                 {
                 "Name" = "8:.NET Framework"
                 "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:.NETFramework,Version=v4.5"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.8"
                 "AllowLaterVersions" = "11:FALSE"
-                "InstallUrl" = "8:https://download.microsoft.com/download/B/A/4/BA4A7E71-2906-4B2D-A0E1-80CF16844F5F/dotNetFx45_Full_setup.exe"
+                "InstallUrl" = "8:https://go.microsoft.com/fwlink/?linkid=2088631"
                 }
             }
         }
@@ -4017,6 +4077,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2400DCC2BD7241A1BBB000BF5D465E5D"
+            {
+            "SourcePath" = "8:..\\Samples\\Traffic Lights\\4.mp3"
+            "TargetName" = "8:4.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_5B1A091317BD44ED90D837E6482CD4F4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_24A5AD711B0E4C7997D583BD37D75E69"
             {
             "SourcePath" = "8:..\\Samples\\Color labels\\FrmColors.xaml"
@@ -4617,6 +4697,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_340DDECCFB354BD8BA98F325CA4CC90C"
+            {
+            "SourcePath" = "8:..\\Samples\\Traffic Lights\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_5B1A091317BD44ED90D837E6482CD4F4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_34854D37743B4AE9A0497E7417137471"
             {
             "SourcePath" = "8:..\\Samples\\Spirals\\Form1.sb.gen"
@@ -4814,6 +4914,26 @@
             "TargetName" = "8:form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_69A0102BD2C54D8AB135C911745B619C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3B56F19777804379B5169997624B3006"
+            {
+            "SourcePath" = "8:..\\Samples\\Traffic Lights\\3.mp3"
+            "TargetName" = "8:3.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_5B1A091317BD44ED90D837E6482CD4F4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -5899,6 +6019,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_61D2FE7928974655B0058326EB3BCAA5"
+            {
+            "SourcePath" = "8:..\\Samples\\Stars\\Stars.sb.gen"
+            "TargetName" = "8:Stars.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_7A0732B31C7C4D0DA3DC70268756319C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6347914C81004359889F8FB67C0A9E21"
             {
             "SourcePath" = "8:..\\Samples\\UnitTest Sample\\FrmTests.xaml"
@@ -6179,6 +6319,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_68F26F4886264B238112F317090454A0"
+            {
+            "SourcePath" = "8:..\\Samples\\Stars\\Stars.xaml"
+            "TargetName" = "8:Stars.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_7A0732B31C7C4D0DA3DC70268756319C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6B17A977B61F49BFB35F44FC86121A11"
+            {
+            "SourcePath" = "8:..\\Samples\\Traffic Lights\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_5B1A091317BD44ED90D837E6482CD4F4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6B198C2169D64E5589394334FCC85206"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\Lib\\Dialogs\\FrmInput.xaml"
@@ -6225,6 +6405,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_B5837058EC9749E49BDDC16AAD625673"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6C3376F2024D4F70B401FB0E6A47DC30"
+            {
+            "SourcePath" = "8:..\\Samples\\Traffic Lights\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_5B1A091317BD44ED90D837E6482CD4F4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7452,6 +7652,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8D96894DC8DB49A9BBF6057899F18479"
+            {
+            "SourcePath" = "8:..\\Samples\\Traffic Lights\\2.mp3"
+            "TargetName" = "8:2.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_5B1A091317BD44ED90D837E6482CD4F4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8DFAB0BB8D5C49E8B50038567D5D3AC2"
             {
             "SourcePath" = "8:..\\Samples\\Show Directory Contents\\Form1.sb.gen"
@@ -8300,6 +8520,26 @@
             "TargetName" = "8:ComboBox.png"
             "Tag" = "8:"
             "Folder" = "8:_8BD34D234F094C07B3CD431D3C229EAA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A3E35EB03B184C71B120A2E16AEA2BE2"
+            {
+            "SourcePath" = "8:..\\Samples\\Traffic Lights\\1.mp3"
+            "TargetName" = "8:1.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_5B1A091317BD44ED90D837E6482CD4F4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11318,6 +11558,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F811FF990F084DD2A606CEA4F4F852F3"
+            {
+            "SourcePath" = "8:..\\Samples\\Stars\\Stars.sb"
+            "TargetName" = "8:Stars.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_7A0732B31C7C4D0DA3DC70268756319C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F8A1453031E84B768B1BF3C095D19891"
             {
             "SourcePath" = "8:..\\sVB Tests\\FrmTestResults.sb.gen"
@@ -12024,6 +12284,17 @@
                                 {
                                 }
                             }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_5B1A091317BD44ED90D837E6482CD4F4"
+                            {
+                            "Name" = "8:Traffic Lights"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_84B309CC8AAB46FDB973AAAB094A9FD3"
+                                "Folders"
+                                {
+                                }
+                            }
                             "{9EF0B969-E518-4E46-987F-47570745A589}:_5C74212CDE5B43CAAF3EC1C7A8068862"
                             {
                             "Name" = "8:Jerry3"
@@ -12196,6 +12467,17 @@
                             "Condition" = "8:"
                             "Transitive" = "11:FALSE"
                             "Property" = "8:_9520C070F4B34007B45CCE685D2F2EDB"
+                                "Folders"
+                                {
+                                }
+                            }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_7A0732B31C7C4D0DA3DC70268756319C"
+                            {
+                            "Name" = "8:Stars"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_DEBBB11A7EE94D1BB8268E390126F7C7"
                                 "Folders"
                                 {
                                 }
@@ -12781,7 +13063,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.0.6"
+        "ProductName" = "8:Small Visual Basic 3.0.7"
         "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
         "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -12975,7 +13257,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.0.6"
+            "Name" = "8:sVB 3.0.7"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -13017,7 +13299,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.0.6"
+            "Name" = "8:sVB 3.0.7"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -13045,7 +13327,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.0.6"
+            "Name" = "8:sVB 3.0.7"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

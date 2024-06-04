@@ -182,7 +182,8 @@ Namespace Microsoft.SmallVisualBasic.Completion
 
         Public Shared Sub FillSubroutines(
                        bag As CompletionBag,
-                       Optional functionsOnly As Boolean = False
+                       Optional functionsOnly As Boolean = False,
+                       Optional addMsgBox As Boolean = True
                    )
 
             If DoNotAddGlobals Then Return
@@ -203,12 +204,14 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 })
             Next
 
-            bag.CompletionItems.Add(New CompletionItem() With {
-                .Key = "msgbox",
-                .DisplayName = "MsgBox",
-                .ReplacementText = "MsgBox",
-                .ItemType = CompletionItemType.SubroutineName
-            })
+            If addMsgBox Then
+                bag.CompletionItems.Add(New CompletionItem() With {
+                    .Key = "msgbox",
+                    .DisplayName = "MsgBox",
+                    .ReplacementText = "MsgBox",
+                    .ItemType = CompletionItemType.SubroutineName
+                })
+            End If
         End Sub
 
 

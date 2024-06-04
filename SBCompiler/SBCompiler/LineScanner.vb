@@ -595,7 +595,8 @@ Namespace Microsoft.SmallVisualBasic
                          TokenType.If, TokenType.Step, TokenType.Stop,
                          TokenType.Sub, TokenType.Function, TokenType.Colon,
                          TokenType.Then, TokenType.To, TokenType.In, TokenType.While,
-                         TokenType.True, TokenType.False, TokenType.Nothing, TokenType.LineContinuity
+                         TokenType.True, TokenType.False, TokenType.Nothing,
+                         TokenType.LineContinuity
                     Return ParseType.Keyword
 
                 Case TokenType.And, TokenType.Or,

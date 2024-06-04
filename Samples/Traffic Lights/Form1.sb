@@ -1,0 +1,48 @@
+HornSound = Sound.Load("1.mp3")
+SrartEngineSound = Sound.Load("2.mp3")
+SlowdownSound = Sound.Load("3.mp3")
+MovingSound = Sound.Load("4.mp3")
+WasMoving = False
+
+' ------------------------------------------------
+Sub RdoStop_OnCheck()
+   If RdoStop.Checked Then
+      RedLight.BackColor = Colors.Red
+      HornSound.Play()
+      WasMoving = False
+   Else
+      RedLight.BackColor = Colors.DarkRed
+      HornSound.Stop()
+   EndIf
+EndSub
+
+
+' ------------------------------------------------
+Sub RdoReady_OnCheck()
+   If RdoReady.Checked Then
+      YelloLight.BackColor = Colors.LightYellow
+      If WasMoving Then
+         SlowdownSound.Play()
+         WasMoving = False
+      Else
+         SrartEngineSound.Play()
+      EndIf
+   Else
+      YelloLight.BackColor = "#FF858504"
+      SlowdownSound.Stop()
+      SrartEngineSound.Stop()
+   EndIf
+EndSub
+
+
+' ------------------------------------------------
+Sub RdoGo_OnCheck()
+   If RdoGo.Checked Then
+      GreenLight.BackColor = Colors.LightGreen
+      MovingSound.Play()
+      WasMoving = True
+   Else
+      GreenLight.BackColor = Colors.DarkGreen
+      MovingSound.Stop()
+   EndIf
+EndSub

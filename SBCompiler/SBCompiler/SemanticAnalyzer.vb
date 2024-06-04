@@ -377,10 +377,11 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub AnalyzeSubroutineStatement(subroutine As SubroutineStatement)
-
-            If subroutine.Name.Text = "_" Then
-                _parser.AddError(subroutine.Name, "_ is not a valid name")
-            End If
+            Dim name = subroutine.Name.LCaseText
+            Select Case name
+                Case "_", "msgbox"
+                    _parser.AddError(subroutine.Name, $"{name} is not a valid name")
+            End Select
 
             Select Case subroutine.StartToken.Type
                 Case TokenType.Sub

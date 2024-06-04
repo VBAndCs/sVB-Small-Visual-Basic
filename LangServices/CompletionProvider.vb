@@ -1581,7 +1581,7 @@ LineShow:
 
                 Case "Sub"
                     bag.IsHandler = True
-                    CompletionHelper.FillSubroutines(bag)
+                    CompletionHelper.FillSubroutines(bag, False, False)
                     bag.CompletionItems.Add(New CompletionItem() With {
                         .DisplayName = "Nothing",
                         .ItemType = CompletionItemType.Keyword,

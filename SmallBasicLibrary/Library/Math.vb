@@ -98,17 +98,29 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Indicates whither or not to consider angle values to be in radian when sent to Sin, Cos and Tan or returned from ArcSin, ArcCos, and ArcTan.
+        ''' The default value is True, but you can set if to False to use degress instead.
+        ''' Note that this property will also affect how the Evaluator works.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property UseRadianAngles As Primitive = True
+
+        ''' <summary>
         ''' Gets the cosine of the given angle in radians.
         ''' </summary>
         ''' <param name="angle">
         ''' The angle whose cosine is needed (in radians).
-        ''' </param>
+        ''' If you have the angle in degrees, use the GetRadians method to convert it to reeadians, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.        ''' </param>
         ''' <returns>
         ''' The cosine of the given angle.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Cos(angle As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Cos(angle))
+            If UseRadianAngles Then
+                Return DoubleToDecimal(System.Math.Cos(angle))
+            Else
+                Return DoubleToDecimal(System.Math.Cos(CDbl(angle) * System.Math.PI / 180.0))
+            End If
         End Function
 
         ''' <summary>
@@ -116,13 +128,18 @@ Namespace Library
         ''' </summary>
         ''' <param name="angle">
         ''' The angle whose sine is needed (in radians)
+        ''' If you have the angle in degrees, use the GetRadians method to convert it to reeadians, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.
         ''' </param>
         ''' <returns>
         ''' The sine of the given angle
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Sin(angle As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Sin(angle))
+            If UseRadianAngles Then
+                Return DoubleToDecimal(System.Math.Sin(angle))
+            Else
+                Return DoubleToDecimal(System.Math.Sin(CDbl(angle) * System.Math.PI / 180.0))
+            End If
         End Function
 
         ''' <summary>
@@ -130,13 +147,17 @@ Namespace Library
         ''' </summary>
         ''' <param name="angle">
         ''' The angle whose tangent is needed (in radians).
-        ''' </param>
+        ''' If you have the angle in degrees, use the GetRadians method to convert it to reeadians, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.        ''' </param>
         ''' <returns>
         ''' The tangent of the given angle.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Tan(angle As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Tan(angle))
+            If UseRadianAngles Then
+                Return DoubleToDecimal(System.Math.Tan(angle))
+            Else
+                Return DoubleToDecimal(System.Math.Tan(CDbl(angle) * System.Math.PI / 180.0))
+            End If
         End Function
 
         ''' <summary>
@@ -147,10 +168,15 @@ Namespace Library
         ''' </param>
         ''' <returns>
         ''' The angle (in radians) for the given sine Value.
+        ''' Use the GetDegrees method to convert the angle to degrees, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ArcSin(sinValue As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Asin(sinValue))
+            If UseRadianAngles Then
+                Return DoubleToDecimal(System.Math.Asin(sinValue))
+            Else
+                Return DoubleToDecimal(System.Math.Asin(sinValue) * 180.0 / System.Math.PI)
+            End If
         End Function
 
         ''' <summary>
@@ -161,10 +187,15 @@ Namespace Library
         ''' </param>
         ''' <returns>
         ''' The angle (in radians) for the given cosine Value.
+        ''' Use the GetDegrees method to convert the angle to degrees, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ArcCos(cosValue As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Acos(cosValue))
+            If UseRadianAngles Then
+                Return DoubleToDecimal(System.Math.Acos(cosValue))
+            Else
+                Return DoubleToDecimal(System.Math.Acos(cosValue) * 180.0 / System.Math.PI)
+            End If
         End Function
 
         ''' <summary>
@@ -175,10 +206,15 @@ Namespace Library
         ''' </param>
         ''' <returns>
         ''' The angle (in radians) for the given tangent Value.
+        ''' Use the GetDegrees method to convert the angle to degrees, or set the UseRadianAngles property fo False to force all trigonometric functions to work with angles in degrees.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ArcTan(tanValue As Primitive) As Primitive
-            Return DoubleToDecimal(System.Math.Atan(tanValue))
+            If UseRadianAngles Then
+                Return DoubleToDecimal(System.Math.Atan(tanValue))
+            Else
+                Return DoubleToDecimal(System.Math.Atan(tanValue) * 180.0 / System.Math.PI)
+            End If
         End Function
 
         ''' <summary>
@@ -350,7 +386,7 @@ Namespace Library
             ElseIf Double.IsNegativeInfinity(number) Then
                 Return New Primitive(Decimal.MinValue)
             Else
-                Return New Primitive(number)
+                Return New Primitive(System.Math.Round(number, 10))
             End If
         End Function
 

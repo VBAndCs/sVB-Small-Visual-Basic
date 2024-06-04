@@ -969,6 +969,8 @@ Public Class Designer
     End Sub
 
     Private Sub UndoRedo_AfterInsertItem(item As Object)
+        If diagramInfo.Count = 0 OrElse Not diagramInfo.ContainsKey(item) Then Return
+
         Dim oldInfo = diagramInfo(item)
         Dim oldListItem = oldInfo.Item1
         Dim oldPanel = oldInfo.Item2
