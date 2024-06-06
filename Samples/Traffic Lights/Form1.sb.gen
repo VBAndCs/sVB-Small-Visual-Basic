@@ -19,7 +19,7 @@ Rectangle2 = "form1.rectangle2"
 RdoStop = "form1.rdostop"
 RdoReady = "form1.rdoready"
 RdoGo = "form1.rdogo"
-_path = Program.Directory + "\Form1.xaml"
+_path = Program.Directory + "\form1.xaml"
 Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 '#Events{

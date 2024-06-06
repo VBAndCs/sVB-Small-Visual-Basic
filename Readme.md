@@ -1,4 +1,7 @@
 # Small Visual Basic 3.0:
+
+* You can download the sVB installer from the [VS marketplace](https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller).
+
 <p align="center">
   <img src="https://modernvbnet.gallerycdn.vsassets.io/extensions/modernvbnet/svbinstaller/3.0/1714546030343/image.png"/>
 </p>
@@ -9,8 +12,6 @@ Small Visual Basic is the visual version of Small Basic, and the small version o
 <p align="center">
   <img src="https://modernvbnet.gallerycdn.vsassets.io/extensions/modernvbnet/svbinstaller/3.0/1714546030343/image__2.png"/>
 </p>
-
-* You can download the sVB installer from the [VS marketplace](https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller).
 
 * After installing Small Visual Basic, you can double-click the "sVB samples" icon on the desktop to open the sVB samples folder, which is installed on your documents folder with more than 90 samples, including the Ball, Cars, Tetris, Tom and Jerry games, and many other interesting samples.
 

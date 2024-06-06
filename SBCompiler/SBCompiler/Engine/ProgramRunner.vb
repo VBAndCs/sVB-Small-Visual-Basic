@@ -479,8 +479,8 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
                 PreviousLineNumber = CurrentLineNumber
                 Dim result As Statement
-                'Try
-                result = st.Execute(Me)
+                Try
+                    result = st.Execute(Me)
                     Exception = Library.Program.Exception
                     If Exception IsNot Nothing Then
                         runnerThread = Thread.CurrentThread
@@ -489,15 +489,15 @@ Namespace Microsoft.SmallVisualBasic.Engine
                         Return New EndDebugging()
                     End If
 
-                    'Catch ex As Exception
-                    '    Exception = ex
-                    '    runnerThread = Thread.CurrentThread
-                    '    Pause(isError:=True)
-                    '    Library.Program.End()
-                    '    Return New EndDebugging()
-                    'End Try
+                Catch ex As Exception
+                    Exception = ex
+                    runnerThread = Thread.CurrentThread
+                    Pause(isError:=True)
+                    Library.Program.End()
+                    Return New EndDebugging()
+                End Try
 
-                    If Depth = 0 Then
+                If Depth = 0 Then
                     If DebuggerCommand = DebuggerCommand.ShortStepOver Then
                         StepAround = False
                     ElseIf DebuggerCommand = DebuggerCommand.ShortStepOut Then

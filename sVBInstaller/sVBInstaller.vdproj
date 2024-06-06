@@ -4305,7 +4305,7 @@
             "Folder" = "8:_8C83B4CF699C4306ABE1F621071665BE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -8622,7 +8622,7 @@
             "Folder" = "8:_8C83B4CF699C4306ABE1F621071665BE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -9304,7 +9304,7 @@
             "Folder" = "8:_8C83B4CF699C4306ABE1F621071665BE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -13063,7 +13063,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.0.7"
+        "ProductName" = "8:Small Visual Basic 3.0.7.1"
         "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
         "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -13257,7 +13257,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.0.7"
+            "Name" = "8:sVB 3.0.7.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -13299,7 +13299,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.0.7"
+            "Name" = "8:sVB 3.0.7.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -13327,7 +13327,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.0.7"
+            "Name" = "8:sVB 3.0.7.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -13852,7 +13852,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C1A41205CDA4479E9BADF2A99BD8D2D9"
             {
-            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Debug\\sVB.exe"
+            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Release\\sVB.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"
