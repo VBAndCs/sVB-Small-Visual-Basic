@@ -15,7 +15,7 @@ Namespace Microsoft.Nautilus.Text.Operations
 
         Public Overrides ReadOnly Property CanRedo As Boolean
             Get
-                Return Not _canUndo
+                Return Not _CanUndo
             End Get
         End Property
 
@@ -47,7 +47,7 @@ Namespace Microsoft.Nautilus.Text.Operations
             _textView.Caret.MoveTo(_newCaretCharacterIndex, _newCaretPlacement)
             _textView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_textView.TextSnapshot, _newSelectionSpan)
             _textView.Caret.EnsureVisible()
-            _canUndo = True
+            _CanUndo = True
         End Sub
 
         Public Overrides Sub Undo()

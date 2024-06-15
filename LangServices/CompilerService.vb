@@ -164,6 +164,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
                                 indentationLevel += 1
                                 AddThen(snapshot, start, textEdit, lineNum, line, tokens)
+
                             Case TokenType.For, TokenType.ForEach, TokenType.While
                                 AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
                                 indentationLevel += 1
@@ -246,12 +247,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     ElseIf lineStart Then
                                         subLineOffset = If(indentStack.Count = 0, Math.Max(0, subLineOffset - 1), Math.Max(0, indentStack.Peek() - 1))
                                         AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
+                                    Else
+                                        subLineOffset = Math.Max(0, subLineOffset - 1)
                                     End If
 
                                 Case TokenType.Concatenation, TokenType.Addition,
-                                    TokenType.Subtraction, TokenType.Multiplication,
-                                    TokenType.Division, TokenType.Mod,
-                                    TokenType.Or, TokenType.And
+                                         TokenType.Subtraction, TokenType.Multiplication,
+                                         TokenType.Division, TokenType.Mod,
+                                         TokenType.Or, TokenType.And
                                     If lineStart Then
                                         subLineOffset = Math.Max(1, subLineOffset)
                                         AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
@@ -287,9 +290,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     End If
 
                                 Case TokenType.Addition,
-                                 TokenType.Subtraction, TokenType.Multiplication,
-                                 TokenType.Division, TokenType.Mod,
-                                 TokenType.And, TokenType.Or, TokenType.LineContinuity
+                                         TokenType.Subtraction, TokenType.Multiplication,
+                                         TokenType.Division, TokenType.Mod,
+                                         TokenType.And, TokenType.Or, TokenType.LineContinuity
                                     subLineOffset = Math.Max(1, subLineOffset)
 
                                 Case TokenType.EqualsTo
@@ -351,9 +354,22 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
         End Sub
 
-        Private Sub AddThen(snapshot As ITextSnapshot, start As Integer, textEdit As ITextEdit, lineNum As Integer, line As ITextSnapshotLine, tokens As List(Of Token))
-            If tokens.Count > 1 Then
-                Dim lastToken = tokens(tokens.Count - 1)
+        Private Sub AddThen(
+                           snapshot As ITextSnapshot,
+                           start As Integer,
+                           textEdit As ITextEdit,
+                           lineNum As Integer,
+                           line As ITextSnapshotLine,
+                           tokens As List(Of Token))
+
+            Dim n = tokens.Count
+            If n > 1 Then
+                Dim lastToken = tokens(n - 1)
+                If lastToken.Type = TokenType.Comment Then
+                    If n = 2 Then Return
+                    lastToken = tokens(n - 2)
+                End If
+
                 If Not lastToken.IsIllegal AndAlso lastToken.Type <> TokenType.Then Then
                     Dim thenLine = If(lastToken.Line = lineNum, line, snapshot.GetLineFromLineNumber(lastToken.Line + start))
                     textEdit.Insert(thenLine.Start + lastToken.EndColumn, " Then")

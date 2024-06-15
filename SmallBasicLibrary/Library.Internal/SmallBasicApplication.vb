@@ -118,7 +118,11 @@ Namespace Library.Internal
 
         Friend Shared Sub BeginInvoke(invokeDelegate As InvokeHelper)
             _pendingOperations += 1
-            _Dispatcher.BeginInvoke(DispatcherPriority.Render, invokeDelegate)
+            Try
+                _Dispatcher.BeginInvoke(DispatcherPriority.Render, invokeDelegate)
+            Catch
+            End Try
+
             If _pendingOperations > 40 Then
                 ClearDispatcherQueue()
                 _pendingOperations = 0
@@ -201,11 +205,18 @@ Namespace Library.Internal
         End Sub
 
         Friend Shared Sub Invoke(invokeDelegate As InvokeHelper)
-            _Dispatcher.Invoke(DispatcherPriority.Render, invokeDelegate)
+            Try
+                _Dispatcher.Invoke(DispatcherPriority.Render, invokeDelegate)
+            Catch ex As Exception
+            End Try
         End Sub
 
         Friend Shared Function InvokeWithReturn(invokeDelegate As InvokeHelperWithReturn) As Object
-            Return _Dispatcher.Invoke(DispatcherPriority.Render, invokeDelegate)
+            Try
+                Return _Dispatcher.Invoke(DispatcherPriority.Render, invokeDelegate)
+            Catch
+                Return ""
+            End Try
         End Function
 
         Friend Shared Sub ClearDispatcherQueue()

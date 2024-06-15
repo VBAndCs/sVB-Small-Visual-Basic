@@ -51,11 +51,13 @@ Namespace Microsoft.Nautilus.Text.Operations
             If Not CanUndo Then
                 Throw New InvalidOperationException("Cannot undo this change.")
             End If
-
-            _textView.Caret.MoveTo(_oldCaretCharacterIndex, _oldCaretPlacement)
-            _textView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_textView.TextSnapshot, _oldSelectionSpan)
-            _textView.Caret.EnsureVisible()
-            _canUndo = False
+            Try
+                _textView.Caret.MoveTo(_oldCaretCharacterIndex, _oldCaretPlacement)
+                _textView.Selection.ActiveSnapshotSpan = New SnapshotSpan(_textView.TextSnapshot, _oldSelectionSpan)
+                _textView.Caret.EnsureVisible()
+                _CanUndo = False
+            Catch
+            End Try
             EditorTrace.TraceBeforeTextBufferChangeUndoEnd()
         End Sub
 

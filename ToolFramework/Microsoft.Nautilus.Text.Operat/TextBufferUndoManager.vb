@@ -16,6 +16,18 @@ Namespace Microsoft.Nautilus.Text.Operations
             End Get
         End Property
 
+        Dim _IsActive As Boolean
+        Public Property IsActive As Boolean Implements ITextBufferUndoManager.IsActive
+            Get
+                Return _IsActive
+            End Get
+
+            Set(value As Boolean)
+                _IsActive = value
+                _undoHistory.State = If(value, UndoHistoryState.Idle, UndoHistoryState.Inactive)
+            End Set
+        End Property
+
         Public Sub New(textBuffer As ITextBuffer, undoHistoryRegistry As IUndoHistoryRegistry)
             If textBuffer Is Nothing Then
                 Throw New ArgumentNullException("textBuffer")
@@ -34,7 +46,7 @@ Namespace Microsoft.Nautilus.Text.Operations
         End Sub
 
         Private Sub TextBufferChanged(sender As Object, e As TextChangedEventArgs)
-            If _undoHistory.State <> 0 Then Return
+            If _undoHistory.State <> UndoHistoryState.Idle Then Return
 
             Using undoTransaction = _undoHistory.CreateTransaction("Text Buffer Change")
                 For Each change In e.Changes

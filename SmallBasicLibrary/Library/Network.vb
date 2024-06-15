@@ -82,16 +82,18 @@ Namespace Library
         Friend Shared Function GetLocalFile(fileNameOrUrl As Primitive) As Primitive
             If fileNameOrUrl.IsEmpty Then Return fileNameOrUrl
 
+            Dim fileName = Environment.ExpandEnvironmentVariables(fileNameOrUrl)
             Dim result As Uri = Nothing
-            If Uri.TryCreate(fileNameOrUrl, UriKind.RelativeOrAbsolute, result) AndAlso result.IsAbsoluteUri Then
+
+            If Uri.TryCreate(fileName, UriKind.RelativeOrAbsolute, result) AndAlso result.IsAbsoluteUri Then
                 If result.Scheme.ToLower(CultureInfo.InvariantCulture) = "file" Then
-                    Return GetFullPath(fileNameOrUrl)
+                    Return GetFullPath(fileName)
                 End If
 
-                Return DownloadFile(fileNameOrUrl)
+                Return DownloadFile(fileName)
             End If
 
-            Return GetFullPath(fileNameOrUrl)
+            Return GetFullPath(fileName)
         End Function
 
         Shared Function GetFullPath(localFileName As String) As String

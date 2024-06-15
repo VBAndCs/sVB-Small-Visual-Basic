@@ -19,7 +19,7 @@ Namespace Microsoft.Nautilus.Core.Undo
 
         Public MustOverride ReadOnly Property CurrentTransaction As UndoTransaction
 
-        Public MustOverride ReadOnly Property State As UndoHistoryState
+        Public MustOverride Property State As UndoHistoryState
 
         Public Event UndoRedoHappened As EventHandler(Of UndoRedoEventArgs)
 

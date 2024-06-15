@@ -491,6 +491,33 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
+        ''' Gets or sets the padding of the control, which is the internal space between the control edges and its content.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetPadding(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetPadding = System.Math.Round(GetControl(controlName).Padding.Left, 1, MidpointRounding.AwayFromZero)
+                    Catch ex As Exception
+                        ReportError(controlName, "Padding", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetPadding(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        GetControl(controlName).Padding = New Thickness(CDbl(value))
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "Padding", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
         ''' Changes the witdth of the control to fit its content width.
         ''' This is a one time change, and will not make the control width auto-szied.
         ''' If you want to make the width auto-sized, set the Width property to -1.

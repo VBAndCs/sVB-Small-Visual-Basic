@@ -1,0 +1,29 @@
+
+' ------------------------------------------------
+Function Test_AppendContents()
+   filePath = File.GetTemporaryFilePath()
+   File.AppendContents(filePath, "Test 1")
+   File.AppendContents(filePath, "Test 2")
+   
+   Return UnitTest.AssertEqual(
+      File.ReadContents(filePath),
+      "Test 1Test 2",
+      "File.AppendContents"
+   )
+EndFunction
+
+
+' ------------------------------------------------
+Function Test_AppendLines()
+   filePath = File.GetTemporaryFilePath()
+   File.AppendLines(filePath, "Test 1")
+   File.AppendLines(filePath, {"Test 2", "Test 3"})
+   
+   Return UnitTest.AssertEqual(
+      File.ReadContents(filePath),
+      "Test 1" & Text.NewLine &
+      "Test 2" & Text.NewLine &
+      "Test 3" & Text.NewLine,
+      "File.AppendLines"
+   )
+EndFunction

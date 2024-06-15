@@ -89,12 +89,13 @@ Namespace WinForms
                             Return
                         End If
 
-                        If Not IO.Path.IsPathRooted(imageFile) Then
-                            imageFile = IO.Path.Combine(Program.Directory, imageFile)
+                        Dim imgFile = Environment.ExpandEnvironmentVariables(imageFile)
+                        If Not IO.Path.IsPathRooted(imgFile) Then
+                            imgFile = IO.Path.Combine(Program.Directory, imgFile)
                         End If
 
                         GetLabel(labelName).Content = New Wpf.Image() With {
-                            .Source = New BitmapImage(New Uri(imageFile))
+                            .Source = New BitmapImage(New Uri(imgFile))
                         }
 
                     Catch ex As Exception

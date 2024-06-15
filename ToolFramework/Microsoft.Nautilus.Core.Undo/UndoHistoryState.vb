@@ -3,5 +3,6 @@ Namespace Microsoft.Nautilus.Core.Undo
         Idle
         Undoing
         Redoing
+        Inactive
     End Enum
 End Namespace

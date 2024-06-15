@@ -1963,7 +1963,7 @@ Namespace Microsoft.SmallVisualBasic
                         PopError.IsOpen = False
                     End If
                 Case Key.F4
-                    formDesigner.ShowProperties()
+                    If tabDesigner.IsSelected Then formDesigner.ShowProperties()
             End Select
         End Sub
 

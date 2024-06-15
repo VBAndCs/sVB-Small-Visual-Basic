@@ -3258,6 +3258,19 @@
       <param name="alignment">"Left", "Center" or "Right"</param>
       <returns>"SUCCESS" or "FAILED".</returns>
     </member>
+    <member name="M:LitDev.LDControls.DataViewFont(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            Set a font for dataview.  Set this immediately after the dataview is created.
+            </summary>
+      <param name="shapeName">The dataview control.</param>
+      <param name="location">Loaction for font "rows", "header" or "" for both.</param>
+      <param name="fontFamily">The font family name (default "").</param>
+      <param name="fontSize">The font size (default "").</param>
+      <param name="fontItallic">The font is itallic ("True" or "False").</param>
+      <param name="fontBold">The font is bold ("True" or "False").</param>
+      <param name="foreColour">The font colour (default "").</param>
+      <param name="backColour">The background colour (default "").</param>
+    </member>
     <member name="M:LitDev.LDControls.SetButtonStyle(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
       <summary>
             Modify the style of a button.
@@ -3701,9 +3714,24 @@
     <member name="M:LitDev.LDCall.CallInclude(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
       <summary>
             Call a method in an included pre-compiled file.
+            All main program variables are shared with the called subroutine.
             </summary>
       <param name="include">The include file name returned by Include method.</param>
       <param name="method">The subroutine name to call in the included exe.</param>
+      <returns>"SUCCESS" or "FAILED".</returns>
+    </member>
+    <member name="M:LitDev.LDCall.CallIncludeWithVars(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            Call a method in an included pre-compiled file, specifying dynamic input and output parameters.
+            If both of these are "", then all variables will be copied in and back from this call, which is equivalent to the CallInclude method.
+            Unset variable values in the included subroutine persist between calls.
+            </summary>
+      <param name="include">The include file name returned by Include method.</param>
+      <param name="method">The subroutine name to call in the included exe.</param>
+      <param name="input">An array of variable names that will be copied to the subroutine.
+            If this is "", then all variables will be copied to the subroutine.</param>
+      <param name="output">An array of variable names that will be copied back from the subroutine.
+            If this is "", then the same input variables will be copied back from the subroutine.</param>
       <returns>"SUCCESS" or "FAILED".</returns>
     </member>
     <member name="M:LitDev.LDCall.Compile(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -4463,6 +4491,30 @@
             </summary>
       <param name="shapeName">The 3DView object.</param>
       <param name="geometryName">The geometry object.</param>
+    </member>
+    <member name="M:LitDev.LD3DView.GetOriginPosition(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            Get the transformed (current) position of the origin (0,0,0) point when created from an existing geometry.
+            </summary>
+      <param name="shapeName">The 3DView object.</param>
+      <param name="geometryName">The geometry object.</param>
+      <returns> An array of the transformed position or "FAILED".
+            array[1] = X (Xorigin)
+            array[2] = Y (Yorigin)
+            array[3] = Z (Zorigin)
+            </returns>
+    </member>
+    <member name="M:LitDev.LD3DView.GetOffset(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            Get the transformed offset (translation) position of an existing geometry.
+            </summary>
+      <param name="shapeName">The 3DView object.</param>
+      <param name="geometryName">The geometry object.</param>
+      <returns> An array of the offset position or "FAILED".
+            array[1] = X (Xoffset)
+            array[2] = Y (Yoffset)
+            array[3] = Z (Zoffset)
+            </returns>
     </member>
     <member name="P:LitDev.LD3DView.SpecularExponent">
       <summary>
@@ -6066,6 +6118,36 @@
       <param name="fastString">A fast string object.</param>
       <returns>The current fast string text.</returns>
     </member>
+    <member name="P:LitDev.LDText.LF">
+      <summary>
+            Get the line feed (newline) character \n
+            </summary>
+    </member>
+    <member name="P:LitDev.LDText.CR">
+      <summary>
+            Get the carriage return character \r
+            </summary>
+    </member>
+    <member name="P:LitDev.LDText.SQ">
+      <summary>
+            Get the single quote character '
+            </summary>
+    </member>
+    <member name="P:LitDev.LDText.DQ">
+      <summary>
+            Get the double quote character "
+            </summary>
+    </member>
+    <member name="P:LitDev.LDText.BS">
+      <summary>
+            Get the back space character
+            </summary>
+    </member>
+    <member name="P:LitDev.LDText.TAB">
+      <summary>
+            Get the back tab character \t
+            </summary>
+    </member>
     <member name="T:LitDev.LDSound">
       <summary>
             A Sound Recorder.  A microphone (may be internal) is required.
@@ -6402,14 +6484,19 @@
     </member>
     <member name="M:LitDev.LDTextWindow.Hide">
       <summary>
-            Hide the TextWindow.
-            Replacement for standard method that may fail (do not mix these methods).
+            Completely hide the TextWindow.
+            Replacement for standard method that may fail if window manually changed by the user.
+            </summary>
+    </member>
+    <member name="M:LitDev.LDTextWindow.Minimise">
+      <summary>
+            Minimise the TextWindow.
             </summary>
     </member>
     <member name="M:LitDev.LDTextWindow.Show">
       <summary>
             Show the TextWindow and give it focus.
-            Replacement for standard method that may fail (do not mix these methods).
+            Replacement for standard method that may fail  if window manually changed by the user.
             </summary>
     </member>
     <member name="M:LitDev.LDTextWindow.Capture(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -6466,11 +6553,23 @@
             Last key pressed or released.
             </summary>
     </member>
+    <member name="P:LitDev.LDTextWindow.UpdateShowHide">
+      <summary>
+            Also update internal state when using Hide and Minimise methods, "True" (default) or "False".
+            If the internal state is updated as hidden or minimised, then methods like Read will automatically bring the window into focus.
+            </summary>
+    </member>
     <member name="P:LitDev.LDTextWindow.Encoding">
       <summary>
             Set extended encoding for the TextWindow.
             Allowed values are:
             "ASCII" (default), "Unicode", "UTF7", "UTF8"
+            </summary>
+    </member>
+    <member name="E:LitDev.LDTextWindow.Exit">
+      <summary>
+            Event when TextWindow is closing.
+            You can perform any final actions here.
             </summary>
     </member>
     <member name="E:LitDev.LDTextWindow.KeyDown">
@@ -8423,6 +8522,14 @@
       <param name="title">Title for the dialog.</param>
       <returns>"Yes", "No" or "Cancel"</returns>
     </member>
+    <member name="M:LitDev.LDDialogs.InputBox(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            A dialog asking the user to enter some text.
+            </summary>
+      <param name="prompt">A prompt decribing the input expected.</param>
+      <param name="title">A title for the input box.</param>
+      <returns>The test inpuut by the user.</returns>
+    </member>
     <member name="P:LitDev.LDDialogs.LastRightClickMenuItem">
       <summary>
             The index of the last right click context menu item selected.
@@ -10289,13 +10396,13 @@
             The left coordinate of the universe (default -100).
             </param>
       <param name="maxX">
-            The right coordinate of the universe (default 200).
+            The right coordinate of the universe (default 300).
             </param>
       <param name="minY">
             The top coordinate of the universe (default -100).
             </param>
       <param name="maxY">
-            The bottom coordinate of the universe (default 200).
+            The bottom coordinate of the universe (default 300).
             </param>
       <returns>
             None.
@@ -11735,6 +11842,11 @@
       <param name="y">
             The y co-ordinate of the new position.
             </param>
+    </member>
+    <member name="P:LitDev.LDShapes.TurtleSpeed">
+      <summary>
+            Allow turtle speeds greater than 10, a negative value is close to instant.
+            </summary>
     </member>
     <member name="P:LitDev.LDShapes.OverlapDetail">
       <summary>

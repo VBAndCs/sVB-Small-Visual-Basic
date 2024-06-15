@@ -1,0 +1,59 @@
+
+Timer.Interval = 20
+Timer.Tick = MoveCar
+SpeedX = 5
+SpeedY = -5
+DirTimer = Me.AddTimer("dirTimer", 20)
+DirTimer.OnTick = ChangeDir
+DirTimer.Pause()
+Direction = 0
+
+' ------------------------------------------------
+Sub MoveCar()
+   If Car.Top <= -Car.Height Then
+      Car.Top = Me.Height
+   Else
+      Car.Top = Car.Top + SpeedY
+   EndIf
+EndSub
+
+
+' ------------------------------------------------
+Sub Form3_OnKeyDown()
+   lastKey = Keyboard.LastKey
+   If lastKey = Keys.Escape Then
+      Timer.Pause()
+   ElseIf lastKey = Keys.Enter Then
+      Timer.Resume()
+   ElseIf lastKey = Keys.Left Then
+      Direction = -1
+      DirTimer.Resume()
+   ElseIf lastKey = Keys.Right Then
+      Direction = 1
+      DirTimer.Resume()
+   ElseIf lastKey = Keys.Up Then
+      SpeedY = Math.Min(0, SpeedY - 0.1)
+   ElseIf lastKey = Keys.Down Then
+      SpeedY = Math.Min(0, SpeedY + 0.1)
+   EndIf
+EndSub
+
+
+' ------------------------------------------------
+Sub ChangeDir()
+   Car.Left = Car.Left + SpeedX * Direction
+   If Car.Left < 0 Then
+      Car.Left = 0
+   ElseIf Car.Right > Me.Width Then
+      Car.Right = Me.Width
+   EndIf
+   
+EndSub
+
+
+' ------------------------------------------------
+Sub Form3_OnKeyUp()
+   DirTimer.Pause()
+EndSub
+
+

@@ -45,6 +45,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End Get
 
             Set(value As Boolean)
+                textBufferUndoManager.IsActive = False
                 If value Then
                     If ReadOnlyRegion Is Nothing Then
                         ReadOnlyRegion = TextBuffer.ReadOnlyRegionManager.CreateReadOnlyRegion(
@@ -56,6 +57,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     ReadOnlyRegion.Remove()
                     ReadOnlyRegion = Nothing
                 End If
+                textBufferUndoManager.IsActive = True
             End Set
         End Property
 

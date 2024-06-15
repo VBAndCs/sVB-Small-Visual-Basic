@@ -5048,6 +5048,11 @@ Creates a color from its alpha, red, green, and blue components.
  Setting this property to 0 or a negative value will reset it (no max height).
  </summary>
 </member>
+<member name="M:Microsoft.SmallVisualBasic.WinForms.Control.GetPadding(Microsoft.SmallVisualBasic.Library.Primitive)">
+ <summary>
+ Gets or sets the padding of the control, which is the internal space between the control edges and its content.
+ </summary>
+</member>
 <member name="M:Microsoft.SmallVisualBasic.WinForms.Control.FitContentWidth(Microsoft.SmallVisualBasic.Library.Primitive)">
  <summary>
  Changes the witdth of the control to fit its content width.

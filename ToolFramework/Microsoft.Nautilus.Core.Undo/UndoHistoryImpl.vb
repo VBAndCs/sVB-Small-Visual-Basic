@@ -63,7 +63,7 @@ Namespace Microsoft.Nautilus.Core.Undo
             End Get
         End Property
 
-        Public Overrides ReadOnly Property State As UndoHistoryState
+        Public Overrides Property State As UndoHistoryState
 
         Public Sub New(undoHistoryRegistry As UndoHistoryRegistryImpl)
             _UndoHistoryRegistry = undoHistoryRegistry

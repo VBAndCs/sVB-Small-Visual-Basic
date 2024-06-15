@@ -92,12 +92,18 @@ Namespace Microsoft.Nautilus.Text
             Return list2
         End Function
 
-        Protected Overrides Function CreateReadOnlyRegion(snapshot As ITextSnapshot, span1 As Span, trackingMode As SpanTrackingMode, edgeInsertionMode1 As EdgeInsertionMode) As IReadOnlyRegionHandle
+        Protected Overrides Function CreateReadOnlyRegion(
+                      snapshot As ITextSnapshot,
+                      span As Span,
+                      trackingMode As SpanTrackingMode,
+                      edgeInsertionMode As EdgeInsertionMode
+                  ) As IReadOnlyRegionHandle
+
             If snapshot Is Nothing Then
                 Throw New ArgumentNullException("snapshot")
             End If
 
-            Dim readOnlyRegionHandle As IReadOnlyRegionHandle = New ReadOnlyRegionHandle(snapshot, span1, trackingMode, edgeInsertionMode1, Me)
+            Dim readOnlyRegionHandle As IReadOnlyRegionHandle = New ReadOnlyRegionHandle(snapshot, span, trackingMode, edgeInsertionMode, Me)
             OnReadOnlyRegionCreated(readOnlyRegionHandle)
             Return readOnlyRegionHandle
         End Function

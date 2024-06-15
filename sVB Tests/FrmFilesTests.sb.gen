@@ -1,0 +1,9 @@
+'@Form Hints:
+'#FrmFilesTests{
+'}
+
+Me = "frmfilestests"
+_path = Program.Directory + "\frmfilestests.xaml"
+FrmFilesTests = Forms.LoadForm("FrmFilesTests", _path)
+Form.SetArgsArr(frmfilestests, Stack.PopValue("_frmfilestests_argsArr"))
+Form.Show(Me)

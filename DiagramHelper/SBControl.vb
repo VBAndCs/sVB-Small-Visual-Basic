@@ -8,6 +8,7 @@
         Get
             Return _displayImage
         End Get
+
         Set(value As String)
             _displayImage = IO.Path.GetFileName(value)
             Dim appPath = System.AppDomain.CurrentDomain.BaseDirectory
