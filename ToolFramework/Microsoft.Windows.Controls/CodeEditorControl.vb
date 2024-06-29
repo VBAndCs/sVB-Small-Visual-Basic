@@ -444,7 +444,7 @@ Namespace Microsoft.Windows.Controls
 
         Protected Overrides Sub OnPreviewMouseWheel(e As MouseWheelEventArgs)
             If (Keyboard.Modifiers And ModifierKeys.Control) = ModifierKeys.Control Then
-                Dim n = 1.0 + 0.05 * (CDbl(e.Delta) / 120.0)
+                Dim n = 1.0 + 0.05 * e.Delta / 120.0
                 ScaleFactor *= n
                 e.Handled = True
             End If

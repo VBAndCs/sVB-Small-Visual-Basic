@@ -27,3 +27,19 @@ Function Test_AppendLines()
       "File.AppendLines"
    )
 EndFunction
+
+
+' ------------------------------------------------
+Function Test_WriteAndReadArray()
+   a = {1, 2, 3, 4}
+   path = File.GetTemporaryFilePath()
+   If File.WriteArray(path, a) Then
+      Return UnitTest.AssertEqual(
+         File.ReadArray(path),
+         {1, 2, 3, 4},
+         "File.Write/ReadArray"
+      )
+   Else
+      Return File.LastError
+   EndIf
+EndFunction

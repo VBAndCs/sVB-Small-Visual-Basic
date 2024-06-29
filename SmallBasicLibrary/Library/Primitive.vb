@@ -382,7 +382,13 @@ Namespace Library
         End Property
 
         Public Function LessThan(comparer As Primitive) As Boolean
-            Return AsDecimal() < comparer.AsDecimal()
+            If Me.IsNumber AndAlso comparer.IsNumber Then
+                Return Me.AsDecimal() < comparer.AsDecimal()
+            ElseIf Me.IsArray AndAlso comparer.IsArray Then
+                Return Me._arrayMap?.Count < comparer._arrayMap?.Count()
+            Else
+                Return Me.AsString() < comparer.AsString()
+            End If
         End Function
 
         Public ReadOnly Property IsDate As Boolean
@@ -392,15 +398,33 @@ Namespace Library
         End Property
 
         Public Function GreaterThan(comparer As Primitive) As Boolean
-            Return AsDecimal() > comparer.AsDecimal()
+            If Me.IsNumber AndAlso comparer.IsNumber Then
+                Return Me.AsDecimal() > comparer.AsDecimal()
+            ElseIf Me.IsArray AndAlso comparer.IsArray Then
+                Return Me._arrayMap?.Count > comparer._arrayMap?.Count()
+            Else
+                Return Me.AsString() > comparer.AsString()
+            End If
         End Function
 
         Public Function LessThanOrEqualTo(comparer As Primitive) As Boolean
-            Return AsDecimal() <= comparer.AsDecimal()
+            If Me.IsNumber AndAlso comparer.IsNumber Then
+                Return Me.AsDecimal() <= comparer.AsDecimal()
+            ElseIf Me.IsArray AndAlso comparer.IsArray Then
+                Return Me._arrayMap?.Count <= comparer._arrayMap?.Count()
+            Else
+                Return Me.AsString() <= comparer.AsString()
+            End If
         End Function
 
         Public Function GreaterThanOrEqualTo(comparer As Primitive) As Boolean
-            Return AsDecimal() >= comparer.AsDecimal()
+            If Me.IsNumber AndAlso comparer.IsNumber Then
+                Return Me.AsDecimal() >= comparer.AsDecimal()
+            ElseIf Me.IsArray AndAlso comparer.IsArray Then
+                Return Me._arrayMap?.Count >= comparer._arrayMap?.Count()
+            Else
+                Return Me.AsString() >= comparer.AsString()
+            End If
         End Function
 
         Public Function EqualTo(comparer As Primitive) As Boolean

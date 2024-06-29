@@ -21,6 +21,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_01EC54244903B5505936601F5151B7B8"
+        "OwnerKey" = "8:_FE73082A3E14C910559E8B3867A5E752"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_01EC54244903B5505936601F5151B7B8"
+        "OwnerKey" = "8:_C1A41205CDA4479E9BADF2A99BD8D2D9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_020F7FE33F6543BF9871813C5F82285F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -627,18 +639,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_39CA6ECF1A61901FF8EA751D1A32442C"
-        "OwnerKey" = "8:_FE73082A3E14C910559E8B3867A5E752"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_39CA6ECF1A61901FF8EA751D1A32442C"
-        "OwnerKey" = "8:_C1A41205CDA4479E9BADF2A99BD8D2D9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_39E7E26EC2554C0DB4D4463E72227DD0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -868,6 +868,12 @@
         "Entry"
         {
         "MsmKey" = "8:_5236DF4E940D4E2095DBC44DC86210BA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_537B3CAD87EE4EBA8849AA7C8B7545C5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1287,6 +1293,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7D1A8B172BAD4F5E88709AA261A18EDD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7D6FD27BF5D64657B0CAE02CEB230576"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1504,6 +1516,12 @@
         "Entry"
         {
         "MsmKey" = "8:_8FE7203314DE44D4A6498C8F70DC2B9B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_903E7F629D534CC88DE467DBB02A10CA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2421,6 +2439,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E28A452441CB42ACB48D81C35CFB43E9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E3E95BBC55BE4A568FA2D96E775132A2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2902,6 +2926,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_01EC54244903B5505936601F5151B7B8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_EFABA3207A408F9BEC2D12C700368E84"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2921,12 +2951,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_FBCC5627FCBADC40A8EE7E7FE58CC292"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_39CA6ECF1A61901FF8EA751D1A32442C"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -3042,6 +3066,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_01EC54244903B5505936601F5151B7B8"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:WpfDialogs, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_01EC54244903B5505936601F5151B7B8"
+                    {
+                    "Name" = "8:WpfDialogs.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:WpfDialogs.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_020F7FE33F6543BF9871813C5F82285F"
@@ -5077,37 +5132,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_39CA6ECF1A61901FF8EA751D1A32442C"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WpfDialogs, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_39CA6ECF1A61901FF8EA751D1A32442C"
-                    {
-                    "Name" = "8:WpfDialogs.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:WpfDialogs.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_39E7E26EC2554C0DB4D4463E72227DD0"
             {
             "SourcePath" = "8:..\\Samples\\3DRubicCube\\rubic.png"
@@ -5874,6 +5898,26 @@
             "TargetName" = "8:FrmFormTests.sb"
             "Tag" = "8:"
             "Folder" = "8:_EA348F33E9094A72BF6001D55ABE9B0E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_537B3CAD87EE4EBA8849AA7C8B7545C5"
+            {
+            "SourcePath" = "8:..\\Samples\\Jerry4\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_93DE0CD03C734C2EB8C8DB82E9EA87CC"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7290,6 +7334,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D1A8B172BAD4F5E88709AA261A18EDD"
+            {
+            "SourcePath" = "8:..\\Samples\\Jerry4\\1.png"
+            "TargetName" = "8:1.png"
+            "Tag" = "8:"
+            "Folder" = "8:_93DE0CD03C734C2EB8C8DB82E9EA87CC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D6FD27BF5D64657B0CAE02CEB230576"
             {
             "SourcePath" = "8:..\\Samples\\Simple Calculator 3\\frmCalc.sb"
@@ -8038,6 +8102,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_1BCE2701A96F4094923C0EC0137E314F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_903E7F629D534CC88DE467DBB02A10CA"
+            {
+            "SourcePath" = "8:..\\Samples\\Jerry4\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_93DE0CD03C734C2EB8C8DB82E9EA87CC"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10947,6 +11031,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E28A452441CB42ACB48D81C35CFB43E9"
+            {
+            "SourcePath" = "8:..\\Samples\\Jerry4\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_93DE0CD03C734C2EB8C8DB82E9EA87CC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E3E95BBC55BE4A568FA2D96E775132A2"
             {
             "SourcePath" = "8:..\\Samples\\sVB Notepad\\FrmFind.sb"
@@ -12819,6 +12923,17 @@
                                 {
                                 }
                             }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_93DE0CD03C734C2EB8C8DB82E9EA87CC"
+                            {
+                            "Name" = "8:Jerry4"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_B779F6A480074CDC93C4DB5FC37AB798"
+                                "Folders"
+                                {
+                                }
+                            }
                             "{9EF0B969-E518-4E46-987F-47570745A589}:_987A0190953D4A0FA22F97E257B99D8A"
                             {
                             "Name" = "8:Label Formats"
@@ -13345,7 +13460,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.0.7.4"
+        "ProductName" = "8:Small Visual Basic 3.0.7.5"
         "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
         "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -13539,7 +13654,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.0.7.4"
+            "Name" = "8:sVB 3.0.7.5"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -13581,7 +13696,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.0.7.4"
+            "Name" = "8:sVB 3.0.7.5"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -13609,7 +13724,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.0.7.4"
+            "Name" = "8:sVB 3.0.7.5"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

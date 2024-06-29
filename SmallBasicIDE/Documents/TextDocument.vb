@@ -20,12 +20,14 @@ Imports Microsoft.SmallVisualBasic.LanguageService
 Imports System.Windows
 Imports Microsoft.SmallBasic
 Imports System.Windows.Input
+Imports System.ComponentModel
 
 Namespace Microsoft.SmallVisualBasic.Documents
     Public Class TextDocument
         Inherits FileDocument
         Implements INotifyImport
 
+        Friend Shared ScaleFactor As Double = CDbl(GetSetting("SmallVisualBasic", "User", "ScaleFactor", "1"))
         Private saveMarker As UndoTransactionMarker
         Private _textBuffer As ITextBuffer
         Private textBufferUndoManager As ITextBufferUndoManager
@@ -128,11 +130,12 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     _editorControl = New CodeEditorControl With {.TextBuffer = TextBuffer}
                     AddHandler _editorControl.KeyUp, AddressOf OnKeyUp
                     AddHandler _editorControl.PreviewTextInput, AddressOf OnTextInput
+                    AddHandler _editorControl.PropertyChanged, AddressOf OnPropertyChanged
 
                     App.GlobalDomain.AddComponent(_editorControl)
                     App.GlobalDomain.Bind()
                     _editorControl.HighlightSearchHits = True
-                    _editorControl.ScaleFactor = 1.0
+                    _editorControl.ScaleFactor = ScaleFactor
                     _editorControl.Background = Brushes.Transparent
                     _editorControl.EditorOperations.TabSize = 2
                     _editorControl.IsLineNumberMarginVisible = True
@@ -154,6 +157,15 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Return _editorControl
             End Get
         End Property
+
+        Private Sub OnPropertyChanged(sender As Object, e As PropertyChangedEventArgs)
+            If MdiView Is Nothing Then Return
+
+            If e.PropertyName = NameOf(CodeEditorControl.ScaleFactor) Then
+                MdiView.NumZoom.Value = _editorControl.ScaleFactor * 100
+                ScaleFactor = _editorControl.ScaleFactor
+            End If
+        End Sub
 
         Private Sub ClearBreakpoint()
             If StatementMarkerProvider.Markers.Count > 0 Then
@@ -688,6 +700,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Public Overrides Sub Close()
             RemoveHandler _editorControl.TextView.Caret.PositionChanged, AddressOf OnCaretPositionChanged
             RemoveHandler _editorControl.KeyUp, AddressOf OnKeyUp
+            RemoveHandler _editorControl.PropertyChanged, AddressOf OnPropertyChanged
             RemoveHandler _editorControl.LineNumberMargin.LineBreakpointChanged, AddressOf ToggleBreakpoint
             RemoveHandler _textBuffer.Changed, AddressOf OnTextBufferChanged
             RemoveHandler _undoHistory.UndoRedoHappened, AddressOf UndoRedoHappened

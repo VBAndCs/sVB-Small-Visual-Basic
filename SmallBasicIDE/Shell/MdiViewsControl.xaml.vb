@@ -220,15 +220,11 @@ Namespace Microsoft.SmallVisualBasic.Shell
         End Sub
 
         Private Function FindViewContainingTemplateItem(templateItem As UIElement) As MdiView
-            Dim dependencyObject As DependencyObject = templateItem
+            Dim obj As DependencyObject = templateItem
 
-            While dependencyObject IsNot Nothing
-
-                If TypeOf dependencyObject Is MdiView Then
-                    Return CType(dependencyObject, MdiView)
-                End If
-
-                dependencyObject = VisualTreeHelper.GetParent(dependencyObject)
+            While obj IsNot Nothing
+                If TypeOf obj Is MdiView Then Return CType(obj, MdiView)
+                obj = VisualTreeHelper.GetParent(obj)
             End While
 
             Return Nothing
@@ -560,5 +556,17 @@ Namespace Microsoft.SmallVisualBasic.Shell
             Next
             Return ""
         End Function
+
+        Private Sub NumZoom_ValueChanged(sender As Object, e As RoutedPropertyChangedEventArgs(Of Object))
+            dispatcher.BeginInvoke(
+                 System.Windows.Threading.DispatcherPriority.Background,
+                 Sub()
+                     Me.UpdateLayout()
+                     Dim view As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
+                     If view Is Nothing Then Return
+                     Dim value = If(view.NumZoom.Value, 100)
+                     view.Document.EditorControl.ScaleFactor = value / 100
+                 End Sub)
+        End Sub
     End Class
 End Namespace

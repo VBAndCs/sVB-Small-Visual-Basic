@@ -1328,6 +1328,7 @@ Namespace Microsoft.SmallVisualBasic
             ' Window is closed normally
             SaveSetting("SmallVisualBasic", "Backup", "LastProject", "")
             SaveSetting("SmallVisualBasic", "Backup", "ProccessID", "")
+            SaveSetting("SmallVisualBasic", "User", "ScaleFactor", TextDocument.ScaleFactor.ToString())
             SmallVisualBasic.Library.Program.End()
             SmallVisualBasic.Library.TextWindow.Close()
         End Sub

@@ -1566,6 +1566,8 @@ Namespace WinForms
                 Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
+                        ' Make sure that the angle is normalized
+                        SetAngle(obj, NormalizeAngle(obj.GetValue(AngleProperty)))
                         GraphicsWindow.DoubleAnimateProperty(
                             obj,
                             AngleProperty,

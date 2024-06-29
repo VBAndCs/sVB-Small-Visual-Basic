@@ -309,6 +309,10 @@
       <Project>{b4ac009e-626f-47e8-af2f-9529687df991}</Project>
       <Name>ToolFramework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WpfDialogs\WpfDialogs.vbproj">
+      <Project>{c80161ce-9098-4af6-bcf9-39dd675b444c}</Project>
+      <Name>WpfDialogs</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\NewForm.png" />

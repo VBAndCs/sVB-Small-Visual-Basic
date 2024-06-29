@@ -14,6 +14,8 @@ Namespace Microsoft.SmallVisualBasic.Shell
             MyBase.OnApplyTemplate()
             _CmbControlNames = Me.Template.FindName("CmbControlNames", Me)
             _CmbEventNames = Me.Template.FindName("CmbEventNames", Me)
+            _NumZoom = Me.Template.FindName("NumZoom", Me)
+            _NumZoom.Value = TextDocument.ScaleFactor * 100
             _MdiViews = GetParent(Of MdiViewsControl)(_CmbEventNames)
         End Sub
 
@@ -23,7 +25,11 @@ Namespace Microsoft.SmallVisualBasic.Shell
         Private oldHeight As Double = Double.NaN
 
         Public ReadOnly Property CmbControlNames As ComboBox
+
         Public ReadOnly Property CmbEventNames As ComboBox
+
+        Public Property NumZoom As WpfDialogs.DoubleUpDown
+
         Friend Property FreezeCmbEvents As Boolean
 
 
@@ -60,6 +66,8 @@ Namespace Microsoft.SmallVisualBasic.Shell
                 SetValue(IsSelectedProperty, value)
             End Set
         End Property
+
+
 
         Public Sub ResetOldWidthAndHeight()
             oldWidth = Double.NaN
