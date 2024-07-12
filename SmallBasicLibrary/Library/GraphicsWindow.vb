@@ -155,17 +155,20 @@ Namespace Library
         Private Shared Sub CreateBrush()
             Invoke(
                 Sub()
-                    If WinForms.Color.IsNone(_gradientEndColor) Then
-                        _fillBrush = WinForms.Color.GetBrush(_brushColor)
-                    Else
-                        _fillBrush = New System.Windows.Media.LinearGradientBrush(
+                    Try
+                        If WinForms.Color.IsNone(_gradientEndColor) Then
+                            _fillBrush = WinForms.Color.GetBrush(_brushColor)
+                        Else
+                            _fillBrush = New System.Windows.Media.LinearGradientBrush(
                              WinForms.Color.FromString(_brushColor),
                              WinForms.Color.FromString(_gradientEndColor),
                              New System.Windows.Point(0, 0),
                              New System.Windows.Point(1, 0)
                         )
-                    End If
-                    _fillBrush?.Freeze()
+                        End If
+                        _fillBrush?.Freeze()
+                    Catch
+                    End Try
                 End Sub)
         End Sub
 

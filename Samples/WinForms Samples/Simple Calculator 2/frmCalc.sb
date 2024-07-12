@@ -1,0 +1,63 @@
+N1 = 0
+N2 = 0
+lblResult.WordWrap = False
+
+'----------------------------
+
+Function Validate
+   N1 = txtNum1.Text
+   If Text.IsNumeric(N1) = False Then
+      lblResult.Text = "num1 must be a number."
+      txtNum1.SelectAll()
+      txtNum1.Focus()
+      Return False
+   EndIf
+   
+   N2 = txtNum2.Text
+   If Text.IsNumeric(N2) = False Then
+      lblResult.Text = "num2 must be a number."
+      txtNum2.SelectAll()
+      txtNum2.Focus()
+      Return False
+   EndIf
+   
+   Return True
+EndFunction
+
+
+'----------------------------
+Sub BtnAdd_OnClick
+   If Validate() Then
+      lblResult.Text = "Result = " + (N1 + N2)
+   EndIf
+EndSub
+
+'__________________________________
+Sub BtnSubtract_OnClick
+   If Validate() Then
+      lblResult.Text = "Result = " + (N1 - N2)
+   EndIf
+EndSub
+
+'__________________________________
+Sub BtnMultply_OnClick
+   If Validate() Then
+      lblResult.Text = "Result = " + (N1 * N2)
+   EndIf
+EndSub
+
+'__________________________________
+Sub BtnDivide_OnClick
+   If Validate() Then
+      If N2 = 0 Then
+         result = "Can't divide by zero."
+         txtNum2.SelectAll()
+         txtNum2.Focus()
+      Else
+         result = "Result = " + (N1 / N2)
+      EndIf
+      lblResult.Text = result
+   EndIf
+EndSub
+
+

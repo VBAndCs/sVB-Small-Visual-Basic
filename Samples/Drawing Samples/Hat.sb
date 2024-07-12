@@ -1,0 +1,25 @@
+' ARCHIMEDES SPIRAL FOR sVB
+
+GraphicsWindow.BackgroundColor = Colors.Black
+XP = 144
+XR = 4.71238905
+XF = XR / XP
+Scale = 1
+XX = 256 / 320
+For ZI = -64 To 64
+   ZT = ZI * 2.25
+   ZS = ZT * ZT
+   XL = Math.Floor(Math.SquareRoot(20736 - ZS) + 0.5)
+   For XI = -XL To XL
+      XT = Math.SquareRoot(XI * XI + ZS) * XF
+      YY = (Math.Sin(XT) + Math.Sin(XT * 3) * 0.4) * 56
+      X1 = (XI + ZI) * XX + 128
+      Y1 = 90 - YY + ZI
+      If Y1 < 200 Then
+         GraphicsWindow.SetPixel(
+            200 + X1 * Scale,
+            100 + Y1 * Scale,
+            Colors.White)
+      EndIf
+   Next
+Next

@@ -1,0 +1,20 @@
+TextWindow.WriteLine("Even:")
+For i = 1 To 5 
+   If Math.Remainder(i, 2) = 1 Then
+      ContinueLoop
+   EndIf
+   TextWindow.WriteLine(i)
+Next
+
+TextWindow.WriteLine("Odd:")
+i = 1
+While i <= 5 
+   If Math.Remainder(i, 2) = 0 Then
+      i = i + 1
+      ContinueLoop
+   EndIf
+   TextWindow.WriteLine(i)
+   i = i + 1
+Wend
+
+TextWindow.WriteLine("End")

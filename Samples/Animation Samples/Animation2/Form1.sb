@@ -1,0 +1,35 @@
+N = 0
+Duration = 2000
+TextBox1.BackColor = Colors.AliceBlue
+TextBox2.BackColor = Colors.Yellow
+
+'------------------------------------------------
+Sub Button1_OnClick
+   N = N + 1
+   
+   If Math.Remainder(N, 2) = 1 Then
+      TextBox1.AnimatePos(Me.Width - 100, Me.Height - 100, Duration)
+      'TextBox1.AnimateSize(TextBox1.Width * 2, TextBox1.Height * 2, duration)
+      TextBox1.AnimateAngle(360, Duration)
+      TextBox1.AnimateColor(Colors.Red, Duration)
+      
+      TextBox2.AnimatePos(0, Me.Height - 100, Duration)
+      'TextBox2.AnimateSize(TextBox2.Width * 2, TextBox2.Height * 2, duration)
+      TextBox2.AnimateAngle(-360, Duration)
+      TextBox2.AnimateTransparency(100, Duration)
+      
+   Else
+      TextBox1.AnimatePos(200, 50, Duration)
+      'TextBox1.AnimateSize(TextBox1.Width / 2, TextBox1.Height / 2, duration)
+      TextBox1.AnimateAngle(0, Duration)
+      TextBox1.AnimateColor(Colors.AliceBlue, Duration)
+      
+      TextBox2.AnimatePos(400, 50, Duration)
+      'TextBox2.AnimateSize(TextBox2.Width / 2, TextBox2.Height / 2, duration)
+      TextBox2.AnimateAngle(0, Duration)
+      TextBox2.AnimateTransparency(0, Duration)
+   EndIf
+   
+   
+EndSub
+

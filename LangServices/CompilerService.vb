@@ -484,13 +484,18 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             End If
 
                         ElseIf i = 0 AndAlso token.Type = TokenType.Identifier AndAlso token.LCaseText = "msgbox" Then
+                            Dim symbolTable = GetSymbolTable(textBuffer)
+                            If symbolTable.Subroutines.ContainsKey("msgbox") Then Continue For
+
                             Dim length = 0
                             Dim startsWithLeftParens = False
                             Dim needsClosing = TokenCount(tokens, TokenType.LeftParens) > TokenCount(tokens, TokenType.RightParens)
                             ' Use actual last token
                             Dim lastToken = tokens(tokens.Count - 1)
 
-                            If tokens(1).Type = TokenType.LeftParens AndAlso (
+                            If tokens.Count = 1 Then
+                                length = token.EndColumn - token.Column
+                            ElseIf tokens(1).Type = TokenType.LeftParens AndAlso (
                                     needsClosing OrElse lastToken.Type = TokenType.RightParens) Then
                                 length = If(tokens.Count > 2, tokens(2).Column, tokens(1).EndColumn) - token.Column
                                 startsWithLeftParens = True
@@ -505,7 +510,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 snapshot.GetLineFromLineNumber(lastToken.Line + start).Start
                             )
                             Dim args = Parser.ParseCommaSeparatedList(tokens, If(startsWithLeftParens, 2, 1))
-                            If args.Count > 1 Then
+                            If args.Count = 0 Then
+                                textEdit.Insert(lineStart + lastToken.EndColumn, """"", ""Message"")")
+                            ElseIf args.Count > 1 Then
                                 If Not startsWithLeftParens OrElse lastToken.Type <> TokenType.RightParens OrElse
                                         needsClosing Then
                                     textEdit.Insert(lineStart + lastToken.EndColumn, ")")

@@ -40,16 +40,16 @@ Namespace WinForms
         <ExMethod>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function RunTests(formName As Primitive) As Primitive
+            Dim asm = System.Reflection.Assembly.GetEntryAssembly()
             Dim frm = formName.AsString().ToLower()
-            If App.IsDebugging Then
+
+            If App.IsDebugging AndAlso asm.FullName.StartsWith("sVBCompiler,") Then
                 Dim result As New Primitive
                 RaiseEvent DebugRunTests(frm, False, result)
                 Return result
             End If
 
-            Dim asm = System.Reflection.Assembly.GetEntryAssembly()
             RunTests = 0
-
             App.Invoke(
                 Sub()
                     Try
@@ -73,14 +73,15 @@ Namespace WinForms
         <ReturnValueType(VariableType.Double)>
         <ExMethod>
         Public Shared Function RunGlobalTests(formName As Primitive) As Primitive
+            Dim asm = System.Reflection.Assembly.GetEntryAssembly()
             Dim frm = formName.AsString().ToLower()
-            If App.IsDebugging Then
+
+            If App.IsDebugging AndAlso asm.FullName.StartsWith("sVBCompiler,") Then
                 Dim result As New Primitive
                 RaiseEvent DebugRunTests(frm, True, result)
                 Return result
             End If
 
-            Dim asm = System.Reflection.Assembly.GetEntryAssembly()
             RunGlobalTests = 0
 
             App.Invoke(
@@ -1280,10 +1281,10 @@ Namespace WinForms
         <ReturnValueType(VariableType.Form)>
         <ExMethod>
         Public Shared Function ShowChildForm(parentFormName As Primitive, childFormName As Primitive, argsArr As Primitive) As Primitive
-            If App.IsDebugging Then
+            Dim asm = System.Reflection.Assembly.GetCallingAssembly()
+            If App.IsDebugging AndAlso asm.FullName.StartsWith("sVBCompiler,") Then
                 RaiseEvent DebugShowChildForm(LCase(parentFormName), LCase(childFormName), argsArr)
             Else
-                Dim asm = System.Reflection.Assembly.GetCallingAssembly()
                 App.Invoke(
                     Sub()
                         Try

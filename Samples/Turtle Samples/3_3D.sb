@@ -1,0 +1,115 @@
+' By Gregor Burghardt
+
+StackName = "turtleStak"
+West = 270
+North = 0
+NorthEast = 45
+East = 90
+South = 180
+SouthEast = 135
+GraphicsWindow.BackgroundColor = "tan"
+Turtle.Speed = 10
+
+
+DrawThree()
+Draw3DEffect()
+
+
+Sub DrawThree()
+   Turtle.Y = Turtle.Y + 250
+   Psh()
+   Turtle.PenUp()
+   Turtle.Move(100)
+   Turtle.Turn(45)
+   Turtle.Move(141)
+   Psh()
+   Turtle.PenDown()
+   
+   Turtle.CreateFigure()
+   Turtle.Turn(45)
+   Turtle.Move(100)
+   Turtle.TurnLeft()
+   Turtle.Move(100)
+   Turtle.TurnLeft()
+   Turtle.Move(200)
+   Turtle.TurnRight()
+   Turtle.Move(100)
+   Psh()
+   Turtle.TurnRight()
+   Turtle.Move(300)
+   Psh()
+   Turtle.TurnRight()
+   Turtle.Move(200)
+   Psh()
+   Turtle.Turn(45)
+   Turtle.Move(70.5)
+   Turtle.Angle = SouthEast
+   Turtle.Move(70.5)
+   Turtle.Angle = South
+   Psh()
+   Turtle.Move(200)
+   Psh()
+   Turtle.Angle = West
+   Turtle.Move(300)
+   Turtle.Angle = North
+   Turtle.Move(100)
+   Psh()
+   Turtle.Angle = East
+   Turtle.Move(200)
+   Turtle.Angle = North
+   Turtle.Move(100)
+   Turtle.Angle = West
+   Turtle.Move(100)
+   Turtle.Angle = North
+   Turtle.Move(100)
+   Turtle.FillFigure()
+EndSub
+
+Sub Draw3DEffect
+   Turtle.Angle = NorthEast
+   Pop()
+   Turtle.Move(100)
+   Turtle.Angle = East
+   Turtle.Move(130)
+   Pop()
+   Turtle.Angle = NorthEast
+   Turtle.Move(100)
+   Pop()
+   Turtle.Move(100)
+   Pop()
+   Turtle.Move(100)
+   Pop()
+   Turtle.Move(100)
+   Pop()
+   Turtle.Move(100)
+   Turtle.Angle = East
+   Turtle.Move(300)
+   Turtle.TurnRight()
+   Turtle.Move(200)
+   Turtle.Turn(45)
+   Turtle.Move(70.5)
+   Turtle.Angle = SouthEast
+   Turtle.Move(70.5)
+   Turtle.Angle = South
+   Turtle.Move(200)
+   Pop()
+   Turtle.Angle = NorthEast
+   Turtle.Move(100)
+   Turtle.Angle = East
+   Turtle.Move(30)
+   Pop()
+EndSub
+
+Sub Psh
+   Stack.PushValue(StackName, Turtle.Y)
+   Stack.PushValue(StackName, Turtle.X)
+EndSub
+
+Sub Pop
+   If Stack.GetCount(StackName) > 0 Then
+      Turtle.X = Stack.PopValue(StackName)
+   EndIf
+   If Stack.GetCount(StackName) > 0 Then
+      Turtle.Y = Stack.PopValue(StackName)
+   EndIf
+EndSub

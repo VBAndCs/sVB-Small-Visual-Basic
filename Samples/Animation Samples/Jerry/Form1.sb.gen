@@ -1,0 +1,43 @@
+'@Form Hints:
+'#Form1{
+'    Jerry: Label
+'    Button1: Button
+'    Button2: Button
+'    Button3: Button
+'    Button4: Button
+'}
+
+Me = "Form1"
+Jerry = "form1.jerry"
+Button1 = "form1.button1"
+Button2 = "form1.button2"
+Button3 = "form1.button3"
+Button4 = "form1.button4"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    Button1: OnClick
+'    Button2: OnClick
+'    Button3: OnClick
+'    Button4: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+' Button2 Events:
+Control.HandleEvents(Button2)
+Control.OnClick = Button2_OnClick
+
+' Button3 Events:
+Control.HandleEvents(Button3)
+Control.OnClick = Button3_OnClick
+
+' Button4 Events:
+Control.HandleEvents(Button4)
+Control.OnClick = Button4_OnClick
+
+

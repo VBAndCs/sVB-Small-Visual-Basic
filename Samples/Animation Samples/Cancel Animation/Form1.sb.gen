@@ -1,0 +1,27 @@
+'@Form Hints:
+'#Form1{
+'    BtnCancel: Button
+'    BtnAnimate: Button
+'}
+
+Me = "form1"
+BtnCancel = "form1.btncancel"
+BtnAnimate = "form1.btnanimate"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    BtnCancel: OnClick
+'    BtnAnimate: OnClick
+'}
+
+' BtnCancel Events:
+Control.HandleEvents(BtnCancel)
+Control.OnClick = BtnCancel_OnClick
+
+' BtnAnimate Events:
+Control.HandleEvents(BtnAnimate)
+Control.OnClick = BtnAnimate_OnClick
+
+

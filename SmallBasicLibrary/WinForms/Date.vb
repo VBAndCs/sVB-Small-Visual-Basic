@@ -73,7 +73,10 @@ Namespace WinForms
         ''' </param>
         ''' <returns>a string represent the date in the given culture</returns>
         <ReturnValueType(VariableType.String)>
-        Public Shared Function ToCulture([date] As Primitive, cultureName As Primitive) As Primitive
+        Public Shared Function ToCulture(
+                     [date] As Primitive,
+                     cultureName As Primitive) As Primitive
+
             Dim d = [date].AsDate()
             If d Is Nothing Then Return ""
 
@@ -84,8 +87,9 @@ Namespace WinForms
                 Else
                     Return d.Value.ToString(New CultureInfo(cult))
                 End If
-            Catch ex As Exception
+            Catch
             End Try
+
             Return d.Value.ToString()
         End Function
 

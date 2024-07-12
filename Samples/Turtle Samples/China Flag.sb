@@ -1,0 +1,124 @@
+' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+' Tutor: Claudia Ermel & Olga Runge
+' Book-Title: Erste Schritte mit Python für Dummies Junior
+' Sub-Title: Lass die Schildkröte für dich arbeiten
+' Student: Gregor
+' Publisher: Wiley Verlag, Weinheim
+' Year: 2017, 1. Auflage
+' Page: 65
+' File: Flag_Of_Country_China.sb
+' Date: 30.05.2023
+' Topic: Turtle Programming
+' Exercise: To Draw The Flag Of China
+' * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Sub SetWindow
+   ' Breite und Höhe des Fensters, Hintergrundfarbe und Titel setzen
+   ' Set window width and height, background color and title
+   GraphicsWindow.Width = 800
+   GraphicsWindow.Height = 600
+   GraphicsWindow.BackgroundColor = Colors.Silver
+   GraphicsWindow.Title = "Drawing And Painting The Flag Of China"
+EndSub
+
+Sub SetTurtle
+   ' Geschwindigkeit und Stiftstärke der Turtle
+   ' Speed ​​and pen width of the turtle
+   Turtle.Speed = 10
+   GraphicsWindow.PenWidth = 2
+   Turtle.Show()
+EndSub
+
+Sub PrintText(xpos, ypos, txt_hue, txt, font_name, font_size, bold)
+   ' formatierten Text ausgeben
+   ' output formatted text at a specified coordinate
+   Turtle.Speed = 1
+   Turtle.PenUp()
+   Turtle.X = xpos
+   Turtle.Y = ypos
+   Turtle.PenDown()
+   GraphicsWindow.FontBold = bold
+   GraphicsWindow.FontName = font_name
+   GraphicsWindow.FontSize = font_size
+   GraphicsWindow.BrushColor = txt_hue
+   GraphicsWindow.DrawBoundText(xpos, ypos, 0, txt)
+EndSub
+
+Sub PaintManyPointedStar(xpos, ypos, jags, line_hue, fill_hue, steps, speed)
+   ' einen Stern mit x Zacken zeichnen und ausfüllen
+   ' draw and fill in a star with x points
+   ' jags = Zacken, aber mehr als 4
+   ' line_hue = Linienfarbe
+   ' fill_hue = Füllfarbe
+   ' xpos = X-Koordinate
+   ' ypos = Y-Koordinate
+   If jags < 5 Then
+      jags = 5
+   EndIf
+   Turtle.X = xpos
+   Turtle.Y = ypos
+   Turtle.Speed = speed
+   GraphicsWindow.PenColor = line_hue
+   a = 360 / jags
+   Turtle.CreateFigure()
+   For i = 1 To jags
+      Turtle.Move(steps)
+      Turtle.Turn(2 * a)
+      Turtle.Move(steps)
+      Turtle.Turn(-a)
+   Next
+   GraphicsWindow.BrushColor = fill_hue
+   Turtle.FillFigure()
+EndSub
+
+Sub PaintFlagBody(pen_width, flag_width, flag_height, line_hue, fill_hue)
+   ' die farbige Flaggenfläche im Format 2:3 zeichnen und ausfüllen
+   ' draw and fill in the colored flag area in 2:3 format
+   Turtle.TurnRight()
+   Turtle.X = 100
+   Turtle.Y = 500
+   GraphicsWindow.PenWidth = pen_width
+   GraphicsWindow.PenColor = line_hue
+   Turtle.CreateFigure()
+   For i = 1 To 2
+      Turtle.Move(flag_width)
+      Turtle.TurnLeft()
+      Turtle.Move(flag_height)
+      Turtle.TurnLeft()
+   Next
+   GraphicsWindow.BrushColor = fill_hue
+   Turtle.FillFigure()
+EndSub
+
+Sub PaintFlagStars
+   ' die fünf gelben Sterne der chinesischen Flagge zeichnen und ausfüllen
+   ' draw and fill in the five yellow stars of the Chinese flag
+   Turtle.Speed = 10
+   GraphicsWindow.PenWidth = 1
+   ' großen gelben Stern malen
+   PaintManyPointedStar(170, 170, 5, "Yellow", "Yellow", 28, 10)
+   ' kleinen gelben Stern zeichnen
+   Turtle.Turn(-16)
+   PaintManyPointedStar(240, 130, 5, "Yellow", "Yellow", 10, 8)
+   ' kleinen gelben Stern zeichnen
+   Turtle.Turn(8)
+   PaintManyPointedStar(270, 155, 5, "Yellow", "Yellow", 10, 8)
+   ' kleinen gelben Stern zeichnen
+   Turtle.Turn(8)
+   PaintManyPointedStar(270, 190, 5, "Yellow", "Yellow", 10, 8)
+   ' kleinen gelben Stern zeichnen
+   Turtle.Turn(16)
+   PaintManyPointedStar(240, 220, 5, "Yellow", "Yellow", 10, 8)
+   Turtle.Turn(-16)
+EndSub
+
+' M A I N - P R O G R A M
+
+SetWindow()
+SetTurtle()
+PaintFlagBody(5, 600, 400, "#D3D3D3", "#EE1D25")
+PaintFlagStars()
+PrintText(190, 35, "White", "The Flag Of China", "Courier New", 42, True)
+PrintText(340, 540, "Black", "Finished", "Courier New", 20, True)
+Turtle.X = 450
+Turtle.Y = 550

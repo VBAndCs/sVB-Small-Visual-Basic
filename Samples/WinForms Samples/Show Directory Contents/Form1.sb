@@ -1,0 +1,55 @@
+TxtPath.Text = Program.GetSetting("folder", "path", "")
+
+'------------------------------------------------
+Sub BtnBrowse_OnClick()
+   dir = File.OpenFolderDialog(TxtPath.Text)
+   If dir <> "" Then
+      TxtPath.Text = dir
+   EndIf
+EndSub
+
+'------------------------------------------------
+Sub Form1_OnClosing()
+   Program.SaveSetting("folder", "path", TxtPath.Text)
+EndSub
+
+
+'------------------------------------------------
+Sub BtnShow_OnClick()
+   TxtContents.Text = ""
+   ShowContent(TxtPath.Text, 1)
+EndSub
+
+Sub ShowContent(strDir, level)
+   indent = Repeat("-", level)
+   ForEach strFile In File.GetFiles(strDir)
+      TxtContents.Append(indent + " File: ")
+      TxtContents.AppendLine(strFile.SubTextToEnd(strDir.Length + 2))
+   Next
+   
+   dirs = File.GetDirectories(strDir)
+   indent = Repeat("*", level)
+   ForEach strSubDir In File.GetDirectories(strDir)
+      TxtContents.Append(indent + " Folder: ")
+      TxtContents.AppendLine(strSubDir.SubTextToEnd(strDir.Length + 2))
+      If ChkRecursive.Checked Then
+         ShowContent(strSubDir, level + 1)
+      EndIf
+   Next
+   
+EndSub
+
+Function Repeat(str, count)
+   If count < 1 Then
+      Return ""
+   ElseIf count = 1 Then
+      Return str
+   EndIf
+   
+   x = str
+   For i = 2 To count
+      x = x.Append(str)
+   Next
+   
+   Return x
+EndFunction

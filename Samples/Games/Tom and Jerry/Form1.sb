@@ -1,0 +1,126 @@
+Cats = {}
+CreateNewTom()
+CreateNewTom()
+CreateNewTom()
+GameOver = False
+DeltaX = 0
+DeltaY = 0
+Score = 0
+LastScore = 0
+
+TomTimer = Me.AddTimer("TomTimer", 80)
+TomTimer.OnTick = MoveTom
+JerryTimer = Me.AddTimer("JerryTimer", 50)
+JerryTimer.OnTick = MoveJerry
+
+Sub MoveTom
+   ForEach cat In Cats
+      tomLabel = cat!Label
+      tomLabel.Left = tomLabel.Left + cat!SpeedX
+      If tomLabel.Left > Me.Width Then
+         tomLabel.Left = -tomLabel.Width
+      EndIf
+      
+      tomLabel.Top = tomLabel.Top + cat!SpeedY
+      If tomLabel.Top > Me.Height Then
+         tomLabel.Top = -tomLabel.Height
+         Score = Score + 1
+      EndIf
+      
+      If (tomLabel.Top > Jerry.Bottom - 10 Or
+            tomLabel.Bottom < Jerry.Top + 10 Or
+            tomLabel.Left > Jerry.Right - 10 Or
+            tomLabel.Right < Jerry.Left + 10) = False Then
+         TomTimer.Pause()
+         JerryTimer.Pause()
+         GameOver = True
+      EndIf
+      Me.Text = Score
+   Next
+   
+   If Score > 0
+         And Score.Remainder(10) = 0
+         And LastScore <> Score Then
+      LastScore = Score
+      CreateNewTom()
+   EndIf
+EndSub
+
+
+
+
+' ------------------------------------------------
+Sub Form1_OnKeyDown()
+   k = Keyboard.LastKey
+   
+   If GameOver Then
+      If k = Keys.Space Then
+         ForEach cat In Cats
+            Me.RemoveControl(cat!Label)
+         Next
+         
+         Cats = {}
+         CreateNewTom()
+         CreateNewTom()
+         CreateNewTom()
+         
+         GameOver = False
+         DeltaX = 0
+         DeltaY = 0
+         Score = 0
+         LastScore = 0
+         
+         Jerry.Top = Me.Height - Jerry.Height
+         Jerry.Left = Me.Width / 2
+         
+         TomTimer.Resume()
+         JerryTimer.Resume()
+      EndIf
+      
+   ElseIf k = Keys.Left Then
+      DeltaX = -20
+   ElseIf k = Keys.Right Then
+      DeltaX = 20
+   ElseIf k = Keys.Up Then
+      DeltaY = -20
+   ElseIf k = Keys.Down Then
+      DeltaY = 20
+   EndIf
+EndSub
+
+Sub Form1_OnKeyUp()
+   k = Keyboard.LastKey
+   If k = Keys.Left Or k = Keys.Right Then
+      DeltaX = 0
+   ElseIf k = Keys.Up Or k = Keys.Down Then
+      DeltaY = 0
+   EndIf
+EndSub
+
+' ------------------------------------------------
+Sub CreateNewTom()
+   newTom = Me.AddLabel(
+      "tom" + (Cats.Count + 1),
+      Math.GetRandomNumber(Me.Width),
+      -50,
+      106,
+      120
+   )
+   newTom.Image = "Tom.png"
+   cat!Label = newTom
+   cat!SpeedX = -8 + Math.GetRandomNumber(16)
+   cat!SpeedY = Math.GetRandomNumber(15)
+   Cats.AddNextItem(cat)
+EndSub
+
+
+' ------------------------------------------------
+Sub MoveJerry()
+   If DeltaX <> 0 Then
+      Jerry.Left = Jerry.Left + DeltaX
+   EndIf
+   
+   If DeltaY <> 0 Then
+      Jerry.Top = Jerry.Top + DeltaY
+   EndIf
+EndSub

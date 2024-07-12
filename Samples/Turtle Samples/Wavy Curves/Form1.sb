@@ -1,0 +1,110 @@
+Math.UseRadianAngles = False
+
+' ------------------------------------------------
+Sub Button1_OnClick()
+   w = 800
+   GW.Width = w
+   GW.Left = 200
+   GW.Clear()
+   Turtle.Speed = 50
+   Turtle.UseAnimation = False
+   Turtle.PenUp()
+   Turtle.MoveTo(0, 100 + Math.Cos(0) * 50)
+   Turtle.PenDown()
+   
+   For i = 1 To w
+      GW.PenColor = GW.GetRandomColor()
+      y = Math.Cos(i)
+      Turtle.MoveTo(i, 200 + y * 50)
+      Turtle.Turn(2)
+      Turtle.Move(20)
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub Button2_OnClick()
+   w = 800
+   GW.Width = w
+   GW.Left = 200
+   GW.Clear()
+   Turtle.Speed = 50
+   Turtle.UseAnimation = False
+   Turtle.PenUp()
+   Turtle.MoveTo(0, 100 + Math.Cos(0) * 50)
+   Turtle.PenDown()
+   
+   For i = 1 To w
+      GW.PenColor = GW.GetRandomColor()
+      y = Math.Cos(i)
+      Turtle.MoveTo(i, 200 + y * 50)
+      Turtle.Turn(360 / w)
+      Turtle.Move(20)
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub Button3_OnClick()
+   w = 800
+   GW.Width = w
+   GW.Left = 200
+   GW.Clear()
+   Turtle.Speed = 50
+   Turtle.UseAnimation = False
+   Turtle.PenUp()
+   Turtle.MoveTo(0, 100 + Math.Cos(0) * 50)
+   Turtle.PenDown()
+   
+   For i = 1 To w Step 2
+      GW.PenColor = GW.GetRandomColor()
+      y = Math.Cos(i)
+      Turtle.MoveTo(i, 200 + y * 50)
+      Turtle.Turn(5)
+      Turtle.Move(50)
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub Button4_OnClick()
+   w = 800
+   GW.Width = w
+   GW.Left = 200
+   GW.Clear()
+   Turtle.Speed = 50
+   Turtle.UseAnimation = False
+   Turtle.PenUp()
+   Turtle.MoveTo(0, 100 + Math.Cos(0) * 50)
+   Turtle.PenDown()
+   
+   For i = 1 To w Step 1
+      GW.PenColor = GW.GetRandomColor()
+      y = Math.Cos(i)
+      Turtle.MoveTo(i, 200 + y * 50)
+      Turtle.Turn(15)
+      Turtle.Move(50)
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub Button5_OnClick()
+   w = 800
+   GW.Width = w
+   GW.Left = 200
+   GW.Clear()
+   Turtle.Speed = 50
+   Turtle.UseAnimation = False
+   Turtle.PenUp()
+   Turtle.MoveTo(0, 100 + Math.Cos(0) * 50)
+   Turtle.PenDown()
+   
+   For i = 1 To w Step 1
+      GW.PenColor = GW.GetRandomColor()
+      y = Math.Cos(i)
+      Turtle.MoveTo(i, 200 + y * 50)
+      Turtle.Turn(11)
+      Turtle.Move(y * 20)
+   Next
+EndSub

@@ -1,0 +1,20 @@
+'@Form Hints:
+'#Form1{
+'    Jerry: Label
+'}
+
+Me = "form1"
+Jerry = "form1.jerry"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    Form1: OnClick
+'}
+
+' Form1 Events:
+Control.HandleEvents(Form1)
+Control.OnClick = Form1_OnClick
+
+

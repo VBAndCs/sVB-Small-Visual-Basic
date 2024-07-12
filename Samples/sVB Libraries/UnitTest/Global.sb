@@ -1,0 +1,223 @@
+Errors = {} ' Array contaning the test errors.
+_HasErrors = False
+
+' ------------------------------------------------
+' Add a test error to the Errors array
+Sub AddError(
+      msg ' The message that describs the test error.
+   )
+   _HasErrors = True
+   Errors[Errors.Count + 1] = msg
+EndSub
+
+' -----------------------------------------------
+' Runs the tests of the given form
+Sub RunFormTests(
+      formName ' The name of the tested form
+   )
+   
+   _HasErrors = False
+   _TestForm(formName, "", "", False)
+EndSub
+
+' -----------------------------------------------
+' Runs the tests of the tests of the global.sb file and shows the results on the given form
+Sub RunGlobalTests(
+      formName ' The name of the form that will display the results
+   )
+   
+   _HasErrors = False
+   _TestForm(formName, "", "", True)
+EndSub
+
+' -----------------------------------------------
+' Runs all the tests of all forms
+Sub RunAllTests(
+      resultsTextBox ' The textbox that will deisplay the test results.
+   )
+   
+   startTime = Date.Now
+   resultsTextBox.Text = ""
+   _HasErrors = False
+   resultsForm = resultsTextBox.ParentForm
+   testsCount = 0
+   
+   ' Run global teests:
+   testsCount = _TestForm(resultsForm, resultsForm, resultsTextBox, True)
+   
+   ForEach frm In Forms.GetForms(False)
+      testsCount = testsCount + _TestForm(frm, resultsForm, resultsTextBox, False)
+   Next
+   
+   t = Date.GetTotalSeconds(Date.Now - startTime)
+   If _HasErrors = False Then
+      If testsCount = 0 Then
+         resultsTextBox.Text = "No tests found. This can happen due to any of these reasons:" & Text.NewLine &
+            "1. You didn't add any test functions to the global.sb file or to any form in your project." & Text.NewLine &
+            "2. Your test function names don't start with the Test_ prefix." & Text.NewLine &
+            "3. Your test functions have parameters" & Text.NewLine &
+            "4. Your test functions don't return results or return an empty string."
+      Else
+         resultsTextBox.AppendLine("")
+         resultsTextBox.AppendLine(
+            "All " + testsCount
+            + " tests passed successfully. "
+            + "Total time: "
+            + t.Round(3) + " seconds."
+         )
+      EndIf
+   EndIf
+EndSub
+
+' ------------------------------------------------
+' Checks if the test actual value is the expected value
+Function AssertEqual(
+      actualValue, ' The actual value of the test
+      expectedValue, ' The expected value from the test
+      testName       ' The name of the test, to be displyed in the result.
+   ) ' Returns a string message that displays the test result, saying whether it passed or failed and why.
+   
+   If actualValue = expectedValue Then
+      n = 53 - Text.GetLength(testName)
+      Return testName + _Repeat(" ", n) + Chars.Tab + "Passed"
+   Else
+      msg = Text.Format(
+         "[1] xxxxxxxxx failed.[4]    Actual value:      `[2]`[4]    Expected Vlaue: `[3]`",
+         {
+            testName,
+            Text.ToStr(actualValue),
+            Text.ToStr(expectedValue),
+            Chars.CrLf
+         }
+      )
+      AddError(msg)
+      Return msg
+   EndIf
+EndFunction
+
+
+
+' ------------------------------------------------
+' Checks if the test actual value is true
+Function AssertTrue(
+      actualValue, ' The actual value of the test
+      testName     ' The name of the test, to be displyed in the result.
+   ) ' Returns a string message that displays the test result, saying whether it passed or failed and why.
+   
+   
+   If Array.IsArray(actualValue) Then
+      expectedValue[1] = True
+      For i = 2 To Array.GetItemCount(actualValue)
+         Array.AddNextItem(expectedValue, True)
+      Next
+   Else
+      expectedValue = True
+   EndIf
+   
+   Return AssertEqual(actualValue, expectedValue, testName)
+EndFunction
+
+' ------------------------------------------------
+' Checks if the test actual value is false
+Function AssertFalse(
+      actualValue, ' The actual value of the test
+      testName     ' The name of the test, to be displyed in the result.
+   ) ' Returns a string message that displays the test result, saying whether it passed or failed and why.
+   
+   If Array.IsArray(actualValue) Then
+      expectedValue[1] = False
+      For i = 2 To Array.GetItemCount(actualValue)
+         Array.AddNextItem(expectedValue, False)
+      Next
+   Else
+      expectedValue = False
+   EndIf
+   
+   Return AssertEqual(actualValue, expectedValue, testName)
+EndFunction
+
+' ------------------------------------------------
+Function _Repeat(str, count)
+   If count < 1 Then
+      Return ""
+   ElseIf count = 1 Then
+      Return str
+   EndIf
+   
+   x = str
+   For i = 2 To count
+      x = x.Append(str)
+   Next
+   
+   Return x
+EndFunction
+
+' ------------------------------------------------
+Function _TestForm(testForm, resultsForm, resultsTextBox, isGlobal)
+   Forms.ShowForm(testForm, "")
+   Errors = {}
+   testTitle = ""
+   testFormName = Text.ToLower(testForm)
+   
+   If isGlobal Then
+      testTitle = "Global tests"
+      testsCount = testForm.RunGlobalTests()
+   Else
+      If testForm.IsLoaded And testForm.Text <> "" Then
+         testTitle = testForm.Text
+      Else
+         testTitle = testForm & " Tests"
+      EndIf
+      
+      testsCount = testForm.RunTests()
+   EndIf
+   
+   If resultsForm = "" Then
+      Return 0
+   EndIf
+   
+   spaces = _Repeat(" ", 53 - testTitle.Length) + Chars.Tab
+   
+   If testsCount > 0 And isGlobal And testFormName = resultsForm Then
+      ' running global tests can add txtTest over the resultsTextBox, so we should hide it
+      txtTest = resultsForm & ".txttest"
+      txtTest.Visible = (txtTest = resultsTextBox)
+      resultsTextBox.Text = ""
+   EndIf
+   
+   If Errors.Count > 0 Then
+      resultsTextBox.AppendLine("")
+      resultsTextBox.AppendLine("--------------------------------")
+      resultsTextBox.AppendLine(
+         testTitle + ": "
+         + spaces
+         + (testsCount - Errors.Count)
+            + " tests passed."
+      )
+      resultsTextBox.AppendLine("Errors:")
+      n = 1
+      ForEach error In Errors
+         id = Text.Append(" ", {n, ". ", error})
+         resultsTextBox.AppendLine(id)
+         n = n + 1
+      Next
+      resultsTextBox.AppendLine("--------------------------------")
+      resultsTextBox.AppendLine("")
+      
+   ElseIf testsCount > 0 Then
+      resultsTextBox.AppendLine(
+         testTitle + ": "
+         + spaces
+         + testsCount + " tests passed."
+      )
+   EndIf
+   
+   
+   If testFormName <> resultsForm And testForm.IsLoaded Then
+      testForm.Close()
+   EndIf
+   
+   Return testsCount
+EndFunction
+
+

@@ -1,0 +1,12 @@
+'@Form Hints:
+'#Form1{
+'    Button1: Button
+'    TextBox1: TextBox
+'}
+
+Me = "Form1"
+Button1 = "form1.button1"
+TextBox1 = "form1.textbox1"
+Form1 = Forms.LoadForm("Form1", "form1.xaml")
+Form.AllowTransparency(Form1)
+Form.Show(Form1)

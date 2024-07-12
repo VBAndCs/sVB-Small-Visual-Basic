@@ -1,0 +1,1 @@
+﻿<Canvas Background="#FFB37878" Name="Form2" Width="700" Height="500" AutomationProperties.HelpText="Form2" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:s="clr-namespace:System;assembly=mscorlib"><Canvas.Tag><s:Boolean>False</s:Boolean></Canvas.Tag></Canvas>

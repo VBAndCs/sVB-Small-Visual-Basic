@@ -1,0 +1,17 @@
+Jerry.Image = "1.png"
+Me.Icon = "1.png"
+Angle = 0
+Jerry.Angle = 45
+
+'------------------------------------------------
+Sub Form1_OnClick()
+   x = Me.MouseX - 20
+   y = Me.MouseY - 20
+   Jerry.AnimatePos(x, y, 1500)
+   
+   dx = x - Jerry.Left
+   dy = y - Jerry.Top
+   rad = Math.ArcTan(dy / dx)
+   Angle = Angle + Math.GetDegrees(rad)
+   Jerry.AnimateAngle(Angle, 1500)
+EndSub

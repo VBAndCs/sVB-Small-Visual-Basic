@@ -1,0 +1,70 @@
+TextBox1.Text = Add(5, {10, 20})
+
+'------------------------------------------------
+Function Add(x, y)
+   If Array.IsArray(x) Then
+      Return Array.AddItem(x, y)
+   ElseIf Array.IsArray(y) Then
+      z[1] = x
+      Return z.AddItems(y)
+   Else
+      Return x + y
+   EndIf
+EndFunction
+
+
+'------------------------------------------------
+Function Test_Add1()
+   a!Name = "Adam"
+   a!Age = 12
+   
+   Return UnitTest.AssertEqual(
+      {
+         Add(1, 2),
+         Add({1, 2, 3}, 4),
+         Array.ToStr(Add({1, 2, 3}, a)),
+         Add(1, {4, 5})
+      },
+      {
+         3,
+         {1, 2, 3, 4},
+         "{1, 2, 3, {[Name]=Adam, [Age]=12}}",
+         {1, 4, 5}
+      },
+      "Add #1"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Add2()
+   a!Name = "Adam"
+   a!Age = 12
+   
+   b["Name"] = "Ahmed"
+   b["Age"] = 15
+   
+   arr = Add(a, b)
+   
+   Return UnitTest.AssertEqual(
+      arr.ToStr(),
+      "{[Name]=Adam, [Age]=12, [3]={[Name]=Ahmed, [Age]=15}}",
+      "Add #2"
+   )
+EndFunction
+
+'------------------------------------------------
+Function Test_Add3()
+   a!Name = "Adam"
+   a!Age = 12
+   
+   b["Name"] = "Ahmed"
+   b["Age"] = 15
+   
+   arr = Add(a, b)
+   
+   Return UnitTest.AssertEqual(
+      {arr["Name"], arr["Age"], arr[3]["name"], arr[3]["age"]},
+      {"Adam", 12, "Ahmed", 150},
+      "Add #3"
+   )
+EndFunction

@@ -1,0 +1,28 @@
+'@Form Hints:
+'#Form1{
+'    Button1: Button
+'    TextBox1: TextBox
+'    ListBox1: ListBox
+'    ChkTrim: CheckBox
+'    ChkNoEmpty: CheckBox
+'}
+
+Me = "Form1"
+Button1 = "form1.button1"
+TextBox1 = "form1.textbox1"
+ListBox1 = "form1.listbox1"
+ChkTrim = "form1.chktrim"
+ChkNoEmpty = "form1.chknoempty"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+

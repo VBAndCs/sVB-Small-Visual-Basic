@@ -1,0 +1,18 @@
+GraphicsWindow.Width = 700
+GraphicsWindow.BackgroundColor = Colors.Green
+GraphicsWindow.FontBold = True
+GraphicsWindow.FontSize = 60
+
+'draw a black shadow texts
+GraphicsWindow.PenColor = Colors.Black
+GraphicsWindow.BrushColor = Colors.Black
+For I = 1 To 25
+   Txt = Shapes.AddText("Small Visual Basic")
+   Shapes.Animate(Txt, 92, 142, 2000 + I * 50)
+Next
+
+' draw white text shifted by (8,8)
+GraphicsWindow.PenColor = Colors.White
+GraphicsWindow.BrushColor = Colors.White
+Txt = Shapes.AddText("Small Visual Basic")
+Shapes.Animate(Txt, 100, 150, 2000)

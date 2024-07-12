@@ -1,0 +1,23 @@
+
+Info = Me.ArgsArr
+Me.Text = Info!Title
+LblMsg.Text = Info!Message
+
+
+'------------------------------------------------
+Sub BtnYes_OnClick()
+   Me.DialogResult = DialogResults.Yes
+   Me.Close()
+EndSub
+
+'------------------------------------------------
+Sub BtnNo_OnClick()
+   Me.DialogResult = DialogResults.No
+   Me.Close()
+EndSub
+
+
+'------------------------------------------------
+Sub BtnCancel_OnClick()
+   Me.Close()
+EndSub

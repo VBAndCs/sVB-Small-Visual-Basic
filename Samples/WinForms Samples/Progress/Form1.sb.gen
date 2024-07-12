@@ -1,0 +1,31 @@
+'@Form Hints:
+'#Form1{
+'    ProgressBar1: ProgressBar
+'    LblValue: Label
+'    BtnStart: Button
+'    BtnCancel: Button
+'}
+
+Me = "Form1"
+ProgressBar1 = "form1.progressbar1"
+LblValue = "form1.lblvalue"
+BtnStart = "form1.btnstart"
+BtnCancel = "form1.btncancel"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    BtnStart: OnClick
+'    BtnCancel: OnClick
+'}
+
+' BtnStart Events:
+Control.HandleEvents(BtnStart)
+Control.OnClick = BtnStart_OnClick
+
+' BtnCancel Events:
+Control.HandleEvents(BtnCancel)
+Control.OnClick = BtnCancel_OnClick
+
+

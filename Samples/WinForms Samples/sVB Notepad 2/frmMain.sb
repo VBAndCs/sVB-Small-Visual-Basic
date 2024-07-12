@@ -1,0 +1,327 @@
+SavedFile = ""
+IsModified = False
+SetProperties(Global.Ops)
+
+'------------------------------------------------
+Sub MnuNew_OnClick()
+   If AskToSave() = False Then
+      Return
+   EndIf
+   
+   TxtEditor.Text = ""
+   IsModified = False
+   SavedFile = ""
+   SetProperties(Global.Ops)
+EndSub
+
+'-------------------------------------------
+Sub SetProperties(ops)
+   TxtEditor.FontName = ops!FontName
+   TxtEditor.FontSize = ops!FontSize
+   TxtEditor.FontBold = ops!Bold
+   TxtEditor.FontItalic = ops!Italic
+   TxtEditor.Underlined = ops!Underlined
+   TxtEditor.ForeColor = ops!ForeColor
+   TxtEditor.BackColor = ops!BackColor
+   Me.BackColor = ops!FrameColor
+   TxtEditor.RightToLeft = ops!RightToLeft
+   TxtEditor.MultiLine = ops!MultiLine
+   TxtEditor.WordWrap = ops!WordWrap
+EndSub
+
+'------------------------------------------------
+Sub MnuOpen_OnClick()
+   If AskToSave() = False Then
+      Return
+   EndIf
+   
+   fileName = File.OpenFileDialog(
+      {
+         {"Text", "txt"},
+         {"Text with format", "twf"}
+      }
+   )
+   
+   If fileName = "" Then
+      Return
+   ElseIf Text.EndsWith(fileName.LowerCase, ".txt") Then
+      TxtEditor.Text = File.ReadContents(fileName)
+      ops = Global.Ops
+   Else
+      lines = File.ReadLines(fileName)
+      ops!FontName = lines[1]
+      ops!FontSize = lines[2]
+      ops!Bold = lines[3]
+      ops!Italic = lines[4]
+      ops!Underlined = lines[5]
+      ops!ForeColor = lines[6]
+      ops!BackColor = lines[7]
+      ops!FrameColor = lines[8]
+      ops!RightToLeft = lines[9]
+      ops!MultiLine = lines[10]
+      ops!WordWrap = lines[11]
+      
+      TxtEditor.Text = ""
+      For i = 12 To lines.Count - 1
+         TxtEditor.AppendLine(lines[i])
+      Next
+      TxtEditor.Append(lines[i])
+      
+   EndIf
+   
+   SavedFile = fileName
+   IsModified = False
+   SetProperties(ops)
+EndSub
+
+
+'------------------------------------------------
+Sub TxtEditor_OnTextChanged()
+   IsModified = True
+EndSub
+
+'------------------------------------------------
+Sub MnuSave_OnClick()
+   Save()
+EndSub
+
+'------------------------------------------------
+Sub MnuSaveAs_OnClick()
+   SaveAs()
+EndSub
+
+'------------------------------------------------
+Function AskToSave()
+   If IsModified Then
+      result = Dialogs.MsgBox(
+         "Save Changes",
+         "Do you want to save changes?"
+      )
+      
+      If result = DialogResults.Yes Then
+         If Save() = False Then
+            Return False
+         EndIf
+         
+      ElseIf result = DialogResults.Cancel Then
+         Return False
+      EndIf
+   EndIf
+   
+   Return True
+EndFunction
+
+
+'------------------------------------------------
+Function Save()
+   If SavedFile = "" Then
+      Return SaveAs()
+      
+   ElseIf Text.EndsWith(SavedFile.LowerCase, ".txt") Then
+      If File.WriteContents(SavedFile, TxtEditor.Text) = False Then
+         Me.ShowMessage(File.LastError, "Error")
+         Return False
+      EndIf
+      
+   Else
+      ops = {}
+      ops!FontName = TxtEditor.FontName
+      ops!FontSize = TxtEditor.FontSize
+      ops!Bold = TxtEditor.FontBold
+      ops!Italic = TxtEditor.FontItalic
+      ops!Underlined = TxtEditor.Underlined
+      ops!ForeColor = TxtEditor.ForeColor
+      ops!BackColor = TxtEditor.BackColor
+      ops!FrameColor = Me.BackColor
+      ops!RightToLeft = TxtEditor.RightToLeft
+      ops!MultiLine = TxtEditor.MultiLine
+      ops!WordWrap = TxtEditor.WordWrap
+      ops!Text = TxtEditor.Text
+      
+      If File.WriteContents(SavedFile, ops) = False Then
+         Me.ShowMessage(File.LastError, "Error")
+         Return False
+      EndIf
+   EndIf
+   
+   IsModified = False
+   Return True
+EndFunction
+
+
+
+
+'------------------------------------------------
+Function SaveAs()
+   fileName = File.SaveFileDialog(
+      SavedFile,
+      {
+         {"Text", "txt"},
+         {"Text with format", "twf"}
+      }
+   )
+   
+   If fileName = "" Then
+      Return False
+   Else
+      SavedFile = fileName
+      Return Save()
+   EndIf
+EndFunction
+
+'------------------------------------------------
+Sub MnuClose_OnClick()
+   Me.Close()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuFile_OnOpen()
+   state = (SavedFile <> "")
+   MnuNew.Enabled = state Or IsModified
+   MnuSaveAs.Enabled = state
+   MnuSave.Enabled = IsModified
+EndSub
+
+
+'------------------------------------------------
+Sub MnuUndo_OnClick()
+   TxtEditor.Undo()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuRedo_OnClick()
+   TxtEditor.Redo()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuCopy_OnClick()
+   TxtEditor.Copy()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuCut_OnClick()
+   TxtEditor.Cut()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuPaste_OnClick()
+   TxtEditor.Paste()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuDelete_OnClick()
+   TxtEditor.SelectedText = ""
+EndSub
+
+
+'------------------------------------------------
+Sub MnuSelAll_OnClick()
+   TxtEditor.SelectAll()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuBold_OnCheck()
+   TxtEditor.FontBold = MnuBold.Checked
+EndSub
+
+
+'------------------------------------------------
+Sub MnuItalic_OnCheck()
+   TxtEditor.FontItalic = MnuItalic.Checked
+EndSub
+
+
+'------------------------------------------------
+Sub MnuUnderline_OnCheck()
+   TxtEditor.Underlined = MnuUnderline.Checked
+EndSub
+
+
+'------------------------------------------------
+Sub MnuEdit_OnOpen()
+   MnuUndo.Enabled = TxtEditor.CanUndo
+   MnuRedo.Enabled = TxtEditor.CanRedo
+   
+   hasSelection = TxtEditor.SelectionLength > 0
+   MnuCopy.Enabled = hasSelection
+   MnuCut.Enabled = hasSelection
+   MnuDelete.Enabled = hasSelection
+   MnuSelAll.Enabled = (TxtEditor.Text <> "")
+EndSub
+
+
+'------------------------------------------------
+Sub MnuWrap_OnCheck()
+   TxtEditor.WordWrap = MnuWrap.Checked
+EndSub
+
+Sub MnuRtl_OnCheck()
+   TxtEditor.RightToLeft = MnuRtl.Checked
+EndSub
+
+'------------------------------------------------
+Sub MnuMuliline_OnCheck()
+   TxtEditor.MultiLine = MnuMuliline.Checked
+EndSub
+
+
+'------------------------------------------------
+Sub MnuFont_OnClick()
+   TxtEditor.ChooseFont()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuForeColor_OnClick()
+   TxtEditor.ChooseForeColor()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuBackColor_OnClick()
+   TxtEditor.ChooseBackColor()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuFrameColor_OnClick()
+   Me.ChooseBackColor()
+EndSub
+
+
+'------------------------------------------------
+Sub MnuOptions_OnClick()
+   Forms.ShowDialog("FrmOps", "")
+EndSub
+
+
+'------------------------------------------------
+Sub MnuView_OnOpen()
+   MnuRtl.Checked = TxtEditor.RightToLeft
+   MnuWrap.Checked = TxtEditor.WordWrap
+   MnuMuliline.Checked = TxtEditor.MultiLine
+   MnuBold.Checked = TxtEditor.FontBold
+   MnuItalic.Checked = TxtEditor.FontItalic
+   MnuUnderline.Checked = TxtEditor.Underlined
+EndSub
+
+
+'------------------------------------------------
+Sub FrmMain_OnClosing()
+   Event.Handled = (AskToSave() = False)
+EndSub
+
+
+'------------------------------------------------
+Sub MnuFind_OnClick()
+   Me.ShowChildForm("FrmFind", TxtEditor)
+EndSub
+
+

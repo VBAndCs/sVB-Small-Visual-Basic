@@ -1,0 +1,75 @@
+Langs = {"English", "French", "German", "Italian", "Japanese",
+   "Korean", "SimplifiedChinese", "Spanish", "TraditionalChinese"}
+
+ChkFrom.AllowEdit = False
+ChkTo.AllowEdit = False
+BtnDefinition.Enabled = False
+
+ChkFrom.AddItem(Langs)
+ChkFrom.SelectedIndex = 1
+
+'------------------------------------------------
+Sub ChkFrom_OnSelection()
+   If ChkFrom.SelectedIndex = 1 Then
+      ChkTo.RemoveAllItems()
+      ChkTo.AddItem(Langs)
+      ChkTo.SelectedIndex = 1
+   ElseIf ChkTo.ItemsCount > 1 Then
+      ChkTo.RemoveAllItems()
+      ChkTo.AddItem("English")
+      ChkTo.SelectedIndex = 1
+   EndIf
+   
+EndSub
+
+
+'------------------------------------------------
+Sub TxtWord_OnTextChanged()
+   BtnDefinition.Enabled = TxtWord.Text <> ""
+EndSub
+
+
+'------------------------------------------------
+Sub BtnDefinition_OnClick()
+   word = TxtWord.Text
+   
+   If ChkFrom.SelectedItem = "English" Then
+      
+      If ChkTo.SelectedItem = "English" Then
+         TxtDefinition.Text = Dictionary.GetDefinitionEnglishToEnglish(word)
+      ElseIf ChkTo.SelectedItem = "French" Then
+         TxtDefinition.Text = Dictionary.GetDefinitionEnglishToFrench(word)
+      ElseIf ChkTo.SelectedItem = "German" Then
+         TxtDefinition.Text = Dictionary.GetDefinitionEnglishToGerman(word)
+      ElseIf ChkTo.SelectedItem = "Italian" Then
+         TxtDefinition.Text = Dictionary.GetDefinitionEnglishToItalian(word)
+      ElseIf ChkTo.SelectedItem = "Japanese" Then
+         TxtDefinition.Text = Dictionary.GetDefinitionEnglishToJapanese(word)
+      ElseIf ChkTo.SelectedItem = "Korean" Then
+         TxtDefinition.Text = Dictionary.GetDefinitionEnglishToKorean(word)
+      ElseIf ChkTo.SelectedItem = "SimplifiedChinese" Then
+         TxtDefinition.Text = Dictionary.GetDefinitionEnglishToSimplifiedChinese(word)
+      ElseIf ChkTo.SelectedItem = "Spanish" Then
+         TxtDefinition.Text = Dictionary.GetDefinitionEnglishToSpanish(word)
+      Else
+         TxtDefinition.Text = Dictionary.GetDefinitionEnglishToTraditionalChinese(word)
+      EndIf
+      
+   ElseIf ChkFrom.SelectedItem = "French" Then
+      TxtDefinition.Text = Dictionary.GetDefinitionFrenchToEnglish(word)
+   ElseIf ChkFrom.SelectedItem = "German" Then
+      TxtDefinition.Text = Dictionary.GetDefinitionGermanToEnglish(word)
+   ElseIf ChkFrom.SelectedItem = "Italian" Then
+      TxtDefinition.Text = Dictionary.GetDefinitionItalianToEnglish(word)
+   ElseIf ChkFrom.SelectedItem = "Japanese" Then
+      TxtDefinition.Text = Dictionary.GetDefinitionJapaneseToEnglish(word)
+   ElseIf ChkFrom.SelectedItem = "Korean" Then
+      TxtDefinition.Text = Dictionary.GetDefinitionKoreanToEnglish(word)
+   ElseIf ChkFrom.SelectedItem = "SimplifiedChinese" Then
+      TxtDefinition.Text = Dictionary.GetDefinitionSimplifiedChineseToEnglish(word)
+   ElseIf ChkFrom.SelectedItem = "Spanish" Then
+      TxtDefinition.Text = Dictionary.GetDefinitionSpanishToEnglish(word)
+   Else
+      TxtDefinition.Text = Dictionary.GetDefinitionTraditionalChineseToEnglish(word)
+   EndIf
+EndSub

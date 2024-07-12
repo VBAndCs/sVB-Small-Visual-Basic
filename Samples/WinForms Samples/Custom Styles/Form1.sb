@@ -1,0 +1,23 @@
+
+
+
+'------------------------------------------------
+Sub Button2_OnClick()
+   Me.SetResourceDictionary("RoundCorner.style")
+   Button1.BackColor = Colors.Red
+EndSub
+
+
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   Button1.SetStyle("RoundCorner2.style", "RoundedButton")
+   Button1.ForeColor = Colors.Yellow
+EndSub
+
+
+'------------------------------------------------
+Sub Button3_OnClick()
+   Button3.SetResourceDictionary("RoundCorner.style")
+EndSub

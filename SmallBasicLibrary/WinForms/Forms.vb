@@ -553,10 +553,11 @@ Namespace WinForms
         ''' <returns>the form name</returns>
         <ReturnValueType(VariableType.Form)>
         Public Shared Function ShowForm(formName As Primitive, argsArr As Primitive) As Primitive
-            If App.IsDebugging Then
+            Dim asm = System.Reflection.Assembly.GetCallingAssembly()
+
+            If App.IsDebugging AndAlso asm.FullName.StartsWith("sVBCompiler,") Then
                 RaiseEvent DebugShowForm(LCase(formName), argsArr)
             Else
-                Dim asm = System.Reflection.Assembly.GetCallingAssembly()
                 App.Invoke(
                       Sub()
                           Try
@@ -595,12 +596,13 @@ Namespace WinForms
         ''' <returns>the dialog result that Represents the type of the button that user clicked, like OK, Yes, No, ... etc.</returns>
         <ReturnValueType(VariableType.DialogResult)>
         Public Shared Function ShowDialog(formName As Primitive, argsArr As Primitive) As Primitive
-            If App.IsDebugging Then
+            Dim asm = System.Reflection.Assembly.GetCallingAssembly()
+
+            If App.IsDebugging AndAlso asm.FullName.StartsWith("sVBCompiler,") Then
                 RaiseEvent DebugShowDialog(LCase(formName), argsArr)
                 Return formName
             End If
 
-            Dim asm = System.Reflection.Assembly.GetCallingAssembly()
             App.Invoke(
                 Sub()
                     Try

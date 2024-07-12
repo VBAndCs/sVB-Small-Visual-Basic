@@ -1,0 +1,40 @@
+'@Form Hints:
+'#Form1{
+'    TxtPath: TextBox
+'    Label1: Label
+'    BtnBrowse: Button
+'    TxtContents: TextBox
+'    BtnShow: Button
+'    ChkRecursive: CheckBox
+'}
+
+Me = "form1"
+TxtPath = "form1.txtpath"
+Label1 = "form1.label1"
+BtnBrowse = "form1.btnbrowse"
+TxtContents = "form1.txtcontents"
+BtnShow = "form1.btnshow"
+ChkRecursive = "form1.chkrecursive"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    BtnBrowse: OnClick
+'    Form1: OnClosing
+'    BtnShow: OnClick
+'}
+
+' BtnBrowse Events:
+Control.HandleEvents(BtnBrowse)
+Control.OnClick = BtnBrowse_OnClick
+
+' Form1 Events:
+Control.HandleEvents(Form1)
+Form.OnClosing = Form1_OnClosing
+
+' BtnShow Events:
+Control.HandleEvents(BtnShow)
+Control.OnClick = BtnShow_OnClick
+
+

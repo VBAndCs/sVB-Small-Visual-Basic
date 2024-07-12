@@ -1,0 +1,67 @@
+TextBox1.MultiLine = True
+
+Arr = {1, 2, 3, 4, 5}
+Arr["test"] = "Hello"
+Arr!Name = "Ahmad"
+
+ForEach Item In Arr
+   ListBox1.AddItem(Item)
+Next
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   TextBox1.Text = ""
+   
+   ForEach item In ListBox1.Items
+      TextBox1.AppendLine(item)
+   Next
+   
+   ' remove the extra empty line
+   t = TextBox1.Text
+   If t <> "" Then
+      TextBox1.Text = t.SubText(1, t.Length - 2)
+   EndIf
+   
+EndSub
+
+
+'------------------------------------------------
+Sub Button2_OnClick()
+   lines = GetLines(TextBox1.Text)
+   ListBox1.RemoveAllItems()
+   
+   ForEach strLine In lines
+      ListBox1.AddItem(strLine)
+   Next
+   
+EndSub
+
+
+
+'------------------------------------------------
+Function GetLines(txt)
+   str = ""
+   str = txt
+   pos = 1
+   a = {}
+   length = str.Length
+   n = 1
+   For i = 1 To length
+      If str[i] = Chars.Cr Then
+         a[n] = str.SubText(pos, i - pos)
+         If i < length And str[i + 1] = Chars.Lf Then
+            i = i + 1
+         EndIf
+         pos = i + 1
+         n = n + 1
+         
+      ElseIf str[i] = Chars.Lf Then
+         a[n] = str.SubText(pos, i - pos)
+         pos = i + 1
+         n = n + 1
+      EndIf
+   Next
+   a[n] = str.SubText(pos, length - pos + 1)
+   
+   Return a
+EndFunction

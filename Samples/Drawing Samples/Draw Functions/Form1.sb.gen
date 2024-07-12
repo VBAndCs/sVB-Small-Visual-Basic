@@ -1,0 +1,54 @@
+'@Form Hints:
+'#Form1{
+'    TxtFunc1: TextBox
+'    LblColor1: Label
+'    LblColor2: Label
+'    TxtFunc2: TextBox
+'    BtnDraw: Button
+'    TxtScale: TextBox
+'    Label1: Label
+'    ChkRad: CheckBox
+'}
+
+Me = "form1"
+TxtFunc1 = "form1.txtfunc1"
+LblColor1 = "form1.lblcolor1"
+LblColor2 = "form1.lblcolor2"
+TxtFunc2 = "form1.txtfunc2"
+BtnDraw = "form1.btndraw"
+TxtScale = "form1.txtscale"
+Label1 = "form1.label1"
+ChkRad = "form1.chkrad"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    LblColor1: OnClick
+'    LblColor2: OnClick
+'    BtnDraw: OnClick
+'    TxtScale: OnLostFocus
+'    ChkRad: OnCheck
+'}
+
+' LblColor1 Events:
+Control.HandleEvents(LblColor1)
+Control.OnClick = LblColor1_OnClick
+
+' LblColor2 Events:
+Control.HandleEvents(LblColor2)
+Control.OnClick = LblColor2_OnClick
+
+' BtnDraw Events:
+Control.HandleEvents(BtnDraw)
+Control.OnClick = BtnDraw_OnClick
+
+' TxtScale Events:
+Control.HandleEvents(TxtScale)
+Control.OnLostFocus = TxtScale_OnLostFocus
+
+' ChkRad Events:
+Control.HandleEvents(ChkRad)
+CheckBox.OnCheck = ChkRad_OnCheck
+
+
+Form.Show(Me)

@@ -1,0 +1,74 @@
+' ROTATING CIRCLES REVISITED
+' Modified by Jim Tharp
+' Credit To Mohammad Hamdy & Ardi Ardi
+
+GraphicsWindow.BackgroundColor = Colors.Black   ' background color
+GraphicsWindow.CanResize = False   ' no re-sizing of screen
+X = 0   ' select number (0 to 5) to check different resolutions  - ( 0 is your monitor )
+
+If X = 1 Then
+   GraphicsWindow.Width = 1024      ' width - minimum
+   GraphicsWindow.Height = 768 - 26   ' height - minimum - minus top message window
+ElseIf X = 2 Then
+   GraphicsWindow.Width = 1372      ' width - dell laptop
+   GraphicsWindow.Height = 751 - 26   ' height - dell laptop - minus top message window
+ElseIf X = 3 Then
+   GraphicsWindow.Width = 1200      ' width - vaio laptop
+   GraphicsWindow.Height = 900 - 26   ' height -vaio laptop - minus top message window
+ElseIf X = 4 Then
+   GraphicsWindow.Width = 1600      ' width - alienware laptop
+   GraphicsWindow.Height = 900 - 26   ' height - alienware laptop - minus top message window
+ElseIf X = 5 Then
+   GraphicsWindow.Width = 1920       ' width - alienware desktop
+   GraphicsWindow.Height = 1080 - 26   ' height - alienware desktop - minus top message window
+Else
+   GraphicsWindow.Width = Desktop.Width        ' your monitor width
+   GraphicsWindow.Height = Desktop.Height - 26   ' your monitor height - minus top message window
+EndIf
+
+GraphicsWindow.Left = -3   ' adjust left screen edge
+GraphicsWindow.Top = 0   ' set top screen position
+GraphicsWindow.KeyDown = KeyPress   ' end program sub-routine
+Mouse.HideCursor()   ' hide mouse curcor
+W = GraphicsWindow.Width   ' window width
+H = GraphicsWindow.Height   ' window height
+W2 = W / 2   ' half window width = window center
+H2 = H / 2   ' half window height = window center
+M2 = W2 - 550
+P2 = H2 - 275
+GraphicsWindow.PenWidth = 2   ' circle pen width
+GraphicsWindow.Title = "ROTATING CIRCLES REVISITED"   ' program title
+C = {Colors.Red, Colors.Lime, Colors.Blue, Colors.Magenta,
+   Colors.Cyan, Colors.Red, Colors.Lime, Colors.Blue,
+   Colors.Magenta, Colors.Cyan}
+' -------------------------------------------------------------------------------
+While True   ' endless loop
+   For N = 550 To 1 Step -2   ' rotate circles
+      Draw()   ' draw circles
+   Next
+   Program.Delay(250)
+   For N = 1 To 550 Step 2   ' reverse circles
+      Draw()   ' draw circles
+   Next
+   Program.Delay(250)
+Wend
+' --------------------------------------------------------------------------------
+Sub Draw()   ' draw circles sub-routine
+   Program.Delay(10)   ' if it is not running smooth - change delay here
+   GraphicsWindow.Clear()   ' clear screen
+   For j = 1 To 10   ' 10 circles
+      GraphicsWindow.PenColor = C[j]   ' circle color
+      k = j * 50   ' re-size circles
+      X = P2 + (k + N) / 2
+      y = 550 - k
+      GraphicsWindow.DrawEllipse(W2, X, y, y - N)   ' draw circles
+      GraphicsWindow.DrawEllipse(M2 + k, X, y, y - N)   ' draw circles
+   Next
+   ' -----------------------------------------------------------------------------
+EndSub
+
+Sub KeyPress()   ' key press sub routine
+   If Keyboard.LastKey = Keys.Escape Then
+      Program.End()
+   EndIf
+EndSub

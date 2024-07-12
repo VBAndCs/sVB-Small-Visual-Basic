@@ -1,0 +1,40 @@
+Turtle.Speed = 50
+Turtle.Y = 500
+Turtle.CreateFigure()
+GW.GradientEndColor = Colors.AliceBlue
+
+For I = 1 To 5
+   Turtle.Move(40)
+   Turtle.TurnLeft()
+   Turtle.Move(40)
+   Turtle.TurnRight()
+   Turtle.Move(40)
+   Turtle.TurnRight()
+   Turtle.Move(40)
+   Turtle.TurnLeft()
+Next
+
+Turtle.TurnRight()
+Turtle.Move(160)
+Turtle.TurnRight()
+
+For I = 1 To 5
+   Turtle.Move(40)
+   Turtle.TurnRight()
+   Turtle.Move(40)
+   Turtle.TurnLeft()
+   Turtle.Move(40)
+   Turtle.TurnLeft()
+   Turtle.Move(40)
+   Turtle.TurnRight()
+Next
+
+
+Turtle.Move(40)
+Turtle.TurnRight()
+Turtle.Move(200)
+Turtle.TurnRight()
+Turtle.Move(40)
+Turtle.TurnRight()
+Turtle.Move(40)
+Turtle.FillFigure()

@@ -1,0 +1,23 @@
+Trans = 0
+
+'----------------------------
+Sub Button1_OnClick
+   Trans = Math.Min(100, Trans + 10)
+   r = Colors.Red
+   TextBox1.BackColor = r.ChangeTransparency(Trans)
+   c = TextBox1.BackColor
+   TextBox1.Text = c.NameAndTransparency
+EndSub
+
+
+'----------------------------
+Sub Button2_OnClick
+   Trans = Math.Max(0, Trans - 10)
+   TextBox1.BackColor = Color.ChangeTransparency(
+      Colors.Red,
+      Trans
+   )
+   TextBox1.Text = Color.GetNameAndTransparency(
+      TextBox1.BackColor
+   )
+EndSub

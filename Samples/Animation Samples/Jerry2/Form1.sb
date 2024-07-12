@@ -1,0 +1,30 @@
+w = Me.Width - Jerry.Width
+h = Me.Height-Jerry.Height
+Jerry.Image = "1.png"
+
+While True
+   Jerry.AnimatePos(0, 0, 2500)
+   Program.Delay(2500)
+   
+   Jerry.Angle = 90
+   Jerry.AnimatePos(w, h, 3000)
+   Program.Delay(3000)
+   
+   Jerry.Angle = -90
+   Jerry.AnimatePos(0, h, 2500)
+   Program.Delay(2500)
+   
+   Jerry.Angle = 180
+   Jerry.AnimatePos(0, 0, 2000)
+   Program.Delay(2000)
+   
+   Jerry.Angle = 0
+   Jerry.AnimatePos(w, 0, 2500)
+   Program.Delay(2500)
+Wend
+
+
+'------------------------------------------------
+Sub Form1_OnClosing
+ Program.End()
+EndSub

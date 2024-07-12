@@ -1,0 +1,36 @@
+
+
+' ------------------------------------------------
+Sub Button1_OnClick()
+   GW.Clear()
+   GW.BackgroundColor = Colors.Black
+   GW.PenColor = Colors.White
+   Stars(
+      GW.Width / 2,
+      GW.Height / 2,
+      TxtCount.Text,
+      TxtRadius.Text,
+      TxtDelay.Text
+   )
+   GW.Show()
+EndSub
+
+' ------------------------------------------------
+Sub Stars(x, y, n, r, delay)
+   m = 360 / n
+   For i = 1 To n
+      a = (i - 1) * m * Math.Pi / 180
+      px[i] = x + r * Math.Cos(a)
+      py[i] = y + r * Math.Sin(a)
+   Next
+   
+   col = 1 + Math.GetRandomNumber(15)
+   
+   For i = 1 To n
+      For j = i + 1 To n
+         GW.DrawLine(px[i], py[i], px[j], py[j])
+         Program.Delay(delay)
+      Next
+   Next
+   
+EndSub

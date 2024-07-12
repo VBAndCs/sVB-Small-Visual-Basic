@@ -1,0 +1,63 @@
+TextBox1.MultiLine = True
+
+'------------------------------------------------
+
+Sub BtnNextLine_OnClick()
+   TextBox1.CaretIndex = GetLineEnd() + 1
+   TextBox1.Focus()
+EndSub
+
+
+'------------------------------------------------
+Sub BtnPrevLine_OnClick()
+   TextBox1.CaretIndex = GetLineStart() -1
+   TextBox1.Focus()
+EndSub
+
+
+'------------------------------------------------
+Sub BtnNextLine1_OnClick()
+   TextBox1.Focus()
+   start = GetLineStart()
+   end = GetLineEnd()
+   Me.Text = end - start
+   TextBox1.Select(start, end - start)
+EndSub
+
+'------------------------------------------------
+Function GetLineEnd()
+   pos = TextBox1.CaretIndex
+   txt = TextBox1.Text
+   For i = pos To txt.Length
+      If txt[i] = Chars.Cr Then
+         If txt[i + 1] = Chars.Lf Then
+            Return i
+         Else
+            Return i - 1
+         EndIf
+         ExitLoop
+      EndIf
+   Next
+   Return txt.Length
+EndFunction
+
+
+
+'------------------------------------------------
+Function GetLineStart()
+   pos = TextBox1.CaretIndex
+   txt = TextBox1.Text
+   For i = pos To 1 Step -1
+      If txt[i] = Chars.Lf Then
+         If txt[i - 1] = Chars.Cr Then
+            Return i
+         Else
+            Return i + 1
+         EndIf
+         ExitLoop
+      EndIf
+   Next
+   Return 0
+EndFunction
+
+

@@ -1,0 +1,145 @@
+' contains methods to create custom geometric figures
+
+_LastX = -1
+_LastY = -1
+_DraggedLabel = ""
+
+' Allows the user to drag the control by mouse
+Sub AllowDrag(
+      targetControl ' the control you want to allow the user to drag
+   )
+   targetControl.OnMouseMove = _OnMouseMove
+   targetControl.OnMouseLeftDown = _OnMouseLeftDown
+EndSub
+
+' Prevents the user from dragding the control by mouse
+Sub PreventDrag(
+      targetControl ' the control you want to allow the user to drag
+   )
+   targetControl.RemoveEventHandler("OnMouseMove")
+   targetControl.RemoveEventHandler("OnMouseLeftDown")
+EndSub
+
+'------------------------------------------------
+Sub _OnMouseLeftDown()
+   _LastX = Mouse.X
+   _LastY = Mouse.Y
+   _DraggedLabel = Event.SenderControl
+EndSub
+
+Sub _OnMouseMove()
+   x = Mouse.X
+   y = Mouse.Y
+   
+   If _LastX > -1 And Event.IsLeftButtonDown Then ' Drag the figure
+      curlablel = Event.SenderControl
+      If _DraggedLabel = curlablel Then
+         curlablel.Left = curlablel.Left + x - _LastX
+         curlablel.Top = curlablel.Top + y - _LastY
+         Event.Handled = True
+         _LastX = x
+         _LastY = y
+      Else
+         _LastX = -1
+         _LastY = -1
+      EndIf
+   Else
+      _DraggedLabel = ""
+      _LastX = -1
+      _LastY = -1
+   EndIf
+   
+EndSub
+
+
+'------------------------------------------------
+' Creates a hexagonal figure with strait lines.
+Sub CreateHexagon(
+      targetLabel, ' The label to draw the figure on.
+      penColor, ' the color used to draw the figure outline
+      penWidth, ' the thickness of the outline
+      brushColor ' the color used to fill the internal area of the figure
+   )
+   
+   ' Create a new empty geometric path
+   GeometricPath.CreatePath()
+   
+   ' Crate a figure to draw a new custom figure
+   GeometricPath.CreateFigure(50, 0, True)
+   GeometricPath.AddLineSegment(0, 50, True)
+   GeometricPath.AddLineSegment(50, 100, True)
+   GeometricPath.AddLineSegment(150, 100, True)
+   GeometricPath.AddLineSegment(200, 50, True)
+   GeometricPath.AddLineSegment(150, 0, True)
+   ' No need for this line as the figure is created as a colsed shape
+   'GeometricPath.AddLineSegment(50, 0, True)
+   
+   targetLabel.AddGeometricPath(penColor, penWidth, brushColor)
+EndSub
+
+
+'------------------------------------------------
+' Creates a hexagonal figure with curves.
+Sub CreateCurvyHexagon(
+      targetLabel, ' The label to draw the figure on.
+      penColor, ' the color used to draw the figure outline
+      penWidth, ' the thickness of the outline
+      brushColor ' the color used to fill the internal area of the figure
+   )
+   
+   ' Create a new empty geometric path
+   GeometricPath.CreatePath()
+   
+   GeometricPath.CreateFigure(50, 0, False)
+   GeometricPath.AddLineSegment(0, 50, True)
+   GeometricPath.AddArcSegment(
+      50, 100,
+      20, 30,
+      30,
+      False,
+      True,
+      True
+   )
+   
+   GeometricPath.AddLineSegment(150, 100, True)
+   GeometricPath.AddBezierSegment(
+      160, 110, ' First control point
+      180, 130, ' Seccond control point
+      200, 50, ' End point
+      True
+   )
+   
+   GeometricPath.AddQuadraticBezierSegment(
+      180, 10, ' Contol point
+      150, 0, ' End point
+      True
+   )
+   
+   GeometricPath.AddLineSegment(50, 0, True)
+   targetLabel.AddGeometricPath(penColor, penWidth, brushColor)
+   
+EndSub
+
+
+'------------------------------------------------
+' Creates a shape composed of basic seometric shapes.
+Sub CreateCompositShape(
+      targetLabel, ' The label to draw the figure on.
+      penColor, ' the color used to draw the figure outline
+      penWidth, ' the thickness of the outline
+      brushColor ' the color used to fill the internal area of the figure
+   )
+   
+   ' You can also combine some basic shapes in one path
+   GeometricPath.CreatePath()
+   GeometricPath.AddLine(0, 0, 300, 300)
+   GeometricPath.AddRectangle(0, 0, 200, 200)
+   GeometricPath.AddEllipse(50, 50, 100, 100)
+   GeometricPath.AddTriangle(
+      200, 200,
+      300, 100,
+      300, 300
+   )
+   
+   targetLabel.AddGeometricPath(penColor, penWidth, brushColor)
+EndSub

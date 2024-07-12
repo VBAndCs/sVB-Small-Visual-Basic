@@ -266,8 +266,6 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     _path.Fill = GraphicsWindow._fillBrush
-                    _path.Stroke = WinForms.Color.GetBrush(GraphicsWindow.PenColor)
-                    _path.StrokeThickness = GraphicsWindow.PenWidth
                     GraphicsWindow.AddShape(name, _path)
                     _path = Nothing
                 End Sub)

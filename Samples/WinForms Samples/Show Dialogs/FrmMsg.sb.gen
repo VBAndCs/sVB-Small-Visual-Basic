@@ -1,0 +1,35 @@
+'@Form Hints:
+'#FrmMsg{
+'    BtnYes: Button
+'    LblMsg: Label
+'    BtnNo: Button
+'    BtnCancel: Button
+'}
+
+Me = "FrmMsg"
+BtnYes = "frmmsg.btnyes"
+LblMsg = "frmmsg.lblmsg"
+BtnNo = "frmmsg.btnno"
+BtnCancel = "frmmsg.btncancel"
+FrmMsg = Forms.LoadForm("FrmMsg", "FrmMsg.xaml")
+Form.SetArgsArr(frmmsg, Stack.PopValue("_frmmsg_argsArr"))
+Form.Show(FrmMsg)
+'#Events{
+'    BtnYes: OnClick
+'    BtnNo: OnClick
+'    BtnCancel: OnClick
+'}
+
+' BtnYes Events:
+Control.HandleEvents(BtnYes)
+Control.OnClick = BtnYes_OnClick
+
+' BtnNo Events:
+Control.HandleEvents(BtnNo)
+Control.OnClick = BtnNo_OnClick
+
+' BtnCancel Events:
+Control.HandleEvents(BtnCancel)
+Control.OnClick = BtnCancel_OnClick
+
+

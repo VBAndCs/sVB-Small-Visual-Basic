@@ -1,0 +1,20 @@
+Turtle.Speed = 50
+Turtle.Y = 150
+N = 20
+For I = 1 To 360 Step 360 / N
+   Turtle.Angle = I
+   DrawTriangle()
+Next
+' ------------------------------------------------
+Sub DrawTriangle()
+   Turtle.CreateFigure()
+   Turtle.Turn(10)
+   Turtle.Move(100)
+   Turtle.Turn(80)
+   ' Uncomment the next line and see what happens
+   ' Turtle.Move(20)
+   Turtle.Turn(80)
+   Turtle.Move(100)
+   GW.BrushColor = Colors.Gold
+   Turtle.FillFigure()
+EndSub

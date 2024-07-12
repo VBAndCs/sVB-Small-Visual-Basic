@@ -1,0 +1,96 @@
+lblResult.WordWrap = False
+
+'----------------------------
+Sub BtnAdd_OnClick
+   lblResult.Text = "Result = " + (txtNum1.Text + txtNum2.Text)
+EndSub
+
+'__________________________________
+Sub BtnSubtract_OnClick
+   lblResult.Text = "Result = " + (txtNum1.Text - txtNum2.Text)
+EndSub
+
+'__________________________________
+Sub BtnMultply_OnClick
+   lblResult.Text = "Result = " + (txtNum1.Text * txtNum2.Text)
+EndSub
+
+'__________________________________
+Sub BtnDivide_OnClick
+   If txtNum2.Text = 0 Then
+      result = "Can't divide by zero."
+      txtNum2.SelectAll()
+      txtNum2.Focus()
+      
+   Else
+      result = "Result = " + (txtNum1.Text / txtNum2.Text)
+   EndIf
+   
+   lblResult.Text = result
+EndSub
+
+
+'----------------------------
+Sub TxtNum1_OnTextInput
+   Validate(txtNum1)
+EndSub
+
+'------------------------------------------------
+Sub TxtNum2_OnTextInput
+   Validate(txtNum2)
+EndSub
+
+
+'------------------------------------------------
+Sub Validate(numTextBox)
+   c = Event.LastTextInput
+   If Text.IsNumeric(c) = False Then
+      If c = "-" Then
+         If Text.StartsWith(numTextBox.Text, "-") Then
+            Sound.PlayBellRing()
+            Event.Handled = True
+         Else
+            numTextBox.Select(1, 0)
+         EndIf
+         
+      ElseIf c = "." Then
+         If Text.Contains(numTextBox.Text, ".") Then
+            Sound.PlayBellRing()
+            Event.Handled = True
+         EndIf
+         
+      Else
+         Sound.PlayBellRing()
+         Event.Handled = True
+      EndIf
+   EndIf
+EndSub
+
+'------------------------------------------------
+LastN1 = 0
+
+Sub TxtNum1_OnTextChanged
+   LastN1 = Reject(txtNum1, LastN1)
+EndSub
+
+'------------------------------------------------
+LastN2 = 0
+
+Sub TxtNum2_OnTextChanged
+   LastN2 = Reject(txtNum2, LastN2)
+EndSub
+
+'------------------------------------------------
+Function Reject(numTextBox, lastN)
+   If numTextBox.Text = "" Then
+      numTextBox.Text = "0"
+      numTextBox.SelectAll()
+      
+   ElseIf Text.IsNumeric(numTextBox.Text) = False Then
+      numTextBox.Text = lastN
+      Sound.PlayBellRing()
+      numTextBox.SelectAll()
+   EndIf
+   
+   Return numTextBox.Text
+EndFunction

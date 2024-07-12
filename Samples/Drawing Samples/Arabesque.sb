@@ -1,0 +1,50 @@
+GraphicsWindow.Width = 990
+GraphicsWindow.Height = 700
+GraphicsWindow.Top = 0
+GraphicsWindow.Left = 0
+
+GraphicsWindow.BackgroundColor = "#002211"
+Math.UseRadianAngles = False
+
+Draw(180, -90)
+Draw(540, -90)
+Draw(900, -90)
+Draw(180, 270)
+Draw(540, 270)
+Draw(900, 270)
+
+
+' ------------------------------------------
+Sub Draw(ox, oy)
+   oy = oy + 180
+   
+   For r = 3 To 50 Step 3
+      For x = -180 To 180
+         y = r * Math.Sin(x) * Math.Cos(3 * x)
+         
+         GraphicsWindow.SetPixel(
+            ox + x,
+            oy - y,
+            Colors.Gold
+         )
+         
+         GraphicsWindow.SetPixel(
+            ox + x,
+            oy + y,
+            Colors.Gold
+         )
+         
+         GraphicsWindow.SetPixel(
+            ox - y,
+            oy + x,
+            Colors.Gold
+         )
+         
+         GraphicsWindow.SetPixel(
+            ox + y,
+            oy + x,
+            Colors.Gold
+         )
+      Next
+   Next
+EndSub

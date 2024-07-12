@@ -1,0 +1,48 @@
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   x = {}
+   TextBox1.Text = ""
+   start = Date.Now
+   totalTime = #+0#
+   For i = 1 To 10000
+      x[i] = i
+      If i.Remainder(100) = 0 Then
+         t = Date.Now - start
+         d = t - totalTime
+         totalTime = t
+         TextBox1.AppendLine(
+            "100 items added at " + Math.Round2(d.TotalSeconds, 3) +
+            " seconds. Total items = " + i
+         )
+      EndIf
+   Next
+   TextBox1.AppendLine("Total time: " + Math.Round2(totalTime.TotalSeconds, 3) + " seconds.")
+EndSub
+
+
+'------------------------------------------------
+Sub Button2_OnClick()
+   x = {}
+   TextBox1.Text = ""
+   start = Date.Now
+   totalTime = #+0#
+   For i = 1 To 10000
+      ' Causion: The Array.Append method is fast but it is a by reference operation
+      ' and can affect another arry if the current array is copied from it by using the = operator
+      ' or by passing it to a parameter or returning it form a function
+      ' The same applies on the Array.SetItemAt method.
+      x.Append(i)
+      If i.Remainder(100) = 0 Then
+         t = Date.Now - start
+         d = t - totalTime
+         totalTime = t
+         TextBox1.AppendLine(
+            "100 items added at " + Math.Round(d.TotalMilliseconds) +
+            " milliseconds. Total items = " + i
+         )
+      EndIf
+   Next
+   TextBox1.AppendLine("Total time: " + Math.Round2(totalTime.TotalSeconds, 3) + " seconds.")
+EndSub

@@ -1,0 +1,9 @@
+' Note that TextBox1 will allow you to write digits only
+
+'----------------------------
+Sub TextBox1_OnKeyDown
+   lastKey = Keyboard.LastKey
+   If lastKey < Keys.D0 Or lastKey > Keys.D9 Then
+      Event.Handled = True
+   EndIf
+EndSub

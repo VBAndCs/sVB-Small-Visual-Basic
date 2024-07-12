@@ -1,0 +1,29 @@
+Math.UseRadianAngles = False
+N = 9 ' use odd number
+Sides = N * 5
+Length = 2 * Math.Pi * 70 / Sides
+Angle = 360 / Sides
+Turtle.Speed = 50
+
+M = Math.Floor(N / 2)
+A = M * 180 / N
+X = Sides * Math.Cos(A)
+
+For J = 1 To N
+   For I = 1 To Sides
+      If I < X + 1 Then
+         Turtle.PenDown()
+      ElseIf I > Sides - X Then
+         Turtle.PenDown()
+      Else
+         Turtle.PenUp()
+      EndIf
+      
+      Turtle.DirectMove(Length)
+      Turtle.DirectTurn(Angle)
+      Program.Delay(1)
+   EndFor
+   Turtle.Turn(360 / N)
+EndFor
+
+Turtle.Hide()

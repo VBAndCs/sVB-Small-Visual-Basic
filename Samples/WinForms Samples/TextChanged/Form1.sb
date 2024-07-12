@@ -1,0 +1,14 @@
+
+
+'----------------------------
+Sub TextBox1_OnTextInput
+   'Event.Handled = true
+   Label1.Text = "LastKeyName = " + Event.LastKeyName
+   Label2.Text = "LastTextInput = " + Event.LastTextInput
+EndSub
+
+
+Sub TextBox1_OnTextChanged
+   Me.Text = TextBox1.Text
+EndSub
+

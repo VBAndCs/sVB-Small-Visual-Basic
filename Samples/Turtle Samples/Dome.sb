@@ -1,0 +1,17 @@
+Sides = 50
+Turtle.Width = 20
+Length = 400 / Sides
+Angle = 360 / Sides
+_Shapes = 17
+Turtle.Speed = 50
+Turtle.UseAnimation = False
+
+
+
+For J = 1 To _Shapes
+   For I = 1 To Sides
+      Turtle.Move(Length)
+      Turtle.Turn(Angle)
+   Next
+   Turtle.Turn(360 / _Shapes)
+Next

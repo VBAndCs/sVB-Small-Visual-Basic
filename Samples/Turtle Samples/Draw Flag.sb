@@ -1,0 +1,42 @@
+' Using Small Visual Basic Turtle to draw a flag
+' Change rectangle colors to draw different flags
+
+GW.BackgroundColor = Colors.AliceBlue
+Turtle.Speed = 15
+Turtle.X = 100
+Turtle.Y = 350
+DarwRect(100, 500, Colors.Green)
+DarwRect(100, 500, Colors.White)
+DarwRect(100, 500, Colors.Black)
+DrawTriangle(120, 300, Colors.Red)
+
+
+
+' ------------------------------------------------
+Sub DarwRect(w, h, colour)
+   Turtle.CreateFigure()
+   Turtle.Move(w)
+   Turtle.TurnRight()
+   Turtle.Move(h)
+   Turtle.TurnRight()
+   Turtle.Move(w)
+   Turtle.TurnRight()
+   Turtle.Move(h)
+   GW.BrushColor = colour
+   Turtle.FillFigure()
+   
+   Turtle.TurnRight()
+   Turtle.Move(w)
+EndSub
+
+
+' ------------------------------------------------
+Sub DrawTriangle(a, l, colour)
+   Turtle.CreateFigure()
+   For i = 1 To 3
+      Turtle.Turn(a)
+      Turtle.Move(l)
+   Next
+   GW.BrushColor = colour
+   Turtle.FillFigure()
+EndSub

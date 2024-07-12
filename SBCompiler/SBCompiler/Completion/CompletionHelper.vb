@@ -204,7 +204,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 })
             Next
 
-            If addMsgBox Then
+            If addMsgBox AndAlso Not bag.SymbolTable.Subroutines.ContainsKey("msgbox") Then
                 bag.CompletionItems.Add(New CompletionItem() With {
                     .Key = "msgbox",
                     .DisplayName = "MsgBox",

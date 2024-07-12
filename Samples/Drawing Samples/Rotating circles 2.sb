@@ -1,0 +1,46 @@
+' ROTATING CIRCLES FULL SCREEN    Submitted by Jim Tharp  3-4-2024
+' Modified by Jim Tharp
+' Credit to Mohammad Hamdy
+
+GraphicsWindow.BackgroundColor = Colors.Black
+GraphicsWindow.CanResize = False
+GraphicsWindow.Width = Desktop.Width
+GraphicsWindow.Height = Desktop.Height - 26
+GraphicsWindow.Left = -3
+GraphicsWindow.Top = 0
+GraphicsWindow.KeyDown = KeyPress
+Mouse.HideCursor()
+W = GraphicsWindow.Width / 2 - 400
+H = GraphicsWindow.Height / 2 - 400
+GraphicsWindow.PenWidth = 2
+GraphicsWindow.Title = "ROTATING CIRCLES"
+_Colors = {Colors.Red, Colors.Lime, Colors.Blue, Colors.Magenta,
+   Colors.Green, Colors.Gold, Colors.Cyan}
+
+While True
+   For I = 1 To 800
+      Program.Delay(10)   ' if it is flashing or not running smooth - add more delay here
+      GraphicsWindow.Clear()
+      For J = 1 To 7
+         GraphicsWindow.PenColor = _Colors[J]
+         K = J * 100
+         GraphicsWindow.DrawEllipse(W + K / 2, H + (K + I) / 2, 800 - K, 800 - I - K)
+      Next
+   Next
+   
+   For I = 800 To 1 Step -1
+      Program.Delay(1)   ' if it is flashing or not running smooth - add more delay here
+      GraphicsWindow.Clear()
+      For J = 7 To 1 Step -1
+         GraphicsWindow.PenColor = _Colors[J]
+         K = J * 100
+         GraphicsWindow.DrawEllipse(W + K / 2, H + (K + I) / 2, 800 - K, 800 - I - K)
+      Next
+   Next
+Wend
+
+Sub KeyPress()   ' key press sub routine
+   If Keyboard.LastKey = Keys.Escape Then
+      Program.End()
+   EndIf
+EndSub

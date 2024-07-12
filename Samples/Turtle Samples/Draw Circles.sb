@@ -1,0 +1,9 @@
+Turtle.Speed = 50
+Turtle.UseAnimation = False
+For N = 1 To 4 Step 0.1
+   GW.PenColor = Color.GetRandomColor()
+   For I = 1 To 360 / N
+      Turtle.Move(4)
+      Turtle.Turn(N)
+   Next
+Next

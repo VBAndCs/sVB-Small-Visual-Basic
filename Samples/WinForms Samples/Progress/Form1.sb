@@ -1,0 +1,39 @@
+ProgressBar1.Visible = False
+LblValue.Visible = False
+BtnCancel.Enabled = False
+
+Timer1 = Me.AddTimer("timer1", 100)
+Timer1.Pause()
+Timer1.OnTick = Progress
+'------------------------------------------------
+Sub BtnStart_OnClick()
+   ProgressBar1.Visible = True
+   LblValue.Visible = True
+   BtnStart.Enabled = False
+   ProgressBar1.Value = 0
+   BtnCancel.Enabled = True
+   Timer1.Resume()
+EndSub
+
+'------------------------------------------------
+Sub Progress()
+   v = ProgressBar1.Value + 1
+   If v <= 100 Then
+      ProgressBar1.Value = v
+      LblValue.Text = v + "%"
+   Else
+      Timer1.Pause()
+      ProgressBar1.Visible = False
+      LblValue.Visible = False
+      BtnStart.Enabled = True
+      BtnCancel.Enabled = False
+   EndIf
+EndSub
+
+
+'------------------------------------------------
+Sub BtnCancel_OnClick()
+   Timer1.Pause()
+   BtnStart.Enabled = True
+   BtnCancel.Enabled = False
+EndSub

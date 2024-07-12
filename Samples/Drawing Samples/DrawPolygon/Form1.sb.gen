@@ -1,0 +1,32 @@
+'@Form Hints:
+'#Form1{
+'    TxtSides: TextBox
+'    TxtLen: TextBox
+'    Button1: Button
+'    Label1: Label
+'    Label2: Label
+'    CmbSpeed: ComboBox
+'    Label3: Label
+'}
+
+Me = "form1"
+TxtSides = "form1.txtsides"
+TxtLen = "form1.txtlen"
+Button1 = "form1.button1"
+Label1 = "form1.label1"
+Label2 = "form1.label2"
+CmbSpeed = "form1.cmbspeed"
+Label3 = "form1.label3"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+
+Form.Show(Me)

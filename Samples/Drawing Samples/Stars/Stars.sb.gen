@@ -1,0 +1,32 @@
+'@Form Hints:
+'#Form1{
+'    TxtCount: TextBox
+'    TxtRadius: TextBox
+'    Button1: Button
+'    Label1: Label
+'    Label2: Label
+'    Label3: Label
+'    TxtDelay: TextBox
+'}
+
+Me = "form1"
+TxtCount = "form1.txtcount"
+TxtRadius = "form1.txtradius"
+Button1 = "form1.button1"
+Label1 = "form1.label1"
+Label2 = "form1.label2"
+Label3 = "form1.label3"
+TxtDelay = "form1.txtdelay"
+_path = Program.Directory + "\stars.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+
+Form.Show(Me)

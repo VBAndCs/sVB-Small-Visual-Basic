@@ -1,0 +1,94 @@
+GW.BackgroundColor = Colors.None
+GW.FullScreen = True
+
+GraphicsWindow.Show()
+GraphicsWindow.Title = "Animate A Football"
+
+' football graphic
+BallImage1 = ImageList.LoadImage("yellow_ball.gif")
+BallImage2 = ImageList.LoadImage("red_ball.gif")
+BallW = ImageList.GetWidthOfImage(BallImage1)
+BallH = ImageList.GetHeightOfImage(BallImage2)
+Ball[1] = Shapes.AddImage(BallImage1)
+Ball[2] = Shapes.AddImage(BallImage2)
+Shapes.HideShape(Ball[1])
+Shapes.HideShape(Ball[2])
+
+' button
+GraphicsWindow.BrushColor = "Black"
+GraphicsWindow.FontSize = 16
+GraphicsWindow.FontBold = "false"
+'TimerButton = Controls.AddButton("Start", 280, 360)
+
+' Arrays initialisieren
+BallX[1] = 0
+BallY[1] = 0
+BallXSpeed[1] = 10
+BallYSpeed[1] = 10
+
+' den Timer aktivieren für alle 100 ms
+Timer.Interval = 100
+Timer.Tick = TickSub
+Timer.Pause()
+ButtonClickedSub()
+
+Sub ButtonClickedSub
+   For i = 1 To 2
+      BallX[i] = Math.GetRandomNumber(GraphicsWindow.Width - BallW) -1
+      BallY[i] = Math.GetRandomNumber(GraphicsWindow.Width - BallW) -1
+      'BallXSpeed[i] = 21 - Math.GetRandomNumber(41)
+      'BallYSpeed[i] = 21 - Math.GetRandomNumber(41)
+      BallXSpeed[i] = 10
+      BallYSpeed[i] = 20
+      Shapes.Move(Ball[i], BallX[i], BallY[i])
+      Shapes.ShowShape(Ball[i])
+   EndFor
+   Timer.Resume()
+EndSub
+
+Sub TickSub
+   For i = 1 To 2
+      BallX[i] = BallX[i] + BallXSpeed[i]
+      BallY[i] = BallY[i] + BallYSpeed[i]
+      Shapes.Move(Ball[i], BallX[i], BallY[i])
+      If (BallY[i] + BallH >= GraphicsWindow.Height) Then
+         ' top bounce
+         BallY[i] = GraphicsWindow.Height - BallH
+         BallYSpeed[i] = -BallYSpeed[i]
+         Sound.PlayMusic("OC")
+         
+         'Sound.Stop("boing.wav")
+         'Sound.Play("boing.wav")
+         
+      ElseIf (BallY[i] <= 0) Then
+         ' bottom bounce
+         BallY[i] = 0
+         BallYSpeed[i] = -BallYSpeed[i]
+         Sound.PlayMusic("OD")
+         
+         'Sound.Stop("boing.wav")
+         'Sound.Play("boing.wav")
+         
+      ElseIf (BallX[i] <= 0) Then
+         ' left bounce
+         BallX[i] = 0
+         BallXSpeed[i] = -BallXSpeed[i]
+         
+         Sound.PlayMusic("OE")
+         
+         'Sound.Stop("boing.wav")
+         'Sound.Play("boing.wav")
+         
+      ElseIf (BallX[i] + BallW >= GraphicsWindow.Width) Then
+         ' right bounce
+         BallX[i] = GraphicsWindow.Width - BallW
+         BallXSpeed[i] = -BallXSpeed[i]
+         Sound.PlayMusic("OF")
+         
+         'Sound.Stop("boing.wav")
+         'Sound.Play("boing.wav")
+      EndIf
+   EndFor
+EndSub
+
+'End of the program ...

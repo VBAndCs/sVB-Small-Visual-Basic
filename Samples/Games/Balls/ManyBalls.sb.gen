@@ -1,0 +1,26 @@
+'@Form Hints:
+'#Form1{
+'    Ball1: Label
+'    Ball2: Label
+'    TimerButton: Button
+'    Ball3: Label
+'}
+
+Me = "form1"
+Ball1 = "form1.ball1"
+Ball2 = "form1.ball2"
+TimerButton = "form1.timerbutton"
+Ball3 = "form1.ball3"
+_path = Program.Directory + "\manyballs.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    TimerButton: OnClick
+'}
+
+' TimerButton Events:
+Control.HandleEvents(TimerButton)
+Control.OnClick = TimerButton_OnClick
+
+

@@ -1,0 +1,83 @@
+' Modified from a SB sample
+
+Turtle.Show()
+Turtle.Speed = 50
+Turtle.UseAnimation = False
+Turtle.X = 400
+Turtle.Y = 300
+Turtle.DirectTurn(30)
+GraphicsWindow.PenWidth = 4
+
+For A = 1 To 7
+   DrawArc()
+   Turtle.DirectTurn(118)
+   DrawArc()
+   Turtle.DirectTurn(19)
+   Turtle.PenUp()
+   Turtle.DirectMove(40)
+Next
+
+' -----------------------------------
+Turtle.X = 380
+Turtle.Y = 310
+For I = 1 To 100
+   Turtle.PenDown()
+   GraphicsWindow.PenColor = "yellow"
+   Turtle.DirectMove(15)
+   GraphicsWindow.PenColor = GraphicsWindow.GetRandomColor()
+   Turtle.DirectMove(10)
+   GraphicsWindow.PenColor = "yellow"
+   Turtle.DirectMove(2)
+   Turtle.PenUp()
+   Turtle.MoveTo(380, 310)
+   Turtle.DirectTurn(180)
+   Turtle.DirectTurn(3.6)
+Next
+
+
+GraphicsWindow.PenWidth = 7
+Turtle.DirectTurn(170)
+For I = 0 To 3
+   Turtle.PenDown()
+   GraphicsWindow.PenColor = "yellow"
+   Turtle.DirectMove(4)
+   Turtle.DirectTurn(-0.7)
+   Turtle.DirectMove(2)
+Next
+
+Turtle.DirectTurn(-11)
+
+For I = 1 To 70
+   Turtle.PenDown()
+   GraphicsWindow.PenColor = "brown"
+   Turtle.DirectMove(4)
+   Turtle.DirectTurn(-0.7)
+   Turtle.DirectMove(2)
+Next
+
+Turtle.X = 380
+Turtle.Y = 310
+Turtle.Angle = 10
+GraphicsWindow.PenWidth = 2
+For I = 1 To 7
+   Turtle.PenUp()
+   Turtle.DirectMove(70)
+   Turtle.PenDown()
+   For A = 0 To 90
+      GraphicsWindow.PenColor = GraphicsWindow.GetRandomColor()
+      Turtle.DirectMove(1)
+   EndFor
+   Turtle.PenUp()
+   Turtle.MoveTo(380, 310)
+   Turtle.Angle = I * (2 + 360 / 7)
+Next
+
+
+Sub DrawArc
+   Turtle.PenDown()
+   For i = 1 To 60
+      GraphicsWindow.PenColor = GraphicsWindow.GetRandomColor()
+      Turtle.DirectMove(5)
+      Turtle.DirectTurn(1)
+   Next
+EndSub

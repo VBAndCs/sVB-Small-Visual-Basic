@@ -1,0 +1,36 @@
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   DrawTiles()
+EndSub
+
+Sub DrawTiles()
+   GraphicsWindow.Clear()
+   GraphicsWindow.BackgroundColor = "Black"
+   GW.PenColor = Colors.White
+   GraphicsWindow.BrushColor = "White"
+   GraphicsWindow.Width = 600
+   GraphicsWindow.Height = 600
+   GraphicsWindow.Top = 0
+   GraphicsWindow.Left = 400
+   
+   tileSize = TxtTruchetSize.Text
+   rows = GraphicsWindow.Height / tileSize
+   columns = GraphicsWindow.Width / tileSize
+   
+   For i = 0 To rows - 1
+      For j = 0 To columns - 1
+         DrawTile(i * tileSize, j * tileSize, tileSize, i * j)
+      Next
+   Next
+EndSub
+
+Sub DrawTile(x, y, size, n)
+   If Math.Remainder(n, TxtFreq.Text) = 0 Then
+      GraphicsWindow.FillEllipse(x, y, size - 3, size - 3)
+   Else
+      GraphicsWindow.DrawLine(x, y, x + size, y + size)
+      GraphicsWindow.DrawLine(x, y + size, x + size, y)
+   EndIf
+EndSub

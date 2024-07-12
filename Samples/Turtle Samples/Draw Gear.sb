@@ -1,0 +1,37 @@
+Turtle.Speed = 50
+Turtle.Y = 450
+Turtle.X = 350
+
+For I = 0 To 360 Step 15
+   Turtle.Angle = I
+   Draw(False)
+Next
+
+
+Turtle.Y = 450
+Turtle.X = 800
+For I = 0 To 360 Step 15
+   Turtle.Angle = I
+   Draw(True)
+Next
+
+' ------------------------------------------------
+Sub Draw(fill)
+   If fill Then
+      Turtle.CreateFigure()
+   EndIf
+   
+   Turtle.Turn(10)
+   Turtle.Move(100)
+   Turtle.Turn(80)
+   Turtle.Move(20)
+   Turtle.Turn(80)
+   Turtle.Move(100)
+   Turtle.Turn(90)
+   Turtle.Move(100)
+   
+   If fill Then
+      GW.BrushColor = Colors.Random
+      Turtle.FillFigure()
+   EndIf
+EndSub

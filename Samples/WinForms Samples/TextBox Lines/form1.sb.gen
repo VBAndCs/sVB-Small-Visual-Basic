@@ -1,0 +1,36 @@
+'@Form Hints:
+'#Form1{
+'    TextBox1: TextBox
+'    BtnPrevLine: Button
+'    BtnNextLine: Button
+'    BtnNextLine1: Button
+'}
+
+Me = "form1"
+TextBox1 = "form1.textbox1"
+BtnPrevLine = "form1.btnprevline"
+BtnNextLine = "form1.btnnextline"
+BtnNextLine1 = "form1.btnnextline1"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Form1)
+'#Events{
+'    BtnPrevLine: OnClick
+'    BtnNextLine: OnClick
+'    BtnNextLine1: OnClick
+'}
+
+' BtnPrevLine Events:
+Control.HandleEvents(BtnPrevLine)
+Control.OnClick = BtnPrevLine_OnClick
+
+' BtnNextLine Events:
+Control.HandleEvents(BtnNextLine)
+Control.OnClick = BtnNextLine_OnClick
+
+' BtnNextLine1 Events:
+Control.HandleEvents(BtnNextLine1)
+Control.OnClick = BtnNextLine1_OnClick
+
+

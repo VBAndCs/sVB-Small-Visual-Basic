@@ -1,0 +1,55 @@
+txtNum2.OnTextInput = TxtNum1_OnTextInput
+lblResult.WordWrap = False
+
+'----------------------------
+Sub BtnAdd_OnClick
+   lblResult.Text = "Result = " + (txtNum1.Text + txtNum2.Text)
+EndSub
+
+'__________________________________
+Sub BtnSubtract_OnClick
+   lblResult.Text = "Result = " + (txtNum1.Text - txtNum2.Text)
+EndSub
+
+'__________________________________
+Sub BtnMultply_OnClick
+   lblResult.Text = "Result = " + (txtNum1.Text * txtNum2.Text)
+EndSub
+
+'__________________________________
+Sub BtnDivide_OnClick
+   
+   If txtNum2.Text = 0 Then
+      result = "Can't divide by zero."
+      txtNum2.SelectAll()
+      txtNum2.Focus()
+   Else
+      result = "Result = " + (txtNum1.Text / txtNum2.Text)
+   EndIf
+   lblResult.Text = result
+EndSub
+
+
+'----------------------------
+Sub TxtNum1_OnTextInput
+   If Text.IsNumeric(Event.LastTextInput) = False Then
+      Sound.PlayBellRing()
+      Event.Handled = True
+   EndIf
+EndSub
+
+
+'----------------------------
+Sub TxtNum1_OnTextChanged
+   If txtNum1.Text = "" Then
+      txtNum1.Text = "0"
+      txtNum1.SelectAll()
+   EndIf
+EndSub
+
+Sub TxtNum2_OnTextChanged
+   If txtNum2.Text = "" Then
+      txtNum2.Text = "0"
+      txtNum2.SelectAll()
+   EndIf
+EndSub

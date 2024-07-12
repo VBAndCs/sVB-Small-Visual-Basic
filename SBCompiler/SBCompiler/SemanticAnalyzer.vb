@@ -379,7 +379,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub AnalyzeSubroutineStatement(subroutine As SubroutineStatement)
             Dim name = subroutine.Name.LCaseText
             Select Case name
-                Case "_", "msgbox"
+                Case "_"
                     _parser.AddError(subroutine.Name, $"{name} is not a valid name")
             End Select
 

@@ -1,0 +1,23 @@
+TxtInput.MuliLine = True
+BtnOK.Enabled = False
+LblMsg.Text = Me.ArgsArr
+
+'------------------------------------------------
+Sub BtnOK_OnClick()
+   Global.InputText = TxtInput.Text
+   Me.DialogResult = DialogResults.OK
+   Me.Close()
+EndSub
+
+
+'------------------------------------------------
+Sub BtnCancel_OnClick()
+   Global.InputText = ""
+   Me.Close()
+EndSub
+
+
+'------------------------------------------------
+Sub TxtInput_OnTextChanged()
+   BtnOK.Enabled = (TxtInput.Text <> "")
+EndSub

@@ -1,0 +1,133 @@
+' The original source is written for Small Basic by "Jim Tharp"
+
+' -------------------------------------------------------
+GraphicsWindow.BackgroundColor = Colors.Black
+GraphicsWindow.CanResize = False
+GraphicsWindow.Width = Desktop.Width
+GraphicsWindow.Height = Desktop.Height - 26
+GraphicsWindow.Left = -3
+GraphicsWindow.Top = 0
+GraphicsWindow.KeyDown = KeyPress
+Mouse.HideCursor()
+' -------------------------------------------------------------------------------------------
+Delay = 2   ' change program speed here - ( smaller number = faster )
+' -------------------------------------------------------------------------------------------
+W = GraphicsWindow.Width
+H = GraphicsWindow.Height
+W2 = (W / 2)
+H2 = (H / 2)
+SnakeWidth = Math.Round(H / 14.5)
+HShift = W2 - SnakeWidth / 2
+ScaleX = HShift - 10
+VShift = H2 - SnakeWidth / 2
+ScaleY = VShift - 10
+Curve = 1  ' use 0 or 1
+
+' -------------------------------------------------------
+While True
+   GraphicsWindow.Clear()
+   K = Math.GetRandomNumber(20) + 60   ' 61-80
+   L = Math.GetRandomNumber(20) + 60   ' 61-80
+   M = Math.GetRandomNumber(20) + 60   ' 61-80
+   N = Math.GetRandomNumber(20) + 60   ' 61-80
+   Draw()
+Wend
+
+' ---------------------------------------
+Function CalculateX(a, b)
+   If Curve = 0 Then
+      Return Math.Cos(a * b) * ScaleX + HShift
+   Else
+      Return Math.Cos(Math.Power(a + b, 2) / 8) * ScaleX + HShift
+   EndIf
+EndFunction
+
+' ---------------------------------------
+Function CalculateY(a, b)
+   If Curve = 0 Then
+      Return Math.Sin(a * b) * ScaleY + VShift
+   Else
+      Return Math.Sin(Math.Power(a + b, 2) / 8) * ScaleY + VShift
+   EndIf
+EndFunction
+
+' ----------------------------------------( seven colors )
+Sub Run(r, g)
+   If r > 255 Then
+      r = 255
+   EndIf
+   
+   K = K + 0.00001
+   L = L + 0.00002
+   M = M + 0.00003
+   N = N + 0.00004
+   
+   x1 = CalculateX(L, K)
+   x2 = CalculateX(L, L)
+   x3 = CalculateX(L, M)
+   x4 = CalculateX(L, N)
+   
+   y1 = CalculateY(L, L)
+   y2 = CalculateY(L, M)
+   y3 = CalculateY(L, K)
+   
+   
+   FillSquare(
+      x1, y1, SnakeWidth,
+      Color.FromRGB(r, 0, 0)   ' red
+   )
+   FillSquare(
+      x1, y2, SnakeWidth,
+      Color.FromRGB(0, r, 0)   ' green
+   )
+   FillSquare(
+      x2, y3, SnakeWidth,
+      Color.FromRGB(0, 0, r)   ' blue
+   )
+   FillSquare(
+      x2, y2, SnakeWidth,
+      Color.FromRGB(r, g, 0)   ' orange
+   )
+   FillSquare(
+      x3, y1, SnakeWidth,
+      Color.FromRGB(r, 0, r)   ' violet
+   )
+   FillSquare(
+      x4, y2, SnakeWidth,
+      Color.FromRGB(r, r, 0)   ' yellow
+   )
+   Program.Delay(Delay)
+EndSub
+
+' -------------------------------------------------------------
+Sub FillSquare(left, top, lenght, colour)
+   GraphicsWindow.BrushColor = colour
+   GraphicsWindow.FillRectangle(left, top, lenght, lenght)
+EndSub
+
+' -----------------------------( color depth )---------------
+Sub Draw()
+   For o = 4 To 4.4 Step 0.01
+      For r = 100 To 255 Step o / 3
+         If r > 128 Then
+            g = r - 128
+         EndIf
+         Run(r, g)
+      Next
+      
+      For r = 255 To 100 Step -o / 3
+         If r > 128 Then
+            g = r - 128
+         EndIf
+         Run(r, g)
+      Next
+   Next
+EndSub
+
+' ----------------------------------------------------------------
+Sub KeyPress()
+   If Keyboard.LastKey = Keys.Escape Then
+      Program.End()
+   EndIf
+EndSub
+

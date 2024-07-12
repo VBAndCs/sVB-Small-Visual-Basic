@@ -1,0 +1,21 @@
+'@Form Hints:
+'#Form1{
+'    TextBox1: TextBox
+'    Label1: Label
+'}
+
+Me = "Form1"
+TextBox1 = "form1.textbox1"
+Label1 = "form1.label1"
+Form1 = Forms.LoadForm("Form1", "form1.xaml")
+Form.Show(Form1)
+
+'#Events{
+'    TextBox1: OnKeyDown
+'}
+
+' TextBox1 Events:
+Control.HandleEvents(TextBox1)
+Control.OnKeyDown = TextBox1_OnKeyDown
+
+

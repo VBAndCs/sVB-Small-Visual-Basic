@@ -1,0 +1,38 @@
+TextBox1.OnMouseMove = OnMouseMove
+TextBox2.OnMouseMove = OnMouseMove
+Label1.OnMouseMove = OnMouseMove
+Me.OnMouseMove = OnMouseMove
+
+'----------------------------
+Sub OnMouseMove()
+   TextBox1.Text = Text.Format(
+      "Pos relative to TextBox1: ([1], [2])",
+      {TextBox1.MouseX, TextBox1.MouseY}
+   )
+   
+   
+   TextBox2.Text = Text.Format(
+      "Pos relative to TextBox2: ([1], [2])",
+      {TextBox2.MouseX, TextBox2.MouseY}
+   )
+   
+   Form1.Text = Text.Format(
+      "Pos relative to Form: ([1], [2])",
+      {Me.MouseX, Me.MouseY}
+   )
+   
+   msg = "Pos relative to Screen: ("
+   Label1.Text = msg + Mouse.X + "," + Mouse.Y + ")"
+   
+EndSub
+
+
+
+
+'------------------------------------------------
+Sub Button1_OnClick()
+   Timer.Interval = 20
+   Mouse.X = 0
+   Mouse.Y = 0
+   Timer.Tick = OnMouseMove
+EndSub

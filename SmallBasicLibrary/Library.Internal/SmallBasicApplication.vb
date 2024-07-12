@@ -89,8 +89,11 @@ Namespace Library.Internal
                     Program.IsTerminated = True
 
                     If IsDebugging Then
+                        Math.UseRadianAngles = True
                         If GraphicsWindow._window IsNot Nothing Then
                             Try
+                                If Turtle.IsVisible Then Turtle.Initialize(True)
+                                GraphicsWindow.AutoShow = True
                                 GraphicsWindow._windowCreated = False
                                 GraphicsWindow._window.Close()
                             Catch
@@ -102,6 +105,7 @@ Namespace Library.Internal
                         WinForms.Forms.ForceCloseAll()
                         Return
                     End If
+
 
                     If GraphicsWindow._window Is Nothing Then
                         Try

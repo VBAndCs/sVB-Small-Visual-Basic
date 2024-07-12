@@ -1,0 +1,29 @@
+'@Form Hints:
+'#FrmMain{
+'    TextBox1: TextBox
+'    BtnMsg: Button
+'    BtnInput: Button
+'}
+
+Me = "FrmMain"
+TextBox1 = "frmmain.textbox1"
+BtnMsg = "frmmain.btnmsg"
+BtnInput = "frmmain.btninput"
+_path = Program.Directory + "\FrmMain.xaml"
+FrmMain = Forms.LoadForm("FrmMain", _path)
+Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
+Form.Show(FrmMain)
+'#Events{
+'    BtnMsg: OnClick
+'    BtnInput: OnClick
+'}
+
+' BtnMsg Events:
+Control.HandleEvents(BtnMsg)
+Control.OnClick = BtnMsg_OnClick
+
+' BtnInput Events:
+Control.HandleEvents(BtnInput)
+Control.OnClick = BtnInput_OnClick
+
+
