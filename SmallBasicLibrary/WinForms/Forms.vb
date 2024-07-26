@@ -555,7 +555,8 @@ Namespace WinForms
         Public Shared Function ShowForm(formName As Primitive, argsArr As Primitive) As Primitive
             Dim asm = System.Reflection.Assembly.GetCallingAssembly()
 
-            If App.IsDebugging AndAlso asm.FullName.StartsWith("sVBCompiler,") Then
+            If App.IsDebugging AndAlso (asm.FullName.StartsWith("sVBCompiler,") OrElse
+                     asm.FullName.StartsWith("Unittest,")) Then
                 RaiseEvent DebugShowForm(LCase(formName), argsArr)
             Else
                 App.Invoke(

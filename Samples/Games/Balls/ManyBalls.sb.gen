@@ -14,7 +14,6 @@ Ball3 = "form1.ball3"
 _path = Program.Directory + "\manyballs.xaml"
 Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
-Form.Show(Form1)
 '#Events{
 '    TimerButton: OnClick
 '}
@@ -24,3 +23,4 @@ Control.HandleEvents(TimerButton)
 Control.OnClick = TimerButton_OnClick
 
 
+Form.Show(Me)

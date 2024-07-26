@@ -155,8 +155,8 @@ Namespace Library
         Private Shared Sub CreateBrush()
             Invoke(
                 Sub()
-                    Try
-                        If WinForms.Color.IsNone(_gradientEndColor) Then
+                    'Try
+                    If WinForms.Color.IsNone(_gradientEndColor) Then
                             _fillBrush = WinForms.Color.GetBrush(_brushColor)
                         Else
                             _fillBrush = New System.Windows.Media.LinearGradientBrush(
@@ -167,8 +167,8 @@ Namespace Library
                         )
                         End If
                         _fillBrush?.Freeze()
-                    Catch
-                    End Try
+                    'Catch
+                    'End Try
                 End Sub)
         End Sub
 
@@ -1513,8 +1513,10 @@ Namespace Library
                 If _windowCreated Then BeginInvoke(Sub() Return)
             ElseIf _windowCreated Then
                 If _isHidden Then
-                    _window.Show()
-                    _windowVisible = True
+                    Invoke(Sub()
+                               _window.Show()
+                               _windowVisible = True
+                           End Sub)
                 End If
             Else
                 CreateWindow(keepValue)

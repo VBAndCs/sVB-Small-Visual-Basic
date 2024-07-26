@@ -1,7 +1,7 @@
-# Small Visual Basic 3.0:
-
-* You can download the sVB installer from the [VS marketplace](https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller).
-
+<b><center><span style="font-size:3em;">Small Visual Basic 3.0:</span>
+<br><br>
+<span style="font-size:2em;">You can download the sVB installer from the <a href="https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller"><u>VS marketplace</u></a>.</span>
+<br><br></center></b>
 <p align="center">
   <img src="https://modernvbnet.gallerycdn.vsassets.io/extensions/modernvbnet/svbinstaller/3.0/1714546030343/image.png"/>
 </p>

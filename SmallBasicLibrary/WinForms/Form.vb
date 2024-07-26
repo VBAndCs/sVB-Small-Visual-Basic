@@ -43,7 +43,8 @@ Namespace WinForms
             Dim asm = System.Reflection.Assembly.GetEntryAssembly()
             Dim frm = formName.AsString().ToLower()
 
-            If App.IsDebugging AndAlso asm.FullName.StartsWith("sVBCompiler,") Then
+            If App.IsDebugging AndAlso (asm.FullName.StartsWith("sVBCompiler,") OrElse
+                     asm.FullName.StartsWith("sVB,")) Then
                 Dim result As New Primitive
                 RaiseEvent DebugRunTests(frm, False, result)
                 Return result
@@ -76,7 +77,8 @@ Namespace WinForms
             Dim asm = System.Reflection.Assembly.GetEntryAssembly()
             Dim frm = formName.AsString().ToLower()
 
-            If App.IsDebugging AndAlso asm.FullName.StartsWith("sVBCompiler,") Then
+            If App.IsDebugging AndAlso (asm.FullName.StartsWith("sVBCompiler,") OrElse
+                     asm.FullName.StartsWith("sVB,")) Then
                 Dim result As New Primitive
                 RaiseEvent DebugRunTests(frm, True, result)
                 Return result

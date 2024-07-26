@@ -380,6 +380,13 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         .subLine = lastToken.subLine,
                         .Type = TokenType.Then
                     })
+                    If lineNum < snapshot.LineCount - 1 Then
+                        Dim nextLine = snapshot.GetLineFromLineNumber(lineNum + 1)
+                        Dim token = LineScanner.GetFirstToken(nextLine.GetText(), lineNum + 1)
+                        If token.Type = TokenType.Then Then
+                            textEdit.Delete(nextLine.Start + token.Column, token.EndColumn - token.Column)
+                        End If
+                    End If
                 End If
             End If
         End Sub
@@ -831,8 +838,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                 Select Case token.Type
                     Case TokenType.EqualsTo, TokenType.NotEqualsTo,
-                             TokenType.GreaterThan, TokenType.GreaterThanOrEqualsTo,
-                             TokenType.LessThanOrEqualsTo, ' Note that < can be followeed by >
+                             TokenType.GreaterThanOrEqualsTo,
+                             TokenType.LessThanOrEqualsTo,
                              TokenType.And, TokenType.Or,
                              TokenType.Concatenation, TokenType.Multiplication,
                              TokenType.Division, TokenType.Mod
@@ -876,7 +883,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     Case TokenType.LessThan
                         If notLastToken Then
-                            If nextToken.Type = TokenType.GreaterThan Then
+                            If nextToken.Type = TokenType.GreaterThan OrElse nextToken.Type = TokenType.EqualsTo Then
+                                FixSpaces(textEdit, line, token, nextToken, 0)
+                            Else
+                                FixSpaces(textEdit, line, token, nextToken, 1)
+                            End If
+                        End If
+
+                    Case TokenType.GreaterThan
+                        If notLastToken Then
+                            If nextToken.Type = TokenType.EqualsTo Then
                                 FixSpaces(textEdit, line, token, nextToken, 0)
                             Else
                                 FixSpaces(textEdit, line, token, nextToken, 1)

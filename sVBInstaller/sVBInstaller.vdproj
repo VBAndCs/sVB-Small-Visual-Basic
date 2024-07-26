@@ -1600,19 +1600,13 @@
         "Entry"
         {
         "MsmKey" = "8:_90E47A155CDDD2B08F2BC44A0E66969A"
-        "OwnerKey" = "8:_AFB3BC7EFFB54B2F9FBB446E9C23F9DA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_90E47A155CDDD2B08F2BC44A0E66969A"
-        "OwnerKey" = "8:_0DF7D5A5CC2D43B68DA61BDF7B1DDC0B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_90E47A155CDDD2B08F2BC44A0E66969A"
         "OwnerKey" = "8:_CD76A335BFF74C3C849A048650AF85C9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_90E47A155CDDD2B08F2BC44A0E66969A"
+        "OwnerKey" = "8:_AFB3BC7EFFB54B2F9FBB446E9C23F9DA"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1637,6 +1631,12 @@
         {
         "MsmKey" = "8:_90E47A155CDDD2B08F2BC44A0E66969A"
         "OwnerKey" = "8:_12BFD2D2728A41D2A07FB20BDB6EBAC8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_90E47A155CDDD2B08F2BC44A0E66969A"
+        "OwnerKey" = "8:_0DF7D5A5CC2D43B68DA61BDF7B1DDC0B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1804,6 +1804,12 @@
         "Entry"
         {
         "MsmKey" = "8:_9CC5057DFCFB48769C031C53F6BB95DD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9D8F975F7C304FB3A9290982D3118909"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3094,7 +3100,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5D8075FAE6AD404798C101EBA3C6BA52"
+        "OwnerKey" = "8:_CD76A335BFF74C3C849A048650AF85C9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3107,24 +3113,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_AFB3BC7EFFB54B2F9FBB446E9C23F9DA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6CA0052E19084F2D816063C9A06098A7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0DF7D5A5CC2D43B68DA61BDF7B1DDC0B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CD76A335BFF74C3C849A048650AF85C9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3148,6 +3136,18 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_6CA0052E19084F2D816063C9A06098A7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5D8075FAE6AD404798C101EBA3C6BA52"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_5A220DDC51B7DAA22DC939BB171A01A8"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3155,6 +3155,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_15A01C7C0B8748758DA54304CE9A2620"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_0DF7D5A5CC2D43B68DA61BDF7B1DDC0B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -9193,6 +9199,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9D8F975F7C304FB3A9290982D3118909"
+            {
+            "SourcePath" = "8:..\\Samples\\Drawing Samples\\Arabesque using multi threads.sb"
+            "TargetName" = "8:Arabesque using multi threads.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_29351D70CCB044B581F9453C9FD90166"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9DA190766D314A45AB40BC1AA24419A4"
             {
             "SourcePath" = "8:..\\Samples\\Games\\Tom and Jerry\\Form1.sb"
@@ -14733,7 +14759,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.0.7.7"
+        "ProductName" = "8:Small Visual Basic 3.0.7.9"
         "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
         "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -14927,7 +14953,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.0.7.7"
+            "Name" = "8:sVB 3.0.7.9"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -14969,7 +14995,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.0.7.7"
+            "Name" = "8:sVB 3.0.7.9"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -14997,7 +15023,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.0.7.7"
+            "Name" = "8:sVB 3.0.7.9"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -15522,7 +15548,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C1A41205CDA4479E9BADF2A99BD8D2D9"
             {
-            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Debug\\sVB.exe"
+            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Release\\sVB.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"

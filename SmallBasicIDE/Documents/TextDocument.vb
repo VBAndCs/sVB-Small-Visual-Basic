@@ -306,9 +306,11 @@ Namespace Microsoft.SmallVisualBasic.Documents
             _GlobalSubs.Add(AddNewFunc)
             _GlobalSubs.Add(AddNewSub)
             _GlobalSubs.Add(AddNewTest)
+            _GlobalSubs.Add(AddNewTimer)
             _ControlEvents.Add(AddNewFunc)
             _ControlEvents.Add(AddNewSub)
             _ControlEvents.Add(AddNewTest)
+            _ControlEvents.Add(AddNewTimer)
             ParseFormHints()
             UpdateGlobalSubsList()
             AddProperty("Document", Me)
@@ -1205,12 +1207,12 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Dim genCode As New Text.StringBuilder
             Dim declaration As New Text.StringBuilder
             Dim formName = _form
-            genCode.AppendLine("'@Form Hints:")
-            genCode.AppendLine($"'#{formName}{{")
             Dim controlsInfoList As New Dictionary(Of String, String)
             Dim controlNamesList As New List(Of String)
-            controlNamesList.Add("(Global)")
 
+            genCode.AppendLine("'@Form Hints:")
+            genCode.AppendLine($"'#{formName}{{")
+            controlNamesList.Add("(Global)")
             controlsInfoList(formName.ToLower()) = "Form"
             controlsInfoList("me") = "Form"
             controlNamesList.Add(formName)
@@ -1218,7 +1220,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
             For Each c As UIElement In formDesigner.Items
                 Dim name = formDesigner.GetControlNameOrDefault(c)
-
                 If name <> "" Then
                     Dim typeName = PreCompiler.GetModuleName(c.GetType().Name)
                     controlsInfoList(name.ToLower()) = typeName
@@ -1392,6 +1393,36 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Return New TextDocument(filename)
         End Function
 
+        Private Const AddNewTimer As String = "(Add New Timer)"
+        Private Const ClassicTimer As String = vbCrLf & "
+Timer.Interval = 20
+Timer.Tick = Timer_OnTick
+
+'------------------------------------------------
+Sub Timer_OnTick()
+   
+EndSub
+"
+        Private Const GwTimer As String = vbCrLf & "
+Timer# = Controls.AddTimer(20)
+Timer#.OnTick = Timer#_OnTick
+
+' ------------------------------------------------
+Sub Timer#_OnTick()
+   
+EndSub
+"
+
+        Private Const FormTimer As String = vbCrLf & "
+Timer# = Me.AddTimer(""timer#"", 20)
+Timer#.OnTick = Timer#_OnTick
+
+' ------------------------------------------------
+Sub Timer#_OnTick()
+   
+EndSub
+"
+
         Private Const SubBodyOffset As Integer = 18
         Private Const AddNewSub As String = "(Add New Sub)"
         Private ReadOnly subDefinition As String = vbCrLf & "
@@ -1410,7 +1441,7 @@ Function #()
 EndFunction
 "
 
-        Private Const testBodyOffset As Integer = 367
+        Private Const testBodyOffset As Integer = 373
         Private Const AddNewTest As String = "(Add New Test)"
         Private ReadOnly testDefinition As String = vbCrLf & "
 '------------------------------------------------
@@ -1423,9 +1454,9 @@ Function #()
          ""Actual Value 3""
       },
       {
-         ""Actual Value 1"",
-         ""Actual Value 2"",
-         ""Actual Value 3""
+         ""Expected Value 1"",
+         ""Expected Value 2"",
+         ""Expected Value 3""
       },
       ""Test Name""
    )
@@ -1468,27 +1499,69 @@ EndFunction
             _editorControl.EditorOperations.ResetSelection()
 
             If pos = -1 Then
-                caret.MoveTo(Me.Text.Length)
                 If handlerName = "" Then
-                    Dim isSub = (eventName = AddNewSub)
+                    Dim isTimer = (eventName = AddNewTimer)
+                    Dim isSub = (eventName = AddNewSub OrElse isTimer)
                     Dim isFunc = (eventName = AddNewFunc)
-                    Dim newName = If(isSub, "NewSub_", If(isFunc, "NewFunc_", "Test_"))
                     Dim n = 0
-                    Dim L = newName.Length
-                    Try
-                        n = Aggregate s In _GlobalSubs
-                                 Where s.StartsWith(newName)
-                                 Let x = s.Substring(L)
-                                 Into Max(If(IsNumeric(x), CInt(x), 0))
-                    Catch
-                    End Try
+                    Dim handler As String
+                    Dim newName = If(isTimer, "Timer#_OnTick",
+                                If(isSub, "NewSub_",
+                                        If(isFunc, "NewFunc_", "Test_")
+                                )
+                    )
 
-                    handlerName = newName & n + 1
-                    Dim name = If(isSub, subDefinition, If(isFunc, funcDefinition, testDefinition))
-                    Dim handler = name.Replace("#", handlerName)
+                    If isTimer Then
+                        pos = GetFirstSubLinePos()
+                        If pos < 1 Then
+                            caret.MoveTo(Me.Text.Length)
+                        Else
+                            caret.MoveTo(Math.Max(0, pos - 2))
+                        End If
+
+                        '-------------------------------------------------
+                        Dim AddTimer = Sub(body As String)
+                                           Try
+                                               n = Aggregate s In _GlobalSubs
+                                                        Where s Like "Timer*_OnTick"
+                                                        Let x = s.Replace("Timer", "").Replace("_OnTick", "")
+                                                        Into Max(If(IsNumeric(x), CInt(x), 0))
+                                           Catch
+                                           End Try
+                                           handlerName = $"Timer{n + 1}_OnTick"
+                                           handler = body.Replace("#", n + 1)
+                                       End Sub
+                        '-------------------------------------------------
+
+                        If _GlobalSubs.Contains("Timer_OnTick") Then
+                            If Me.Form = "" Then
+                                AddTimer(GwTimer)
+                            Else
+                                AddTimer(FormTimer)
+                            End If
+                        Else
+                            handlerName = "Timer_OnTick"
+                            handler = ClassicTimer
+                        End If
+
+                    Else
+                        caret.MoveTo(Me.Text.Length)
+                        Dim L = newName.Length
+                        Try
+                            n = Aggregate s In _GlobalSubs
+                                     Where s.StartsWith(newName)
+                                     Let x = s.Substring(L)
+                                     Into Max(If(IsNumeric(x), CInt(x), 0))
+                        Catch
+                        End Try
+                        handlerName = newName & (n + 1)
+                        Dim code = If(isSub, subDefinition, If(isFunc, funcDefinition, testDefinition))
+                        handler = code.Replace("#", handlerName)
+                    End If
+
                     _GlobalSubs.Add(handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
-                    Dim namePos = Text.Length - If(isSub, SubBodyOffset, If(isFunc, funcBodyOffset, testBodyOffset))
+                    Dim namePos = caret.Position.TextInsertionIndex - If(isSub, SubBodyOffset, If(isFunc, funcBodyOffset, testBodyOffset))
                     caret.MoveTo(namePos)
                     If selectSubName Then
                         SelectCurrentWord()
@@ -1500,6 +1573,7 @@ EndFunction
                     _ControlEvents.Add(handlerName)
 
                 Else
+                    caret.MoveTo(Me.Text.Length)
                     _EventHandlers(handlerName) = New EventInformation(controlName, eventName)
                     Dim handler = subDefinition.Replace("#", handlerName)
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
@@ -1515,7 +1589,7 @@ EndFunction
 
             Me.Focus()
 
-            MdiView.SelectEventName(controlName, If(isGlobal, handlerName, eventName))
+            MdiView.SelectEventName(controlName, If(isGlobal, handlerName, eventName), True)
 
             If Not (selectSubName OrElse alreadyExists) Then
                 _editorControl.EditorOperations.MoveLineDown(False)
@@ -1677,6 +1751,7 @@ EndFunction
             _GlobalSubs.Add(AddNewFunc)
             _GlobalSubs.Add(AddNewSub)
             _GlobalSubs.Add(AddNewTest)
+            _GlobalSubs.Add(AddNewTimer)
 
             Dim textView = EditorControl.TextView
             Dim text = textView.TextSnapshot
@@ -1853,6 +1928,25 @@ EndFunction
             Next
 
             Return forms
+        End Function
+
+        Private Function GetFirstSubLinePos() As Integer
+            Dim snapshot = EditorControl.TextView.TextSnapshot
+            Dim prevLinePos = -1
+
+            For Each line In snapshot.Lines
+                Dim code = line.GetText().Trim(" "c, vbTab)
+                If code = "" Then Continue For
+
+                Dim Token = LineScanner.GetFirstToken(line.GetText(), line.LineNumber)
+                Select Case Token.Type
+                    Case TokenType.Sub, TokenType.Function
+                        Return If(prevLinePos=-1, line.Start,prevLinePos)
+                    Case TokenType.Comment
+                        If Token.Text.Contains("------------") Then prevLinePos = line.Start
+                End Select
+            Next
+            Return -1
         End Function
     End Class
 End Namespace

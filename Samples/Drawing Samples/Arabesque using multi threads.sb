@@ -1,0 +1,61 @@
+' sVB arabesque using multi threads
+
+GraphicsWindow.Width = 990
+GraphicsWindow.Height = 700
+GraphicsWindow.Top = 0
+GraphicsWindow.Left = 0
+GraphicsWindow.BackgroundColor = "#002211"
+Math.UseRadianAngles = False
+
+Points = {
+   180, -90,
+   540, -90,
+   900, -90,
+   180, 270,
+   540, 270,
+   900, 270
+}
+
+For I = 1 To 12 Step 2
+   Thread.SubToRun = NewThread
+Next
+
+' ------------------------------------------
+Sub NewThread()
+   Draw(Points[I], Points[I + 1])
+EndSub
+
+' ------------------------------------------
+Sub Draw(ox, oy)
+   oy = oy + 180
+   
+   For r = 3 To 50 Step 3
+      For x = -180 To 180
+         y = r * Math.Sin(x) * Math.Cos(3 * x)
+         
+         GraphicsWindow.SetPixel(
+            ox + x,
+            oy - y,
+            Colors.Gold
+         )
+         
+         GraphicsWindow.SetPixel(
+            ox + x,
+            oy + y,
+            Colors.Gold
+         )
+         
+         GraphicsWindow.SetPixel(
+            ox - y,
+            oy + x,
+            Colors.Gold
+         )
+         
+         GraphicsWindow.SetPixel(
+            ox + y,
+            oy + x,
+            Colors.Gold
+         )
+      Next
+   Next
+EndSub

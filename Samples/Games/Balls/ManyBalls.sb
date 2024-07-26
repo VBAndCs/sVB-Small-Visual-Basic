@@ -51,6 +51,13 @@ Sub OnTick
    ForEach control1 In Me.Controls
       If control1.TypeName = ControlTypes.Label Then
          MoveBall(control1)
+         ' Check ball collisions
+         ForEach control2 In Me.Controls
+            If control2 <> control1 And
+                  control2.TypeName = ControlTypes.Label Then
+               CheckCollision(control1, control2)
+            EndIf
+         Next
       EndIf
    Next
 EndSub
@@ -84,5 +91,24 @@ Sub MoveBall(ballLabel)
       ballLabel.Tag = {-ballSpeed[1], ballSpeed[2]}
       ' Sound.PlayMusic("OF")
       BoingSound.Play()
+   EndIf
+EndSub
+
+
+' ------------------------------------------------
+Sub CheckCollision(lblBall1, lblBall2)
+   r1 = lblBall1.Width / 2
+   x1 = lblBall1.Left + r1
+   y1 = lblBall1.Top + r1
+   
+   r2 = lblBall2.Width / 2
+   x2 = lblBall2.Left + r2
+   y2 = lblBall2.Top + r2
+   
+   d = Math.SquareRoot((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
+   If d <= r1 + r2 Then
+      speed = lblBall1.Tag
+      lblBall1.Tag = lblBall2.Tag
+      lblBall2.Tag = speed
    EndIf
 EndSub

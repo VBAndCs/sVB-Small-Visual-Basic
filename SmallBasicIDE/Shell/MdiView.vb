@@ -67,8 +67,6 @@ Namespace Microsoft.SmallVisualBasic.Shell
             End Set
         End Property
 
-
-
         Public Sub ResetOldWidthAndHeight()
             oldWidth = Double.NaN
             oldHeight = Double.NaN
@@ -101,11 +99,11 @@ Namespace Microsoft.SmallVisualBasic.Shell
             BeginAnimation([property], doubleAnimation2)
         End Sub
 
-        Friend Sub SelectEventName(controlName As String, eventName As String)
-            _FreezeCmbEvents = True
+        Friend Sub SelectEventName(controlName As String, eventName As String, freezeCmbEvents As Boolean)
+            _FreezeCmbEvents = freezeCmbEvents
             _CmbControlNames.SelectedItem = controlName
             _CmbEventNames.SelectedItem = eventName
-            mdiViews.SelectHandlers(Me, controlName, eventName)
+            MdiViews.SelectHandlers(Me, controlName, eventName)
             _FreezeCmbEvents = False
         End Sub
 
