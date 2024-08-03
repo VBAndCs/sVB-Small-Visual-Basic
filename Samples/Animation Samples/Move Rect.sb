@@ -1,0 +1,8 @@
+R = Shapes.AddRectangle(100, 100)
+For X = 1 To GraphicsWindow.Width Step 100
+   For Y = 1 To GraphicsWindow.Height Step 5
+      Shapes.Move(R, X, Y)
+      Program.Delay(20)
+   Next
+Next
+

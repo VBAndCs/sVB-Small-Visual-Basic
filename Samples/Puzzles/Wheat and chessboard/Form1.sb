@@ -1,0 +1,21 @@
+
+
+' ------------------------------------------------
+Sub Button1_OnClick()
+   sum = 0
+   wheat = 1
+   For n = 1 To 64
+      sum = sum + wheat
+      wheat = wheat * 2
+   Next
+   
+   TextBox1.AppendLine("Total wheat = " & sum & " seeds")
+   weight = sum * 0.04 / 1000000
+   TextBox1.AppendLine("Total weigh = " &
+      Math.Round(weight / 1000000000) & " billion tons")
+   TextBox1.AppendLine("Total years = " &
+      Math.Round(weight / 800000000) & " years")
+   TextBox1.AppendLine("Total price = " &
+      Math.Round(weight * 300 / 10000000000) & " billion dolars")
+   
+EndSub

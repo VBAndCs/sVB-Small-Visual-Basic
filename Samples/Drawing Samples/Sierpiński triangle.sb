@@ -1,0 +1,33 @@
+GraphicsWindow.BackgroundColor = Colors.Black
+X = 0
+Y = 600
+
+For N = 1 To 100000 Step 1000
+   Thread.SubToRun = Draw
+Next
+
+' ------------------------------------------------
+Sub Draw()
+   start = N
+   For i = start To start + 999
+      r = Math.GetRandomNumber(3)
+      
+      If (r = 1) Then
+         ux = 0
+         uy = 600
+         _color = Colors.LightGreen
+      ElseIf (r = 2) Then
+         ux = 600
+         uy = 600
+         _color = Colors.Red
+      Else
+         ux = 300
+         uy = 0
+         _color = Colors.White
+      EndIf
+      
+      X = (X + ux) / 2
+      Y = (Y + uy) / 2
+      GraphicsWindow.SetPixel(X, Y, _color)
+   Next
+EndSub

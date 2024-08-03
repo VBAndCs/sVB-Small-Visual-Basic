@@ -115,7 +115,8 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                     .Name = _MethodName,
                     .Args = _Arguments,
                     .IsGlobalFunc = isGlobalFunc,
-                    .DontExecuteSub = runner.Evaluating
+                    .DontExecuteSub = runner.Evaluating,
+                    .OuterSubroutine = _OuterSubroutine
                 }
                 Return EvaluateFunction(runner, subroutine)
             End If

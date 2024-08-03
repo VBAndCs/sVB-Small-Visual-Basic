@@ -1,0 +1,63 @@
+' Sierpinski Carpet
+GW.FullScreen = True
+Total = 6
+Size = Math.Power(3, Total)
+
+Colours = {
+   Colors.Cyan, Colors.LightPink, Colors.Gray, Colors.Yellow,
+   Colors.Gold, Colors.LightCoral, Colors.LightCyan, Colors.LightGreen,
+   Colors.Wheat, Colors.White, Colors.Orange, Colors.Red,
+   Colors.Green, Colors.Blue, Colors.Brown, Colors.Black
+}
+
+CIndex = Colours.Count
+GW.BackgroundColor = Colors.Black
+End = False
+
+GW.KeyDown = OnKeyDown
+
+' ----------------------------------------
+For I = 0 To Total
+   Stepdown = Math.Power(3, Total - I)
+   For X = 0 To Math.Power(3, I)
+      ' checking for the centre most square
+      If X Mod 3 = 1 Then
+         For Y = 0 To Math.Power(3, I)
+            If Y Mod 3 = 1 Then
+               Fill()
+               If End Then
+                  ExitLoop --
+               EndIf
+            EndIf
+         Next
+      EndIf
+   Next
+Next
+
+
+' ------------------------------------------------
+Sub Fill()
+   px = Y * Stepdown
+   width = (Y + 1) * Stepdown - px
+   py = X * Stepdown
+   height = (X + 1) * Stepdown - py
+   If width < 4 Or height < 4 Then
+      End = True
+      Return
+   EndIf
+   
+   GW.BrushColor = Colours[CIndex]
+   GW.FillRectangle(px, py, width, height)
+   CIndex = CIndex - 1
+   If CIndex < 1 Then
+      CIndex = Colours.Count
+   EndIf
+EndSub
+
+
+' ------------------------------------------------
+Sub OnKeyDown()
+   If Keyboard.LastKey = Keys.Escape Then
+      Program.End()
+   EndIf
+EndSub

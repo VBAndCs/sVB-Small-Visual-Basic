@@ -1,0 +1,19 @@
+R = Shapes.AddRectangle(100, 100)
+X = 0
+While X < GraphicsWindow.Width - 100
+   Y = GraphicsWindow.Height - 100
+   Shapes.Animate(R, X, Y, 3000)
+   Program.Delay(3000)
+   
+   X = X + 100
+   Shapes.Animate(R, X, Y, 1000)
+   Program.Delay(1000)
+   
+   Y = 0
+   Shapes.Animate(R, X, Y, 3000)
+   Program.Delay(3000)
+   
+   X = X + 100
+   Shapes.Animate(R, X, Y, 1000)
+   Program.Delay(1000)
+Wend

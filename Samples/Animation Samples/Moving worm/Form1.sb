@@ -1,0 +1,86 @@
+' Develpoed by M. Hamdy
+' Inspired bt Ardi Ardi
+R = 50
+
+' Add five labels on the form and draw five circles inside them
+For I = 1 To 5
+   _Label = Me.AddLabel("circle" & I, R * (I - 1), 0, R, R)
+   _Label.Padding = 0
+   _Label.AddEllipse(R, R, Colors.None, 0, Colors.Yellow)
+Next
+
+Circles = Me.Controls
+First = Circles.Count ' The ibdex of the front circle (worm head)
+Last = 0 ' The index of the back circle (worm tail)
+XDirection = 1
+YDirection = 1
+
+Timer.Interval = 50
+Timer.Tick = Timer_OnTick
+AddNewCircle = False
+
+' ------------------------------------------------
+Sub Timer_OnTick()
+   ' The first item in array is the worm tail, but after moving it to be the worm head,
+   ' The second item of the array will be the tail, and so on...
+   ' So, we need to increese Last by 1 at each move to point to the current tail
+   Last = Last + 1
+   If Last > Circles.Count Then
+      Last = 1
+   EndIf
+   
+   firstLabel = Circles[First]
+   lastLabel = Circles[Last]
+   ' x and y are the place we will use to add a new circle
+   x = lastLabel.Left
+   y = lastLabel.Top
+   lastLabel.Top = firstLabel.Top
+   
+   If XDirection = 1 Then ' Move right
+      lastLabel.Left = firstLabel.Right
+   Else ' Move left
+      lastLabel.Right = firstLabel.Left
+   EndIf
+   
+   ' The worm head will be gold, and the rest circles will be yellow
+   firstLabel.AddEllipse(R, R, Colors.None, 0, Colors.Yellow)
+   lastLabel.AddEllipse(R, R, Colors.None, 0, Colors.Gold)
+   lastLabel.BringToFront()
+   
+   
+   If lastLabel.Right > Me.Width Then
+      ' Worm head will move to another row
+      lastLabel.Right = Me.Width
+      lastLabel.Top = lastLabel.Top + R * YDirection
+      XDirection = -1 ' change direction to left
+   ElseIf lastLabel.Left < 0 Then
+      ' Worm head will move to another row
+      lastLabel.Left = 0
+      lastLabel.Top = lastLabel.Top + R * YDirection
+      XDirection = 1 ' change direction to right
+   EndIf
+   
+   If (YDirection = 1 And lastLabel.Bottom >= Me.Height)
+         Or (YDirection = -1 And lastLabel.Top <= 0) Then
+      ' Worm reached the top or bottom edge of the form
+      YDirection = -YDirection ' Change vertical direction
+      AddNewCircle = True ' We will add a new circlee in the suitable moment
+   EndIf
+   
+   First = Last ' the last tail of the worm now beecame its head
+   
+   
+   ' Add a new circle if the drawn circles have the same order of the array
+   If AddNewCircle And Last = Circles.Count Then
+      AddNewCircle = False
+      I = Circles.Count + 1
+      _Label = Me.AddLabel("circle" & I, x, y, R, R)
+      _Label.Padding = 0
+      _Label.AddEllipse(R, R, Colors.None, 0, Colors.Yellow)
+      Circles[I] = _Label
+   EndIf
+   
+EndSub
+
+
+

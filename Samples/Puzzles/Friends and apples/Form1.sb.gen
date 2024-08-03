@@ -1,0 +1,31 @@
+'@Form Hints:
+'#Form1{
+'    TextBox1: TextBox
+'    Button2: Button
+'    Label1: Label
+'    Button1: Button
+'}
+
+Me = "form1"
+TextBox1 = "form1.textbox1"
+Button2 = "form1.button2"
+Label1 = "form1.label1"
+Button1 = "form1.button1"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    Button2: OnClick
+'    Button1: OnClick
+'}
+
+' Button2 Events:
+Control.HandleEvents(Button2)
+Control.OnClick = Button2_OnClick
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+
+Form.Show(Me)

@@ -1,0 +1,67 @@
+
+' ------------------------------------------------
+Sub Button1_OnClick()
+   apples = 1
+   While True
+      apples = apples + 3
+      If Math.Remainder(apples, 3) = 1 Then
+         shares[1] = Math.Floor(apples / 3)
+         x = shares[1] * 2
+         If Math.Remainder(x, 3) = 1 Then
+            shares[2] = Math.Floor(x / 3)
+            y = shares[2] * 2
+            If Math.Remainder(y, 3) = 1 Then
+               shares[3] = Math.Floor(y / 3)
+               z = shares[3] * 2
+               If Math.Remainder(z, 3) = 1 Then
+                  shares[4] = Math.Floor(z / 3)
+                  ExitLoop
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+   Wend
+   
+   ShowResults(apples, shares)
+EndSub
+
+
+
+' ------------------------------------------------
+Sub Button2_OnClick()
+   apples = 1
+   shares = {}
+   found = False
+   
+   While found = False
+      apples = apples + 3
+      n = apples
+      found = True
+      
+      For i = 1 To 4
+         If n.Remainder(3) = 1 Then
+            n = n - 1
+            shares[i] = n / 3
+            n = 2 * shares[i]
+         Else
+            found = False
+            ExitLoop
+         EndIf
+      Next
+   Wend
+   
+   ShowResults(apples, shares)
+   
+EndSub
+
+
+
+' ------------------------------------------------
+Sub ShowResults(apples, shares)
+   TextBox1.Text = ""
+   TextBox1.AppendLine("apples = " + apples)
+   TextBox1.AppendLine("First one ate: " + (shares[1] + shares[4]))
+   TextBox1.AppendLine("Second one ate: " + (shares[2] + shares[4]))
+   TextBox1.AppendLine("Thirs one ate: " + (shares[3] + shares[4]))
+   TextBox1.Append("Donkey ate: 4")
+EndSub

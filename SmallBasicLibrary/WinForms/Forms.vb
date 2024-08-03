@@ -219,6 +219,7 @@ Namespace WinForms
                                             .MaxWidth = fw.MaxWidth,
                                             .MinHeight = fw.MinHeight,
                                             .MaxHeight = fw.MaxHeight,
+                                            .Padding = New Thickness(0),
                                             .Width = fw.Width,
                                             .Height = fw.Height,
                                             .IsEnabled = fw.IsEnabled,

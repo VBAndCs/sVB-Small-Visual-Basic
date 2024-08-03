@@ -1,0 +1,20 @@
+'@Form Hints:
+'#Form1{
+'    Label1: Label
+'}
+
+Me = "form1"
+Label1 = "form1.label1"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    Form1: OnPreviewKeyDown
+'}
+
+' Form1 Events:
+Control.HandleEvents(Form1)
+Form.OnPreviewKeyDown = Form1_OnPreviewKeyDown
+
+
+Form.Show(Me)

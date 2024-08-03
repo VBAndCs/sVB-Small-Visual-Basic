@@ -1,0 +1,9 @@
+R = Shapes.AddRectangle(100, 100)
+Shapes.Move(R, 100, 100)
+While True
+   For A = 1 To 360 Step 1
+      Shapes.Rotate(R, A)
+      Program.Delay(10)
+   Next
+Wend
+

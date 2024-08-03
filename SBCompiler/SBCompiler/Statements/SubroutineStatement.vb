@@ -402,22 +402,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
-            Dim hasParams = Params IsNot Nothing AndAlso Params.Count > 0
-            Dim argsStack As New Library.Primitive
-            Dim subName = Name.LCaseText
-            Dim subKey = $"{subName}.args"
-            Dim n = 1
-
-            If hasParams Then ' Push args
-                argsStack = runner.Fields(subKey)
-                n = argsStack.GetItemCount()
-                Dim LastValues = argsStack.Items(n)
-                For i = 0 To Params.Count - 1
-                    Dim argKey = $"{subName}.{Params(i).LCaseText}"
-                    runner.Fields(argKey) = LastValues.Items(i + 1)
-                Next
-            End If
-
             runner.CheckForExecutionBreakAtLine(SubToken.Line, True)
             Dim canStepOver = runner.StepAround AndAlso SubToken.Line <> runner.StepLineNumber
             If canStepOver Then runner.Depth += 1
@@ -442,21 +426,33 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 End If
             End If
 
-            If hasParams Then ' Pop args
-                If n > 0 Then
-                    argsStack = Library.Array.RemoveItem(argsStack, argsStack.GetItemCount())
-                    runner.Fields(subKey) = argsStack
-                    If n = 1 Then Return Nothing
-
-                    Dim LastValues = argsStack.Items(n - 1)
-                    For i = 0 To Params.Count - 1
-                        Dim argKey = $"{subName}.{Params(i).LCaseText}"
-                        runner.Fields(argKey) = LastValues.Items(i + 1)
-                    Next
-                End If
-            End If
-
             Return Nothing
         End Function
+
+        Sub SetParams(runner As ProgramRunner, args As List(Of Expressions.Expression))
+            If Params IsNot Nothing AndAlso Params.Count > 0 Then
+                Dim subName = Name.LCaseText
+                Dim keyPrefix = subName & "."
+
+                For i = 0 To Params.Count - 1
+                    Dim argKey = $"{subName}.{Params(i).LCaseText}"
+                    runner.Fields(argKey) = args(i).Evaluate(runner)
+                Next
+            End If
+        End Sub
+
+
+        Sub ResetLocals(runner As ProgramRunner)
+            Dim subName = Name.LCaseText
+            Dim keyPrefix = subName & "."
+            Dim returnKey = keyPrefix & "return"
+            Dim keys As New List(Of String)(runner.Fields.Keys)
+
+            For Each key In keys
+                If key <> returnKey AndAlso key.StartsWith(keyPrefix) Then
+                    runner.Fields(key) = New Library.Primitive
+                End If
+            Next
+        End Sub
     End Class
 End Namespace

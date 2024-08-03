@@ -1,0 +1,15 @@
+R = Shapes.AddRectangle(100, 100)
+X = 0
+Shapes.Move(R, X, 100)
+While 1 = 1
+   For A = 1 To 360 Step 1
+      Shapes.Rotate(R, A)
+      X = X + 1
+      Shapes.Move(R, X, 100)
+      If X > GraphicsWindow.Width - 50 Then
+         ExitLoop - ' exit this loop and its parent loop
+      EndIf
+      Program.Delay(10)
+   Next
+Wend
+

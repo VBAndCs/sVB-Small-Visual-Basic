@@ -13,7 +13,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public OuterSubroutine As SubroutineStatement
         Friend IsGlobalFunc As Boolean
         Friend DontExecuteSub As Boolean
-        Friend Property KeepReturnValue As Boolean
+        Friend KeepReturnValue As Boolean
 
         Public Overrides Function GetStatementAt(lineNumber As Integer) As Statement
             If lineNumber < StartToken.Line Then Return Nothing
@@ -95,22 +95,23 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
             Dim subName = Name.LCaseText
             Dim targetRunner = If(IsGlobalFunc, runner.GlobalRunner, runner)
+            If OuterSubroutine Is Nothing Then
+                OuterSubroutine = SubroutineStatement.GetSubroutine(Me)
+            End If
 
-            If Args IsNot Nothing AndAlso Args.Count > 0 Then
-                Dim values As New Library.Primitive()
-                Dim n = 1
-                For Each arg In Args
-                    values.Items(n) = arg.Evaluate(runner)
-                    n += 1
+            Dim parentSubName = OuterSubroutine?.Name.LCaseText
+            Dim recursive = (subName = parentSubName AndAlso targetRunner Is runner)
+            Dim locals As Dictionary(Of String, Library.Primitive)
+
+            If recursive Then
+                Dim keyPrefix = subName & "."
+                locals = New Dictionary(Of String, Library.Primitive)
+
+                For Each item In targetRunner.Fields
+                    If item.Key.StartsWith(keyPrefix) Then
+                        locals(item.Key) = item.Value
+                    End If
                 Next
-
-                ' Subroutine can call itself recursivley, so we must keep the args of each call in a stack,
-                ' and remove the last args from the stack at the end of each subroutine call
-                Dim key = $"{subName}.args"
-                Dim argsStack As New Library.Primitive
-                targetRunner.Fields.TryGetValue(key, argsStack)
-                argsStack = Library.Array.AddItem(argsStack, values)
-                targetRunner.Fields(key) = argsStack
             End If
 
             Dim subToken = targetRunner.SymbolTable.Subroutines(subName)
@@ -139,7 +140,17 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
 
             targetRunner.runnerThread = runner.runnerThread
-            Dim result = subToken.Parent.Execute(targetRunner)
+            Dim subStatement As SubroutineStatement = subToken.Parent
+            subStatement.SetParams(targetRunner, Args)
+
+            Dim result = subStatement.Execute(targetRunner)
+
+            subStatement.ResetLocals(targetRunner)
+            If recursive Then ' restore locals
+                For Each item In locals
+                    targetRunner.Fields(item.Key) = item.Value
+                Next
+            End If
 
             If IsGlobalFunc Then
                 If Not runner.Evaluating Then

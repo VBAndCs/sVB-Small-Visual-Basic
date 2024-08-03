@@ -501,5 +501,6 @@ Namespace WinForms
             Me.ControlName = controlName
             Me.EventName = eventName
         End Sub
+
     End Structure
 End Namespace

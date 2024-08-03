@@ -1,0 +1,25 @@
+
+Me.Text = "width = " + Me.Width + ", Height = " + Me.Height
+Label1.FitContentSize()
+
+
+' ------------------------------------------------
+Sub Form1_OnPreviewKeyDown()
+   If Keyboard.CtrlPressed Then
+      inc = 10
+   Else
+      inc = 1
+   EndIf
+   
+   If Keyboard.LastKey = Keys.Left Then
+      Label1.Left = Label1.Left - inc
+   ElseIf Keyboard.LastKey = Keys.Right Then
+      Label1.Left = Label1.Left + inc
+   ElseIf Keyboard.LastKey = Keys.Up Then
+      Label1.Top = Label1.Top - inc
+   ElseIf Keyboard.LastKey = Keys.Down Then
+      Label1.Top = Label1.Top + inc
+   EndIf
+   Label1.Text = "x = " + Label1.Left + ", y = " + Label1.Top
+   Label1.FitContentSize()
+EndSub

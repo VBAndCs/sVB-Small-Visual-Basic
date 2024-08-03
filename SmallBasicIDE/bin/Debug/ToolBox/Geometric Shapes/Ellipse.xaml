@@ -1,4 +1,0 @@
-﻿<Ellipse xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-xmlns:d="clr-namespace:DiagramHelper;assembly=DiagramHelper"
-d:Designer.FrameWidth="50" d:Designer.FrameHeight="50"
- Fill="Red" Stretch="Fill" />
