@@ -1,0 +1,17 @@
+Rows = 8
+Columns = 8
+Size = 40
+For R = 1 To Rows
+   For C = 1 To Columns
+      GW.BrushColor = Colors.Random
+      Boxes[R][C] = Shapes.AddRectangle(Size, Size)
+      Shapes.Move(Boxes[R][C], C * Size, R * Size)
+   Next
+Next
+
+For R = 1 To Rows
+   For C = 1 To Columns
+      Shapes.Animate(Boxes[R][C], 0, 0, 1000)
+      Program.Delay(300)
+   Next
+Next

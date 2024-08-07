@@ -385,12 +385,15 @@ Namespace Microsoft.SmallVisualBasic.Documents
             m.DisplayDebugCommands(False)
             m.Dispatcher.Invoke(
                 Sub()
-                    RemoveHandler _ProgramEngine.DebuggerStateChanged, AddressOf OnCurrentStateChanged
-                    RemoveHandler Library.Program.ProgramTerminated, AddressOf OnProgramTerminated
+                    If _ProgramEngine IsNot Nothing Then
+                        RemoveHandler _ProgramEngine.DebuggerStateChanged, AddressOf OnCurrentStateChanged
+                        RemoveHandler Library.Program.ProgramTerminated, AddressOf OnProgramTerminated
 
-                    _IsActive = False
-                    _ProgramEngine.Dispose()
-                    _ProgramEngine = Nothing
+                        _IsActive = False
+                        _ProgramEngine.Dispose()
+                        _ProgramEngine = Nothing
+                    End If
+
                     m.PopError.IsOpen = False
                     m.tabDesigner.IsEnabled = True
 

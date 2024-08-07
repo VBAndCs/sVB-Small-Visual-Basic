@@ -1,4 +1,5 @@
-﻿Imports Microsoft.SmallVisualBasic.Library
+﻿Imports System.Windows.Threading
+Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
 Module Helper
@@ -9,7 +10,7 @@ Module Helper
     Private ClearErrors As Boolean = True
 
     Public Sub ReportError(msg As String, ex As Exception)
-        If app.IsDebugging Then
+        If App.IsDebugging Then
             Program.Exception = New Exception(msg, ex)
             Return
         End If
@@ -23,6 +24,17 @@ Module Helper
             App.ShowErrorWindow(msg, ex.StackTrace)
         Catch
         End Try
+    End Sub
 
+    Public Sub RunLater(DisObj As DispatcherObject, action As Action, Optional milliseconds As Integer = 20)
+        If DisObj Is Nothing Then Return
+        Dim dt As New DispatcherTimer(
+            TimeSpan.FromMilliseconds(milliseconds),
+            DispatcherPriority.Background,
+            Sub()
+                action()
+                dt.Stop()
+            End Sub, DisObj.Dispatcher)
+        dt.Start()
     End Sub
 End Module

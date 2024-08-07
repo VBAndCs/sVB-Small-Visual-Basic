@@ -3,10 +3,9 @@
 '}
 
 Me = "form1"
-_path = Program.Directory + "\Form1.xaml"
+_path = Program.Directory + "\form1.xaml"
 Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
-Form.Show(Form1)
 '#Events{
 '    Form1: OnKeyDown OnKeyUp OnClosing
 '}
@@ -18,3 +17,4 @@ Control.OnKeyUp = Form1_OnKeyUp
 Form.OnClosing = Form1_OnClosing
 
 
+Form.Show(Me)

@@ -1,0 +1,33 @@
+Delta = 10
+Turtle.Speed = 9
+GW.BackgroundColor = Colors.Black
+GW.PenColor = Colors.LightGreen
+Turtle.X = GW.Width / 2
+Turtle.Y = GW.Height
+Turtle.Speed = 10
+' Uncomment the next line to speed up
+' Turtle.UseAnimation = False
+Turtle.Move(50)
+DrawTree(100, 58)
+
+' ------------------------------------------------
+Sub DrawTree(distance, angle)
+   d = distance - Delta
+   angle = angle - 10
+   If d > 0 Then
+      ' Draw trunk
+      Turtle.Move(distance)
+      
+      ' Draw right branch
+      Turtle.Turn(angle)
+      DrawTree(d, angle)
+      
+      ' Draw left branch
+      Turtle.Turn(-2 * angle)
+      DrawTree(d, angle)
+      
+      ' Go back to the parent tree
+      Turtle.Turn(angle)
+      Turtle.Move(-distance)
+   EndIf
+EndSub

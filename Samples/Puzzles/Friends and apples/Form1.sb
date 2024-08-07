@@ -1,60 +1,79 @@
 
 ' ------------------------------------------------
 Sub Button1_OnClick()
-   apples = 1
+   apples = 10 ' 4 apples for the donkey + at least 2 apples for each friend
    While True
-      apples = apples + 3
-      If Math.Remainder(apples, 3) = 1 Then
-         shares[1] = Math.Floor(apples / 3)
-         x = shares[1] * 2
-         If Math.Remainder(x, 3) = 1 Then
-            shares[2] = Math.Floor(x / 3)
-            y = shares[2] * 2
-            If Math.Remainder(y, 3) = 1 Then
-               shares[3] = Math.Floor(y / 3)
-               z = shares[3] * 2
-               If Math.Remainder(z, 3) = 1 Then
-                  shares[4] = Math.Floor(z / 3)
-                  ExitLoop
-               EndIf
+      shares[1] = (apples - 1) / 3
+      x = shares[1] * 2
+      If x Mod 3 = 1 Then
+         shares[2] = (x - 1) / 3
+         y = shares[2] * 2
+         If y Mod 3 = 1 Then
+            shares[3] = (y - 1) / 3
+            z = shares[3] * 2
+            If z Mod 3 = 1 Then
+               shares[4] = (z - 1) / 3
+               ExitLoop
             EndIf
          EndIf
       EndIf
+      apples = apples + 3
    Wend
    
    ShowResults(apples, shares)
 EndSub
 
 
-
 ' ------------------------------------------------
 Sub Button2_OnClick()
-   apples = 1
+   apples = 10 ' 4 apples for the donkey + at least 2 apples for each friend
    shares = {}
    found = False
    
    While found = False
-      apples = apples + 3
       n = apples
       found = True
       
       For i = 1 To 4
-         If n.Remainder(3) = 1 Then
-            n = n - 1
-            shares[i] = n / 3
+         If n Mod 3 = 1 Then
+            shares[i] = (n - 1) / 3
             n = 2 * shares[i]
          Else
             found = False
+            apples = apples + 3 ' At least each friend will eat one more apple
             ExitLoop
          EndIf
       Next
    Wend
    
    ShowResults(apples, shares)
-   
 EndSub
 
 
+' ------------------------------------------------
+Sub Button3_OnClick()
+   morningApples = 4 ' At morning, at least each of the donkey and  friends ate 1 apple
+   shares = {}
+   found = False
+   
+   While found = False
+      found = True
+      apples = morningApples
+      For i = 4 To 2 Step -1
+         shares[i] = (apples - 1) / 3
+         If apples Mod 2 = 0 Then
+            apples = 3 * apples / 2 + 1
+         Else
+            found = False
+            morningApples = morningApples + 6 ' Keep apples even at morning pass the first dividion by 2 check
+            ExitLoop
+         EndIf
+      Next
+   Wend
+   
+   shares[1] = (apples - 1) / 3
+   ShowResults(apples, shares)
+EndSub
 
 ' ------------------------------------------------
 Sub ShowResults(apples, shares)
@@ -65,3 +84,5 @@ Sub ShowResults(apples, shares)
    TextBox1.AppendLine("Thirs one ate: " + (shares[3] + shares[4]))
    TextBox1.Append("Donkey ate: 4")
 EndSub
+
+

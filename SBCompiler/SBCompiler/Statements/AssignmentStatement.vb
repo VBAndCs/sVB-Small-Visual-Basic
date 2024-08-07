@@ -339,9 +339,17 @@ Namespace Microsoft.SmallVisualBasic.Statements
             eventInfo.GetAddMethod().Invoke(Nothing, {CType(
                    Sub()
                        Dim eventName = eventInfo.Name
-                       If engine.BreakMode AndAlso (eventName.EndsWith("Click") OrElse eventName.Contains("Key") OrElse eventName.Contains("Mouse")) Then
+                       If engine.BreakMode AndAlso (
+                                eventName.EndsWith("Click") OrElse
+                                eventName.Contains("Key") OrElse
+                                eventName.Contains("Mouse")
+                       ) Then
                            MsgBox("You are running the program in debug mode, and it is curreuntly paused, so you can't do anything before resuming execution. You will be switched to the current line that has the break point.")
                            engine.RaiseDebuggerStateChangedEvent(Nothing)
+                           Return
+                       End If
+
+                       If handlerRunner.runnerThread IsNot Nothing Then
                            Return
                        End If
 
@@ -405,6 +413,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
                                     End If
                                 End If
                                 runner.EventThreads(handlerKey) = False
+                                handlerRunner.runnerThread = Nothing
                             End Sub)
 
                        handlerThread.IsBackground = True

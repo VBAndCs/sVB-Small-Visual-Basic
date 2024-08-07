@@ -446,9 +446,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Dim subName = Name.LCaseText
             Dim keyPrefix = subName & "."
             Dim returnKey = keyPrefix & "return"
-            Dim keys As New List(Of String)(runner.Fields.Keys)
 
-            For Each key In keys
+            For Each key In runner.Fields.Keys.ToArray()
                 If key <> returnKey AndAlso key.StartsWith(keyPrefix) Then
                     runner.Fields(key) = New Library.Primitive
                 End If

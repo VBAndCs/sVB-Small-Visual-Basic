@@ -46,10 +46,10 @@ CreateTracks()
 Timer.Interval = 1
 Timer.Tick = Timer_Tick
 
-'---------------------------------------------------------------
+' ---------------------------------------------------------------
 Function CreateCar(
       name,  	  ' #String: the name of the car
-      maxSpeed, '#double
+      maxSpeed, ' #double
       speed,
       left,	' x-pos of the car
       top,		' y-pos of the car
@@ -72,7 +72,7 @@ Function CreateCar(
    Return car
 EndFunction
 
-'---------------------------------------------------------------
+' ---------------------------------------------------------------
 Sub CreateEnamyCars()
    For i = 1 To 11
       maxSpeed = 120 + 10 * Math.GetRandomNumber(13)
@@ -99,7 +99,7 @@ Sub CreateEnamyCars()
    Next
 EndSub
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 
 Sub MoveMyCar
    If StartMove Then
@@ -139,7 +139,7 @@ Sub MoveMyCar
 EndSub
 
 
-'---------------------------------------------------------------
+' ---------------------------------------------------------------
 Function MoveCar(i)
    car = Cars[i]
    steps = car!Steps
@@ -233,7 +233,7 @@ Function MoveCar(i)
    Return True
 EndFunction
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 Sub MoveCars()
    r = Math.GetRandomNumber(CarsCount * 10) / 10
    negative = Math.GetRandomNumber(100) > 50
@@ -275,7 +275,7 @@ Sub MoveCars()
    Wend
 EndSub
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 
 Sub Timer_Tick
    Timer.Pause()
@@ -283,48 +283,52 @@ Sub Timer_Tick
    Timer.Resume()
 EndSub
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 Sub EndMove()
    StartMove = False
    Braking = False
    A = 0.5
 EndSub
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 
 Sub SpeedUp()
    MoveDirection = Direction_Up
    StartMove = True
 EndSub
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 Sub SpeedDown()
    MoveDirection = Direction_Down
    StartMove = True
 EndSub
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 Sub MoveRight()
    MoveDirection = Direction_Right
    StartMove = True
 EndSub
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 Sub MoveLeft()
    MoveDirection = Direction_Left
    StartMove = True
 EndSub
 
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 Sub Brake()
    Braking = True
    MoveDirection = Direction_Down
    StartMove = True
 EndSub
 
-'---------------------------------------------------------------------
+' ---------------------------------------------------------------------
 Sub Form1_OnKeyDown()
+   If StartMove Or Braking Then
+      Return
+   EndIf
+   
    If Event.LastKey = Keys.Up Then
       If Keyboard.CtrlPressed Then
          A = 1
@@ -350,28 +354,27 @@ Sub Form1_OnKeyDown()
    Event.Handled = True
 EndSub
 
-'-------------------------------------------------------------------------------
-GameKeys = {_
-   Keys.Up, _
-   Keys.Down, _
-   Keys.Left, _
-   Keys.Right, _
-   Keys.Space _
+' -------------------------------------------------------------------------------
+GameKeys = {
+   Keys.Up,
+   Keys.Down,
+   Keys.Left,
+   Keys.Right,
+   Keys.Space
 }
 
-Sub Form1_OnKeyUp
+Sub Form1_OnKeyUp()
    key = Event.LastKey
-   For i = 1 To Array.GetItemCount(GameKeys)
+   For i = 1 To GameKeys.Count
       If key = GameKeys[i] Then
          EndMove()
          Return
       EndIf
-      
    Next
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub Form1_OnClosing
    Timer.Pause()
    EndGame = True
@@ -382,7 +385,7 @@ Sub Form1_OnClosing
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub CreateTracks()
    leftTrackLabel = Me.AddLabel("leftTrack", 0, 0, 20, Me.Height)
    leftTrackLabel.BackColor = Colors.White
@@ -401,7 +404,7 @@ Sub CreateTracks()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function CreateBlock(left, top, n)
    blockLabel = Me.AddLabel("blockLabel" + n, left, top, 20, 20)
    blockLabel.BackColor = Colors.Black
@@ -410,7 +413,7 @@ EndFunction
 
 
 CurrentBlock = 1
-'------------------------------------------------
+' ------------------------------------------------
 Sub MoveTracks()
    y = MyCarSpeed / 5
    
@@ -437,7 +440,7 @@ Sub MoveTracks()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function AvoidCollisions(n)
    car = Cars[n]
    carSpeed = car!Speed

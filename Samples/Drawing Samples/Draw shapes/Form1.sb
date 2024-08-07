@@ -1,0 +1,68 @@
+GW.BackgroundColor = Colors.Black
+GW.PenColor = Colors.LightBlue
+GW.Width = 400
+GW.Height = 400
+GwForm = GW.AsForm()
+GwForm.OnClosing = Gw_OnClosing
+GW.Hide()
+
+' ------------------------------------------------
+Sub Gw_OnClosing()
+   ' cancel closing and hide thee window instead
+   Event.Handled = True
+   GW.Hide()
+EndSub
+
+
+' ------------------------------------------------
+Sub Form1_OnClosed()
+   Program.End()
+EndSub
+
+
+' ------------------------------------------------
+Sub Button1_OnClick
+   GW.Clear()
+   GW.Show()
+   c = GW.Width / 2
+   For i = 1 To c Step 10
+      GW.DrawRectangle(c - i, c - i, i * 2, i * 2)
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub Button2_OnClick()
+   GW.Clear()
+   GW.Show()
+   c = GW.Width / 2
+   For i = 1 To c Step 10
+      GW.DrawEllipse(c - i, c - i, i * 2, i * 2)
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub Button3_OnClick()
+   GW.Clear()
+   GW.Show()
+   For i = 1 To 1000
+      GW.BrushColor = Colors.Random
+      x = Math.GetRandomNumber(GW.Width)
+      y = Math.GetRandomNumber(GW.Height)
+      GraphicsWindow.FillEllipse(x, y, 10, 10)
+   EndFor
+EndSub
+
+
+' ------------------------------------------------
+Sub Button4_OnClick()
+   Math.UseRadianAngles = False
+   GW.Clear()
+   GW.Show()
+   For angle = 0 To 360 Step 10
+      x = Math.Sin(angle) * 100 + 140
+      y = Math.Cos(angle) * 100 + 140
+      GW.DrawEllipse(x, y, 120, 120)
+   Next
+EndSub

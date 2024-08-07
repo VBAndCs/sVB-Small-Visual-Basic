@@ -83,12 +83,12 @@ EndSub
 Sub CheckEggs()
    Eggs = Eggs + 1
    LblResult.Text = Eggs
-   If Eggs.Remainder(2) = R2 And
-         Eggs.Remainder(3) = R3 And
-         Eggs.Remainder(4) = R4 And
-         Eggs.Remainder(5) = R5 And
-         Eggs.Remainder(6) = R6 And
-         Eggs.Remainder(7) = R7 Then
+   If Eggs Mod 2 = R2 And
+         Eggs Mod 3 = R3 And
+         Eggs Mod 4 = R4 And
+         Eggs Mod 5 = R5 And
+         Eggs Mod 6 = R6 And
+         Eggs Mod 7 = R7 Then
       
       Timer.Pause()
       ProgressBar1.Visible = False

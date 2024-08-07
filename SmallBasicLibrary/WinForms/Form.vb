@@ -1710,9 +1710,15 @@ Namespace WinForms
 
                                              Call handler()
 
+                                             If App.IsDebugging Then
+                                                 ' wait for the event thread to fininsh
+                                                 ' to make sure that the Event.Handled is set by the handler
+                                                 Program.Delay(100)
+                                             End If
+
                                              ' the handler may set the Handled property. We will use it and reset it.
                                              e.Cancel = [Event].Handled
-                                             [Event].Handled = False
+                                             If win IsNot Library.GraphicsWindow._window Then [Event].Handled = False
 
                                          Catch ex As Exception
                                              Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `{NameOf(OnClosing)}`event,  caused this error: {ex.Message}", ex)

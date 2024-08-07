@@ -1473,17 +1473,26 @@ Namespace Library
         End Sub
 
         Private Shared Sub WindowClosing(sender As Object, e As CancelEventArgs)
-            _windowCreated = False
-            If WinForms.Forms._forms.Count = 0 AndAlso Not TextWindow._windowVisible Then
-                Program.End()
-            End If
+            Helper.RunLater(_window,
+                Sub()
+                    If WinForms.Event.Handled Then
+                        e.Cancel = True
+                        WinForms.Event.Handled = False
+                        Return
+                    End If
 
-            WinForms.Forms.RemoveFormAndControls(Controls.GW_NAME)
-            Turtle.Initialize()
-            _mainCanvas.Children.Clear()
-            _renderBitmap.Clear()
-            _mainDrawing.Children.Clear()
-            _objectsMap.Clear()
+                    _windowCreated = False
+                    If WinForms.Forms._forms.Count = 0 AndAlso Not TextWindow._windowVisible Then
+                        Program.End()
+                    End If
+
+                    WinForms.Forms.RemoveFormAndControls(Controls.GW_NAME)
+                    Turtle.Initialize()
+                    _mainCanvas.Children.Clear()
+                    _renderBitmap.Clear()
+                    _mainDrawing.Children.Clear()
+                    _objectsMap.Clear()
+                End Sub, 500)
         End Sub
 
         Private Shared Sub WindowSizeChanged(sender As Object, e As SizeChangedEventArgs)

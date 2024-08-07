@@ -371,7 +371,9 @@ Namespace WinForms
                 Dim name = [Event].SenderControl
                 Dim _sender = GetSelector(name)
                 Dim h = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs)
-                            [Event].HandleEvent(CType(Sender, System.Windows.FrameworkElement), e, handler)
+                            App.BeginInvoke(Sub() [Event].HandleEvent(
+                                        CType(Sender, System.Windows.FrameworkElement),
+                                        e, handler))
                         End Sub
 
                 Control.RemovePrevEventHandler(
