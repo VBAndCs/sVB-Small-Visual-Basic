@@ -3,6 +3,7 @@ Imports Microsoft.SmallVisualBasic.Library
 Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
+Imports System.Windows.Media
 
 Namespace WinForms
     ''' <summary>
@@ -114,7 +115,9 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetText = GetComboBox(comboBoxName).Text
+                        Dim cmb = GetComboBox(comboBoxName)
+                        Dim txt = CType(cmb.Template.FindName("PART_EditableTextBox", cmb), Wpf.TextBox)
+                        GetText = txt.Text
                     Catch ex As Exception
                         Control.ReportError(comboBoxName, "Text", ex)
                     End Try
@@ -247,6 +250,15 @@ Namespace WinForms
         Public Shared Function FindItemAt(comboBoxName As Primitive, value As Primitive, startIndex As Primitive, endIndex As Primitive) As Primitive
             Return ListBase.FindItemAt(comboBoxName, value, startIndex, endIndex)
         End Function
+
+        Friend Shared Sub SetBackColor(cmb As Wpf.ComboBox, color As Media.Color?)
+            Dim brush As SolidColorBrush = Nothing
+            If color IsNot Nothing Then
+                brush = New SolidColorBrush(color.Value)
+            End If
+            Dim txt = CType(cmb.Template.FindName("PART_EditableTextBox", cmb), Wpf.TextBox)
+            txt.Background = brush
+        End Sub
 
         ''' <summary>
         ''' This event is fired when the selected item in the list is changed.

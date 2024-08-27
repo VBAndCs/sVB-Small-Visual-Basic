@@ -362,15 +362,40 @@ Namespace Library
         ''' <summary>
         ''' Gets a random number between 1 and the specified maxNumber (inclusive).
         ''' </summary>
-        ''' <param name="maxNumber">The maximum number for the requested random value.</param>
+        ''' <param name="maxNumber">The maximum value for the requested random number.</param>
         ''' <returns>
-        ''' A Random number that is less than or equal to the specified max.
+        ''' A positive random number that is less than or equal to the specified max.
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetRandomNumber(maxNumber As Primitive) As Primitive
             If CBool((maxNumber < 1)) Then maxNumber = 1
             If _random Is Nothing Then _random = New Random()
             Return _random.Next(maxNumber) + 1
+        End Function
+
+        ''' <summary>
+        ''' Gets a random number between the given two numbers (inclusive).
+        ''' </summary>
+        ''' <param name="minNumber">The minimum value for the requested random number.</param>
+        ''' <param name="maxNumber">The maximum value for the requested random number.</param>
+        ''' <returns>
+        ''' A random number that is greater than or equal the specified min value, and less than or equal to the specified max value.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function Rnd(minNumber As Primitive, maxNumber As Primitive) As Primitive
+            Dim max, min As Integer
+            If CBool((maxNumber < minNumber)) Then
+                max = minNumber
+                min = maxNumber
+            Else
+                min = minNumber
+                max = maxNumber
+            End If
+
+            If max = min Then Return min
+
+            If _random Is Nothing Then _random = New Random()
+            Return min + _random.Next(max - min + 1)
         End Function
 
         ''' <summary>

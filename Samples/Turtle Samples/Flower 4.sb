@@ -1,0 +1,56 @@
+GW.PenWidth = 0.8
+GW.Title = "Lotus Flower"
+GW.BackgroundColor = Colors.Black
+GW.PenColor = Colors.White
+GW.PenWidth = 4
+GW.BrushColor = Colors.Goldenrod
+GW.GradientEndColor = Colors.Gold
+GW.Width = 650
+GW.Height = 400
+Math.UseRadianAngles = False
+
+Dr = 255 / 180
+Ww = 640
+Hh = 400
+U = 1
+Xc = Ww / 2
+Yc = Hh / 2
+Ra = 150
+H2 = 255 / 2
+K2 = 2
+K3 = 3
+K5 = 0.25
+K6 = 6
+K8 = 8
+Rr = 50
+P1 = 1 + K2 * (K5 - Math.Abs(Math.Cos(H2)))
+P2 = K2 + K8
+R = Ra * (U + P1 / P2)
+Turtle.Speed = 50
+Turtle.UseAnimation = False
+
+
+For A = 0 To 254
+   T = A * Dr
+   P1 = Math.Abs(Math.Cos(K3 * T)) + K2 * (K5 - Math.Abs(Math.Cos(K3 * T + H2)))
+   P2 = K2 + K8 * Math.Abs(Math.Cos(K6 * T + H2))
+   R = Ra * (U + P1 / P2)
+   X = Xc + R * Math.Cos(T)
+   Y = Yc - R * Math.Sin(T)
+   
+   If A = 0 Then
+      Turtle.X = X
+      Turtle.Y = Y
+      X0 = X
+      Y0 = Y
+      Turtle.CreateFigure()
+   Else
+      Turtle.MoveTo(X, Y)
+   EndIf
+Next
+
+Turtle.MoveTo(X0, Y0)
+Turtle.FillFigure()
+Turtle.Hide()
+
+

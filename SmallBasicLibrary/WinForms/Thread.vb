@@ -21,6 +21,7 @@ Namespace WinForms
         Public Shared Custom Event SubToRun As SmallVisualBasicCallback
             AddHandler(handler As SmallVisualBasicCallback)
                 Dim t As New Threading.Thread(Sub() handler())
+                t.IsBackground = True
                 t.Start()
                 If _InitializationDelay > 0 Then Program.Delay(_InitializationDelay)
             End AddHandler

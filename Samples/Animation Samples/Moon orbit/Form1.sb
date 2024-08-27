@@ -1,0 +1,17 @@
+Math.UseRadianAngles = False
+R = Orbit.Width / 2
+Cx = Orbit.Left + R
+Cy = Orbit.Top + R
+R2 = Moon.Width / 2
+Rotate(10)
+
+' ------------------------------------------------
+Sub Rotate(n)
+   For a = 0 To 360 * n
+      x = Cx - R * Math.Cos(a)
+      y = Cy + R * Math.Sin(a)
+      Moon.Left = x - R2
+      Moon.Top = y - R2
+      Program.Delay(1)
+   Next
+EndSub

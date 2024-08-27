@@ -8,7 +8,7 @@
     <RootNamespace>WpfDialogs</RootNamespace>
     <AssemblyName>WpfDialogs</AssemblyName>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MyType>Custom</MyType>
     <ProjectGuid>{C80161CE-9098-4AF6-BCF9-39DD675B444C}</ProjectGuid>
     <TargetFrameworkProfile />

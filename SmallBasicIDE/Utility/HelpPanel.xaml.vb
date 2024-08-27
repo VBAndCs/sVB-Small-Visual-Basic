@@ -154,7 +154,7 @@ Namespace Microsoft.SmallVisualBasic.Utility
 
             Dim strValue As String
             If value.IsEmpty Then
-                Select Case LCase(methodType).Trim()
+                Select Case LCase(methodType)?.Trim()
                     Case "as array"
                         strValue = "{}"
                     Case "as double"

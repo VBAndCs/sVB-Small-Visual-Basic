@@ -1,6 +1,7 @@
 ﻿Imports Microsoft.SmallVisualBasic.Library
 Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
+Imports System.Windows.Threading
 
 Namespace WinForms
 
@@ -371,9 +372,9 @@ Namespace WinForms
                 Dim name = [Event].SenderControl
                 Dim _sender = GetSelector(name)
                 Dim h = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs)
-                            App.BeginInvoke(Sub() [Event].HandleEvent(
-                                        CType(Sender, System.Windows.FrameworkElement),
-                                        e, handler))
+                            [Event].HandleEvent(
+                                   CType(Sender, System.Windows.FrameworkElement),
+                                   e, handler)
                         End Sub
 
                 Control.RemovePrevEventHandler(

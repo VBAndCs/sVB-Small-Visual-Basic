@@ -1,0 +1,91 @@
+' Originally created for Small Basic by Ardi Ardi
+
+GW.BackgroundColor = Colors.DarkOliveGreen
+GW.Title = "GaltonHouse Anim"
+GW.Top = 0
+GW.PenWidth = 0
+GW.Height = Math.Min(660, Desktop.Height - 50)
+GW.CanResize = False
+
+LDPhysics.Reset()
+LDUtilities.ShowErrors = False
+Sc = 7
+Sz = 5
+N = 0
+AddNew = False
+
+GW.BrushColor = Colors.White
+
+S = Shapes.AddRectangle(5, 390)
+S.Move(191, 55)
+S.Rotate(27)
+LDPhysics.AddFixedShape(S, 0.01, 0.1)
+LDPhysics.DoTimestep()
+
+S = Shapes.AddRectangle(5, 390)
+S.Move(439, 55)
+S.Rotate(-27)
+LDPhysics.AddFixedShape(S, 0.01, 0.1)
+LDPhysics.DoTimestep()
+
+' -------------------------------------------------------
+For I = 2 To 10
+   For J = 1 To I
+      If I = 10 Then
+         S = Shapes.AddRectangle(5, 250)
+         S.Move(
+            Sc * (J + 2) * 6,
+            Sc * 60
+         )
+      Else
+         S = Shapes.AddEllipse(Sz, Sz)
+         S.Move(
+            Sc * ((14 - I) * 3 + J * 6),
+            Sc * (I * 6 + 2)
+         )
+      EndIf
+      
+      LDPhysics.AddFixedShape(S, 0.01, 0.2)
+   Next
+Next
+
+GW.BrushColor = Colors.Gold
+
+' -------------------------------
+
+Timer.Tick = DropNewBall
+Timer.Interval = 2500
+DropNewBall()
+
+StepTimer = Controls.AddTimer(30)
+StepTimer.OnTick = StepTimer_OnTick
+
+' ------------------------------------------------
+Sub StepTimer_OnTick()
+   If AddNew Then
+      AddNew = False
+      ball = Shapes.AddEllipse(19, 19)
+      ' Try 39 instead of 40 and 10 instead of 8, to allow droppimg balls oit of the cone
+      ball.Move(Sc * 40 + Math.GetRandomNumber(Sc * 8), 5)
+      LDPhysics.AddMovingShape(ball, 0.1, 0.25, 1.1)
+      If N Mod 10 = 0 Then
+         Timer.Interval = Math.Max(200, Timer.Interval * 0.9)
+         StepTimer.Interval = Math.Max(1, StepTimer.Interval - 1)
+      EndIf
+   EndIf
+   
+   LDPhysics.DoTimestep()
+EndSub
+
+
+' -------------------------------
+Sub DropNewBall()
+   AddNew = True
+   N = N + 1
+   GW.Title = N
+   If N > 1024 Then
+      Timer.Pause()
+   EndIf
+EndSub
+
+

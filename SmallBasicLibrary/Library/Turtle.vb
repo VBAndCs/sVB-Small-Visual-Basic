@@ -262,7 +262,7 @@ Namespace Library
             If _path Is Nothing Then Return
 
             Dim name = Shapes.GenerateNewName("GeoPath")
-            GraphicsWindow.Invoke(
+            GraphicsWindow.BeginInvoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     _path.Fill = GraphicsWindow._fillBrush
@@ -335,10 +335,11 @@ Namespace Library
                                 )
                             )
                         End If
+
+                        _currentX = newX
+                        _currentY = newY
                     End Sub)
 
-            _currentX = newX
-            _currentY = newY
             WaitForReturn(animateTime)
         End Sub
 
@@ -352,13 +353,13 @@ Namespace Library
             VerifyAccess()
             If Not GraphicsWindow._windowCreated Then Return
 
-            Dim d = CDbl(distance)
-            Dim angle = _angle / 180.0 * System.Math.PI
-            Dim newY = _currentY - d * System.Math.Cos(angle)
-            Dim newX = _currentX + d * System.Math.Sin(angle)
-
             GraphicsWindow.Invoke(
                 Sub()
+                    Dim d = CDbl(distance)
+                    Dim angle = _angle / 180.0 * System.Math.PI
+                    Dim newY = _currentY - d * System.Math.Cos(angle)
+                    Dim newX = _currentX + d * System.Math.Sin(angle)
+
                     If _penDown Then
                         Dim name = Shapes.GenerateNewName("_turtleLine")
                         Dim line1 As New Line With {
@@ -377,12 +378,13 @@ Namespace Library
 
                     If _path IsNot Nothing Then
                         _figure.Segments.Add(New LineSegment(
-                                New Point(newX, newX), _penDown))
+                                New Point(newX, newY), _penDown))
                     End If
+
+                    _currentX = newX
+                    _currentY = newY
                 End Sub)
 
-            _currentX = newX
-            _currentY = newY
         End Sub
 
 

@@ -123,7 +123,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Dim objectName As New Token() With {.Text = item.ObjectName, .Type = TokenType.Identifier}
                 Dim type = runner.Parser.SymbolTable.GetTypeInfo(objectName)
 
-                Dim propInfo = TryCast(item.MemberInfo, Reflection.PropertyInfo)
+                Dim propInfo = TryCast(item.MemberInfo, System.Reflection.PropertyInfo)
                 If propInfo IsNot Nothing Then
                     result = CType(propInfo.GetValue(Nothing, Nothing), Library.Primitive)
                 Else

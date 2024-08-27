@@ -8,7 +8,7 @@ Namespace Library
     Public NotInheritable Class Text
 
         ''' <summary>
-        ''' Formats the string by replacing [1], [2], ... [n] by items from the values array.
+        ''' Formats the given text by substituting the placeholders by the given values.
         ''' </summary>
         ''' <param name="text">The string to Format. Use [1], [2],... [n] in the string, to refer the values[1], values[2], ... values[n]</param>
         ''' <param name="values">An array its elements will be used to replace [1], [2],... [n] strings if found in the text</param>

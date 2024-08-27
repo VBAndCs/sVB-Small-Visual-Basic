@@ -56,6 +56,11 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        Public Shared ReadOnly ImagePathProperty As _
+                               DependencyProperty = DependencyProperty.RegisterAttached("ImagePath",
+                               GetType(String), GetType(Label),
+                               New PropertyMetadata(""))
+
         ''' <summary>
         ''' Gets or sets the path of the image that is displayed on the label
         ''' </summary>
@@ -65,14 +70,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        Dim content = GetLabel(labelName).Content
-                        Dim img = TryCast(content, Wpf.Image)
-                        If img IsNot Nothing Then
-                            GetImage = CType(img.Source, BitmapImage).UriSource.AbsolutePath
-                        Else
-                            GetImage = ""
-                        End If
-
+                        GetImage = GetLabel(labelName).GetValue(ImagePathProperty).ToString()
                     Catch ex As Exception
                         Control.ReportError(labelName, "Image", ex)
                     End Try
@@ -84,19 +82,26 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        If imageFile.AsString() = "" Then
+                        Dim lbl = GetLabel(labelName)
+                        Dim imgFile = imageFile.AsString()
+                        If imgFile = "" Then
                             SetText(labelName, "")
+                            lbl.SetValue(ImagePathProperty, "")
                             Return
                         End If
 
-                        Dim imgFile = Environment.ExpandEnvironmentVariables(imageFile)
+                        lbl.SetValue(ImagePathProperty, imgFile)
+                        imgFile = Environment.ExpandEnvironmentVariables(imgFile)
                         If Not IO.Path.IsPathRooted(imgFile) Then
                             imgFile = IO.Path.Combine(Program.Directory, imgFile)
                         End If
 
-                        GetLabel(labelName).Content = New Wpf.Image() With {
-                            .Source = New BitmapImage(New Uri(imgFile))
-                        }
+                        Dim img As New BitmapImage()
+                        img.BeginInit()
+                        img.CacheOption = BitmapCacheOption.OnLoad
+                        img.UriSource = New Uri(imgFile)
+                        img.EndInit()
+                        lbl.Content = New Wpf.Image() With {.Source = img}
 
                     Catch ex As Exception
                         Control.ReportPropertyError(labelName, "Image", imageFile, ex)

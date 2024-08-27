@@ -1372,6 +1372,7 @@ Namespace Library
                                 WinForms.Color.GetTransparency(_backgroundColor) > 0
                         )
                         _window = New Window() With {
+                            .Name = Controls.GW_NAME,
                             .Title = "sVB Graphics Window",
                             .AllowsTransparency = allowsTransparency,
                             .WindowStyle = If(allowsTransparency, WindowStyle.None, WindowStyle.ThreeDBorderWindow),
@@ -1414,6 +1415,7 @@ Namespace Library
         Private Shared Sub SignupForWindowEvents()
             AddHandler _window.SizeChanged, AddressOf WindowSizeChanged
             AddHandler _window.Closing, AddressOf WindowClosing
+            AddHandler _window.Closed, AddressOf WinForms.Forms.Form_Closed
             AddHandler _window.MouseDown, Sub() RaiseEvent MouseDown()
             AddHandler _window.MouseUp, Sub() RaiseEvent MouseUp()
 
@@ -1486,7 +1488,6 @@ Namespace Library
                         Program.End()
                     End If
 
-                    WinForms.Forms.RemoveFormAndControls(Controls.GW_NAME)
                     Turtle.Initialize()
                     _mainCanvas.Children.Clear()
                     _renderBitmap.Clear()

@@ -1,0 +1,21 @@
+' A modified Guilloche pattern
+Math.UseRadianAngles = False
+XRadius = 170
+YRadius = 150
+Cx = 450
+Cy = 300
+Ax = 10 ' try 6
+Ay = 7 ' try 3
+
+For Scale = 1 To 125 Step 2
+   DrawGuillochePattern()
+Next
+
+' ------------------------------------------------
+Sub DrawGuillochePattern()
+   For angle = 1 To 360 * 2
+      x = (XRadius + Scale * Math.Sin(Ax * angle)) * Math.Cos(angle)
+      y = (YRadius + Scale * Math.Sin(Ay * angle)) * Math.Sin(angle)
+      GraphicsWindow.SetPixel(Cx + x, Cy + y, Colors.Blue)
+   Next
+EndSub

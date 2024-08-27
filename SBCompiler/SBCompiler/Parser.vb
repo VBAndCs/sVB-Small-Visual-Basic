@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Reflection
 Imports Microsoft.SmallVisualBasic.Expressions
 Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Statements
@@ -40,7 +41,7 @@ Namespace Microsoft.SmallVisualBasic
             'Build new fields
             For Each key In _parser.SymbolTable.GlobalVariables.Keys
                 If Not scope.Fields.ContainsKey(key) Then
-                    Dim fieldBuilder = scope.TypeBuilder.DefineField(key, GetType(Primitive), Reflection.FieldAttributes.Private Or Reflection.FieldAttributes.Static)
+                    Dim fieldBuilder = scope.TypeBuilder.DefineField(key, GetType(Primitive), FieldAttributes.Private Or FieldAttributes.Static)
                     scope.Fields.Add(key, fieldBuilder)
                 End If
             Next

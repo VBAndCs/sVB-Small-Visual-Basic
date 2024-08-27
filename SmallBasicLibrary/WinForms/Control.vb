@@ -1034,6 +1034,7 @@ Namespace WinForms
                         ' Remove any animation effect to allow setting the new value
                         obj.BeginAnimation(BackColorProperty, Nothing)
                         obj.SetValue(BackColorProperty, _color)
+                        ' If TypeOf obj Is Wpf.ComboBox Then ComboBox.SetBackColor(obj, _color)
 
                     Catch ex As Exception
                         ReportPropertyError(controlName, "BackColor", value, ex)

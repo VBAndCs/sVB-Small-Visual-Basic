@@ -8,7 +8,7 @@
     </RootNamespace>
     <AssemblyName>LanguageService</AssemblyName>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MyType>Custom</MyType>
     <Deterministic>true</Deterministic>
     <ProjectGuid>{A76620D4-A63C-4221-9FDC-D44C0CDD9B9F}</ProjectGuid>

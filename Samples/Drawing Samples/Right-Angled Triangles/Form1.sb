@@ -1,0 +1,50 @@
+GetTriangles2()
+ListBox1.SelectedIndex = 1
+
+' ------------------------------------------------
+Sub GetTriangles1()
+   results[0] = 0
+   For i = 1 To 100
+      i2 = i * i
+      For j = 1 To 100
+         k = Math.SquareRoot(i2 + j * j)
+         If k <= 100 And k = Math.Floor(k) And results.ContainsValue(k) = False Then
+            results.Append(k)
+            ListBox1.AddItem(Text.Format("[1],[2],[3]", {i, j, k}))
+         EndIf
+      Next
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub GetTriangles2()
+   For i = 2 To 100
+      i2 = i * i
+      For j = 2 To i - 1
+         j2 = j * j
+         For k = i - 1 To 2 Step -1
+            n = k * k + j2
+            If n = i2 Then
+               ListBox1.AddItem(Text.Format("[1],[2],[3]", {j, k, i}))
+               ExitLoop -
+            ElseIf n < i2 Then
+               ExitLoop
+            EndIf
+         Next
+      Next
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub ListBox1_OnSelection()
+   sides = Text.Split(ListBox1.SelectedItem, ",", True, True)
+   scale = 7
+   Label1.AddTriangle(
+      0, Me.Height - 40,
+      sides[2] * scale, Me.Height - 40,
+      0, Me.Height - 40 - sides[1] * scale,
+      Colors.Black, 2, Colors.Blue
+   )
+EndSub

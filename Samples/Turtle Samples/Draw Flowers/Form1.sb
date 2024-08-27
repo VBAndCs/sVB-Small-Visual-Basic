@@ -1,0 +1,50 @@
+Math.UseRadianAngles = False
+XRadius = 200
+YRadius = 200
+Cx = 350
+Cy = 240
+ListBox1.SelectedIndex = 1
+
+
+' ------------------------------------------------
+Sub Button1_OnClick()
+   Draw(0, 0)
+EndSub
+
+' ------------------------------------------------
+Sub Button2_OnClick()
+   Draw(20, 35)
+EndSub
+
+
+Sub Draw(ox, oy)
+   Button1.Enabled = False
+   GW.AutoShow = False
+   GW.Show()
+   GW.Clear()
+   GW.Left = 200
+   GW.Width = 700
+   GW.Top = 50
+   GW.Height = 500
+   leaves = ListBox1.SelectedItem / 2
+   Turtle.UseAnimation = False
+   Turtle.Speed = 50
+   Turtle.X = ox + Cx + XRadius
+   Turtle.Y = Cy
+   GW.BrushColor = Colors.Red
+   Turtle.CreateFigure()
+   
+   For angle = 1 To 360 Step 1
+      x = (ox + XRadius * Math.Cos(leaves * angle)) * Math.Cos(angle)
+      y = (oy + YRadius * Math.Cos(leaves * angle)) * Math.Sin(angle)
+      If GW.IsClosed Then
+         Button1.Enabled = True
+         Return
+      EndIf
+      Turtle.MoveTo(Cx + x, Cy + y)
+   Next
+   
+   Turtle.FillFigure()
+   Turtle.Hide()
+   Button1.Enabled = True
+EndSub

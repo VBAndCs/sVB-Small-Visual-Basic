@@ -1,5 +1,5 @@
 GW.Width = 720
-GW.Height = 490
+GW.Height = 600
 GW.Left = 50
 GW.Top = 20
 
@@ -36,26 +36,26 @@ CrossedStarPoints = {
 
 ' -------------------------------------------------------------------------
 GW.BrushColor = Colors.LightGreen
-GraphicsWindow.FillPolygon(20, 20, 2, 2, PentaPoints)
-GraphicsWindow.DrawPolygon(20, 20, 2, 2, PentaPoints)
+GraphicsWindow.FillPolygon(20, 20, 2, 5, PentaPoints)
+GraphicsWindow.DrawPolygon(20, 20, 2, 5, PentaPoints)
 
 ' -------------------------------------------------------------------------
 GraphicsWindow.PenColor = Colors.Black
 GraphicsWindow.PenWidth = 2
 GraphicsWindow.BrushColor = Colors.Red
 Star = Shapes.AddPolygon(StarPoints)
-Star.Move(300, 70)
-Star.Zoom(2, 2)
+Star.Move(300, 170)
+Star.Zoom(4, 2)
 Star.Rotate(30)
 
 ' -------------------------------------------------------------------------
 
 GraphicsWindow.BrushColor = Colors.Gold
 GraphicsWindow.GradientEndColor = Colors.White
-GW.FillPolygon(80, 200, 3, 3, StarPoints)
+GW.FillPolygon(180, 350, 3, 3, StarPoints)
 GraphicsWindow.PenColor = Colors.SaddleBrown
 GraphicsWindow.PenWidth = 1.1
-GW.DrawPolygon(80, 200, 3, 3, StarPoints)
+GW.DrawPolygon(180, 350, 3, 3, StarPoints)
 
 ' -------------------------------------------------------------------------
 GraphicsWindow.PenColor = Colors.Blue
@@ -64,7 +64,7 @@ GraphicsWindow.BrushColor = Colors.AliceBlue
 GraphicsWindow.GradientEndColor = Colors.None
 Penta = Shapes.AddPolygon(PentaPoints)
 Penta.Zoom(3, 3)
-Penta.Move(400, 300)
+Penta.Move(550, 400)
 Penta.Rotate(30)
 
 ' -------------------------------------------------------------------------

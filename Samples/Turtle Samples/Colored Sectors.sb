@@ -1,0 +1,65 @@
+L = 4
+Cycles = 1
+Sectors = 120
+SecAngle = Math.Round(360 / Sectors)
+
+GW.Clear()
+Turtle.Speed = 50
+X1 = Turtle.X
+Y1 = Turtle.Y
+R = GetRadius()
+' Uncomment next line  to have a very fast turtle
+' Turtle.UseAnimation = True
+Turtle.CreateFigure()
+
+For I = 1 To 360 * Cycles
+   Turtle.Move(L)
+   Turtle.Turn(1)
+   If I Mod SecAngle = 0 Then ' This is sector end, move to the center
+      ' Save the current pos and angle first
+      X2 = Turtle.X
+      Y2 = Turtle.Y
+      A2 = Turtle.Angle
+      
+      ' Move to the center
+      Turtle.MoveTo(X1 + R, Y1)
+      
+      ' fill the last sector with a random coolor
+      GW.BrushColor = Colors.Random
+      Turtle.FillFigure()
+      
+      ' Create a new sector
+      Turtle.CreateFigure()
+      
+      ' Go back to draw the new sector
+      Turtle.MoveTo(X2, Y2)
+      Turtle.Angle = A2
+   EndIf
+Next
+
+
+
+' ------------------------------------------------
+Function GetRadius()
+   Turtle.PenUp()
+   Turtle.UseAnimation = False
+   
+   ' The turtle will draw a hidden half circle to stop at the end point of its horizontal diameter
+   ' So we can calculate the radius
+   For i = 1 To 180
+      Turtle.Move(L)
+      Turtle.Turn(1)
+   Next
+   
+   diameter = Turtle.X - X1
+   ' Restore the turtle initial pos, angle and state
+   Turtle.X = X1
+   Turtle.Y = Y1
+   Turtle.Angle = 0
+   Turtle.PenDown()
+   Turtle.UseAnimation = True
+   Return diameter / 2
+EndFunction
+
+
+

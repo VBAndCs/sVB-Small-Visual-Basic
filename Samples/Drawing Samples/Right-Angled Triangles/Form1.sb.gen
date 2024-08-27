@@ -1,0 +1,22 @@
+'@Form Hints:
+'#Form1{
+'    ListBox1: ListBox
+'    Label1: Label
+'}
+
+Me = "form1"
+ListBox1 = "form1.listbox1"
+Label1 = "form1.label1"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    ListBox1: OnSelection
+'}
+
+' ListBox1 Events:
+Control.HandleEvents(ListBox1)
+ListBox.OnSelection = ListBox1_OnSelection
+
+
+Form.Show(Me)

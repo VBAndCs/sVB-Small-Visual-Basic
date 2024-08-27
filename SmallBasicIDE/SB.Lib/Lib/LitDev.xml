@@ -1360,7 +1360,7 @@
     </member>
     <member name="T:LitDev.LDMathX">
       <summary>
-            Extended maths methods.
+            Extended maths methods, FFT and cubic spline.
             </summary>
     </member>
     <member name="M:LitDev.LDMathX.FFTForward(Microsoft.SmallVisualBasic.Library.Primitive)">
@@ -1403,6 +1403,26 @@
       <param name="imaginary">An array of imaginary data.</param>
       <returns>An array of complex data (real amplitude and imaginary phase), "MISMATCH" or "FAILED".
             For each complex pair the index is the real part and the value is the imaginary part.</returns>
+    </member>
+    <member name="M:LitDev.LDMathX.CreateSpline(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            Create a cubic spline for later interpolation.
+            </summary>
+      <param name="data">A set of x,y data in an array data[x]=y.</param>
+      <param name="mode">Spline termination (both ends) or other variants
+            1 : first derivitive = 0
+            2 : second derivitive = 0
+            3 : Hermite cubic spline (all first derivatives = 0)
+            4 : Akima cubic spline (reduce outlier overshoots)</param>
+      <returns>The cubic spline.</returns>
+    </member>
+    <member name="M:LitDev.LDMathX.InterpolateSpline(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            Calculated interpolated data from a previopusly created cubic spline.
+            </summary>
+      <param name="splineName">The cubic spline created with CreateSpline.</param>
+      <param name="data">An array of x values to interpolate.</param>
+      <returns>An array of interpolated x,y pairs, result[x] = y.</returns>
     </member>
     <member name="T:LitDev.LDResources">
       <summary>
@@ -10238,6 +10258,17 @@
             A 2 element array with the shape velocity.
             </returns>
     </member>
+    <member name="M:LitDev.LDPhysics.GetAcceleration(Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            Get the acceleration of the shape.
+            </summary>
+      <param name="shapeName">
+            The shape name.
+            </param>
+      <returns>
+            A 2 element array with the shape acceleration.
+            </returns>
+    </member>
     <member name="M:LitDev.LDPhysics.GroupShapes(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
       <summary>
             Solidly group two shapes to move together as one.  Shape1 is added to shape2 to act as one shape.
@@ -11309,9 +11340,16 @@
       <param name="colour">
             The new brush colour.
             </param>
-      <returns>
-            None.
-            </returns>
+    </member>
+    <member name="M:LitDev.LDShapes.TextAlignment(Microsoft.SmallVisualBasic.Library.Primitive,Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            Set the alignment of text within a text shape
+            </summary>
+      <param name="shapeName">
+            The shape or control name.
+            </param>
+      <param name="alignment">
+            The alignment, can be "Left", "Center", "Right" or "Justify"</param>
     </member>
     <member name="M:LitDev.LDShapes.GetColour(Microsoft.SmallVisualBasic.Library.Primitive)">
       <summary>
@@ -11634,6 +11672,17 @@
             </param>
       <returns>
             The shape visible width.
+            </returns>
+    </member>
+    <member name="M:LitDev.LDShapes.Angle(Microsoft.SmallVisualBasic.Library.Primitive)">
+      <summary>
+            Get the shape's rotation angle.
+            </summary>
+      <param name="shapeName">
+            The shape or control name.
+            </param>
+      <returns>
+            The shape rotation in degrees.
             </returns>
     </member>
     <member name="M:LitDev.LDShapes.Height(Microsoft.SmallVisualBasic.Library.Primitive)">
