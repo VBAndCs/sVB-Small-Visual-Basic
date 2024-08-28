@@ -747,7 +747,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             Next
         End Sub
 
-        Private Function GetSymbolTable(buffer As ITextBuffer) As SymbolTable
+        Public Function GetSymbolTable(buffer As ITextBuffer) As SymbolTable
             DummyCompiler.Compile(New TextBufferReader(buffer.CurrentSnapshot), True)
             Dim symbolTable = _compiler.Parser.SymbolTable
             symbolTable.ModuleNames = buffer.Properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")

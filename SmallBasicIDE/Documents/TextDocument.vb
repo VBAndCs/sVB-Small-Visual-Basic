@@ -961,7 +961,18 @@ Namespace Microsoft.SmallVisualBasic.Documents
                         AutoCompleteBlock(textView, line, code, keyword, $"ElseIf {paran} Then#   ", "", paran.Length)
 
                     Case "for"
-                        AutoCompleteBlock(textView, line, code, keyword, $"For i = 1 To 1#   ", "Next", paran.Length)
+                        Dim varName = ""
+                        Dim symbolTable = GetSymbolTable(TextBuffer)
+                        Dim subName = GetCurrentSubName().ToLower()
+                        For i = AscW("i") To AscW("z")
+                            varName = ChrW(i)
+                            If subName = "" Then
+                                If Not symbolTable.GlobalVariables.ContainsKey(varName) Then Exit For
+                            ElseIf Not symbolTable.LocalVariables.ContainsKey(subName & "." & varName) Then
+                                Exit For
+                            End If
+                        Next
+                        AutoCompleteBlock(textView, line, code, keyword, $"For {varName} = 1 To 1#   ", "Next", paran.Length)
 
                     Case "foreach"
                         AutoCompleteBlock(textView, line, code, keyword, $"ForEach  In Array#   ", "Next", paran.Length)
@@ -1077,6 +1088,10 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 For i = line.LineNumber + 1 To text.LineCount - 1
                     Dim nextLine = text.GetLineFromLineNumber(i)
                     Dim LineCode = nextLine.GetText()
+                    If LineCode.StartsWith("Sub") Or LineCode.StartsWith("Function") Then
+                        Exit For
+                    End If
+
                     If LineCode.Trim(" "c, vbTab, "("c).ToLower() <> "" Then
                         Dim indent_Keyword = leadingSpace & keyword
                         If (isSubroutine AndAlso (LineCode = "EndSub" OrElse LineCode = "EndFunction")) OrElse LineCode = leadingSpace & endBlock Then
@@ -1113,6 +1128,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
                                     addBlockEnd = False
                                     Exit For
                                 End If
+                                If LineCode.StartsWith("Sub") Or LineCode.StartsWith("Function") Then
+                                    Exit For
+                                End If
                             Next
                         End If
                         Exit For
@@ -1129,7 +1147,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                  New Span(line.Start, L),
                 leadingSpace &
                     block.Replace("#", If(addBlockEnd, nl, "")) &
-                    If(addBlockEnd, nl & endBlock & nl, ""),
+                    If(addBlockEnd, nl & endBlock, ""),
                 _undoHistory
             )
 

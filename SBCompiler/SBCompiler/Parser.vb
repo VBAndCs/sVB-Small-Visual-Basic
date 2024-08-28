@@ -83,10 +83,11 @@ Namespace Microsoft.SmallVisualBasic
                     Exit While
                 End If
 
-                If tokenEnum.Current.Type = TokenType.Sub OrElse tokenEnum.Current.Type = TokenType.EndSub OrElse
-                            tokenEnum.Current.Type = TokenType.Function OrElse tokenEnum.Current.Type = TokenType.EndFunction Then
-                    Exit While
-                End If
+                Select Case tokenEnum.Current.Type
+                    Case TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
+                        RewindLine()
+                        Exit While
+                End Select
 
                 whileStatement.Body.Add(GetStatementFromTokens(tokenEnum))
                 tokenEnum = ReadNextLine()
@@ -159,10 +160,11 @@ Namespace Microsoft.SmallVisualBasic
                     Exit While
                 End If
 
-                If tokenEnum.Current.Type = TokenType.Sub OrElse tokenEnum.Current.Type = TokenType.EndSub OrElse
-                        tokenEnum.Current.Type = TokenType.Function OrElse tokenEnum.Current.Type = TokenType.EndFunction Then
-                    Exit While
-                End If
+                Select Case tokenEnum.Current.Type
+                    Case TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
+                        RewindLine()
+                        Exit While
+                End Select
 
                 forStatement.Body.Add(GetStatementFromTokens(tokenEnum))
                 tokenEnum = ReadNextLine()
@@ -206,10 +208,11 @@ Namespace Microsoft.SmallVisualBasic
                     Exit While
                 End If
 
-                If tokenEnum.Current.Type = TokenType.Sub OrElse tokenEnum.Current.Type = TokenType.EndSub OrElse
-                        tokenEnum.Current.Type = TokenType.Function OrElse tokenEnum.Current.Type = TokenType.EndFunction Then
-                    Exit While
-                End If
+                Select Case tokenEnum.Current.Type
+                    Case TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
+                        RewindLine()
+                        Exit While
+                End Select
 
                 forEach.Body.Add(GetStatementFromTokens(tokenEnum))
                 tokenEnum = ReadNextLine()
@@ -261,12 +264,11 @@ Namespace Microsoft.SmallVisualBasic
                     Exit While
                 End If
 
-                If tokenEnum.Current.Type = TokenType.Sub OrElse
-                            tokenEnum.Current.Type = TokenType.EndSub OrElse
-                            tokenEnum.Current.Type = TokenType.Function OrElse
-                            tokenEnum.Current.Type = TokenType.EndFunction Then
-                    Exit While
-                End If
+                Select Case tokenEnum.Current.Type
+                    Case TokenType.Sub, TokenType.EndSub, TokenType.Function, TokenType.EndFunction
+                        RewindLine()
+                        Exit While
+                End Select
 
                 ifStatement.ThenStatements.Add(GetStatementFromTokens(tokenEnum))
                 tokenEnum = ReadNextLine()
@@ -392,10 +394,11 @@ Namespace Microsoft.SmallVisualBasic
                     Exit While
                 End If
 
-                If tokenEnum.Current.Type = TokenType.Sub OrElse tokenEnum.Current.Type = TokenType.Function Then
-                    RewindLine()
-                    Exit While
-                End If
+                Select Case tokenEnum.Current.Type
+                    Case TokenType.Sub, TokenType.Function
+                        RewindLine()
+                        Exit While
+                End Select
 
                 Dim statement = GetStatementFromTokens(tokenEnum)
                 subroutine.Body.Add(statement)
