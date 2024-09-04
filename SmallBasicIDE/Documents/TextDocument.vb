@@ -1046,7 +1046,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                                 Case TokenType.Question, TokenType.Colon
                                        ' add extra quote
                                 Case TokenType.Identifier
-                                    If tokens(tokens.Count - 1).LCaseText <> "msgbox" Then
+                                    If openingChar = _QUOTE OrElse openingChar = "{" Then
                                         Return
                                     End If
                                 Case Else

@@ -7,9 +7,8 @@ GW.Clear()
 Turtle.Speed = 50
 X1 = Turtle.X
 Y1 = Turtle.Y
-R = GetRadius()
-' Uncomment next line  to have a very fast turtle
-' Turtle.UseAnimation = True
+R = 360 * L / (2 * Math.Pi)
+Turtle.UseAnimation = True
 Turtle.CreateFigure()
 
 For I = 1 To 360 * Cycles
@@ -36,30 +35,3 @@ For I = 1 To 360 * Cycles
       Turtle.Angle = A2
    EndIf
 Next
-
-
-
-' ------------------------------------------------
-Function GetRadius()
-   Turtle.PenUp()
-   Turtle.UseAnimation = False
-   
-   ' The turtle will draw a hidden half circle to stop at the end point of its horizontal diameter
-   ' So we can calculate the radius
-   For i = 1 To 180
-      Turtle.Move(L)
-      Turtle.Turn(1)
-   Next
-   
-   diameter = Turtle.X - X1
-   ' Restore the turtle initial pos, angle and state
-   Turtle.X = X1
-   Turtle.Y = Y1
-   Turtle.Angle = 0
-   Turtle.PenDown()
-   Turtle.UseAnimation = True
-   Return diameter / 2
-EndFunction
-
-
-

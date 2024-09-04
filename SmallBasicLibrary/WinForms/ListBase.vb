@@ -372,6 +372,21 @@ Namespace WinForms
                 Dim name = [Event].SenderControl
                 Dim _sender = GetSelector(name)
                 Dim h = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs)
+                            Dim cmb = TryCast(_sender, Wpf.ComboBox)
+                            Dim txt = CType(cmb.Template.FindName("PART_EditableTextBox", cmb), Wpf.TextBox)
+                            If cmb IsNot Nothing Then
+                                If cmb.SelectedIndex = -1 Then
+                                    If txt IsNot Nothing Then
+                                        cmb.Text = txt.Text
+                                    Else
+                                        cmb.Text = ""
+                                    End If
+                                Else
+                                    cmb.Text = cmb.Items(cmb.SelectedIndex)
+                                    If txt IsNot Nothing Then txt.SelectAll()
+                                End If
+                            End If
+
                             [Event].HandleEvent(
                                    CType(Sender, System.Windows.FrameworkElement),
                                    e, handler)

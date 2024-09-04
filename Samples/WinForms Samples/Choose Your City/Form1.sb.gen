@@ -1,0 +1,41 @@
+'@Form Hints:
+'#Form1{
+'    CmbGovern: ComboBox
+'    CmbCity: ComboBox
+'    Label1: Label
+'    Label2: Label
+'    LblLocation: Label
+'    Button1: Button
+'}
+
+Me = "form1"
+CmbGovern = "form1.cmbgovern"
+CmbCity = "form1.cmbcity"
+Label1 = "form1.label1"
+Label2 = "form1.label2"
+LblLocation = "form1.lbllocation"
+Button1 = "form1.button1"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    CmbGovern: OnSelection OnLostFocus
+'    Button1: OnClick
+'    CmbCity: OnLostFocus
+'}
+
+' CmbGovern Events:
+Control.HandleEvents(CmbGovern)
+ComboBox.OnSelection = CmbGovern_OnSelection
+Control.OnLostFocus = CmbGovern_OnLostFocus
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+' CmbCity Events:
+Control.HandleEvents(CmbCity)
+Control.OnLostFocus = CmbCity_OnLostFocus
+
+
+Form.Show(Me)

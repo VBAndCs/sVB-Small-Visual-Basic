@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel.Composition
+Imports System.Windows.Shell
 Imports Microsoft.Nautilus.Core.Undo
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
@@ -39,6 +40,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     Case Key.Return
                         args.Handled = CommitConditionally(textView, completionSurface, If(Keyboard.Modifiers And ModifierKeys.Control > 0, "+nl", ""))
+                        Dim repWith = CType(completionSurface.CompletionListBox.SelectedItem, CompletionItemWrapper).ReplacementText
+                        If repWith.EndsWith("(") Then
+                            textView.Caret.MoveToPreviousCaretPosition()
+                        End If
 
                     Case Key.Space, Key.Tab
                         args.Handled = CommitConditionally(textView, completionSurface, " ")
@@ -108,10 +113,30 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         Case ">"
                             args.Handled = CommitConditionally(textView, completionSurface, " > ", True)
 
-                        Case "!", ")", "[", "]", "{", "}"
+                        Case "!", ")", "]", "}"
                             CommitConditionally(textView, completionSurface)
 
-                        Case ",", "("
+                        Case "{"
+                            If Not CommitConditionally(textView, completionSurface, "[]") Then
+                                Dim EditOps = EditorOperationsProvider.GetEditorOperations(textView)
+                                EditOps.InsertText("{}", UndoHistoryRegistry.GetHistory(textView.TextBuffer))
+                            End If
+                            textView.Caret.MoveToPreviousCaretPosition()
+                            args.Handled = True
+
+                        Case "["
+                            If Not CommitConditionally(textView, completionSurface, "[]") Then
+                                Dim EditOps = EditorOperationsProvider.GetEditorOperations(textView)
+                                EditOps.InsertText("[]", UndoHistoryRegistry.GetHistory(textView.TextBuffer))
+                            End If
+                            textView.Caret.MoveToPreviousCaretPosition()
+                            args.Handled = True
+
+                        Case "("
+                            args.Handled = CommitConditionally(textView, completionSurface, ")")
+                            textView.Caret.MoveToPreviousCaretPosition()
+
+                        Case ","
                             args.Handled = CommitConditionally(textView, completionSurface, args.Text & " ")
 
                     End Select
@@ -161,10 +186,25 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
 
                 If repWith.EndsWith("(") OrElse repWith.EndsWith(")") Then
-                    If extraText.EndsWith("( ") Then extraText = ""
                     Dim txt = line.GetText().Substring(pos - line.Start)
-                    If LineScanner.GetFirstToken(txt, 0).Type = TokenType.LeftParens Then
+                    Dim nextToken = LineScanner.GetFirstToken(txt, 0)
+
+                    If nextToken.Type = TokenType.LeftParens Then
                         repWith = repWith.TrimEnd("("c, ")"c)
+                    ElseIf repWith.EndsWith("(") Then
+                        If nextToken.IsIllegal OrElse nextToken.ParseType = ParseType.Operator Then
+                            If extraText <> ")" Then extraText &= ")"
+                        ElseIf extraText = ")" Then
+                            extraText = ""
+                        End If
+                    ElseIf repWith.EndsWith(")") AndAlso extraText = ")" Then
+                        extraText = ""
+                    End If
+                ElseIf extraText = ")" Then
+                    If item.ItemType = Completion.CompletionItemType.MethodName Or item.ItemType = Completion.CompletionItemType.SubroutineName Then
+                        extraText = "()"
+                    Else
+                        extraText = "("
                     End If
                 End If
 

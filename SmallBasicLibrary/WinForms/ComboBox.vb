@@ -116,12 +116,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim cmb = GetComboBox(comboBoxName)
-                        Dim txt = CType(cmb.Template.FindName("PART_EditableTextBox", cmb), Wpf.TextBox)
-                        If txt Is Nothing Then
-                            GetText = cmb.Text
-                        Else
-                            GetText = txt.Text
-                        End If
+                        GetText = cmb.Text
                     Catch ex As Exception
                         Control.ReportError(comboBoxName, "Text", ex)
                     End Try

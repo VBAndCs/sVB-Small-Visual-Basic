@@ -1,6 +1,8 @@
 ﻿Imports System.IO
 Imports Microsoft.Nautilus.Text
 Imports Microsoft.SmallVisualBasic.Completion
+Imports Microsoft.SmallVisualBasic.Engine
+Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.LanguageService
     Public Module CompilerService
@@ -194,7 +196,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                         ' format sub lines
                         Dim lineStart = False, lineEnd = False, subLine = 0
-
                         Dim subLineOffset = 0
                         Dim indentStack As New Stack(Of Integer)
                         Dim firstSubLine = True
@@ -567,7 +568,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             textBuffer As ITextBuffer,
                             start As Integer,
                             [end] As Integer
-                     )
+                    )
 
             Dim snapshot = textBuffer.CurrentSnapshot
             Dim symbolTable = GetSymbolTable(textBuffer)
@@ -580,6 +581,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     ' The exact type/method name is stored in the comment field
                     textEdit.Replace(line.Start + token.Column, token.EndColumn - token.Column, token.Comment)
+                    FixParans(token, line, textEdit, True)
                 Next
 
                 ' fix local vars definitions
@@ -628,50 +630,68 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     If id.LCaseText = "me" Then
                         If id.Text <> "Me" Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, "Me")
+                        FixParans(id, line, textEdit, True)
                         Continue For
                     End If
 
-                    ' fix local vars usage
-                    If id.SymbolType = CompletionItemType.LocalVariable Then
-                        Dim subName = Statements.SubroutineStatement.GetSubroutine(id)?.Name.LCaseText
-                        Dim key = $"{subName}.{id.LCaseText}"
-                        Dim definition = symbolTable.LocalVariables(key).Identifier
-                        If id.Line <> definition.Line OrElse id.Column <> definition.Column Then
-                            Dim name = definition.Text
-                            If id.Text <> name Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, name)
-                        End If
-                        Continue For
-                    End If
+                    Select Case id.SymbolType
+                        Case CompletionItemType.LocalVariable
+                            ' fix local vars usage
+                            Dim subName = Statements.SubroutineStatement.GetSubroutine(id)?.Name.LCaseText
+                            Dim key = $"{subName}.{id.LCaseText}"
+                            Dim definition = symbolTable.LocalVariables(key).Identifier
+                            If id.Line <> definition.Line OrElse id.Column <> definition.Column Then
+                                Dim name = definition.Text
+                                If id.Text <> name Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, name)
+                            End If
+                            FixParans(id, line, textEdit, True)
 
-                    ' fix global vars usage
-                    If id.SymbolType = CompletionItemType.GlobalVariable Then
-                        If FixToken(id, line.Start, symbolTable.GlobalVariables, textEdit) Then
-                            Continue For
-                        End If
+                        Case CompletionItemType.GlobalVariable
+                            ' fix global vars usage
+                            If FixToken(id, line.Start, symbolTable.GlobalVariables, textEdit) Then
+                                FixParans(id, line, textEdit, True)
+                                Continue For
+                            End If
 
-                        If controlNames IsNot Nothing Then
-                            ' fix control names usage
-                            Dim controlId = id.LCaseText
-                            For Each controlName In controlNames
-                                If controlName.ToLower() = controlId Then
-                                    If id.Text <> controlName Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, controlName)
-                                    Continue For
+                            Dim fixed = False
+                            If controlNames IsNot Nothing Then
+                                ' fix control names usage
+                                Dim controlId = id.LCaseText
+                                For Each controlName In controlNames
+                                    If controlName.ToLower() = controlId Then
+                                        If id.Text <> controlName Then textEdit.Replace(line.Start + id.Column, id.EndColumn - id.Column, controlName)
+                                        fixed = True
+                                        FixParans(id, line, textEdit, True)
+                                        Exit For
+                                    End If
+                                Next
+                            End If
+
+                            ' Add missing parans to subroutine calls
+                            If Not fixed AndAlso FixToken(id, line.Start, symbolTable.Subroutines, textEdit) Then
+                                FixParans(id, line, textEdit)
+                            End If
+
+                        Case CompletionItemType.SubroutineName
+                            ' fix event handlers and sub call
+                            If TypeOf id.Parent Is SubroutineStatement Then
+                                FixParans(id, line, textEdit)
+                            ElseIf FixToken(id, line.Start, symbolTable.Subroutines, textEdit) Then
+                                Dim LeftSide = TryCast(id.Parent, AssignmentStatement)?.LeftValue
+                                If LeftSide IsNot Nothing Then
+                                    If TryCast(LeftSide, Expressions.PropertyExpression)?.IsEvent Then
+                                        FixParans(id, line, textEdit, True)
+                                    End If
                                 End If
-                            Next
-                        End If
-                    End If
+                            Else
+                                FixParans(id, line, textEdit, True)
+                            End If
 
-                    ' fix event handlers and sub calls
-                    If id.SymbolType = CompletionItemType.SubroutineName Then
-                        If FixToken(id, line.Start, symbolTable.Subroutines, textEdit) Then
-                            Continue For
-                        End If
-                    End If
-
-                    ' fix goto labels
-                    If id.SymbolType = CompletionItemType.Label Then
-                        FixToken(id, line.Start, symbolTable.Labels, textEdit)
-                    End If
+                        Case CompletionItemType.Label
+                            ' fix goto labels
+                            FixToken(id, line.Start, symbolTable.Labels, textEdit)
+                            FixParans(id, line, textEdit, True)
+                    End Select
                 Next
 
                 For Each obj In symbolTable.AllDynamicProperties
@@ -692,7 +712,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 Dim y = CompletionHelper.TrimData(type.Key)
                                 If x.Contains(y) Then
                                     Dim propDictionery2 = symbolTable.Dynamics(type.Key)
-                                    If FixToken(prop, line.Start, propDictionery2, textEdit) Then Exit For
+                                    If FixToken(prop, line.Start, propDictionery2, textEdit) Then
+                                        FixParans(prop, line, textEdit, True)
+                                        Exit For
+                                    End If
                                 End If
                             Next
                         End If
@@ -703,12 +726,33 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Using
         End Sub
 
+        Private Sub FixParans(
+                           id As Token,
+                           line As ITextSnapshotLine,
+                           textEdit As ITextEdit,
+                           Optional RemoveParans As Boolean = False)
+
+            Dim tokens = LineScanner.GetTokens(line.GetText(), id.Line)
+            Dim n = tokens.Count - 1
+            For i = 0 To n
+                If tokens(i).Column = id.Column Then
+                    If RemoveParans Then
+                        If i < n - 1 AndAlso tokens(i + 1).Type = TokenType.LeftParens AndAlso tokens(i + 2).Type = TokenType.RightParens Then
+                            textEdit.Replace(line.Start + id.EndColumn, tokens(i + 2).EndColumn - id.EndColumn, "")
+                        End If
+                    ElseIf i = n OrElse tokens(i + 1).Type <> TokenType.LeftParens Then
+                        textEdit.Insert(line.Start + id.EndColumn, "()")
+                        Return
+                    End If
+                End If
+            Next
+        End Sub
+
         Private Function FixToken(
                             token As Token,
                             lineStart As Integer,
                             dictionary As Dictionary(Of String, Token),
-                            textEdit As ITextEdit
-                     )
+                            textEdit As ITextEdit) As Boolean
 
             Dim key = token.LCaseText
             If key.StartsWith("__foreach__") Then Return True
@@ -718,8 +762,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 If defenition.Line <> token.Line OrElse defenition.Column <> token.Column Then
                     Dim name = defenition.Text
                     If token.Text <> name Then textEdit.Replace(lineStart + token.Column, token.EndColumn - token.Column, name)
-                    Return True
                 End If
+                Return True
             End If
 
             Return False
@@ -730,6 +774,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim token = dictionary.Values(i)
                 Dim name = token.Text
                 Dim n = 0
+
                 If name.StartsWith("_") Then
                     If name.Length = 1 Then Continue For
                     n = 1
@@ -923,10 +968,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                              TokenType.Question, TokenType.HashQuestion
                         If notLastToken Then
                             Select Case nextToken.Type
-                                Case TokenType.Comma,
-                                     TokenType.LeftBracket, TokenType.RightBracket,
-                                     TokenType.LeftBrace, TokenType.RightBrace,
-                                     TokenType.LeftParens, TokenType.RightParens
+                                Case TokenType.Comma, TokenType.Dot,
+                                        TokenType.LeftBracket, TokenType.RightBracket,
+                                        TokenType.LeftBrace, TokenType.RightBrace,
+                                        TokenType.LeftParens, TokenType.RightParens
                                     FixSpaces(textEdit, line, token, nextToken, 0)
                                 Case Else
                                     FixSpaces(textEdit, line, token, nextToken, 1)

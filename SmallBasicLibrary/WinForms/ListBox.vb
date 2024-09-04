@@ -60,6 +60,14 @@ Namespace WinForms
         <ExProperty>
         Public Shared Sub SetSelectedItem(listBoxName As Primitive, item As Primitive)
             ListBase.SetSelectedItem(listBoxName, item)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim lst = GetListBox(listBoxName)
+                        lst.ScrollIntoView(lst.SelectedItem)
+                    Catch
+                    End Try
+                End Sub)
         End Sub
 
         ''' <summary>

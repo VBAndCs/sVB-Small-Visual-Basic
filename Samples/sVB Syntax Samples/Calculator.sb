@@ -1,0 +1,41 @@
+TextWindow.Write("Enter 1st number: ")
+N1 = TW.ReadNumber()
+TextWindow.Write("Enter operator(+ - * / %): ")
+Op = TW.Read()
+TextWindow.Write("Enter 2nd number: ")
+N2 = TW.ReadNumber()
+Error = False
+
+If Op = "+" Then
+   Result = N1 + N2
+ElseIf Op = "-" Then
+   Result = N1 - N2
+ElseIf Op = "*" Then
+   Result = N1 * N2
+ElseIf Op = "/" Then
+   If N2 = 0 Then
+      Result = "Can't divide by 0"
+      Error = True
+   Else
+      Result = N1 / N2
+   EndIf
+ElseIf Op = "%" Then
+   If N2 = 0 Then
+      Result = "Can't divide by 0"
+      Error = True
+   Else
+      Result = N1 Mod N2
+   EndIf
+Else
+   Result = "Invalid operator"
+   Error = True
+EndIf
+
+If Error Then
+   TextWindow.WriteLine(Result)
+Else
+   TextWindow.WriteFormatted(
+      "[1] [2] [3] = [4]",
+      {N1, Op, N2, Result}
+   )
+EndIf

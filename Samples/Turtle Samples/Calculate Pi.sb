@@ -1,0 +1,26 @@
+L = 4
+X1 = Turtle.X
+Turtle.Speed = 50
+' The turtle will draw a half circle to stop at the end point of its horizontal diameter
+' So we can calculate the diameter
+For I = 1 To 180
+   Turtle.Move(L)
+   Turtle.Turn(1)
+Next
+Diameter = Turtle.X - X1
+Circumference = L * 360
+Pi = Circumference / Diameter
+
+GW.BrushColor = Colors.Blue
+GW.FontBold = True
+GW.FontSize = 14
+GW.DrawText(300, 300, "Diameter = " & Diameter)
+GW.DrawText(300, 320, "Circumference = " & Circumference)
+GW.DrawText(300, 340, "Calculated Pi = " & Pi)
+GW.DrawText(300, 360, "         Math.Pi = " & Math.Pi)
+GW.DrawText(300, 380, "Difference = " & (Pi - Math.Pi))
+GW.DrawText(300, 400, "Accurecy = " & Math.Round2(Math.Pi / Pi * 100, 3) & "%")
+
+
+
+

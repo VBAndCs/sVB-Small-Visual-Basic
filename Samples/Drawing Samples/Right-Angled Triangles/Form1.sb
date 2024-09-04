@@ -8,16 +8,12 @@ Sub GetTriangles()
       i2 = i * i
       For j = 2 To i - 1
          j2 = j * j
-         For k = i - 1 To 2 Step -1
-            n = k * k + j2
-            If n = i2 And Array.ContainsValue(sides[i], j) = False Then
-               sides[i] = Array.AddItem(sides[i], k)
-               ListBox1.AddItem(Text.Format("[1],[2],[3]", {j, k, i}))
-               ContinueLoop -
-            ElseIf n < i2 Then
-               ExitLoop
-            EndIf
-         Next
+         k = Math.SquareRoot(i2 - j2)
+         If Math.Round(k) = k And Array.ContainsValue(sides[i], j) = False Then
+            sides[i] = Array.AddItem(sides[i], k)
+            ListBox1.AddItem(Text.Format("[1],[2],[3]", {j, k, i}))
+            ContinueLoop
+         EndIf
       Next
    Next
 EndSub

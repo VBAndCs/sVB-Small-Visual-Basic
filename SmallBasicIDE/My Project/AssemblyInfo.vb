@@ -10,7 +10,7 @@ Imports System.Runtime.InteropServices
 
 <Assembly: AssemblyTitle("Small Visual Basic")>
 <Assembly: AssemblyDescription("Small Visual Basic: Created by Mohammed Hamdy Ghanem, based on MS Small Basic")>
-<Assembly: AssemblyCompany("Small Visual Basic")>
+<Assembly: AssemblyCompany("Modern VB")>
 <Assembly: AssemblyProduct("Small Visual Basic")>
 <Assembly: AssemblyCopyright("Copyright ©  2021")>
 <Assembly: AssemblyTrademark("")>
@@ -30,5 +30,5 @@ Imports System.Runtime.InteropServices
 ' You can specify all the values or you can default the Build and Revision Numbers 
 ' by using the '*' as shown below:
 
-<Assembly: AssemblyVersion("3.0.8.6")>
-<Assembly: AssemblyFileVersion("3.0.8.6")>
+<Assembly: AssemblyVersion("3.0.9.2")>
+<Assembly: AssemblyFileVersion("3.0.9.2")>

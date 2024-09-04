@@ -1,7 +1,7 @@
 ' Develpoed by M. Hamdy
 ' Inspired bt Ardi Ardi
 R = 50
-
+Me.BackColor = Colors.DarkBlue
 ' Add five labels on the form and draw five circles inside them
 For I = 1 To 5
    _Label = Me.AddLabel("circle" & I, R * (I - 1), 0, R, R)

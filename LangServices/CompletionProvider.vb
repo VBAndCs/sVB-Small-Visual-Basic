@@ -182,7 +182,12 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
 
                 If textView.TextSnapshot.GetText(replaceSpan) <> repWith Then
-                    editorOperations.ReplaceText(replaceSpan, repWith, undoHistory)
+                    If repWith.EndsWith("(") Then
+                        editorOperations.ReplaceText(replaceSpan, repWith & ")", undoHistory)
+                        textView.Caret.MoveToPreviousCaretPosition()
+                    Else
+                        editorOperations.ReplaceText(replaceSpan, repWith, undoHistory)
+                    End If
                 End If
 
                 DismissAdornment(force:=True)

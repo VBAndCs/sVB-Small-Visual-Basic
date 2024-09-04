@@ -1,0 +1,54 @@
+Governnates = {"Cairo", "Giza", "Assuit", "Damietta"}
+
+
+Cities = {
+   {
+      "Downtown", "Heliopolis", "Nasr City",
+      "Sayyida Zeinab", "Mokattam", "Basateen", "Helwan"
+   },
+   {"Kerdasa", "Hawamdiya", "Badrashin", "Ayat"},
+   {"Assuit", "Dayrut", "Al Qusia", "Ibnob", "Manfalut"},
+   {"Damietta", "New Damietta", "Farscore"}
+}
+
+
+CmbGovern.AddItem(Governnates)
+
+' ------------------------------------------------
+Sub CmbGovern_OnSelection()
+   CmbCity.RemoveAllItems()
+   CmbCity.AddItem(Cities[CmbGovern.SelectedIndex])
+EndSub
+
+
+' ------------------------------------------------
+Sub Button1_OnClick()
+   If Me.Validate() Then
+      LblLocation.Text = "Address: " & CmbCity.Text &
+         ", " & CmbGovern.Text & ", Egypt."
+   Else
+      LblLocation.Text = ""
+   EndIf
+EndSub
+
+
+
+
+' ------------------------------------------------
+Sub CmbCity_OnLostFocus()
+   If CmbCity.Text = "" Then
+      CmbCity.Error = "You must enter a city."
+   Else
+      CmbCity.Error = ""
+   EndIf
+EndSub
+
+
+' ------------------------------------------------
+Sub CmbGovern_OnLostFocus()
+   If CmbGovern.Text = "" Then
+      CmbGovern.Error = "You must enter a governate."
+   Else
+      CmbGovern.Error = ""
+   EndIf
+EndSub

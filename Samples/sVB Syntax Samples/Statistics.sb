@@ -1,0 +1,22 @@
+TextWindow.Write("Enter count: ")
+Count = TW.ReadNumber()
+Sum = 0
+
+For I = 1 To Count
+   TextWindow.Write("Enter number #" + I + ": ")
+   N = TW.ReadNumber()
+   Sum = Sum + N
+   If I = 1 Then
+      Min = N
+      Max = N
+   ElseIf N < Min Then
+      Min = N
+   ElseIf N > Max Then
+      Max = N
+   EndIf
+Next
+
+TW.WriteFormatted(
+   "Min = [1], Max = [2], Sum = [3], Avg = [4]",
+   {Min, Max, Sum, Sum / Count}
+)

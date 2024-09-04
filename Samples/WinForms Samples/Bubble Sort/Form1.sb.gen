@@ -1,0 +1,41 @@
+'@Form Hints:
+'#Form1{
+'    ListBox1: ListBox
+'    ListBox2: ListBox
+'    BtnRandom: Button
+'    BtnSort: Button
+'}
+
+Me = "form1"
+ListBox1 = "form1.listbox1"
+ListBox2 = "form1.listbox2"
+BtnRandom = "form1.btnrandom"
+BtnSort = "form1.btnsort"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    BtnSort: OnClick
+'    BtnRandom: OnClick
+'    ListBox1: OnSelection
+'    ListBox2: OnSelection
+'}
+
+' BtnSort Events:
+Control.HandleEvents(BtnSort)
+Control.OnClick = BtnSort_OnClick
+
+' BtnRandom Events:
+Control.HandleEvents(BtnRandom)
+Control.OnClick = BtnRandom_OnClick
+
+' ListBox1 Events:
+Control.HandleEvents(ListBox1)
+ListBox.OnSelection = ListBox1_OnSelection
+
+' ListBox2 Events:
+Control.HandleEvents(ListBox2)
+ListBox.OnSelection = ListBox2_OnSelection
+
+
+Form.Show(Me)

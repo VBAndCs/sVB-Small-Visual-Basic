@@ -1,0 +1,43 @@
+BtnRandom_OnClick()
+
+' ------------------------------------------------
+Sub BtnRandom_OnClick()
+   ListBox1.RemoveAllItems()
+   For i = 1 To 25
+      ListBox1.AddItem(Math.GetRandomNumber(100))
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub BtnSort_OnClick()
+   ListBox2.RemoveAllItems()
+   numbers = Sort(ListBox1.Items)
+   ListBox2.AddItem(numbers)
+EndSub
+
+' ------------------------------------------------
+Function Sort(numArr)
+   count = numArr.Count
+   For i = 1 To count
+      For j = i + 1 To count
+         If numArr[j] < numArr[i] Then
+            tmp = numArr[i]
+            numArr[i] = numArr[j]
+            numArr[j] = tmp
+         EndIf
+      Next
+   Next
+   Return numArr
+EndFunction
+
+' ------------------------------------------------
+Sub ListBox1_OnSelection()
+   ListBox2.SelectedItem = ListBox1.SelectedItem
+EndSub
+
+
+' ------------------------------------------------
+Sub ListBox2_OnSelection()
+   ListBox1.SelectedItem = ListBox2.SelectedItem
+EndSub

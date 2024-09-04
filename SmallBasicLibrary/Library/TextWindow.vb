@@ -381,9 +381,9 @@ Namespace Library
         ''' <summary>
         ''' Formats the given text by substituting the placeholders by the given values, and writes the resulted text to the current line of the Text Window.
         ''' </summary>
-        ''' <param name="text">The string to Format. Use [1], [2],... [n] in the string, to refer the values[1], values[2], ... values[n]</param>
-        ''' <param name="values">An array its elements will be used to replace [1], [2],... [n] placeholders if found in the text</param>
-        Public Shared Sub WriteFormated(text As Primitive, values As Primitive)
+        ''' <param name="text">The string to format. Use [1], [2],... [n] in the string, to refer values[1], values[2], ... values[n] in the values array</param>
+        ''' <param name="values">An array. Its elements will be used to replace [1], [2],... [n] placeholders if found in the text</param>
+        Public Shared Sub WriteFormatted(text As Primitive, values As Primitive)
             Write(Library.Text.Format(text, values))
         End Sub
 
