@@ -5,7 +5,7 @@ Imports Wpf = System.Windows.Controls
 Namespace WinForms
 
     ''' <summary>
-    ''' Contains info about thee last fired event
+    ''' Contains info about the last fired event
     ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class [Event]

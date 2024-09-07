@@ -431,7 +431,7 @@ Namespace WinForms
 
 
         ''' <summary>
-        ''' Gets the approximate total months in the current duration, assuming that theere are 12 months in the year, and each year contains 365.2425 days.
+        ''' Gets the approximate total months in the current duration, assuming that there are 12 months in the year, and each year contains 365.2425 days.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
         <ExProperty>

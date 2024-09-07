@@ -8,7 +8,7 @@ Namespace WinForms
     ''' Represents the WinTimer control, which provides an easy way for doing something repeatedly with a constant interval between.
     ''' Use the Interval property to set the time between ticks, and write the code you want to be executed in the OnTick event handler.
     ''' This object differs that the Timer object, as you can add many win timers as you want to each form in the project, while there is only a single Timer object that was suitable to SB code files.
-    ''' You can't use the form designer to add Win timers to thee form, but you can use the Form.AddTimer method to add a new timer to the form.
+    ''' You can't use the form designer to add Win timers to the form, but you can use the Form.AddTimer method to add a new timer to the form.
     ''' </summary>
     <SmallVisualBasicType>
     <HideFromIntellisense>

@@ -292,5 +292,38 @@ Namespace WinForms
         Public Shared Function ToDecimal(hex As Primitive) As Primitive
             Return Convert.ToInt32(hex, 16)
         End Function
+
+
+        ''' <summary>
+        ''' Adds spaces on the left of the current text so that its length equals the given total width. This is useful when you want to right-align texts.
+        ''' Note that if the length of the current text is greater than or egual to the given length, it will be displayed as it is and will not be trimmed.
+        ''' </summary>
+        ''' <param name="totalWidth">The desired total length of the text.</param>
+        ''' <returns>a new text that has the given total length (at least).</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function PadLeft(
+                   text As Primitive,
+                   totalWidth As Primitive
+            ) As Primitive
+
+            Return text.AsString().PadLeft(totalWidth)
+        End Function
+
+        ''' <summary>
+        ''' Adds spaces on the right of the current text so that its length equals the given total width. This is useful when you want to left-align texts.
+        ''' Note that if the length of the current text is greater than or egual to the given length, it will be displayed as it is and will not be trimmed.
+        ''' </summary>
+        ''' <param name="totalWidth">The desired total length of the text.</param>
+        ''' <returns>a new text that has the given total length (at least).</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function PadRight(
+                   text As Primitive,
+                   totalWidth As Primitive
+            ) As Primitive
+
+            Return text.AsString().PadRight(totalWidth)
+        End Function
     End Class
 End Namespace

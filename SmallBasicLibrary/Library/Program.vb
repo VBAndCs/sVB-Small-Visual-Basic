@@ -76,7 +76,7 @@ Namespace Library
                 System.Windows.Application.Current.Dispatcher.Invoke(
                         System.Windows.Threading.DispatcherPriority.Background,
                         Sub()
-                            ' Do nothing. Just let thee UI refresh itself
+                            ' Do nothing. Just let the UI refresh itself
                         End Sub)
             Loop
         End Sub

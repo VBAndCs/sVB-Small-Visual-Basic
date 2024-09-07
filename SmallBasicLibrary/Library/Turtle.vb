@@ -120,7 +120,7 @@ Namespace Library
         ''' Indicates whether or not the turtle moves and turns are animated.
         ''' The default value is True, which is OK in most cases, and you can increase the Turtle.Speed up to 50 to make it faster.
         ''' But you may need to set this property fo false while you are drawing curves, which require many turns and succissive short movements, which make the turtle too slow because of the animations overhead. 
-        ''' Setting this property to False, will make the Move, MoveTo and Turn methods call the DirectMove, DirectMoveTo and DirectTurn Methods to avoid using animation, which will make thee turtle super fast.
+        ''' Setting this property to False, will make the Move, MoveTo and Turn methods call the DirectMove, DirectMoveTo and DirectTurn Methods to avoid using animation, which will make the turtle super fast.
         ''' You can also call the three `Direct` methods manually even when this property is set to True, which allows you to mix animated and non-animated moves.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Boolean)>

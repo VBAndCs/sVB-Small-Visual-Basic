@@ -133,8 +133,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             args.Handled = True
 
                         Case "("
-                            args.Handled = CommitConditionally(textView, completionSurface, ")")
-                            textView.Caret.MoveToPreviousCaretPosition()
+                            If CommitConditionally(textView, completionSurface, ")") Then
+                                textView.Caret.MoveToPreviousCaretPosition()
+                                args.Handled = True
+                            End If
 
                         Case ","
                             args.Handled = CommitConditionally(textView, completionSurface, args.Text & " ")

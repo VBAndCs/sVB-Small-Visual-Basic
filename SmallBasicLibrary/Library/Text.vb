@@ -524,5 +524,37 @@ Namespace Library
 
             Return New Primitive(arr, removeEmpty)
         End Function
+
+        ''' <summary>
+        ''' Adds spaces on the left of the given text so that its length equals the given total width. This is useful when you want to right-align texts.
+        ''' Note that if the length of the input text is greater than or egual to the given length, it will be displayed as it is and will not be trimmed.
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <param name="totalWidth">The desired total length of the text.</param>
+        ''' <returns>a new text that has the given total length (at least).</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function PadLeft(
+                   text As Primitive,
+                   totalWidth As Primitive
+            ) As Primitive
+
+            Return text.AsString().PadLeft(totalWidth)
+        End Function
+
+        ''' <summary>
+        ''' Adds spaces on the right of the given text so that its length equals the given total width. This is useful when you want to left-align texts.
+        ''' Note that if the length of the input text is greater than or egual to the given length, it will be displayed as it is and will not be trimmed.
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <param name="totalWidth">The desired total length of the text.</param>
+        ''' <returns>a new text that has the given total length (at least).</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function PadRight(
+                   text As Primitive,
+                   totalWidth As Primitive
+            ) As Primitive
+
+            Return text.AsString().PadRight(totalWidth)
+        End Function
     End Class
 End Namespace

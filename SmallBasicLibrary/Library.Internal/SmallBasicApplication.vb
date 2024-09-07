@@ -103,20 +103,19 @@ Namespace Library.Internal
                         Stack._stackMap = New Dictionary(Of Primitive, Stack(Of Primitive))
                         TextWindow.Hide()
                         WinForms.Forms.ForceCloseAll()
-                        Return
+
+                    Else
+                        TextWindow.Close()
+                        If GraphicsWindow._window Is Nothing Then
+                            Try
+                                GraphicsWindow._window.Close()
+                            Catch
+                            End Try
+                        End If
+                        _application.Shutdown()
+                        _Dispatcher.InvokeShutdown()
+                        Process.GetCurrentProcess().Kill()
                     End If
-
-
-                    If GraphicsWindow._window Is Nothing Then
-                        Try
-                            GraphicsWindow._window.Close()
-                        Catch
-                        End Try
-                    End If
-
-                    _application.Shutdown()
-                    _Dispatcher.InvokeShutdown()
-                    Process.GetCurrentProcess().Kill()
                 End Sub)
         End Sub
 

@@ -165,18 +165,21 @@ Namespace Library
         ''' </summary>
         Public Shared Sub Show()
             If Not _windowVisible Then
-                Dim consoleWindow = NativeHelper.GetConsoleWindow()
-                If consoleWindow = IntPtr.Zero Then
-                    NativeHelper.AllocConsole()
-                    consoleWindow = NativeHelper.GetConsoleWindow()
-                    'If SmallBasicApplication.IsDebugging Then
-                    Dim systemMenu = NativeHelper.GetSystemMenu(consoleWindow, False)
-                    NativeHelper.DeleteMenu(systemMenu, NativeHelper.SC_CLOSE, NativeHelper.MF_BYCOMMAND)
-                    'End If
-                End If
+                SmallBasicApplication.Invoke(
+                       Sub()
+                           Dim consoleWindow = NativeHelper.GetConsoleWindow()
+                           If consoleWindow = IntPtr.Zero Then
+                               NativeHelper.AllocConsole()
+                               consoleWindow = NativeHelper.GetConsoleWindow()
+                               'If SmallBasicApplication.IsDebugging Then
+                               Dim systemMenu = NativeHelper.GetSystemMenu(consoleWindow, False)
+                               NativeHelper.DeleteMenu(systemMenu, NativeHelper.SC_CLOSE, NativeHelper.MF_BYCOMMAND)
+                               'End If
+                           End If
 
-                    NativeHelper.ShowWindow(consoleWindow, 5)
-                _windowVisible = True
+                           NativeHelper.ShowWindow(consoleWindow, 5)
+                           _windowVisible = True
+                       End Sub)
             End If
         End Sub
 
@@ -241,10 +244,11 @@ Namespace Library
                     Hide()
                 End If
 
-            Catch
+            Catch ex As Exception
                 Console.WriteLine("An error occured.")
-                Console.WriteLine("If you are debugging this sVB projet in VS.NET in its debugging mode, thee console window will nor work correctly.")
+                Console.WriteLine("If you are debugging this sVB projet in VS.NET in its debugging mode, the console window will not work correctly.")
                 Console.WriteLine("Stop the VS debugger the Press Ctrl+F5 to run sVB im VS without debugging, then debug your project in sVB.")
+                Console.WriteLine(ex.Message)
             End Try
         End Sub
 

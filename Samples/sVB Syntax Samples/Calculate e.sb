@@ -1,0 +1,27 @@
+X = E(1)
+TW.WriteLine("Calculated e = " & X)
+Y = Math.E
+TW.WriteLine("      Math.E = " & Y)
+TW.WriteLine("       delta = " & (X - Y))
+TW.WriteLine("")
+X = E(10)
+TW.WriteLine("Calculated e^10 = " & X)
+Y = Math.Power(Math.E, 10)
+TW.WriteLine("      Math.E^10 = " & Y)
+TW.WriteLine("          delta = 0000" & (X - Y))
+
+' ------------------------------------------------
+' Calculates 1 + x + x^2/2! + x^3/3! + ...........
+Function E(x)
+   sum = 1
+   For i = 1 To 500
+      n = x
+      For j = 2 To i
+         n = n * (x / j)
+      Next
+      sum = sum + n
+   Next
+   Return sum
+EndFunction
+
+
