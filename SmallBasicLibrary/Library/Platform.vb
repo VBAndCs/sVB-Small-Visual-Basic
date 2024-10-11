@@ -14,9 +14,9 @@ Namespace Library
                 Dim value As Object = Activator.CreateInstance(type1)
                 Dim text As String = GenerateNewName("Instance")
                 _objectMap(text) = value
-                Return text
+                Return New Primitive(text)
             Catch
-                Return "ERROR"
+                Return New Primitive("ERROR")
             End Try
         End Function
 
@@ -35,9 +35,9 @@ Namespace Library
                     Return New Primitive(method.Invoke(obj, list1.ToArray()))
                 End If
 
-                Return "ERROR"
+                Return New Primitive("ERROR")
             Catch
-                Return "ERROR"
+                Return New Primitive("ERROR")
             End Try
         End Function
 
@@ -56,9 +56,9 @@ Namespace Library
                     Return New Primitive(method.Invoke(Nothing, list1.ToArray()))
                 End If
 
-                Return "ERROR"
+                Return New Primitive("ERROR")
             Catch
-                Return "ERROR"
+                Return New Primitive("ERROR")
             End Try
         End Function
 

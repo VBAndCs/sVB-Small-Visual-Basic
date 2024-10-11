@@ -41,10 +41,10 @@ Namespace Library
         Public Shared ReadOnly Property Directory As Primitive
             Get
                 If SmallBasicApplication.IsDebugging Then
-                    Return Path.GetDirectoryName(AppExe)
+                    Return New Primitive(Path.GetDirectoryName(AppExe))
                 Else
                     Dim asm = Assembly.GetCallingAssembly()
-                    Return Path.GetDirectoryName(asm.Location)
+                    Return New Primitive(Path.GetDirectoryName(asm.Location))
                 End If
             End Get
         End Property
@@ -118,7 +118,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetSetting(section As Primitive, name As Primitive, defaultValue As Primitive) As Primitive
             Dim appName = "sVB_" & IO.Path.GetDirectoryName(Directory).Replace(" ", "_")
-            Return Interaction.GetSetting(appName, section, name, defaultValue)
+            Return New Primitive(Interaction.GetSetting(appName, section, name, defaultValue))
         End Function
 
         ''' <summary>

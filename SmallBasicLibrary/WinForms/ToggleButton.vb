@@ -32,7 +32,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetText = Label.GetTextBlock(toggleButtonName).Text
+                        GetText = New Primitive(Label.GetTextBlock(toggleButtonName).Text)
                     Catch ex As Exception
                         Control.ReportError(toggleButtonName, "Text", ex)
                     End Try

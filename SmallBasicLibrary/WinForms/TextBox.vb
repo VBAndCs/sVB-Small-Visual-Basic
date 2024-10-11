@@ -34,7 +34,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetText = GetTextBox(textBoxName).Text
+                        GetText = New Primitive(GetTextBox(textBoxName).Text)
                     Catch ex As Exception
                         Control.ReportError(textBoxName, "Text", ex)
                     End Try
@@ -119,7 +119,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetSelectedText = GetTextBox(textBoxName).SelectedText
+                        GetSelectedText = New Primitive(GetTextBox(textBoxName).SelectedText)
                     Catch ex As Exception
                         Control.ReportError(textBoxName, "SelectedText", ex)
                     End Try
@@ -314,7 +314,7 @@ Namespace WinForms
 
                         Dim t = GetTextBox(textBoxName)
                         If lines.IsArray Then
-                            For Each lineText In lines._arrayMap.Values
+                            For Each lineText In lines.ArrayMap.Values
                                 t.AppendText(lineText.AsString() & vbCrLf)
                             Next
                         Else
@@ -533,7 +533,7 @@ Namespace WinForms
                     Dim _sender = GetTextBox(name)
                     Dim h = Sub(Sender As Wpf.Control, e As System.Windows.Input.KeyEventArgs)
                                 If e.Key = Keys.Space Then
-                                    Keyboard._lastTextInput = " "
+                                    Keyboard._lastTextInput = New Primitive(" ")
                                     [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
                                 End If
                             End Sub

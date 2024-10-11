@@ -1,0 +1,28 @@
+'@Form Hints:
+'#Form1{
+'    Label8: Label
+'    Label9: Label
+'    Label10: Label
+'    Label11: Label
+'    Label12: Label
+'    Label13: Label
+'    Label14: Label
+'    Label15: Label
+'    Label16: Label
+'}
+
+Me = "form1"
+Label8 = "form1.label8"
+Label9 = "form1.label9"
+Label10 = "form1.label10"
+Label11 = "form1.label11"
+Label12 = "form1.label12"
+Label13 = "form1.label13"
+Label14 = "form1.label14"
+Label15 = "form1.label15"
+Label16 = "form1.label16"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Me)
+Form.Show(Me)

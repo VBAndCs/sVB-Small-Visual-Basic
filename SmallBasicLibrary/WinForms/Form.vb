@@ -146,8 +146,8 @@ Namespace WinForms
                         Dim wind = CType(Forms._forms(formName), Window)
                         Dim canv = GetCanvas(wind)
                         AddTextBox(
-                                formName,
-                                "txttest",
+                                New Primitive(formName),
+                                New Primitive("txttest"),
                                 5,
                                 5,
                                 canv.ActualWidth - 10,
@@ -214,14 +214,15 @@ Namespace WinForms
                          width As Primitive, height As Primitive
                     ) As Primitive
 
-            Dim key = ValidateArgs(formName, textBoxName)
+            Dim controlName = textBoxName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                  Sub()
                      Try
                          Dim frm = CType(Forms._forms(CStr(formName).ToLower()), Window)
 
                          Dim textBox1 As New Wpf.TextBox With {
-                           .Name = textBoxName,
+                           .Name = controlName,
                            .Width = GetDouble(width),
                            .Height = GetDouble(height),
                            .VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto,
@@ -241,7 +242,7 @@ Namespace WinForms
                      End Try
                  End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -265,14 +266,15 @@ Namespace WinForms
                          width As Primitive, height As Primitive
                    ) As Primitive
 
-            Dim key = ValidateArgs(formName, labelName)
+            Dim controlName = labelName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
               Sub()
                   Try
                       Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                       Dim label1 As New Wpf.Label With {
-                          .Name = labelName,
+                          .Name = controlName,
                           .Width = GetDouble(width),
                           .Height = GetDouble(height)
                       }
@@ -289,7 +291,7 @@ Namespace WinForms
                   End Try
               End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -317,13 +319,14 @@ Namespace WinForms
                          fileName As Primitive
                    ) As Primitive
 
-            Dim key = ValidateArgs(formName, imageBoxName)
+            Dim controlName = imageBoxName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                     Sub()
                         Try
                             Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
                             Dim img As New Wpf.Image With {
-                                .Name = imageBoxName,
+                                .Name = controlName,
                                 .Width = GetDouble(width),
                                 .Height = GetDouble(height)
                             }
@@ -331,7 +334,7 @@ Namespace WinForms
                             If Not IO.Path.IsPathRooted(fileName) Then
                                 Dim path = Environment.GetCommandLineArgs()(0)
                                 path = IO.Path.GetDirectoryName(path)
-                                fileName = IO.Path.Combine(path, fileName)
+                                fileName = New Primitive(IO.Path.Combine(path, fileName))
                             End If
                             img.Source = New Imaging.BitmapImage(New Uri(fileName))
 
@@ -348,7 +351,7 @@ Namespace WinForms
                         End Try
                     End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -368,7 +371,7 @@ Namespace WinForms
                          interval As Primitive
                    ) As Primitive
 
-            Dim key = ValidateArgs(formName, timerName)
+            Dim key = ValidateArgs(formName, timerName.AsString())
             App.Invoke(
                     Sub()
                         Try
@@ -385,7 +388,7 @@ Namespace WinForms
                         End Try
                     End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
 
@@ -445,14 +448,15 @@ Namespace WinForms
                          menuName As Primitive
                     ) As Primitive
 
-            Dim key = ValidateArgs(formName, menuName)
+            Dim controlName = menuName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
 
             App.Invoke(
                 Sub()
                     Try
                         Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
                         Dim menu As New Wpf.Menu()
-                        menu.Name = menuName
+                        menu.Name = controlName
                         AddMenu(frm, menu)
 
                     Catch ex As Exception
@@ -460,7 +464,7 @@ Namespace WinForms
                     End Try
                 End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         Friend Shared Sub AddMenu(frm As Window, menu As Wpf.Menu)
@@ -504,14 +508,15 @@ Namespace WinForms
                          height As Primitive
                     ) As Primitive
 
-            Dim key = ValidateArgs(formName, buttonName)
+            Dim controlName = buttonName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim button1 As New Wpf.Button With {
-                               .Name = buttonName,
+                               .Name = controlName,
                                .Width = GetDouble(width),
                                .Height = GetDouble(height)
                           }
@@ -529,7 +534,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -555,14 +560,15 @@ Namespace WinForms
                          height As Primitive
                     ) As Primitive
 
-            Dim key = ValidateArgs(formName, toggleButtonName)
+            Dim controlName = toggleButtonName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), Window)
 
                           Dim toggleButton1 As New Wpf.Primitives.ToggleButton With {
-                               .Name = toggleButtonName,
+                               .Name = controlName,
                                .Width = GetDouble(width),
                                .Height = GetDouble(height)
                           }
@@ -580,7 +586,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -606,14 +612,15 @@ Namespace WinForms
                          isChecked As Primitive
                    ) As Primitive
 
-            Dim key = ValidateArgs(formName, checkBoxName)
+            Dim controlName = checkBoxName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim ch As New Wpf.CheckBox With {
-                               .Name = checkBoxName,
+                               .Name = controlName,
                                .Content = text
                           }
 
@@ -637,7 +644,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -665,14 +672,15 @@ Namespace WinForms
                          isChecked As Primitive
                    ) As Primitive
 
-            Dim key = ValidateArgs(formName, radioButtonName)
+            Dim controlName = radioButtonName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim rd As New Wpf.RadioButton With {
-                               .Name = radioButtonName,
+                               .Name = controlName,
                                .Content = text,
                                .GroupName = groupName,
                                .IsChecked = isChecked
@@ -691,7 +699,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
 
@@ -718,14 +726,15 @@ Namespace WinForms
                          height As Primitive
                   ) As Primitive
 
-            Dim key = ValidateArgs(formName, listBoxName)
+            Dim controlName = listBoxName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim listBox1 As New Wpf.ListBox With {
-                                 .Name = listBoxName,
+                                 .Name = controlName,
                                  .Width = GetDouble(width),
                                  .Height = GetDouble(height)
                           }
@@ -743,7 +752,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
 
@@ -770,14 +779,15 @@ Namespace WinForms
                          height As Primitive
                   ) As Primitive
 
-            Dim key = ValidateArgs(formName, comboBoxName)
+            Dim controlName = comboBoxName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim comboBox1 As New Wpf.ComboBox With {
-                                 .Name = comboBoxName,
+                                 .Name = controlName,
                                  .Width = GetDouble(width),
                                  .Height = GetDouble(height)
                           }
@@ -795,7 +805,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         Private Shared Function GetDouble(value As Primitive) As Double
@@ -826,14 +836,15 @@ Namespace WinForms
                          selectedDate As Primitive
                     ) As Primitive
 
-            Dim key = ValidateArgs(formName, datePickerName)
+            Dim controlName = datePickerName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim dp As New Wpf.DatePicker With {
-                               .Name = datePickerName,
+                               .Name = controlName,
                                .Width = GetDouble(width),
                                .SelectedDate = selectedDate.AsDate()
                           }
@@ -851,7 +862,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -881,14 +892,15 @@ Namespace WinForms
                          maximum As Primitive
                     ) As Primitive
 
-            Dim key = ValidateArgs(formName, progressBarName)
+            Dim controlName = progressBarName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim pb As New Wpf.ProgressBar With {
-                               .Name = progressBarName,
+                               .Name = controlName,
                                .Width = GetDouble(width),
                                .Height = GetDouble(height),
                                .Minimum = minimum,
@@ -901,7 +913,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(pb)
                           Forms._controls(key) = pb
-                          ProgressBar.SetMaximum(key, maximum)
+                          ProgressBar.SetMaximum(New Primitive(key), maximum)
                           AddHandler pb.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
@@ -909,7 +921,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -943,14 +955,15 @@ Namespace WinForms
                          tickFrequency As Primitive
                     ) As Primitive
 
-            Dim key = ValidateArgs(formName, sliderName)
+            Dim controlName = sliderName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim s As New Wpf.Slider With {
-                               .Name = sliderName,
+                               .Name = controlName,
                                .Width = GetDouble(width),
                                .Height = GetDouble(height),
                                .Minimum = minimum,
@@ -975,7 +988,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -1007,14 +1020,15 @@ Namespace WinForms
                          value As Primitive
                    ) As Primitive
 
-            Dim key = ValidateArgs(formName, scrollBarName)
+            Dim controlName = scrollBarName.AsString()
+            Dim key = ValidateArgs(formName, controlName)
             App.Invoke(
                   Sub()
                       Try
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), Window)
 
                           Dim s As New Wpf.Primitives.ScrollBar With {
-                               .Name = scrollBarName,
+                               .Name = controlName,
                                .Width = GetDouble(width),
                                .Height = GetDouble(height),
                                .Minimum = minimum,
@@ -1035,7 +1049,7 @@ Namespace WinForms
                       End Try
                   End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -1062,7 +1076,10 @@ Namespace WinForms
                               Dim menu = CType(c, Wpf.Menu)
                               For i = menu.Items.Count - 1 To 0 Step -1
                                   Dim m = CType(menu.Items(i), Wpf.MenuItem)
-                                  MainMenu.RemoveItem(key, frm & "." & m.Name.ToLower())
+                                  MainMenu.RemoveItem(
+                                           New Primitive(key),
+                                           New Primitive(frm & "." & m.Name.ToLower())
+                                  )
                               Next
 
                           ElseIf TypeOf c Is Wpf.MenuItem Then
@@ -1102,7 +1119,7 @@ Namespace WinForms
                   Sub()
                       Try
                           Dim frm = Forms.GetForm(formName)
-                          GetArgsArr = CStr(frm.GetValue(ArgsArrProperty))
+                          GetArgsArr = New Primitive(CStr(frm.GetValue(ArgsArrProperty)))
                       Catch ex As Exception
                           ReportError(formName, "ArgsArr", ex)
                       End Try
@@ -1162,7 +1179,7 @@ Namespace WinForms
             Dim frmName = formName.ToString().ToLower()
             If Not Forms._forms.ContainsKey(frmName) Then
                 ReportSubError(formName, "GetControls", New Exception($"There is no form named `{formName}`"))
-                Return ""
+                Return New Primitive("")
             End If
 
             Dim map = New Dictionary(Of Primitive, Primitive)
@@ -1171,20 +1188,20 @@ Namespace WinForms
 
             For Each key In Forms._controls.Keys
                 If key.StartsWith(prefix) Then
-                    map(num) = key
+                    map(num) = New Primitive(key)
                     num += 1
                 End If
             Next
 
             For Each key In WinTimer.Timers.Keys
                 If key.StartsWith(prefix) Then
-                    map(num) = key
+                    map(num) = New Primitive(key)
                     num += 1
                 End If
             Next
 
             Dim result As New Primitive
-            result._arrayMap = map
+            result.ArrayMap = map
             Return result
         End Function
 
@@ -1196,7 +1213,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetIcon = CType(Forms.GetForm(formName).Icon, Imaging.BitmapImage).UriSource.AbsolutePath
+                        GetIcon = New Primitive(CType(Forms.GetForm(formName).Icon, Imaging.BitmapImage).UriSource.AbsolutePath)
                     Catch ex As Exception
                         ReportError(formName, "Icon", ex)
                     End Try
@@ -1208,7 +1225,7 @@ Namespace WinForms
                 Sub()
                     Try
                         If Not IO.Path.IsPathRooted(imageFile) Then
-                            imageFile = IO.Path.Combine(Program.Directory, imageFile)
+                            imageFile = New Primitive(IO.Path.Combine(Program.Directory, imageFile))
                         End If
                         Forms.GetForm(formName).Icon = New Imaging.BitmapImage(New Uri(imageFile))
 
@@ -1256,13 +1273,13 @@ Namespace WinForms
                            If _dialogResult = "" Then
                                ShowDialog = DialogResults.No
                            Else
-                               ShowDialog = _dialogResult
+                               ShowDialog = New Primitive(_dialogResult)
                            End If
 
                        ElseIf _dialogResult = "" Then
                            ShowDialog = If(dialogResult1, DialogResults.Yes, DialogResults.Cancel)
                        Else
-                           ShowDialog = _dialogResult
+                           ShowDialog = New Primitive(_dialogResult)
                        End If
 
                    Catch ex As Exception
@@ -1297,7 +1314,7 @@ Namespace WinForms
                                 Show(childFormName)
                                 childWnd.RaiseEvent(New RoutedEventArgs(OnFormShownEvent))
                             Else
-                                Stack.PushValue("_" & childFormName.AsString().ToLower() & "_argsArr", argsArr)
+                                Stack.PushValue(New Primitive("_" & childFormName.AsString().ToLower() & "_argsArr"), argsArr)
                                 Form.Initialize(childFormName, asm)
                                 Dim childWnd = Forms.GetForm(childFormName)
                                 childWnd.Owner = Forms.GetForm(parentFormName)
@@ -1332,7 +1349,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetDialogResult = _dialogResult
+                        GetDialogResult = New Primitive(_dialogResult)
                     Catch ex As Exception
                         ReportError(formName, "DialogResult", ex)
                     End Try
@@ -1428,7 +1445,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetText = Forms.GetForm(formName).Title
+                        GetText = New Primitive(Forms.GetForm(formName).Title)
                     Catch ex As Exception
                         ReportError(formName, "Text", ex)
                     End Try
@@ -1516,7 +1533,7 @@ Namespace WinForms
                 Sub()
                     Try
                         For Each cntrl In Forms._controls
-                            If Control.Validate(cntrl.Key) = False Then
+                            If Control.Validate(New Primitive(cntrl.Key)) = False Then
                                 Sound.PlayBellRing()
                                 cntrl.Value.Focus()
                                 Validate = False
@@ -1656,7 +1673,7 @@ Namespace WinForms
                              Dim h = Sub(sender As Object, e As EventArgs)
                                          Try
                                              Dim win = CType(sender, System.Windows.Window)
-                                             [Event]._senderControl = win.Name
+                                             [Event]._senderControl = New Primitive(win.Name)
                                              Call handler()
                                              [Event].Handled = False
                                          Catch ex As Exception
@@ -1706,7 +1723,7 @@ Namespace WinForms
                                              If Forms.forceClose Then Return
 
                                              Dim win = CType(sender, System.Windows.Window)
-                                             [Event]._senderControl = win.Name
+                                             [Event]._senderControl = New Primitive(win.Name)
 
                                              Call handler()
 

@@ -26,24 +26,24 @@ Namespace Library
         ''' <returns>The entire contents of the file.</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadContents(filePath As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim path As String = Network.GetLocalFile(filePath)
             Try
                 If Not IO.File.Exists(path) Then
-                    LastError = $"The file `{path}` is not found."
-                    Return ""
+                    LastError = New Primitive($"The file `{path}` is not found.")
+                    Return New Primitive("")
                 End If
 
                 Using reader As New StreamReader(path, Encoding.Default)
                     Dim value As String = reader.ReadToEnd()
-                    Return value
+                    Return New Primitive(value)
                 End Using
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
-            Return ""
+            Return New Primitive("")
         End Function
 
         ''' <summary>
@@ -55,12 +55,12 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function WriteContents(filePath As Primitive, contents As Primitive) As Primitive
             Try
-                LastError = ""
+                LastError = New Primitive("")
                 Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
 
                 Using writer As New StreamWriter(path, False, Encoding.Default)
                     If contents.IsArray Then
-                        Dim lines = contents._arrayMap.Values
+                        Dim lines = contents.ArrayMap.Values
                         Dim n = lines.Count - 1
                         For i = 0 To n - 1
                             writer.WriteLine(lines(i).AsString())
@@ -74,7 +74,7 @@ Namespace Library
                 Return True
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -89,7 +89,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function WriteArray(filePath As Primitive, array As Primitive) As Primitive
             Try
-                LastError = ""
+                LastError = New Primitive("")
                 Dim path As String = Network.GetLocalFile(filePath)
 
                 Using writer As New StreamWriter(path, False, Encoding.Default)
@@ -99,7 +99,7 @@ Namespace Library
                 Return True
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -119,39 +119,39 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadLine(filePath As Primitive, lineNumber As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim path As String = Network.GetLocalFile(filePath)
             If lineNumber < 1 Then
-                LastError = $"{lineNumber} is not a valid line number."
-                Return ""
+                LastError = New Primitive($"{lineNumber} is not a valid line number.")
+                Return New Primitive("")
             End If
 
             Try
                 If Not IO.File.Exists(path) Then
-                    LastError = $"The file `{path}` is not found."
-                    Return ""
+                    LastError = New Primitive($"The file `{path}` is not found.")
+                    Return New Primitive("")
                 End If
 
                 Using reader As New StreamReader(path, Encoding.Default)
                     For i = 1 To CInt(lineNumber) - 1
                         If reader.ReadLine() Is Nothing Then
-                            LastError = $"{lineNumber} is not a valid line number."
-                            Return ""
+                            LastError = New Primitive($"{lineNumber} is not a valid line number.")
+                            Return New Primitive("")
                         End If
                     Next
 
                     Dim x = reader.ReadLine()
                     If x Is Nothing Then
-                        LastError = $"{lineNumber} is not a valid line number."
+                        LastError = New Primitive($"{lineNumber} is not a valid line number.")
                     End If
-                    Return x
+                    Return New Primitive(x)
 
                 End Using
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
-            Return ""
+            Return New Primitive("")
         End Function
 
         ''' <summary>
@@ -161,13 +161,13 @@ Namespace Library
         ''' <returns>an array containing the lines of the specified file, or an empty string if the file is not found.</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function ReadLines(filePath As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
 
             Try
                 If Not IO.File.Exists(path) Then
-                    LastError = $"The file `{path}` is not found."
-                    Return ""
+                    LastError = New Primitive($"The file `{path}` is not found.")
+                    Return New Primitive("")
                 End If
 
                 Dim lines As New Dictionary(Of Primitive, Primitive)
@@ -183,14 +183,14 @@ Namespace Library
                 End Using
 
                 Dim result As New Primitive
-                result._arrayMap = lines
+                result.ArrayMap = lines
                 Return result
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
-            Return ""
+            Return New Primitive("")
         End Function
 
         ''' <summary>
@@ -200,25 +200,25 @@ Namespace Library
         ''' <returns>an array if the specified file content is a valid string representation of an array, or an empty string otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function ReadArray(filePath As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim path As String = Network.GetLocalFile(filePath)
 
             Try
                 If Not IO.File.Exists(path) Then
-                    LastError = $"The file `{path}` is not found."
-                    Return ""
+                    LastError = New Primitive($"The file `{path}` is not found.")
+                    Return New Primitive("")
                 End If
 
                 Dim arr = New Primitive(My.Computer.FileSystem.ReadAllText(path, Encoding.Default))
                 If arr.IsArray Then Return arr
-                LastError = "The file content is not a valid array!"
-                Return ""
+                LastError = New Primitive("The file content is not a valid array!")
+                Return New Primitive("")
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
-            Return ""
+            Return New Primitive("")
         End Function
 
 
@@ -240,7 +240,7 @@ Namespace Library
                          contents As Primitive
                    ) As Primitive
 
-            LastError = ""
+            LastError = New Primitive("")
             Dim path1 = Network.GetLocalFile(filePath)
             Dim tempFileName = Path.GetTempFileName()
 
@@ -279,7 +279,7 @@ Namespace Library
                 Return True
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -302,7 +302,7 @@ Namespace Library
                          lines As Primitive
                    ) As Primitive
 
-            LastError = ""
+            LastError = New Primitive("")
             Dim path1 As String = Network.GetLocalFile(filePath)
             Dim tempFileName = Path.GetTempFileName()
 
@@ -324,7 +324,7 @@ Namespace Library
 
                             If num = lineNumber Then
                                 WriteLines(writer, lines)
-                                For i = 1 To lines._arrayMap.Count - 1
+                                For i = 1 To lines.ArrayMap.Count - 1
                                     ' overwrite lines
                                     If reader.ReadLine() Is Nothing Then
                                         num = lineNumber + 1
@@ -348,7 +348,7 @@ Namespace Library
                 Return True
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -383,7 +383,7 @@ Namespace Library
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function InsertLines(filePath As Primitive, lineNumber As Primitive, lines As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim path1 As String = Network.GetLocalFile(filePath)
             Dim tempFileName = Path.GetTempFileName()
 
@@ -421,7 +421,7 @@ Namespace Library
                 Return True
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -430,7 +430,7 @@ Namespace Library
         Private Shared Sub WriteLines(writer As StreamWriter, lines As Primitive)
             If lines.IsEmpty Then Return
             If lines.IsArray Then
-                For Each line In lines._arrayMap.Values
+                For Each line In lines.ArrayMap.Values
                     writer.WriteLine(line.AsString())
                 Next
             Else
@@ -446,13 +446,13 @@ Namespace Library
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function AppendLines(filePath As Primitive, lines As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim path1 As String = Network.GetLocalFile(filePath)
 
             Try
                 Using writer As New StreamWriter(path1, append:=True, Encoding.Default)
                     If lines.IsArray Then
-                        For Each line In lines._arrayMap.Values
+                        For Each line In lines.ArrayMap.Values
                             writer.WriteLine(line.AsString())
                         Next
                     Else
@@ -463,7 +463,7 @@ Namespace Library
                 Return True
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -477,7 +477,7 @@ Namespace Library
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function AppendContents(filePath As Primitive, contents As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim path1 As String = Network.GetLocalFile(filePath)
 
             Try
@@ -487,7 +487,7 @@ Namespace Library
                 Return True
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -503,12 +503,12 @@ Namespace Library
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function CopyFile(sourceFilePath As Primitive, destinationFilePath As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim file1 As String = Network.GetLocalFile(sourceFilePath)
             Dim file2 As String = Network.GetLocalFile(destinationFilePath)
 
             If Not IO.File.Exists(file1) Then
-                LastError = "Source file doesn't exist."
+                LastError = New Primitive("Source file doesn't exist.")
                 Return False
             End If
 
@@ -526,7 +526,7 @@ Namespace Library
                 Return True
 
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -539,14 +539,14 @@ Namespace Library
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function DeleteFile(filePath As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim path As String = Network.GetLocalFile(filePath)
 
             Try
                 IO.File.Delete(path)
                 Return True
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -559,14 +559,14 @@ Namespace Library
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function CreateDirectory(directoryPath As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim dir As String = Network.GetLocalFile(directoryPath)
 
             Try
                 Directory.CreateDirectory(dir)
                 Return True
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -579,14 +579,14 @@ Namespace Library
         ''' <returns>True if the operation was successful, or False otherwise.</returns>
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Function DeleteDirectory(directoryPath As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim dir As String = Network.GetLocalFile(directoryPath)
 
             Try
                 Directory.Delete(dir, recursive:=True)
                 Return True
             Catch ex As Exception
-                LastError = ex.Message
+                LastError = New Primitive(ex.Message)
             End Try
 
             Return False
@@ -601,7 +601,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function GetFiles(directoryPath As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim dir As String = Network.GetLocalFile(directoryPath)
 
             Try
@@ -611,19 +611,19 @@ Namespace Library
                     Dim files = Directory.GetFiles(dir)
 
                     For Each file In files
-                        dictionary(n) = file
+                        dictionary(n) = New Primitive(file)
                         n += 1
                     Next
 
                     Return Primitive.ConvertFromMap(dictionary)
                 End If
 
-                LastError = $"Directory '{dir}' does not exist."
-                Return ""
+                LastError = New Primitive($"Directory '{dir}' does not exist.")
+                Return New Primitive("")
 
             Catch ex As Exception
-                LastError = ex.Message
-                Return ""
+                LastError = New Primitive(ex.Message)
+                Return New Primitive("")
             End Try
         End Function
 
@@ -636,7 +636,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function GetDirectories(directoryPath As Primitive) As Primitive
-            LastError = ""
+            LastError = New Primitive("")
             Dim dir As String = Network.GetLocalFile(directoryPath)
 
             Try
@@ -646,19 +646,19 @@ Namespace Library
                     Dim directories = Directory.GetDirectories(dir)
 
                     For Each item In directories
-                        dictionary(n) = item
+                        dictionary(n) = New Primitive(item)
                         n += 1
                     Next
 
                     Return Primitive.ConvertFromMap(dictionary)
                 End If
 
-                LastError = $"Directory '{dir}' does not exist."
-                Return ""
+                LastError = New Primitive($"Directory '{dir}' does not exist.")
+                Return New Primitive("")
 
             Catch ex As Exception
-                LastError = ex.Message
-                Return ""
+                LastError = New Primitive(ex.Message)
+                Return New Primitive("")
             End Try
         End Function
 
@@ -670,7 +670,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetTemporaryFilePath() As Primitive
-            Return Path.GetTempFileName()
+            Return New Primitive(Path.GetTempFileName())
         End Function
 
         ''' <summary>
@@ -682,7 +682,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetSettingsFilePath() As Primitive
             Dim entryAssemblyPath = SmallBasicApplication.GetEntryAssemblyPath()
-            Return Path.ChangeExtension(entryAssemblyPath, ".settings")
+            Return New Primitive(Path.ChangeExtension(entryAssemblyPath, ".settings"))
         End Function
 
         ''' <summary>
@@ -724,9 +724,9 @@ Namespace Library
             If dlg.ShowDialog() = True Then
                 SaveSetting("SmallVisualBasic", "OpenFile", key, IO.Path.GetDirectoryName(dlg.FileName))
                 SaveSetting("SmallVisualBasic", "OpenFile", key & "_FilterIndex", dlg.FilterIndex.ToString())
-                Return dlg.FileName
+                Return New Primitive(dlg.FileName)
             Else
-                Return ""
+                Return New Primitive("")
             End If
         End Function
 
@@ -762,7 +762,7 @@ Namespace Library
 
                     If dlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
                         SaveSetting("SmallVisualBasic", "OpenFolder", "LastFolder", dlg.SelectedPath)
-                        OpenFolderDialog = dlg.SelectedPath
+                        OpenFolderDialog = New Primitive(dlg.SelectedPath)
                     End If
                 End Sub)
         End Function
@@ -786,7 +786,7 @@ Namespace Library
                 folder = ""
             End Try
 
-            Return Network.GetLocalFile(folder)
+            Return Network.GetLocalFile(New Primitive(folder))
         End Function
 
         ''' <summary>
@@ -834,8 +834,9 @@ Namespace Library
                 End If
 
                 Dim ext = IO.Path.GetExtension(name).TrimStart("."c)
+                Dim ext2 As New Primitive(ext)
                 If extFilters.IsArray Then
-                    index = Array.Find(extFilters, ext, 1, True)
+                    index = Array.Find(extFilters, ext2, 1, True)
                 Else
                     Dim str = extFilters.AsString()
                     Dim pos = str.LastIndexOf("*." & ext)
@@ -844,8 +845,8 @@ Namespace Library
                 End If
 
                 If index.IsEmpty Then
-                    For Each item In extFilters._arrayMap.Values
-                        index = Array.Find(item, ext, 1, True)
+                    For Each item In extFilters.ArrayMap.Values
+                        index = Array.Find(item, ext2, 1, True)
                         If Not index.IsEmpty Then Exit For
                     Next
                 End If
@@ -862,21 +863,21 @@ Namespace Library
 
             If dlg.ShowDialog() = True Then
                 SaveSetting("SmallVisualBasic", "SaveFile", key, IO.Path.GetDirectoryName(dlg.FileName))
-                Return dlg.FileName
+                Return New Primitive(dlg.FileName)
             Else
-                Return ""
+                Return New Primitive("")
             End If
         End Function
 
         Private Shared Function GetKey(filter As String) As String
             Return filter.Replace("|", "_").
-                                 Replace(";", "_").
-                                 Replace(",", "_").
-                                 Replace(" ", "_").
-                                 Replace("(", "_").
-                                 Replace(")", "_").
-                                 Replace("*", "_").
-                                 Replace(".", "_")
+                               Replace(";", "_").
+                               Replace(",", "_").
+                               Replace(" ", "_").
+                               Replace("(", "_").
+                               Replace(")", "_").
+                               Replace("*", "_").
+                               Replace(".", "_")
         End Function
 
         Private Shared Function GetFilter(fileType As String) As String
@@ -893,8 +894,8 @@ Namespace Library
         Private Shared Function BuildFilter(extFilters As Primitive) As String
             Dim filter As New StringBuilder
             If extFilters.IsArray Then
-                If extFilters._arrayMap("1").IsArray Then
-                    For Each ext In extFilters._arrayMap.Values
+                If extFilters.ArrayMap(New Primitive("1")).IsArray Then
+                    For Each ext In extFilters.ArrayMap.Values
                         If ext.IsArray Then
                             AddFileType(filter, ext)
                         Else
@@ -914,7 +915,7 @@ Namespace Library
 
         Private Shared Sub AddFileType(filter As StringBuilder, ext As Primitive)
             Dim st = 0
-            Dim parts = ext._arrayMap.Values
+            Dim parts = ext.ArrayMap.Values
             Dim description = parts(0).AsString()
             If Not description.Contains(".") Then
                 st = 1

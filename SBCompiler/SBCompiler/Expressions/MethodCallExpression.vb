@@ -124,7 +124,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             If runner.Evaluating AndAlso
                     (tName = "tw" OrElse tName = "textwindow") AndAlso
                     (mName = "read" OrElse mName = "readnumber") Then
-                Return "This method can't be evaluated at this time beecause it expects the user to enter a value in the text window."
+                Return New Primitive("This method can't be evaluated at this time beecause it expects the user to enter a value in the text window.")
             End If
 
             Dim args As New List(Of Object)()
@@ -137,7 +137,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Dim typeInfo = runner.TypeInfoBag.Types(tName)
                 methodInfo = typeInfo.Methods(_MethodName.LCaseText)
                 If runner.Evaluating AndAlso methodInfo.ReturnType Is GetType(System.Void) Then
-                    Return "A subroutine call doesn't return any value!"
+                    Return New Primitive("A subroutine call doesn't return any value!")
                 Else
                     Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
                 End If
@@ -145,22 +145,22 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
             Dim type = runner.SymbolTable.GetTypeInfo(_TypeName)
             Dim memberInfo = runner.SymbolTable.GetMemberInfo(_MethodName, type, True)
-            If memberInfo Is Nothing Then Return "???"
+            If memberInfo Is Nothing Then Return New Primitive("???")
 
             methodInfo = TryCast(memberInfo, MethodInfo)
-            If methodInfo Is Nothing Then Return "???"
+            If methodInfo Is Nothing Then Return New Primitive("???")
             If runner.Evaluating AndAlso methodInfo.ReturnType Is GetType(System.Void) Then
-                Return "A subroutine call doesn't return any value!"
+                Return New Primitive("A subroutine call doesn't return any value!")
             End If
 
             Dim key = runner.GetKey(_TypeName)
-            If Not runner.Fields.ContainsKey(key) Then Return "This object is not set yet"
+            If Not runner.Fields.ContainsKey(key) Then Return New Primitive("This object is not set yet")
             args.Insert(0, runner.Fields(key))
             Try
                 Return CType(methodInfo.Invoke(Nothing, args.ToArray()), Primitive)
             Catch ex As Exception
             End Try
-            Return "Can't evaluate this method call at this time. Calling some methods twice can cause errors like when you try to add the same control again on the form"
+            Return New Primitive("Can't evaluate this method call at this time. Calling some methods twice can cause errors like when you try to add the same control again on the form")
         End Function
 
         Friend Shared Function EvaluateFunction(
@@ -169,7 +169,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
             subroutine.Execute(runner)
             If subroutine.DontExecuteSub Then
-                Return "A subroutine call doesn't return any value!"
+                Return New Primitive("A subroutine call doesn't return any value!")
             End If
 
             Dim retKey = $"{subroutine.Name.LCaseText}.return"
@@ -178,14 +178,14 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 If result.HasValue Then
                     Return result.Value
                 ElseIf runner.Evaluating Then
-                    Return "A subroutine call doesn't return any value!"
+                    Return New Primitive("A subroutine call doesn't return any value!")
                 Else
                     Return New Primitive()
                 End If
             ElseIf runner.Fields.ContainsKey(retKey) Then
                 Return runner.Fields(retKey)
             ElseIf runner.Evaluating Then
-                Return "A subroutine call doesn't return any value!"
+                Return New Primitive("A subroutine call doesn't return any value!")
             Else
                 Return New Primitive()
             End If

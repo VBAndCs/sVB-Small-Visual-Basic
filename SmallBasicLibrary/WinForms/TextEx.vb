@@ -189,6 +189,20 @@ Namespace WinForms
             Return Library.Text.ToLower(text)
         End Function
 
+
+        ''' <summary>
+        ''' Converts the given text to lower case.
+        ''' </summary>
+        ''' <returns>
+        ''' The lower case version of the given text.
+        ''' </returns>
+        <ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function ToLower(text As Primitive) As Primitive
+            Return Library.Text.ToLower(text)
+        End Function
+
+
         ''' <summary>
         ''' Converts the given text to upper case.
         ''' </summary>
@@ -198,6 +212,19 @@ Namespace WinForms
         <ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetUpperCase(text As Primitive) As Primitive
+            Return Library.Text.ToUpper(text)
+        End Function
+
+
+        ''' <summary>
+        ''' Converts the given text to upper case.
+        ''' </summary>
+        ''' <returns>
+        ''' The upper case version of the given text.
+        ''' </returns>
+        <ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function ToUpper(text As Primitive) As Primitive
             Return Library.Text.ToUpper(text)
         End Function
 
@@ -221,18 +248,6 @@ Namespace WinForms
         <ExMethod>
         Public Shared Function SetCharacterAt(text As Primitive, pos As Primitive, value As Primitive) As Primitive
             Return Library.Text.SetCharacterAt(text, pos, value)
-        End Function
-
-        ''' <summary>
-        ''' Converts the current text to a number
-        ''' </summary>
-        ''' <param name="text">the input text</param>
-        ''' <returns>If text is numeric, returns the numeric value.
-        ''' If text contains only one character, returns the ASCII code of this character
-        ''' Otherwise, returns 0.
-        ''' </returns>
-        Public Shared Function ToNumber(text As Primitive) As Primitive
-            Return Library.Text.ToNumber(text)
         End Function
 
         ''' <summary>
@@ -307,7 +322,7 @@ Namespace WinForms
                    totalWidth As Primitive
             ) As Primitive
 
-            Return text.AsString().PadLeft(totalWidth)
+            Return New Primitive(text.AsString().PadLeft(totalWidth))
         End Function
 
         ''' <summary>
@@ -323,7 +338,47 @@ Namespace WinForms
                    totalWidth As Primitive
             ) As Primitive
 
-            Return text.AsString().PadRight(totalWidth)
+            Return New Primitive(text.AsString().PadRight(totalWidth))
+        End Function
+
+        ''' <summary>
+        ''' Converts the current text to a number
+        ''' </summary>
+        ''' <returns>If text is numeric, returns the numeric value.
+        ''' If text contains only one character, returns the ascii code of this character
+        ''' Otherwise, returns 0.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        <ExMethod>
+        Public Shared Function ToNumber(text As Primitive) As Primitive
+            Return Library.Text.ToNumber(text)
+        End Function
+
+
+        ''' <summary>
+        ''' Creates a new date from the current text if it has a valid date format for the given culture.
+        ''' </summary>
+        ''' <param name="cultureName">
+        ''' The culture name used to format the date, like "en-US" for English (United States) culture, "ar-EG" for Arabic (Egypt) culture, and "ar-SA" for Arabic (Saudi Arabia) culture.
+        ''' ''' Send an empty string "" to use the local culture of the user's system.
+        ''' </param>
+        ''' <returns>a new date or empty string</returns>
+        <ReturnValueType(VariableType.Date)>
+        <ExMethod>
+        Public Shared Function ToDate(dateText As Primitive, cultureName As Primitive) As Primitive
+            Return [Date].FromCulture(dateText, cultureName)
+        End Function
+
+        ''' <summary>
+        ''' Converts the input text to a duration if it has a valid format.
+        ''' </summary>
+        ''' <returns>If text is a valid duration, returns the the duration value.
+        ''' Otherwise, returns a 0 duration.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Date)>
+        <ExMethod>
+        Public Shared Function ToDuration(text As Primitive) As Primitive
+            Return Library.Text.ToDuration(text)
         End Function
     End Class
 End Namespace

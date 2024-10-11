@@ -12,55 +12,55 @@ Namespace WinForms
         ''' The user clicked the Cancel button or the form close button
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>
-        Public Shared ReadOnly Property Cancel As Primitive = "Cancel"
+        Public Shared ReadOnly Property Cancel As New Primitive("Cancel")
 
         ''' <summary>
         ''' The user clicked the OK button.
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>
-        Public Shared ReadOnly Property OK As Primitive = "OK"
+        Public Shared ReadOnly Property OK As New Primitive("OK")
 
         ''' <summary>
         ''' The user clicked the Yes button.
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>
-        Public Shared ReadOnly Property Yes As Primitive = "Yes"
+        Public Shared ReadOnly Property Yes As New Primitive("Yes")
 
         ''' <summary>
         ''' The user clicked the No button.
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>
-        Public Shared ReadOnly Property No As Primitive = "No"
+        Public Shared ReadOnly Property No As New Primitive("No")
 
         ''' <summary>
         ''' The user clicked the Abort button.
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>
-        Public Shared ReadOnly Property Abort As Primitive = "Abort"
+        Public Shared ReadOnly Property Abort As New Primitive("Abort")
 
         ''' <summary>
         ''' The user clicked the Retry button.
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>
-        Public Shared ReadOnly Property Retry As Primitive = "Retry"
+        Public Shared ReadOnly Property Retry As New Primitive("Retry")
 
         ''' <summary>
         ''' The user clicked the Ignore button.
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>
-        Public Shared ReadOnly Property Ignore As Primitive = "Ignore"
+        Public Shared ReadOnly Property Ignore As New Primitive("Ignore")
 
         ''' <summary>
         ''' The user clicked the Try button.
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>
-        Public Shared ReadOnly Property [Try] As Primitive = "Try"
+        Public Shared ReadOnly Property [Try] As New Primitive("Try")
 
         ''' <summary>
         ''' The user clicked the Continue button.
         ''' </summary>
         <ReturnValueType(VariableType.DialogResult)>
-        Public Shared ReadOnly Property [Continue] As Primitive = "Continue"
+        Public Shared ReadOnly Property [Continue] As New Primitive("Continue")
 
     End Class
 

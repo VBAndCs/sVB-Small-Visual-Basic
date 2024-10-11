@@ -116,7 +116,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim cmb = GetComboBox(comboBoxName)
-                        GetText = cmb.Text
+                        GetText = New Primitive(cmb.Text)
                     Catch ex As Exception
                         Control.ReportError(comboBoxName, "Text", ex)
                     End Try

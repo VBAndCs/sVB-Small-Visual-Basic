@@ -206,9 +206,9 @@
     <AppDesigner Include="My Project\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SBCompiler\SBCompiler\svB.Compiler.vbproj">
+    <ProjectReference Include="..\SBCompiler\SBCompiler\sVB.Compiler.vbproj">
       <Project>{c35b1c89-a93e-43ff-8608-7c8274562a87}</Project>
-      <Name>svB.Compiler</Name>
+      <Name>sVB.Compiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\WpfDialogs\WpfDialogs.vbproj">
       <Project>{c80161ce-9098-4af6-bcf9-39dd675b444c}</Project>

@@ -41,7 +41,7 @@ Namespace WinForms
                     ) As Primitive
 
             Dim _parentName = parentItem.AsString
-            Dim key = Form.ValidateArgs(_parentName.Substring(0, _parentName.IndexOf(".")), itemName)
+            Dim key = Form.ValidateArgs(_parentName.Substring(0, _parentName.IndexOf(".")), itemName.AsString())
 
             App.Invoke(
                 Sub()
@@ -60,7 +60,7 @@ Namespace WinForms
                     End Try
                 End Sub)
 
-            Return key
+            Return New Primitive(key)
         End Function
 
         ''' <summary>
@@ -182,12 +182,12 @@ Namespace WinForms
                         For Each item In GetMenuItem(menuItemName).Items
                             Dim m = TryCast(item, Wpf.MenuItem)
                             If m IsNot Nothing Then
-                                items.Add(i, $"{formName}.{m.Name}")
+                                items.Add(i, New Primitive($"{formName}.{m.Name}"))
                                 i += 1
                             End If
                         Next
 
-                        GetMenuItems = New Primitive() With {._arrayMap = items}
+                        GetMenuItems = New Primitive() With {.ArrayMap = items}
 
                     Catch ex As Exception
                         Control.ReportError(menuItemName, "MenuItems", ex)

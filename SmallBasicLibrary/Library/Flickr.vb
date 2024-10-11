@@ -39,7 +39,7 @@ Namespace Library
             Dim random1 As New Random(Now.Ticks Mod Integer.MaxValue)
             Dim url As String = $"{_urlTemplate}&method=flickr.photos.getRecent&per_page=50&page={random1.Next(10) + 1}"
             Thread.Sleep(1000)
-            Return GetRandomPhotoNodeUrl(RestHelper.GetContents(url))
+            Return New Primitive(GetRandomPhotoNodeUrl(RestHelper.GetContents(url)))
         End Function
 
         ''' <summary>
@@ -56,7 +56,7 @@ Namespace Library
             Dim random1 As New Random(Now.Ticks Mod Integer.MaxValue)
             If CStr(tag) = _cachedTag AndAlso _cachedTagDocument IsNot Nothing AndAlso _cachedTagDocumentHitCount < 10 Then
                 _cachedTagDocumentHitCount += 1
-                Return GetRandomPhotoNodeUrl(_cachedTagDocument)
+                Return New Primitive(GetRandomPhotoNodeUrl(_cachedTagDocument))
             End If
 
             Dim url As String = $"{_urlTemplate}&method=flickr.photos.search&per_page=50&tags={tag}&page={random1.Next(10) + 1}"
@@ -64,7 +64,7 @@ Namespace Library
             _cachedTag = tag
             _cachedTagDocument = RestHelper.GetContents(url)
             _cachedTagDocumentHitCount = 0
-            Return GetRandomPhotoNodeUrl(_cachedTagDocument)
+            Return New Primitive(GetRandomPhotoNodeUrl(_cachedTagDocument))
         End Function
 
         Private Shared Function GetRandomPhotoNodeUrl(document As XDocument) As String

@@ -1,0 +1,47 @@
+_Color = Colors.LightGreen
+
+ForEach _Label In Me.Controls
+   _Label.OnClick = Label_OnClick
+   _Label.OnMouseEnter = Label_OnMouseEnter
+   _Label.OnMouseLeave = Label_OnMouseLeave
+   _Label.BackColor = Colors.LightGreen
+Next
+
+Sub Label_OnClick()
+   ForEach _label In Me.Controls
+      If _label = Event.SenderControl Then
+         If _Color = Colors.LightGreen Then
+            _label.BackColor = Colors.Red
+            _label.FontBold = True
+         Else
+            _label.BackColor = Colors.LightGreen
+            _label.FontBold = False
+         EndIf
+         _Color = _label.BackColor
+      ElseIf _label.TypeName = ControlTypes.Label Then
+         _label.BackColor = Colors.LightGreen
+         _label.FontBold = False
+      EndIf
+   Next
+EndSub
+
+
+' ------------------------------------------------
+Sub Label_OnMouseEnter()
+   _Label = Event.SenderControl
+   _Color = _Label.BackColor
+   If _Color = Colors.Red Then
+      _Label.BackColor = Colors.Goldenrod
+   Else
+      _Label.BackColor = Colors.Gold
+   EndIf
+   
+EndSub
+
+
+' ------------------------------------------------
+Sub Label_OnMouseLeave()
+   _Label = Event.SenderControl
+   _Label.BackColor = _Color
+EndSub
+

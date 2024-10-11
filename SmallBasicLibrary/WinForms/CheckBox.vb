@@ -32,7 +32,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetText = Label.GetTextBlock(CheckBoxName).Text
+                        GetText = New Primitive(Label.GetTextBlock(CheckBoxName).Text)
                     Catch ex As Exception
                         Control.ReportError(CheckBoxName, "Text", ex)
                     End Try
@@ -68,7 +68,7 @@ Namespace WinForms
                         If state.HasValue Then
                             GetChecked = New Primitive(state.Value)
                         Else
-                            GetChecked = ""
+                            GetChecked = New Primitive("")
                         End If
                     Catch ex As Exception
                         Control.ReportError(controlName, "Checked", ex)

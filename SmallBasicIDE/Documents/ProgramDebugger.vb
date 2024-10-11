@@ -2,6 +2,7 @@
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.SmallVisualBasic.Engine
 Imports Microsoft.SmallVisualBasic.LanguageService
+Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.Windows.Controls
 Imports System
 Imports System.Collections.Generic
@@ -106,15 +107,14 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Dim subName = doc.GetCurrentSubName()
                 Dim arrKey = If(subName = "", item.ObjectName, $"{subName}.{item.ObjectName}").ToLower()
                 Dim arr = GetValue(arrKey, runner.Fields)
-
                 If arr.HasValue Then
-                    result = Library.Primitive.GetArrayValue(arr.Value, item.DisplayName)
+                    result = Library.Primitive.GetArrayValue(arr.Value, New Primitive(item.DisplayName))
 
                 ElseIf subName <> "" Then
                     arrKey = item.ObjectName.ToLower()
                     arr = GetValue(arrKey, runner.Fields)
                     If arr.HasValue Then
-                        result = Library.Primitive.GetArrayValue(arr.Value, item.DisplayName)
+                        result = Library.Primitive.GetArrayValue(arr.Value, New Primitive(item.DisplayName))
                     End If
                 End If
 
@@ -122,6 +122,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Dim key = item.DisplayName.ToLower()
                 Dim objectName As New Token() With {.Text = item.ObjectName, .Type = TokenType.Identifier}
                 Dim type = runner.Parser.SymbolTable.GetTypeInfo(objectName)
+                If type Is Nothing Then Return Nothing
 
                 Dim propInfo = TryCast(item.MemberInfo, System.Reflection.PropertyInfo)
                 If propInfo IsNot Nothing Then
@@ -373,7 +374,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Try
                 result = runner.EvaluateExpression(text, doc.GetCurrentSubToken())
             Catch ex As Exception
-                result = "Expression caused an error: " & ex.Message
+                result = New Primitive("Expression caused an error: " & ex.Message)
             End Try
 
             isEvaluating = False

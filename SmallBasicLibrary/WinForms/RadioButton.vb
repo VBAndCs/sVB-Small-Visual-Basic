@@ -33,7 +33,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetText = Label.GetTextBlock(radioButtonName).Text
+                        GetText = New Primitive(Label.GetTextBlock(radioButtonName).Text)
                     Catch ex As Exception
                         Control.ReportError(radioButtonName, "Text", ex)
                     End Try
@@ -61,7 +61,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetGroupName = GetRadioButton(radioButtonName).GroupName
+                        GetGroupName = New Primitive(GetRadioButton(radioButtonName).GroupName)
                     Catch ex As Exception
                         Control.ReportError(radioButtonName, "GroupName", ex)
                     End Try

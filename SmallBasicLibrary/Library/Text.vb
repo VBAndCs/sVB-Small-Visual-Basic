@@ -16,11 +16,11 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Format(text As Primitive, values As Primitive) As Primitive
             Dim str = CStr(text)
-            If str.Trim() = "" Then Return str
+            If str.Trim() = "" Then Return text
 
             Dim arr() As Primitive
             If values.IsArray Then
-                arr = values._arrayMap.Values.ToArray()
+                arr = values.ArrayMap.Values.ToArray()
             Else
                 arr = {values}
             End If
@@ -34,7 +34,7 @@ Namespace Library
                 sb.Replace($"<<[[{i + 1}]]>>", arr(i))
             Next
 
-            Return sb.ToString()
+            Return New Primitive(sb.ToString())
         End Function
 
 
@@ -59,7 +59,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Append(text1 As Primitive, text2 As Primitive) As Primitive
             If text1.IsArray Then
-                Dim map1 = text1._arrayMap
+                Dim map1 = text1.ArrayMap
                 Dim maxKey = map1.Count
                 For Each index In map1.Keys
                     Dim id = index.TryGetAsDecimal()
@@ -69,10 +69,10 @@ Namespace Library
                 Return text1
 
             ElseIf text2.IsArray Then
-                Dim map = text2._arrayMap
-                Return String.Concat(text1, String.Concat(map.Values))
+                Dim map = text2.ArrayMap
+                Return New Primitive(String.Concat(text1, String.Concat(map.Values)))
             Else
-                Return String.Concat(text1, text2)
+                Return New Primitive(String.Concat(text1, text2))
             End If
         End Function
 
@@ -87,7 +87,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetLength(text As Primitive) As Primitive
-            If text.IsArray Then Return text._arrayMap.Count
+            If text.IsArray Then Return text.ArrayMap.Count
             Return text.AsString().Length
         End Function
 
@@ -185,7 +185,7 @@ Namespace Library
                        length As Primitive
                    ) As Primitive
 
-            If text.IsEmpty OrElse length.IsEmpty Then Return ""
+            If text.IsEmpty OrElse length.IsEmpty Then Return New Primitive("")
 
             Dim strText = text.AsString()
             Dim textLength = strText.Length
@@ -193,7 +193,7 @@ Namespace Library
             If start.IsEmpty Then
                 start = 0
             ElseIf start > textLength Then
-                Return ""
+                Return New Primitive("")
             End If
 
             Dim intStart = System.Math.Max(CInt(start), 1)
@@ -201,13 +201,13 @@ Namespace Library
 
             Dim intLength = System.Math.Min(CInt(length), textLength)
             intLength = System.Math.Max(0, intLength)
-            If intLength = 0 Then Return ""
+            If intLength = 0 Then Return New Primitive("")
 
             If intStart + intLength <= textLength Then
-                Return strText.Substring(intStart - 1, intLength)
+                Return New Primitive(strText.Substring(intStart - 1, intLength))
             End If
 
-            Return strText.Substring(intStart - 1)
+            Return New Primitive(strText.Substring(intStart - 1))
         End Function
 
         ''' <summary>
@@ -294,7 +294,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ConvertToLowerCase(text As Primitive) As Primitive
             If text.IsEmpty Then Return text
-            Return CStr(text).ToLower(CultureInfo.CurrentUICulture)
+            Return New Primitive(CStr(text).ToLower(CultureInfo.CurrentUICulture))
         End Function
 
         ''' <summary>
@@ -309,7 +309,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ConvertToUpperCase(text As Primitive) As Primitive
             If text.IsEmpty Then Return text
-            Return CStr(text).ToUpper(CultureInfo.InvariantCulture)
+            Return New Primitive(CStr(text).ToUpper(CultureInfo.InvariantCulture))
         End Function
 
         ''' <summary>
@@ -324,7 +324,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetCharacter(characterCode As Primitive) As Primitive
             Dim code As Integer = characterCode
-            Return Char.ConvertFromUtf32(code)
+            Return New Primitive(Char.ConvertFromUtf32(code))
         End Function
 
         ''' <summary>
@@ -351,8 +351,8 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetCharacterAt(text As Primitive, pos As Primitive) As Primitive
             Dim s = CStr(text)
-            If s = "" OrElse pos < 1 OrElse pos > s.Length Then Return ""
-            Return s(pos - 1)
+            If s = "" OrElse pos < 1 OrElse pos > s.Length Then Return New Primitive("")
+            Return New Primitive(s(pos - 1))
         End Function
 
         ''' <summary>
@@ -361,7 +361,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property NewLine As Primitive
             Get
-                Return Environment.NewLine
+                Return New Primitive(Environment.NewLine)
             End Get
         End Property
 
@@ -406,7 +406,7 @@ Namespace Library
         ''' <returns>a lower-case text</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ToLower(text As Primitive) As Primitive
-            Return text.AsString().ToLower()
+            Return New Primitive(text.AsString().ToLower())
         End Function
 
         ''' <summary>
@@ -416,7 +416,7 @@ Namespace Library
         ''' <returns>an upper-case text</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ToUpper(text As Primitive) As Primitive
-            Return text.AsString().ToUpper()
+            Return New Primitive(text.AsString().ToUpper())
         End Function
 
         ''' <summary>
@@ -429,7 +429,7 @@ Namespace Library
         Public Shared Function Trim(text As Primitive) As Primitive
             If text.IsEmpty Then Return text
             If text.IsArray Then Return text
-            Return text.AsString().Trim()
+            Return New Primitive(text.AsString().Trim())
         End Function
 
         ''' <summary>
@@ -440,10 +440,10 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ToStr(value As Primitive) As Primitive
             If value.IsArray Then
-                If value.IsEmpty Then Return "{}"
+                If value.IsEmpty Then Return New Primitive("{}")
 
                 Dim sb As New System.Text.StringBuilder("{")
-                Dim map = value._arrayMap
+                Dim map = value.ArrayMap
                 Dim n = map.Count - 1
                 Dim keys = map.Keys
                 Dim values = map.Values
@@ -466,9 +466,9 @@ Namespace Library
                 Next
 
                 sb.Append("}")
-                Return sb.ToString()
+                Return New Primitive(sb.ToString())
             Else
-                Return value.AsString()
+                Return value
             End If
         End Function
 
@@ -497,11 +497,11 @@ Namespace Library
                         trim As Primitive,
                         removeEmpty As Primitive
                     ) As Primitive
-            If text.IsEmpty Then Return ""
+            If text.IsEmpty Then Return New Primitive("")
 
             Dim arr, separators As String()
             If separator.IsArray Then
-                Dim items = separator._arrayMap.Values
+                Dim items = separator.ArrayMap.Values
                 Dim n = items.Count - 1
                 separators = New String(n) {}
 
@@ -538,7 +538,7 @@ Namespace Library
                    totalWidth As Primitive
             ) As Primitive
 
-            Return text.AsString().PadLeft(totalWidth)
+            Return New Primitive(text.AsString().PadLeft(totalWidth))
         End Function
 
         ''' <summary>
@@ -554,7 +554,31 @@ Namespace Library
                    totalWidth As Primitive
             ) As Primitive
 
-            Return text.AsString().PadRight(totalWidth)
+            Return New Primitive(text.AsString().PadRight(totalWidth))
+        End Function
+
+        ''' <summary>
+        ''' Converts the input text to a duration if it has a valid format.
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <returns>If text is a valid duration, returns the the duration value.
+        ''' Otherwise, returns a 0 duration.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Date)>
+        Public Shared Function ToDuration(text As Primitive) As Primitive
+            If text.IsEmpty Then Return WinForms.Date.CreateDuration(0, 0, 0, 0, 0)
+
+            Dim s = text.AsString().Trim()
+            If s.Length < 2 Then
+                Return WinForms.Date.CreateDuration(0, 0, 0, 0, 0)
+            End If
+
+            Dim ts As TimeSpan
+            If TimeSpan.TryParse(s.Trim("#"c, "+"c), CultureInfo.InvariantCulture, ts) Then
+                Return New Primitive(ts.Ticks, NumberType.TimeSpan)
+            Else
+                Return WinForms.Date.CreateDuration(0, 0, 0, 0, 0)
+            End If
         End Function
     End Class
 End Namespace

@@ -6,7 +6,7 @@ Module Helper
 
     Private exeFile As String = Process.GetCurrentProcess().MainModule.FileName
     Private exeDir As String = IO.Path.GetDirectoryName(exeFile)
-    Private errorFile As String = IO.Path.Combine(exeDir, "RuntimeErrors.txt")
+    Private errorFile As New Primitive(IO.Path.Combine(exeDir, "RuntimeErrors.txt"))
     Private ClearErrors As Boolean = True
 
     Public Sub ReportError(msg As String, ex As Exception)
@@ -20,7 +20,7 @@ Module Helper
                 ClearErrors = False
                 File.DeleteFile(errorFile)
             End If
-            File.AppendContents(errorFile, Now & vbCrLf & msg & vbCrLf)
+            File.AppendContents(errorFile, New Primitive(Now & vbCrLf & msg & vbCrLf))
             App.ShowErrorWindow(msg, ex.StackTrace)
         Catch
         End Try

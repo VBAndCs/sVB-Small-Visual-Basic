@@ -52,7 +52,7 @@ Namespace WinForms
 
             If loadedFormsOnly Then
                 For Each name In _forms.Keys
-                    map(num) = name
+                    map(num) = New Primitive(name)
                     num += 1
                 Next
 
@@ -62,7 +62,7 @@ Namespace WinForms
 
                 For Each frmType In asm.GetTypes()
                     If frmType.Name.StartsWith(FormPrefix) AndAlso frmType.Name <> progModule Then
-                        map(num) = frmType.Name.Substring(FormPrefix.Length).ToLower()
+                        map(num) = New Primitive(frmType.Name.Substring(FormPrefix.Length).ToLower())
                         num += 1
                     End If
                 Next
@@ -71,7 +71,7 @@ Namespace WinForms
                 Return Nothing
             Else
                 For Each name In Program.FormNames
-                    map(num) = name.ToLower()
+                    map(num) = New Primitive(name.ToLower())
                     num += 1
                 Next
             End If
@@ -98,7 +98,7 @@ Namespace WinForms
                 ReportError(ex.Message, ex)
             End If
 
-            If _forms.ContainsKey(form_Name) Then Return form_Name
+            If _forms.ContainsKey(form_Name) Then Return New Primitive(form_Name)
 
             SyncLock _syncLock
                 App.Invoke(
@@ -279,7 +279,7 @@ Namespace WinForms
             Dim __ = Keyboard.LastKey
             __ = Mouse.LastMouseWheelDirection
 
-            Return form_Name
+            Return New Primitive(form_Name)
         End Function
 
         Public Shared Sub EndIfNoForms()
@@ -407,7 +407,7 @@ Namespace WinForms
                 Dim frm = GetForm(formName)
                 If frm Is Nothing Then
                     Dim xaml As String = $"<Canvas Name=""{formName}"" Width=""700"" Height=""500"" xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""/>"
-                    LoadForm(formName, xaml)
+                    LoadForm(formName, New Primitive(xaml))
                 End If
 
             Catch ex As Exception
@@ -423,7 +423,7 @@ Namespace WinForms
             Dim winName = win.Name.ToLower()
             Dim handler As SmallVisualBasicCallback = Nothing
             Try
-                [Event]._senderControl = winName
+                [Event]._senderControl = New Primitive(winName)
                 Dim keys = Form.ClosedHandlers.Keys
                 For i = 0 To Form.ClosedHandlers.Count - 1
                     Dim key = Keys(i)
@@ -566,7 +566,7 @@ Namespace WinForms
                               If Form.GetIsLoaded(formName) Then
                                   DoShowForm(formName, argsArr)
                               Else
-                                  Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
+                                  Stack.PushValue(New Primitive("_" & formName.AsString().ToLower() & "_argsArr"), argsArr)
                                   Form.Initialize(formName, asm)
                               End If
                           Catch ex As Exception
@@ -612,7 +612,7 @@ Namespace WinForms
                             Form.SetArgsArr(formName, argsArr)
                             ShowDialog = Form.ShowDialog(formName)
                         Else
-                            Stack.PushValue("_" & formName.AsString().ToLower() & "_argsArr", argsArr)
+                            Stack.PushValue(New Primitive("_" & formName.AsString().ToLower() & "_argsArr"), argsArr)
                             Form.Initialize(formName, asm)
                             Control.SetVisible(formName, False)
                             ShowDialog = Form.ShowDialog(formName)

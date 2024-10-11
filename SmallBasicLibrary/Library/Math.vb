@@ -256,7 +256,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function SquareRoot(number As Primitive) As Primitive
-            If Not number.IsNumber OrElse number < 0 Then Return ""
+            If Not number.IsNumber OrElse number < 0 Then Return New Primitive("")
             Return DoubleToDecimal(System.Math.Sqrt(number))
         End Function
 
@@ -422,7 +422,7 @@ Namespace Library
         ''' <returns>A string that represnts the hexadecimal value the number.</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Hex([decimal] As Primitive) As Primitive
-            Return Conversion.Hex([decimal])
+            Return New Primitive(Conversion.Hex([decimal]))
         End Function
 
         ''' <summary>

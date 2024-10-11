@@ -34,7 +34,7 @@ Namespace WinForms
         End Function
 
         ''' <summary>
-        ''' Creates a new date from the given text if its format is a valid date format for the given culture.
+        ''' Creates a new date from the given text if it has a valid date format for the given culture.
         ''' </summary>
         ''' <param name="dateText">The text that represents the date</param>
         ''' <param name="cultureName">
@@ -47,20 +47,39 @@ Namespace WinForms
             Dim d As Date
             Dim cult = cultureName.AsString()
             Dim c As CultureInfo
-            Try
-                If cult = "" Then
-                    c = CultureInfo.CurrentCulture
-                Else
+            If cult = "" Then
+                c = GetLocalCulture()
+            Else : Try
                     c = New CultureInfo(cultureName.AsString())
-                End If
-            Catch
-                c = CultureInfo.CurrentCulture
-            End Try
+                Catch
+                    c = GetLocalCulture()
+                End Try
+            End If
 
             If Date.TryParse(dateText, c, DateTimeStyles.None, d) Then
                 Return New Primitive(d.Ticks, NumberType.Date)
             End If
-            Return ""
+            Return New Primitive("")
+        End Function
+
+
+        Private Shared localCulture As CultureInfo
+
+        Private Shared Function GetLocalCulture() As CultureInfo
+            If localCulture Is Nothing Then
+                Try
+                    Dim langs = System.Windows.Input.InputLanguageManager.Current.AvailableInputLanguages.GetEnumerator()
+                    langs.MoveNext()
+                    If langs.MoveNext() Then
+                        localCulture = langs.Current
+                    Else
+                        localCulture = CultureInfo.CurrentCulture
+                    End If
+                Catch ex As Exception
+                    localCulture = CultureInfo.CurrentCulture
+                End Try
+            End If
+            Return localCulture
         End Function
 
         ''' <summary>
@@ -78,19 +97,19 @@ Namespace WinForms
                      cultureName As Primitive) As Primitive
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
 
             Try
                 Dim cult = cultureName.AsString()
                 If cult = "" Then
-                    Return d.Value.ToString(CultureInfo.CurrentCulture)
+                    Return New Primitive(d.Value.ToString(GetLocalCulture()))
                 Else
-                    Return d.Value.ToString(New CultureInfo(cult))
+                    Return New Primitive(d.Value.ToString(New CultureInfo(cult)))
                 End If
             Catch
             End Try
 
-            Return d.Value.ToString()
+            Return New Primitive(d.Value.ToString())
         End Function
 
 
@@ -101,7 +120,7 @@ Namespace WinForms
         ''' <returns>a new date.</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function TicksToDate(ticks As Primitive) As Primitive
-            If Not ticks.IsNumber Then Return ""
+            If Not ticks.IsNumber Then Return New Primitive("")
             Return New Primitive(ticks.AsDecimal, NumberType.Date)
         End Function
 
@@ -112,7 +131,7 @@ Namespace WinForms
         ''' <returns>a new duration.</returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function TicksToDuration(ticks As Primitive) As Primitive
-            If Not ticks.IsNumber Then Return ""
+            If Not ticks.IsNumber Then Return New Primitive("")
             Return New Primitive(ticks.AsDecimal, NumberType.TimeSpan)
         End Function
 
@@ -131,7 +150,7 @@ Namespace WinForms
                 Return New Primitive(d.Ticks, NumberType.Date)
             Catch
             End Try
-            Return ""
+            Return New Primitive("")
         End Function
 
         ''' <summary>
@@ -149,7 +168,7 @@ Namespace WinForms
                 Return New Primitive(d.Ticks, NumberType.Date)
             Catch
             End Try
-            Return ""
+            Return New Primitive("")
         End Function
 
         ''' <summary>
@@ -170,63 +189,63 @@ Namespace WinForms
                 Return New Primitive(d.Ticks, NumberType.Date)
             Catch
             End Try
-            Return ""
+            Return New Primitive("")
         End Function
 
 
         ''' <summary>
-        ''' Gets the time part for the given date, which will include the seconds part and the day time part like AM/PM but in the user's local culture.
+        ''' Gets the time part for the given date, which will include the seconds part and the day time part like AM/PM.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
         ''' <returns>a string representing the long time</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetLongTime([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.ToLongTimeString())
         End Function
 
         ''' <summary>
-        ''' Gets the short time part of the given date. The time will incude hours and minutes and AM or PM in the user local culture, but not seconds and milliseconds.
+        ''' Gets the short time part of the given date. The time will incude hours and minutes and AM or PM, but not seconds and milliseconds.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a string representing the short time in the user local culture</returns>
+        ''' <returns>a string representing the short time</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetShortTime([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.ToShortTimeString())
         End Function
 
         ''' <summary>
-        ''' Gets the long form of the given date. The long date contains the month name in the user local culture, instead of its number.
+        ''' Gets the long form of the given date. The long date contains the month name, instead of its number.
         ''' </summary>
         ''' <param name="date">the input date \ time</param>
-        ''' <returns>a string representing the long date in the user local culture.</returns>
+        ''' <returns>a string representing the long date.</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetLongDate([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.ToLongDateString())
         End Function
 
         ''' <summary>
-        ''' Gets the short form of the given date in the user local culture, like 1/1/2020.
+        ''' Gets the short form of the given date, like 1/1/2020.
         ''' </summary>
         ''' <param name="date">The input date \ time</param>
-        ''' <returns>a string representing the short date in the user local culture.</returns>
+        ''' <returns>a string representing the short date.</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetShortDate([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.ToShortDateString())
         End Function
 
@@ -237,10 +256,10 @@ Namespace WinForms
         ''' <returns>a string representing the short date and long time in the user local culture.</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetDateAndTime([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.ToLongDateString() & " " & d.Value.ToLongTimeString())
         End Function
 
@@ -279,10 +298,10 @@ Namespace WinForms
         ''' <returns>the name of the month in English</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetEnglishMonthName([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.ToString("MMMM", CultureInfo.InvariantCulture))
         End Function
 
@@ -293,10 +312,10 @@ Namespace WinForms
         ''' <returns>the name of the month in the local language defined on the user system</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetMonthName([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.ToString("MMMM"))
         End Function
 
@@ -309,12 +328,12 @@ Namespace WinForms
         Public Shared Function GetDay([date] As Primitive) As Primitive
             If [date].numberType = NumberType.TimeSpan Then
                 Dim ts = GetTimeSpan([date])
-                If ts Is Nothing Then Return ""
+                If ts Is Nothing Then Return New Primitive("")
                 Return ts.Value.Days
             End If
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.Day)
         End Function
 
@@ -341,10 +360,10 @@ Namespace WinForms
         ''' <returns>a number between 1 and 7 that Represents the day in the week</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetDayOfWeek([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(1 + d.Value.DayOfWeek)
         End Function
 
@@ -356,10 +375,10 @@ Namespace WinForms
         ''' <returns>the name of the week day in English</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetEnglishDayName([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.DayOfWeek.ToString())
         End Function
 
@@ -370,10 +389,10 @@ Namespace WinForms
         ''' <returns>the name of the week day in the local language defined on the user system</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetDayName([date] As Primitive) As Primitive
-            If [date].numberType = NumberType.TimeSpan Then Return ""
+            If [date].numberType = NumberType.TimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.ToString("dddd"))
         End Function
 
@@ -386,12 +405,12 @@ Namespace WinForms
         Public Shared Function GetHour([date] As Primitive) As Primitive
             If [date].numberType = NumberType.TimeSpan Then
                 Dim ts = GetTimeSpan([date])
-                If ts Is Nothing Then Return ""
+                If ts Is Nothing Then Return New Primitive("")
                 Return ts.Value.Hours
             End If
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.Hour)
         End Function
 
@@ -405,12 +424,12 @@ Namespace WinForms
         Public Shared Function GetMinute([date] As Primitive) As Primitive
             If [date].numberType = NumberType.TimeSpan Then
                 Dim ts = GetTimeSpan([date])
-                If ts Is Nothing Then Return ""
+                If ts Is Nothing Then Return New Primitive("")
                 Return ts.Value.Minutes
             End If
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.Minute)
         End Function
 
@@ -424,12 +443,12 @@ Namespace WinForms
         Public Shared Function GetSecond([date] As Primitive) As Primitive
             If [date].numberType = NumberType.TimeSpan Then
                 Dim ts = GetTimeSpan([date])
-                If ts Is Nothing Then Return ""
+                If ts Is Nothing Then Return New Primitive("")
                 Return ts.Value.Seconds
             End If
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.Second)
         End Function
 
@@ -442,12 +461,12 @@ Namespace WinForms
         Public Shared Function GetMillisecond([date] As Primitive) As Primitive
             If [date].numberType = NumberType.TimeSpan Then
                 Dim ts = GetTimeSpan([date])
-                If ts Is Nothing Then Return ""
+                If ts Is Nothing Then Return New Primitive("")
                 Return ts.Value.Milliseconds
             End If
 
             Dim d = [date].AsDate()
-            If d Is Nothing Then Return ""
+            If d Is Nothing Then Return New Primitive("")
             Return New Primitive(d.Value.Millisecond)
         End Function
 
@@ -468,7 +487,7 @@ Namespace WinForms
         ''' <returns>the number of milliseconds that have elapsed since 1900 until the given date</returns>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetElapsedMilliseconds([date] As Primitive) As Primitive
-            If [date].IsTimeSpan Then Return ""
+            If [date].IsTimeSpan Then Return New Primitive("")
 
             Dim d = [date].AsDate()
             If d Is Nothing Then
@@ -963,10 +982,10 @@ Namespace WinForms
         ''' </returns>
         <ReturnValueType(VariableType.Date)>
         Public Shared Function Negate(duration As Primitive) As Primitive
-            If duration.numberType = NumberType.Date Then Return ""
+            If duration.numberType = NumberType.Date Then Return New Primitive("")
 
             Dim ts = GetTimeSpan(duration)
-            If ts Is Nothing Then Return ""
+            If ts Is Nothing Then Return New Primitive("")
             Return New Primitive(ts.Value.Negate().Ticks, NumberType.TimeSpan)
         End Function
     End Class

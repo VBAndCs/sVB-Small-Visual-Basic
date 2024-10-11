@@ -20,9 +20,9 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared ReadOnly Property EmptyArray As Primitive
             Get
-                Dim arr As Primitive = ""
+                Dim arr As New Primitive
                 arr._isArray = True
-                arr._arrayMap = New Dictionary(Of Primitive, Primitive)(Primitive.PrimitiveComparer.Instance)
+                arr.ArrayMap = New Dictionary(Of Primitive, Primitive)(Primitive.PrimitiveComparer.Instance)
                 Return arr
             End Get
         End Property
@@ -35,7 +35,7 @@ Namespace Library
         ''' <returns>a new array with the new item added. The input array will not be changed</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function AddItem(array As Primitive, value As Primitive) As Primitive
-            Dim map = array._arrayMap
+            Dim map = array.ArrayMap
             Dim index = If(map Is Nothing, 1, map.Count + 1)
             Return Primitive.SetArrayValue(value, array, index)
         End Function
@@ -49,7 +49,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Array)>
         <HideFromIntellisense>
         Public Shared Sub AddNextItem(array As Primitive, value As Primitive)
-            Dim map = array._arrayMap
+            Dim map = array.ArrayMap
             If map Is Nothing Then
                 Throw New InvalidOperationException("Can't add items to an empty array.")
             End If
@@ -65,7 +65,7 @@ Namespace Library
         ''' <param name="value">The item you want to add after the last item in the array.</param>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Sub Append(array As Primitive, value As Primitive)
-            Dim map = array._arrayMap
+            Dim map = array.ArrayMap
             If map Is Nothing Then
                 Throw New InvalidOperationException("Can't add items to an empty array.")
             End If
@@ -87,17 +87,17 @@ Namespace Library
 
             Dim p As New Primitive
             Dim map As New Dictionary(Of Primitive, Primitive)(
-                array._arrayMap,
+                array.ArrayMap,
                 Primitive.PrimitiveComparer.Instance
             )
 
             Dim index As Integer = map.Count + 1
-            p._arrayMap = map
+            p.ArrayMap = map
 
             If items.IsArray Then
-                For Each item In items._arrayMap.Values
-                    map(Index) = item
-                    Index += 1
+                For Each item In items.ArrayMap.Values
+                    map(index) = item
+                    index += 1
                 Next
             Else
                 map(index) = items
@@ -131,12 +131,12 @@ Namespace Library
         ''' <param name="position">A number that represents the position of the item in the array, which not always be the same as its index (key). Note that position must be > 0.</param>
         ''' <returns>the item value if found, otherwise empty string "".</returns>
         Public Shared Function GetItemAt(array As Primitive, position As Primitive) As Primitive
-            If position < 1 Then Return ""
+            If array.IsEmpty OrElse position < 1 Then Return New Primitive("")
 
-            Dim keys = array._arrayMap.Keys
-            If position > keys.Count Then Return ""
+            Dim keys = array.ArrayMap.Keys
+            If position > keys.Count Then Return New Primitive("")
 
-            Return array._arrayMap(keys(position - 1))
+            Return array.ArrayMap(keys(position - 1))
         End Function
 
         ''' <summary>
@@ -153,13 +153,13 @@ Namespace Library
                           value As Primitive
                    ) As Primitive
 
-            If position < 1 Then Return ""
+            If position < 1 Then Return New Primitive("")
 
-            Dim map = array._arrayMap
-            If map Is Nothing OrElse map.Count = 0 Then Return ""
+            Dim map = array.ArrayMap
+            If map Is Nothing OrElse map.Count = 0 Then Return New Primitive("")
 
             Dim keys = map.Keys
-            If position > keys.Count Then Return ""
+            If position > keys.Count Then Return New Primitive("")
 
             Dim key = keys(position - 1)
             map(key) = value
@@ -175,10 +175,10 @@ Namespace Library
         ''' <returns>the item key if found, otherwise empty string "".</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetKeyAt(array As Primitive, position As Primitive) As Primitive
-            If position < 1 Then Return ""
+            If position < 1 Then Return New Primitive("")
 
-            Dim keys = array._arrayMap.Keys
-            If position > keys.Count Then Return ""
+            Dim keys = array.ArrayMap.Keys
+            If position > keys.Count Then Return New Primitive("")
 
             Return keys(position - 1)
         End Function
@@ -292,9 +292,9 @@ Namespace Library
         ''' </returns>
         <HideFromIntellisense>
         Public Shared Function GetValue(arrayName As Primitive, index As Primitive) As Primitive
-            Dim map = arrayName._arrayMap
+            Dim map = arrayName.ArrayMap
             If map Is Nothing OrElse Not map.ContainsKey(index) Then
-                Return ""
+                Return New Primitive("")
             End If
 
             Return map(index)
@@ -310,7 +310,7 @@ Namespace Library
         Public Shared Function RemoveItem(array As Primitive, index As Primitive) As Primitive
             If index.AsString() = "" Then Return array
 
-            Dim map = array._arrayMap
+            Dim map = array.ArrayMap
             If map Is Nothing OrElse Not map.ContainsKey(index) Then Return array
 
             Dim map2 As New Dictionary(Of Primitive, Primitive)(map, Primitive.PrimitiveComparer.Instance)
@@ -318,7 +318,7 @@ Namespace Library
 
             Return New Primitive With {
                 ._isArray = True,
-                ._arrayMap = map2
+                .ArrayMap = map2
             }
         End Function
 
@@ -333,29 +333,29 @@ Namespace Library
         ''' <returns>the key of the item if found, otherwise empty string</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Find(array As Primitive, value As Primitive, start As Primitive, ignoreCase As Primitive) As Primitive
-            If array.IsEmpty OrElse value.IsEmpty Then Return ""
-            Dim count = array._arrayMap.Count
+            If array.IsEmpty OrElse value.IsEmpty Then Return New Primitive("")
+            Dim count = array.ArrayMap.Count
 
             Dim intStart = System.Math.Max(CInt(start), 1)
             intStart = System.Math.Min(intStart, count)
 
 
-            Dim ids = array._arrayMap.Keys
-            Dim map = array._arrayMap
+            Dim ids = array.ArrayMap.Keys
+            Dim map = array.ArrayMap
             Dim ignCase = CBool(ignoreCase)
             Dim lowercaseValue = value.AsString().ToLower()
 
             For i = intStart - 1 To count - 1
                 If ignCase Then
                     If map(ids(i)).AsString().ToLower() = lowercaseValue Then
-                        Return array._arrayMap.Keys(i)
+                        Return array.ArrayMap.Keys(i)
                     End If
                 ElseIf map(ids(i)) = value Then
-                    Return array._arrayMap.Keys(i)
+                    Return array.ArrayMap.Keys(i)
                 End If
             Next
 
-            Return ""
+            Return New Primitive("")
         End Function
 
         ''' <summary>
@@ -368,14 +368,14 @@ Namespace Library
         ''' <returns>the position (order) of the item in the array if found, otherwise 0. </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function IndexOf(array As Primitive, value As Primitive, start As Primitive, ignoreCase As Primitive) As Primitive
-            If array.IsEmpty OrElse value.IsEmpty Then Return ""
-            Dim count = array._arrayMap.Count
+            If array.IsEmpty OrElse value.IsEmpty Then Return New Primitive("")
+            Dim count = array.ArrayMap.Count
 
             Dim intStart = System.Math.Max(CInt(start), 1)
             If intStart > count Then Return 0
 
-            Dim ids = array._arrayMap.Keys
-            Dim map = array._arrayMap
+            Dim ids = array.ArrayMap.Keys
+            Dim map = array.ArrayMap
             Dim ignCase = CBool(ignoreCase)
             Dim lowercaseValue = value.AsString().ToLower()
 
@@ -401,17 +401,17 @@ Namespace Library
         ''' <returns>a string containing the array items, separated by the given separator</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Join(array As Primitive, separator As Primitive) As Primitive
-            If array.IsEmpty Then Return ""
+            If array.IsEmpty Then Return New Primitive("")
             If array.IsArray Then
                 Dim sb As New System.Text.StringBuilder
-                Dim arr = array._arrayMap.Values
+                Dim arr = array.ArrayMap.Values
                 Dim n = arr.Count - 1
                 Dim sep = separator.AsString()
                 For i = 0 To n
                     sb.Append(arr(i).AsString())
                     If i < n Then sb.Append(sep)
                 Next
-                Return sb.ToString()
+                Return New Primitive(sb.ToString())
             Else
                 Return array
             End If

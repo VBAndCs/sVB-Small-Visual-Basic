@@ -1,4 +1,5 @@
 ﻿Imports System.Text
+Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Evaluator.Expressions
     <Serializable>
@@ -94,7 +95,7 @@ Namespace Evaluator.Expressions
                 ))
             End If
 
-            Return ""
+            Return New Primitive("")
         End Function
     End Class
 End Namespace

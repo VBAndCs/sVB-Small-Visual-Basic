@@ -182,7 +182,7 @@ Namespace WinForms
                   Sub()
                       Try
                           Dim c = GetSlider(sliderName)
-                          GetTrackColor = CStr(c.GetValue(TrackColorProperty))
+                          GetTrackColor = New Primitive(CStr(c.GetValue(TrackColorProperty)))
                       Catch ex As Exception
                           Control.ReportError(sliderName, "TrackColor", ex)
                       End Try
@@ -222,7 +222,7 @@ Namespace WinForms
                   Sub()
                       Try
                           Dim c = GetSlider(sliderName)
-                          GetThumbColor = CStr(c.GetValue(ThumbColorProperty))
+                          GetThumbColor = New Primitive(CStr(c.GetValue(ThumbColorProperty)))
                       Catch ex As Exception
                           Control.ReportError(sliderName, "ThumbColor", ex)
                       End Try

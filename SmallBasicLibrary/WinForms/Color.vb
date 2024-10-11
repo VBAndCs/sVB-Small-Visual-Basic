@@ -21,7 +21,7 @@ Namespace WinForms
                 _random = New Random()
             End If
 
-            Return _colorNames.Keys(_random.Next(_colorNames.Count - 3) + 2)
+            Return New Primitive(_colorNames.Keys(_random.Next(_colorNames.Count - 3) + 2))
         End Function
 
         Private Shared Function InRange(value As Integer, min As Integer, max As Integer) As Integer
@@ -41,7 +41,7 @@ Namespace WinForms
             Dim R = InRange(red, 0, 255)
             Dim G = InRange(green, 0, 255)
             Dim B = InRange(blue, 0, 255)
-            Return $"#FF{R:X2}{G:X2}{B:X2}"
+            Return New Primitive($"#FF{R:X2}{G:X2}{B:X2}")
         End Function
 
         ''' <summary>
@@ -58,7 +58,7 @@ Namespace WinForms
             Dim R = InRange(red, 0, 255)
             Dim G = InRange(green, 0, 255)
             Dim B = InRange(blue, 0, 255)
-            Return $"#{A:X2}{R:X2}{G:X2}{B:X2}"
+            Return New Primitive($"#{A:X2}{R:X2}{G:X2}{B:X2}")
         End Function
 
         Friend Shared Function IsNone(color As String) As Boolean
@@ -78,7 +78,7 @@ Namespace WinForms
             Dim _color = FromString(color)
             Dim opacity = 1 - InRange(percentage, 0, 100) / 100
             Dim A As Byte = System.Math.Floor(opacity * 255)
-            Return $"#{A:X2}{_color.R:X2}{_color.G:X2}{_color.B:X2}"
+            Return New Primitive($"#{A:X2}{_color.R:X2}{_color.G:X2}{_color.B:X2}")
         End Function
 
         ''' <summary>
@@ -118,7 +118,7 @@ Namespace WinForms
         ''' <returns>the English name of the color</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetName(color As Primitive) As Primitive
-            Return DoGetName(color, True)
+            Return New Primitive(DoGetName(color, True))
         End Function
 
         ''' <summary>
@@ -128,7 +128,7 @@ Namespace WinForms
         ''' <returns>the English name of the color, followed by the transparency percentage of the color</returns>
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetNameAndTransparency(color As Primitive) As Primitive
-            Return DoGetName(color, False)
+            Return New Primitive(DoGetName(color, False))
         End Function
 
         Private Shared Function DoGetName(color As String, ingnoreTrans As Boolean) As String
@@ -151,7 +151,7 @@ Namespace WinForms
             If ingnoreTrans OrElse _color.A = 255 Then
                 Return name
             Else
-                Return $"{name} ({GetTransparency(color)}%)"
+                Return $"{name} ({GetTransparency(New Primitive(color))}%)"
             End If
         End Function
 
@@ -334,7 +334,7 @@ Namespace WinForms
                 Return FromARGB(c.A, c.R, c.G, c.B)
             End If
 
-            Return ""
+            Return New Primitive("")
         End Function
 
 
@@ -351,9 +351,9 @@ Namespace WinForms
                     Dim keys = Color._colorNames.Keys
 
                     For n = 2 To keys.Count - 1
-                        map(n - 1) = keys(n)
+                        map(n - 1) = New Primitive(keys(n))
                     Next
-                    _colors._arrayMap = map
+                    _colors.ArrayMap = map
                 End If
 
                 Return _colors

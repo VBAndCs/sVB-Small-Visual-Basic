@@ -27,6 +27,8 @@ Imports System.ComponentModel.Composition
 Imports sb = Microsoft.SmallVisualBasic.WinForms
 Imports Microsoft.VisualBasic
 Imports Microsoft.SmallBasic
+Imports Microsoft.SmallVisualBasic.Library
+Imports DiagramHelper
 
 Namespace Microsoft.SmallVisualBasic
     <Export("MainWindow")>
@@ -718,7 +720,7 @@ Namespace Microsoft.SmallVisualBasic
                         Next
                     End If
 
-                    If File.Exists(fileName) Then File.Delete(fileName)
+                    If IO.File.Exists(fileName) Then IO.File.Delete(fileName)
                     document.SaveAs(fileName)
 
                     If document.PageKey <> "" Then
@@ -727,10 +729,10 @@ Namespace Microsoft.SmallVisualBasic
                         Dim newFilePath = Path.Combine(newDir, newFormName)
 
                         fileName = newFilePath & ".sb.gen"
-                        If File.Exists(fileName) Then File.Delete(fileName)
+                        If IO.File.Exists(fileName) Then IO.File.Delete(fileName)
 
                         fileName = newFilePath & ".xaml"
-                        If File.Exists(fileName) Then File.Delete(fileName)
+                        If IO.File.Exists(fileName) Then IO.File.Delete(fileName)
                         Dim oldDir = IO.Path.GetDirectoryName(formDesigner.CodeFile)
                         formDesigner.XamlFile = fileName
                         formDesigner.CodeFile = saveFileDialog.FileName
@@ -778,9 +780,9 @@ Namespace Microsoft.SmallVisualBasic
             If debugger?.IsActive Then
                 debugger.Continue()
             Else
-                Mouse.OverrideCursor = Cursors.Wait
+                Input.Mouse.OverrideCursor = Cursors.Wait
                 BuildAndRun(buildOnly)
-                Mouse.OverrideCursor = Nothing
+                Input.Mouse.OverrideCursor = Nothing
             End If
         End Sub
 
@@ -793,9 +795,9 @@ Namespace Microsoft.SmallVisualBasic
                 Dim doc = ActiveDocument
                 If doc IsNot Nothing AndAlso doc.Form = "" AndAlso Not doc.IsTheGlobalFile Then
                     ' Single code file. Use it as a key
-                    Key = doc.File
+                    key = doc.File
                 Else ' A file within a project. Use the folder as a key
-                    Key = ProjExplorer.ProjectDirectory
+                    key = ProjExplorer.ProjectDirectory
                 End If
             End If
 
@@ -836,7 +838,7 @@ Namespace Microsoft.SmallVisualBasic
                 filePath,
                 doc.Form = "" AndAlso Not doc.IsTheGlobalFile
             )
-            SmallVisualBasic.Library.Program.AppExe = outputFileName
+            SmallVisualBasic.Library.Program.AppExe = New Primitive(outputFileName)
             doc.Errors.Clear()
             Dim formNames = doc.GetFormNames()
             Library.Program.FormNames = formNames
@@ -852,7 +854,7 @@ Namespace Microsoft.SmallVisualBasic
                         tabCode.IsSelected = False
                         tabDesigner.IsSelected = True
                         MsgBox($"There is another form in the project with the name `{formName}`. Each form must have a unique programmable name. Please fix this before running the program.")
-                        Mouse.OverrideCursor = Nothing
+                        Input.Mouse.OverrideCursor = Nothing
                         ProjExplorer.FilesList.Focus()
                     End Sub)
                 Return Nothing
@@ -867,7 +869,7 @@ Namespace Microsoft.SmallVisualBasic
                     code = doc.Text
                     'sVB.Compiler.ExeFile = outputFileName
                     If Not sVB.Compile("", code, doc, parsers) Then
-                        Mouse.OverrideCursor = Nothing
+                        Input.Mouse.OverrideCursor = Nothing
                         Return Nothing
                     End If
 
@@ -875,7 +877,7 @@ Namespace Microsoft.SmallVisualBasic
                     parsers = sVB.CompileGlobalModule(inputDir, outputFileName, formNames, False)
                     If parsers Is Nothing Then
                         ' global file has errors
-                        Mouse.OverrideCursor = Nothing
+                        Input.Mouse.OverrideCursor = Nothing
                         Return Nothing
                     End If
 
@@ -888,7 +890,7 @@ Namespace Microsoft.SmallVisualBasic
 
                         code = doc.Text
                         If Not sVB.Compile(genCode, code, doc, parsers) Then
-                            Mouse.OverrideCursor = Nothing
+                            Input.Mouse.OverrideCursor = Nothing
                             Return Nothing
                         End If
 
@@ -903,7 +905,7 @@ Namespace Microsoft.SmallVisualBasic
                             If DiagramHelper.Designer.SavePageIfDirty(xamlFile) Then
                                 Dim f2 = Path.Combine(binDir, Path.GetFileName(xamlFile))
                                 Try
-                                    File.Copy(xamlFile, f2, True)
+                                    IO.File.Copy(xamlFile, f2, True)
                                 Catch
                                 End Try
                             End If
@@ -914,15 +916,15 @@ Namespace Microsoft.SmallVisualBasic
                                 genCode = gen
                             Else
                                 Dim genCodefile = xamlFile.Substring(0, xamlFile.Length - 4) + "sb.gen"
-                                If File.Exists(genCodefile) Then
-                                    genCode = File.ReadAllText(genCodefile)
+                                If IO.File.Exists(genCodefile) Then
+                                    genCode = IO.File.ReadAllText(genCodefile)
                                 Else
                                     genCode = ""
                                 End If
                             End If
 
-                            If File.Exists(sbCodeFile) Then
-                                code = File.ReadAllText(sbCodeFile)
+                            If IO.File.Exists(sbCodeFile) Then
+                                code = IO.File.ReadAllText(sbCodeFile)
                             Else
                                 code = ""
                             End If
@@ -951,7 +953,7 @@ Namespace Microsoft.SmallVisualBasic
                                      Sub() doc.EditorControl.TextView.Caret.EnsureVisible()
                                 )
 
-                                Mouse.OverrideCursor = Nothing
+                                Input.Mouse.OverrideCursor = Nothing
                                 Return Nothing
                             End If
                         Next
@@ -961,7 +963,7 @@ Namespace Microsoft.SmallVisualBasic
 
                     If parsers.Count = 0 Then
                         If Not sVB.Compile("", doc.Text, doc, parsers) Then
-                            Mouse.OverrideCursor = Nothing
+                            Input.Mouse.OverrideCursor = Nothing
                             Return Nothing
                         End If
                     End If
@@ -977,7 +979,7 @@ Namespace Microsoft.SmallVisualBasic
             If errors?.Count > 0 Then
                 doc.ShowErrors(errors)
                 tabCode.IsSelected = True
-                Mouse.OverrideCursor = Nothing
+                Input.Mouse.OverrideCursor = Nothing
                 Return Nothing
             End If
 
@@ -1018,12 +1020,19 @@ Namespace Microsoft.SmallVisualBasic
                 Return
             End If
 
+            If MsgBox(
+                    "Are you sure you want to publish this program?",
+                    MsgBoxStyle.YesNo Or MsgBoxStyle.Question Or MsgBoxStyle.DefaultButton2,
+                    "Confirmation") = MsgBoxResult.No Then
+                Return
+            End If
+
             Try
                 Cursor = Cursors.Wait
                 Dim service As New Service()
                 Dim result = service.SaveProgram("", document.Text, document.BaseId)
 
-                If Equals(result, "error") Then
+                If result = "error" Then
                     Utility.MessageBox.Show(ResourceHelper.GetString("FailedToPublishToWeb"), ResourceHelper.GetString("Title"), ResourceHelper.GetString("PublishToWebFailedReason"), NotificationButtons.Close, NotificationIcon.Error)
                 Else
                     Dim publishProgramDialog As New PublishProgramDialog(result)
@@ -1065,7 +1074,7 @@ Namespace Microsoft.SmallVisualBasic
                 }
 
                 If messageBox.Display() = Nf.OK Then
-                    Mouse.OverrideCursor = Cursors.Wait
+                    Input.Mouse.OverrideCursor = Cursors.Wait
                     Dim service As New Service()
                     Dim baseId As String = textBox.Text.Trim()
                     Dim code = service.LoadProgram(baseId)
@@ -1106,7 +1115,7 @@ Namespace Microsoft.SmallVisualBasic
             Catch ex As Exception
                 Utility.MessageBox.Show(ResourceHelper.GetString("FailedToImportFromWeb"), ResourceHelper.GetString("Title"), String.Format(CultureInfo.CurrentUICulture, ResourceHelper.GetString("ReasonForFailure"), New Object(0) {ex.Message}), NotificationButtons.Close, NotificationIcon.Error)
             Finally
-                Mouse.OverrideCursor = Nothing
+                Input.Mouse.OverrideCursor = Nothing
             End Try
         End Sub
 
@@ -1181,8 +1190,8 @@ Namespace Microsoft.SmallVisualBasic
 
             If formDesigner.Name = "global" Then
                 Dim globFile = formDesigner.CodeFile
-                If Not File.Exists(globFile) Then
-                    File.Create(globFile).Close()
+                If Not IO.File.Exists(globFile) Then
+                    IO.File.Create(globFile).Close()
                 End If
                 Dim doc = OpenDocIfNot(globFile)
                 doc.PageKey = formDesigner.PageKey
@@ -1316,7 +1325,7 @@ Namespace Microsoft.SmallVisualBasic
             Else
                 Dim doc = GetDocIfOpened()
                 If doc IsNot Nothing Then Return doc
-                If Not File.Exists(codeFilePath) Then File.Create(codeFilePath).Close()
+                If Not IO.File.Exists(codeFilePath) Then IO.File.Create(codeFilePath).Close()
                 Return New TextDocument(codeFilePath)
             End If
 
@@ -1353,7 +1362,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub AddEventDefaultHandler(controlName As String, Optional eventName As String = "")
             tabCode.IsSelected = True
-            Mouse.OverrideCursor = Cursors.Wait
+            Input.Mouse.OverrideCursor = Cursors.Wait
 
             dispatcher.BeginInvoke(
                    System.Windows.Threading.DispatcherPriority.Background,
@@ -1377,7 +1386,7 @@ Namespace Microsoft.SmallVisualBasic
                            End If
 
                            tabCode.IsSelected = True
-                           Mouse.OverrideCursor = Nothing
+                           Input.Mouse.OverrideCursor = Nothing
                        Catch ex As Exception
                            MsgBox(ex.Message)
                        End Try
@@ -1412,7 +1421,13 @@ Namespace Microsoft.SmallVisualBasic
 
             AddHandler DiagramHelper.Designer.PageShown, AddressOf FormDesigner_CurrentPageChanged
             AddHandler DiagramHelper.Designer.OnMenuItemClicked, AddressOf FormDesigner_OnMenuItemClicked
+            AddHandler DiagramHelper.Designer.OnOpeningCodeFile, AddressOf Designer_OnOpeningCodeFile
+        End Sub
 
+        Private Sub Designer_OnOpeningCodeFile(fileName As String)
+            tabCode.IsSelected = True
+            tabDesigner.IsSelected = False
+            dispatcher.BeginInvoke(Sub() OpenDocIfNot(fileName).Focus(), DispatcherPriority.Background)
         End Sub
 
         Private Sub FormDesigner_OnMenuItemClicked(sender As MenuItem)
@@ -1446,18 +1461,18 @@ Namespace Microsoft.SmallVisualBasic
                             doc?.Save()
                         Else
 
-                            If oldCodeFile <> "" AndAlso File.Exists(fileName) Then
+                            If oldCodeFile <> "" AndAlso IO.File.Exists(fileName) Then
                                 If IO.File.ReadAllText(fileName) = "" OrElse MsgBox(
                                     $"There Is a file with the same name `{fileName}`. Do you want to overwrite if? ",
                                     MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
-                                    File.Delete(fileName)
+                                    IO.File.Delete(fileName)
                                 End If
                             End If
 
                             If doc IsNot Nothing Then
                                 doc.SaveAs(fileName)
-                            ElseIf File.Exists(oldCodeFile) Then
-                                File.Copy(oldCodeFile, fileName, True)
+                            ElseIf IO.File.Exists(oldCodeFile) Then
+                                IO.File.Copy(oldCodeFile, fileName, True)
                             End If
 
                             formDesigner.CodeFile = fileName
@@ -1664,7 +1679,7 @@ Namespace Microsoft.SmallVisualBasic
                     End If
 
                     Dim pagePath = codeFilePath.Substring(0, codeFilePath.Length - 3) & ".xaml"
-                    If File.Exists(pagePath) Then
+                    If IO.File.Exists(pagePath) Then
                         tabDesigner.IsSelected = True
                         dispatcher.BeginInvoke(DispatcherPriority.Background,
                              Sub()
@@ -1837,7 +1852,7 @@ Namespace Microsoft.SmallVisualBasic
                     fileName = fileName.ToLower()
                     If Path.GetExtension(fileName) = ".xaml" OrElse (
                                 Path.GetExtension(fileName) = ".sb" AndAlso
-                                File.Exists(fileName.Substring(0, fileName.Length - 2) & "xaml")
+                                IO.File.Exists(fileName.Substring(0, fileName.Length - 2) & "xaml")
                             ) Then
                         closePage = True
                         Exit For
@@ -2005,7 +2020,7 @@ Namespace Microsoft.SmallVisualBasic
             Dim doc = GetDoc(oldFileName, False)
             Dim genFile = newFileName & ".gen"
             doc.File = newFileName
-            File.WriteAllText(genFile, doc.GenerateCodeBehind(formDesigner, True))
+            IO.File.WriteAllText(genFile, doc.GenerateCodeBehind(formDesigner, True))
         End Sub
 
         Private Sub tabDesigner_PreviewMouseDoubleClick(sender As Object, e As MouseButtonEventArgs)
@@ -2072,7 +2087,6 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub BtnOpenPage_Click(sender As Object, e As RoutedEventArgs)
             DiagramHelper.Designer.Open()
-            formDesigner.Focus()
         End Sub
 
         Private Sub BtnRun_Click(sender As Object, e As RoutedEventArgs)

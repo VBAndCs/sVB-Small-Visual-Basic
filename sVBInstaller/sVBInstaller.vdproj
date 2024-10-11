@@ -159,6 +159,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_07E0BB1C7065426B899EB60072CFD1B8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_08797EFF34DA465CAD320B8123F93FF2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -879,12 +885,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_408B4366BDE24B0CB27C226E58DF6CC6"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_427C7B6707374F509660C0037ECED63B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1335,12 +1335,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6970FCCB78B14E2B98B13B078E0A2CB6"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_69CA4CF76A1B4534925172776B38D473"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1378,6 +1372,12 @@
         "Entry"
         {
         "MsmKey" = "8:_6B198C2169D64E5589394334FCC85206"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6B68FCB1CF49437F836016859983BAE4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1480,6 +1480,12 @@
         "Entry"
         {
         "MsmKey" = "8:_758C478676164805A88C41F522489C37"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_75A8E87E287A47C9B23BA30F2AD7CC63"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1630,6 +1636,12 @@
         "Entry"
         {
         "MsmKey" = "8:_7E0C3EAD84C14148A8B4AC31F72FE899"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7E21F581B7B94A3A8ED44D511708E0FA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1821,12 +1833,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9131178C8C4242F0AE63E2D887515EE8"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_913EC873BE694DFBA326C50002CCDC5F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1966,6 +1972,12 @@
         "Entry"
         {
         "MsmKey" = "8:_9AA0F1A949C94BEA944E565CB124A578"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9B732C8E7F634FB3B84B65ACDD2FB844"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2523,6 +2535,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C4CF00E61695412F9E295CEC29601BBC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C550AF585FC647D8B5B889C981E6A889"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2542,6 +2560,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C5D376AB15324D108CC5AC2A451331BF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C673EC419D7545ACA3F0F247E6180A31"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2775,7 +2799,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D4F0C7019D884B989B1A6EA4994D3E51"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D550A4F552924EC9856516E4C4FCEB6F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D561E99B5EF14B24B9213A6FB706AF8D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3617,7 +3653,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.0.9.3_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.0.9.6_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -4149,6 +4185,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_A2344A4BDBAF4F4F8E5C3BEF47672450"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_07E0BB1C7065426B899EB60072CFD1B8"
+            {
+            "SourcePath" = "8:..\\Samples\\Color Samples\\Highlight and select labels\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_E5ECC610483F434C8A03C4B26396B006"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6569,26 +6625,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_408B4366BDE24B0CB27C226E58DF6CC6"
-            {
-            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Sin And Cos Art3.sb"
-            "TargetName" = "8:Sin And Cos Art3.sb"
-            "Tag" = "8:"
-            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_427C7B6707374F509660C0037ECED63B"
             {
             "SourcePath" = "8:..\\Samples\\sVB Libraries\\Dialogs\\FrmMsg.xaml"
@@ -8100,26 +8136,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6970FCCB78B14E2B98B13B078E0A2CB6"
-            {
-            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Sin And Cos Art2.sb"
-            "TargetName" = "8:Sin And Cos Art2.sb"
-            "Tag" = "8:"
-            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_69CA4CF76A1B4534925172776B38D473"
             {
             "SourcePath" = "8:..\\Samples\\Color Samples\\Color labels\\FrmColors.sb.gen"
@@ -8246,6 +8262,26 @@
             "TargetName" = "8:FrmInput.xaml"
             "Tag" = "8:"
             "Folder" = "8:_821790668FC54DA7A55718DE4ACF17ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6B68FCB1CF49437F836016859983BAE4"
+            {
+            "SourcePath" = "8:..\\Samples\\WinForms Samples\\MouseEnter\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_5BEDC4111FF64B07A6AF5E993E7ADA7D"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8608,6 +8644,26 @@
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_65961B503FA84C318754C1507FE3DB3C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_75A8E87E287A47C9B23BA30F2AD7CC63"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Sin And Cos Art\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_C8F7A832AD1B45E8987F3889E1E070D6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9108,6 +9164,26 @@
             "TargetName" = "8:FrmTextTests.sb"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7E21F581B7B94A3A8ED44D511708E0FA"
+            {
+            "SourcePath" = "8:..\\Samples\\Color Samples\\Highlight and select labels\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_E5ECC610483F434C8A03C4B26396B006"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9753,26 +9829,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9131178C8C4242F0AE63E2D887515EE8"
-            {
-            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Sin And Cos Art.sb"
-            "TargetName" = "8:Sin And Cos Art.sb"
-            "Tag" = "8:"
-            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_913EC873BE694DFBA326C50002CCDC5F"
             {
             "SourcePath" = "8:..\\Samples\\Games\\Traffic Lights\\Form1.sb"
@@ -10239,6 +10295,26 @@
             "TargetName" = "8:FrmControlsTests.sb"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B732C8E7F634FB3B84B65ACDD2FB844"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Sin And Cos Art\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_C8F7A832AD1B45E8987F3889E1E070D6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12068,6 +12144,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C4CF00E61695412F9E295CEC29601BBC"
+            {
+            "SourcePath" = "8:..\\Samples\\WinForms Samples\\MouseEnter\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_5BEDC4111FF64B07A6AF5E993E7ADA7D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C550AF585FC647D8B5B889C981E6A889"
             {
             "SourcePath" = "8:..\\Samples\\sVB Libraries\\DemoLib\\DemoLib\\obj\\Release\\DemoLib.vbproj.GenerateResource.cache"
@@ -12125,6 +12221,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_51E22253AF204F4899E2B87E41256F49"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C673EC419D7545ACA3F0F247E6180A31"
+            {
+            "SourcePath" = "8:..\\Samples\\WinForms Samples\\MouseEnter\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_5BEDC4111FF64B07A6AF5E993E7ADA7D"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12910,12 +13026,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D4F0C7019D884B989B1A6EA4994D3E51"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Sin And Cos Art\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_C8F7A832AD1B45E8987F3889E1E070D6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D550A4F552924EC9856516E4C4FCEB6F"
             {
             "SourcePath" = "8:..\\Samples\\Turtle Samples\\Bouncing Turtle.sb"
             "TargetName" = "8:Bouncing Turtle.sb"
             "Tag" = "8:"
             "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D561E99B5EF14B24B9213A6FB706AF8D"
+            {
+            "SourcePath" = "8:..\\Samples\\Color Samples\\Highlight and select labels\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_E5ECC610483F434C8A03C4B26396B006"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15477,6 +15633,17 @@
                                         {
                                         }
                                     }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_5BEDC4111FF64B07A6AF5E993E7ADA7D"
+                                    {
+                                    "Name" = "8:MouseEnter"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_5AEA5C9A59F7498B8B0F7BD4BCB04C71"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_64534DC530B148DC9683121230DDF66A"
                                     {
                                     "Name" = "8:Simple Calculator 3"
@@ -15803,6 +15970,17 @@
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
                                     "Property" = "8:_47E6B42E3537475082A16CB62732BAD1"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_E5ECC610483F434C8A03C4B26396B006"
+                                    {
+                                    "Name" = "8:Highlight and select labels"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_3C2DC277DFEF45F59A025160C280BEF9"
                                         "Folders"
                                         {
                                         }
@@ -16170,6 +16348,17 @@
                                         {
                                         }
                                     }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_C8F7A832AD1B45E8987F3889E1E070D6"
+                                    {
+                                    "Name" = "8:Sin And Cos Art"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_C9B6113684064E18B03992B5C1BA7A08"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
                                 }
                             }
                             "{9EF0B969-E518-4E46-987F-47570745A589}:_DC44810FF1E84CAFAD642F096ED1B50E"
@@ -16445,7 +16634,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.0.9.3"
+        "ProductName" = "8:Small Visual Basic 3.0.9.6"
         "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
         "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -16639,7 +16828,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.0.9.3"
+            "Name" = "8:sVB 3.0.9.6"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -16681,7 +16870,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.0.9.3"
+            "Name" = "8:sVB 3.0.9.6"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -16709,7 +16898,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.0.9.3"
+            "Name" = "8:sVB 3.0.9.6"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

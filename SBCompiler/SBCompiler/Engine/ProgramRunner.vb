@@ -166,7 +166,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
                     If subroutines.ContainsKey(key) Then
                         Dim subroutine = CType(subroutines(key).Parent, SubroutineStatement)
                         If subroutine.SubToken.Type = TokenType.Sub Then
-                            Return "A subroutine call doesn't return any value!"
+                            Return New Library.Primitive("A subroutine call doesn't return any value!")
                         End If
                     End If
                 Else

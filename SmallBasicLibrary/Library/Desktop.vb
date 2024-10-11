@@ -70,15 +70,24 @@ Namespace Library
         ''' <returns>an array containing the font properties under the keys Name, Size, Bold, Italic, Underlined and Color, or returns an empty string "" if the user canceled the operation</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function ShowFontDialog(font As Primitive) As Primitive
-            Dim wpfColor = WinForms.Color.FromString(font.Items("Color"))
+            Dim key As New Primitive("Color")
+            Dim wpfColor = WinForms.Color.FromString(font.Items(key))
             Dim color = Drawing.Color.FromArgb(wpfColor.A, wpfColor.R, wpfColor.G, wpfColor.B)
 
-            Dim family As New Drawing.FontFamily(font.Items("Name"))
-            Dim style As New Drawing.FontStyle
-            If font.Items("Bold") Then style = style Or Drawing.FontStyle.Bold
-            If font.Items("Italic") Then style = style Or Drawing.FontStyle.Italic
-            If font.Items("Underlined") Then style = style Or Drawing.FontStyle.Underline
+            key._stringValue = "Name"
+            Dim family As New Drawing.FontFamily(font.Items(key))
 
+            Dim style As New Drawing.FontStyle
+            key._stringValue = "Bold"
+            If font.Items(key) Then style = style Or Drawing.FontStyle.Bold
+
+            key._stringValue = "Italic"
+            If font.Items(key) Then style = style Or Drawing.FontStyle.Italic
+
+            key._stringValue = "Underlined"
+            If font.Items(key) Then style = style Or Drawing.FontStyle.Underline
+
+            key._stringValue = "Size"
             Dim dlg As New Forms.FontDialog() With {
                 .AllowScriptChange = True,
                 .AllowSimulations = True,
@@ -88,23 +97,34 @@ Namespace Library
                 .ShowColor = True,
                 .ShowHelp = True,
                 .ShowEffects = True,
-                .Font = New Drawing.Font(family, font.Items("Size"), style),
+                .Font = New Drawing.Font(family, font.Items(key), style),
                 .Color = color
             }
 
             If dlg.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
                 Dim f = dlg.Font
                 font = New Primitive
-                font.Items("Name") = f.FontFamily.Name
-                font.Items("Size") = f.Size
-                font.Items("Bold") = (f.Style And Drawing.FontStyle.Bold) > 0
-                font.Items("Italic") = (f.Style And Drawing.FontStyle.Italic) > 0
-                font.Items("Underlined") = (f.Style And Drawing.FontStyle.Underline) > 0
-                font.Items("Color") = WinForms.Color.FromARGB(dlg.Color.A, dlg.Color.R, dlg.Color.G, dlg.Color.B)
+                key._stringValue = "Name"
+                font.Items(key) = New Primitive(f.FontFamily.Name)
+
+                key._stringValue = "Size"
+                font.Items(key) = f.Size
+
+                key._stringValue = "Bold"
+                font.Items(key) = (f.Style And Drawing.FontStyle.Bold) > 0
+
+                key._stringValue = "Italic"
+                font.Items(key) = (f.Style And Drawing.FontStyle.Italic) > 0
+
+                key._stringValue = "Underlined"
+                font.Items(key) = (f.Style And Drawing.FontStyle.Underline) > 0
+
+                key._stringValue = "Color"
+                font.Items(key) = WinForms.Color.FromARGB(dlg.Color.A, dlg.Color.R, dlg.Color.G, dlg.Color.B)
                 Return font
             End If
 
-            Return ""
+            Return New Primitive("")
         End Function
 
         ''' <summary>
@@ -117,12 +137,12 @@ Namespace Library
                 Dim n = 1
 
                 For Each family In Media.Fonts.SystemFontFamilies
-                    fonts(n) = family.Source
+                    fonts(n) = New Primitive(family.Source)
                     n += 1
                 Next
 
                 Dim result As New Primitive
-                result._arrayMap = fonts
+                result.ArrayMap = fonts
                 Return result
             End Get
         End Property

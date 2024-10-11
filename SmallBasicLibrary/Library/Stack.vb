@@ -14,7 +14,7 @@ Namespace Library
         ''' <param name="value">The value to push.</param>
         Public Shared Sub PushValue(stackName As Primitive, value As Primitive)
             Dim stack As Stack(Of Primitive) = Nothing
-            stackName = stackName.ToString().ToLower()
+            stackName = Text.ToLower(stackName)
             If Not _stackMap.TryGetValue(stackName, stack) Then
                 stack = New Stack(Of Primitive)
                 _stackMap(stackName) = stack
@@ -32,7 +32,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function GetCount(stackName As Primitive) As Primitive
             Dim stack As Stack(Of Primitive) = Nothing
-            stackName = stackName.ToString().ToLower()
+            stackName = Text.ToLower(stackName)
             If Not _stackMap.TryGetValue(stackName, stack) Then
                 stack = New Stack(Of Primitive)
                 _stackMap(stackName) = stack
@@ -48,7 +48,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Sub Clear(stackName As Primitive)
             Dim stack As Stack(Of Primitive) = Nothing
-            stackName = stackName.ToString().ToLower()
+            stackName = Text.ToLower(stackName)
             If _stackMap.TryGetValue(stackName, stack) Then
                 stack.Clear()
             End If
@@ -64,10 +64,10 @@ Namespace Library
         ''' </returns>
         Public Shared Function PopValue(stackName As Primitive) As Primitive
             Dim stack As Stack(Of Primitive) = Nothing
-            If _stackMap.TryGetValue(stackName.ToString().ToLower(), stack) Then
+            If _stackMap.TryGetValue(Text.ToLower(stackName), stack) Then
                 If stack.Count > 0 Then Return stack.Pop()
             End If
-            Return ""
+            Return New Primitive("")
         End Function
     End Class
 End Namespace

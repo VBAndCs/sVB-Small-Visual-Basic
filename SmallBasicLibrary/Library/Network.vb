@@ -51,14 +51,14 @@ Namespace Library
                     num -= num2
                 End While
             Catch __unusedException1__ As Exception
-                Return ""
+                Return New Primitive("")
             Finally
                 stream1?.Close()
                 stream2?.Close()
                 webResponse1?.Close()
             End Try
 
-            Return tempFileName
+            Return New Primitive(tempFileName)
         End Function
 
         ''' <summary>
@@ -76,7 +76,7 @@ Namespace Library
                 Return url
             End If
 
-            Return GetWebPageContents(CStr(url))
+            Return New Primitive(GetWebPageContents(url.AsString()))
         End Function
 
         Friend Shared Function GetLocalFile(fileNameOrUrl As Primitive) As Primitive
@@ -87,13 +87,13 @@ Namespace Library
 
             If Uri.TryCreate(fileName, UriKind.RelativeOrAbsolute, result) AndAlso result.IsAbsoluteUri Then
                 If result.Scheme.ToLower(CultureInfo.InvariantCulture) = "file" Then
-                    Return GetFullPath(fileName)
+                    Return New Primitive(GetFullPath(fileName))
                 End If
 
-                Return DownloadFile(fileName)
+                Return DownloadFile(New Primitive(fileName))
             End If
 
-            Return GetFullPath(fileName)
+            Return New Primitive(GetFullPath(fileName))
         End Function
 
         Shared Function GetFullPath(localFileName As String) As String

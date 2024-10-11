@@ -12,55 +12,55 @@ Namespace WinForms
         ''' Represents a carriage return character, which is the end of line.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
-        Public Shared ReadOnly Property Cr As Primitive = ChrW(13)
+        Public Shared ReadOnly Property Cr As Primitive = New Primitive(ChrW(13))
 
         ''' <summary>
         ''' Represents a line feed character, which is the start of a new line. In some cases, this character a lone can be used to represent the new line.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
-        Public Shared ReadOnly Property Lf As Primitive = ChrW(10)
+        Public Shared ReadOnly Property Lf As New Primitive(ChrW(10))
 
         ''' <summary>
         ''' Represents a carriage return and a line feed character. Together, they indicate the presence of a new line.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
-        Public Shared ReadOnly Property CrLf As Primitive = Chr(13) + ChrW(10)
+        Public Shared ReadOnly Property CrLf As New Primitive(Chr(13) + ChrW(10))
 
         ''' <summary>
         '''     Represents a backspace character.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
-        Public Shared ReadOnly Property Back As Primitive = ChrW(8)
+        Public Shared ReadOnly Property Back As New Primitive(ChrW(8))
 
         ''' <summary>
         '''     Represents a form feed character for print functions.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
-        Public Shared ReadOnly Property FormFeed As Primitive = ChrW(12)
+        Public Shared ReadOnly Property FormFeed As New Primitive(ChrW(12))
 
         ''' <summary>
         '''     Represents a tab character.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
-        Public Shared ReadOnly Property Tab As Primitive = ChrW(9)
+        Public Shared ReadOnly Property Tab As Primitive = New Primitive(ChrW(9))
 
         ''' <summary>
         '''     Represents a vertical tab character.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
-        Public Shared ReadOnly Property VerticalTab As Primitive = ChrW(11)
+        Public Shared ReadOnly Property VerticalTab As New Primitive(ChrW(11))
 
         ''' <summary>
         '''     Represents a null character.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
-        Public Shared ReadOnly Property Null As Primitive = ChrW(0)
+        Public Shared ReadOnly Property Null As New Primitive(ChrW(0))
 
         ''' <summary>
         '''     Represents a double-quote character.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
-        Public Shared ReadOnly Property Quote As Primitive = """"c
+        Public Shared ReadOnly Property Quote As New Primitive(""""c)
 
         ''' <summary>
         ''' Given the Unicode character code, gets the corresponding character, which can then be used with regular text.
@@ -74,7 +74,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.String)>
         Public Shared Function GetCharacter(characterCode As Primitive) As Primitive
             Dim code As Integer = characterCode
-            Return Char.ConvertFromUtf32(code)
+            Return New Primitive(Char.ConvertFromUtf32(code))
         End Function
 
         ''' <summary>
@@ -115,6 +115,5 @@ Namespace WinForms
         End Function
 
     End Class
-
 
 End Namespace

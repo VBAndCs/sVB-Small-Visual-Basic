@@ -99,7 +99,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             ElseIf runner.TypeInfoBag.Types.ContainsKey(tName) Then
                 Dim typeInfo = runner.TypeInfoBag.Types(tName)
                 Dim propKey = _PropertyName.LCaseText
-                If Not typeInfo.Properties.ContainsKey(propKey) Then Return "???"
+                If Not typeInfo.Properties.ContainsKey(propKey) Then Return New Primitive("???")
 
                 Dim propertyInfo = typeInfo.Properties(propKey)
                 Return CType(propertyInfo.GetValue(Nothing, Nothing), Primitive)
@@ -107,7 +107,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             Else
                 Dim type = runner.SymbolTable.GetTypeInfo(_TypeName)
                 Dim memberInfo = runner.SymbolTable.GetMemberInfo(_PropertyName, type, False)
-                If memberInfo Is Nothing Then Return "???"
+                If memberInfo Is Nothing Then Return New Primitive("???")
 
                 Dim propInfo = TryCast(memberInfo, PropertyInfo)
                 If propInfo IsNot Nothing Then
@@ -117,11 +117,11 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                 Dim methodInfo = TryCast(memberInfo, MethodInfo)
                 If methodInfo IsNot Nothing Then
                     Dim key = runner.GetKey(_TypeName)
-                    If Not runner.Fields.ContainsKey(key) Then Return "This object is not set yet"
+                    If Not runner.Fields.ContainsKey(key) Then Return New Primitive("This object is not set yet")
                     Return CType(methodInfo.Invoke(Nothing, New Object() {runner.Fields(key)}), Primitive)
                 End If
 
-                Return "Event Handler"
+                Return New Primitive("Event Handler")
             End If
         End Function
 

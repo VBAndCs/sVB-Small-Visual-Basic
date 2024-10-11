@@ -297,9 +297,9 @@
       <Project>{a76620d4-a63c-4221-9fdc-d44c0cdd9b9f}</Project>
       <Name>LangServices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SBCompiler\SBCompiler\svB.Compiler.vbproj">
+    <ProjectReference Include="..\SBCompiler\SBCompiler\sVB.Compiler.vbproj">
       <Project>{c35b1c89-a93e-43ff-8608-7c8274562a87}</Project>
-      <Name>svB.Compiler</Name>
+      <Name>sVB.Compiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\SmallBasicLibrary\sVB.Library.vbproj">
       <Project>{3a782b43-424c-4023-a24f-58ac371e18bd}</Project>

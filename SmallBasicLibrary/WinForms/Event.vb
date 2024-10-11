@@ -105,14 +105,14 @@ Namespace WinForms
 
         Friend Shared Function GetControlName(sender As FrameworkElement) As Primitive
             If TypeOf sender Is Window Then
-                Return sender.Name.ToLower()
+                Return New Primitive(sender.Name.ToLower())
             ElseIf TypeOf sender Is Wpf.Canvas Then
-                Return CType(sender.Parent, Window).Name.ToLower()
+                Return New Primitive(CType(sender.Parent, Window).Name.ToLower())
             Else
                 Dim parent As FrameworkElement = sender.Parent
                 Do While parent IsNot Nothing
                     If TypeOf parent Is Window Then
-                        Return CType(parent, Window).Name.ToLower + "." + sender.Name.ToLower
+                        Return New Primitive(CType(parent, Window).Name.ToLower() + "." + sender.Name.ToLower())
                     End If
                     parent = parent.Parent
                 Loop

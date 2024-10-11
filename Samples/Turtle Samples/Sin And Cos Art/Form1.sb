@@ -1,0 +1,45 @@
+Math.UseRadianAngles = False
+GW.AutoShow = False
+
+ListBox1.SelectedIndex = 3
+BtnDraw_OnClick()
+
+
+' ------------------------------------------------
+Sub BtnDraw_OnClick()
+   BtnDraw.Enabled = False
+   GW.Show()
+   GW.Clear()
+   Turtle.Speed = 50
+   Turtle.Show()
+   GW.BrushColor = Colors.Green
+   
+   rx = 450
+   ry = 250
+   cx = 500
+   cy = 300
+   Turtle.CreateFigure()
+   
+   For a = 0 To 360 Step ListBox1.SelectedItem
+      If GW.IsClosed Then
+         BtnDraw.Enabled = True
+         Return
+      EndIf
+      
+      r1 = rx * Math.Cos(20 * a) + 10 * Math.Sin(180 * Math.Cos(a))
+      x = r1 * Math.Cos(a)
+      r2 = ry * Math.Cos(320 * a) + 10 * Math.Sin(180 * Math.Sin(a))
+      y = r2 * Math.Sin(a)
+      If a = 0 Then
+         Turtle.X = cx + x
+         Turtle.Y = cy + y
+      EndIf
+      Turtle.MoveTo(cx + x, cy + y)
+   Next
+   
+   Turtle.Hide()
+   Turtle.FillFigure()
+   BtnDraw.Enabled = True
+EndSub
+
+

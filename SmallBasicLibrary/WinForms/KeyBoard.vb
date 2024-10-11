@@ -27,7 +27,7 @@ Namespace WinForms
         End Sub
 
         Private Shared Sub TextInput(sender As Object, e As TextCompositionEventArgs)
-            _lastTextInput = e.Text
+            _lastTextInput = New Primitive(e.Text)
         End Sub
 
         Private Shared Sub KeyDown(sender As Object, e As KeyEventArgs)
@@ -164,7 +164,7 @@ Namespace WinForms
         <ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property LastKeyName As Primitive
             Get
-                Return [Enum].GetName(GetType(Input.Key), CInt(LastKey))
+                Return New Primitive([Enum].GetName(GetType(Input.Key), CInt(LastKey)))
             End Get
         End Property
     End Class

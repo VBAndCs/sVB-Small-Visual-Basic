@@ -284,7 +284,7 @@ Namespace WinForms
         <WinForms.ReturnValueType(VariableType.String)>
         <ExProperty>
         Public Shared Function GetHex([decimal] As Primitive) As Primitive
-            Return Hex([decimal])
+            Return New Primitive(Hex([decimal]))
         End Function
 
         ''' <summary>

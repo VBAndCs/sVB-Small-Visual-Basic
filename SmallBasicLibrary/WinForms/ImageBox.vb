@@ -29,9 +29,9 @@ Namespace WinForms
                         Dim img = GetImageBox(ImageBoxName)
                         Dim src = CType(img.Source, BitmapImage)
                         If src IsNot Nothing Then
-                            GetFileName = src.UriSource?.AbsolutePath
+                            GetFileName = New Primitive(src.UriSource?.AbsolutePath)
                         Else
-                            GetFileName = ""
+                            GetFileName = New Primitive("")
                         End If
 
                     Catch ex As Exception
@@ -48,7 +48,7 @@ Namespace WinForms
                         If Not IO.Path.IsPathRooted(imageFile) Then
                             Dim path = Environment.GetCommandLineArgs()(0)
                             path = IO.Path.GetDirectoryName(path)
-                            imageFile = IO.Path.Combine(path, imageFile)
+                            imageFile = New Primitive(IO.Path.Combine(path, imageFile))
                         End If
                         GetImageBox(ImageBoxName).Source = New BitmapImage(New Uri(imageFile))
                     Catch ex As Exception

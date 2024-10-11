@@ -37,7 +37,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetText = GetTextBlock(labelName).Text
+                        GetText = New Primitive(GetTextBlock(labelName).Text)
                     Catch ex As Exception
                         Control.ReportError(labelName, "Text", ex)
                     End Try
@@ -70,7 +70,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetImage = GetLabel(labelName).GetValue(ImagePathProperty).ToString()
+                        GetImage = New Primitive(GetLabel(labelName).GetValue(ImagePathProperty).ToString())
                     Catch ex As Exception
                         Control.ReportError(labelName, "Image", ex)
                     End Try
@@ -85,7 +85,7 @@ Namespace WinForms
                         Dim lbl = GetLabel(labelName)
                         Dim imgFile = imageFile.AsString()
                         If imgFile = "" Then
-                            SetText(labelName, "")
+                            SetText(labelName, New Primitive(""))
                             lbl.SetValue(ImagePathProperty, "")
                             Return
                         End If
@@ -195,7 +195,7 @@ Namespace WinForms
                         Else
                             Dim link As New Documents.Hyperlink(txtRun)
                             Try
-                                url = GetAbsUrl(url)
+                                url = New Primitive(GetAbsUrl(url))
                                 link.NavigateUri = New Uri(url)
                             Catch ex As Exception
                                 link.NavigateUri = New Uri("about:blank")
@@ -241,7 +241,10 @@ Namespace WinForms
         ''' <param name="fontName">The name of the font to apply on the text. Send an empty string to use the current label font</param>
         <ExMethod>
         Public Shared Sub AppendWithFontName(labelName As Primitive, text As Primitive, fontName As Primitive)
-            AppendFormatted(labelName, text, fontName, 0, "", "", "", Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, fontName,
+                       0, emptyStr, emptyStr, emptyStr,
+                       Colors.None, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -251,7 +254,9 @@ Namespace WinForms
         ''' <param name="fontSize">The font size of the text. Send 0 to use the current label font size.</param>
         <ExMethod>
         Public Shared Sub AppendWithFontSize(labelName As Primitive, text As Primitive, fontSize As Primitive)
-            AppendFormatted(labelName, text, "", fontSize, "", "", "", Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, fontSize, emptyStr,
+                        emptyStr, emptyStr, Colors.None, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -262,7 +267,10 @@ Namespace WinForms
         ''' <param name="fontSize">The font size of the text. Send 0 to use the current label font size</param>
         <ExMethod>
         Public Shared Sub AppendWithFontNameAndSize(labelName As Primitive, text As Primitive, fontName As Primitive, fontSize As Primitive)
-            AppendFormatted(labelName, text, fontName, fontSize, "", "", "", Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, fontName, fontSize,
+                        emptyStr, emptyStr, emptyStr,
+                        Colors.None, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -271,7 +279,9 @@ Namespace WinForms
         ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendBold(labelName As Primitive, text As Primitive)
-            AppendFormatted(labelName, text, "", 0, True, "", "", Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, True,
+                        emptyStr, emptyStr, Colors.None, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -280,7 +290,9 @@ Namespace WinForms
         ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendItalic(labelName As Primitive, text As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", True, "", Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, emptyStr,
+                        True, emptyStr, Colors.None, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -289,7 +301,9 @@ Namespace WinForms
         ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendBoldItalic(labelName As Primitive, text As Primitive)
-            AppendFormatted(labelName, text, "", 0, True, True, "", Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, True,
+                        True, emptyStr, Colors.None, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -298,7 +312,9 @@ Namespace WinForms
         ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendUnderlined(labelName As Primitive, text As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", "", True, Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, emptyStr,
+                        emptyStr, True, Colors.None, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -317,7 +333,9 @@ Namespace WinForms
                            isUnderlined As Primitive
                    )
 
-            AppendFormatted(labelName, text, "", 0, isBold, isItalic, isUnderlined, Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, isBold,
+                        isItalic, isUnderlined, Colors.None, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -340,7 +358,8 @@ Namespace WinForms
                            isUnderlined As Primitive
                    )
 
-            AppendFormatted(labelName, text, fontName, fontSize, isBold, isItalic, isUnderlined, Colors.None, Colors.None, "")
+            AppendFormatted(labelName, text, fontName, fontSize, isBold,
+                        isItalic, isUnderlined, Colors.None, Colors.None, New Primitive(""))
         End Sub
 
         ''' <summary>
@@ -350,7 +369,9 @@ Namespace WinForms
         ''' <param name="foreColor">The color of the text. Send Colors.None to use the current label foreColor.</param>
         <ExMethod>
         Public Shared Sub AppendWithForeColor(labelName As Primitive, text As Primitive, foreColor As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", "", "", foreColor, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, emptyStr,
+                        emptyStr, emptyStr, foreColor, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -360,7 +381,9 @@ Namespace WinForms
         ''' <param name="backColor">The background color of the text. Send Colors.None to use the current label backColor.</param>
         <ExMethod>
         Public Shared Sub AppendWithBackColor(labelName As Primitive, text As Primitive, backColor As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", "", "", Colors.None, backColor, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, emptyStr,
+                       emptyStr, emptyStr, Colors.None, backColor, emptyStr)
         End Sub
 
         ''' <summary>
@@ -371,7 +394,9 @@ Namespace WinForms
         ''' <param name="backColor">The background color of the text. Send Colors.None to use the current label backColor.</param>
         <ExMethod>
         Public Shared Sub AppendWithColors(labelName As Primitive, text As Primitive, foreColor As Primitive, backColor As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", "", "", foreColor, backColor, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, emptyStr,
+                       emptyStr, emptyStr, foreColor, backColor, emptyStr)
         End Sub
 
         ''' <summary>
@@ -381,7 +406,9 @@ Namespace WinForms
         ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendLink(labelName As Primitive, text As Primitive, url As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", "", "", Colors.None, Colors.None, url)
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, emptyStr, emptyStr,
+                        emptyStr, Colors.None, Colors.None, url)
         End Sub
 
         ''' <summary>
@@ -391,7 +418,9 @@ Namespace WinForms
         ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendBoldLink(labelName As Primitive, text As Primitive, url As Primitive)
-            AppendFormatted(labelName, text, "", 0, True, "", "", Colors.None, Colors.None, url)
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, True, emptyStr,
+                       emptyStr, Colors.None, Colors.None, url)
         End Sub
 
         ''' <summary>
@@ -401,7 +430,9 @@ Namespace WinForms
         ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendItalicLink(labelName As Primitive, text As Primitive, url As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", True, "", Colors.None, Colors.None, url)
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, emptyStr,
+                        True, emptyStr, Colors.None, Colors.None, url)
         End Sub
 
         ''' <summary>
@@ -411,7 +442,9 @@ Namespace WinForms
         ''' <param name="url">The address to navigate to. Use an empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
         <ExMethod>
         Public Shared Sub AppendBoldItalicLink(labelName As Primitive, text As Primitive, url As Primitive)
-            AppendFormatted(labelName, text, "", 0, True, True, "", Colors.None, Colors.None, url)
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, True, True,
+                       emptyStr, Colors.None, Colors.None, url)
         End Sub
 
         ''' <summary>
@@ -420,7 +453,9 @@ Namespace WinForms
         ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub Append(labelName As Primitive, text As Primitive)
-            AppendFormatted(labelName, text, "", 0, "", "", "", Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName, text, emptyStr, 0, emptyStr,
+                       emptyStr, emptyStr, Colors.None, Colors.None, emptyStr)
         End Sub
 
         ''' <summary>
@@ -429,7 +464,11 @@ Namespace WinForms
         ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendLine(labelName As Primitive, text As Primitive)
-            AppendFormatted(labelName, text + vbCrLf, "", 0, "", "", "", Colors.None, Colors.None, "")
+            Dim emptyStr As New Primitive("")
+            AppendFormatted(labelName,
+                        New Primitive(text.AsString() + vbCrLf),
+                        emptyStr, 0, emptyStr, emptyStr, emptyStr,
+                        Colors.None, Colors.None, emptyStr)
         End Sub
 
 
@@ -673,7 +712,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim Points As New Media.PointCollection()
-                        For Each point In pointsArr._arrayMap.Values
+                        For Each point In pointsArr.ArrayMap.Values
                             Points.Add(New Point(point.Items(1), point.Items(2)))
                         Next
 

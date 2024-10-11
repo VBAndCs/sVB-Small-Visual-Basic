@@ -40,7 +40,7 @@ Namespace Library
                      }
                     GraphicsWindow.AddShape(name, shape)
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
         ''' <summary>
@@ -64,7 +64,7 @@ Namespace Library
                     path.StrokeThickness = GraphicsWindow._pen.Thickness
                     GraphicsWindow.AddShape(name, path)
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
 
@@ -96,7 +96,7 @@ Namespace Library
                      }
                     GraphicsWindow.AddShape(name, shape)
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
         ''' <summary>
@@ -145,7 +145,7 @@ Namespace Library
                         .StrokeThickness = GraphicsWindow._pen.Thickness
                     })
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
         ''' <summary>
@@ -161,13 +161,13 @@ Namespace Library
                          pointsArr As Primitive
                     ) As Primitive
 
-            If pointsArr.IsEmpty OrElse Not pointsArr.IsArray Then Return ""
+            If pointsArr.IsEmpty OrElse Not pointsArr.IsArray Then Return New Primitive("")
             Dim name As String = GenerateNewName("Polygon")
 
             GraphicsWindow.Invoke(
                 Sub()
                     Dim Points As New PointCollection()
-                    For Each point In pointsArr._arrayMap.Values
+                    For Each point In pointsArr.ArrayMap.Values
                         Points.Add(New Point(point.Items(1), point.Items(2)))
                     Next
 
@@ -181,7 +181,7 @@ Namespace Library
                         }
                     )
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
 
@@ -222,7 +222,7 @@ Namespace Library
                         .StrokeThickness = GraphicsWindow._pen.Thickness
                     })
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
         ''' <summary>
@@ -251,7 +251,7 @@ Namespace Library
                         GraphicsWindow.AddShape(name, image1)
                     End If
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
         ''' <summary>
@@ -280,7 +280,7 @@ Namespace Library
                      }
                     GraphicsWindow.AddShape(name, shape)
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
         ''' <summary>
@@ -459,13 +459,13 @@ Namespace Library
                         shape.RenderTransform = matrixTransform
                         Dim wnd = GraphicsWindow._window
                         NameScope.SetNameScope(wnd, New NameScope())
-                        wnd.RegisterName(shapeName & "_MatrixTransform", matrixTransform)
+                        wnd.RegisterName(shapeName.AsString() & "_MatrixTransform", matrixTransform)
                         Dim matrixAnimation As New Animation.MatrixAnimationUsingPath()
                         matrixAnimation.PathGeometry = pathGeo
                         matrixAnimation.Duration = TimeSpan.FromMilliseconds(duration)
                         matrixAnimation.DoesRotateWithTangent = True
 
-                        Animation.Storyboard.SetTargetName(matrixAnimation, shapeName & "_MatrixTransform")
+                        Animation.Storyboard.SetTargetName(matrixAnimation, shapeName.AsString() & "_MatrixTransform")
                         Animation.Storyboard.SetTargetProperty(matrixAnimation, New PropertyPath(MatrixTransform.MatrixProperty))
                         Dim storyboard As New Animation.Storyboard()
                         storyboard.Children.Add(matrixAnimation)

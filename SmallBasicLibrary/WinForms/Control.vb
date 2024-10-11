@@ -75,7 +75,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetName = GetControl(controlName).Name
+                        GetName = New Primitive(GetControl(controlName).Name)
                     Catch ex As Exception
                         ReportError(controlName, "Name", ex)
                     End Try
@@ -97,12 +97,12 @@ Namespace WinForms
                         Dim i = name.IndexOf(".")
                         If i = -1 Then
                             If Forms._forms.ContainsKey(name) Then
-                                GetParentForm = name
+                                GetParentForm = New Primitive(name)
                             Else
-                                GetParentForm = ""
+                                GetParentForm = New Primitive("")
                             End If
                         Else
-                            GetParentForm = name.Substring(0, i)
+                            GetParentForm = New Primitive(name.Substring(0, i))
                         End If
 
                     Catch ex As Exception
@@ -124,7 +124,7 @@ Namespace WinForms
                         If WinTimer.Timers.ContainsKey(controlName) Then
                             GetTypeName = ControlTypes.WinTimer
                         Else
-                            GetTypeName = GetControl(controlName).GetType().Name
+                            GetTypeName = New Primitive(GetControl(controlName).GetType().Name)
                         End If
                     Catch ex As Exception
                         ReportError(controlName, "TypeName", ex)
@@ -141,7 +141,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetTag = CStr(GetControl(controlName).Tag)
+                        GetTag = New Primitive(CStr(GetControl(controlName).Tag))
                     Catch ex As Exception
                         ReportError(controlName, "Tag", ex)
                     End Try
@@ -829,7 +829,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        GetToolTip = If(c.GetValue(TipProperty), "").ToString()
+                        GetToolTip = New Primitive(If(c.GetValue(TipProperty), "").ToString())
                     Catch ex As Exception
                         ReportError(controlName, "ToolTip", ex)
                     End Try
@@ -988,7 +988,7 @@ Namespace WinForms
                  Sub()
                      Try
                          Dim c = GetControl(controlName)
-                         GetBackColor = Color.GetHexaName(GetBackColor(c))
+                         GetBackColor = New Primitive(Color.GetHexaName(GetBackColor(c)))
                      Catch ex As Exception
                          ReportError(controlName, "BackColor", ex)
                      End Try
@@ -1061,9 +1061,9 @@ Namespace WinForms
                           Dim brush = TryCast(c.Foreground, SolidColorBrush)
 
                           If brush IsNot Nothing Then
-                              GetForeColor = Color.GetHexaName(brush)
+                              GetForeColor = New Primitive(Color.GetHexaName(brush))
                           Else
-                              GetForeColor = Color.GetHexaName(CType(c.GetValue(ForeColorProperty), Media.Color?))
+                              GetForeColor = New Primitive(Color.GetHexaName(CType(c.GetValue(ForeColorProperty), Media.Color?)))
                           End If
 
                       Catch ex As Exception
@@ -1158,29 +1158,38 @@ Namespace WinForms
                     Try
                         Dim font As New Primitive
                         Dim c = GetControl(controlName)
-                        font.Items("Name") = c.FontFamily.Source
-                        font.Items("Size") = System.Math.Round(c.FontSize * 0.75, 1, MidpointRounding.AwayFromZero)
-                        font.Items("Bold") = (c.FontWeight = FontWeights.Bold)
-                        font.Items("Italic") = (c.FontStyle = FontStyles.Italic)
+                        Dim key As New Primitive("Name")
+                        font.Items(key) = New Primitive(c.FontFamily.Source)
+
+                        key._stringValue = "Size"
+                        font.Items(key) = System.Math.Round(c.FontSize * 0.75, 1, MidpointRounding.AwayFromZero)
+
+                        key._stringValue = "Bold"
+                        font.Items(key) = (c.FontWeight = FontWeights.Bold)
+
+                        key._stringValue = "Italic"
+                        font.Items(key) = (c.FontStyle = FontStyles.Italic)
 
                         Dim cc = TryCast(c, Wpf.ContentControl)
+                        key._stringValue = "Underlined"
                         If cc Is Nothing Then
                             Dim txt = TryCast(c, Wpf.TextBox)
                             If txt Is Nothing Then
-                                font.Items("Underlined") = False
+                                font.Items(key) = False
                             Else
-                                font.Items("Underlined") = txt.TextDecorations Is TextDecorations.Underline
+                                font.Items(key) = txt.TextDecorations Is TextDecorations.Underline
                             End If
                         Else
                             Dim tb = TryCast(cc.Content, Wpf.TextBlock)
                             If tb Is Nothing Then
-                                font.Items("Underlined") = False
+                                font.Items(key) = False
                             Else
-                                font.Items("Underlined") = tb.TextDecorations Is TextDecorations.Underline
+                                font.Items(key) = tb.TextDecorations Is TextDecorations.Underline
                             End If
                         End If
 
-                        font.Items("Color") = GetForeColor(controlName)
+                        key._stringValue = "Color"
+                        font.Items(key) = GetForeColor(controlName)
 
                         GetFont = font
                     Catch ex As Exception
@@ -1196,38 +1205,44 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        If font.ContainsKey("Name") Then
-                            c.FontFamily = New FontFamily(font.Items("Name"))
+                        Dim key As New Primitive("Name")
+                        If font.ContainsKey(key) Then
+                            c.FontFamily = New FontFamily(font.Items(key))
                         End If
 
-                        If font.ContainsKey("Size") Then
-                            c.FontSize = font.Items("Size") * 4 / 3
+                        key._stringValue = "Size"
+                        If font.ContainsKey(key) Then
+                            c.FontSize = font.Items(key) * 4 / 3
                         End If
 
-                        If font.ContainsKey("Bold") Then
-                            c.FontWeight = If(font.Items("Bold"), FontWeights.Bold, FontWeights.Normal)
+                        key._stringValue = "Bold"
+                        If font.ContainsKey(key) Then
+                            c.FontWeight = If(font.Items(key), FontWeights.Bold, FontWeights.Normal)
                         End If
 
-                        If font.ContainsKey("Italic") Then
-                            c.FontStyle = If(font.Items("Italic"), FontStyles.Italic, FontStyles.Normal)
+                        key._stringValue = "Italic"
+                        If font.ContainsKey(key) Then
+                            c.FontStyle = If(font.Items(key), FontStyles.Italic, FontStyles.Normal)
                         End If
 
-                        If font.ContainsKey("Color") Then
-                            SetForeColor(controlName, font.Items("Color"))
+                        key._stringValue = "Color"
+                        If font.ContainsKey(key) Then
+                            SetForeColor(controlName, font.Items(key))
                         End If
 
-                        If Not CBool(font.ContainsKey("Underlined")) Then Return
+                        key._stringValue = "Underlined"
+                        If Not CBool(font.ContainsKey(key)) Then Return
 
                         Dim cc = TryCast(c, Wpf.ContentControl)
                         If cc Is Nothing Then
                             Dim txt = TryCast(c, Wpf.TextBox)
                             If txt IsNot Nothing Then
-                                txt.TextDecorations = If(font.Items("Underlined"), TextDecorations.Underline, Nothing)
+                                txt.TextDecorations = If(font.Items(key), TextDecorations.Underline, Nothing)
                             End If
                         Else
                             Dim tb = TryCast(cc.Content, Wpf.TextBlock)
                             If tb IsNot Nothing Then
-                                tb.TextDecorations = If(font.Items("Underlined"), TextDecorations.Underline, Nothing)
+                                tb.TextDecorations = If(font.Items(key), TextDecorations.Underline, Nothing)
                             End If
                         End If
 
@@ -1248,7 +1263,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim _fontFamily = GetControl(controlName).FontFamily
-                        GetFontName = If(_fontFamily IsNot Nothing, _fontFamily.Source, "Tahoma")
+                        GetFontName = New Primitive(If(_fontFamily IsNot Nothing, _fontFamily.Source, "Tahoma"))
 
                     Catch ex As Exception
                         ReportError(controlName, "FontName", ex)

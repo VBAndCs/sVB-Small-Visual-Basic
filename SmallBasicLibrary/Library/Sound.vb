@@ -130,7 +130,7 @@ Namespace Library
         Public Shared Sub PlayMusic(notes As Primitive)
             EnsureDeviceInit()
             If notes.IsArray Then
-                For Each note In notes._arrayMap.Values
+                For Each note In notes.ArrayMap.Values
                     PlayNotes(note)
                 Next
             Else

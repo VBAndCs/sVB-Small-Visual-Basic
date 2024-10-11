@@ -1,4 +1,5 @@
 ﻿Imports System
+Imports Microsoft.SmallVisualBasic.Library
 
 Namespace Evaluator.Expressions
     <Serializable>
@@ -16,15 +17,15 @@ Namespace Evaluator.Expressions
                 Case "x"
                     Return x
                 Case "e"
-                    Return Math.E
+                    Return Library.Math.E
                 Case "pi"
-                    Return Math.PI
+                    Return Library.Math.Pi
                 Case Else
                     Evaluator.Errors.Add(New [Error](
                            Identifier,
                             $"Unkown Identifier {Identifier.Text}"
                     ))
-                    Return ""
+                    Return New Primitive("")
             End Select
         End Function
     End Class

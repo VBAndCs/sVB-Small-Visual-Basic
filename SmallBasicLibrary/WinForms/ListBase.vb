@@ -34,7 +34,7 @@ Namespace WinForms
                         Dim map = New Dictionary(Of Primitive, Primitive)
                         Dim num = 1
                         For Each item As String In GetSelector(listName).Items
-                            map(num) = item
+                            map(num) = New Primitive(item)
                             num += 1
                         Next
                         GetItems = Primitive.ConvertFromMap(map)
@@ -50,7 +50,7 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim item As String = GetSelector(listName).SelectedItem
-                        GetSelectedItem = item
+                        GetSelectedItem = New Primitive(item)
                     Catch ex As Exception
                         Control.ReportError(listName, "SelectedItem", ex)
                     End Try
@@ -112,13 +112,13 @@ Namespace WinForms
                     Try
                         Dim lst = GetSelector(listName)
                         If Not index.IsNumber Then
-                            GetItemAt = ""
+                            GetItemAt = New Primitive("")
                         Else
                             Dim i As Integer = index
                             If i < 1 OrElse i > lst.Items.Count Then
-                                GetItemAt = ""
+                                GetItemAt = New Primitive("")
                             Else
-                                GetItemAt = lst.Items(i - 1).ToString()
+                                GetItemAt = New Primitive(lst.Items(i - 1).ToString())
                             End If
                         End If
                     Catch ex As Exception
@@ -166,7 +166,7 @@ Namespace WinForms
                         Dim id As Integer
 
                         If value.IsArray Then
-                            Dim items = value._arrayMap
+                            Dim items = value.ArrayMap
                             If items Is Nothing OrElse items.Count = 0 Then
                                 AddItem = 0
                                 Return
@@ -202,7 +202,7 @@ Namespace WinForms
                         End If
 
                         If value.IsArray Then
-                            Dim items = value._arrayMap.Values
+                            Dim items = value.ArrayMap.Values
                             If items Is Nothing OrElse items.Count = 0 Then
                                 AddItemAt = False
                                 Return
@@ -232,7 +232,7 @@ Namespace WinForms
                         Dim lst = GetSelector(listName)
                         If value.IsArray Then
                             RemoveItem = False
-                            For Each value In value._arrayMap.Values
+                            For Each value In value.ArrayMap.Values
                                 If RemoveItem(value, lst) Then RemoveItem = True
                             Next
                         Else
@@ -278,7 +278,7 @@ Namespace WinForms
 
                     If index.IsArray Then
                         RemoveItemAt = False
-                        Dim map = index._arrayMap
+                        Dim map = index.ArrayMap
                         If map Is Nothing OrElse map.Count = 0 Then Return
 
                         For Each id In map.Values
@@ -373,8 +373,8 @@ Namespace WinForms
                 Dim _sender = GetSelector(name)
                 Dim h = Sub(Sender As Wpf.Control, e As System.Windows.RoutedEventArgs)
                             Dim cmb = TryCast(_sender, Wpf.ComboBox)
-                            Dim txt = CType(cmb.Template.FindName("PART_EditableTextBox", cmb), Wpf.TextBox)
                             If cmb IsNot Nothing Then
+                                Dim txt = CType(cmb.Template.FindName("PART_EditableTextBox", cmb), Wpf.TextBox)
                                 If cmb.SelectedIndex = -1 Then
                                     If txt IsNot Nothing Then
                                         cmb.Text = txt.Text

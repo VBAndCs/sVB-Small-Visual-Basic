@@ -501,7 +501,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property LastKey As Primitive
             Get
-                Return _lastKey.ToString()
+                Return New Primitive(_lastKey.ToString())
             End Get
         End Property
 
@@ -511,7 +511,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property LastText As Primitive
             Get
-                Return _lastText.ToString()
+                Return New Primitive(_lastText)
             End Get
         End Property
 
@@ -808,7 +808,7 @@ Namespace Library
                     Dim Points As New PointCollection()
                     Dim x1, x2, y1, y2 As Double
 
-                    For Each point In pointsArr._arrayMap.Values
+                    For Each point In pointsArr.ArrayMap.Values
                         Dim x As Double = point.Items(1)
                         Dim y As Double = point.Items(2)
                         Points.Add(New System.Windows.Point(x, y))
@@ -1284,7 +1284,7 @@ Namespace Library
                 _random = New Random(Now.Ticks Mod Integer.MaxValue)
             End If
 
-            Return $"#{_random.Next(256):X2}{_random.Next(256):X2}{_random.Next(256):X2}"
+            Return New Primitive($"#{_random.Next(256):X2}{_random.Next(256):X2}{_random.Next(256):X2}")
         End Function
 
         ''' <summary>
@@ -1301,7 +1301,7 @@ Namespace Library
             Dim num As Integer = Math.Abs(CInt(red) Mod 256)
             Dim num2 As Integer = Math.Abs(CInt(green) Mod 256)
             Dim num3 As Integer = Math.Abs(CInt(blue) Mod 256)
-            Return $"#{num:X2}{num2:X2}{num3:X2}"
+            Return New Primitive($"#{num:X2}{num2:X2}{num3:X2}")
         End Function
 
         ''' <summary>
@@ -1432,6 +1432,8 @@ Namespace Library
                     _lastKey = e.Key
                     If e.Key = Key.F11 Then
                         FullScreen = Not CBool(FullScreen)
+                    ElseIf FullScreen AndAlso e.Key = Key.Escape Then
+                        FullScreen = False
                     End If
                     Invoke(Sub() RaiseEvent KeyDown())
                 End Sub
@@ -1553,7 +1555,7 @@ Namespace Library
 
             VerifyAccess()
             If name.StartsWith(Controls.GW_NAME) Then
-                shape.Name = name.Substring(Controls.GW_NAME.Length + 1)
+                shape.Name = name.Substring(Controls.GW_NAME.AsString().Length + 1)
             Else
                 shape.Name = name
             End If

@@ -1,0 +1,25 @@
+Label1.OnMouseEnter = OnMouseEnter
+Label2.OnMouseEnter = OnMouseEnter
+Label3.OnMouseEnter = OnMouseEnter
+
+Label1.OnMouseLeave = OnMouseLeave
+Label2.OnMouseLeave = OnMouseLeave
+Label3.OnMouseLeave = OnMouseLeave
+
+
+' ------------------------------------------------
+Sub OnMouseEnter()
+   targetLabel = Event.SenderControl
+   targetLabel.BackColor = Colors.Gold
+   targetLabel.FontBold = True
+   targetLabel.FitContentSize()
+EndSub
+
+
+' ------------------------------------------------
+Sub OnMouseLeave()
+   targetLabel = Event.SenderControl
+   targetLabel.BackColor = Colors.None
+   targetLabel.FontBold = False
+   targetLabel.FitContentSize()
+EndSub

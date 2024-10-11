@@ -102,7 +102,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             If idEpr IsNot Nothing Then
                 Dim fields = runner.Fields
                 If Not fields.TryGetValue(runner.GetKey(idEpr.Identifier), value) Then
-                    value = ""
+                    value = New Primitive("")
                 End If
 
                 Return Primitive.GetArrayValue(value, _Indexer.Evaluate(runner))

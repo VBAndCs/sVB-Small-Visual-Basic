@@ -48,25 +48,27 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Private Sub DebugShowDialog(formName As String, argsArr As Primitive)
             Dim isLoaded = False
-            If WinForms.Form.GetIsLoaded(formName) Then
-                WinForms.Form.SetArgsArr(formName, argsArr)
-                isloaded = True
+            Dim frmName As New Primitive(formName)
+            If WinForms.Form.GetIsLoaded(frmName) Then
+                WinForms.Form.SetArgsArr(frmName, argsArr)
+                isLoaded = True
             Else
-                Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
+                Stack.PushValue(New Primitive("_" & formName.ToLower() & "_argsArr"), argsArr)
                 _currentRunner.RunForm(formName)
-                WinForms.Control.SetVisible(formName, False)
+                WinForms.Control.SetVisible(frmName, False)
             End If
 
-            WinForms.Form.ShowDialog(formName)
+            WinForms.Form.ShowDialog(frmName)
             If isLoaded Then WinForms.Form.RaiseOnShown(formName)
         End Sub
 
         Private Sub DebugShowForm(formName As String, argsArr As Primitive)
             If Not _currentRunner.Evaluating Then
-                If WinForms.Form.GetIsLoaded(formName) Then
-                    WinForms.Forms.DoShowForm(formName, argsArr)
+                Dim frmName As New Primitive(formName)
+                If WinForms.Form.GetIsLoaded(frmName) Then
+                    WinForms.Forms.DoShowForm(frmName, argsArr)
                 Else
-                    Stack.PushValue("_" & CStr(formName).ToLower() & "_argsArr", argsArr)
+                    Stack.PushValue(New Primitive("_" & formName.ToLower() & "_argsArr"), argsArr)
                     _currentRunner.RunForm(formName)
                 End If
             End If
@@ -74,8 +76,8 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
         Private Sub DebugShowChildForm(parentFormName As String, childFormName As String, argsArr As Primitive)
             If Not _currentRunner.Evaluating Then
-                Stack.PushValue("_" & CStr(childFormName).ToLower() & "_argsArr", argsArr)
-                Dim isLoaded = CBool(WinForms.Form.GetIsLoaded(childFormName))
+                Stack.PushValue(New Primitive("_" & childFormName.ToLower() & "_argsArr"), argsArr)
+                Dim isLoaded = CBool(WinForms.Form.GetIsLoaded(New Primitive(childFormName)))
                 _currentRunner.RunForm(childFormName)
                 WinForms.Form.SetOwner(childFormName, parentFormName)
                 If isLoaded Then WinForms.Form.RaiseOnShown(childFormName)
@@ -106,7 +108,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
 
             If Not testMethods.Any Then Return
 
-            Dim txtTest = WinForms.Form.AddTestTextBox(formName)
+            Dim txtTest As New Primitive(WinForms.Form.AddTestTextBox(formName))
             Dim errMsg = " doesn't return a value. Use a test function and return a text showing the result of the test."
             Dim n = 0
 
@@ -121,17 +123,17 @@ Namespace Microsoft.SmallVisualBasic.Engine
                     Dim msg As String = MethodCallExpression.EvaluateFunction(runner, subroutineCall)
 
                     If msg = "" Then
-                        WinForms.TextBox.Append(txtTest, testName.Text)
-                        WinForms.TextBox.Append(txtTest, errMsg)
+                        WinForms.TextBox.Append(txtTest, New Primitive(testName.Text))
+                        WinForms.TextBox.Append(txtTest, New Primitive(errMsg))
                     Else
-                        WinForms.TextBox.Append(txtTest, msg)
+                        WinForms.TextBox.Append(txtTest, New Primitive(msg))
                         n += 1
                     End If
 
                 Catch ex As Exception
-                    WinForms.TextBox.Append(txtTest, $"{testName} has caused the error: {ex.Message}.")
+                    WinForms.TextBox.Append(txtTest, New Primitive($"{testName} has caused the error: {ex.Message}."))
                 End Try
-                WinForms.TextBox.Append(txtTest, vbCrLf)
+                WinForms.TextBox.Append(txtTest, New Primitive(vbCrLf))
             Next
             result = n
         End Sub

@@ -30,7 +30,7 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetText = Label.GetTextBlock(buttonName).Text
+                        GetText = New Primitive(Label.GetTextBlock(buttonName).Text)
                     Catch ex As Exception
                         Control.ReportError(buttonName, "Text", ex)
                     End Try

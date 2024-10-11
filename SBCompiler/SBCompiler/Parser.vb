@@ -1326,7 +1326,6 @@ Namespace Microsoft.SmallVisualBasic
                     Return New DateResult(Nothing, True)
                 End If
             End If
-
         End Function
 
 

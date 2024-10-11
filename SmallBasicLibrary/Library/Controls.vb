@@ -11,7 +11,7 @@ Namespace Library
         Private Shared _positionMap As New Dictionary(Of String, Point)
         Private Shared _lastClickedButton As Primitive
         Private Shared _lastTypedTextBox As Primitive
-        Friend Const GW_NAME As String = "graphicswindow"
+        Friend Shared GW_NAME As New Primitive("graphicswindow")
 
         ''' <summary>
         ''' Gets the last Button that was clicked on the Graphics Window.
@@ -96,7 +96,7 @@ Namespace Library
                     AddHandler button1.Click, AddressOf OnButtonClicked
                     GraphicsWindow.AddControl(name, button1)
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
         ''' <summary>
@@ -161,7 +161,7 @@ Namespace Library
                     AddHandler textBox1.TextChanged, AddressOf OnTextChanged
                     GraphicsWindow.AddControl(name, textBox1)
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
         ''' <summary>
@@ -186,7 +186,7 @@ Namespace Library
             GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
-                    Dim key = WinForms.Form.AddCheckBox(GW_NAME, name, left, top, caption, isChecked)
+                    Dim key = WinForms.Form.AddCheckBox(GW_NAME, New Primitive(name), left, top, caption, isChecked)
                     GraphicsWindow.AddControl(
                         name,
                         WinForms.Control.GetControl(key),
@@ -220,7 +220,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddComboBox(
-                        GW_NAME, name, left, top, width, height
+                        GW_NAME, New Primitive(name), left, top, width, height
                     )
                     GraphicsWindow.AddControl(
                         name,
@@ -255,7 +255,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddDatePicker(
-                        GW_NAME, name, left, top, width, selectedDate
+                        GW_NAME, New Primitive(name), left, top, width, selectedDate
                     )
                     GraphicsWindow.AddControl(
                         name,
@@ -287,7 +287,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddLabel(
-                        GW_NAME, name, left, top, -1, -1
+                        GW_NAME, New Primitive(name), left, top, -1, -1
                     )
                     GraphicsWindow.AddControl(
                         name,
@@ -323,7 +323,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddListBox(
-                        GW_NAME, name, left, top, width, height
+                        GW_NAME, New Primitive(name), left, top, width, height
                     )
                     GraphicsWindow.AddControl(
                         name,
@@ -361,7 +361,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddProgressBar(
-                        GW_NAME, name,
+                        GW_NAME, New Primitive(name),
                         left, top, width, height,
                         minimum, maximum
                     )
@@ -399,7 +399,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddRadioButton(
-                        GW_NAME, name,
+                        GW_NAME, New Primitive(name),
                         left, top,
                         caption, groupName, isChecked
                     )
@@ -442,7 +442,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddScrollBar(
-                        GW_NAME, name,
+                        GW_NAME, New Primitive(name),
                         left, top, width, height,
                         minimum, maximum, value
                     )
@@ -487,7 +487,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddSlider(
-                        GW_NAME, name,
+                        GW_NAME, New Primitive(name),
                         left, top, width, height,
                         minimum, maximum, value, tickFrequency
                     )
@@ -518,7 +518,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddTimer(
-                        GW_NAME, name, interval
+                        GW_NAME, New Primitive(name), interval
                     )
                     AddTimer = key
                 End Sub)
@@ -550,7 +550,7 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim key = WinForms.Form.AddToggleButton(
-                        GW_NAME, name,
+                        GW_NAME, New Primitive(name),
                         left, top, width, height
                     )
                     WinForms.ToggleButton.SetText(key, caption)
@@ -589,7 +589,7 @@ Namespace Library
                     AddHandler textBox1.TextChanged, AddressOf OnTextChanged
                     GraphicsWindow.AddControl(name, textBox1)
                 End Sub)
-            Return name
+            Return New Primitive(name)
         End Function
 
         ''' <summary>
@@ -639,7 +639,7 @@ Namespace Library
         ''' </summary>
         ''' <param name="controlName">The name of the control that needs to be removed.</param>
         Public Shared Sub Remove(controlName As Primitive)
-            controlName = controlName.AsString().ToLower()
+            controlName = Text.ToLower(controlName)
             Dim value As UIElement = Nothing
             If GraphicsWindow._objectsMap.TryGetValue(controlName, value) Then
                 Dim button1 As Button = TryCast(value, Button)
@@ -726,7 +726,7 @@ Namespace Library
 
         Private Shared Sub OnButtonClicked(sender As Object, e As RoutedEventArgs)
             Dim button1 = TryCast(sender, Button)
-            Dim name = GW_NAME + "." + button1.Name
+            Dim name = New Primitive($"{GW_NAME}.{button1.Name}")
             If GraphicsWindow._objectsMap.ContainsKey(name) Then
                 _lastClickedButton = name
                 RaiseEvent ButtonClicked()
@@ -735,7 +735,7 @@ Namespace Library
 
         Private Shared Sub OnTextChanged(sender As Object, e As EventArgs)
             Dim textBox1 = TryCast(sender, TextBox)
-            Dim name = GW_NAME + "." + textBox1.Name
+            Dim name = New Primitive($"{GW_NAME}.{textBox1.Name}")
             If GraphicsWindow._objectsMap.ContainsKey(name) Then
                 _lastTypedTextBox = name
                 RaiseEvent TextTyped()

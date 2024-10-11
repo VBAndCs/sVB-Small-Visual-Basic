@@ -18,7 +18,7 @@ Namespace Library
         Public Shared Property ForegroundColor As Primitive
             Get
                 VerifyAccess()
-                Return Console.ForegroundColor.ToString()
+                Return New Primitive(Console.ForegroundColor.ToString())
             End Get
 
             Set(Value As Primitive)
@@ -39,7 +39,7 @@ Namespace Library
         Public Shared Property BackgroundColor As Primitive
             Get
                 VerifyAccess()
-                Return Console.BackgroundColor.ToString()
+                Return New Primitive(Console.BackgroundColor.ToString())
             End Get
 
             Set(Value As Primitive)
@@ -285,7 +285,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadKey() As Primitive
             VerifyAccess()
-            Return New String(Console.ReadKey(intercept:=True).KeyChar, 1)
+            Return New Primitive(Console.ReadKey(intercept:=True).KeyChar)
         End Function
 
         ''' <summary>
@@ -356,7 +356,7 @@ Namespace Library
         Public Shared Sub WriteLines(lines As Primitive)
             VerifyAccess()
             If lines.IsArray Then
-                Dim map = lines._arrayMap
+                Dim map = lines.ArrayMap
                 If map Is Nothing Then
                     Console.WriteLine()
                 Else

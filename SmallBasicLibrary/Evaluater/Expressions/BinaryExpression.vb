@@ -1,4 +1,6 @@
 ﻿
+Imports Microsoft.SmallVisualBasic.Library
+
 Namespace Evaluator.Expressions
     <Serializable>
     Friend Class BinaryExpression
@@ -33,7 +35,7 @@ Namespace Evaluator.Expressions
                      [Operator],
                      $"Unrecognized operator {[Operator].Text}"
            ))
-            Return ""
+            Return New Primitive("")
         End Function
     End Class
 End Namespace

@@ -14,7 +14,7 @@ Namespace Library
     ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class Turtle
-        Private Const _turtleName As String = "_turtle"
+        Private Shared _turtleName As New Primitive("_turtle")
         Private Shared _initialized As Boolean
         Friend Shared IsVisible As Boolean
         Private Shared _currentX As Double

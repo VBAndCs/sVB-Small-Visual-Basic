@@ -55,7 +55,7 @@ Namespace Evaluator
                 Errors.Add(New [Error](0, 0, ex.Message))
             End Try
 
-            Return ""
+            Return New Primitive("")
         End Function
 
         ''' <summary>
@@ -65,14 +65,14 @@ Namespace Evaluator
         Public Shared ReadOnly Property LastErrors As Primitive
             Get
                 If Errors Is Nothing OrElse Errors.Count = 0 Then
-                    Return ""
+                    Return New Primitive("")
                 End If
 
                 Dim sb As New System.Text.StringBuilder()
                 For Each e In Errors
                     sb.AppendLine(e.Description)
                 Next
-                Return sb.ToString()
+                Return New Primitive(sb.ToString())
             End Get
         End Property
     End Class

@@ -14,8 +14,8 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Date)>
         Public Shared ReadOnly Property Time As Primitive
             Get
-                Dim instance As DateTimeFormatInfo = DateTimeFormatInfo.GetInstance(CultureInfo.CurrentCulture)
-                Return Date.Now.ToString(instance.LongTimePattern, CultureInfo.CurrentUICulture)
+                Dim longTimePattern = DateTimeFormatInfo.GetInstance(CultureInfo.CurrentCulture).LongTimePattern
+                Return New Primitive(Date.Now.ToString(longTimePattern, CultureInfo.CurrentUICulture))
             End Get
         End Property
 
@@ -25,8 +25,8 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Date)>
         Public Shared ReadOnly Property [Date] As Primitive
             Get
-                Dim instance As DateTimeFormatInfo = DateTimeFormatInfo.GetInstance(CultureInfo.CurrentCulture)
-                Return DateTime.Now.ToString(instance.ShortDatePattern, CultureInfo.CurrentUICulture)
+                Dim shortDatePattern = DateTimeFormatInfo.GetInstance(CultureInfo.CurrentCulture).ShortDatePattern
+                Return New Primitive(DateTime.Now.ToString(shortDatePattern, CultureInfo.CurrentUICulture))
             End Get
         End Property
 
@@ -66,7 +66,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared ReadOnly Property WeekDay As Primitive
             Get
-                Return DateTime.Now.ToString("dddd", CultureInfo.CurrentUICulture)
+                Return New Primitive(DateTime.Now.ToString("dddd", CultureInfo.CurrentUICulture))
             End Get
         End Property
 

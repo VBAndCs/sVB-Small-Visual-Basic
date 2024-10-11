@@ -1275,6 +1275,9 @@ Public Class Designer
         Me.Scale = Sc
     End Sub
 
+
+    Public Shared Event OnOpeningCodeFile(fileName As String)
+
     Public Shared Sub Open()
         Dim lastDir = GetSetting("SmallVisualBasic", "Files", "Open")
         If lastDir = "" OrElse Not IO.Directory.Exists(lastDir) Then
@@ -1287,19 +1290,24 @@ Public Class Designer
 
         Dim dlg As New Microsoft.Win32.OpenFileDialog With {
             .DefaultExt = ".xaml", ' Default file extension
-            .Filter = "Diagram Pages|*.xaml",
-            .Title = "Open Diagram Design Page",
+            .Filter = "Forms|*.xaml;*.sb",
+            .Title = "Open Form",
             .InitialDirectory = lastDir
         }
 
         If dlg.ShowDialog() = True Then
             SaveSetting("SmallVisualBasic", "Files", "Open", IO.Path.GetDirectoryName(dlg.FileName))
-            If Not CurrentPage.IsDirty AndAlso
+            If IO.Path.GetExtension(dlg.FileName).ToLower() = ".xaml" Then
+                If Not CurrentPage.IsDirty AndAlso
                     CurrentPage.IsNew AndAlso Pages.Count = 1 Then
-                ClosePage(False, True)
-            End If
+                    ClosePage(False, True)
+                End If
 
-            SwitchTo(dlg.FileName)
+                SwitchTo(dlg.FileName)
+                CurrentPage.Focus()
+            Else
+                RaiseEvent OnOpeningCodeFile(dlg.FileName)
+            End If
         End If
     End Sub
 
