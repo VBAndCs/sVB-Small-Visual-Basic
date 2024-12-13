@@ -1,0 +1,28 @@
+Turtle.Speed = 50
+GW.BackgroundColor = Colors.Black
+GW.PenColor = Colors.White
+
+
+For I = 1 To 8
+   For J = 1 To 6
+      For K = 1 To 5
+         Turtle.CreateFigure()
+         For L = 1 To 3
+            Turtle.Move(25)
+            Turtle.Turn(120)
+         Next
+         GW.BrushColor = Colors.Random
+         Turtle.FillFigure()
+         Turtle.Turn(72)
+      Next
+      Turtle.Turn(60)
+      Turtle.PenUp()
+      Turtle.Move(50)
+      Turtle.PenDown()
+   Next
+   Turtle.Turn(45)
+   Turtle.PenUp()
+   Turtle.Move(200)
+   Turtle.PenDown()
+Next
+

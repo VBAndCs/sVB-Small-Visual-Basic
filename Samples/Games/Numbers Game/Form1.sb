@@ -1,0 +1,77 @@
+L = LblRange.Width
+St = LblRange.Left
+LblSrart.Width = 0
+LblEnd.Width = 0
+LblMsg.Width = 0
+TextBox1.Focus()
+Num = Math.GetRandomNumber(100)
+Trials = 0
+Start = Date.Now
+Min = 1
+
+' ------------------------------------------------
+Sub BtnRand_OnClick()
+   TextBox1.Text = ""
+   Trials = 0
+   LblRange.Left = St
+   LblRange.Width = L
+   Min = Math.Rnd(0, 10) * 10 + 1
+   LblSrart.Text = Min - 1
+   LblSrart.Right = St
+   LblEnd.Text = Min + 100
+   LblEnd.Left = LblRange.Right
+   LblMsg.Text = Text.Format(
+      "Guess a number between [1] and [2]",
+      {Min, Min + 99}
+   )
+   Num = Math.Rnd(Min, Min + 99)
+   TextBox1.Focus()
+   Start = Date.Now
+EndSub
+
+' ------------------------------------------------
+Sub BtnGuess_OnClick()
+   BtnRand.Enabled = False
+   d = Date.Now - Start
+   n = TextBox1.Text
+   Trials = Trials + 1
+   Me.Text = Trials & " trials in " & Math.Round(d.TotalSeconds) & " seconds"
+   
+   If n = Num Then
+      Sound.PlayBeep()
+      Forms.ShowMessage("Yes, that is right! You can play again.", "Well done!")
+      BtnRand_OnClick()
+      BtnRand.Enabled = True
+      Return
+   EndIf
+   
+   Sound.PlayBellRing()
+   x = St + (n - Min + 1) * L / 100
+   
+   If LblRange.Left < x And LblRange.Right > x Then
+      If n < Num Then
+         LblRange.Left = x
+         LblRange.Width = LblEnd.Left - LblRange.Left
+         LblSrart.Text = n
+         LblSrart.Right = LblRange.Left
+      Else
+         LblRange.Width = x - LblSrart.Right
+         LblRange.Right = x
+         LblEnd.Text = n
+         LblEnd.Left = LblRange.Right
+      EndIf
+   EndIf
+   
+   TextBox1.SelectAll()
+   TextBox1.Focus()
+EndSub
+
+
+' ------------------------------------------------
+Sub TextBox1_OnKeyDown()
+   If Event.LastKey = Keys.Enter Then
+      BtnGuess_OnClick()
+      Event.Handled = True
+   EndIf
+EndSub
+

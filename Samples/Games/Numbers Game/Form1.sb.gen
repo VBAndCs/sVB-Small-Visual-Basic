@@ -1,0 +1,44 @@
+'@Form Hints:
+'#Form1{
+'    LblMsg: Label
+'    TextBox1: TextBox
+'    BtnGuess: Button
+'    Label2: Label
+'    LblRange: Label
+'    LblSrart: Label
+'    LblEnd: Label
+'    BtnRand: Button
+'}
+
+Me = "form1"
+LblMsg = "form1.lblmsg"
+TextBox1 = "form1.textbox1"
+BtnGuess = "form1.btnguess"
+Label2 = "form1.label2"
+LblRange = "form1.lblrange"
+LblSrart = "form1.lblsrart"
+LblEnd = "form1.lblend"
+BtnRand = "form1.btnrand"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    BtnGuess: OnClick
+'    TextBox1: OnKeyDown
+'    BtnRand: OnClick
+'}
+
+' BtnGuess Events:
+Control.HandleEvents(BtnGuess)
+Control.OnClick = BtnGuess_OnClick
+
+' TextBox1 Events:
+Control.HandleEvents(TextBox1)
+Control.OnKeyDown = TextBox1_OnKeyDown
+
+' BtnRand Events:
+Control.HandleEvents(BtnRand)
+Control.OnClick = BtnRand_OnClick
+
+
+Form.Show(Me)

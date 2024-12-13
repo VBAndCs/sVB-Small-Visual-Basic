@@ -46,7 +46,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         End If
 
                     Case Key.Space, Key.Tab
-                        args.Handled = CommitConditionally(textView, completionSurface, " ")
+                        If CommitConditionally(textView, completionSurface, " ") Then
+                            textView.Caret.MoveToPreviousCaretPosition()
+                            args.Handled = True
+                        End If
 
                     Case Key.OemPeriod
                         If Keyboard.Modifiers = 0 Then CommitConditionally(textView, completionSurface)

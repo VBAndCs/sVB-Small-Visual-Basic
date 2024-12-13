@@ -1,0 +1,26 @@
+Turtle.Speed = 10
+Side1 = 200
+R = 0.5
+Angle1 = 60
+Angle2 = (90 - Angle1) * 2
+X1 = Turtle.X
+Y1 = Turtle.Y
+Turtle.TurnLeft()
+
+Turtle.Turn(180 - Angle1)
+Turtle.Move(Side1)
+X2 = Turtle.X
+Y2 = Turtle.Y
+
+Turtle.Turn(180 - Angle2)
+Turtle.Move(Side1)
+X3 = Turtle.X
+Y3 = Turtle.Y
+
+W = (X3 - X1) / 2
+H = Y3 - Y2
+X4 = X1 + W
+Y4 = Y2 + R * H
+
+Turtle.MoveTo(X4, Y4)
+Turtle.MoveTo(X1, Y1)

@@ -31,7 +31,11 @@ Namespace WinForms
         End Sub
 
         Private Shared Sub KeyDown(sender As Object, e As KeyEventArgs)
-            _LastKey = e.Key
+            If e.SystemKey = Key.F10 Then
+                _LastKey = Key.F10
+            Else
+                _LastKey = e.Key
+            End If
         End Sub
 
         ''' <summary>

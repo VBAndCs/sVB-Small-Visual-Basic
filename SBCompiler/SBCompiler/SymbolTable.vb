@@ -1,6 +1,7 @@
 ﻿Imports System.Globalization
 Imports Microsoft.SmallBasic
 Imports Microsoft.SmallVisualBasic.Expressions
+Imports Microsoft.SmallVisualBasic.Statements
 Imports TokenDictionary = System.Collections.Generic.Dictionary(Of String, Microsoft.SmallVisualBasic.Token)
 
 Namespace Microsoft.SmallVisualBasic
@@ -511,6 +512,32 @@ Namespace Microsoft.SmallVisualBasic
             End If
 
         End Sub
+
+        Public Function GetMethodInfo(mc As MethodCallStatement) As System.Reflection.MethodInfo
+            If mc Is Nothing Then Return Nothing
+            Return GetMethodInfo(mc.MethodCallExpression)
+        End Function
+
+        Public Function GetMethodInfo(mc As MethodCallExpression) As System.Reflection.MethodInfo
+            If mc Is Nothing Then Return Nothing
+            Return GetMethodInfo(mc.TypeName, mc.MethodName)
+        End Function
+
+        Public Function GetMethodInfo(typeName As Token, methodName As Token) As System.Reflection.MethodInfo
+            Dim typeInfo = Me.GetTypeInfo(typeName)
+            If typeInfo Is Nothing Then Return Nothing
+            Dim key = methodName.LCaseText
+            If Not typeInfo.Methods.ContainsKey(key) Then Return Nothing
+            Return typeInfo.Methods(key)
+        End Function
+
+        Public Function GetPropertyInfo(typeName As Token, propName As Token) As System.Reflection.PropertyInfo
+            Dim typeInfo = Me.GetTypeInfo(typeName)
+            If typeInfo Is Nothing Then Return Nothing
+            Dim key = propName.LCaseText
+            If Not typeInfo.Properties.ContainsKey(key) Then Return Nothing
+            Return typeInfo.Properties(key)
+        End Function
 
     End Class
 

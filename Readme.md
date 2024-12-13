@@ -1,4 +1,4 @@
-<b><center><span style="font-size:3em;">Small Visual Basic 3.0:</span>
+<b><center><span style="font-size:3em;">Small Visual Basic 3.1:</span>
 <br><br>
 <span style="font-size:2em;">You can download the sVB installer from the <a href="https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller"><u>VS marketplace</u></a>.</span>
 <br><br></center></b>
@@ -17,11 +17,11 @@ Small Visual Basic is the visual version of Small Basic, and the small version o
 
 * You can also double-click the "sVB docs" icon on the desktop to open the sVB reference PDF book, which contains the full documentation of the sVB IDE, syntax, and library.
 
-* The reference book may not be the easiest way for kids and beginners to start learning sVB with, and this is why I am publishing the ["Small Visual Basic Kid Programmer" book series](https://a.co/d/5LGnE5m) on Amazon.
+* The reference book may not be the easiest way for kids and beginners to start learning sVB with, and this is why I am publishing the ["Small Visual Basic Kid Programmer" book series](https://www.amazon.com/dp/B0DNX2ZR4D) on Amazon.
  
 <p align="center">
-<a href="https://a.co/d/5LGnE5m">
-  <img src="https://modernvbnet.gallerycdn.vsassets.io/extensions/modernvbnet/svbinstaller/3.0/1714546030343/image__3.png"/>
+<a href="https://www.amazon.com/dp/B0DNX2ZR4D">
+  <img src="blob:https://marketplace.visualstudio.com/5280dd5a-f721-4f5e-9064-11699bb3c994"/>
 </a>
 </p>
 
@@ -103,6 +103,29 @@ Let’s see in short points some of what sVB can do. For full details on what you 
 Thread.SubToRun = Task1
 Thread.SubToRun = Task2
 ```
+
+* Small Visual Basic is easier than Python for kids and young beginners!
+1.	Python is a full stack language, while sVB is only for desktop apps and only for educational purposes, which make it more focused on its purpose. But this doesn't mean sVB has no future, or it is just a toy. It is actually the doorway to a popular and powerful development platform: the DotNET and VS .NET. It is easy to use your understanding of sVB syntax, library, form designer, and even the code editor experience to move to VB .NET (and later to C# if you want). But actually sVB has some advanced topics, like designing a multi-form application, using XAML styles, using multi-threading and creating code libraries. sVB also comes with the LitDev external library that contains a 3D engine and a Physics engine, which allows endless advanced possibilities. 
+2.	Both Python and sVB are dynamically typed languages, but sVB is easier in this aspect, because it doesn't require type conversions.
+3.	Python is case-sensitive (and surprisingly, the True and False keywords starts with uppercase letters), while sVB is case-insensitive, and the code editor makes sure to fix words to their original casing. This makes it more easier to learn.
+4.	Python lists have 0-based indexes, while sVB arrays by default have 1-based indexes, which is more natural and easier for kids to deal with, but nothing prevents them from using the 0 index or even negative indexes, because arrays in sVB are actually dictionaries, so indexes are actually keys!
+5.	Trigonometry functions use radian angles in Python. This is the default case in sVB, but you can disable this behavior to use degrees by using:
+Math.UseRadianAngles = False
+6.	Python for loops can be confusing because of the range exclusive end: 
+```py
+for i in range(5, 0, -1):
+    print(i)
+```
+while for loops are very simple in sVB:
+```vb
+For I = 5 To 1 Step -1
+   TW.WriteLine(I)
+Next
+```
+
+7.	Python block indentation is confusing for kids, and make nested statement harder to understand and more error borne because of miscounted spaces, while sVB uses end blocks (like EndIf, EndSub, and Next) which makes the code readable and well constructed. The sVB editor automatically adds the end block token while the kid is typing. It also adjusts block indentation and pretty-lists spaces and identifier casing. It even enforces a variable casing rule: local vars and parameters start with a lowercase, while global vars, subroutines and functions start with uppercase. So, in sVB, kids focus only on the code logic, not formatting!
+8.	The sVB IDE is easy and powerful to deal with forms and graphics.
+
 
 * The sVB source code is fully written with VB .NET and published on [GitHub](https://github.com/VBAndCs/sVB-Small-Visual-Basic). All sVB projects are WPF projects, that target the .NET framework 4.5. You can run the source code in VS.NET 2019 and later. But before running the code, please copy the "Lib" and "Toolbar" folders from the "SmallBasicIDE\SB.Lib" folder to both "SmallBasicIDE\bin\Debug" and "SmallBasicIDE\bin\Release" folders.
 

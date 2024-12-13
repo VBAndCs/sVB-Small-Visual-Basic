@@ -1,0 +1,21 @@
+' In sVB, you can access the digits of the number by using the array indexer:
+Num = 478
+TW.WriteLine("Last digit of " & Num & " is: " & Num[3])
+
+' And you can use the array indexer to change a digit:
+Num[2] = 5
+Num = Num + 1
+
+' You can also use ForEach to iterate through all the digits:
+TW.Write("Digits of " & Num & " are:")
+ForEach Digit In Num
+   TW.Write(" " & Digit)
+Next
+TW.Write(Text.NewLine)
+
+' You can even set more that one digit to any pos in the number:
+Num[2] = 12
+TW.WriteLine(Num)
+
+
+

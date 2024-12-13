@@ -245,10 +245,12 @@ Namespace Library
                 End If
 
             Catch ex As Exception
-                Console.WriteLine("An error occured.")
-                Console.WriteLine("If you are debugging this sVB projet in VS.NET in its debugging mode, the console window will not work correctly.")
-                Console.WriteLine("Stop the VS debugger the Press Ctrl+F5 to run sVB im VS without debugging, then debug your project in sVB.")
-                Console.WriteLine(ex.Message)
+                'If SmallBasicApplication.IsDebugging Then
+                '    Console.WriteLine("An error occured.")
+                '    Console.WriteLine("If you are debugging this sVB projet in VS.NET in its debugging mode, the console window will not work correctly.")
+                '    Console.WriteLine("Stop the VS debugger the Press Ctrl+F5 to run sVB im VS without debugging, then debug your project in sVB.")
+                '    Console.WriteLine(ex.Message)
+                'End If
             End Try
         End Sub
 

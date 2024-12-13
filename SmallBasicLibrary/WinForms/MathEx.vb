@@ -297,5 +297,19 @@ Namespace WinForms
         Public Shared Function ToDecimal(hex As Primitive) As Primitive
             Return Convert.ToInt32(hex, 16)
         End Function
+
+
+        ''' <summary>
+        ''' Gets the integeral part of the number, which means that the decimal part will be renoved without doing any rounding.
+        ''' For example, 32.233 will return 32 and 44.7 will return 44.
+        ''' </summary>
+        ''' <returns>
+        ''' The integral part of the number.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        <ExMethod>
+        Public Shared Function Truncate(number As Primitive) As Primitive
+            Return System.Math.Truncate(number.AsDecimal)
+        End Function
     End Class
 End Namespace

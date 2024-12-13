@@ -1,0 +1,46 @@
+'@Form Hints:
+'#Form1{
+'    TxtA: TextBox
+'    Label1: Label
+'    Label2: Label
+'    Label3: Label
+'    TxtB: TextBox
+'    Label4: Label
+'    TxtC: TextBox
+'    Label5: Label
+'    Label6: Label
+'    Button1: Button
+'    LblSolution: Label
+'    Label7: Label
+'    Label8: Label
+'    Label9: Label
+'}
+
+Me = "form1"
+TxtA = "form1.txta"
+Label1 = "form1.label1"
+Label2 = "form1.label2"
+Label3 = "form1.label3"
+TxtB = "form1.txtb"
+Label4 = "form1.label4"
+TxtC = "form1.txtc"
+Label5 = "form1.label5"
+Label6 = "form1.label6"
+Button1 = "form1.button1"
+LblSolution = "form1.lblsolution"
+Label7 = "form1.label7"
+Label8 = "form1.label8"
+Label9 = "form1.label9"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+
+Form.Show(Me)

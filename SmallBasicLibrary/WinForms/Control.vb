@@ -137,11 +137,14 @@ Namespace WinForms
         ''' An extra property to store any value you want that is related to the control. you can store multiple values as by putting them in an array or a dynamic object
         ''' </summary>
         <ExProperty>
+        <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function GetTag(controlName As Primitive) As Primitive
             App.Invoke(
                 Sub()
                     Try
-                        GetTag = New Primitive(CStr(GetControl(controlName).Tag))
+                        Dim x = New Primitive(CStr(GetControl(controlName).Tag))
+                        x.ConstructArrayMap()
+                        GetTag = x
                     Catch ex As Exception
                         ReportError(controlName, "Tag", ex)
                     End Try

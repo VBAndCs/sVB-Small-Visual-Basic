@@ -1,0 +1,11 @@
+' Display all numbers between 1 and 100,
+' where the digit summation of the number is a miltiple of 7
+For N = 1 To 100
+   Sum = 0
+   ForEach Digit In N
+      Sum = Sum + Digit
+   Next
+   If Sum Mod 7 = 0 Then
+      TW.WriteLine(N)
+   EndIf
+Next

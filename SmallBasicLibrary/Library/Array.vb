@@ -83,13 +83,20 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function AddItems(array As Primitive, items As Primitive) As Primitive
             If items.IsEmpty Then Return array
-            If array.IsEmpty Then Return items
 
             Dim p As New Primitive
-            Dim map As New Dictionary(Of Primitive, Primitive)(
-                array.ArrayMap,
-                Primitive.PrimitiveComparer.Instance
-            )
+            Dim map As Dictionary(Of Primitive, Primitive)
+
+            If array.IsEmpty Then
+                map = New Dictionary(Of Primitive, Primitive)(
+                    Primitive.PrimitiveComparer.Instance
+                )
+            Else
+                map = New Dictionary(Of Primitive, Primitive)(
+                    array.ArrayMap,
+                    Primitive.PrimitiveComparer.Instance
+                )
+            End If
 
             Dim index As Integer = map.Count + 1
             p.ArrayMap = map
@@ -365,7 +372,7 @@ Namespace Library
         ''' <param name="value">the item to search for</param>
         ''' <param name="start">an integer representing the array index to start searching at</param>
         ''' <param name="ignoreCase">set it to true if you want to do an case-insensitive search</param>
-        ''' <returns>the position (order) of the item in the array if found, otherwise 0. </returns>
+        ''' <returns>the position (order) of the item in the array if found, otherwise an empty string. </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function IndexOf(array As Primitive, value As Primitive, start As Primitive, ignoreCase As Primitive) As Primitive
             If array.IsEmpty OrElse value.IsEmpty Then Return New Primitive("")

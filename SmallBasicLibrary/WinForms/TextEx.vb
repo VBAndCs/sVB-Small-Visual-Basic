@@ -380,5 +380,31 @@ Namespace WinForms
         Public Shared Function ToDuration(text As Primitive) As Primitive
             Return Library.Text.ToDuration(text)
         End Function
+
+
+
+        ''' <summary>
+        '''Converts the current text to an array, if it has a valid array format.
+        ''' </summary>
+        ''' <returns>an array that is constructed from the text if it has a valid array format, otherwise an empty array.</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        <ExMethod>
+        Public Shared Function ToArray(value As Primitive) As Primitive
+            Return Text.ToArray(value)
+        End Function
+
+
+        ''' <summary>
+        ''' Repeats the current text for the given number of times.
+        ''' For examle, when you repeat "aB" 3 times, it returns "aBaBaB".
+        ''' </summary>
+        ''' <param name="count">the number of times to repeat the text.</param>
+        ''' <returns>the repeated text</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function Repeat(text As Primitive, count As Primitive) As Primitive
+            Return Library.Text.Repeat(text, count)
+        End Function
+
     End Class
 End Namespace

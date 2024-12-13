@@ -973,9 +973,12 @@ Namespace Microsoft.SmallVisualBasic.Documents
                             End If
                         Next
                         AutoCompleteBlock(textView, line, code, keyword, $"For {varName} = 1 To 1#   ", "Next", paran.Length)
+                        _editorControl.EditorOperations.SelectCurrentWord()
 
                     Case "foreach"
-                        AutoCompleteBlock(textView, line, code, keyword, $"ForEach  In Array#   ", "Next", paran.Length)
+                        AutoCompleteBlock(textView, line, code, keyword, "ForEach item In Array#   ", "Next", paran.Length)
+                        textView.Caret.MoveTo(line.Start + 16)
+                        _editorControl.EditorOperations.SelectCurrentWord()
 
                     Case "while"
                         AutoCompleteBlock(textView, line, code, keyword, $"While {paran}#   ", "Wend", paran.Length)
@@ -1152,7 +1155,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
             )
 
             textView.Caret.MoveTo(line.Start + indent + Len(keyword) + 1 + n)
-            If keyword = "for" Then _editorControl.EditorOperations.SelectCurrentWord()
             stopFormatingLine = line.LineNumber
         End Sub
 
@@ -1876,7 +1878,9 @@ EndFunction
                 If eventInfo.ControlName.ToLower() = oldName.ToLower() Then
                     Dim newHandler = $"{newName}_{eventInfo.EventName}"
                     Dim pos = FindEventHandler(oldHandler)
-                    _editorControl.EditorOperations.ReplaceText(New Span(pos, oldHandler.Length), newHandler, _undoHistory)
+                    If pos > -1 Then
+                        _editorControl.EditorOperations.ReplaceText(New Span(pos, oldHandler.Length), newHandler, _undoHistory)
+                    End If
                     EventHandlers.Remove(oldHandler)
                     EventHandlers(newHandler) = New EventInformation(newName, eventInfo.EventName)
                 End If

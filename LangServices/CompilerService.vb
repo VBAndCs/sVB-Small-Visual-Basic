@@ -581,7 +581,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
                     ' The exact type/method name is stored in the comment field
                     textEdit.Replace(line.Start + token.Column, token.EndColumn - token.Column, token.Comment)
-                    FixParans(token, line, textEdit, True)
                 Next
 
                 ' fix local vars definitions
@@ -691,6 +690,40 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             ' fix goto labels
                             FixToken(id, line.Start, symbolTable.Labels, textEdit)
                             FixParans(id, line, textEdit, True)
+
+                        Case CompletionItemType.PropertyName
+                            Dim tokens = LineScanner.GetTokens(line.GetText(), id.Line)
+                            Dim n = tokens.Count - 1
+                            For i = 0 To n
+                                If tokens(i).Column = id.Column Then
+                                    If i - 2 >= 0 Then
+                                        Dim m = symbolTable.GetMethodInfo(tokens(i - 2), id)
+                                        If m IsNot Nothing Then
+                                            If i = n OrElse tokens(i + 1).Type <> TokenType.LeftParens Then
+                                                textEdit.Insert(line.Start + id.EndColumn, "()")
+                                            End If
+                                        End If
+                                    End If
+                                    Exit For
+                                End If
+                            Next
+
+                        Case CompletionItemType.MethodName
+                            Dim tokens = LineScanner.GetTokens(line.GetText(), id.Line)
+                            Dim n = tokens.Count - 1
+                            For i = 0 To n
+                                If tokens(i).Column = id.Column Then
+                                    If i - 2 >= 0 Then
+                                        Dim p = symbolTable.GetPropertyInfo(tokens(i - 2), id)
+                                        If p IsNot Nothing Then
+                                            If i < n - 1 AndAlso tokens(i + 1).Type = TokenType.LeftParens AndAlso tokens(i + 2).Type = TokenType.RightParens Then
+                                                textEdit.Replace(line.Start + id.EndColumn, tokens(i + 2).EndColumn - id.EndColumn, "")
+                                            End If
+                                        End If
+                                    End If
+                                    Exit For
+                                End If
+                            Next
                     End Select
                 Next
 

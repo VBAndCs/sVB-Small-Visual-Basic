@@ -56,5 +56,6 @@ Namespace Microsoft.SmallVisualBasic.Statements
             MethodCallExpression.Evaluate(runner)
             Return If(SmallVisualBasic.Library.Program.IsTerminated, New EndDebugging(), Nothing)
         End Function
+
     End Class
 End Namespace

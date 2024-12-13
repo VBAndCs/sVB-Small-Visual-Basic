@@ -56,6 +56,21 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Gets the integeral part of the given number, which means that the decimal part will be renoved without doing any rounding.
+        ''' For example, 32.233 will return 32 and 44.7 will return 44.
+        ''' </summary>
+        ''' <param name="number">
+        ''' The number whose truncated value is required.
+        ''' </param>
+        ''' <returns>
+        ''' The integral part of the given number.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function Truncate(number As Primitive) As Primitive
+            Return System.Math.Truncate(number.AsDecimal)
+        End Function
+
+        ''' <summary>
         ''' Gets the natural logarithm value of the given number.
         ''' </summary>
         ''' <param name="number">The number whose natural logarithm value is required.</param>

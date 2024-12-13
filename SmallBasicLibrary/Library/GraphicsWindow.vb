@@ -240,11 +240,11 @@ Namespace Library
             Invoke(
                 Sub()
                     If WinForms.Color.IsNone(_penColor) Then
-                        _pen = Nothing
+                        _pen = New Media.Pen(Nothing, _penWidth)
                     Else
                         _pen = New Media.Pen(WinForms.Color.GetBrush(_penColor), _penWidth)
-                        _pen.Freeze()
                     End If
+                    _pen.Freeze()
                 End Sub)
         End Sub
 
@@ -1079,6 +1079,31 @@ Namespace Library
                     dc.Close()
                     AddRasterizeOperationToQueue()
                 End Sub)
+        End Sub
+
+
+        Private Shared _aliasedEdgeMode As Boolean = False
+
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property AliasedEdgeMode As Primitive
+            Get
+                Return _aliasedEdgeMode
+            End Get
+            Set(value As Primitive)
+                Try
+                    _aliasedEdgeMode = CBool(value)
+                    SetAliasingMode()
+                Catch ex As Exception
+                End Try
+            End Set
+        End Property
+
+        Private Shared Sub SetAliasingMode()
+            If _aliasedEdgeMode Then
+                _mainDrawing.SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Aliased)
+            Else
+                _mainDrawing = New DrawingGroup()
+            End If
         End Sub
 
         ''' <summary>

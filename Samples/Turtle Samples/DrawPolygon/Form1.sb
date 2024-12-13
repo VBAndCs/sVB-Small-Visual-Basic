@@ -1,0 +1,36 @@
+CmbSpeed.SelectedIndex = 4
+GraphicsWindow.AutoShow = False
+
+Sub Button1_OnClick()
+   GraphicsWindow.Show()
+   GraphicsWindow.Clear()
+   Turtle.Speed = CmbSpeed.Text
+   Turtle.X = 20
+   Turtle.Y = 300
+   
+   n = TxtSides.Text
+   l = TxtLen.Text
+   DrawPolygon(n, l)
+   
+   Turtle.PenUp()
+   Turtle.MoveTo(600, 300)
+   Turtle.Angle = 0
+   Turtle.PenDown()
+   
+   For i = 1 To 360 Step 10
+      DrawPolygon(n, l)
+      Turtle.Turn(10)
+   Next
+EndSub
+
+Sub DrawPolygon(n, l)
+   a = 360 / n
+   For i = 1 To n
+      Turtle.Move(l)
+      Turtle.Turn(a)
+   Next
+   
+EndSub
+
+
+

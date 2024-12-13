@@ -5,29 +5,29 @@ Controls.SetSize(TextBox1, 600, 400)
 Button1 = Controls.AddButton("Generate", 200, 450)
 Controls.ButtonClicked = Button1_OnClick
 
-Colors[1][1] = "Red"
-Colors[1][2] = "#FF0000"
-Colors[1][3] = "255"
-Colors[1][4] = "0"
-Colors[1][5] = "0"
+_Colors[1][1] = "Red"
+_Colors[1][2] = "#FF0000"
+_Colors[1][3] = "255"
+_Colors[1][4] = "0"
+_Colors[1][5] = "0"
 
-Colors[2][1] = "Green"
-Colors[2][2] = "#00FF00"
-Colors[2][3] = "0"
-Colors[2][4] = "255"
-Colors[2][5] = "0"
+_Colors[2][1] = "Green"
+_Colors[2][2] = "#00FF00"
+_Colors[2][3] = "0"
+_Colors[2][4] = "255"
+_Colors[2][5] = "0"
 
-Colors[3][1] = "Blue"
-Colors[3][2] = "#0000FF"
-Colors[3][3] = "0"
-Colors[3][4] = "0"
-Colors[3][5] = "255"
+_Colors[3][1] = "Blue"
+_Colors[3][2] = "#0000FF"
+_Colors[3][3] = "0"
+_Colors[3][4] = "0"
+_Colors[3][5] = "255"
 
 Nl = Text.GetCharacter(13)
 Q = Text.GetCharacter(34)
 Code = ""
 
-Sub Button1_OnClick
+Sub Button1_OnClick()
    line = "Imports Microsoft.SmallVisualBasic.Library"
    Code = Code + line + Nl
    
@@ -50,7 +50,7 @@ Sub Button1_OnClick
    Code = Code + line + Nl
    
    For i = 1 To 3
-      color1 = Colors[i]
+      color1 = _Colors[i]
       line = "  ''' <summary>"
       Code = Code + line + Nl
       

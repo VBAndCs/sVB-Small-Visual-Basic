@@ -213,12 +213,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_09FDB8A054BC4D7E8D9A978E82C8A9EA"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0A046ED15E0648518C643119F6C994FD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -531,12 +525,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_213A165DF2614078839A94BB16CC1B8D"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_2174BF2D680B4DB291EBA6E762D40081"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -550,6 +538,12 @@
         "Entry"
         {
         "MsmKey" = "8:_22B69B54C64E49119680C3CE98DA270E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_22D1DBE69C8C4920A29528E2AC9185C8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -664,6 +658,12 @@
         "Entry"
         {
         "MsmKey" = "8:_2A413D7BA3BC4ACB9CE15A43135C83A7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2ABC9F2E74D94AABBBAD1C261B2FA6DC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -802,6 +802,12 @@
         "Entry"
         {
         "MsmKey" = "8:_35E3A988CEBB453C82FB56E4CEE9A772"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_38A5FC3B90C945BCBF90606B6B0A0776"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1035,6 +1041,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5645335800DB4FD29E77F086F2CD3EE6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_56DC01A47A2E4DC083B0BC7B8232A91E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1066,6 +1078,12 @@
         "Entry"
         {
         "MsmKey" = "8:_598CBE85C0DE4AF893F31B3574DA13EC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_59EFFAA22EA54501B0741B8232322EC6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1138,12 +1156,6 @@
         "Entry"
         {
         "MsmKey" = "8:_5D89D81679DF4410BB2963AB55BA03A3"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5DFC8393203942CA99B30F2917E99B6A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1348,6 +1360,12 @@
         "Entry"
         {
         "MsmKey" = "8:_69EF4425CDBF4A42921C1B160CD8DED2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6A341B1080094F2DAC03CEB471F6ABC9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1887,6 +1905,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_942048A6F2034A80B037F1D849493C4E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9420B222CDB24AEB83366F7FD2B9F268"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1966,6 +1990,12 @@
         "Entry"
         {
         "MsmKey" = "8:_9A50465A539C4F9C8353C347178B75B6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9A6F551AC6B24C07A1A4522957D6B877"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2211,6 +2241,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_ABC5C8067B034A02B2458515317F9F80"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_ACE1A47DBD1348C795FE9AC071291CA2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2338,6 +2374,12 @@
         "Entry"
         {
         "MsmKey" = "8:_B377FC1609B64C738ABA771C0EA2F177"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B521AECB73914EEEBC03145AA5CC8B68"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2769,12 +2811,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D386ED7EFBB44D3CBFEFA538D5F6E002"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D3AAA1B7C76B40BEA5244128601B4330"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2806,6 +2842,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D550A4F552924EC9856516E4C4FCEB6F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D55BA8AD7A764750B4F7CE197C2477BB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2889,6 +2931,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_DAC4F6683EF84EBDAF997390940958BE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_DB0D9A65AC554130BA27E095796AC4C7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2920,6 +2968,12 @@
         "Entry"
         {
         "MsmKey" = "8:_DBEAC82CA9674744A40DEBF9FC4663BA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DC0BF5EC4EAE4A67AA6E7E35262CD65A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3171,6 +3225,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E98AFF2183194489AA4D0F7BCE46613C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E9CF36A5AD01489C8E2EA758E9E5E5E1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3315,6 +3375,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_F3DC52B94381468AAEB66AD0A1188EB5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F3EA8EA5161A493BAB39AC7213A28C3F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3406,6 +3472,12 @@
         "Entry"
         {
         "MsmKey" = "8:_FB1ADD2511CE44AAACA775830AB48C53"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FB87975A6A2E4B21AA2B8BFD27D45603"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3653,7 +3725,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.0.9.6_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.1_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -4365,26 +4437,6 @@
             "TargetName" = "8:red_ball.gif"
             "Tag" = "8:"
             "Folder" = "8:_7257C561F22C470B9ACAFD4165AC8CFE"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_09FDB8A054BC4D7E8D9A978E82C8A9EA"
-            {
-            "SourcePath" = "8:sVB_Kid_Programmer.jpg"
-            "TargetName" = "8:sVB_Kid_Programmer.jpg"
-            "Tag" = "8:"
-            "Folder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -5454,26 +5506,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_213A165DF2614078839A94BB16CC1B8D"
-            {
-            "SourcePath" = "8:..\\Samples\\Drawing Samples\\DrawPolygon\\Form1.sb"
-            "TargetName" = "8:Form1.sb"
-            "Tag" = "8:"
-            "Folder" = "8:_C930475E16FA45E699A64221AFC9B4B7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2174BF2D680B4DB291EBA6E762D40081"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Show Dialogs\\FrmMain.sb.gen"
@@ -5520,6 +5552,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_D701FB8768084905AB904CBF699D1074"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_22D1DBE69C8C4920A29528E2AC9185C8"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\DrawPolygon\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_A61E1F8F5FBA4F0FAC65D20E2E8DDE02"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -5891,6 +5943,26 @@
             "TargetName" = "8:FrmCharsTests.sb"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2ABC9F2E74D94AABBBAD1C261B2FA6DC"
+            {
+            "SourcePath" = "8:..\\Samples\\sVB Syntax Samples\\Digits of a number.sb"
+            "TargetName" = "8:Digits of a number.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_DC44810FF1E84CAFAD642F096ED1B50E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6351,6 +6423,26 @@
             "TargetName" = "8:rubic.png"
             "Tag" = "8:"
             "Folder" = "8:_E3F3B06A5D0E42CAA4983DA6356BD9AD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_38A5FC3B90C945BCBF90606B6B0A0776"
+            {
+            "SourcePath" = "8:..\\Samples\\sVB Syntax Samples\\Digit sum is 7 multiple.sb"
+            "TargetName" = "8:Digit sum is 7 multiple.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_DC44810FF1E84CAFAD642F096ED1B50E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7125,6 +7217,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5645335800DB4FD29E77F086F2CD3EE6"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\DrawPolygon\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_A61E1F8F5FBA4F0FAC65D20E2E8DDE02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_56DC01A47A2E4DC083B0BC7B8232A91E"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Geometric Shapes\\Line.xaml"
@@ -7231,6 +7343,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_14C7959D83244507AC4A16D793E939B1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_59EFFAA22EA54501B0741B8232322EC6"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Draw Kite.sb"
+            "TargetName" = "8:Draw Kite.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7482,26 +7614,6 @@
             "TargetName" = "8:FrmOps.sb"
             "Tag" = "8:"
             "Folder" = "8:_E8779BA8720944D9A122A3F9D02BCDEF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5DFC8393203942CA99B30F2917E99B6A"
-            {
-            "SourcePath" = "8:..\\Samples\\Drawing Samples\\DrawPolygon\\Form1.sb.gen"
-            "TargetName" = "8:Form1.sb.gen"
-            "Tag" = "8:"
-            "Folder" = "8:_C930475E16FA45E699A64221AFC9B4B7"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8182,6 +8294,26 @@
             "TargetName" = "8:FrmTestResults.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6A341B1080094F2DAC03CEB471F6ABC9"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Draw Arrowhead.sb"
+            "TargetName" = "8:Draw Arrowhead.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10009,6 +10141,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_942048A6F2034A80B037F1D849493C4E"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Numbers Game\\Guess a number.sb"
+            "TargetName" = "8:Guess a number.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_36903ABC8A7542CCBD95BFCAFBF067A9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9420B222CDB24AEB83366F7FD2B9F268"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Random Buttons\\form1.xaml"
@@ -10275,6 +10427,26 @@
             "TargetName" = "8:geometrics_frmTest.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_BE330BB0EB3B449E9AF062CD75061E33"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9A6F551AC6B24C07A1A4522957D6B877"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Numbers Game\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_36903ABC8A7542CCBD95BFCAFBF067A9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11071,6 +11243,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ABC5C8067B034A02B2458515317F9F80"
+            {
+            "SourcePath" = "8:sVB Kid Programmer.png"
+            "TargetName" = "8:sVB Kid Programmer.png"
+            "Tag" = "8:"
+            "Folder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ACE1A47DBD1348C795FE9AC071291CA2"
             {
             "SourcePath" = "8:..\\Samples\\Games\\Tom and Jerry\\Form1.sb.gen"
@@ -11499,6 +11691,26 @@
             "TargetName" = "8:10.png"
             "Tag" = "8:"
             "Folder" = "8:_293DC1A2F74F492D998EA9E73CC1AFEC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B521AECB73914EEEBC03145AA5CC8B68"
+            {
+            "SourcePath" = "8:..\\Samples\\WinForms Samples\\Quadratic Equation Solver\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_15AF76DB06C24944B165AA3EF0DCC0BD"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12926,26 +13138,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D386ED7EFBB44D3CBFEFA538D5F6E002"
-            {
-            "SourcePath" = "8:..\\Samples\\Drawing Samples\\DrawPolygon\\Form1.xaml"
-            "TargetName" = "8:Form1.xaml"
-            "Tag" = "8:"
-            "Folder" = "8:_C930475E16FA45E699A64221AFC9B4B7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D3AAA1B7C76B40BEA5244128601B4330"
             {
             "SourcePath" = "8:..\\Samples\\Games\\Balls\\ball.gif"
@@ -13052,6 +13244,26 @@
             "TargetName" = "8:Bouncing Turtle.sb"
             "Tag" = "8:"
             "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D55BA8AD7A764750B4F7CE197C2477BB"
+            {
+            "SourcePath" = "8:..\\Samples\\WinForms Samples\\Quadratic Equation Solver\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_15AF76DB06C24944B165AA3EF0DCC0BD"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13326,6 +13538,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DAC4F6683EF84EBDAF997390940958BE"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Numbers Game\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_36903ABC8A7542CCBD95BFCAFBF067A9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DB0D9A65AC554130BA27E095796AC4C7"
             {
             "SourcePath" = "8:..\\Samples\\Animation Samples\\Moving worm\\Form1.sb.gen"
@@ -13432,6 +13664,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_319B051BD70846C4A4345C5AD221144D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DC0BF5EC4EAE4A67AA6E7E35262CD65A"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Numbers Game\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_36903ABC8A7542CCBD95BFCAFBF067A9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -14097,6 +14349,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E98AFF2183194489AA4D0F7BCE46613C"
+            {
+            "SourcePath" = "8:..\\Samples\\WinForms Samples\\Quadratic Equation Solver\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_15AF76DB06C24944B165AA3EF0DCC0BD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E9CF36A5AD01489C8E2EA758E9E5E5E1"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\CheckBox Sample\\Form1.sb"
@@ -14568,6 +14840,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F3DC52B94381468AAEB66AD0A1188EB5"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\DrawPolygon\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_A61E1F8F5FBA4F0FAC65D20E2E8DDE02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F3EA8EA5161A493BAB39AC7213A28C3F"
             {
             "SourcePath" = "8:..\\sVB Tests\\FrmFilesTests.sb"
@@ -14874,6 +15166,26 @@
             "TargetName" = "8:frmShapes.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_9DE4539DA5C8452D87E7DAEE55F6671D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FB87975A6A2E4B21AA2B8BFD27D45603"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Triangles Art.sb"
+            "TargetName" = "8:Triangles Art.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15413,17 +15725,6 @@
                                         {
                                         }
                                     }
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_C930475E16FA45E699A64221AFC9B4B7"
-                                    {
-                                    "Name" = "8:DrawPolygon"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "Condition" = "8:"
-                                    "Transitive" = "11:FALSE"
-                                    "Property" = "8:_24C163841C9B433396B369813CBA20CF"
-                                        "Folders"
-                                        {
-                                        }
-                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_DA5A9E100C91468F9A1B94D868AB5999"
                                     {
                                     "Name" = "8:Draw shapes"
@@ -15530,6 +15831,17 @@
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
                                     "Property" = "8:_82686301AA5D4FA9ADBFE284C63F3A84"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_15AF76DB06C24944B165AA3EF0DCC0BD"
+                                    {
+                                    "Name" = "8:Quadratic Equation Solver"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_74D054796E3141FDBC220419C9818D1C"
                                         "Folders"
                                         {
                                         }
@@ -16183,6 +16495,17 @@
                                         {
                                         }
                                     }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_36903ABC8A7542CCBD95BFCAFBF067A9"
+                                    {
+                                    "Name" = "8:Numbers Game"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_9560EE88A49B4183A739C101525591D6"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_49B7BFFD6CB0497AA8BF6638926BA165"
                                     {
                                     "Name" = "8:Balls"
@@ -16344,6 +16667,17 @@
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
                                     "Property" = "8:_3BE7DC69922E4818A7096E38AF212FE2"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_A61E1F8F5FBA4F0FAC65D20E2E8DDE02"
+                                    {
+                                    "Name" = "8:DrawPolygon"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_4130BEF0F73A4CEDA23472DE9FD2F06C"
                                         "Folders"
                                         {
                                         }
@@ -16634,16 +16968,16 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.0.9.6"
-        "ProductCode" = "8:{5AB4510E-4109-46F7-9F92-9E8A1B64F41B}"
-        "PackageCode" = "8:{889CACD0-9362-44C1-93D1-4CA9AA4D7729}"
+        "ProductName" = "8:Small Visual Basic 3.1"
+        "ProductCode" = "8:{6D953381-E9BB-427B-B542-ED93E60B1FC2}"
+        "PackageCode" = "8:{0E18A135-558D-4470-88E7-7D29D4AC839F}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:3.0"
+        "ProductVersion" = "8:3.1"
         "Manufacturer" = "8:Modern VB"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/VBAndCs/sVB-Small-Visual-Basic"
@@ -16828,7 +17162,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.0.9.6"
+            "Name" = "8:sVB 3.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -16870,7 +17204,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.0.9.6"
+            "Name" = "8:sVB 3.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -16898,7 +17232,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.0.9.6"
+            "Name" = "8:sVB 3.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

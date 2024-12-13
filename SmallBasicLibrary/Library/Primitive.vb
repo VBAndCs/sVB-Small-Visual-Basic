@@ -89,6 +89,9 @@ Namespace Library
             Get
                 ConstructArrayMap()
                 If Not IsArray Then
+                    If Not index.IsNumber Then
+                        Return New Primitive("")
+                    End If
                     Dim s = If(_stringValue, "")
                     If index < 1 OrElse index > s.Length Then Return New Primitive("")
                     Return New Primitive(s(index - 1).ToString())
@@ -101,8 +104,11 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                ConstructArrayMap()
-                If Not IsArray AndAlso _stringValue <> "" Then
+                If IsArray OrElse _stringValue = "" Then
+                    Me._decimalValue = Nothing
+                    ArrayMap(index) = Value
+
+                ElseIf index.IsNumber Then
                     If index < 1 Then
                         Me._stringValue = CStr(Value) & Space(-index) & _stringValue
                     ElseIf index > _stringValue.Length Then
@@ -111,9 +117,11 @@ Namespace Library
                         Me._stringValue = _stringValue.Substring(0, index - 1) & CStr(Value) & _stringValue.Substring(index)
                     End If
 
-                Else
-                    _decimalValue = Nothing
-                    ArrayMap(index) = Value
+                    If IsNumeric(Me._stringValue) Then
+                        Me._decimalValue = Me._stringValue
+                    Else
+                        Me._decimalValue = Nothing
+                    End If
                 End If
             End Set
         End Property
@@ -374,7 +382,14 @@ Namespace Library
             Return New Primitive("")
         End Function
 
-        Private Function Duplicate(str As String, count As Decimal) As Primitive
+        Friend Shared Function Duplicate(str As String, count As Integer) As Primitive
+            If count = 0 Then Return New Primitive("")
+            If count = 1 Then Return New Primitive(str)
+
+            If str.Length = 1 Then
+                Return New Primitive(New String(str(0), count))
+            End If
+
             Dim sb As New StringBuilder
             For i = 1 To count
                 sb.Append(str)
@@ -492,7 +507,7 @@ Namespace Library
             Return AsString()
         End Function
 
-        Private Sub ConstructArrayMap()
+        Friend Sub ConstructArrayMap()
             If _arrMap?.Count > 0 Then Return
 
             _arrMap = New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)

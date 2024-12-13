@@ -49,7 +49,7 @@ Namespace Library
         End Function
 
         ''' <summary>
-        ''' Appends two text inputs and returns the result as another text.  This operation is particularly useful when dealing with unknown text in variables which could accidentally be treated as numbers and get added, instead of getting appended.
+        ''' Appends two text inputs and returns the resultant text..
         ''' </summary>
         ''' <param name="text1">First part of the text to be appended.</param>
         ''' <param name="text2">Second part of the text to be appended. You can also send an array to append all its items.</param>
@@ -410,6 +410,21 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Repeats the input text to for the given number of times.
+        ''' For examle, when you repeat "aB" 3 times, it returns "aBaBaB".
+        ''' </summary>
+        ''' <param name="text">the input text</param>
+        ''' <param name="count">the number of times to repeat the text.</param>
+        ''' <returns>the repeated text</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function Repeat(text As Primitive, count As Primitive) As Primitive
+            If text.IsEmpty OrElse Not count.IsNumber Then
+                Return New Primitive()
+            End If
+            Return Primitive.Duplicate(text.ToString(), count)
+        End Function
+
+        ''' <summary>
         ''' Converts all characters of the input text to upper case.
         ''' </summary>
         ''' <param name="text">the input text</param>
@@ -471,6 +486,22 @@ Namespace Library
                 Return value
             End If
         End Function
+
+
+        ''' <summary>
+        '''Converts the given string to an array, if it has a valid array format.
+        ''' </summary>
+        ''' <param name="value">the input string</param>
+        ''' <returns>an array that is constructed from the input string if it has a valid array format, otherwise an empty array.</returns>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        Public Shared Function ToArray(value As Primitive) As Primitive
+            If value.IsArray Then
+                Return value
+            Else
+                Return Array.EmptyArray
+            End If
+        End Function
+
 
         ''' <summary>
         '''Returns true if the given text is empty, or returns false otherwise.

@@ -165,7 +165,7 @@ Namespace WinForms
         ''' <param name="value">the item to search for</param>
         ''' <param name="start">an integer representing the array index to start searching at</param>
         ''' <param name="ignoreCase">set it to true if you want to do an case-insensetive search</param>
-        ''' <returns>the index or string key of the item if found, otherwise empty string</returns>
+        ''' <returns>the index or string key of the item if found, otherwise an empty string</returns>
         <WinForms.ReturnValueType(VariableType.String)>
         <ExMethod>
         Public Shared Function Find(
