@@ -13,6 +13,7 @@ Namespace WinForms
         Shared Sub New()
             FillModuleMembers(GetType(Forms))
             FillModuleMembers(GetType(Form))
+            FillModuleMembers(GetType(GraphicsWindow))
             FillModuleMembers(GetType(Control))
             FillModuleMembers(GetType(TextBox))
             FillModuleMembers(GetType(Label))
@@ -38,7 +39,6 @@ Namespace WinForms
             FillModuleMembers(GetType(SoundEx))
             FillModuleMembers(GetType(ShapesEx))
 
-            deafaultControlEvents(NameOf(Form).ToLower()) = "OnShown"
             deafaultControlEvents(NameOf(TextBox).ToLower()) = "OnTextChanged"
             deafaultControlEvents(NameOf(ListBox).ToLower()) = "OnSelection"
             deafaultControlEvents(NameOf(ComboBox).ToLower()) = "OnSelection"
@@ -279,11 +279,13 @@ Namespace WinForms
             Dim events As New List(Of String)
             If controlName = NameOf(Forms) Then Return events
 
-            If controlName <> NameOf(ImageBox) AndAlso controlName <> NameOf(WinTimer) Then
-                For Each e In eventsInfo(NameOf(Control))
-                    events.Add(e)
-                Next
-            End If
+            Select Case controlName
+                Case NameOf(ImageBox), NameOf(WinTimer), NameOf(GraphicsWindow)
+                Case Else
+                    For Each e In eventsInfo(NameOf(Control))
+                        events.Add(e)
+                    Next
+            End Select
 
             If controlName <> NameOf(Control) Then
                 For Each e In eventsInfo(controlName)

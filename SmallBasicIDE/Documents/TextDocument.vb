@@ -27,6 +27,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Inherits FileDocument
         Implements INotifyImport
 
+        Const GW = NameOf(Library.GraphicsWindow)
+        Const GlobalSection = "(Global)"
+        Private Shared GwEventNames As List(Of String) = PreCompiler.GetEvents(GW)
         Friend Shared ScaleFactor As Double = CDbl(GetSetting("SmallVisualBasic", "User", "ScaleFactor", "1"))
         Private saveMarker As UndoTransactionMarker
         Private _textBuffer As ITextBuffer
@@ -302,7 +305,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
             saveMarker = New UndoTransactionMarker()
             App.GlobalDomain.AddComponent(Me)
             App.GlobalDomain.Bind()
-            _ControlNames.Add("(Global)")
+            _ControlNames.Add(GlobalSection)
+            _ControlNames.Add(GW)
             _GlobalSubs.Add(AddNewFunc)
             _GlobalSubs.Add(AddNewSub)
             _GlobalSubs.Add(AddNewTest)
@@ -362,6 +366,15 @@ Namespace Microsoft.SmallVisualBasic.Documents
                             If _EventHandlers.ContainsKey(handlerName) Then
                                 UpdateCombos(_EventHandlers(handlerName))
 
+                            ElseIf handlerName.StartsWith(GW & "_") Then
+                                Dim eventName = handlerName.Substring(GW.Length + 1)
+                                If GWEventNames.Contains(eventName) Then
+                                    UpdateCombos(New EventInformation(GW, eventName))
+                                Else ' Global
+                                    FixGlobalSubs(handlerName)
+                                    _MdiView.CmbControlNames.SelectedIndex = 0
+                                    _MdiView.SelectEventName(handlerName)
+                                End If
                             Else
                                 Dim eventInfo = GetHandlerInfo(handlerName)
                                 If eventInfo.ControlName <> "" Then
@@ -1199,6 +1212,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Public ReadOnly Property ControlEvents As New ObservableCollection(Of String)
         Public ReadOnly Property ControlNames As New ObservableCollection(Of String)
         Public Property EventHandlers As New Dictionary(Of String, EventInformation)
+        Public Property GwHandlers As New Dictionary(Of String, EventInformation)
 
         Dim _form As String
 
@@ -1232,7 +1246,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
             genCode.AppendLine("'@Form Hints:")
             genCode.AppendLine($"'#{formName}{{")
-            controlNamesList.Add("(Global)")
+            controlNamesList.Add(GlobalSection)
+            controlNamesList.Add(GW)
             controlsInfoList(formName.ToLower()) = "Form"
             controlsInfoList("me") = "Form"
             controlNamesList.Add(formName)
@@ -1328,6 +1343,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
                                     Into EventInfo = Group
 
                 For Each ev In controlEvents
+                    If ev.ControlName = GW Then Continue For
+
                     genCode.Append($"'    {ev.ControlName}:")
                     sbHandlers.AppendLine($"' {ev.ControlName} Events:")
                     sbHandlers.AppendLine($"Control.HandleEvents({ev.ControlName})")
@@ -1396,7 +1413,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
             info.ControlNames.Sort()
             _ControlNames.Clear()
-            _ControlNames.Add("(Global)")
+            _ControlNames.Add(GlobalSection)
+            _ControlNames.Add(GW)
 
             For Each c In info.ControlNames
                 _ControlNames.Add(c)
@@ -1492,7 +1510,7 @@ EndFunction
                     ) As Boolean
 
             Dim alreadyExists = False
-            Dim isGlobal = (controlName = "(Global)")
+            Dim isGlobal = (controlName = GlobalSection)
             Dim handlerName = If(isGlobal, "", controlName & "_") &
                         If(eventName.StartsWith("(Add New "), "", eventName)
 
@@ -1500,16 +1518,23 @@ EndFunction
             If handlerName = "" Then
                 pos = -1
 
-            ElseIf isGlobal AndAlso _GlobalSubs.Contains(handlerName) Then
-                pos = FindEventHandler(handlerName)
-
-            ElseIf _EventHandlers.ContainsKey(handlerName) Then
+            ElseIf (isGlobal AndAlso _GlobalSubs.Contains(handlerName)) OrElse
+                    _EventHandlers.ContainsKey(handlerName) OrElse
+                    _GwHandlers.ContainsKey(handlerName) Then
                 pos = FindEventHandler(handlerName)
 
             Else ' Restore Broken Handler
                 pos = FindEventHandler(handlerName)
                 If pos > -1 Then
-                    _EventHandlers(handlerName) = New EventInformation(controlName, eventName)
+                    If controlName = GW Then
+                        If GWEventNames.Contains(eventName) Then
+                            _GwHandlers(handlerName) = New EventInformation(controlName, eventName)
+                        Else
+                            FixGlobalSubs(handlerName)
+                        End If
+                    Else
+                        _EventHandlers(handlerName) = New EventInformation(controlName, eventName)
+                    End If
                 End If
             End If
 
@@ -1594,8 +1619,14 @@ EndFunction
 
                 Else
                     caret.MoveTo(Me.Text.Length)
-                    _EventHandlers(handlerName) = New EventInformation(controlName, eventName)
                     Dim handler = subDefinition.Replace("#", handlerName)
+                    If controlName = GW Then
+                        handler = handler.Insert(53, $"{vbCrLf}{controlName}.{eventName} = {handlerName}{vbCrLf}")
+                        _GwHandlers(handlerName) = New EventInformation(controlName, eventName)
+                    Else
+                        _EventHandlers(handlerName) = New EventInformation(controlName, eventName)
+                    End If
+
                     _editorControl.EditorOperations.InsertText(handler, _undoHistory)
                     EnsureAtTop(Text.Length - 10)
                     alreadyExists = True
@@ -1619,6 +1650,13 @@ EndFunction
             _IgnoreCaretPosChange = False
             Return Not alreadyExists
         End Function
+
+        Private Sub FixGlobalSubs(handlerName As String)
+            _GwHandlers.Remove(handlerName)
+            If Not _GlobalSubs.Contains(handlerName) Then
+                _GlobalSubs.Add(handlerName)
+            End If
+        End Sub
 
         Public Sub SelectWordAt(
                         line As Integer,
@@ -1788,14 +1826,16 @@ EndFunction
                         Dim subName = token.Text
                         If Not _EventHandlers.ContainsKey(subName) Then
                             ' If name has the form Control_Event, add ot to EventHandlers.
-                            Dim info = GetHandlerInfo(subName.ToLower())
-                            If info.ControlName <> "" Then
-                                _EventHandlers(subName) = info
-                            Else
+                            Dim info = GetHandlerInfo(subName)
+                            If info.ControlName = "" Then
                                 _GlobalSubs.Add(subName)
                                 If Not hasChanged Then
                                     hasChanged = Not _ControlEvents.Contains(subName)
                                 End If
+                            ElseIf info.ControlName = GW Then
+                                _GwHandlers(subName) = info
+                            Else
+                                _EventHandlers(subName) = info
                             End If
                         End If
                     End If
@@ -1805,7 +1845,7 @@ EndFunction
             If Not hasChanged AndAlso _ControlEvents.Count = _GlobalSubs.Count Then Return
 
             _GlobalSubs.Sort()
-            If _MdiView Is Nothing OrElse CStr(_MdiView.CmbControlNames.SelectedItem) = "(Global)" Then
+            If _MdiView Is Nothing OrElse CStr(_MdiView.CmbControlNames.SelectedItem) = GlobalSection Then
                 If _MdiView IsNot Nothing Then _MdiView.FreezeCmbEvents = True
                 _ControlEvents.Clear()
                 For Each sb In _GlobalSubs
@@ -1816,7 +1856,18 @@ EndFunction
         End Sub
 
         Public Function GetHandlerInfo(subName As String) As EventInformation
-            If _ControlsInfo Is Nothing Then Return New EventInformation("", "")
+            If subName.StartsWith(GW & "_") Then
+                Dim eventName = subName.Substring(GW.Length + 1)
+                If GWEventNames.Contains(eventName) Then
+                    Return New EventInformation(GW, eventName)
+                Else
+                    GwHandlers.Remove(subName)
+                    Return Nothing
+                End If
+            End If
+
+            If _ControlsInfo Is Nothing Then Return Nothing
+
             subName = subName.ToLower()
             For Each controlInfo In _ControlsInfo
                 Dim controlName = controlInfo.Key
@@ -1963,7 +2014,7 @@ EndFunction
                 Dim Token = LineScanner.GetFirstToken(line.GetText(), line.LineNumber)
                 Select Case Token.Type
                     Case TokenType.Sub, TokenType.Function
-                        Return If(prevLinePos=-1, line.Start,prevLinePos)
+                        Return If(prevLinePos = -1, line.Start, prevLinePos)
                     Case TokenType.Comment
                         If Token.Text.Contains("------------") Then prevLinePos = line.Start
                 End Select

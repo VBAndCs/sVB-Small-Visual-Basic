@@ -1244,6 +1244,13 @@ Namespace Library
 
         Private Shared dispatcher As Threading.Dispatcher = SmallBasicApplication.Dispatcher
 
+        Shared Sub New()
+            ' Ensure Keyboard and Mouse modules are loaded, 
+            ' to create a global hanler for the PreviewKeyDown and PreviewMouseWheelEvent events
+            Dim __ = WinForms.Keyboard.LastKey
+            __ = Mouse.LastMouseWheelDirection
+        End Sub
+
         ''' <summary>
         ''' Draws the pixel specified by the x and y co-ordinates using the specified color.
         ''' </summary>

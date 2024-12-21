@@ -261,6 +261,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0D83E2C3AFF54599A8BB240828F17D20"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0D965C712F1D42B586F88B99856E66F1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -957,6 +963,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4B84095DA7CC4AE78E2BD5A3FCD1D7B0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4C543DE567DD438A8396323596ED8E43"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1341,6 +1353,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_690B1C84368E481C898CFAE2CD3C3344"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6943B36C55D3411C86A86FDCAA39B987"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1642,6 +1660,12 @@
         "Entry"
         {
         "MsmKey" = "8:_7C2CBE37776142608DD6048C489A333F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7D99D21839A944E9B2616D5BC74C2AF7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2314,6 +2338,12 @@
         "Entry"
         {
         "MsmKey" = "8:_AF420AF299EB45519C6866A240F710CD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AF61FB05E5D14ED2AF9B0F7869E80B6C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3483,6 +3513,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_FBA67ABDA8034A7BAE3CBE94E05A5C3C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_FBC26C8B2C724262A5FC9D106A333ED3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3725,7 +3761,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.1_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.1.1_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -4568,6 +4604,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_FE5815EE95BA4D33A663BEEB5E9A06C5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0D83E2C3AFF54599A8BB240828F17D20"
+            {
+            "SourcePath" = "8:..\\Samples\\Drawing Samples\\Draw Cup.sb"
+            "TargetName" = "8:Draw Cup.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_29351D70CCB044B581F9453C9FD90166"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6937,6 +6993,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B84095DA7CC4AE78E2BD5A3FCD1D7B0"
+            {
+            "SourcePath" = "8:..\\Samples\\Puzzles\\Password Cracker\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_33EE10B0567A49DA82B510D25351571F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4C543DE567DD438A8396323596ED8E43"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Simple Calculator 3\\frmcalc.xaml"
@@ -8228,6 +8304,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_690B1C84368E481C898CFAE2CD3C3344"
+            {
+            "SourcePath" = "8:..\\Samples\\Puzzles\\Password Cracker\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_33EE10B0567A49DA82B510D25351571F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6943B36C55D3411C86A86FDCAA39B987"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Mouse pos\\Form1.sb.gen"
@@ -9256,6 +9352,26 @@
             "TargetName" = "8:FrmTestResults.xaml"
             "Tag" = "8:"
             "Folder" = "8:_A7AF2C6B342D4451B798AAAFA9691C1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D99D21839A944E9B2616D5BC74C2AF7"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Adam.sb"
+            "TargetName" = "8:Adam.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11480,6 +11596,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_70CAEB29D0D94445BD0F5B77A0DC2F4F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AF61FB05E5D14ED2AF9B0F7869E80B6C"
+            {
+            "SourcePath" = "8:..\\Samples\\Puzzles\\Password Cracker\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_33EE10B0567A49DA82B510D25351571F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15200,6 +15336,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FBA67ABDA8034A7BAE3CBE94E05A5C3C"
+            {
+            "SourcePath" = "8:..\\Samples\\Puzzles\\Password Cracker\\Puzzle.jpg"
+            "TargetName" = "8:Puzzle.jpg"
+            "Tag" = "8:"
+            "Folder" = "8:_33EE10B0567A49DA82B510D25351571F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FBC26C8B2C724262A5FC9D106A333ED3"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\TextChanged\\Form1.xaml"
@@ -16770,6 +16926,17 @@
                             "Property" = "8:_52136A692A28463B9E30E99D6BCC1124"
                                 "Folders"
                                 {
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_33EE10B0567A49DA82B510D25351571F"
+                                    {
+                                    "Name" = "8:Password Cracker"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_39DCA26116E843FD89A47E4A72BADA36"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_5A6818C393594325A514D3F5ED03A6B2"
                                     {
                                     "Name" = "8:Eggs Puzzle"
@@ -16968,7 +17135,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.1"
+        "ProductName" = "8:Small Visual Basic 3.1.1"
         "ProductCode" = "8:{6D953381-E9BB-427B-B542-ED93E60B1FC2}"
         "PackageCode" = "8:{0E18A135-558D-4470-88E7-7D29D4AC839F}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -17162,7 +17329,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.1"
+            "Name" = "8:sVB 3.1.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -17204,7 +17371,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.1"
+            "Name" = "8:sVB 3.1.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -17232,7 +17399,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.1"
+            "Name" = "8:sVB 3.1.1"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

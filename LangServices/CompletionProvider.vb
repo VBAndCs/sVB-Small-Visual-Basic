@@ -981,7 +981,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
             Dim properties = textBuffer.Properties
             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
-            Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
+            Dim controlNames = GetControlNames(textBuffer)
             Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
             Dim lastIndex = tokens.Count - 1
             Dim prevToken As Token = Nothing
@@ -1383,7 +1383,7 @@ LineShow:
             Dim especialItem = ""
             Dim properties = textBuffer.Properties
             Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
-            Dim controlNames = properties.GetProperty(Of List(Of String))("ControlNames")
+            Dim controlNames = GetControlNames(textBuffer)
             Dim source = New TextBufferReader(line.TextSnapshot)
             Dim gp = GlobalParser
             Dim symbolTable = compHelper.Compile(

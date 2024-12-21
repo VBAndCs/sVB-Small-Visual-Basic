@@ -1,0 +1,60 @@
+
+
+' ------------------------------------------------
+Sub Button1_OnClick()
+   For number = 0 To 999
+      code = Text.Repeat(0, 3 - Text.GetLength(number)) & number
+      If Distinct(code) And
+            Inplace(code, 682, 1) And
+            Misplaced(code, 614, 1) And
+            Misplaced(code, 206, 2) And
+            Reject(code, 738) = False And
+            Misplaced(code, 780, 1) Then
+         Forms.ShowMessage("Code: " + code, "Message")
+      EndIf
+   Next
+EndSub
+
+' ------------------------------------------------
+Function Distinct(code)
+   Return code[1] <> code[2] And
+      code[1] <> code[2] And
+      code[2] <> code[3]
+EndFunction
+
+' ------------------------------------------------
+Function Inplace(code, clue, count)
+   n = 0
+   For i = 1 To 3
+      If code[i] = clue[i] Then
+         n = n + 1
+      EndIf
+   Next
+   Return n = count
+EndFunction
+
+' ------------------------------------------------
+Function Misplaced(code, clue, count)
+   n = 0
+   For i = 1 To 3
+      If code[i] = clue[i] Then
+         Return False
+      EndIf
+      If Text.Contains(clue, code[i]) Then
+         n = n + 1
+      EndIf
+   Next
+   Return n = count
+EndFunction
+
+
+' ------------------------------------------------
+Function Reject(code, clue)
+   ForEach digit In clue
+      If Text.Contains(code, digit) Then
+         Return True
+      EndIf
+   Next
+   Return False
+EndFunction
+

@@ -98,7 +98,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             If textView.Properties.TryGetProperty(GetType(CompletionSurface), completionSurface) Then
                 If completionSurface.IsAdornmentVisible Then
                     Select Case args.Text
-                        Case "+", "-", "*", "/", "%"
+                        Case "&", "+", "-", "*", "/", "%"
                             args.Handled = CommitConditionally(textView, completionSurface, " " & args.Text & " ")
 
                         Case "="
@@ -197,7 +197,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     If nextToken.Type = TokenType.LeftParens Then
                         repWith = repWith.TrimEnd("("c, ")"c)
                     ElseIf repWith.EndsWith("(") Then
-                        If nextToken.IsIllegal OrElse nextToken.ParseType = ParseType.Operator Then
+                        If nextToken.IsIllegal OrElse
+                                nextToken.ParseType = ParseType.Operator OrElse
+                                nextToken.ParseType = ParseType.Keyword Then
                             If extraText <> ")" Then extraText &= ")"
                         ElseIf extraText = ")" Then
                             extraText = ""

@@ -2,6 +2,7 @@
 Imports System.Collections.Generic
 Imports System.Collections.Specialized
 Imports System.Linq
+Imports System.Runtime.InteropServices
 Imports System.Windows
 Imports System.Windows.Controls
 Imports System.Windows.Input
@@ -333,6 +334,8 @@ Namespace Microsoft.SmallVisualBasic.Shell
                    End Sub)
         End Sub
 
+        Const GW = "GraphicsWindow"
+
         Private Sub ControlNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             Dim cmb = CType(sender, ComboBox)
             Dim controlName = CStr(cmb.SelectedItem)
@@ -351,7 +354,11 @@ Namespace Microsoft.SmallVisualBasic.Shell
                     events.Add(sb)
                 Next
             Else
-                Dim typeName = selectedView.Document.ControlsInfo(controlName.ToLower())
+                Dim controlsInfo = selectedView.Document.ControlsInfo
+                Dim typeName = If(controlsInfo Is Nothing OrElse controlName = GW,
+                                                GW,
+                                                controlsInfo(controlName.ToLower())
+                                           )
                 For Each ev In WinForms.PreCompiler.GetEvents(typeName)
                     events.Add(ev)
                 Next
@@ -365,6 +372,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
             For i = 0 To cmb.Items.Count - 1
                 Dim item = CType(cmb.ItemContainerGenerator.ContainerFromIndex(i), ComboBoxItem)
                 If item Is Nothing Then Return
+
                 item.FontWeight = If((isGlobal AndAlso i > 3) OrElse
                     (Not isGlobal AndAlso events.Contains(cmb.Items(i))),
                     FontWeights.Bold, FontWeights.Normal
@@ -478,6 +486,8 @@ Namespace Microsoft.SmallVisualBasic.Shell
                  End Sub)
         End Sub
 
+        Dim ignorCase = StringComparer.OrdinalIgnoreCase
+
         Public Sub SelectHandlers(
                        selectedView As MdiView,
                        controlName As String,
@@ -489,24 +499,26 @@ Namespace Microsoft.SmallVisualBasic.Shell
                 Return
             End If
 
-            Dim eventNames = From h In selectedView.Document.EventHandlers
+            Dim doc = selectedView.Document
+            Dim handlers = If(controlName = GW, doc.GwHandlers, doc.EventHandlers)
+
+            Dim eventNames = From h In handlers
                              Let ev = h.Value.EventName
-                             Where h.Value.ControlName = controlName
+                             Where h.Value.ControlName = controlName AndAlso
+                                 doc.FindEventHandler($"{controlName}_{h.Value.EventName}") > -1
                              Order By ev
                              Select ev
 
             If eventNames.Any Then
-                Dim e = If(eventName = "", eventNames.First, eventName)
+                Dim e = If(
+                        eventName = "" OrElse
+                            Not eventNames.Contains(eventName, ignorCase),
+                        eventNames.First,
+                        eventName
+                 )
                 If selectedView.CmbEventNames.SelectedIndex = -1 Then
                     Dim h = controlName & "_" & e
-                    If selectedView.Document.FindEventHandler(h) = -1 Then
-                        If RemoveEventHandler(selectedView.Document.EventHandlers, h.ToLower()) Then
-                            SelectHandlers(selectedView, controlName, eventName)
-                        End If
-                        Return
-                        Else
-                            selectedView.CmbEventNames.SelectedItem = e
-                    End If
+                    selectedView.CmbEventNames.SelectedItem = e
                 End If
                 SetItemsBold(selectedView.CmbEventNames, eventNames.ToArray())
             End If
@@ -515,7 +527,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
         Private Function RemoveEventHandler(eventHandlers As Dictionary(Of String, WinForms.EventInformation), handler As String) As Boolean
             Dim key = ""
             For Each h In eventHandlers.Keys
-                If h.ToLower = h Then
+                If h.ToLower = handler Then
                     key = h
                     Exit For
                 End If

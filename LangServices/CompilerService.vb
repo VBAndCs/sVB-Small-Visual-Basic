@@ -829,8 +829,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             DummyCompiler.Compile(New TextBufferReader(buffer.CurrentSnapshot), True)
             Dim symbolTable = _compiler.Parser.SymbolTable
             symbolTable.ModuleNames = buffer.Properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
-            symbolTable.ControlNames = buffer.Properties.GetProperty(Of List(Of String))("ControlNames")
+            symbolTable.ControlNames = GetControlNames(buffer)
             Return symbolTable
+        End Function
+
+        Friend Function GetControlNames(buffer As ITextBuffer) As List(Of String)
+            Dim controlNames = buffer.Properties.GetProperty(Of List(Of String))("ControlNames")
+            If controlNames Is Nothing Then Return New List(Of String)
+
+            Return (From name In controlNames
+                    Where name.ToLower() <> "graphicswindow").ToList()
         End Function
 
         Public Function FindCurrentSubStart(textSnapshot As ITextSnapshot, LineNumber As Integer) As Integer

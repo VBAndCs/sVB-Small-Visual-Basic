@@ -1,0 +1,16 @@
+GW.PenColor = Colors.Goldenrod
+A = 18
+B = 0.4
+C = 200
+N = 24
+W = 500
+Y = 50
+
+For I = 10 To 500 Step 3
+   X = C * (I / N - (I - A) / (N - B))
+   GW.DrawLine(
+      W - X, Y + I,
+      W + X, Y + I
+   )
+   N = N - 0.1
+Next
