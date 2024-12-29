@@ -42,5 +42,9 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
             Return -_Expression.Evaluate(runner)
         End Function
+
+        Public Overrides Function ToVB() As String
+            Return $"-{Expression.ToVB()}"
+        End Function
     End Class
 End Namespace

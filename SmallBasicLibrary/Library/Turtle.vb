@@ -78,6 +78,7 @@ Namespace Library
         End Sub
 
         Friend Shared Sub Initialize(Optional resetSpeed As Boolean = True)
+            turtleLine = Nothing
             _initialized = False
             IsVisible = True
             _currentX = 320.0
@@ -168,6 +169,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
+                If turtleLine IsNot Nothing Then Return
                 _currentX = Value
                 Shapes.Move(_turtleName, _currentX, _currentY)
             End Set
@@ -183,6 +185,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
+                If turtleLine IsNot Nothing Then Return
                 _currentY = Value
                 Shapes.Move(_turtleName, _currentX, _currentY)
             End Set
@@ -272,6 +275,7 @@ Namespace Library
         End Sub
 
         Private Shared animationX, animationY As DoubleAnimation
+        Private Shared turtleLine As Line
 
         ''' <summary>
         ''' Moves the turtle to a specified distance. If the pen is down, it will draw a line as it moves.
@@ -280,7 +284,9 @@ Namespace Library
         ''' The distance to move the turtle.
         ''' </param>
         Public Shared Sub Move(distance As Primitive)
-            If Not _UseAnimation Then
+            If turtleLine IsNot Nothing Then Return
+
+            If Not _useAnimation Then
                 DirectMove(distance)
                 Return
             End If
@@ -303,14 +309,14 @@ Namespace Library
                     Sub()
                         If _penDown Then
                             Dim name As String = Shapes.GenerateNewName("_turtleLine")
-                            Dim line1 As New Line With {
+                            turtleLine = New Line With {
                                   .Name = name,
                                   .X1 = _currentX,
                                   .Y1 = _currentY,
                                   .Stroke = GraphicsWindow._pen.Brush,
                                   .StrokeThickness = GraphicsWindow._pen.Thickness
                             }
-                            GraphicsWindow.AddShape(name, line1)
+                            GraphicsWindow.AddShape(name, turtleLine)
 
                             If animationX Is Nothing Then
                                 animationX = New DoubleAnimation()
@@ -325,8 +331,8 @@ Namespace Library
                             animationY.To = newY
                             animationY.Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
 
-                            line1.BeginAnimation(Line.X2Property, animationX)
-                            line1.BeginAnimation(Line.Y2Property, animationY)
+                            turtleLine.BeginAnimation(Line.X2Property, animationX)
+                            turtleLine.BeginAnimation(Line.Y2Property, animationY)
                         End If
 
                         If _path IsNot Nothing Then
@@ -341,6 +347,7 @@ Namespace Library
                     End Sub)
 
             WaitForReturn(animateTime)
+            turtleLine = Nothing
         End Sub
 
         ''' <summary>
@@ -350,6 +357,8 @@ Namespace Library
         ''' The distance to move the turtle.
         ''' </param>
         Public Shared Sub DirectMove(distance As Primitive)
+            If turtleLine IsNot Nothing Then Return
+
             VerifyAccess()
             If Not GraphicsWindow._windowCreated Then Return
 
@@ -398,7 +407,9 @@ Namespace Library
         ''' The y co-ordinate of the destination point.
         ''' </param>
         Public Shared Sub MoveTo(newX As Primitive, newY As Primitive)
-            If Not _UseAnimation Then
+            If turtleLine IsNot Nothing Then Return
+
+            If Not _useAnimation Then
                 DirectMoveTo(newX, newY)
                 Return
             End If
@@ -420,6 +431,8 @@ Namespace Library
         ''' The y co-ordinate of the destination point.
         ''' </param>
         Public Shared Sub DirectMoveTo(newX As Primitive, newY As Primitive)
+            If turtleLine IsNot Nothing Then Return
+
             Dim deltaAngle As Double
             Dim distance As Double
             GetAngleAndDistance(newX, newY, deltaAngle, distance)
@@ -465,7 +478,9 @@ Namespace Library
         ''' If it is negative, the turtle turns to its left.
         ''' </param>
         Public Shared Sub Turn(angle As Primitive)
-            If Not _UseAnimation Then
+            If turtleLine IsNot Nothing Then Return
+
+            If Not _useAnimation Then
                 DirectTurn(angle)
                 Return
             End If
@@ -496,6 +511,8 @@ Namespace Library
         ''' If it is negative, the turtle turns to its left.
         ''' </param>
         Public Shared Sub DirectTurn(angle As Primitive)
+            If turtleLine IsNot Nothing Then Return
+
             VerifyAccess()
             If Not GraphicsWindow._windowCreated Then Return
 

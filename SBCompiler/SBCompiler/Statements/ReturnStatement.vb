@@ -39,7 +39,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Sub
 
         Public Overrides Function ToString() As String
-            Return $"{StartToken} {ReturnExpression}" & vbCrLf
+            If ReturnExpression Is Nothing Then
+                Return StartToken.Text & vbCrLf
+            Else
+                Return $"{StartToken.Text} {ReturnExpression}" & vbCrLf
+            End If
         End Function
 
         Public Overrides Sub PopulateCompletionItems(
@@ -60,6 +64,14 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 runner.Fields($"{Subroutine.Name.LCaseText}.return") = ReturnExpression.Evaluate(runner)
             End If
             Return Me
+        End Function
+
+        Public Overrides Function ToVB() As String
+            If ReturnExpression Is Nothing Then
+                Return StartToken.Text & vbCrLf
+            Else
+                Return $"{StartToken.Text} {ReturnExpression.ToVB}" & vbCrLf
+            End If
         End Function
     End Class
 End Namespace

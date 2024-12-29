@@ -191,5 +191,26 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             End If
         End Function
 
+        Public Overrides Function ToVB() As String
+            Dim sb As New StringBuilder()
+
+            If Not _TypeName.IsIllegal Then
+                sb.Append($"{_TypeName.Text}.")
+            End If
+
+            sb.Append(_MethodName.Text & "(")
+
+            If _Arguments.Count > 0 Then
+                For Each arg In _Arguments
+                    sb.Append(arg.ToVB())
+                    sb.Append(", ")
+                Next
+
+                sb.Remove(sb.Length - 2, 2)
+            End If
+
+            sb.Append(")")
+            Return sb.ToString()
+        End Function
     End Class
 End Namespace

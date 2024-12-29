@@ -176,5 +176,19 @@ Namespace Microsoft.SmallVisualBasic.Statements
             If stepOut Then runner.Depth -= 1
             Return Nothing
         End Function
+
+        Public Overrides Function ToVB() As String
+            Dim sb As New StringBuilder()
+            sb.AppendLine("While ")
+            sb.AppendLine(Condition.ToVB())
+
+            For Each st In Body
+                sb.Append("  ")
+                sb.Append(st.ToVB())
+            Next
+
+            sb.AppendLine("End While")
+            Return sb.ToString()
+        End Function
     End Class
 End Namespace

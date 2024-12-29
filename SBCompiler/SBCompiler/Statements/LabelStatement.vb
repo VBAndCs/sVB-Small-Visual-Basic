@@ -70,5 +70,9 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Overrides Function Execute(runner As ProgramRunner) As statement
             Return Nothing
         End Function
+
+        Public Overrides Function ToVB() As String
+            Return $"{LabelToken.Text}:" & vbCrLf
+        End Function
     End Class
 End Namespace

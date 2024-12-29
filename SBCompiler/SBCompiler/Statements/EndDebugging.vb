@@ -14,6 +14,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
             Return Me
         End Function
+
+        Public Overrides Function ToVB() As String
+            Return ""
+        End Function
     End Class
 
 End Namespace

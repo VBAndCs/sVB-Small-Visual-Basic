@@ -57,5 +57,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return If(SmallVisualBasic.Library.Program.IsTerminated, New EndDebugging(), Nothing)
         End Function
 
+        Public Overrides Function ToVB() As String
+            Return MethodCallExpression.ToVB() & vbCrLf
+        End Function
     End Class
 End Namespace

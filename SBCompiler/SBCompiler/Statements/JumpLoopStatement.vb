@@ -93,5 +93,22 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
             Return Me
         End Function
+
+        Public Overrides Function ToVB() As String
+            Dim parentLoops = Me.GetParentLoops()
+            Dim loopType = If(parentLoops(0).StartToken.Type = TokenType.While,
+                                            "While",
+                                            "For")
+
+            If parentLoops.Count = 1 OrElse UpLevel = 0 Then
+                If StartToken.Type = TokenType.ExitLoop Then
+                    Return "Exit " & loopType
+                Else
+                    Return "Continue " & loopType
+                End If
+            Else
+                ' ToDo: use GoTo
+            End If
+        End Function
     End Class
 End Namespace

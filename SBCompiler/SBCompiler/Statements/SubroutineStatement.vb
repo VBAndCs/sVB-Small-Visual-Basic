@@ -347,8 +347,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
                     sb.Append(Params(i).Text)
                     If i < n Then sb.Append(", ")
                 Next
-                sb.AppendLine(")")
+                sb.Append(")")
             End If
+
+            sb.AppendLine()
 
             For Each st In Body
                 sb.Append(st.ToString())
@@ -453,5 +455,35 @@ Namespace Microsoft.SmallVisualBasic.Statements
                 End If
             Next
         End Sub
+
+        Public Overrides Function ToVB() As String
+            Dim sb As New StringBuilder(SubToken.Text)
+            sb.Append(" ")
+            sb.Append(Name.Text)
+
+            If Params IsNot Nothing Then
+                Dim n = Params.Count - 1
+                sb.Append("(")
+                For i = 0 To n
+                    sb.Append(Params(i).Text)
+                    sb.Append(" As Primitive")
+                    If i < n Then sb.Append(", ")
+                Next
+                sb.Append(")")
+            End If
+
+            If SubToken.Type = TokenType.Function Then
+                sb.Append(" As Primitive")
+            End If
+
+            sb.AppendLine()
+
+            For Each st In Body
+                sb.Append(st.ToVB())
+            Next
+
+            sb.AppendLine("End " & SubToken.Text)
+            Return sb.ToString()
+        End Function
     End Class
 End Namespace

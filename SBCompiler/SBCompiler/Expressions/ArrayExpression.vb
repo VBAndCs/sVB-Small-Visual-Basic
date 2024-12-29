@@ -117,5 +117,8 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             Return Nothing
         End Function
 
+        Public Overrides Function ToVB() As String
+            Return $"{LeftHand.ToVB()}({Indexer.ToVB()})"
+        End Function
     End Class
 End Namespace

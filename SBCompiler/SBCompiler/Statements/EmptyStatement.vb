@@ -10,11 +10,15 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Function
 
         Public Overrides Function ToString() As String
-            Return vbCrLf
+            Return EndingComment.Text & vbCrLf
         End Function
 
         Public Overrides Function Execute(runner As ProgramRunner) As statement
             Return Nothing
+        End Function
+
+        Public Overrides Function ToVB() As String
+            Return EndingComment.Text & vbCrLf
         End Function
     End Class
 End Namespace

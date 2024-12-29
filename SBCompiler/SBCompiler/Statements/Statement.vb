@@ -53,6 +53,9 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Public MustOverride Function GetStatementAt(lineNumber As Integer) As Statement
 
+        Public MustOverride Function ToVB() As String
+
+
         Public Overridable Sub PrepareForEmit(scope As CodeGenScope)
         End Sub
 

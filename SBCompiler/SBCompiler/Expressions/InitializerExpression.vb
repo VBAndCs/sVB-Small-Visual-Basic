@@ -122,5 +122,22 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             Next
             Return arr
         End Function
+
+        Public Overrides Function ToVB() As String
+            Dim x = New Primitive({1, 2, 3, 4}, False)
+            Dim sb As New StringBuilder("New Primitive({")
+
+            If Arguments.Count > 0 Then
+                For Each arg In Arguments
+                    sb.Append(arg.ToVB())
+                    sb.Append(", ")
+                Next
+
+                sb.Remove(sb.Length - 2, 2)
+            End If
+
+            sb.Append("}, False)")
+            Return sb.ToString()
+        End Function
     End Class
 End Namespace

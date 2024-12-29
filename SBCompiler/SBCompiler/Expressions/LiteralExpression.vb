@@ -129,10 +129,10 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
             Select Case Literal.Type
                 Case TokenType.StringLiteral
-                    Return New Library.Primitive(GetString(Literal.Text, """"))
+                    Return New Library.Primitive(GetString(text, """"))
 
                 Case TokenType.DateLiteral
-                    Dim result = Parser.ParseDateLiteral(Literal.Text)
+                    Dim result = Parser.ParseDateLiteral(text)
                     Return If(result.IsDate,
                         Library.Primitive.DateToPrimitive(result.Ticks),
                         Library.Primitive.TimeSpanToPrimitive(result.Ticks)
@@ -150,6 +150,20 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         End Function
 
+        Public Overrides Function ToVB() As String
+            Dim text = _Literal.Text
+
+            If Literal.Type = TokenType.DateLiteral Then
+                Dim result = Parser.ParseDateLiteral(text)
+                If result.IsDate Then
+                    Return $"Date.Parse(""{text.Trim("#"c)}"", CultureInfo.InvariantCulture)"
+                Else
+                    Return $"TimeSpan.Parse(""{text.Trim("#"c, "+"c)}"", CultureInfo.InvariantCulture)"
+                End If
+            Else
+                Return text
+            End If
+        End Function
     End Class
 
 End Namespace

@@ -447,5 +447,24 @@ Namespace Microsoft.SmallVisualBasic.Statements
             If stepOut Then runner.Depth -= 1
             Return Nothing
         End Function
+
+        Public Overrides Function ToVB() As String
+            Dim sb As New StringBuilder()
+            sb.Append($"{ForToken.Text} {Iterator.Text} = {_InitialValue.ToVB} To {_FinalValue.ToVB}")
+
+            If Not StepToken.IsIllegal Then
+                sb.Append($"{StepToken.Text} { _StepValue.ToVB}")
+            End If
+
+            sb.AppendLine()
+
+            For Each st In Body
+                sb.Append("  ")
+                sb.Append(st.ToVB())
+            Next
+
+            sb.AppendLine(EndLoopToken.Text)
+            Return sb.ToString()
+        End Function
     End Class
 End Namespace

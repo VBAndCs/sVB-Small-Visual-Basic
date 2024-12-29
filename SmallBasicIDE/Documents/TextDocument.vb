@@ -990,7 +990,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
                     Case "foreach"
                         AutoCompleteBlock(textView, line, code, keyword, "ForEach item In Array#   ", "Next", paran.Length)
-                        textView.Caret.MoveTo(line.Start + 16)
+                        textView.Caret.MoveTo(line.Start + 16 + code.Length - code.Trim().Length)
                         _editorControl.EditorOperations.SelectCurrentWord()
 
                     Case "while"

@@ -423,5 +423,8 @@ Namespace Microsoft.SmallVisualBasic.Statements
             })
         End Sub
 
+        Public Overrides Function ToVB() As String
+            Return $"{LeftValue.ToVB} = {RightValue.ToVB}" & vbCrLf
+        End Function
     End Class
 End Namespace

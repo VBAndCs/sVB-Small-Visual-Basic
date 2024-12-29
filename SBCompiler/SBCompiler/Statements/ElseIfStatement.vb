@@ -68,5 +68,17 @@ Namespace Microsoft.SmallVisualBasic.Statements
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
             Return runner.Execute(ThenStatements)
         End Function
+
+        Public Overrides Function ToVB() As String
+            Dim sb As New StringBuilder()
+            sb.AppendLine($"{ElseIfToken.Text} {Condition.ToVB()} {ThenToken.Text}")
+
+            For Each st In ThenStatements
+                sb.Append("  ")
+                sb.Append(st.ToVB())
+            Next
+
+            Return sb.ToString()
+        End Function
     End Class
 End Namespace

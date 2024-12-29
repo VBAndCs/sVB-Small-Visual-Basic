@@ -172,5 +172,19 @@ Namespace Microsoft.SmallVisualBasic.Statements
             runner.Engine.CurrentRunner = runner
             Return If(TypeOf result Is EndDebugging, result, Nothing)
         End Function
+
+        Public Overrides Function ToVB() As String
+            Dim sb As New Text.StringBuilder(Name.Text)
+            Dim n = If(Args Is Nothing, -1, Args.Count - 1)
+
+            sb.Append("(")
+            For i = 0 To n
+                sb.Append(Args(0).ToVB())
+                If i < n Then sb.Append(", ")
+            Next
+            sb.AppendLine(")")
+
+            Return sb.ToString()
+        End Function
     End Class
 End Namespace

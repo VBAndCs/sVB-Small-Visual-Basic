@@ -171,5 +171,8 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             End Select
         End Function
 
+        Public Overrides Function ToVB() As String
+            Return $"({LeftHandSide.ToVB()} {[Operator].Text} {RightHandSide.ToVB()})"
+        End Function
     End Class
 End Namespace
