@@ -539,6 +539,18 @@ Namespace Microsoft.SmallVisualBasic
             Return typeInfo.Properties(key)
         End Function
 
+        Friend Function GetDefinitionIdentifier(id As Token) As Token
+            Dim subName = LCase(id.SubroutineName)
+            Dim varName = id.LCaseText
+
+            If subName <> "" AndAlso _LocalVariables.ContainsKey(subName & "." & varName) Then
+                Return _GlobalVariables(varName)
+            ElseIf _GlobalVariables.ContainsKey(varName) Then
+                Return _GlobalVariables(varName)
+            End If
+
+            Return New Token
+        End Function
     End Class
 
     Friend Structure EventHandlerInfo

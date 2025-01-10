@@ -1,14 +1,9 @@
 Math.UseRadianAngles = False
 
 Sub ChangeButtonsState(isEnabled)
-   BtnFlower.Enabled = isEnabled
-   BtnRadialSpiral.Enabled = isEnabled
-   BtnSpiral.Enabled = isEnabled
-   BtnSpiralRays.Enabled = isEnabled
-   BtnSpring.Enabled = isEnabled
-   BtnSpring2.Enabled = isEnabled
-   BtnSpring3.Enabled = isEnabled
-   BtnWavySpiral.Enabled = isEnabled
+   ForEach _button In Me.Controls
+      _button.Enabled = isEnabled
+   Next
 EndSub
 
 ' ------------------------------------------------
@@ -32,14 +27,14 @@ Sub BtnSpiral_OnClick()
 EndSub
 
 
-Sub Initialize(w, h)
+Sub Initialize(x, y)
    ChangeButtonsState(False)
    Turtle.Speed = 50
    Turtle.UseAnimation = False
    GW.Clear()
    GW.PenColor = Colors.Blue
    Turtle.PenUp()
-   Turtle.MoveTo(w, h)
+   Turtle.MoveTo(x, y)
    Turtle.PenDown()
    GW.AutoShow = False
 EndSub
@@ -200,8 +195,8 @@ EndSub
 
 ' ------------------------------------------------
 Sub BtnSpring3_OnClick()
-   w = GraphicsWindow.Width / 2
-   h = GraphicsWindow.Height / 2
+   w = GW.Width / 2
+   h = GW.Height / 2
    Initialize(w, h)
    angle = 0
    _step = 0.1
@@ -257,6 +252,43 @@ Sub BtnSpiralRays_OnClick()
          420 + (r - w) * Math.Cos(a),
          Math.Sin(a) * (r - w) + 320
       )
+   Next
+   GW.AutoShow = True
+   ChangeButtonsState(True)
+EndSub
+
+
+' ------------------------------------------------
+Sub BtnCircularSpiral_OnClick()
+   ChangeButtonsState(False)
+   GW.Clear()
+   GW.AutoShow = False
+   Initialize(GW.Width / 2 - 100, GW.Height / 2 - 50)
+   d100 = 4
+   
+   For x = 1 To 100
+      If GW.IsClosed Then
+         ExitLoop
+      EndIf
+      
+      ox = Turtle.X
+      oy = Turtle.Y
+      oa = Turtle.Angle
+      For r = 1 To 100
+         Turtle.Move(d100)
+         Turtle.Turn(3.6)
+      Next
+      Turtle.X = ox
+      Turtle.Y = oy
+      Turtle.Angle = oa
+      
+      d100 = d100 * 0.985
+      ta = Turtle.Angle
+      Turtle.Turn(-37.5)
+      Turtle.PenUp()
+      Turtle.Move(20 + x / 10)
+      Turtle.Angle = ta + 12
+      Turtle.PenDown()
    Next
    GW.AutoShow = True
    ChangeButtonsState(True)

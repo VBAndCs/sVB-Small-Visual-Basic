@@ -1221,9 +1221,9 @@ Namespace Library
         End Sub
 
         ''' <summary>
-        ''' Draws the specified image from memory on to the screen.  
+        ''' Draws the specified image from memory on to the screen. You should first add the image to the image list.
         ''' </summary>
-        ''' <param name="imageName">The name of the image to draw.</param>
+        ''' <param name="imageName">The name of the image in the image list.</param>
         ''' <param name="x">The x co-ordinate of the point to draw the image at.</param>
         ''' <param name="y">The y co-ordinate of the point to draw the image at.</param>
         Public Shared Sub DrawImage(imageName As Primitive, x As Primitive, y As Primitive)

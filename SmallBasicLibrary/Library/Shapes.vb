@@ -80,7 +80,7 @@ Namespace Library
         ''' <returns>
         ''' The Ellipse shape that was just added to the Graphics Window.
         ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
-        ''' </returns>
+        ''' </returns>        
         <WinForms.ReturnValueType(VariableType.Shape)>
         Public Shared Function AddEllipse(width As Primitive, height As Primitive) As Primitive
             Dim name As String = GenerateNewName("Ellipse")
@@ -237,12 +237,12 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Shape)>
         Public Shared Function AddImage(imageName As Primitive) As Primitive
-            Dim name As String = GenerateNewName("Image")
+            Dim name = GenerateNewName("Image")
             GraphicsWindow.Invoke(
                 Sub()
-                    Dim image1 As New Image
-                    Dim bitmap As BitmapSource = ImageList.GetBitmap(imageName)
+                    Dim bitmap = ImageList.GetBitmap(imageName)
                     If bitmap IsNot Nothing Then
+                        Dim image1 As New Image
                         image1.Source = bitmap
                         If bitmap.PixelWidth <> 0 AndAlso bitmap.PixelHeight <> 0 Then
                             image1.Width = bitmap.PixelWidth
@@ -431,13 +431,16 @@ Namespace Library
                    y As Primitive,
                    duration As Primitive)
 
-            Dim obj As UIElement = Nothing
-            If GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
+            Dim shape As UIElement = Nothing
+            If GraphicsWindow._objectsMap.TryGetValue(shapeName, shape) Then
                 _positionMap(shapeName) = New Point(x, y)
                 GraphicsWindow.Invoke(
                     Sub()
-                        GraphicsWindow.DoubleAnimateProperty(obj, Canvas.LeftProperty, x, duration)
-                        GraphicsWindow.DoubleAnimateProperty(obj, Canvas.TopProperty, y, duration)
+                        GraphicsWindow.DoubleAnimateProperty(shape, Canvas.LeftProperty, x, duration)
+                        GraphicsWindow.DoubleAnimateProperty(shape, Canvas.TopProperty, y, duration)
+                        Turtle.WaitForReturn(duration)
+                        Canvas.SetLeft(shape, x)
+                        Canvas.SetTop(shape, y)
                     End Sub)
             End If
         End Sub
@@ -623,5 +626,133 @@ Namespace Library
                 Return prefix & value
             End If
         End Function
+
+
+        ''' <summary>
+        ''' Adds a rectangle shape with the specified width and height.
+        ''' </summary>
+        ''' <param name="x">The x co-ordinate of the rectangle.</param>
+        ''' <param name="y">The y co-ordinate of the rectangle.</param>
+        ''' <param name="width">The width of the rectangle.</param>
+        ''' <param name="height">The height of the rectangle.</param>
+        ''' <returns>
+        ''' The Rectangle shape that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, to access its methods and properties directly like: s.Move(100, 100)
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Shape)>
+        Public Shared Function AddRectangleAt(x As Primitive, y As Primitive, width As Primitive, height As Primitive) As Primitive
+            Dim name As String = GenerateNewName("Rectangle")
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim shape As New Rectangle With {
+                            .Width = width,
+                            .Height = height,
+                            .Fill = GraphicsWindow._fillBrush,
+                            .Stroke = GraphicsWindow._pen.Brush,
+                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                     }
+                    Canvas.SetLeft(shape, x)
+                    Canvas.SetTop(shape, y)
+                    GraphicsWindow.AddShape(name, shape)
+                End Sub)
+            Return New Primitive(name)
+        End Function
+
+
+        ''' <summary>
+        ''' Adds an ellipse shape with the specified width and height.
+        ''' </summary>
+        ''' <param name="x">The x co-ordinate of the ellipse.</param>
+        ''' <param name="y">The y co-ordinate of the ellipse.</param>
+        ''' <param name="width">The width of the ellipse shape.</param>
+        ''' <param name="height">The height of the ellipse shape.</param>
+        ''' <returns>
+        ''' The Ellipse shape that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Shape)>
+        Public Shared Function AddEllipseAt(x As Primitive, y As Primitive, width As Primitive, height As Primitive) As Primitive
+            Dim name As String = GenerateNewName("Ellipse")
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim shape As New Ellipse With {
+                            .Width = width,
+                            .Height = height,
+                            .Fill = GraphicsWindow._fillBrush,
+                            .Stroke = GraphicsWindow._pen.Brush,
+                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                     }
+                    Canvas.SetLeft(shape, x)
+                    Canvas.SetTop(shape, y)
+                    GraphicsWindow.AddShape(name, shape)
+                End Sub)
+            Return New Primitive(name)
+        End Function
+
+
+        ''' <summary>
+        ''' Adds an image as a shape that can be moved, animated or rotated. You should first add the image to the image list.
+        ''' </summary>
+        ''' <param name="imageName">The name of the image in the image list.</param>
+        ''' <param name="x">The x co-ordinate of the point to add the image at.</param>
+        ''' <param name="y">The y co-ordinate of the point to add the image at.</param>
+        ''' <returns>
+        ''' The image that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Shape)>
+        Public Shared Function AddImageAt(imageName As Primitive, x As Primitive, y As Primitive) As Primitive
+            Dim name = GenerateNewName("Image")
+            GraphicsWindow.Invoke(
+                Sub()
+                    Dim bitmap = ImageList.GetBitmap(imageName)
+                    If bitmap IsNot Nothing Then
+                        Dim image As New Image
+                        image.Source = bitmap
+                        If bitmap.PixelWidth <> 0 AndAlso bitmap.PixelHeight <> 0 Then
+                            image.Width = bitmap.PixelWidth
+                            image.Height = bitmap.PixelHeight
+                        End If
+                        Canvas.SetLeft(image, x)
+                        Canvas.SetTop(image, y)
+                        GraphicsWindow.AddShape(name, image)
+                    End If
+                End Sub)
+            Return New Primitive(name)
+        End Function
+
+        ''' <summary>
+        ''' Adds some text as a shape that can be moved, animated or rotated.
+        ''' </summary>
+        ''' <param name="x">The x co-ordinate of the text start point.</param>
+        ''' <param name="y">The y co-ordinate of the text start point.</param>
+        ''' <param name="text">The text to add.</param>
+        ''' <returns>
+        ''' The text shape that was just added to the Graphics Window.
+        ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Shape)>
+        Public Shared Function AddTextAt(x As Primitive, y As Primitive, text As Primitive) As Primitive
+            Dim name As String = GenerateNewName("Text")
+            GraphicsWindow.Invoke(
+                Sub()
+                    GraphicsWindow.VerifyAccess()
+                    Dim shape As New TextBlock With {
+                        .Text = text,
+                        .Foreground = GraphicsWindow._fillBrush,
+                        .FontFamily = GraphicsWindow._fontFamily,
+                        .FontStyle = GraphicsWindow._fontStyle,
+                        .FontSize = GraphicsWindow._fontSize,
+                        .FontWeight = GraphicsWindow._fontWeight
+                     }
+                    Canvas.SetLeft(shape, x)
+                    Canvas.SetTop(shape, y)
+                    GraphicsWindow.AddShape(name, shape)
+                End Sub)
+            Return New Primitive(name)
+        End Function
+
     End Class
 End Namespace

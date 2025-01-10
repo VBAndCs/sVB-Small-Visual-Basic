@@ -423,8 +423,41 @@ Namespace Microsoft.SmallVisualBasic.Statements
             })
         End Sub
 
-        Public Overrides Function ToVB() As String
+        Public Overrides Function ToVB(symbolTable As SymbolTable) As String
+            Dim prop = TryCast(LeftValue, PropertyExpression)
+            If prop IsNot Nothing Then
+                If prop.IsEvent Then
+                    If RightValue.StartToken.Type = TokenType.Nothing Then
+                        Return $"RemoveHandler {prop.ToVB}, Nothing"
+                    End If
+                    Return $"AddHandler {prop.ToVB}, AddressOf {RightValue.ToVB}"
+                End If
+
+                If prop.IsDynamic AndAlso NeedsDefinition(symbolTable) Then
+                    Return $"Dim {prop.TypeName.Text} As Primitive" & vbCrLf &
+                           $"{prop.TypeName.Text}(""{prop.PropertyName.Text}"") = {RightValue.ToVB}" & vbCrLf
+                End If
+
+                Return $"{prop.ToVB} = {RightValue.ToVB}" & vbCrLf
+            End If
+
+            If NeedsDefinition(symbolTable) Then
+                Dim arr = TryCast(LeftValue, ArrayExpression)
+                If arr Is Nothing Then
+                    Return $"Dim {LeftValue.ToVB} = {RightValue.ToVB}" & vbCrLf
+                End If
+
+                Return $"Dim {arr.StartToken.Text} As Primitive" & vbCrLf &
+                           $"{arr.ToVB} = {RightValue.ToVB}" & vbCrLf
+            End If
+
             Return $"{LeftValue.ToVB} = {RightValue.ToVB}" & vbCrLf
+        End Function
+
+        Private Function NeedsDefinition(symbolTable As SymbolTable) As Boolean
+            Dim id = LeftValue.StartToken
+            Dim defID = symbolTable.GetDefinitionIdentifier(id)
+            Return defID.IsIllegal OrElse defID.Line <> id.Line OrElse defID.Column = id.Column
         End Function
     End Class
 End Namespace

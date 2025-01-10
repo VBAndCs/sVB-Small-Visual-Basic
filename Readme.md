@@ -1,4 +1,4 @@
-<b><center><span style="font-size:3em;">Small Visual Basic 3.1:</span>
+<b><center><span style="font-size:3em;">Small Visual Basic 3.1.5:</span>
 <br><br>
 <span style="font-size:2em;">You can download the sVB installer from the <a href="https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller"><u>VS marketplace</u></a>.</span>
 <br><br></center></b>
@@ -13,18 +13,18 @@ Small Visual Basic is the visual version of Small Basic, and the small version o
   <img src="https://modernvbnet.gallerycdn.vsassets.io/extensions/modernvbnet/svbinstaller/3.0/1714546030343/image__2.png"/>
 </p>
 
-* After installing Small Visual Basic, you can double-click the "sVB samples" icon on the desktop to open the sVB samples folder, which is installed on your documents folder with more than 90 samples, including the Ball, Cars, Tetris, Tom and Jerry games, and many other interesting samples.
+# Learn Small Visual Basic:
+* After installing Small Visual Basic, you can double-click the "sVB samples" icon on the desktop to open the sVB samples folder, which is installed on your documents folder with more than 160 samples, including games, puzzles, drawings, animation, turtle and windows forms samples.
 
-* You can also double-click the "sVB docs" icon on the desktop to open the sVB reference PDF book, which contains the full documentation of the sVB IDE, syntax, and library.
+* You can also double-click the "sVB reference book" icon on the desktop to open the sVB reference PDF book, which contains the full documentation of the sVB IDE, syntax, and library. You can Click Ctrl+F and type a name of a type, method, property or event to get more info about. You can also use the links in "How To" section to learn about some interesting fearurs of sVB.
+The reference also includes a fulll info about sVB syntax, form designer and code editor.
 
-* The reference book may not be the easiest way for kids and beginners to start learning sVB with, and this is why I am publishing the ["Small Visual Basic Kid Programmer" book series](https://www.amazon.com/dp/B0DNX2ZR4D) on Amazon.
- 
+* The reference book may not be the easiest way for kids and beginners to start learning sVB with, and this is why I am publishing the ["Small Visual Basic Kid Programmer" book series](https://www.amazon.com/dp/B0DNX2ZR4D) on Amazon to introduce sVB to  kids from 6 years and up. The series also aims to enhance the mathematical skills of the kids based on their educational knowledge in each grade. For example, the 3rd and 4th books of the series can be considered as a geometry course simply introduced by turtle graphics.
 <p align="center">
-<a href="https://www.amazon.com/dp/B0DNX2ZR4D">
-  <img src="blob:https://marketplace.visualstudio.com/5280dd5a-f721-4f5e-9064-11699bb3c994"/>
-</a>
-</p>
+  <a href="https://www.amazon.com/dp/B0DNX2ZR4D"><img src="https://m.media-amazon.com/images/I/81ey+FtB8KL._CLa%7C2893,2214%7C71XQRjHURJL.jpg,71dj-VHkYOL.jpg%7C0,0,1315,2214+1578,0,1315,2214+657,0,1578,2214_._SY300_.jpg"/></a></p>
 
+* You can also use all available Small Basic educational resources to  get started with sVB. You can run Small Basic sample in sVB with 0 or few modifications. For more information, see the "Fix SB variable issues in sVB" topic in the "How To" section in the sVB reference book.
+ 
 # sVB 3.0 says: Happy BASIC 60th anniversary for all!
 In 1 May, 1964, John G. Kemeny and Thomas E. Kurtz created BASIC, which became the easiest and most popular programming language ever, with more than 300 different dialects that emerged and vanished over time.
 <p align="center">
@@ -105,7 +105,7 @@ Thread.SubToRun = Task2
 ```
 
 * Small Visual Basic is easier than Python for kids and young beginners!
-1.	Python is a full stack language, while sVB is only for desktop apps and only for educational purposes, which make it more focused on its purpose. But this doesn't mean sVB has no future, or it is just a toy. It is actually the doorway to a popular and powerful development platform: the DotNET and VS .NET. It is easy to use your understanding of sVB syntax, library, form designer, and even the code editor experience to move to VB .NET (and later to C# if you want). But actually sVB has some advanced topics, like designing a multi-form application, using XAML styles, using multi-threading and creating code libraries. sVB also comes with the LitDev external library that contains a 3D engine and a Physics engine, which allows endless advanced possibilities. 
+1.	Python is a full stack language, while sVB is only for desktop apps and only for educational purposes, which make it more focused on its purpose. But this doesn't mean sVB has no future, or it is just a toy. It is actually the doorway to a popular and powerful development platform: the DotNET and VS .NET. It is easy to use your understanding of sVB syntax, library, form designer, and even the code editor experience to move to VB .NET (and later to C# if you want). But actually sVB has some advanced topics, like designing a multi-form application, using XAML styles, using multi-threading and creating code libraries. sVB also comes with the LitDev external library that contains a 3D engine and a Physics engine, which allows endless advanced possibilities.  
 2.	Both Python and sVB are dynamically typed languages, but sVB is easier in this aspect, because it doesn't require type conversions.
 3.	Python is case-sensitive (and surprisingly, the True and False keywords starts with uppercase letters), while sVB is case-insensitive, and the code editor makes sure to fix words to their original casing. This makes it more easier to learn.
 4.	Python lists have 0-based indexes, while sVB arrays by default have 1-based indexes, which is more natural and easier for kids to deal with, but nothing prevents them from using the 0 index or even negative indexes, because arrays in sVB are actually dictionaries, so indexes are actually keys!

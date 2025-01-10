@@ -94,7 +94,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return Me
         End Function
 
-        Public Overrides Function ToVB() As String
+        Public Overrides Function ToVB(symbolTable As SymbolTable) As String
             Dim parentLoops = Me.GetParentLoops()
             Dim loopType = If(parentLoops(0).StartToken.Type = TokenType.While,
                                             "While",

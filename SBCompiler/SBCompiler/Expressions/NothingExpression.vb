@@ -56,10 +56,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Function
 
         Public Overrides Function ToVB() As String
-            ' Must use RemoveHandler in VB
-            ' ToDo: Replace handler with the subroutine name!
-            Dim s = CType(Me.Parent, Statements.AssignmentStatement)
-            Return $"RemoveHandler {s.LeftValue}, handler"
+            Return NothingToken.Text
         End Function
     End Class
 

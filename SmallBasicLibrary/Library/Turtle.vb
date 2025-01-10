@@ -573,7 +573,7 @@ Namespace Library
                 End Sub)
         End Sub
 
-        Private Shared Sub WaitForReturn(time As Double)
+        Friend Shared Sub WaitForReturn(time As Double)
             If SmallBasicApplication.HasShutdown Then
                 Return
             End If

@@ -4,14 +4,17 @@ Size = 40
 For R = 1 To Rows
    For C = 1 To Columns
       GW.BrushColor = Colors.Random
-      Boxes[R][C] = Shapes.AddRectangle(Size, Size)
-      Shapes.Move(Boxes[R][C], C * Size, R * Size)
+      Boxes[R][C] = Shapes.AddRectangleAt(
+         100 + C * Size,
+         100 + R * Size,
+         Size,
+         Size)
    Next
 Next
 
 For R = 1 To Rows
    For C = 1 To Columns
-      Shapes.Animate(Boxes[R][C], 0, 0, 1000)
-      Program.Delay(300)
+      Shapes.Animate(Boxes[R][C], 0, 0, 400 - 10 * R - C)
+      Program.Delay(200)
    Next
 Next

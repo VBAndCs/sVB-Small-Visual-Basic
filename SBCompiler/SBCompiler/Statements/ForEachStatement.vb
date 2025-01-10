@@ -294,13 +294,13 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return Nothing
         End Function
 
-        Public Overrides Function ToVB() As String
+        Public Overrides Function ToVB(symbolTable As SymbolTable) As String
             Dim sb As New StringBuilder()
             sb.AppendLine($"For Each {Iterator.Text} In {ArrayExpression.ToVB}")
 
             For Each st In Body
                 sb.Append("   ")
-                sb.Append(st.ToVB())
+                sb.Append(st.ToVB(symbolTable))
             Next
 
             sb.Append(EndLoopToken.Text)

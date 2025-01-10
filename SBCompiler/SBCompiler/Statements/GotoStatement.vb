@@ -58,7 +58,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return Me
         End Function
 
-        Public Overrides Function ToVB() As String
+        Public Overrides Function ToVB(symbolTable As SymbolTable) As String
             Return $"{GotoToken.Text} {Label.Text}" & vbCrLf
         End Function
     End Class

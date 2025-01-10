@@ -388,6 +388,58 @@ Namespace Library
             Return _random.Next(maxNumber) + 1
         End Function
 
+
+        ''' <summary>
+        ''' Calculates the distance between the given two points in the 2D space.
+        ''' </summary>
+        ''' <param name="x1">The x co-ordinate of the first point.</param>
+        ''' <param name="y1">The y co-ordinate of the first point.</param>
+        ''' <param name="x2">The x co-ordinate of the second point.</param>
+        ''' <param name="y2">The y co-ordinate of the second point.</param>
+        ''' ''' <returns>
+        ''' The distance berween the two points.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDistance(
+                   x1 As Primitive,
+                   y1 As Primitive,
+                   x2 As Primitive,
+                   y2 As Primitive) As Primitive
+
+            Return New Primitive(System.Math.Sqrt(
+                CDbl(x2.AsDecimal() - x1.AsDecimal()) ^ 2.0 +
+                CDbl(y2.AsDecimal() - y1.AsDecimal()) ^ 2.0
+            ))
+        End Function
+
+        ''' <summary>
+        ''' Calculates the distance between the given two points in the 3D space.
+        ''' </summary>
+        ''' <param name="x1">The x co-ordinate of the first point.</param>
+        ''' <param name="y1">The y co-ordinate of the first point.</param>
+        ''' <param name="z1">The z co-ordinate of the first point.</param>
+        ''' <param name="x2">The x co-ordinate of the second point.</param>
+        ''' <param name="y2">The y co-ordinate of the second point.</param>
+        ''' <param name="z2">The z co-ordinate of the second point.</param>
+        ''' ''' <returns>
+        ''' The distance berween the two points.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function GetDistance3D(
+                   x1 As Primitive,
+                   y1 As Primitive,
+                   z1 As Primitive,
+                   x2 As Primitive,
+                   y2 As Primitive,
+                   z2 As Primitive) As Primitive
+
+            Return New Primitive(System.Math.Sqrt(
+                CDbl(x2.AsDecimal() - x1.AsDecimal()) ^ 2.0 +
+                CDbl(y2.AsDecimal() - y1.AsDecimal()) ^ 2.0 +
+                CDbl(z2.AsDecimal() - z1.AsDecimal()) ^ 2.0
+            ))
+        End Function
+
         ''' <summary>
         ''' Gets a random number between the given two numbers (inclusive).
         ''' </summary>

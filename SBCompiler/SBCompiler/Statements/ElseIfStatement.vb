@@ -69,13 +69,13 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return runner.Execute(ThenStatements)
         End Function
 
-        Public Overrides Function ToVB() As String
+        Public Overrides Function ToVB(symbolTable As SymbolTable) As String
             Dim sb As New StringBuilder()
             sb.AppendLine($"{ElseIfToken.Text} {Condition.ToVB()} {ThenToken.Text}")
 
             For Each st In ThenStatements
                 sb.Append("  ")
-                sb.Append(st.ToVB())
+                sb.Append(st.ToVB(symbolTable))
             Next
 
             Return sb.ToString()

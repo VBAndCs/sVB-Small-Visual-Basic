@@ -127,7 +127,7 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Overrides Function ToVB() As String
             If IsDynamic Then
-                Return $"{TypeName.Text}({PropertyName.Text})"
+                Return $"{TypeName.Text}(""{PropertyName.Text}"")"
             End If
             Return $"{TypeName.Text}.{PropertyName.Text}"
         End Function

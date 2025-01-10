@@ -1,0 +1,62 @@
+' PRETZEL TWIST-sVB VERSION
+' Based on the SB version Submitted by Jim Tharp 12 - 20 - 2024
+
+GW.FullScreen = True
+GW.BackgroundColor = Colors.Black
+GW.CanResize = False
+GW.Title = "TWISTER (sVB-VERSION)"
+GW.KeyDown = GraphicsWindow_KeyDown
+
+C1 = {Colors.Red, Colors.Blue, Colors.Brown,
+   Colors.DodgerBlue, Colors.DeepPink, Colors.RoyalBlue,
+   Colors.DarkOrchid, Colors.DarkGreen, Colors.White}
+
+C2 = {Colors.AliceBlue, Colors.Yellow, Colors.Gold,
+   Colors.DarkOrange, Colors.Chartreuse, Colors.HotPink,
+   Colors.Cyan, Colors.Tan, Colors.DeepSkyBlue}
+
+GW.PenWidth = 4
+Col = GW.Width / 2 - 64
+Row = GW.Height / 2 - 64
+A = Col + 14
+B = Row + 14
+Rotate = 10
+' --------------------------------------
+D = 0.0003   ' change speed here
+' --------------------------------------
+N = 0
+Speed = 0
+_Color = 0
+S = {}
+While True
+   N = N + 1
+   If N Mod 100 = 0 Then   ' change rotation every 100 cycles
+      Index = N Mod 9 + 1
+      GW.PenColor = C1[Index]
+      GW.BrushColor = C2[Index]
+      Rotate = Rotate + 1
+   EndIf
+   
+   Speed = Speed + D
+   _Color = _Color + 1
+   If _Color Mod 360 = 0 Or (_Color + 180) Mod 360 = 0 Then   ' skip black color
+      _Color = _Color + 1
+   EndIf
+   
+   Shapes.Remove(S[N - 500])   ' remove old cube-shapes for program speed
+   S[N] = Shapes.AddRectangleAt(
+      Math.Sin(Speed * 40) * Col + A,
+      Math.Cos(Speed * 60) * Row + B,
+      100, 100)   ' add new cube
+   Shapes.Rotate(S[N], Rotate * N)   ' rotate cube
+   Program.Delay(20)
+Wend
+
+' ------------------------------------------------
+Sub GraphicsWindow_KeyDown()
+   If Keyboard.LastKey = Keys.Escape Then
+      Program.End()
+   EndIf
+EndSub
+
+

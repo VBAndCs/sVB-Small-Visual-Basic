@@ -286,25 +286,25 @@ Namespace Microsoft.SmallVisualBasic.Statements
             End If
         End Function
 
-        Public Overrides Function ToVB() As String
+        Public Overrides Function ToVB(symbolTable As SymbolTable) As String
             Dim sb As New StringBuilder()
             sb.AppendLine($"{IfToken.Text} {Condition.ToVB} {ThenToken.Text}")
 
             For Each st In ThenStatements
                 sb.Append("  ")
-                sb.Append(st.ToVB())
+                sb.Append(st.ToVB(symbolTable))
             Next
 
             For Each st In ElseIfStatements
                 sb.Append("  ")
-                sb.Append(st.ToVB())
+                sb.Append(st.ToVB(symbolTable))
             Next
 
             If Not ElseToken.IsIllegal Then
                 sb.AppendLine(ElseToken.Text)
                 For Each st In ElseStatements
                     sb.Append("  ")
-                    sb.Append(st.ToVB())
+                    sb.Append(st.ToVB(symbolTable))
                 Next
             End If
 

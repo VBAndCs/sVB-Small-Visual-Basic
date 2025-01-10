@@ -8,6 +8,7 @@
 '    BtnWavySpiral: Button
 '    BtnSpring3: Button
 '    BtnSpiralRays: Button
+'    BtnCircularSpiral: Button
 '}
 
 Me = "form1"
@@ -19,6 +20,7 @@ BtnSpring2 = "form1.btnspring2"
 BtnWavySpiral = "form1.btnwavyspiral"
 BtnSpring3 = "form1.btnspring3"
 BtnSpiralRays = "form1.btnspiralrays"
+BtnCircularSpiral = "form1.btncircularspiral"
 _path = Program.Directory + "\form1.xaml"
 Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
@@ -31,6 +33,7 @@ Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
 '    BtnWavySpiral: OnClick
 '    BtnSpring3: OnClick
 '    BtnSpiralRays: OnClick
+'    BtnCircularSpiral: OnClick
 '}
 
 ' BtnSpiral Events:
@@ -64,6 +67,10 @@ Control.OnClick = BtnSpring3_OnClick
 ' BtnSpiralRays Events:
 Control.HandleEvents(BtnSpiralRays)
 Control.OnClick = BtnSpiralRays_OnClick
+
+' BtnCircularSpiral Events:
+Control.HandleEvents(BtnCircularSpiral)
+Control.OnClick = BtnCircularSpiral_OnClick
 
 
 Form.Show(Me)

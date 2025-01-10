@@ -456,7 +456,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Next
         End Sub
 
-        Public Overrides Function ToVB() As String
+        Public Overrides Function ToVB(symbolTable As SymbolTable) As String
             Dim sb As New StringBuilder(SubToken.Text)
             sb.Append(" ")
             sb.Append(Name.Text)
@@ -479,7 +479,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
             sb.AppendLine()
 
             For Each st In Body
-                sb.Append(st.ToVB())
+                sb.Append(st.ToVB(symbolTable))
             Next
 
             sb.AppendLine("End " & SubToken.Text)
