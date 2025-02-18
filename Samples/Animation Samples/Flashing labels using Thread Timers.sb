@@ -1,0 +1,28 @@
+Circle = Controls.AddLabel("", 100, 100)
+Circle.AddEllipse(200, 200, Colors.Blue, 1, Colors.AliceBlue)
+Square = Controls.AddLabel("", 300, 100)
+Square.AddRectangle(200, 200, Colors.Red, 1, Colors.Yellow)
+
+Thread.InitializationDelay = 0
+Thread.SubToRun = FlashCircle
+Thread.SubToRun = FlashSquare
+
+
+' ------------------------------------------------
+Sub FlashCircle()
+   While True
+      Circle.Visible = (Circle.Visible = False)
+      Program.Delay(500)
+   Wend
+EndSub
+
+
+' ------------------------------------------------
+Sub FlashSquare()
+   While True
+      Square.Visible = (Square.Visible = False)
+      Program.Delay(1000)
+   Wend
+EndSub
+
+'

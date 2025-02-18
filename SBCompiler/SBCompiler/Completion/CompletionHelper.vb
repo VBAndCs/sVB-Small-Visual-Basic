@@ -109,10 +109,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
 
             For i = parseTree.Count - 1 To 0 Step -1
                 Dim statement = parseTree(i)
-
-                If line >= statement.StartToken.Line Then
-                    Return statement
-                End If
+                If line >= statement.StartToken.Line Then Return statement
             Next
 
             Return Nothing
@@ -494,6 +491,11 @@ Namespace Microsoft.SmallVisualBasic.Completion
         End Sub
 
         Private Shared numChars() As Char = {"_"c, "0"c, "1"c, "2"c, "3"c, "4"c, "5"c, "6"c, "7"c, "8"c, "9"c}
+        Public ReadOnly Property SymbolTable As SymbolTable
+            Get
+                Return _compiler.Parser.SymbolTable
+            End Get
+        End Property
 
         Public Shared Function TrimData(name As String, Optional removeNums As Boolean = True) As String
             name = name.ToLower()

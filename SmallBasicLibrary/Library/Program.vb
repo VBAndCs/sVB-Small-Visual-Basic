@@ -25,6 +25,12 @@ Namespace Library
         End Sub
 
         ''' <summary>
+        ''' The default value is true (which is the default valiue), which prevents the errors from stopping the program when it runs in noraml mode. This property has no effect in debugging mode.
+        ''' You still can see the errors report in the RuntimeErrors.txt file in the bin folder of your program.
+        ''' </summary>
+        Public Shared Property OnErrorResumeNex As Primitive = True
+
+        ''' <summary>
         ''' Gets the number of command-line arguments passed to this program.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>

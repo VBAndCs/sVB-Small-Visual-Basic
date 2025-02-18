@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel.Composition
+Imports System.Data.Common
 Imports System.Windows.Shell
 Imports Microsoft.Nautilus.Core.Undo
 Imports Microsoft.Nautilus.Text.Editor
@@ -107,7 +108,32 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 Case ">", "<"
                                     ' >= or <=
                                 Case Else
-                                    args.Handled = CommitConditionally(textView, completionSurface, " = ", True)
+                                    Dim line = textView.TextSnapshot.GetLineFromPosition(pos)
+                                    Dim provider = textView.Properties.GetProperty(Of CompletionProvider)()
+                                    Dim st = TryCast(provider.GetStatementAt(line), Statements.AssignmentStatement)
+                                    Dim column = pos - line.Start
+
+                                    If st IsNot Nothing AndAlso st.StartToken.Line = line.LineNumber AndAlso
+                                        st.StartToken.Column <= column AndAlso st.StartToken.EndColumn >= column Then
+                                        Dim compList = completionSurface.CompletionListBox
+                                        Dim itemWrapper = CType(compList.SelectedItem, CompletionItemWrapper)
+                                        Select Case itemWrapper.CompletionItem.ItemType
+                                            Case Completion.CompletionItemType.Label,
+                                                    Completion.CompletionItemType.Keyword,
+                                                    Completion.CompletionItemType.ModuleName,
+                                                    Completion.CompletionItemType.TypeName,
+                                                    Completion.CompletionItemType.SubroutineName
+                                                ' don't auto-complete
+                                                completionSurface.IsCommitting = False
+                                                If completionSurface.Adornment IsNot Nothing Then
+                                                    completionSurface.Adornment.Dismiss(force:=False)
+                                                End If
+                                            Case Else
+                                                args.Handled = CommitConditionally(textView, completionSurface, " = ", True)
+                                        End Select
+                                    Else
+                                        args.Handled = CommitConditionally(textView, completionSurface, " = ", True)
+                                    End If
                             End Select
 
                         Case "<" ' don't add a space after, because user may want to write <>

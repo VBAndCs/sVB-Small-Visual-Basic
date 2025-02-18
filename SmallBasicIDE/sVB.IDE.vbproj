@@ -174,6 +174,7 @@
     <Compile Include="Ngen.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="WidthConverter.vb" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\AppWorkspace.png" />

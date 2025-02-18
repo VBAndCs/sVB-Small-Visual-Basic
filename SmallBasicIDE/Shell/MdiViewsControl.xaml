@@ -144,13 +144,15 @@
                                         </Grid.ColumnDefinitions>
 
                                         <ComboBox Name="CmbControlNames"  
+                                            Style="{StaticResource  ColoredComboBox}"
                                             MinWidth="100" Margin="5,4" 
-                                            Background="#FFFFE0C0"
+                                            Background="#FFFFE0C0"                                            
                                             SelectionChanged="ControlNames_SelectionChanged"
                                             ItemsSource="{Binding Path=Document.ControlNames, RelativeSource={RelativeSource TemplatedParent}}"
                                             SelectedIndex="0"/>
 
-                                        <ComboBox Name="CmbEventNames" Grid.Column="1"  
+                                        <ComboBox Name="CmbEventNames" Grid.Column="1" 
+                                            Style="{StaticResource  ColoredComboBox}"
                                             MinWidth="100"  Margin="5,4" Background="#FFFFE0C0"
                                             SelectionChanged="EventNames_SelectionChanged"
                                             ItemsSource="{Binding Path=Document.ControlEvents, RelativeSource={RelativeSource TemplatedParent}}"

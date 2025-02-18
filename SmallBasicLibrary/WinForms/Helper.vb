@@ -21,7 +21,7 @@ Module Helper
                 File.DeleteFile(errorFile)
             End If
             File.AppendContents(errorFile, New Primitive(Now & vbCrLf & msg & vbCrLf))
-            App.ShowErrorWindow(msg, ex.StackTrace)
+            If Program.OnErrorResumeNex = False Then App.ShowErrorWindow(msg, ex.StackTrace)
         Catch
         End Try
     End Sub
@@ -37,4 +37,16 @@ Module Helper
             End Sub, DisObj.Dispatcher)
         dt.Start()
     End Sub
+
+
+    Public Sub DoEvents()
+        Dim frame As New DispatcherFrame()
+        Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, New DispatcherOperationCallback(AddressOf ExitFrame), frame)
+        Dispatcher.PushFrame(frame)
+    End Sub
+
+    Public Function ExitFrame(f As Object) As Object
+        CType(f, DispatcherFrame).Continue = False
+        Return Nothing
+    End Function
 End Module

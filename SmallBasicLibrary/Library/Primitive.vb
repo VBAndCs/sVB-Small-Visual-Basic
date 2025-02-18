@@ -401,7 +401,9 @@ Namespace Library
             Return New Primitive(AsDecimal() / divisor.AsDecimal())
         End Function
         Public Function Remainder(divisor As Primitive) As Primitive
-            Return New Primitive(Decimal.Remainder(AsDecimal(), divisor.AsDecimal()))
+            Dim d = divisor.AsDecimal
+            If d = 0 Then Return Me
+            Return New Primitive(Decimal.Remainder(AsDecimal(), d))
         End Function
 
         Public ReadOnly Property IsTimeSpan As Boolean

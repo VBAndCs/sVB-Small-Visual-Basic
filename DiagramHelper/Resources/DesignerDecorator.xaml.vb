@@ -1,23 +1,28 @@
 ﻿Public Class DesignerDecorator
 
-    Function GetDesigner(Mi As Control) As Designer
-        Dim Cntx As ContextMenu
+    Function GetDesigner(mi As Control) As Designer
+        Dim Cntx = GetContextMenu(mi)
+        If Cntx Is Nothing Then Return Nothing
+        Return Helper.GetDesigner(Cntx.PlacementTarget)
+    End Function
+
+    Private Shared Function GetContextMenu(Mi As Control) As ContextMenu
         Dim p = TryCast(Mi.Parent, Control)
 
-        Do
-            If p Is Nothing Then Return Nothing
+        Do Until p Is Nothing
             If TypeOf p Is ContextMenu Then
-                Cntx = p
-                Exit Do
+                Return p
             End If
             p = TryCast(p.Parent, Control)
         Loop
-        Return Helper.GetDesigner(Cntx.PlacementTarget)
+        Return Nothing
     End Function
 
     Friend Sub ContextMenu_Opened(sender As Object, e As RoutedEventArgs)
         Dim Cntx As ContextMenu = sender
         Dim Dsn = Helper.GetDesigner(Cntx.PlacementTarget)
+        Dsn.LastMouseDownPos = Mouse.GetPosition(Dsn.DesignerCanvas)
+
         For Each m In Cntx.Items
             Dim Mi = TryCast(m, MenuItem)
             If Mi IsNot Nothing Then
@@ -77,7 +82,10 @@
     End Sub
 
     Private Sub PasteMenuItem_Click(sender As Object, e As RoutedEventArgs)
-        GetDesigner(sender).Paste()
+        Dim Cntx = GetContextMenu(sender)
+        If Cntx Is Nothing Then Return
+        Dim dsn = Helper.GetDesigner(Cntx.PlacementTarget)
+        dsn.Paste(dsn.LastMouseDownPos)
     End Sub
 
     Private Sub RedoMenuItem_Click(sender As Object, e As RoutedEventArgs)

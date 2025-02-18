@@ -82,6 +82,21 @@ Namespace WinForms
         <ReturnValueType(VariableType.String)>
         Public Shared Property AppPath As Primitive
 
+        Friend Shared Property ColoredComboBoxStyle As Style
+            Get
+                If _ColoredComboBoxStyle Is Nothing Then
+                    Dim resourceLocater As New Uri("/SmallVisualBasicLibrary;component/WinForms/ComboBoxStyle.xaml", UriKind.Relative)
+                    Dim rd As ResourceDictionary = Application.LoadComponent(resourceLocater)
+                    _ColoredComboBoxStyle = rd("ColoredComboBox")
+                End If
+                Return _ColoredComboBoxStyle
+            End Get
+
+            Set
+                _ColoredComboBoxStyle = Value
+            End Set
+        End Property
+
         Private Shared _syncLock As New Object
 
         ''' <summary>
@@ -166,6 +181,10 @@ Namespace WinForms
                                         wnd.WindowStartupLocation = WindowStartupLocation.Manual
                                     End If
                                     Continue Do
+                                End If
+
+                                If TypeOf fw Is Wpf.ComboBox Then
+                                    fw.Style = ColoredComboBoxStyle
                                 End If
 
                                 Dim lst = TryCast(ui, ItemsControl)
@@ -291,6 +310,7 @@ Namespace WinForms
         End Sub
 
         Friend Shared forceClose As Boolean = False
+        Private Shared _ColoredComboBoxStyle As Style
         Public Const FormPrefix As String = "_SmallVisualBasic_"
 
         Friend Shared Sub ForceCloseAll()

@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v3.1.5" Loaded="Window_Loaded"
+        Title="Small Visual Basic v3.3" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -448,7 +448,8 @@
                             <ComboBox x:Name="CmbOpenedDocs" 
                                       Grid.Column="1" Grid.Row="1"
                                       Background="Azure" Foreground="Blue" 
-                                      FontSize="16" FontWeight="Bold" IsEditable="True"
+                                      FontSize="16" FontWeight="Bold" 
+                                      IsEditable="True"
                                       GotFocus="CmbOpenedDocs_GotFocus" 
                                       HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                       PreviewMouseLeftButtonDown="CmbOpenedDocs_PreviewMouseLeftButtonDown"
@@ -583,7 +584,10 @@
 
             <DockPanel>
                 <StackPanel DockPanel.Dock="Bottom">
-                    <Button Name="endProgramButton" Padding="4" Margin="8" FontWeight="Bold" HorizontalAlignment="Right" Command="{x:Static l:MainWindow.EndProgramCommand}" IsDefault="True" Content="{lu:Localized EndProgramCommand}" />
+                    <Button Name="endProgramButton" 
+                            Padding="4" Margin="8" 
+                            FontWeight="Bold" HorizontalAlignment="Right" 
+                            Command="{x:Static l:MainWindow.EndProgramCommand}" IsDefault="True" Content="{lu:Localized EndProgramCommand}" />
                 </StackPanel>
 
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">

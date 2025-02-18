@@ -371,7 +371,9 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function Remainder(dividend As Primitive, divisor As Primitive) As Primitive
-            Return Decimal.Remainder(dividend.AsDecimal, divisor.AsDecimal)
+            Dim d = divisor.AsDecimal
+            If d = 0 Then Return dividend
+            Return Decimal.Remainder(dividend.AsDecimal, d)
         End Function
 
         ''' <summary>

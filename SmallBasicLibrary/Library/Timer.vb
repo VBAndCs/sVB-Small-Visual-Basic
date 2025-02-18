@@ -12,7 +12,7 @@ Namespace Library
 
         ''' <summary>
         ''' Gets or sets the interval (in milliseconds) specifying how often the timer should raise the Tick event.  
-        ''' This value can range from 10 to 100000000.
+        ''' This value can range from 1 to 100000000.
         ''' Note that setting the interval resumes the timer.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Double)>
@@ -23,7 +23,7 @@ Namespace Library
 
             Set(Value As Primitive)
                 _interval = Value
-                _interval = System.Math.Max(10, System.Math.Min(_interval, 100000000))
+                _interval = System.Math.Max(1, System.Math.Min(_interval, 100000000))
                 _threadTimer.Change(_interval, _interval)
             End Set
         End Property

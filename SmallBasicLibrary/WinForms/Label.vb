@@ -62,7 +62,8 @@ Namespace WinForms
                                New PropertyMetadata(""))
 
         ''' <summary>
-        ''' Gets or sets the path of the image that is displayed on the label
+        ''' Gets or sets the path of the image that is displayed on the label.
+        '''You can also load an image into the ImageList, and pass its key to this property to show it in the label. This is more efficient when you need to show the same image in many labels, which avoids loading many instances of the same image into memory.
         ''' </summary>
         <ReturnValueType(VariableType.String)>
         <ExProperty>
@@ -96,12 +97,20 @@ Namespace WinForms
                             imgFile = IO.Path.Combine(Program.Directory, imgFile)
                         End If
 
-                        Dim img As New BitmapImage()
-                        img.BeginInit()
-                        img.CacheOption = BitmapCacheOption.OnLoad
-                        img.UriSource = New Uri(imgFile)
-                        img.EndInit()
-                        lbl.Content = New Wpf.Image() With {.Source = img}
+                        If IO.File.Exists(imgFile) Then
+                            Dim img As New BitmapImage()
+                            img.BeginInit()
+                            img.CacheOption = BitmapCacheOption.OnLoad
+                            img.UriSource = New Uri(imgFile)
+                            img.EndInit()
+                            lbl.Content = New Wpf.Image() With {.Source = img}
+
+                        Else
+                            Dim imgSource = ImageList.GetBitmap(imageFile)
+                            If imgSource IsNot Nothing Then
+                                lbl.Content = New Wpf.Image() With {.Source = imgSource}
+                            End If
+                        End If
 
                     Catch ex As Exception
                         Control.ReportPropertyError(labelName, "Image", imageFile, ex)

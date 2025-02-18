@@ -13,7 +13,6 @@ Namespace WinForms
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class Form
-
         Shared Sub ReportSubError(formName As String, memberName As String, ex As Exception)
             Helper.ReportError($"Calling {formName}.{memberName} caused an error: {vbCrLf}{ex.Message}", ex)
         End Sub
@@ -787,6 +786,7 @@ Namespace WinForms
                           Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
 
                           Dim comboBox1 As New Wpf.ComboBox With {
+                                 .Style = Forms.ColoredComboBoxStyle,
                                  .Name = controlName,
                                  .Width = GetDouble(width),
                                  .Height = GetDouble(height)
@@ -1507,7 +1507,7 @@ Namespace WinForms
                         frm.Background = Brushes.Transparent
                         Dim canvas = GetCanvas(frm)
                         canvas.Focusable = True
-                        AddHandler canvas.PreviewMouseDown, Sub() canvas.Focus()
+                        AddHandler canvas.MouseDown, Sub() canvas.Focus()
                     Catch ex As Exception
                         Helper.ReportError(ex.Message, ex)
                     End Try

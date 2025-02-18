@@ -49,7 +49,7 @@
                                             <MenuItem Header="Grid Lines Brush" InputGestureText="Ctrl+L"  Click="GridBrushMenuItem_Click"/>
                                         </MenuItem>
                                         <MenuItem Header="Page Background" Click="PageBackgroundMenuItem_Click"/>
-                                        <MenuItem Name="AllowTransparencyMenuItem" Header="Allow Transoarency" InputGestureText="Ctrl+T" IsCheckable="True" Checked="AllowTransparencyMenuItem_Checked" Unchecked="AllowTransparencyMenuItem_Checked"/>
+                                        <MenuItem Name="AllowTransparencyMenuItem" Header="Allow Transparency" InputGestureText="Ctrl+T" IsCheckable="True" Checked="AllowTransparencyMenuItem_Checked" Unchecked="AllowTransparencyMenuItem_Checked"/>
                                         <Separator/>
                                         <MenuItem Header="Menu Designer" Click="MenuDesignerMenuItem_Click"/>
                                         <MenuItem Header="Properties" InputGestureText="F4" Click="PropertiesMenuItem_Click"/>

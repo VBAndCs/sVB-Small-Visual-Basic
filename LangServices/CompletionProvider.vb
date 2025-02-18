@@ -6,6 +6,7 @@ Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
 Imports Microsoft.SmallVisualBasic.Completion
 Imports System.Runtime.InteropServices
+Imports Microsoft.SmallVisualBasic.Statements
 
 Namespace Microsoft.SmallVisualBasic.LanguageService
     Public NotInheritable Class CompletionProvider
@@ -386,7 +387,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 force = CType(sender, Boolean)
             ElseIf TypeOf sender Is String OrElse TypeOf sender Is Char Then
                 symbol = CType(sender, String)
-            ElseIf TypeOf sender Is Symbolinfo Then
+            ElseIf TypeOf sender Is SymbolInfo Then
                 Dim info = CType(sender, SymbolInfo)
                 force = info.Force
                 symbol = info.Symbol
@@ -738,8 +739,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                         token,
                                         line
                                     )
-                                    End If
                                 End If
+                            End If
                         End If
                     End If
 
@@ -1381,21 +1382,11 @@ LineShow:
 
         Private Function InferEspType(token As Token, line As ITextSnapshotLine) As String
             Dim especialItem = ""
-            Dim properties = textBuffer.Properties
-            Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
-            Dim controlNames = GetControlNames(textBuffer)
-            Dim source = New TextBufferReader(line.TextSnapshot)
-            Dim gp = GlobalParser
-            Dim symbolTable = compHelper.Compile(
-                                source, controlNames, controlsInfo, gp
-                            ).Parser.SymbolTable
-
-            needsToReCompile = False
-            token.Parent = compHelper.GetRootStatement(line.LineNumber)
+            Dim st = TryCast(GetStatementAt(line), Statements.AssignmentStatement)
+            Dim symbolTable = compHelper.SymbolTable
             Dim varType = symbolTable.GetInferedType(token)
 
             If varType = VariableType.Any Then
-                Dim st = TryCast(token.Parent.GetStatementAt(line.LineNumber), Statements.AssignmentStatement)
                 If st IsNot Nothing Then
                     Dim prop = TryCast(st.LeftValue, Expressions.PropertyExpression)
                     If prop Is Nothing OrElse Not prop.IsEvent Then
@@ -1420,6 +1411,18 @@ LineShow:
             End Select
 
             Return especialItem
+        End Function
+
+        Friend Function GetStatementAt(line As ITextSnapshotLine) As Statement
+            Dim properties = textBuffer.Properties
+            Dim controlsInfo = properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
+            Dim controlNames = GetControlNames(textBuffer)
+            Dim source = New TextBufferReader(line.TextSnapshot)
+            Dim gp = GlobalParser
+            compHelper.Compile(source, controlNames, controlsInfo, gp)
+            needsToReCompile = False
+            Dim parent = compHelper.GetRootStatement(line.LineNumber)
+            Return parent.GetStatementAt(line.LineNumber)
         End Function
 
         Private Function GetEspecialItem(name As String) As String

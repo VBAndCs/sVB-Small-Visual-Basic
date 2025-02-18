@@ -1,5 +1,6 @@
 ﻿
 Imports System.Windows
+Imports System.Windows.Controls
 Imports System.Windows.Media
 Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
@@ -291,6 +292,82 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+
+        ''' <summary>
+        ''' Gets or sets the actual x-pos of the rotated control.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetRotatedLeft(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim ctrl = GetControl(controlName)
+                        Dim radian = GetAngle(ctrl) * (Math.Pi / 180)
+                        Dim offsetX = (ctrl.ActualWidth / 2) * (1 - Math.Cos(radian)) + (ctrl.ActualHeight / 2) * Math.Sin(radian)
+                        GetRotatedLeft = System.Math.Round(offsetX + Wpf.Canvas.GetLeft(ctrl), 2, MidpointRounding.AwayFromZero)
+                    Catch ex As Exception
+                        ReportError(controlName, "RotatedLeft", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetRotatedLeft(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim ctrl = GetControl(controlName)
+                        ' Remove any animation effect to allow setting the new value
+                        ctrl.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
+
+                        Dim radian = GetAngle(ctrl) * (Math.Pi / 180)
+                        Dim offsetX = (ctrl.ActualWidth / 2) * (1 - Math.Cos(radian)) + (ctrl.ActualHeight / 2) * Math.Sin(radian)
+                        Canvas.SetLeft(ctrl, CDbl(value) - offsetX)
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "RotatedLeft", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Gets or sets the actual y-pos of the rotated control.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetRotatedTop(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim ctrl = GetControl(controlName)
+                        Dim radian = GetAngle(ctrl) * (Math.Pi / 180)
+                        Dim offsetY = (ctrl.ActualHeight / 2) * (1 - Math.Cos(radian)) - (ctrl.ActualWidth / 2) * Math.Sin(radian)
+                        GetRotatedTop = System.Math.Round(offsetY + Wpf.Canvas.GetTop(ctrl), 2, MidpointRounding.AwayFromZero)
+                    Catch ex As Exception
+                        ReportError(controlName, "RotatedTop", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetRotatedTop(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim ctrl = GetControl(controlName)
+                        ' Remove any animation effect to allow setting the new value
+                        ctrl.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
+
+                        Dim radian = GetAngle(ctrl) * (Math.Pi / 180)
+                        Dim offsetY = (ctrl.ActualHeight / 2) * (1 - Math.Cos(radian)) - (ctrl.ActualWidth / 2) * Math.Sin(radian)
+                        Canvas.SetTop(ctrl, CDbl(value) - offsetY)
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "RotatedTop", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
         ''' <summary>
         ''' Gets or sets the width of the control.
         ''' If you want an auto-width to fit the control's content width, set this property to 0 or amy negative number. 
@@ -493,6 +570,7 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+
         ''' <summary>
         ''' Gets or sets the padding of the control, which is the internal space between the control edges and its content.
         ''' </summary>
@@ -634,6 +712,7 @@ Namespace WinForms
 
         <ExProperty>
         Public Shared Sub SetVisible(controlName As Primitive, value As Primitive)
+            If controlName.IsEmpty Then Stop
             App.Invoke(
                 Sub()
                     Try

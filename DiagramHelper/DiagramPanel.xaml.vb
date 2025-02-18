@@ -630,7 +630,6 @@ Public Class DiagramPanel
         Dim y = P.Y * Helper.CmToPx * Dsn.Scale - 5
         Dsn.TbLeftLocation.Margin = New Thickness(x - Dsn.TbLeftLocation.ActualWidth * Dsn.Scale, y + 2, 0, 0)
         Dsn.TbTopLocation.Margin = New Thickness(x + 2, y - Dsn.TbTopLocation.ActualHeight * Dsn.Scale, 0, 0)
-
     End Sub
 
     Private Sub BringToFrontMenuItem_Click(sender As Object, e As RoutedEventArgs)

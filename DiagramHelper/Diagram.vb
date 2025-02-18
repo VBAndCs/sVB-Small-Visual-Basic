@@ -67,24 +67,49 @@ Public Class DiagramObject
         Dsn.LocationVisibility = Windows.Visibility.Collapsed
     End Sub
 
-    Friend Function GetLeftTopPoint(Optional RelativeTo As FrameworkElement = Nothing, Optional InCm As Boolean = True) As Point
-        Dim P As Point
+    Friend Function GetLeftTopPoint(Optional relativeTo As FrameworkElement = Nothing, Optional inCm As Boolean = True) As Point
+        Dim p As Point
         Dim Lt = Pnl.FocusRectangle.LayoutTransform
-        If Lt IsNot Nothing Then P = Lt.Transform(New Point(0, 0))
-        Dim Rt = DesignerItem.RenderTransform
-        If Rt IsNot Nothing Then P = Rt.Transform(P)
-        If RelativeTo Is Nothing Then
-            P = Pnl.FocusRectangle.TransformToVisual(Canv).Transform(P)
+        If Lt IsNot Nothing Then p = Lt.Transform(New Point(0, 0))
+
+        Dim rt = DesignerItem.RenderTransform
+        If rt IsNot Nothing Then p = rt.Transform(p)
+
+        If relativeTo Is Nothing Then
+            p = Pnl.FocusRectangle.TransformToVisual(Canv).Transform(p)
         Else
-            P = Pnl.FocusRectangle.TransformToVisual(RelativeTo).Transform(P)
+            p = Pnl.FocusRectangle.TransformToVisual(relativeTo).Transform(p)
         End If
 
-        If InCm Then
-            P.X = Math.Round(P.X * Helper.PxToCm, 2)
-            P.Y = Math.Round(P.Y * Helper.PxToCm, 2)
+        If inCm Then
+            p.X = Math.Round(p.X * Helper.PxToCm, 2)
+            p.Y = Math.Round(p.Y * Helper.PxToCm, 2)
         End If
-        Return P
+
+        Return p
     End Function
+
+    Friend Function GetOriginalPos(transformedPoint As Point, Optional relativeTo As FrameworkElement = Nothing) As Point
+        Dim p As Point = transformedPoint
+
+        ' Reverse TransformToVisual
+        If relativeTo Is Nothing Then
+            p = Pnl.FocusRectangle.TransformToVisual(Canv).Inverse.Transform(p)
+        Else
+            p = Pnl.FocusRectangle.TransformToVisual(relativeTo).Inverse.Transform(p)
+        End If
+
+        ' Reverse RenderTransform
+        Dim rt = DesignerItem.RenderTransform
+        If rt IsNot Nothing Then p = rt.Inverse.Transform(p)
+
+        ' Reverse LayoutTransform
+        Dim Lt = Pnl.FocusRectangle.LayoutTransform
+        If Lt IsNot Nothing Then p = Lt.Inverse.Transform(p)
+
+        Return p
+    End Function
+
 
     Private Sub Diagram_MouseLeave(sender As Object, e As MouseEventArgs) Handles Diagram.MouseLeave
         If DraggingDiagram Then Diagram_PreviewMouseLeftButtonUp(Nothing, Nothing)

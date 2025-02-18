@@ -511,6 +511,7 @@ Namespace Library
                     Dim shape As UIElement = Nothing
                     If GraphicsWindow._objectsMap.TryGetValue(shapeName, shape) Then
                         Dim y = Canvas.GetTop(shape)
+                        If Double.IsNaN(y) Then y = 0
                         _positionMap(shapeName) = New Point(x, y)
                         shape.BeginAnimation(Canvas.LeftProperty, Nothing)
                         shape.BeginAnimation(Canvas.TopProperty, Nothing)
@@ -552,6 +553,7 @@ Namespace Library
                     Dim shape As UIElement = Nothing
                     If GraphicsWindow._objectsMap.TryGetValue(shapeName, shape) Then
                         Dim x = Canvas.GetLeft(shape)
+                        If Double.IsNaN(x) Then x = 0
                         _positionMap(shapeName) = New Point(x, y)
                         shape.BeginAnimation(Canvas.LeftProperty, Nothing)
                         shape.BeginAnimation(Canvas.TopProperty, Nothing)
@@ -655,6 +657,7 @@ Namespace Library
                     Canvas.SetLeft(shape, x)
                     Canvas.SetTop(shape, y)
                     GraphicsWindow.AddShape(name, shape)
+                    _positionMap(name) = New Point(x, y)
                 End Sub)
             Return New Primitive(name)
         End Function
@@ -687,6 +690,7 @@ Namespace Library
                     Canvas.SetLeft(shape, x)
                     Canvas.SetTop(shape, y)
                     GraphicsWindow.AddShape(name, shape)
+                    _positionMap(name) = New Point(x, y)
                 End Sub)
             Return New Primitive(name)
         End Function
@@ -750,6 +754,7 @@ Namespace Library
                     Canvas.SetLeft(shape, x)
                     Canvas.SetTop(shape, y)
                     GraphicsWindow.AddShape(name, shape)
+                    _positionMap(name) = New Point(x, y)
                 End Sub)
             Return New Primitive(name)
         End Function

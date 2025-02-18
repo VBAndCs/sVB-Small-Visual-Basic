@@ -29,6 +29,7 @@ Imports Microsoft.VisualBasic
 Imports Microsoft.SmallBasic
 Imports Microsoft.SmallVisualBasic.Library
 Imports DiagramHelper
+Imports MS.Internal.Xaml
 
 Namespace Microsoft.SmallVisualBasic
     <Export("MainWindow")>
@@ -255,7 +256,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub CanFileSave(sender As Object, e As CanExecuteRoutedEventArgs)
-            e.CanExecute = ActiveDocument IsNot Nothing
+            e.CanExecute = tabCode.IsSelected AndAlso ActiveDocument IsNot Nothing
         End Sub
 
         Private Sub OnFileSave(sender As Object, e As RoutedEventArgs)
@@ -267,7 +268,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub CanEditCut(sender As Object, e As CanExecuteRoutedEventArgs)
-            e.CanExecute = ActiveDocument IsNot Nothing AndAlso Not ActiveDocument.EditorControl.TextView.Selection.IsEmpty
+            e.CanExecute = tabCode.IsSelected AndAlso ActiveDocument IsNot Nothing AndAlso Not ActiveDocument.EditorControl.TextView.Selection.IsEmpty
         End Sub
 
         Private Sub OnEditCut(sender As Object, e As RoutedEventArgs)
@@ -276,7 +277,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub CanEditCopy(sender As Object, e As CanExecuteRoutedEventArgs)
-            e.CanExecute = ActiveDocument IsNot Nothing AndAlso Not ActiveDocument.EditorControl.TextView.Selection.IsEmpty
+            e.CanExecute = tabCode.IsSelected AndAlso ActiveDocument IsNot Nothing AndAlso Not ActiveDocument.EditorControl.TextView.Selection.IsEmpty
         End Sub
 
 
@@ -285,7 +286,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub CanEditPaste(sender As Object, e As CanExecuteRoutedEventArgs)
-            e.CanExecute = ActiveDocument IsNot Nothing AndAlso ActiveDocument.EditorControl.EditorOperations.CanPaste
+            e.CanExecute = tabCode.IsSelected AndAlso ActiveDocument IsNot Nothing AndAlso ActiveDocument.EditorControl.EditorOperations.CanPaste
         End Sub
 
         Private Sub OnEditPaste(sender As Object, e As RoutedEventArgs)
@@ -294,7 +295,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub CanEditUndo(sender As Object, e As CanExecuteRoutedEventArgs)
-            e.CanExecute = ActiveDocument IsNot Nothing AndAlso ActiveDocument.UndoHistory.CanUndo
+            e.CanExecute = tabCode.IsSelected AndAlso ActiveDocument IsNot Nothing AndAlso ActiveDocument.UndoHistory.CanUndo
         End Sub
 
         Private Sub OnEditUndo(sender As Object, e As RoutedEventArgs)
@@ -302,7 +303,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub CanEditRedo(sender As Object, e As CanExecuteRoutedEventArgs)
-            e.CanExecute = ActiveDocument IsNot Nothing AndAlso ActiveDocument.UndoHistory.CanRedo
+            e.CanExecute = tabCode.IsSelected AndAlso ActiveDocument IsNot Nothing AndAlso ActiveDocument.UndoHistory.CanRedo
         End Sub
 
         Private Sub OnEditRedo(sender As Object, e As RoutedEventArgs)
@@ -339,11 +340,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub CanExportToVisualBasic(sender As Object, e As CanExecuteRoutedEventArgs)
-            If ActiveDocument IsNot Nothing AndAlso ActiveDocument.Text.Trim().Length > 0 Then
-                e.CanExecute = True
-            Else
-                e.CanExecute = False
-            End If
+            e.CanExecute = tabCode.IsSelected AndAlso ActiveDocument IsNot Nothing AndAlso ActiveDocument.Text.Trim().Length > 0
         End Sub
 
         Private Sub OnExportToVisualBasic(sender As Object, e As RoutedEventArgs)
@@ -542,7 +539,7 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub CanToggleBreakpoint(sender As Object, e As CanExecuteRoutedEventArgs)
             Dim doc = ActiveDocument
-            If doc Is Nothing Then
+            If Not tabCode.IsSelected OrElse doc Is Nothing Then
                 e.CanExecute = False
                 Return
             End If
@@ -583,7 +580,7 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub CanWebSave(sender As Object, e As CanExecuteRoutedEventArgs)
-            e.CanExecute = ActiveDocument IsNot Nothing
+            e.CanExecute = tabCode.IsSelected AndAlso ActiveDocument IsNot Nothing
         End Sub
 
         Private Sub OnWebSave(sender As Object, e As RoutedEventArgs)
@@ -602,6 +599,13 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
         Protected Overrides Sub OnClosing(e As CancelEventArgs)
+            If Me.programRunningOverlay.Visibility = Visibility.Visible OrElse
+                      GetDebugger(True)?.IsActive Then
+                OnProgramEnd(Nothing, Nothing)
+                e.Cancel = True
+                Return
+            End If
+
             Dim doc = ActiveDocument
             If doc IsNot Nothing Then
                 If Not CloseDocument(doc) Then
@@ -617,7 +621,6 @@ Namespace Microsoft.SmallVisualBasic
                     Return
                 End If
             Next
-
             tabDesigner.IsSelected = True
             For i = 0 To DiagramHelper.Designer.Pages.Count - 1
                 If Not DiagramHelper.Designer.ClosePage(False, True, True) Then
@@ -625,10 +628,8 @@ Namespace Microsoft.SmallVisualBasic
                     Exit For
                 End If
             Next
-
             MyBase.OnClosing(e)
         End Sub
-
         Private Function OpenCodeFile(filePath As String, Optional focus As Boolean = True) As TextDocument
             Dim doc = ActiveDocument
             If doc IsNot Nothing Then

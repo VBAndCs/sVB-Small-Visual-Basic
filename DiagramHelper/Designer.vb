@@ -1,5 +1,7 @@
 ﻿Imports System.Collections.ObjectModel
 Imports System.ComponentModel
+Imports System.IO
+Imports System.Windows.Interop
 Imports System.Windows.Markup
 Imports System.Xml
 Imports ItemPair = System.Tuple(Of System.Windows.Controls.ListBoxItem, DiagramHelper.DiagramPanel)
@@ -651,6 +653,8 @@ Public Class Designer
                     diagram2.ClearValue(LayoutTransformProperty)
                 End If
             End If
+
+            If TypeOf diagram2 Is ComboBox Then diagram2.ClearValue(StyleProperty)
             canvas.Children.Add(diagram2)
         Next
 
@@ -785,6 +789,11 @@ Public Class Designer
 
                     Dim lt = diagram.LayoutTransform
                     diagram.LayoutTransform = Nothing
+
+                    If TypeOf diagram Is ComboBox Then
+                        diagram.Style = CType(Application.Current.Resources("ColoredComboBox"), Style)
+                    End If
+
                     Helper.UpdateControl(diagram)
                     diagram.LayoutTransform = lt
                 End Sub)
@@ -827,38 +836,48 @@ Public Class Designer
         Dim Pos = e.GetPosition(Me.DesignerCanvas)
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             Dim Files() As String = e.Data.GetData(DataFormats.FileDrop)
-            Dim key = CurrentPage.PageKey
-            For Each file In Files
-                Select Case IO.Path.GetExtension(file).ToLower()
-                    Case ".xaml"
-                        SwitchTo(file)
-
-                    Case ".bmp", ".jpg", ".jpeg", ".png", ".gif"
-                        SwitchTo(key)
-                        Dim label As New Label()
-                        label.Width = 200
-                        label.Height = 200
-
-                        Dim newFile = IO.Path.Combine(IO.Path.GetDirectoryName(_codeFile), IO.Path.GetFileName(file))
-                        Try
-                            IO.File.Copy(file, newFile)
-                            file = newFile
-                        Catch ex As Exception
-                        End Try
-
-                        label.Background = New ImageBrush(New BitmapImage(New Uri(file)))
-                        AddToForm(Pos, label, label.GetType(), "Label")
-                        SetControlText(label, "", False)
-                        Pos.X += 10
-                        Pos.Y += 10
-                End Select
-            Next
-
+            DropFiles(Pos, Files)
         Else
             Dim tbItem As ToolBoxItem = e.Data.GetData(GetType(ToolBoxItem))
             DarwDiagram(tbItem, Pos)
         End If
 
+    End Sub
+
+    Private Sub DropFiles(Pos As Point, Files() As String)
+        Dim key = CurrentPage.PageKey
+        For Each file In Files
+            Select Case IO.Path.GetExtension(file).ToLower()
+                Case ".xaml"
+                    SwitchTo(file)
+
+                Case ".bmp", ".jpg", ".jpeg", ".png", ".gif"
+                    SwitchTo(key)
+                    Dim label As New Label()
+                    label.Width = 200
+                    label.Height = 200
+
+                    Dim newFile = IO.Path.Combine(IO.Path.GetDirectoryName(_codeFile), IO.Path.GetFileName(file))
+                    Try
+                        IO.File.Copy(file, newFile)
+                        file = newFile
+                    Catch ex As Exception
+                    End Try
+
+                    Dim img As New BitmapImage(New Uri(file))
+                    If img.Width > img.Height Then
+                        label.Width = label.Height * img.Width / img.Height
+                    Else
+                        label.Height = label.Width * img.Height / img.Width
+                    End If
+
+                    label.Background = New ImageBrush(img)
+                    AddToForm(Pos, label, label.GetType(), "Label")
+                    SetControlText(label, "", False)
+                    Pos.X += 10
+                    Pos.Y += 10
+            End Select
+        Next
     End Sub
 
     Private Sub DarwDiagram(
@@ -1040,49 +1059,110 @@ Public Class Designer
         Me.Focus()
     End Sub
 
-    Public Sub Paste()
+    Public Sub Paste(Pos As Point?)
         Try
-            Dim xaml As String = Clipboard.GetData(DataFormats.Xaml)
-            Dim Lst As ArrayList = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
-            Me.SelectedItems.Clear()
-            Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items)
-            AddHandler OldState.BeforeRemoveItem, AddressOf UndoRedo_BeforeRemoveItem
-            AddHandler OldState.AfterInsertItem, AddressOf UndoRedo_AfterInsertItem
+            If Clipboard.ContainsData(DataFormats.FileDrop) Then
+                Dim Files() As String = Clipboard.GetData(DataFormats.FileDrop)
+                DropFiles(If(Pos, New Point(0, 0)), Files)
 
-            For Each Diagram As UIElement In Lst
-                Dim left = Designer.GetLeft(Diagram)
-                Dim top = Designer.GetTop(Diagram)
-                Designer.SetLeft(Diagram, left + 10)
-                Designer.SetTop(Diagram, top + 10)
-                Dim name = GetControlName(Diagram)
-                SetControlName(Diagram, GetNextName(name))
-                Dim control = TryCast(Diagram, Control)
-                If control IsNot Nothing Then
-                    Commands.FixImageBrush(control.Background)
-                    Commands.FixImageBrush(control.Foreground)
-                    Commands.FixImageBrush(control.BorderBrush)
+            ElseIf Clipboard.ContainsData(DataFormats.Bitmap) Then
+                PasteImage(If(Pos, New Point(0, 0)))
+
+            ElseIf Clipboard.ContainsData(DataFormats.Xaml) Then
+                Dim xaml As String = Clipboard.GetData(DataFormats.Xaml)
+                Dim Lst As ArrayList = XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
+                Me.SelectedItems.Clear()
+                Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items)
+                AddHandler OldState.BeforeRemoveItem, AddressOf UndoRedo_BeforeRemoveItem
+                AddHandler OldState.AfterInsertItem, AddressOf UndoRedo_AfterInsertItem
+
+                Dim xOffset = 10
+                Dim yOffset = 10
+
+                If Pos IsNot Nothing Then
+                    Dim minX = Double.MaxValue
+                    Dim minY = Double.MaxValue
+
+                    For Each Diagram As UIElement In Lst
+                        minX = Math.Min(minX, Designer.GetLeft(Diagram))
+                        minY = Math.Min(minY, Designer.GetTop(Diagram))
+                    Next
+
+                    xOffset = Pos.Value.X - minX
+                    yOffset = Pos.Value.Y - minY
                 End If
 
-                OldState.Add(Diagram)
-                Me.Items.Add(Diagram)
-                OldState.SetNewValues()
-            Next
+                For Each Diagram As UIElement In Lst
+                    Dim left = Designer.GetLeft(Diagram) + xOffset
+                    Dim top = Designer.GetTop(Diagram) + yOffset
+                    Designer.SetLeft(Diagram, left)
+                    Designer.SetTop(Diagram, top)
+                    Dim name = GetControlName(Diagram)
+                    SetControlName(Diagram, GetNextName(name))
+                    Dim control = TryCast(Diagram, Control)
+                    If control IsNot Nothing Then
+                        Commands.FixImageBrush(control.Background)
+                        Commands.FixImageBrush(control.Foreground)
+                        Commands.FixImageBrush(control.BorderBrush)
+                    End If
 
-            UndoStack.ReportChanges(New UndoRedoUnit(OldState))
-            Helper.UpdateControl(Me)
+                    OldState.Add(Diagram)
+                    Me.Items.Add(Diagram)
+                    OldState.SetNewValues()
+                Next
 
-            For Each Diagram As UIElement In Lst
-                Dim Item = Helper.GetListBoxItem(Diagram)
-                Item?.Focus()
-                Me.ScrollIntoView(Diagram)
-            Next
+                UndoStack.ReportChanges(New UndoRedoUnit(OldState))
+                Helper.UpdateControl(Me)
 
-            xaml = XamlWriter.Save(Lst)
-            Clipboard.SetData(DataFormats.Xaml, xaml)
+                For Each Diagram As UIElement In Lst
+                    Dim Item = Helper.GetListBoxItem(Diagram)
+                    Item?.Focus()
+                    Me.ScrollIntoView(Diagram)
+                Next
+
+                xaml = XamlWriter.Save(Lst)
+                Clipboard.SetData(DataFormats.Xaml, xaml)
+
+            ElseIf Clipboard.ContainsData(DataFormats.Text) Then
+                Dim txt = Clipboard.GetData(DataFormats.Text)
+                Dim label As New Label()
+                label.Visibility = Visibility.Hidden
+                AddToForm(If(Pos, New Point(10, 10)), label, label.GetType(), "Label")
+                SetControlText(label, txt)
+                Dim tb As TextBlock = label.Content
+                tb.TextWrapping = TextWrapping.NoWrap
+                label.Visibility = Visibility.Visible
+                Dim pnl = Helper.GetDiagramPanel(label)
+                Me.Dispatcher.BeginInvoke(
+                    Threading.DispatcherPriority.Background,
+                    Sub()
+                        pnl.Width = tb.ActualWidth + 15
+                        pnl.Height = tb.ActualHeight + 15
+                        tb.TextWrapping = TextWrapping.Wrap
+                    End Sub
+                )
+            End If
 
         Catch ex As Exception
 
         End Try
+    End Sub
+
+    Private Sub PasteImage(pos As Point)
+        Dim files = IO.Directory.GetFiles(IO.Path.GetDirectoryName(_codeFile), "svb_gen_image*.jpg")
+        Dim n = 1
+        For Each file In files
+            Dim i = CInt(IO.Path.GetFileNameWithoutExtension(file).Substring(13))
+            If i >= n Then n = i + 1
+        Next
+
+        Dim imageName = $"svb_gen_image{n}.jpg"
+        Using fileStream As New FileStream(imageName, FileMode.Create)
+            Dim encoder As New JpegBitmapEncoder()
+            encoder.Frames.Add(BitmapFrame.Create(Clipboard.GetImage()))
+            encoder.Save(fileStream)
+        End Using
+        DropFiles(pos, {imageName})
     End Sub
 
     Private Function GetNextName(name As String) As String
@@ -1117,11 +1197,15 @@ Public Class Designer
     End Function
 
     Public Function CanPaste() As Boolean
-        If Not Clipboard.ContainsData(DataFormats.Xaml) Then Return False
-        Dim xaml As String = Clipboard.GetData(DataFormats.Xaml)
-        Dim Lst = TryCast(XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml))), ArrayList)
-        If Lst Is Nothing Then Return False
-        Return True
+        If Clipboard.ContainsData(DataFormats.Bitmap) Then Return True
+        If Clipboard.ContainsData(DataFormats.FileDrop) Then Return True
+        If Clipboard.ContainsData(DataFormats.Xaml) Then
+            Dim xaml As String = Clipboard.GetData(DataFormats.Xaml)
+            Dim Lst = TryCast(XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml))), ArrayList)
+            If Lst Is Nothing Then Return False
+            Return True
+        End If
+        If Clipboard.ContainsData(DataFormats.Text) Then Return True
     End Function
 
 
@@ -1507,7 +1591,7 @@ Public Class Designer
                     e.Handled = True
                     Return
                 Case Key.V
-                    Me.Paste()
+                    Me.Paste(Nothing)
                     e.Handled = True
                     Return
                 Case Key.S
@@ -2451,6 +2535,8 @@ Public Class Designer
 #End Region
 
     Dim _mustSaveDesign As Boolean
+    Friend LastMouseDownPos As Point
+
     Public ReadOnly Property MustSaveDesign As Boolean
         Get
             Return _mustSaveDesign OrElse HasChanges

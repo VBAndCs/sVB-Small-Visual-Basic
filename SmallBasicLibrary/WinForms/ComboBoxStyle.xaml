@@ -1,0 +1,94 @@
+﻿<ResourceDictionary
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:local="clr-namespace:Microsoft.SmallVisualBasic.WinForms">
+          
+    <local:WidthConverter x:Key="WidthConverter"/>
+            
+    <Style x:Key="ColoredComboBox" TargetType="ComboBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid Margin="{TemplateBinding Margin}">
+                        <Border 
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="2"
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}">
+                            <ToggleButton x:Name="ToggleButton" 
+                                Background="Transparent"
+                                BorderThickness = "0"
+                                Grid.Column="2"
+                                Focusable="false"
+                                IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                ClickMode="Press"
+                                HorizontalContentAlignment="Right"
+                                IsEnabled="{TemplateBinding IsEnabled}">
+                                <Path x:Name="Arrow" 
+                                    HorizontalAlignment="Left" 
+                                    VerticalAlignment="Center" Fill="Black" 
+                                    Data="M 0 0 L 4 4 L 8 0 Z"/>
+                            </ToggleButton>
+                        </Border>
+                        <Grid Margin="0" HorizontalAlignment="Left">
+                            <Border Padding="{TemplateBinding Padding}">
+                                <ContentPresenter x:Name="ContentSite"
+                                        IsHitTestVisible="False"
+                                        Content="{TemplateBinding SelectionBoxItem}"
+                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Left"/>
+                            </Border>
+                            <TextBox x:Name="PART_EditableTextBox"
+                                    Style="{DynamicResource ComboBoxEditableTextBox}"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    Background="Transparent"
+                                    Padding="{TemplateBinding Padding}" 
+                                    Margin="0" 
+                                    Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                                    Visibility="Hidden" BorderThickness="0"
+                                    IsEnabled="{TemplateBinding IsEnabled}"
+                                    IsReadOnly="{TemplateBinding IsReadOnly}" >
+                            </TextBox>
+                            <Grid.Width>
+                                <MultiBinding Converter="{StaticResource WidthConverter}">
+                                    <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="ActualWidth"/>
+                                    <Binding ElementName="Arrow" Path="ActualWidth"/>
+                                    <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Padding"/>
+                                </MultiBinding>
+                            </Grid.Width>
+                        </Grid>
+                        <Popup x:Name="Popup"
+                            Placement="Bottom"
+                            IsOpen="{TemplateBinding IsDropDownOpen}"
+                            AllowsTransparency="True" 
+                            Focusable="False"
+                            PopupAnimation="Slide">
+                            <Grid x:Name="DropDown"
+                                SnapsToDevicePixels="True"
+                                MinWidth="{TemplateBinding ActualWidth}"
+                                MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <Border x:Name="DropDownBorder"
+                                    Background="White"
+                                    BorderBrush="Black"
+                                    BorderThickness="1"/>
+                                <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                    <StackPanel IsItemsHost="True"
+                                            KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                </ScrollViewer>
+                            </Grid>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEditable" Value="True">
+                            <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

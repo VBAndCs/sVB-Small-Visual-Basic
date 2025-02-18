@@ -1592,6 +1592,7 @@ Namespace Library
                 shape.Name = name
             End If
             _objectsMap(name) = shape
+            Shapes._positionMap(name) = New System.Windows.Point(0, 0)
             If addToCanvas Then _mainCanvas.Children.Add(shape)
         End Sub
 

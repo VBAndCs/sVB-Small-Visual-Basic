@@ -1,0 +1,329 @@
+GW.Top = 0
+GwWidth = 800
+GW.Width = GwWidth
+GwHeight = Desktop.Height - 50
+GW.Height = GwHeight
+Score = 0
+FrameCount = 0
+EnemyShipLabel = ""
+GameOver = False
+Thread.InitializationDelay = 3
+ExitUpdateFrame = False
+EnemyShipLabel2 = ""
+EnemyShipLabel3 = ""
+PlayerSpeed = 3
+BulletSpeed = 10
+
+' -------------------------------------------------------------------
+' Using ListBox to add and remove items has better performance that SB array.
+' So, lets add some hidden lists to the GW
+Bullets = {}
+Enemies = {}
+EnemyBullets = {}
+' -------------------------------------------------------------------
+
+
+PlayerShipImage = ImageList.LoadImage("PlayerShip.png")
+EnemyShipImage = ImageList.LoadImage("Enemy.png")
+UpBulletImage = ImageList.LoadImage("UpFireBullet.png")
+DownBulletImage = ImageList.LoadImage("DownFireBullet.png")
+
+BulletWidth = ImageList.GetWidthOfImage(UpBulletImage)
+BulletHeight = ImageList.GetHeightOfImage(UpBulletImage)
+
+FireSound = Sound.Load("Fire.wav")
+EnemyFireSound = Sound.Load("EnemyFire.wav")
+ExplosionSound = Sound.Load("explosion.wav")
+
+
+PlayerShip = CreateShip(
+   PlayerShipImage,
+   (GwWidth - ImageList.GetActualWidth(PlayerShipImage)) / 2,
+   GwHeight - ImageList.GetActualHeight(PlayerShipImage) - 20
+)
+
+GraphicsWindow.KeyDown = GraphicsWindow_KeyDown
+
+Timer.Interval = 1
+Timer.Tick = UpdateFrame
+
+CreateEnemies()
+
+
+' ------------------------------------------------
+Sub CreateEnemies()
+   For i = 1 To 3
+      CreateEnemy()
+   Next
+EndSub
+
+' ------------------------------------------------
+Sub CreateEnemy()
+   lblEnemy = GetHiddenLabel(Enemies)
+   If lblEnemy = "" Then
+      lblEnemy = CreateShip(
+         EnemyShipImage,
+         Math.GetRandomNumber(GwWidth),
+         0
+      )
+      lblEnemy.Tag = {
+         Math.Rnd(-15, 15),	' Speed X
+         Math.Rnd(2, 4),		' Speed y
+         Math.Rnd(20, 50)		' Bullet frequency
+      }
+      Enemies.Append(lblEnemy)
+   Else
+      lblEnemy.Top = 0
+      lblEnemy.Visible = True
+   EndIf
+EndSub
+
+
+' --------------------------------------------------
+
+Function CreateShip(image, x, y)
+   ship = Controls.AddLabel("", x, y)
+   ship.Image = image
+   ship.FitContentSize()
+   ship.BringToFront()
+   Return ship
+EndFunction
+
+' --------------------------------------------------
+Sub UpdateFrame()
+   MovePlayerShip()
+   If ExitUpdateFrame Then
+      Return
+   Else
+      ExitUpdateFrame = True
+   EndIf
+   
+   FrameCount = FrameCount + 1
+   If FrameCount Mod 100 = 0 Then
+      Thread.SubToRun = CreateEnemies
+   EndIf
+   
+   Thread.SubToRun = MoveBullets
+   
+   For i = 1 To Enemies.Count
+      EnemyShipLabel = Enemies[i]
+      If EnemyShipLabel.Visible Then
+         Thread.SubToRun = MoveEnemy
+      EndIf
+   Next
+   
+   ExitUpdateFrame = False
+EndSub
+
+' -----------------------------------------------------------------
+
+Sub MoveEnemy()
+   lblEnemy = EnemyShipLabel
+   info = lblEnemy.Tag
+   speedX = info[1]
+   speedY = info[2]
+   bulletFrequency = info[3]
+   
+   lblEnemy.Left = lblEnemy.Left + speedX
+   If lblEnemy.Left < 0 Then
+      lblEnemy.Left = 0
+      speedX = -speedX
+   ElseIf lblEnemy.Right > GwWidth Then
+      lblEnemy.Right = GwWidth
+      speedX = -speedX
+   EndIf
+   
+   lblEnemy.Top = lblEnemy.Top + speedY
+   If lblEnemy.Top < 0 Then
+      lblEnemy.Top = 0
+      speedY = -speedY
+   ElseIf lblEnemy.Bottom > GwHeight - 200 Then
+      speedY = -speedY
+   EndIf
+   
+   If EnemyHitsPlayer(lblEnemy) Then
+      GameOver = True
+      Return
+   EndIf
+   
+   ' Update info
+   lblEnemy.Tag = {speedX, speedY, bulletFrequency}
+   
+   If FrameCount Mod bulletFrequency = 0 Then ' Fire a bullet
+      EnemyShipLabel2 = lblEnemy
+      Thread.SubToRun = FireEnemyBullet
+   EndIf
+   
+   EnemyShipLabel3 = lblEnemy
+   Thread.SubToRun = CheckEnemyAndBuulets
+EndSub
+' -----------------------------------------------------------------
+
+Sub FireEnemyBullet()
+   lblEnemy = EnemyShipLabel2
+   EnemyFireSound.Play()
+   x = lblEnemy.Left + (lblEnemy.Width - BulletWidth) / 2
+   y = lblEnemy.Bottom + 10
+   lblBullet = GetHiddenLabel(EnemyBullets)
+   
+   If lblBullet = "" Then
+      lblBullet = CreateShip(DownBulletImage, x, y)
+      EnemyBullets.Append(lblBullet)
+   Else
+      lblBullet.Left = x
+      lblBullet.Top = y
+      lblBullet.Visible = True
+   EndIf
+EndSub
+' -----------------------------------------------------------------
+
+Sub CheckEnemyAndBuulets()
+   lblEnemy = EnemyShipLabel3
+   If CollideWithPlayerBullets(lblEnemy) Then
+      Score = Score + 10
+      GW.Title = "Spaceship: score = " & Score
+      Return
+   EndIf
+EndSub
+
+' -----------------------------------------------------------------
+Sub MoveBullets()
+   For i = Bullets.Count To 1 Step -1
+      lblBullet = Bullets[i]
+      If lblBullet.Visible Then
+         lblBullet.Top = lblBullet.Top - BulletSpeed
+         If lblBullet.Bottom < 0 Then
+            lblBullet.Visible = False
+         EndIf
+      EndIf
+   Next
+   
+   ForEach lblBullet In EnemyBullets
+      If lblBullet.Visible Then
+         lblBullet.Top = lblBullet.Top + BulletSpeed
+         If lblBullet.Bottom > GwHeight Then
+            lblBullet.Visible = False
+            Score = Score + 1
+            GW.Title = "Spaceship: score = " & Score
+         ElseIf CollideWithPlayerBullets(lblBullet) Then
+            Score = Score + 3
+            GW.Title = "Spaceship: score = " & Score
+            ContinueLoop
+         ElseIf EnemyHitsPlayer(lblBullet) Then
+            GameOver = True
+            Return
+         EndIf
+      EndIf
+   Next
+EndSub
+
+' -----------------------------------------------------------
+Function CollideWithPlayerBullets(lblEnemy)
+   ForEach lblBullet In Bullets
+      If lblBullet.Visible Then
+         If BulletHitsEnemy(lblBullet, lblEnemy) Then
+            Return True
+         EndIf
+      EndIf
+   Next
+   
+   Return False
+EndFunction
+
+' -----------------------------------------------------------
+Function BulletHitsEnemy(lblBullet, lblEnemy)
+   If ImageList.Collide(
+         lblBullet.Left, lblBullet.Top, UpBulletImage,
+         lblEnemy.Left, lblEnemy.Top, EnemyShipImage
+      ) Then
+      ExplosionSound.Play()
+      lblEnemy.Visible = False
+      lblBullet.Visible = False
+      Return True
+   EndIf
+   
+   Return False
+EndFunction
+
+' --------------------------------------------------
+Function EnemyHitsPlayer(lblEnemy)
+   If lblEnemy.Tag = "" Then
+      image = DownBulletImage
+   Else
+      image = EnemyShipImage
+   EndIf
+   
+   If ImageList.Collide(
+         PlayerShip.Left, PlayerShip.Top, PlayerShipImage,
+         lblEnemy.Left, lblEnemy.Top, image
+      ) Then
+      Timer.Pause()
+      ExplosionSound.Play()
+      lblEnemy.Visible = False
+      PlayerShip.Visible = False
+      Return True
+   EndIf
+   
+   Return False
+EndFunction
+
+' --------------------------------------------------
+Sub GraphicsWindow_KeyDown()
+   k = Keyboard.LastKey
+   
+   If k = Keys.Escape Then
+      Program.End()
+   ElseIf Keyboard.CtrlPressed Then
+      FireSound.Play()
+      x = PlayerShip.Left + (PlayerShip.Width - BulletWidth) / 2
+      y = PlayerShip.Top - BulletHeight
+      lblBullet = GetHiddenLabel(Bullets)
+      
+      If lblBullet = "" Then
+         lblBullet = CreateShip(UpBulletImage, x, y)
+         Bullets.Append(lblBullet)
+      Else
+         lblBullet.Left = x
+         lblBullet.Top = y
+         lblBullet.Visible = True
+      EndIf
+   EndIf
+EndSub
+
+' ------------------------------------------------
+Sub MovePlayerShip()
+   If Keyboard.IsKeyDown(Keys.Left) Then
+      PlayerShip.Left = PlayerShip.Left - PlayerSpeed
+      If PlayerShip.Left < 0 Then
+         PlayerShip.Left = 0
+      EndIf
+      
+   ElseIf Keyboard.IsKeyDown(Keys.Right) Then
+      PlayerShip.Left = PlayerShip.Left + PlayerSpeed
+      If PlayerShip.Right > GwWidth Then
+         PlayerShip.Left = GwWidth - PlayerShip.Width
+      EndIf
+      
+   ElseIf Keyboard.IsKeyDown(Keys.Down) Then
+      PlayerShip.Top = PlayerShip.Top + PlayerSpeed
+      If PlayerShip.Bottom > GwHeight Then
+         PlayerShip.Top = GwHeight - PlayerShip.Height
+      EndIf
+      
+   ElseIf Keyboard.IsKeyDown(Keys.Up) Then
+      PlayerShip.Top = PlayerShip.Top - PlayerSpeed
+      If PlayerShip.Top < 0 Then
+         PlayerShip.Top = 0
+      EndIf
+   EndIf
+EndSub
+
+' ------------------------------------------------
+Function GetHiddenLabel(arr)
+   ForEach _label In arr
+      If _label.Visible = False Then
+         Return _label
+      EndIf
+   Next
+   Return ""
+EndFunction

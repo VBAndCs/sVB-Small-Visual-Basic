@@ -1,5 +1,6 @@
 ﻿Imports System.Windows
 Imports System.Windows.Input
+Imports System.Windows.Threading
 Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
@@ -18,6 +19,13 @@ Namespace WinForms
                         UIElement.PreviewKeyDownEvent,
                         New KeyEventHandler(AddressOf KeyDown)
                     )
+
+                    EventManager.RegisterClassHandler(
+                        GetType(Window),
+                        UIElement.PreviewKeyUpEvent,
+                        New KeyEventHandler(AddressOf KeyUp)
+                    )
+
                     EventManager.RegisterClassHandler(
                          GetType(Window),
                          UIElement.PreviewTextInputEvent,
@@ -35,6 +43,14 @@ Namespace WinForms
                 _LastKey = Key.F10
             Else
                 _LastKey = e.Key
+            End If
+        End Sub
+
+        Private Shared Sub KeyUp(sender As Object, e As KeyEventArgs)
+            If e.SystemKey = Key.F10 Then
+                _LastKeyUp = Key.F10
+            Else
+                _LastKeyUp = e.Key
             End If
         End Sub
 
@@ -150,6 +166,14 @@ Namespace WinForms
         <ReturnValueType(VariableType.Key)>
         Public Shared ReadOnly Property LastKey As Primitive
 
+        ''' <summary>
+        ''' Returns the last released Key on the keyboard. 
+        ''' Use The Keys enum members to check they key.
+        ''' Example: If Keyboard.LastKeyUp = Keys.A Then
+        ''' </summary>
+        <ReturnValueType(VariableType.Key)>
+        Public Shared ReadOnly Property LastKeyUp As Primitive
+
         Friend Shared _lastTextInput As Primitive
 
         ''' <summary>
@@ -171,5 +195,19 @@ Namespace WinForms
                 Return New Primitive([Enum].GetName(GetType(Input.Key), CInt(LastKey)))
             End Get
         End Property
+
+        ''' <summary>
+        ''' Checks whither the given key is pressed or not.
+        ''' </summary>
+        ''' <param name="Key">the key you want to check. Use valuees of the Keys type such as Keys.A</param>
+        ''' <returns>True if the key is pressed, False otherwise.</returns>
+        <ReturnValueType(VariableType.Boolean)>
+        Public Shared Function IsKeyDown(Key As Primitive) As Primitive
+            App.Invoke(
+                     Sub()
+                         IsKeyDown = Input.Keyboard.IsKeyDown(Key.AsDecimal)
+                     End Sub)
+        End Function
+
     End Class
 End Namespace
