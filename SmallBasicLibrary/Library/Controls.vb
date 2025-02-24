@@ -90,7 +90,8 @@ Namespace Library
                 Sub()
                     Dim button1 As New Button With {
                           .Content = caption,
-                          .Padding = New Thickness(4.0)
+                          .Padding = New Thickness(4.0),
+                          .RenderTransformOrigin = New Point(0.5, 0.5)
                     }
                     Canvas.SetLeft(button1, left)
                     Canvas.SetTop(button1, top)
@@ -156,7 +157,8 @@ Namespace Library
                     Dim name = Shapes.GenerateNewName("TextBox", True)
                     Dim textBox1 As New TextBox With {
                         .Width = 160.0,
-                        .Padding = New Thickness(2.0)
+                        .Padding = New Thickness(2.0),
+                        .RenderTransformOrigin = New Point(0.5, 0.5)
                     }
                     Canvas.SetLeft(textBox1, left)
                     Canvas.SetTop(textBox1, top)

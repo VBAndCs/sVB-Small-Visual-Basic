@@ -63,7 +63,7 @@ Namespace Library
         Public Shared Sub Delay(milliSeconds As Primitive)
             Dim delayTime = CDbl(milliSeconds)
             If delayTime <= 0 Then Return
-            Thread.Sleep(TimeSpan.FromMilliseconds(delayTime))
+            Thread.Sleep(delayTime)
         End Sub
 
         ''' <summary>

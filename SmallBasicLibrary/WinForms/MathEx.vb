@@ -311,5 +311,21 @@ Namespace WinForms
         Public Shared Function Truncate(number As Primitive) As Primitive
             Return System.Math.Truncate(number.AsDecimal)
         End Function
+
+        ''' <summary>
+        ''' Limits the current number to be in the range of the given min and max values.
+        ''' </summary>
+        ''' <param name="minValue">The minimun value that the number should not be less than.</param>
+        ''' <param name="maxValue">The maximun value that the number should not be greater than.</param>
+        ''' <returns>
+        ''' The minValue if the number is less than,
+        ''' or the maxValue is the number is greater than,
+        ''' otherwise returns the number itself.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        <ExMethod>
+        Public Shared Function Limit(number As Primitive, minValue As Primitive, maxValue As Primitive) As Primitive
+            Return Math.Limit(number, minValue, maxValue)
+        End Function
     End Class
 End Namespace

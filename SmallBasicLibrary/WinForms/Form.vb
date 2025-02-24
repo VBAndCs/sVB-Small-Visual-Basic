@@ -221,11 +221,12 @@ Namespace WinForms
                          Dim frm = CType(Forms._forms(CStr(formName).ToLower()), Window)
 
                          Dim textBox1 As New Wpf.TextBox With {
-                           .Name = controlName,
-                           .Width = GetDouble(width),
-                           .Height = GetDouble(height),
-                           .VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto,
-                           .HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto
+                               .Name = controlName,
+                               .Width = GetDouble(width),
+                               .Height = GetDouble(height),
+                               .VerticalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto,
+                               .HorizontalScrollBarVisibility = Wpf.ScrollBarVisibility.Auto,
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                          }
 
                          Wpf.Canvas.SetLeft(textBox1, left)
@@ -275,7 +276,8 @@ Namespace WinForms
                       Dim label1 As New Wpf.Label With {
                           .Name = controlName,
                           .Width = GetDouble(width),
-                          .Height = GetDouble(height)
+                          .Height = GetDouble(height),
+                          .RenderTransformOrigin = New Point(0.5, 0.5)
                       }
 
                       Wpf.Canvas.SetLeft(label1, left)
@@ -327,7 +329,8 @@ Namespace WinForms
                             Dim img As New Wpf.Image With {
                                 .Name = controlName,
                                 .Width = GetDouble(width),
-                                .Height = GetDouble(height)
+                                .Height = GetDouble(height),
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                             }
 
                             If Not IO.Path.IsPathRooted(fileName) Then
@@ -517,7 +520,8 @@ Namespace WinForms
                           Dim button1 As New Wpf.Button With {
                                .Name = controlName,
                                .Width = GetDouble(width),
-                               .Height = GetDouble(height)
+                               .Height = GetDouble(height),
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           Wpf.Canvas.SetLeft(button1, left)
@@ -569,7 +573,8 @@ Namespace WinForms
                           Dim toggleButton1 As New Wpf.Primitives.ToggleButton With {
                                .Name = controlName,
                                .Width = GetDouble(width),
-                               .Height = GetDouble(height)
+                               .Height = GetDouble(height),
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           Wpf.Canvas.SetLeft(toggleButton1, left)
@@ -620,7 +625,8 @@ Namespace WinForms
 
                           Dim ch As New Wpf.CheckBox With {
                                .Name = controlName,
-                               .Content = text
+                               .Content = text,
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           ' Don't use if() expression, because it will return a new primitive not Nothing
@@ -682,7 +688,8 @@ Namespace WinForms
                                .Name = controlName,
                                .Content = text,
                                .GroupName = groupName,
-                               .IsChecked = isChecked
+                               .IsChecked = isChecked,
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           Wpf.Canvas.SetLeft(rd, left)
@@ -735,7 +742,8 @@ Namespace WinForms
                           Dim listBox1 As New Wpf.ListBox With {
                                  .Name = controlName,
                                  .Width = GetDouble(width),
-                                 .Height = GetDouble(height)
+                                 .Height = GetDouble(height),
+                                .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           Wpf.Canvas.SetLeft(listBox1, left)
@@ -789,7 +797,8 @@ Namespace WinForms
                                  .Style = Forms.ColoredComboBoxStyle,
                                  .Name = controlName,
                                  .Width = GetDouble(width),
-                                 .Height = GetDouble(height)
+                                 .Height = GetDouble(height),
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           Wpf.Canvas.SetLeft(comboBox1, left)
@@ -846,7 +855,8 @@ Namespace WinForms
                           Dim dp As New Wpf.DatePicker With {
                                .Name = controlName,
                                .Width = GetDouble(width),
-                               .SelectedDate = selectedDate.AsDate()
+                               .SelectedDate = selectedDate.AsDate(),
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           Wpf.Canvas.SetLeft(dp, left)
@@ -904,7 +914,8 @@ Namespace WinForms
                                .Width = GetDouble(width),
                                .Height = GetDouble(height),
                                .Minimum = minimum,
-                               .Background = Brushes.White
+                               .Background = Brushes.White,
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           Wpf.Canvas.SetLeft(pb, left)
@@ -972,7 +983,8 @@ Namespace WinForms
                                .AutoToolTipPrecision = 1,
                                .TickPlacement = Wpf.Primitives.TickPlacement.TopLeft,
                                .TickFrequency = tickFrequency,
-                               .Value = value
+                               .Value = value,
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           Wpf.Canvas.SetLeft(s, left)
@@ -1033,7 +1045,8 @@ Namespace WinForms
                                .Height = GetDouble(height),
                                .Minimum = minimum,
                                .Maximum = maximum,
-                               .Value = value
+                               .Value = value,
+                               .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
                           Wpf.Canvas.SetLeft(s, left)

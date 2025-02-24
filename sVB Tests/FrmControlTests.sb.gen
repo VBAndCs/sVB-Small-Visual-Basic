@@ -30,4 +30,6 @@ RadioButton1 = "frmcontroltests.radiobutton1"
 _path = Program.Directory + "\FrmControlTests.xaml"
 FrmControlTests = Forms.LoadForm("FrmControlTests", _path)
 Form.SetArgsArr(frmcontroltests, Stack.PopValue("_frmcontroltests_argsArr"))
-Form.Show(FrmControlTests)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)

@@ -303,9 +303,20 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim ctrl = GetControl(controlName)
-                        Dim radian = GetAngle(ctrl) * (Math.Pi / 180)
-                        Dim offsetX = (ctrl.ActualWidth / 2) * (1 - Math.Cos(radian)) + (ctrl.ActualHeight / 2) * Math.Sin(radian)
-                        GetRotatedLeft = System.Math.Round(offsetX + Wpf.Canvas.GetLeft(ctrl), 2, MidpointRounding.AwayFromZero)
+                        Dim left = Canvas.GetLeft(ctrl)
+                        Dim rotation = TryCast(ctrl.RenderTransform, RotateTransform)
+                        If rotation Is Nothing Then
+                            GetRotatedLeft = System.Math.Round(left, 2, MidpointRounding.AwayFromZero)
+                            Return
+                        End If
+
+                        Dim c = ctrl.RenderTransformOrigin
+                        Dim cx = ctrl.ActualWidth * c.X
+                        Dim cy = ctrl.ActualHeight * c.Y
+                        Dim angle = rotation.Angle * (Math.Pi / 180)
+                        Dim offsetX = cx * (1 - Math.Cos(angle)) + cy * Math.Sin(angle)
+                        GetRotatedLeft = System.Math.Round(offsetX + left, 2, MidpointRounding.AwayFromZero)
+
                     Catch ex As Exception
                         ReportError(controlName, "RotatedLeft", ex)
                     End Try
@@ -318,12 +329,20 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim ctrl = GetControl(controlName)
+                        Dim offsetX = 0
                         ' Remove any animation effect to allow setting the new value
                         ctrl.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
 
-                        Dim radian = GetAngle(ctrl) * (Math.Pi / 180)
-                        Dim offsetX = (ctrl.ActualWidth / 2) * (1 - Math.Cos(radian)) + (ctrl.ActualHeight / 2) * Math.Sin(radian)
+                        Dim rotation = TryCast(ctrl.RenderTransform, RotateTransform)
+                        If rotation IsNot Nothing Then
+                            Dim c = ctrl.RenderTransformOrigin
+                            Dim cx = ctrl.ActualWidth * c.X
+                            Dim cy = ctrl.ActualHeight * c.Y
+                            Dim angle = rotation.Angle * (Math.Pi / 180)
+                            offsetX = cx * (1 - Math.Cos(angle)) + cy * Math.Sin(angle)
+                        End If
                         Canvas.SetLeft(ctrl, CDbl(value) - offsetX)
+
                     Catch ex As Exception
                         ReportPropertyError(controlName, "RotatedLeft", value, ex)
                     End Try
@@ -341,9 +360,20 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim ctrl = GetControl(controlName)
-                        Dim radian = GetAngle(ctrl) * (Math.Pi / 180)
-                        Dim offsetY = (ctrl.ActualHeight / 2) * (1 - Math.Cos(radian)) - (ctrl.ActualWidth / 2) * Math.Sin(radian)
-                        GetRotatedTop = System.Math.Round(offsetY + Wpf.Canvas.GetTop(ctrl), 2, MidpointRounding.AwayFromZero)
+                        Dim top = Wpf.Canvas.GetTop(ctrl)
+                        Dim rotation = TryCast(ctrl.RenderTransform, RotateTransform)
+                        If rotation Is Nothing Then
+                            GetRotatedTop = System.Math.Round(top, 2, MidpointRounding.AwayFromZero)
+                            Return
+                        End If
+
+                        Dim c = ctrl.RenderTransformOrigin
+                        Dim cx = ctrl.ActualWidth * c.X
+                        Dim cy = ctrl.ActualHeight * c.Y
+                        Dim angle = rotation.Angle * (Math.Pi / 180)
+                        Dim offsetY = cy * (1 - Math.Cos(angle)) - cx * Math.Sin(angle)
+                        GetRotatedTop = System.Math.Round(offsetY + top, 2, MidpointRounding.AwayFromZero)
+
                     Catch ex As Exception
                         ReportError(controlName, "RotatedTop", ex)
                     End Try
@@ -356,12 +386,20 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim ctrl = GetControl(controlName)
+                        Dim offsetY = 0
                         ' Remove any animation effect to allow setting the new value
                         ctrl.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
 
-                        Dim radian = GetAngle(ctrl) * (Math.Pi / 180)
-                        Dim offsetY = (ctrl.ActualHeight / 2) * (1 - Math.Cos(radian)) - (ctrl.ActualWidth / 2) * Math.Sin(radian)
+                        Dim rotation = TryCast(ctrl.RenderTransform, RotateTransform)
+                        If rotation IsNot Nothing Then
+                            Dim c = ctrl.RenderTransformOrigin
+                            Dim cx = ctrl.ActualWidth * c.X
+                            Dim cy = ctrl.ActualHeight * c.Y
+                            Dim angle = rotation.Angle * (Math.Pi / 180)
+                            offsetY = cy * (1 - Math.Cos(angle)) - cx * Math.Sin(angle)
+                        End If
                         Canvas.SetTop(ctrl, CDbl(value) - offsetY)
+
                     Catch ex As Exception
                         ReportPropertyError(controlName, "RotatedTop", value, ex)
                     End Try
@@ -411,6 +449,7 @@ Namespace WinForms
                             obj.BeginAnimation(FrameworkElement.WidthProperty, Nothing)
                             obj.Width = w
                         End If
+
                     Catch ex As Exception
                         ReportPropertyError(controlName, "Width", value, ex)
                     End Try
@@ -1454,6 +1493,72 @@ Namespace WinForms
 #Region "Angle and rotaion"
 
         ''' <summary>
+        ''' Gets or sets the x-coordinate of the point that the control will rotate arround. By default, the control is rotated around its center.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetRotationCenterX(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim obj = GetControl(controlName)
+                        Dim x = obj.RenderTransformOrigin.X * obj.ActualWidth + Canvas.GetLeft(obj)
+                        GetRotationCenterX = System.Math.Round(x, 2, MidpointRounding.AwayFromZero)
+                    Catch ex As Exception
+                        ReportError(controlName, "RotationCenterX", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetRotationCenterX(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim obj = GetControl(controlName)
+                        Dim x = (CDbl(value) - Canvas.GetLeft(obj)) / obj.ActualWidth
+                        obj.RenderTransformOrigin = New Point(x, obj.RenderTransformOrigin.Y)
+
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "RotationCenterX", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Gets or sets the y-coordinate of the point that the control will rotate arround. By default, the control is rotated around its center.
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetRotationCenterY(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim obj = GetControl(controlName)
+                        Dim y = obj.RenderTransformOrigin.Y * obj.ActualHeight + Canvas.GetTop(obj)
+                        GetRotationCenterY = System.Math.Round(y, 2, MidpointRounding.AwayFromZero)
+                    Catch ex As Exception
+                        ReportError(controlName, "RotationCenterY", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetRotationCenterY(controlName As Primitive, value As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim obj = GetControl(controlName)
+                        Dim y = (CDbl(value) - Canvas.GetTop(obj)) / obj.ActualHeight
+                        obj.RenderTransformOrigin = New Point(obj.RenderTransformOrigin.X, y)
+
+                    Catch ex As Exception
+                        ReportPropertyError(controlName, "RotationCenterY", value, ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
         ''' Gets or sets the rotation angle of the control.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>
@@ -1474,7 +1579,11 @@ Namespace WinForms
                 Throw New ArgumentNullException("element")
             End If
 
-            Return NormalizeAngle(element.GetValue(AngleProperty))
+            Dim angle As Double = element.GetValue(AngleProperty)
+            If System.Math.Abs(angle) >= 360 Then
+                angle = angle Mod 360
+            End If
+            Return angle
         End Function
 
 
@@ -1496,19 +1605,9 @@ Namespace WinForms
             End If
 
             CType(element, Wpf.Control).BeginAnimation(AngleProperty, Nothing)
-            element.SetValue(AngleProperty, NormalizeAngle(value))
+            element.SetValue(AngleProperty, value)
         End Sub
 
-        Private Shared Function NormalizeAngle(value As Double) As Double
-            If value >= 360 Then
-                Return value Mod 360
-            ElseIf value < 0 Then
-                Dim v = (value Mod 360)
-                Return If(v < 0, 360 + v, 0)
-            Else
-                Return value
-            End If
-        End Function
 
         Public Shared ReadOnly AngleProperty As _
                                DependencyProperty = DependencyProperty.RegisterAttached("Angle",
@@ -1522,8 +1621,6 @@ Namespace WinForms
                      Dim rotation = TryCast(obj.RenderTransform, RotateTransform)
                      If rotation Is Nothing Then
                          rotation = New RotateTransform
-                         rotation.CenterX = obj.ActualWidth / 2.0
-                         rotation.CenterY = obj.ActualHeight / 2.0
                          obj.RenderTransform = rotation
                      End If
                      rotation.Angle = CDbl(e.NewValue)
@@ -1641,8 +1738,8 @@ Namespace WinForms
                 Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
-                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.WidthProperty, width, CDbl(duration))
-                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.HeightProperty, height, CDbl(duration))
+                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.WidthProperty, CDbl(width), CDbl(duration))
+                        GraphicsWindow.DoubleAnimateProperty(obj, FrameworkElement.HeightProperty, CDbl(height), CDbl(duration))
                     End Sub)
             Catch ex As Exception
                 ReportSubError(controlName, "AnimateSize", ex)
@@ -1664,8 +1761,13 @@ Namespace WinForms
                 Dim obj = GetControl(controlName)
                 App.Invoke(
                     Sub()
-                        ' Make sure that the angle is normalized
-                        SetAngle(obj, NormalizeAngle(obj.GetValue(AngleProperty)))
+                        ' Normalize the angle
+                        Dim startAngle As Double = obj.GetValue(AngleProperty)
+                        If System.Math.Abs(startAngle) >= 360 Then
+                            startAngle = startAngle Mod 360
+                            SetAngle(obj, startAngle)
+                        End If
+
                         GraphicsWindow.DoubleAnimateProperty(
                             obj,
                             AngleProperty,

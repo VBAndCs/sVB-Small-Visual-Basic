@@ -1,0 +1,5 @@
+
+Sub Form1_OnClick()
+   Jerry.AnimatePos(Me.MouseX, Me.MouseY, 1500)
+   Jerry.AnimateAngle(Jerry.Angle - 360, 1500)
+EndSub

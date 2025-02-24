@@ -1,0 +1,6 @@
+N = 10
+Moon.RotationCenterX = Orbit.Left + Orbit.Width / 2
+Moon.RotationCenterY = Orbit.Top + Orbit.Height / 2
+Moon.AnimateAngle(360 * N, 50000)
+
+

@@ -1,0 +1,83 @@
+Delay = 1000
+UpdatePosition()
+
+' ------------------------------------------------
+Sub BtnReset_OnClick()
+   Label1.Angle = 0
+   Label1.Left = 400
+   Label1.Top = 300
+   Label1.Width = 170
+   Label1.Height = 100
+   UpdatePosition()
+EndSub
+
+' ------------------------------------------------
+Sub BtnRotateRight_OnClick()
+   Label1.Angle = Label1.Angle + 30
+   UpdatePosition()
+EndSub
+
+' ------------------------------------------------
+Sub BtnRotateLeft_OnClick()
+   Label1.Angle = Label1.Angle - 30
+   UpdatePosition()
+EndSub
+
+' ------------------------------------------------
+Sub BtnEnlarge_OnClick()
+   LblStartPos.Visible = False
+   BtnReduce.Enabled = False
+   BtnEnlarge.Enabled = False
+   w = Label1.Width * 1.5
+   Label1.AnimateSize(w, Label1.Height * 1.5, Delay)
+   Label2.AnimateSize(w, Label1.Height * 1.5, Delay)
+   Label1.AnimateAngle(Label1.Angle + 360, Delay)
+   Program.WinDelay(Delay)
+   UpdatePosition()
+   BtnReduce.Enabled = True
+   BtnEnlarge.Enabled = w < 500
+   LblStartPos.Visible = True
+EndSub
+
+' ------------------------------------------------
+Sub BtnReduce_OnClick()
+   LblStartPos.Visible = False
+   BtnReduce.Enabled = False
+   BtnEnlarge.Enabled = False
+   h = Label1.Height / 1.5
+   Label1.AnimateSize(Label1.Width / 1.5, h, Delay)
+   Label2.AnimateSize(Label1.Width / 1.5, h, Delay)
+   Label1.AnimateAngle(Label1.Angle - 360, Delay)
+   Program.WinDelay(Delay)
+   UpdatePosition()
+   BtnReduce.Enabled = h > 30
+   BtnEnlarge.Enabled = True
+   LblStartPos.Visible = True
+EndSub
+
+' ------------------------------------------------
+Sub UpdatePosition()
+   LblStartPos.Left = Label1.RotatedLeft - LblStartPos.Width / 2
+   LblStartPos.Top = Label1.RotatedTop - LblStartPos.Height / 2
+   Label2.Width = Label1.Width
+   Label2.Height = Label1.Height
+   Label2.Left = Label1.Left
+   Label2.Top = Label1.Top
+EndSub
+
+
+' ------------------------------------------------
+Sub BtnMoveDown_OnClick()
+   Label1.RotatedLeft = Label1.RotatedLeft + 10
+   Label1.RotatedTop = Label1.RotatedTop + 10
+   UpdatePosition()
+EndSub
+
+' ------------------------------------------------
+Sub BtnMoveUp_OnClick()
+   Label1.RotatedLeft = Label1.RotatedLeft - 10
+   Label1.RotatedTop = Label1.RotatedTop - 10
+   UpdatePosition()
+EndSub
+
+

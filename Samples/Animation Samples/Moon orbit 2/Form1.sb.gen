@@ -1,0 +1,20 @@
+'@Form Hints:
+'#Form1{
+'    Moon: Control
+'    Orbit: Control
+'    Ellipse1: Control
+'}
+
+Me = "form1"
+Moon = "form1.moon"
+Orbit = "form1.orbit"
+Ellipse1 = "form1.ellipse1"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)

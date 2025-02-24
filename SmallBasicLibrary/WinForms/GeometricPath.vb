@@ -48,7 +48,7 @@ Namespace WinForms
                     _geometry = New PathGeometry()
                     _geometry.Figures = New PathFigureCollection()
                     _group.Children.Add(_geometry)
-                    _path = New Path
+                    _path = New Path()
                     _path.Data = _group
                 End Sub)
         End Sub

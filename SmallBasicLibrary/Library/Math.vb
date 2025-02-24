@@ -321,6 +321,24 @@ Namespace Library
         End Function
 
         ''' <summary>
+        ''' Limits the given number to be in the range of the given min and max values.
+        ''' </summary>
+        ''' <param name="number">The number to check.</param>
+        ''' <param name="minValue">The minimun value that the number should not be less than.</param>
+        ''' <param name="maxValue">The maximun value that the number should not be greater than.</param>
+        ''' <returns>
+        ''' The minValue if the number is less than,
+        ''' or the maxValue is the number is greater than,
+        ''' otherwise returns the number itself.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Function Limit(number As Primitive, minValue As Primitive, maxValue As Primitive) As Primitive
+            If number < minValue Then Return minValue
+            If number > maxValue Then Return maxValue
+            Return number
+        End Function
+
+        ''' <summary>
         ''' Compares two numbers and returns the greater of the two.
         ''' </summary>
         ''' <param name="number1">

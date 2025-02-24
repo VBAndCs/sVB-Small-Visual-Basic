@@ -1,4 +1,5 @@
-﻿Imports System.Reflection
+﻿Imports System.IO
+Imports System.Reflection
 Imports System.Reflection.Emit
 Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Library.Internal
@@ -43,8 +44,8 @@ Namespace Microsoft.SmallVisualBasic
                 </doc>
 
             _members = <members/>
-                doc.Add(_members)
-                _xmlDoc.Add(doc)
+            doc.Add(_members)
+            _xmlDoc.Add(doc)
 
         End Sub
 
@@ -103,9 +104,14 @@ Namespace Microsoft.SmallVisualBasic
                 _directory
             )
 
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Runtime.Versioning.TargetFrameworkAttribute).GetConstructor(New Type() {GetType(String)}),
+                New Object() {".NETFramework,Version=v4.8"}
+            ))
+
             Dim moduleBuilder = asm.DefineDynamicModule(_outputName & ".exe", emitSymbolInfo:=True)
             Dim typeBuilder = moduleBuilder.DefineType("_SmallVisualBasic_Program", TypeAttributes.Sealed)
-            EntryPoint = typeBuilder.DefineMethod("_Main", MethodAttributes.Static)
+            entryPoint = typeBuilder.DefineMethod("_Main", MethodAttributes.Static)
 
             Dim mainFormInit As MethodInfo = Nothing
             Dim formInit As MethodInfo = Nothing
@@ -123,9 +129,10 @@ Namespace Microsoft.SmallVisualBasic
             If Not forGlobalHelp Then
                 EmitMain(If(mainFormInit, formInit))
                 typeBuilder.CreateType()
-                asm.SetEntryPoint(EntryPoint, PEFileKinds.WindowApplication)
+                asm.SetEntryPoint(entryPoint, PEFileKinds.WindowApplication)
                 asm.Save(_outputName & ".exe")
-                _xmlDoc.Save(IO.Path.Combine(_directory, _outputName & ".xml"))
+                Dim _path = IO.Path.Combine(_directory, _outputName)
+                _xmlDoc.Save(_path & ".xml")
                 Return asm.GetReferencedAssemblies()
             End If
 
@@ -133,264 +140,263 @@ Namespace Microsoft.SmallVisualBasic
         End Function
 
 
-
         Dim globalScope As CodeGenScope
 
-        Private Function EmitModule(
-                          parser As Parser,
-                          moduleBuilder As ModuleBuilder,
-                          Optional forGlobalHelp As Boolean = False
-                    ) As MethodInfo
+            Private Function EmitModule(
+                              parser As Parser,
+                              moduleBuilder As ModuleBuilder,
+                              Optional forGlobalHelp As Boolean = False
+                        ) As MethodInfo
 
-            Dim domain = TypeAttributes.Sealed
-            If parser.IsGlobal Then
-                domain = domain Or TypeAttributes.Public
-            End If
+                Dim domain = TypeAttributes.Sealed
+                If parser.IsGlobal Then
+                    domain = domain Or TypeAttributes.Public
+                End If
 
-            Dim typeBuilder = moduleBuilder.DefineType(parser.ClassName, domain)
-            Dim initializeMethod = typeBuilder.DefineMethod(
-                "Initialize",
-                MethodAttributes.Static Or MethodAttributes.Public
-            )
-            Dim attr = GetType(HideFromIntellisenseAttribute)
-            Dim ctorInfo = attr.GetConstructor(Type.EmptyTypes)
-            initializeMethod.SetCustomAttribute(
-                 New CustomAttributeBuilder(ctorInfo, New Object() {})
-            )
+                Dim typeBuilder = moduleBuilder.DefineType(parser.ClassName, domain)
+                Dim initializeMethod = typeBuilder.DefineMethod(
+                    "Initialize",
+                    MethodAttributes.Static Or MethodAttributes.Public
+                )
+                Dim attr = GetType(HideFromIntellisenseAttribute)
+                Dim ctorInfo = attr.GetConstructor(Type.EmptyTypes)
+                initializeMethod.SetCustomAttribute(
+                     New CustomAttributeBuilder(ctorInfo, New Object() {})
+                )
 
-            Dim iL = initializeMethod.GetILGenerator()
-            _currentScope = New CodeGenScope With {
-                .ILGenerator = iL,
-                .MethodBuilder = initializeMethod,
-                .TypeBuilder = typeBuilder,
-                .SymbolTable = parser.SymbolTable,
-                .TypeInfoBag = _typeInfoBag,
-                .GlobalScope = globalScope,
-                .ForGlobalHelp = forGlobalHelp
-            }
+                Dim iL = initializeMethod.GetILGenerator()
+                _currentScope = New CodeGenScope With {
+                    .ILGenerator = iL,
+                    .MethodBuilder = initializeMethod,
+                    .TypeBuilder = typeBuilder,
+                    .SymbolTable = parser.SymbolTable,
+                    .TypeInfoBag = _typeInfoBag,
+                    .GlobalScope = globalScope,
+                    .ForGlobalHelp = forGlobalHelp
+                }
 
-            If parser.IsGlobal Then
-                globalScope = _currentScope
-                _currentScope.GlobalScope = globalScope
-                If Not forGlobalHelp Then AddTypeDoc(parser)
-            End If
+                If parser.IsGlobal Then
+                    globalScope = _currentScope
+                    _currentScope.GlobalScope = globalScope
+                    If Not forGlobalHelp Then AddTypeDoc(parser)
+                End If
 
-            BuildFields(typeBuilder, parser.SymbolTable, parser.IsGlobal)
-            EmitIL(parser.ParseTree)
-            iL.Emit(OpCodes.Ret)
-
-            If Not forGlobalHelp AndAlso parser.IsGlobal Then
-                ' Create a shared constructor that calls the Inialize method
-                Dim constructor = typeBuilder.DefineTypeInitializer()
-                iL = constructor.GetILGenerator()
-                iL.EmitCall(OpCodes.Call, initializeMethod, Nothing)
+                BuildFields(typeBuilder, parser.SymbolTable, parser.IsGlobal)
+                EmitIL(parser.ParseTree)
                 iL.Emit(OpCodes.Ret)
-            End If
 
-            typeBuilder.CreateType()
-            Return initializeMethod
-        End Function
+                If Not forGlobalHelp AndAlso parser.IsGlobal Then
+                    ' Create a shared constructor that calls the Inialize method
+                    Dim constructor = typeBuilder.DefineTypeInitializer()
+                    iL = constructor.GetILGenerator()
+                    iL.EmitCall(OpCodes.Call, initializeMethod, Nothing)
+                    iL.Emit(OpCodes.Ret)
+                End If
 
-        Private Function EmitMain(mainFormInit As MethodInfo) As Boolean
-            Dim methodBuilder = CType(entryPoint, MethodBuilder)
-            Dim iLGenerator = methodBuilder.GetILGenerator()
-            Dim beginProgram = GetType(SmallBasicApplication).GetMethod(
-                "BeginProgram",
-                BindingFlags.Static Or BindingFlags.Public
-            )
-            iLGenerator.EmitCall(OpCodes.Call, beginProgram, Nothing)
-            iLGenerator.EmitCall(OpCodes.Call, mainFormInit, Nothing)
+                typeBuilder.CreateType()
+                Return initializeMethod
+            End Function
 
-            Dim pauseThenClose = GetType(TextWindow).GetMethod(
-               NameOf(TextWindow.PauseThenClose),
-                BindingFlags.Static Or BindingFlags.Public
-             )
-            iLGenerator.EmitCall(OpCodes.Call, pauseThenClose, Nothing)
-
-            iLGenerator.Emit(OpCodes.Ret)
-            Return True
-        End Function
-
-        Private Sub BuildFields(
-                        typeBuilder As TypeBuilder,
-                        symbolTable As SymbolTable,
-                        isGlobal As Boolean
-                    )
-
-            For Each var In symbolTable.GlobalVariables
-                Dim fieldName = var.Value.LCaseText
-                Dim fieldBuilder = typeBuilder.DefineField(
-                        "_p_" & fieldName,
-                        GetType(Primitive),
-                        FieldAttributes.Private Or FieldAttributes.Static
+            Private Function EmitMain(mainFormInit As MethodInfo) As Boolean
+                Dim methodBuilder = CType(entryPoint, MethodBuilder)
+                Dim iLGenerator = methodBuilder.GetILGenerator()
+                Dim beginProgram = GetType(SmallBasicApplication).GetMethod(
+                    "BeginProgram",
+                    BindingFlags.Static Or BindingFlags.Public
                 )
-                _currentScope.Fields.Add(var.Key, fieldBuilder)
+                iLGenerator.EmitCall(OpCodes.Call, beginProgram, Nothing)
+                iLGenerator.EmitCall(OpCodes.Call, mainFormInit, Nothing)
 
-                ' private fields starts with _. They will be hidden
-                If fieldName.StartsWith("_") Then Continue For
+                Dim pauseThenClose = GetType(TextWindow).GetMethod(
+                   NameOf(TextWindow.PauseThenClose),
+                    BindingFlags.Static Or BindingFlags.Public
+                 )
+                iLGenerator.EmitCall(OpCodes.Call, pauseThenClose, Nothing)
 
-                If isGlobal Then
-                    If Not _currentScope.ForGlobalHelp Then
-                        AddPropertyDoc(var.Value)
-                    End If
+                iLGenerator.Emit(OpCodes.Ret)
+                Return True
+            End Function
 
-                    ' Define a public property for the field
-                    Dim propName = var.Value.Text
-                    Dim propBuilder = typeBuilder.DefineProperty(
-                            propName,
-                            PropertyAttributes.None,
-                            GetType(Primitive),
-                            Nothing
-                    )
-
-                    Dim attr = MethodAttributes.Public Or
-                                      MethodAttributes.Static Or
-                                      MethodAttributes.SpecialName Or
-                                      MethodAttributes.HideBySig
-
-                    Dim getProp = typeBuilder.DefineMethod(
-                            $"get_{propName}",
-                            attr,
-                            GetType(Primitive),
-                            Type.EmptyTypes
-                    )
-
-                    Dim getIL = getProp.GetILGenerator()
-                    getIL.Emit(OpCodes.Ldsfld, fieldBuilder)
-                    getIL.Emit(OpCodes.Ret)
-
-                    Dim setProp = typeBuilder.DefineMethod(
-                            $"set_{propName}",
-                            attr,
-                            Nothing,
-                            New Type() {GetType(Primitive)}
-                    )
-
-                    Dim setIL = setProp.GetILGenerator()
-                    setIL.Emit(OpCodes.Ldarg_0)
-                    setIL.Emit(OpCodes.Stsfld, fieldBuilder)
-                    setIL.Emit(OpCodes.Ret)
-
-                    propBuilder.SetGetMethod(getProp)
-                    propBuilder.SetSetMethod(setProp)
-
-                    Dim returntype = _currentScope.SymbolTable.GetInferedType(var.Value)
-                    If returntype <> VariableType.Any Then
-                        Dim ctorParams = New Type() {GetType(VariableType)}
-                        Dim ctorInfo = GetType(WinForms.ReturnValueTypeAttribute).GetConstructor(ctorParams)
-                        propBuilder.SetCustomAttribute(
-                            New CustomAttributeBuilder(
-                                    ctorInfo,
-                                    New Object() {returntype}
-                            )
+            Private Sub BuildFields(
+                            typeBuilder As TypeBuilder,
+                            symbolTable As SymbolTable,
+                            isGlobal As Boolean
                         )
-                    End If
-                End If
-            Next
-        End Sub
 
-        Dim _xmlDoc As XDocument
-        Dim _members As XElement
-
-        Private Sub AddTypeDoc(parser As Parser)
-            Dim atStart = True
-            Dim sb As New System.Text.StringBuilder()
-            For Each st In parser.ParseTree
-                If TypeOf st Is Statements.EmptyStatement Then
-                    Dim comment = st.EndingComment.Text
-                    If comment = "" Then
-                        If Not atStart Then Exit For
-                    Else
-                        atStart = False
-                        sb.AppendLine(comment)
-                    End If
-                Else
-                    Exit For
-                End If
-            Next
-
-            Dim typeInfo = sb.ToString().Trim()
-            If typeInfo <> "" Then
-                Dim typeDoc =
-                    <member name=<%= "T:" & _appName %>>
-                        <summary><%= typeInfo %></summary>
-                    </member>
-                _members.Add(typeDoc)
-            End If
-        End Sub
-
-        Private Sub AddPropertyDoc(token As Token)
-            If token.Comment = "" Then Return
-
-            Dim propDoc =
-                <member name=<%= "P:" & _appName & "." & token.Text %>>
-                    <summary><%= token.Comment %></summary>
-                </member>
-            _members.Add(propDoc)
-        End Sub
-
-        Private Sub AddMethodDocs(parser As Parser)
-            Dim prmtv = GetType(Primitive).FullName
-            For Each st In parser.ParseTree
-                Dim method = TryCast(st, Statements.SubroutineStatement)
-                If method Is Nothing Then Continue For
-
-                Dim hasDoc As Boolean = False
-                Dim paramsCount = If(method.Params Is Nothing, 0, method.Params.Count)
-                Dim paramsList = If(
-                    paramsCount = 0,
-                    "",
-                    "(" & String.Join(",", Enumerable.Repeat(prmtv, paramsCount)) & ")"
-                )
-
-                Dim methodDoc =
-                    <member name=<%= $"M:{_appName}.{method.Name.Text}{paramsList}" %>/>
-
-                Dim summery = method.GetSummery()
-                If summery <> "" Then
-                    hasDoc = True
-                    methodDoc.Add(
-                          <summary><%= summery %></summary>
+                For Each var In symbolTable.GlobalVariables
+                    Dim fieldName = var.Value.LCaseText
+                    Dim fieldBuilder = typeBuilder.DefineField(
+                            "_p_" & fieldName,
+                            GetType(Primitive),
+                            FieldAttributes.Private Or FieldAttributes.Static
                     )
-                End If
+                    _currentScope.Fields.Add(var.Key, fieldBuilder)
 
-                If paramsCount > 0 Then
-                    For Each param In method.Params
-                        Dim paramInfo = param.Comment
-                        If paramInfo <> "" Then
-                            hasDoc = True
-                            methodDoc.Add(
-                                <param name=<%= param.Text %>><%= paramInfo %></param>
+                    ' private fields starts with _. They will be hidden
+                    If fieldName.StartsWith("_") Then Continue For
+
+                    If isGlobal Then
+                        If Not _currentScope.ForGlobalHelp Then
+                            AddPropertyDoc(var.Value)
+                        End If
+
+                        ' Define a public property for the field
+                        Dim propName = var.Value.Text
+                        Dim propBuilder = typeBuilder.DefineProperty(
+                                propName,
+                                PropertyAttributes.None,
+                                GetType(Primitive),
+                                Nothing
+                        )
+
+                        Dim attr = MethodAttributes.Public Or
+                                          MethodAttributes.Static Or
+                                          MethodAttributes.SpecialName Or
+                                          MethodAttributes.HideBySig
+
+                        Dim getProp = typeBuilder.DefineMethod(
+                                $"get_{propName}",
+                                attr,
+                                GetType(Primitive),
+                                Type.EmptyTypes
+                        )
+
+                        Dim getIL = getProp.GetILGenerator()
+                        getIL.Emit(OpCodes.Ldsfld, fieldBuilder)
+                        getIL.Emit(OpCodes.Ret)
+
+                        Dim setProp = typeBuilder.DefineMethod(
+                                $"set_{propName}",
+                                attr,
+                                Nothing,
+                                New Type() {GetType(Primitive)}
+                        )
+
+                        Dim setIL = setProp.GetILGenerator()
+                        setIL.Emit(OpCodes.Ldarg_0)
+                        setIL.Emit(OpCodes.Stsfld, fieldBuilder)
+                        setIL.Emit(OpCodes.Ret)
+
+                        propBuilder.SetGetMethod(getProp)
+                        propBuilder.SetSetMethod(setProp)
+
+                        Dim returntype = _currentScope.SymbolTable.GetInferedType(var.Value)
+                        If returntype <> VariableType.Any Then
+                            Dim ctorParams = New Type() {GetType(VariableType)}
+                            Dim ctorInfo = GetType(WinForms.ReturnValueTypeAttribute).GetConstructor(ctorParams)
+                            propBuilder.SetCustomAttribute(
+                                New CustomAttributeBuilder(
+                                        ctorInfo,
+                                        New Object() {returntype}
+                                )
                             )
                         End If
-                    Next
-                End If
+                    End If
+                Next
+            End Sub
 
-                If method.SubToken.Type = TokenType.Function Then
-                    Dim returnInfo = method.GetRetunDoc()
-                    If returnInfo <> "" Then
+            Dim _xmlDoc As XDocument
+            Dim _members As XElement
+
+            Private Sub AddTypeDoc(parser As Parser)
+                Dim atStart = True
+                Dim sb As New System.Text.StringBuilder()
+                For Each st In parser.ParseTree
+                    If TypeOf st Is Statements.EmptyStatement Then
+                        Dim comment = st.EndingComment.Text
+                        If comment = "" Then
+                            If Not atStart Then Exit For
+                        Else
+                            atStart = False
+                            sb.AppendLine(comment)
+                        End If
+                    Else
+                        Exit For
+                    End If
+                Next
+
+                Dim typeInfo = sb.ToString().Trim()
+                If typeInfo <> "" Then
+                    Dim typeDoc =
+                        <member name=<%= "T:" & _appName %>>
+                            <summary><%= typeInfo %></summary>
+                        </member>
+                    _members.Add(typeDoc)
+                End If
+            End Sub
+
+            Private Sub AddPropertyDoc(token As Token)
+                If token.Comment = "" Then Return
+
+                Dim propDoc =
+                    <member name=<%= "P:" & _appName & "." & token.Text %>>
+                        <summary><%= token.Comment %></summary>
+                    </member>
+                _members.Add(propDoc)
+            End Sub
+
+            Private Sub AddMethodDocs(parser As Parser)
+                Dim prmtv = GetType(Primitive).FullName
+                For Each st In parser.ParseTree
+                    Dim method = TryCast(st, Statements.SubroutineStatement)
+                    If method Is Nothing Then Continue For
+
+                    Dim hasDoc As Boolean = False
+                    Dim paramsCount = If(method.Params Is Nothing, 0, method.Params.Count)
+                    Dim paramsList = If(
+                        paramsCount = 0,
+                        "",
+                        "(" & String.Join(",", Enumerable.Repeat(prmtv, paramsCount)) & ")"
+                    )
+
+                    Dim methodDoc =
+                        <member name=<%= $"M:{_appName}.{method.Name.Text}{paramsList}" %>/>
+
+                    Dim summery = method.GetSummery()
+                    If summery <> "" Then
                         hasDoc = True
                         methodDoc.Add(
-                            <returns><%= returnInfo %></returns>
+                              <summary><%= summery %></summary>
                         )
                     End If
-                End If
 
-                If hasDoc Then _members.Add(methodDoc)
-            Next
-        End Sub
+                    If paramsCount > 0 Then
+                        For Each param In method.Params
+                            Dim paramInfo = param.Comment
+                            If paramInfo <> "" Then
+                                hasDoc = True
+                                methodDoc.Add(
+                                    <param name=<%= param.Text %>><%= paramInfo %></param>
+                                )
+                            End If
+                        Next
+                    End If
 
-        Private Sub EmitIL(parseTree As List(Of Statements.Statement), Optional prepareOnly As Boolean = False)
-            For Each item In parseTree
-                item.PrepareForEmit(_currentScope)
-            Next
+                    If method.SubToken.Type = TokenType.Function Then
+                        Dim returnInfo = method.GetRetunDoc()
+                        If returnInfo <> "" Then
+                            hasDoc = True
+                            methodDoc.Add(
+                                <returns><%= returnInfo %></returns>
+                            )
+                        End If
+                    End If
 
-            If prepareOnly Then Return
+                    If hasDoc Then _members.Add(methodDoc)
+                Next
+            End Sub
 
-            For Each item In parseTree
-                item.EmitIL(_currentScope)
-            Next
-        End Sub
+            Private Sub EmitIL(parseTree As List(Of Statements.Statement), Optional prepareOnly As Boolean = False)
+                For Each item In parseTree
+                    item.PrepareForEmit(_currentScope)
+                Next
+
+                If prepareOnly Then Return
+
+                For Each item In parseTree
+                    item.EmitIL(_currentScope)
+                Next
+            End Sub
 
     End Class
 End Namespace

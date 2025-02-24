@@ -362,24 +362,25 @@ Namespace Library
             If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
                 Return
             End If
+
             GraphicsWindow.Invoke(
                 Sub()
                     If Not (TypeOf obj.RenderTransform Is TransformGroup) Then
                         obj.RenderTransform = New TransformGroup
                     End If
 
-                    Dim value As System.Windows.Media.RotateTransform = Nothing
-                    If Not _rotateTransformMap.TryGetValue(shapeName, value) Then
-                        value = New RotateTransform
-                        _rotateTransformMap(shapeName) = value
-                        Dim frameworkElement1 As FrameworkElement = TryCast(obj, FrameworkElement)
-                        If frameworkElement1 IsNot Nothing Then
-                            value.CenterX = frameworkElement1.ActualWidth / 2.0
-                            value.CenterY = frameworkElement1.ActualHeight / 2.0
+                    Dim rotateTrans As RotateTransform = Nothing
+                    If Not _rotateTransformMap.TryGetValue(shapeName, rotateTrans) Then
+                        rotateTrans = New RotateTransform
+                        _rotateTransformMap(shapeName) = rotateTrans
+                        Dim fw = TryCast(obj, FrameworkElement)
+                        If fw IsNot Nothing Then
+                            rotateTrans.CenterX = fw.ActualWidth / 2.0
+                            rotateTrans.CenterY = fw.ActualHeight / 2.0
                         End If
-                        CType(obj.RenderTransform, TransformGroup).Children.Add(value)
+                        CType(obj.RenderTransform, TransformGroup).Children.Add(rotateTrans)
                     End If
-                    value.Angle = angle
+                    rotateTrans.Angle = angle
                 End Sub)
         End Sub
 
@@ -394,34 +395,37 @@ Namespace Library
             If Not GraphicsWindow._objectsMap.TryGetValue(shapeName, obj) Then
                 Return
             End If
+
             scaleX = Math.Min(Math.Max(scaleX, 0.1), 20.0)
             scaleY = Math.Min(Math.Max(scaleY, 0.1), 20.0)
+
             GraphicsWindow.Invoke(
                 Sub()
                     If Not (TypeOf obj.RenderTransform Is TransformGroup) Then
                         obj.RenderTransform = New TransformGroup
                     End If
 
-                    Dim value As System.Windows.Media.ScaleTransform = Nothing
-                    If Not _scaleTransformMap.TryGetValue(shapeName, value) Then
-                        value = New ScaleTransform
-                        _scaleTransformMap(shapeName) = value
-                        Dim frameworkElement1 As FrameworkElement = TryCast(obj, FrameworkElement)
-                        If frameworkElement1 IsNot Nothing Then
-                            value.CenterX = frameworkElement1.ActualWidth / 2.0
-                            value.CenterY = frameworkElement1.ActualHeight / 2.0
+                    Dim scaleTrans As ScaleTransform = Nothing
+                    If Not _scaleTransformMap.TryGetValue(shapeName, scaleTrans) Then
+                        scaleTrans = New ScaleTransform
+                        _scaleTransformMap(shapeName) = scaleTrans
+                        Dim fw = TryCast(obj, FrameworkElement)
+                        If fw IsNot Nothing Then
+                            scaleTrans.CenterX = fw.ActualWidth / 2.0
+                            scaleTrans.CenterY = fw.ActualHeight / 2.0
                         End If
-                        CType(obj.RenderTransform, TransformGroup).Children.Add(value)
+                        CType(obj.RenderTransform, TransformGroup).Children.Add(scaleTrans)
                     End If
-                    value.ScaleX = scaleX
-                    value.ScaleY = scaleY
+
+                    scaleTrans.ScaleX = scaleX
+                    scaleTrans.ScaleY = scaleY
                 End Sub)
         End Sub
 
         ''' <summary>
         ''' Animates a shape with the specified name to a new position.
         ''' </summary>
-        ''' <param name="shapeName">The name of the shape to move.</param>
+        ''' <param name="shapeName">The name of the shape to animate.</param>
         ''' <param name="x">The x co-ordinate of the new position.</param>
         ''' <param name="y">The y co-ordinate of the new position.</param>
         ''' <param name="duration">The time for the animation, in milliseconds.</param>
@@ -445,8 +449,12 @@ Namespace Library
             End If
         End Sub
 
-        ' Not used
-        Private Shared Sub AnimateOnPath(
+        ''' <summary>
+        ''' Animates the given shape on the geometic path, last created using the GeometricPath type.
+        ''' </summary>
+        ''' <param name="shapeName">The name of the shape to animate.</param>
+        ''' <param name="duration">The time for the animation, in milliseconds.</param>
+        Friend Shared Sub AnimateOnPath(
                    shapeName As Primitive,
                    duration As Primitive)
 

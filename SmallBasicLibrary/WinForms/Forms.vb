@@ -7,6 +7,7 @@ Imports System.Windows.Controls
 Imports System.Windows
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Reflection
+Imports System.Windows.Media
 
 Namespace WinForms
     ''' <summary>
@@ -205,7 +206,9 @@ Namespace WinForms
 
                                 Dim angle = 0.0
                                 Dim rotation As Media.RotateTransform
-                                If ui.RenderTransform IsNot Nothing Then
+                                If ui.RenderTransform Is Nothing OrElse ui.RenderTransform Is Transform.Identity Then
+                                    ui.RenderTransformOrigin = New Point(0.5, 0.5)
+                                Else
                                     rotation = TryCast(ui.RenderTransform, Media.RotateTransform)
                                     If rotation IsNot Nothing Then angle = rotation.Angle
                                 End If

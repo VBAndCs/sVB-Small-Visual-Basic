@@ -1181,13 +1181,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Sub
 
         Private Sub UndoRedoHappened(sender As Object, e As UndoRedoEventArgs)
-            Dim __ As Object = Nothing
-
-            If _undoHistory.TryFindMarkerOnTop(saveMarker, __) Then
-                IsDirty = False
-            Else
-                IsDirty = True
-            End If
+            IsDirty = True
         End Sub
 
         Dim StillWorking As Boolean = False

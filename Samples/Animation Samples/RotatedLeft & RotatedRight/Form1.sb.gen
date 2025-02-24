@@ -1,0 +1,68 @@
+'@Form Hints:
+'#Form1{
+'    Label1: Label
+'    BtnRotateRight: Button
+'    BtnEnlarge: Button
+'    BtnReset: Button
+'    BtnMoveDown: Button
+'    BtnMoveUp: Button
+'    LblStartPos: Control
+'    BtnReduce: Button
+'    BtnRotateLeft: Button
+'    Label2: Label
+'}
+
+Me = "form1"
+Label1 = "form1.label1"
+BtnRotateRight = "form1.btnrotateright"
+BtnEnlarge = "form1.btnenlarge"
+BtnReset = "form1.btnreset"
+BtnMoveDown = "form1.btnmovedown"
+BtnMoveUp = "form1.btnmoveup"
+LblStartPos = "form1.lblstartpos"
+BtnReduce = "form1.btnreduce"
+BtnRotateLeft = "form1.btnrotateleft"
+Label2 = "form1.label2"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    BtnReset: OnClick
+'    BtnRotateRight: OnClick
+'    BtnEnlarge: OnClick
+'    BtnMoveUp: OnClick
+'    BtnMoveDown: OnClick
+'    BtnReduce: OnClick
+'    BtnRotateLeft: OnClick
+'}
+
+' BtnReset Events:
+Control.HandleEvents(BtnReset)
+Control.OnClick = BtnReset_OnClick
+
+' BtnRotateRight Events:
+Control.HandleEvents(BtnRotateRight)
+Control.OnClick = BtnRotateRight_OnClick
+
+' BtnEnlarge Events:
+Control.HandleEvents(BtnEnlarge)
+Control.OnClick = BtnEnlarge_OnClick
+
+' BtnMoveUp Events:
+Control.HandleEvents(BtnMoveUp)
+Control.OnClick = BtnMoveUp_OnClick
+
+' BtnMoveDown Events:
+Control.HandleEvents(BtnMoveDown)
+Control.OnClick = BtnMoveDown_OnClick
+
+' BtnReduce Events:
+Control.HandleEvents(BtnReduce)
+Control.OnClick = BtnReduce_OnClick
+
+' BtnRotateLeft Events:
+Control.HandleEvents(BtnRotateLeft)
+Control.OnClick = BtnRotateLeft_OnClick
+
+
+Form.Show(Me)

@@ -246,10 +246,10 @@ Namespace Library
                     Dim image2 = GetBitmap(key2)
                     If image2 Is Nothing Then Return
 
-                    Dim left1 = CDbl(x1) / dpiX
-                    Dim left2 = CDbl(x2) / dpiX
-                    Dim top1 = CDbl(y1) / dpiY
-                    Dim top2 = CDbl(y2) / dpiY
+                    Dim left1 = CDbl(x1) / DpiX
+                    Dim left2 = CDbl(x2) / DpiX
+                    Dim top1 = CDbl(y1) / DpiY
+                    Dim top2 = CDbl(y2) / DpiY
 
                     Dim width1 = image1.PixelWidth
                     Dim width2 = image2.PixelWidth
@@ -276,16 +276,16 @@ Namespace Library
                         CollisionMasks.Add(key2, mask2)
                     End If
 
-                    Dim dx = left1 - left2
-                    Dim dy = top1 - top2
+                    Dim dx As Integer = left1 - left2
+                    Dim dy As Integer = top1 - top2
 
-                    For x As Integer = 0 To width1 - 1
-                        Dim m2X As Integer = x + dx
+                    For x = 0 To width1 - 1
+                        Dim m2X = x + dx
                         If m2X >= width2 Then Return
                         If m2X < 0 Then Continue For
 
-                        For y As Integer = 0 To height1 - 1
-                            Dim m2Y As Integer = y + dy
+                        For y = 0 To height1 - 1
+                            Dim m2Y = y + dy
                             If m2Y >= height2 Then Exit For
                             If m2Y < 0 OrElse Not mask1(x, y) Then Continue For
 

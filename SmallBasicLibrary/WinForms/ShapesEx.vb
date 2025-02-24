@@ -128,5 +128,15 @@ Namespace WinForms
             Shapes.ShowShape(shapeName)
         End Sub
 
+        ''' <summary>
+        ''' Animates the shape on the geometic path, last created using the GeometricPath type.
+        ''' </summary>
+        ''' <param name="duration">The time for the animation, in milliseconds.</param>
+        <ExMethod>
+        Private Shared Sub AnimateOnPath(
+                   shapeName As Primitive,
+                   duration As Primitive)
+            Shapes.AnimateOnPath(shapeName, duration)
+        End Sub
     End Class
 End Namespace

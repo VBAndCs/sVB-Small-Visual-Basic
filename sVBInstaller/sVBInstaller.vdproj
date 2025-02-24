@@ -777,6 +777,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_31E58BE7C65F4E8DAEC1CCF220244504"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_32044D91236D4DEC943E97A6898D6EF9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -958,12 +964,6 @@
         "Entry"
         {
         "MsmKey" = "8:_460E7299171F4414866528628E94BC32"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_472325040275444EB634AB21B2928228"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1623,12 +1623,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_77B3812D34B740648D02850E70BEB84B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_77E39569BE76421583E296DAE0B8DFB7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1768,6 +1762,12 @@
         "Entry"
         {
         "MsmKey" = "8:_80029EA199FB4540B3B445B7C343B100"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_808DF3353CFD44F1A1B1AE7AB6684B46"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2109,6 +2109,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_9BE40137CB6D4B7FA8D98B8A2647CA1F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9BEE94CD7527447C815A0251444BBFB6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2283,6 +2289,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A864D9FABE9C43F9BA2CB9EA7D8F4CF4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A8C40828D83149FA9D39BF9CA533222D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2403,12 +2415,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_AF1D5AF115374A38BD8A9D7DEC18ECFB"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_AF420AF299EB45519C6866A240F710CD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2518,6 +2524,12 @@
         "Entry"
         {
         "MsmKey" = "8:_B7FACD5EFA6549949E812964692D4B90"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B857AB6F4F8A401EB4D69CAAF99A64F0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2733,6 +2745,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C44F25B22579460ABA0F230A98D36282"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C4C16A70514445A9B19D0C2E710B5386"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2823,6 +2841,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C99382892018498EAA6D09E5DD181E17"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C9DF5291DFCF415CA21665C1C9B67A66"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2872,6 +2896,12 @@
         "Entry"
         {
         "MsmKey" = "8:_CCE8DA85923E4522859B25BD7AA9EB0E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CD273B1F6C804462BF0126ACB1B89E38"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3010,6 +3040,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D56DD5AD37F24696AC19E2A2CE592575"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D611FFCEAA4649C887E25368C31C9C64"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3429,6 +3465,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_F204702CE58049B18ABEE1958CD01510"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F24D57CC89994F9F88495160EA8D9B68"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3483,6 +3525,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_F444CF77367B47DE9948395ADD110528"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F5062FEA968345418AC06CEA000A6C81"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3502,6 +3550,12 @@
         "Entry"
         {
         "MsmKey" = "8:_F673EAFD4D75453F84AF9200A8A2B092"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F69C9026D36A49EEA3ADE341ACE3112F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3562,6 +3616,12 @@
         "Entry"
         {
         "MsmKey" = "8:_FB1ADD2511CE44AAACA775830AB48C53"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FB7BA795F73E4D8EB3E32CE9F6987ECB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3821,7 +3881,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.3_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.3.3_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -6413,6 +6473,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_31E58BE7C65F4E8DAEC1CCF220244504"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Jerry1\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_19D98C897CBC44B5BC4A1329C8AA12E6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_32044D91236D4DEC943E97A6898D6EF9"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\Lib\\DemoLib.xml"
@@ -7019,26 +7099,6 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_443A641196EB47B39DE3FD8A28756E22"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_472325040275444EB634AB21B2928228"
-            {
-            "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit\\Form1.xaml"
-            "TargetName" = "8:Form1.xaml"
-            "Tag" = "8:"
-            "Folder" = "8:_FB7D511E3F8A44509E58590A05808B9A"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9266,26 +9326,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_77B3812D34B740648D02850E70BEB84B"
-            {
-            "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit\\Form1.sb"
-            "TargetName" = "8:Form1.sb"
-            "Tag" = "8:"
-            "Folder" = "8:_FB7D511E3F8A44509E58590A05808B9A"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_77E39569BE76421583E296DAE0B8DFB7"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\sVB Notepad 2\\frmMain.xaml"
@@ -9763,6 +9803,26 @@
             "TargetName" = "8:FrmTestResults.xaml"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_808DF3353CFD44F1A1B1AE7AB6684B46"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit 2\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_80E287CBDDFD4C65935173FFCA2E356D"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10908,6 +10968,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9BE40137CB6D4B7FA8D98B8A2647CA1F"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit 2\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_80E287CBDDFD4C65935173FFCA2E356D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9BEE94CD7527447C815A0251444BBFB6"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\sVB Notepad\\FrmFind.xaml"
@@ -11461,6 +11541,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A864D9FABE9C43F9BA2CB9EA7D8F4CF4"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\RotatedLeft & RotatedRight\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_5B00672948624C848C1E727F5F5990ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A8C40828D83149FA9D39BF9CA533222D"
             {
             "SourcePath" = "8:..\\Samples\\Drawing Samples\\Draw Functions\\Form1.sb.gen"
@@ -11847,26 +11947,6 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_791D583C7C14471D93BCCE8466FE0A70"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AF1D5AF115374A38BD8A9D7DEC18ECFB"
-            {
-            "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit\\Form1.sb.gen"
-            "TargetName" = "8:Form1.sb.gen"
-            "Tag" = "8:"
-            "Folder" = "8:_FB7D511E3F8A44509E58590A05808B9A"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12269,6 +12349,26 @@
             "TargetName" = "8:FrmTextTests.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B857AB6F4F8A401EB4D69CAAF99A64F0"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Jerry1\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_19D98C897CBC44B5BC4A1329C8AA12E6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12794,6 +12894,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C44F25B22579460ABA0F230A98D36282"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\RotatedLeft & RotatedRight\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_5B00672948624C848C1E727F5F5990ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C4C16A70514445A9B19D0C2E710B5386"
             {
             "SourcePath" = "8:..\\Samples\\sVB Libraries\\DemoLib\\DemoLib\\obj\\Release\\DemoLib.vbproj.CopyComplete"
@@ -13094,6 +13214,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C99382892018498EAA6D09E5DD181E17"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit 1\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_C28A969AA3F643D79A5BFD5EEC059B06"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C9DF5291DFCF415CA21665C1C9B67A66"
             {
             "SourcePath" = "8:..\\Samples\\Animation Samples\\Animate Rect.sb"
@@ -13260,6 +13400,26 @@
             "TargetName" = "8:FrmMsg.xaml"
             "Tag" = "8:"
             "Folder" = "8:_821790668FC54DA7A55718DE4ACF17ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD273B1F6C804462BF0126ACB1B89E38"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Jerry1\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_19D98C897CBC44B5BC4A1329C8AA12E6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13731,6 +13891,26 @@
             "TargetName" = "8:ball_hit.mp3"
             "Tag" = "8:"
             "Folder" = "8:_7257C561F22C470B9ACAFD4165AC8CFE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D611FFCEAA4649C887E25368C31C9C64"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit 1\\Form1.xaml"
+            "TargetName" = "8:Form1.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_C28A969AA3F643D79A5BFD5EEC059B06"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15116,6 +15296,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F204702CE58049B18ABEE1958CD01510"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit 2\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_80E287CBDDFD4C65935173FFCA2E356D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F24D57CC89994F9F88495160EA8D9B68"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Random Buttons 3\\Global.sb"
@@ -15296,6 +15496,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F444CF77367B47DE9948395ADD110528"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\RotatedLeft & RotatedRight\\Form1.sb.gen"
+            "TargetName" = "8:Form1.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_5B00672948624C848C1E727F5F5990ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F5062FEA968345418AC06CEA000A6C81"
             {
             "SourcePath" = "8:..\\Samples\\Games\\Cars\\bin\\Cars\\4.png"
@@ -15362,6 +15582,26 @@
             "TargetName" = "8:Dome.sb"
             "Tag" = "8:"
             "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F69C9026D36A49EEA3ADE341ACE3112F"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Jerry1\\1.png"
+            "TargetName" = "8:1.png"
+            "Tag" = "8:"
+            "Folder" = "8:_19D98C897CBC44B5BC4A1329C8AA12E6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15562,6 +15802,26 @@
             "TargetName" = "8:frmShapes.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_9DE4539DA5C8452D87E7DAEE55F6671D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FB7BA795F73E4D8EB3E32CE9F6987ECB"
+            {
+            "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit 1\\Form1.sb"
+            "TargetName" = "8:Form1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_C28A969AA3F643D79A5BFD5EEC059B06"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15943,6 +16203,17 @@
                                         {
                                         }
                                     }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_19D98C897CBC44B5BC4A1329C8AA12E6"
+                                    {
+                                    "Name" = "8:Jerry1"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_C9AB03DB77AC4E0183165641969194FA"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_1A4F0917A4FE47F387CF6333DE5F20E4"
                                     {
                                     "Name" = "8:Moving worm"
@@ -15961,6 +16232,17 @@
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
                                     "Property" = "8:_A58FCB9BEBC743968A268BEC1CC85BC2"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_5B00672948624C848C1E727F5F5990ED"
+                                    {
+                                    "Name" = "8:RotatedLeft & RotatedRight"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_7E1FDD7F83BB4A77A9A860CEE1B70084"
                                         "Folders"
                                         {
                                         }
@@ -16009,6 +16291,17 @@
                                         {
                                         }
                                     }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_80E287CBDDFD4C65935173FFCA2E356D"
+                                    {
+                                    "Name" = "8:Moon orbit 2"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_AD4A2E13ED05438492B6A066532A60ED"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_98A1F196B75E44AC947DC9B1CCE2E026"
                                     {
                                     "Name" = "8:Animation3"
@@ -16031,6 +16324,17 @@
                                         {
                                         }
                                     }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_C28A969AA3F643D79A5BFD5EEC059B06"
+                                    {
+                                    "Name" = "8:Moon orbit 1"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_5C2463A82DBB42BFB28C37B7CDB11377"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_F6D77554F4D0461DB0A73D4DDECCC556"
                                     {
                                     "Name" = "8:Move Label"
@@ -16038,17 +16342,6 @@
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
                                     "Property" = "8:_0FB279266DCB41A8B6FC7AD8AF6B52FB"
-                                        "Folders"
-                                        {
-                                        }
-                                    }
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_FB7D511E3F8A44509E58590A05808B9A"
-                                    {
-                                    "Name" = "8:Moon orbit"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "Condition" = "8:"
-                                    "Transitive" = "11:FALSE"
-                                    "Property" = "8:_55F340712A1A4BE28CD1D9BE084C16BB"
                                         "Folders"
                                         {
                                         }
@@ -17406,9 +17699,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.3"
+        "ProductName" = "8:Small Visual Basic 3.3.3"
         "ProductCode" = "8:{DE2CC7AC-989B-4BEE-8362-DD1F69719A48}"
-        "PackageCode" = "8:{60E16135-F9A8-4F3E-A299-EDAB6791F59C}"
+        "PackageCode" = "8:{C9E90158-093F-42BC-945B-7AFD4405B8E9}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -17586,7 +17879,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.3"
+            "Name" = "8:sVB 3.3.3"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -17628,7 +17921,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.3"
+            "Name" = "8:sVB 3.3.3"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -17656,7 +17949,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.3"
+            "Name" = "8:sVB 3.3.3"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
