@@ -5,22 +5,16 @@
 
 Me = "frmmain"
 TxtEditor = "frmmain.txteditor"
-_path = Program.Directory + "\frmMain.xaml"
+_path = Program.Directory + "\frmmain.xaml"
 FrmMain = Forms.LoadForm("FrmMain", _path)
 Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
-Form.Show(FrmMain)
 '#Events{
 '    TxtEditor: OnTextChanged
-'    FrmMain: OnClosing OnPreviewKeyDown
 '}
 
 ' TxtEditor Events:
 Control.HandleEvents(TxtEditor)
 TextBox.OnTextChanged = TxtEditor_OnTextChanged
 
-' FrmMain Events:
-Control.HandleEvents(FrmMain)
-Form.OnClosing = FrmMain_OnClosing
-Form.OnPreviewKeyDown = FrmMain_OnPreviewKeyDown
 
-
+Form.Show(Me)

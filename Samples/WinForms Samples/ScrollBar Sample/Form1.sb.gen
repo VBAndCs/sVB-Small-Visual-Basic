@@ -1,0 +1,28 @@
+'@Form Hints:
+'#Form1{
+'    ScrollBar1: ScrollBar
+'    Label1: Label
+'}
+
+Me = "form1"
+ScrollBar1 = "form1.scrollbar1"
+Label1 = "form1.label1"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    ScrollBar1: OnScroll
+'    Form1: OnPreviewMouseWheel OnPreviewKeyDown
+'}
+
+' ScrollBar1 Events:
+Control.HandleEvents(ScrollBar1)
+ScrollBar.OnScroll = ScrollBar1_OnScroll
+
+' Form1 Events:
+Control.HandleEvents(Form1)
+Form.OnPreviewMouseWheel = Form_OnPreviewMouseWheel
+Form.OnPreviewKeyDown = Form_OnPreviewKeyDown
+
+
+Form.Show(Me)

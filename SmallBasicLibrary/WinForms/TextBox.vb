@@ -2,6 +2,8 @@
 Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
+Imports System.Windows.Controls
+Imports Microsoft.SmallVisualBasic.Library.Primitive
 
 Namespace WinForms
     ''' <summary>
@@ -218,6 +220,40 @@ Namespace WinForms
                     End Try
                 End Sub)
         End Sub
+
+
+        ''' <summary>
+        ''' Gets the position of the horizontal scrollbar of the textbox
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetHorizontalScrollOffset(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetHorizontalScrollOffset = GetTextBox(textBoxName).GetChild(Of ScrollViewer)(True).HorizontalOffset
+                    Catch ex As Exception
+                        Control.ReportError(textBoxName, "HorizontalScrollOffset", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        ''' <summary>
+        ''' Gets the position of the Vertical scrollbar of the textbox
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetVerticalScrollOffset(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetVerticalScrollOffset = GetTextBox(textBoxName).GetChild(Of ScrollViewer)(True).VerticalOffset
+                    Catch ex As Exception
+                        Control.ReportError(textBoxName, "VerticalScrollOffset", ex)
+                    End Try
+                End Sub)
+        End Function
+
 
         ''' <summary>
         ''' Selects a part ot the text displayed in the textbox.
@@ -491,6 +527,44 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
+        ''' Gets the start position of the first visible line and the last position of the last visuble line in the textbox.
+        ''' </summary>
+        ''' <returns>
+        ''' an array containing 2 items:
+        ''' 1. the start position of the first visible line 
+        ''' 2. the last position of the last visuble line in the textbox
+        ''' </returns>
+        <ExMethod>
+        <ReturnValueType(VariableType.Array)>
+        Private Shared Function GetVisibleTextRange(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                 Sub()
+                     Try
+                         Dim tb = GetTextBox(textBoxName)
+                         Dim firstVisibleLineIndex = tb.GetFirstVisibleLineIndex()
+                         Dim lastVisibleLineIndex = tb.GetLastVisibleLineIndex()
+                         Dim range As New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
+                         Dim lastLineStartIndex = tb.GetCharacterIndexFromLineIndex(lastVisibleLineIndex)
+                         Dim lastLineLength = tb.GetLineText(lastVisibleLineIndex).Length
+
+                         range(1) = tb.GetCharacterIndexFromLineIndex(firstVisibleLineIndex) + 1
+                         If lastLineLength > 0 Then
+                             range(2) = lastLineStartIndex + lastLineLength
+                         Else
+                             range(2) = lastLineStartIndex + 1
+                         End If
+                         range(3) = firstVisibleLineIndex + 1
+
+                         GetVisibleTextRange = New Primitive With {.ArrayMap = range}
+
+                     Catch ex As Exception
+                         Control.ReportSubError(textBoxName, "GetVisibleTextRange", ex)
+                     End Try
+                 End Sub)
+        End Function
+
+
+        ''' <summary>
         ''' Fired when the text is changed.
         ''' </summary>
         Public Shared Custom Event OnTextChanged As SmallVisualBasicCallback
@@ -566,6 +640,42 @@ Namespace WinForms
             RaiseEvent()
             End RaiseEvent
         End Event
+
+        ''' <summary>
+        ''' Fired when the text is scrolled
+        ''' </summary>
+        Public Shared Custom Event OnScroll As SmallVisualBasicCallback
+            AddHandler(handler As SmallVisualBasicCallback)
+                Try
+                    Dim name = [Event].SenderControl
+                    Dim _sender = GetTextBox(name)
+                    Dim scrollViewer = _sender.GetChild(Of ScrollViewer)(True)
+                    If scrollViewer Is Nothing Then Return
+
+                    Dim h = Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                            End Sub
+
+                    Control.RemovePrevEventHandler(
+                        name,
+                        NameOf(OnScroll),
+                        Sub() RemoveHandler scrollViewer.ScrollChanged, h
+                    )
+                    AddHandler scrollViewer.ScrollChanged, h
+
+                Catch ex As Exception
+                    [Event].ShowErrorMessage(NameOf(OnScroll), ex)
+                End Try
+            End AddHandler
+
+            RemoveHandler(handler As SmallVisualBasicCallback)
+            End RemoveHandler
+
+            RaiseEvent()
+            End RaiseEvent
+        End Event
+
+
 
         ''' <summary>
         ''' Fired when the selected text is changed in TextBox.

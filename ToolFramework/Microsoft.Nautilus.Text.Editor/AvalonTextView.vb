@@ -964,7 +964,15 @@ Namespace Microsoft.Nautilus.Text.Editor
             End SyncLock
         End Sub
 
-        Private Function CreateLineVisuals(line As ITextSnapshotLine, position As Integer, horizontalOffset As Double, verticalOffset As Double, maxIndent As Double, wrapWidth As Double) As IList(Of TextLineVisual)
+        Private Function CreateLineVisuals(
+                            line As ITextSnapshotLine,
+                            position As Integer,
+                            horizontalOffset As Double,
+                            verticalOffset As Double,
+                            maxIndent As Double,
+                            wrapWidth As Double
+                    ) As IList(Of TextLineVisual)
+
             Dim lineVisuals = _visualsFactory.CreateLineVisuals(line, position, horizontalOffset, verticalOffset, maxIndent, wrapWidth, Nothing)
             Dim adornments = _adornmentProvider.GetAdornments(New SnapshotSpan(_TextSnapshot, New Span(position, line.EndIncludingLineBreak - position)))
 

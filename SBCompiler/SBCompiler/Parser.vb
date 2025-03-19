@@ -1463,7 +1463,10 @@ Namespace Microsoft.SmallVisualBasic
                     Dim returnExpr As Expression = Nothing
                     Dim returnToken = tokenEnum.Current
                     tokenEnum.MoveNext()
-                    If Not tokenEnum.IsEnd Then EatExpression(tokenEnum, returnExpr)
+                    If Not tokenEnum.IsEndOrComment Then
+                        EatExpression(tokenEnum, returnExpr)
+                    End If
+
                     Dim subroutine = SubroutineStatement.Current
                     statement = New ReturnStatement With {
                         .StartToken = returnToken,

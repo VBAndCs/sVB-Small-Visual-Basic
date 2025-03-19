@@ -3,4 +3,9 @@
   <PropertyGroup>
     <ShowAllFiles>true</ShowAllFiles>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="WinForms\ConsoleWindow.xaml.vb">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

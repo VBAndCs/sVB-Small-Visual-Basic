@@ -6,7 +6,6 @@ WasMoving = False
 Timer.Tick = MoveCar
 MaxTime = 0
 
-' ------------------------------------------------
 Sub RdoStop_OnCheck()
    If RdoStop.Checked Then
       RedLight.BackColor = Colors.Red
@@ -21,7 +20,6 @@ Sub RdoStop_OnCheck()
 EndSub
 
 
-' ------------------------------------------------
 Sub RdoReady_OnCheck()
    If RdoReady.Checked Then
       YelloLight.BackColor = Colors.LightYellow
@@ -39,8 +37,6 @@ Sub RdoReady_OnCheck()
    EndIf
 EndSub
 
-
-' ------------------------------------------------
 Sub RdoGo_OnCheck()
    If RdoGo.Checked Then
       GreenLight.BackColor = Colors.LightGreen
@@ -55,7 +51,6 @@ Sub RdoGo_OnCheck()
 EndSub
 
 
-' ------------------------------------------------
 Sub MoveCar()
    Timer.Pause()
    If Car.Top <= -Car.Height Then

@@ -24,7 +24,6 @@ lblResult = "frmcalc.lblresult"
 _path = Program.Directory + "\frmcalc.xaml"
 frmCalc = Forms.LoadForm("frmCalc", _path)
 Form.SetArgsArr(frmcalc, Stack.PopValue("_frmcalc_argsArr"))
-Form.Show(frmCalc)
 '#Events{
 '    btnAdd: OnClick
 '    btnSubtract: OnClick
@@ -60,3 +59,4 @@ Control.HandleEvents(txtNum2)
 TextBox.OnTextChanged = TxtNum2_OnTextChanged
 
 
+Form.Show(Me)

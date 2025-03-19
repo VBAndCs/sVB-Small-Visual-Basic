@@ -1377,7 +1377,7 @@ Namespace Microsoft.SmallVisualBasic
                                Dim type = If(doc.ControlsInfo.ContainsKey(key), doc.ControlsInfo(key), "")
                                If eventName = "" Then eventName = sb.PreCompiler.GetDefaultEvent(type)
 
-                               If doc.AddEventHandler(controlName, eventName, False) Then
+                               If doc.AddEventHandler(controlName, eventName, False, type = "Form") Then
                                    doc.PageKey = formDesigner.PageKey
                                    ' The code behind is saved before the new Handler is added.
                                    ' We must make the designer dirty, to force saving this chamge in 
@@ -1432,7 +1432,13 @@ Namespace Microsoft.SmallVisualBasic
         End Sub
 
         Private Sub FormDesigner_OnMenuItemClicked(sender As MenuItem)
-            AddEventDefaultHandler(sender.Name, If(sender.Items.Count = 0, "", "OnOpen"))
+            AddEventDefaultHandler(
+                   sender.Name,
+                   If(sender.Items.Count = 0,
+                       If(LCase(CStr(sender.Tag)) = "true", "OnCheck", "OnClick"),
+                       "OnOpen"
+                   )
+            )
         End Sub
 
         Dim formNameChanged As Boolean
@@ -1762,7 +1768,7 @@ Namespace Microsoft.SmallVisualBasic
 
             Dim doc = OpenDocIfNot(formDesigner.CodeFile)
             If doc IsNot Nothing Then
-                doc.FixEventHandlers(oldName, newName)
+                doc.FixEventHandlers(oldName, newName, controlIndex = -1)
                 Try
                     SaveDesignInfo(doc)
                 Catch ex As Exception

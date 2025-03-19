@@ -1,8 +1,10 @@
+Me.BackColor = Colors.None
+Me.Top = 0
 Me.Angle = 30
 Button1.Angle = -30
 TextBox1.Angle = -30
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub Button1_OnClick()
    Program.End()
 EndSub

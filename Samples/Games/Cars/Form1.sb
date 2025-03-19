@@ -5,18 +5,15 @@
 ScreenHeight = Me.Height
 ScreenWidth = Me.Width - 25
 
-
 Cars = {}
 CarsCount = 0
 MyCarSpeed = 80
-
 
 MoveDirection = 0
 Direction_Up = 1
 Direction_Down = 2
 Direction_Left = 3
 Direction_Right = 4
-
 
 StartMove = False
 EndGame = False
@@ -46,7 +43,6 @@ CreateTracks()
 Timer.Interval = 1
 Timer.Tick = Timer_Tick
 
-' ---------------------------------------------------------------
 Function CreateCar(
       name,  	  ' #String: the name of the car
       maxSpeed, ' #double
@@ -72,7 +68,6 @@ Function CreateCar(
    Return car
 EndFunction
 
-' ---------------------------------------------------------------
 Sub CreateEnamyCars()
    For i = 1 To 11
       maxSpeed = 120 + 10 * Math.GetRandomNumber(13)
@@ -99,9 +94,7 @@ Sub CreateEnamyCars()
    Next
 EndSub
 
-' ---------------------------------------------------------------------
-
-Sub MoveMyCar
+Sub MoveMyCar()
    If StartMove Then
       myCarLabel = MyCar!Label
       If MoveDirection = Direction_Up Then
@@ -126,7 +119,6 @@ Sub MoveMyCar
             A = 0.5
          EndIf
          
-         
       ElseIf MoveDirection = Direction_Right Then
          myCarLabel.Left = myCarLabel.Left _
             + Math.Min(MyCarSpeed / 100, 1)
@@ -139,7 +131,6 @@ Sub MoveMyCar
 EndSub
 
 
-' ---------------------------------------------------------------
 Function MoveCar(i)
    car = Cars[i]
    steps = car!Steps
@@ -181,7 +172,6 @@ Function MoveCar(i)
       EndIf
    EndIf
    
-   
    If xDisplacement > 0 Then
       left = left + 0.5
       w = ScreenWidth - carLabel.Width
@@ -191,7 +181,6 @@ Function MoveCar(i)
       Else
          xDisplacement = Math.Max(0, xDisplacement - 0.5)
       EndIf
-      
       
    ElseIf xDisplacement < 0 Then
       left = left - 0.5
@@ -210,7 +199,6 @@ Function MoveCar(i)
       car!OldSpeed = -1
    EndIf
    
-   
    carHeight = carLabel.Height
    If top < -carHeight Or top > ScreenHeight Then
       pos = carLabel.Top
@@ -223,7 +211,6 @@ Function MoveCar(i)
       carLabel.Left = left
    EndIf
    
-   
    car!Steps = steps + 2
    car!Speed = speed
    car!Top = top
@@ -233,7 +220,6 @@ Function MoveCar(i)
    Return True
 EndFunction
 
-' ---------------------------------------------------------------------
 Sub MoveCars()
    r = Math.GetRandomNumber(CarsCount * 10) / 10
    negative = Math.GetRandomNumber(100) > 50
@@ -275,56 +261,45 @@ Sub MoveCars()
    Wend
 EndSub
 
-' ---------------------------------------------------------------------
-
-Sub Timer_Tick
+Sub Timer_Tick()
    Timer.Pause()
    MoveCars()
    Timer.Resume()
 EndSub
 
-' ---------------------------------------------------------------------
 Sub EndMove()
    StartMove = False
    Braking = False
    A = 0.5
 EndSub
 
-' ---------------------------------------------------------------------
-
 Sub SpeedUp()
    MoveDirection = Direction_Up
    StartMove = True
 EndSub
 
-' ---------------------------------------------------------------------
 Sub SpeedDown()
    MoveDirection = Direction_Down
    StartMove = True
 EndSub
 
-' ---------------------------------------------------------------------
 Sub MoveRight()
    MoveDirection = Direction_Right
    StartMove = True
 EndSub
 
-' ---------------------------------------------------------------------
 Sub MoveLeft()
    MoveDirection = Direction_Left
    StartMove = True
 EndSub
 
-
-' ---------------------------------------------------------------------
 Sub Brake()
    Braking = True
    MoveDirection = Direction_Down
    StartMove = True
 EndSub
 
-' ---------------------------------------------------------------------
-Sub Form1_OnKeyDown()
+Sub Form_OnKeyDown()
    If StartMove Or Braking Then
       Return
    EndIf
@@ -363,7 +338,7 @@ GameKeys = {
    Keys.Space
 }
 
-Sub Form1_OnKeyUp()
+Sub Form_OnKeyUp()
    key = Event.LastKey
    For i = 1 To GameKeys.Count
       If key = GameKeys[i] Then
@@ -373,9 +348,7 @@ Sub Form1_OnKeyUp()
    Next
 EndSub
 
-
-' ------------------------------------------------
-Sub Form1_OnClosing
+Sub Form1_OnClosing()
    Timer.Pause()
    EndGame = True
    MyCarSpeed = 0
@@ -384,8 +357,6 @@ Sub Form1_OnClosing
    MyCar = ""
 EndSub
 
-
-' ------------------------------------------------
 Sub CreateTracks()
    leftTrackLabel = Me.AddLabel("leftTrack", 0, 0, 20, Me.Height)
    leftTrackLabel.BackColor = Colors.White
@@ -403,8 +374,6 @@ Sub CreateTracks()
    Next
 EndSub
 
-
-' ------------------------------------------------
 Function CreateBlock(left, top, n)
    blockLabel = Me.AddLabel("blockLabel" + n, left, top, 20, 20)
    blockLabel.BackColor = Colors.Black
@@ -413,11 +382,8 @@ EndFunction
 
 
 CurrentBlock = 1
-' ------------------------------------------------
 Sub MoveTracks()
    y = MyCarSpeed / 5
-   
-   
    blockLabel = LeftBlocks[CurrentBlock]
    top = blockLabel.Top + y
    h = top - Me.Height
@@ -426,11 +392,8 @@ Sub MoveTracks()
    EndIf
    
    blockLabel.Top = top
-   
-   
    blockLabel = RightBlocks[CurrentBlock]
    blockLabel.Top = top
-   
    
    If CurrentBlock = BlockCount Then
       CurrentBlock = 1
@@ -439,8 +402,6 @@ Sub MoveTracks()
    EndIf
 EndSub
 
-
-' ------------------------------------------------
 Function AvoidCollisions(n)
    car = Cars[n]
    carSpeed = car!Speed
@@ -501,9 +462,7 @@ Function AvoidCollisions(n)
          
          Return True
       EndIf
-      
    Next
-   
    
    x = Math.GetRandomNumber(100)
    
@@ -517,4 +476,3 @@ Function AvoidCollisions(n)
    
    Return False
 EndFunction
-

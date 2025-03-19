@@ -6,16 +6,26 @@
 '    SldBlue: Slider
 '    SldTrans: Slider
 '    TextBox1: TextBox
+'    Label1: Label
+'    Label2: Label
+'    Label3: Label
+'    Label4: Label
 '}
 
-Me = "Form1"
+Me = "form1"
 LblPreview = "form1.lblpreview"
 SldRed = "form1.sldred"
 SldGreen = "form1.sldgreen"
 SldBlue = "form1.sldblue"
 SldTrans = "form1.sldtrans"
 TextBox1 = "form1.textbox1"
-_path = Program.Directory + "\Form1.xaml"
+Label1 = "form1.label1"
+Label2 = "form1.label2"
+Label3 = "form1.label3"
+Label4 = "form1.label4"
+_path = Program.Directory + "\form1.xaml"
 Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
-Form.Show(Form1)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)

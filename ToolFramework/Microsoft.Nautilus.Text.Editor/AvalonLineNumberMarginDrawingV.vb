@@ -37,7 +37,13 @@ Namespace Microsoft.Nautilus.Text.Editor
             End If
         End Sub
 
-        Public Sub New(lineNumber As Integer, textLine As TextLine, horizontalOffset As Double, viewLineHeight As Double, viewLineTop As Double)
+        Public Sub New(
+                      lineNumber As Integer,
+                      textLine As TextLine,
+                      horizontalOffset As Double,
+                      viewLineHeight As Double,
+                      viewLineTop As Double)
+
             If lineNumber < 1 Then
                 Throw New ArgumentOutOfRangeException("lineNumber")
             End If

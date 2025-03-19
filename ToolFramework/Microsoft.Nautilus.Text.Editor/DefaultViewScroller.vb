@@ -169,33 +169,36 @@ Namespace Microsoft.Nautilus.Text.Editor
             rightEdge += num3
         End Sub
 
-        Private Sub ComputeLeftAndRightEdgesOfSpanText(span1 As Span, textLines As IFormattedTextLineCollection, startLine As ITextLine, endLine As ITextLine, <Out> ByRef leftEdge As Double, <Out> ByRef rightEdge As Double)
+        Private Sub ComputeLeftAndRightEdgesOfSpanText(
+                            span As Span,
+                            textLines As IFormattedTextLineCollection,
+                            startLine As ITextLine,
+                            endLine As ITextLine,
+                            <Out> ByRef leftEdge As Double,
+                            <Out> ByRef rightEdge As Double)
+
             leftEdge = Double.MaxValue
             rightEdge = Double.MinValue
             If startLine Is endLine Then
-                ExpandBounds(startLine, span1, leftEdge, rightEdge)
+                ExpandBounds(startLine, span, leftEdge, rightEdge)
                 Return
             End If
 
-            ExpandBounds(startLine, New Span(span1.Start, startLine.LineSpan.End - span1.Start), leftEdge, rightEdge)
-            ExpandBounds(endLine, New Span(endLine.LineSpan.Start, span1.End - endLine.LineSpan.Start), leftEdge, rightEdge)
-            Dim indexOfTextLine As Integer = textLines.GetIndexOfTextLine(startLine)
-            Dim indexOfTextLine2 As Integer = textLines.GetIndexOfTextLine(endLine)
-            For i As Integer = indexOfTextLine + 1 To indexOfTextLine2 - 1
-                Dim textLine As ITextLine = textLines(i)
+            ExpandBounds(startLine, New Span(span.Start, startLine.LineSpan.End - span.Start), leftEdge, rightEdge)
+            ExpandBounds(endLine, New Span(endLine.LineSpan.Start, span.End - endLine.LineSpan.Start), leftEdge, rightEdge)
+            Dim startIndex = textLines.GetIndexOfTextLine(startLine)
+            Dim endIndex = textLines.GetIndexOfTextLine(endLine)
+
+            For i = startIndex + 1 To endIndex - 1
+                Dim textLine = textLines(i)
                 ExpandBounds(textLine, New Span(textLine.LineSpan.Start, textLine.LineSpan.Length), leftEdge, rightEdge)
             Next
         End Sub
 
-        Private Sub ExpandBounds(line As ITextLine, span1 As Span, ByRef leftEdge As Double, ByRef rightEdge As Double)
-            Dim textBounds1 As ReadOnlyCollection(Of TextBounds) = line.GetTextBounds(span1)
-            For Each item As TextBounds In textBounds1
-                If item.Left < leftEdge Then
-                    leftEdge = item.Left
-                End If
-                If item.Right > rightEdge Then
-                    rightEdge = item.Right
-                End If
+        Private Sub ExpandBounds(line As ITextLine, span As Span, ByRef leftEdge As Double, ByRef rightEdge As Double)
+            For Each item As TextBounds In line.GetTextBounds(span)
+                If item.Left < leftEdge Then leftEdge = item.Left
+                If item.Right > rightEdge Then rightEdge = item.Right
             Next
         End Sub
     End Class

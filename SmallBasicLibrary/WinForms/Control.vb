@@ -733,7 +733,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' When it is True, the control is shown at the form.
+        ''' When it is True, the control is displayed on the form.
         ''' When it is False,  the control is hidden.
         ''' </summary>
         <ReturnValueType(VariableType.Boolean)>
@@ -803,7 +803,11 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        GetMouseX = System.Math.Round(Input.Mouse.GetPosition(c).X, MidpointRounding.AwayFromZero)
+                        Dim pos = System.Windows.Forms.Cursor.Position
+                        GetMouseX = System.Math.Round(
+                              c.PointFromScreen(New Point(pos.X, pos.Y)).X,
+                              MidpointRounding.AwayFromZero)
+
                     Catch ex As Exception
                         ReportError(controlName, "MouseX", ex)
                     End Try
@@ -820,7 +824,11 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim c = GetControl(controlName)
-                        GetMouseY = System.Math.Round(Input.Mouse.GetPosition(c).Y, MidpointRounding.AwayFromZero)
+                        Dim pos = System.Windows.Forms.Cursor.Position
+                        GetMouseY = System.Math.Round(
+                              c.PointFromScreen(New Point(pos.X, pos.Y)).Y,
+                              MidpointRounding.AwayFromZero)
+
                     Catch ex As Exception
                         ReportError(controlName, "MouseY", ex)
                     End Try
@@ -1413,7 +1421,10 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetFontSize = System.Math.Round(GetControl(controlName).FontSize * 0.75, 1, MidpointRounding.AwayFromZero)
+                        GetFontSize = System.Math.Round(
+                                GetControl(controlName).FontSize * 0.75,
+                                1, MidpointRounding.AwayFromZero)
+
                     Catch ex As Exception
                         ReportError(controlName, "FontSize", ex)
                     End Try

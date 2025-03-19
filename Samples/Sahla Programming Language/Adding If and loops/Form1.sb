@@ -1,0 +1,831 @@
+Statements = {}                ' Array of code lines (strings)
+LineIndex = 1         ' Our program counter
+
+WhileStack = "WhileStack"      ' Stack name for WHILE loops
+LoopStack = "LoopStack"        ' Stack name for FOR loops
+
+Tokens = {}                    ' Tokens array for the current line
+Vars = {}
+ProEndMsg = "انتهى البرنامج.. اضغط أي زر لإغلاقه..."
+UnknownCommandMsg = "أمر غير معروف: "
+
+_True = "نعم"
+_False = "لا"
+_If = "لو"
+_ElseIf = "أو لو"
+_Else = "وإلا"
+_EndIf = "تم الشرط"
+_And = "و"
+_Or = "أو"
+_While = "بينما"
+_Wend = "كرر"
+_For = "من"
+_To1 = "إلى"
+_To2 = "حتى"
+_Step = "بزيادة"
+_Next = "زد"
+_ExitLoop = "اخرج"
+_Write = "اكتب"
+_Line1 = "سطرا"
+_Line2 = "السطر"
+_Read = "اقرأ"
+_Number1 = "عددا"
+_Number2 = "العدد"
+
+BlueWords = {
+   _True, _False, _If, _Else, _And, _Or, "تم", "الشرط",
+   _While, _Wend, _For, _To1, _To2, _Step, _Next, _ExitLoop,
+   _Write, _Line1, _Line2, _Read, _Number1, _Number2
+}
+
+TW.RightToLeft = True
+TW.FontName = "Simplified Arabic"
+TW.FontSize = 16
+TW.FontBold = True
+TxtCode.MultiLine = True
+TxtCode.Padding = 10
+LblFormat.Padding = 10
+LblFormat.Font = TxtCode.Font
+TxtCode.BackColor = Colors.Transparent
+TxtCode.ForeColor = Colors.Transparent
+TxtCode.Width = Me.Width
+TxtCode.Left = 0
+TxtCode_OnTextChanged()
+OnScroll()
+
+Sub BtnRun_OnClick()
+   BtnRun.Enabled = False
+   TW.Clear()
+   Statements = Text.Split(TxtCode.Text, Chars.Lf, False, False)
+   LineIndex = 1
+   statementsCount = Statements.Count
+   
+   While LineIndex <= statementsCount
+      TokenizeLine(Text.Trim(Statements[LineIndex]), LineIndex)
+      Execute()
+      If LineIndex <= Statements.Count Then
+         LineIndex = LineIndex + 1
+      EndIf
+      
+      If TW.IsClosed Then
+         BtnRun.Enabled = True
+         Return
+      EndIf
+   Wend
+   
+   Terminate(ProEndMsg)
+EndSub
+
+Sub Terminate(msg)
+   TW.Write(Chars.Lf & msg)
+   TW.PauseWithoutMessage()
+   TW.Close()
+   BtnRun.Enabled = True
+EndSub
+
+Sub Execute()
+   tokensCount = Tokens.Count
+   
+   If tokensCount = 0 Or TW.IsClosed Then
+      Return
+   EndIf
+   
+   command = Tokens[1][3]
+   
+   If command = _Write And tokensCount >= 2 Then
+      nextCommand = Tokens[2][3]
+      If nextCommand = _Line1 Or nextCommand = _Line2 Then
+         val = EvaluateExpressionTokens(3)
+         If TW.IsClosed Then
+            Return
+         EndIf
+         TW.WriteLine(FixBool(val))
+      Else
+         val = EvaluateExpressionTokens(2)
+         If TW.IsClosed Then
+            Return
+         EndIf
+         
+         TW.Write(FixBool(val))
+      EndIf
+      
+   ElseIf command = _For Then
+      ProcessForLoopHeader()
+      
+   ElseIf command = _Next Then
+      ProcessForLoopNext()
+      
+   ElseIf command = _While Then
+      ProcessWhileLoopHeader()
+      
+   ElseIf command = _Wend Then
+      ProcessWhileLoopEnd()
+      
+   ElseIf command = _If Then
+      ProcessIfBlock()
+      
+   ElseIf command = _ExitLoop Then
+      ProcessExitLoop(LineIndex)
+      
+   ElseIf command = _ElseIf Or command = _Else Or command = _EndIf Then
+      Return
+      
+   ElseIf tokensCount >= 3 And Tokens[2][3] = "=" Then ' varName
+      If IsValidVarName(command, LineIndex, 1) = False Then
+         Return
+      EndIf
+      
+      result = EvaluateExpressionTokens(3)
+      Vars[command] = result
+      
+   Else
+      ReportError(UnknownCommandMsg + command, LineIndex, 1)
+   EndIf
+EndSub
+
+Function FixBool(strValue)
+   If strValue.Length = 4 And strValue.StartsWith("True") Then
+      Return _True
+   ElseIf strValue.Length = 5 And strValue.StartsWith("False") Then
+      Return _False
+   EndIf
+   
+   Return strValue
+EndFunction
+
+Sub ProcessExitLoop(line)
+   If Stack.GetCount(WhileStack) > 0 Then
+      LineIndex = FindClosingToken(_While, _Wend, LineIndex + 1)
+      If LineIndex = 0 Then
+         ReportError("'" + _Wend + "' غير موجودة", line, 1)
+      Else
+         Stack.PopValue(WhileStack)
+      EndIf
+      
+   ElseIf Stack.GetCount(LoopStack) > 0 Then
+      LineIndex = FindClosingToken(_For, _Next, LineIndex + 1)
+      If LineIndex = 0 Then
+         ReportError("'" + _Next + "' غير موجودة", line, 1)
+      EndIf
+      Stack.PopValue(LoopStack)
+      
+   Else
+      ReportError("لا توجد حلقة مفتوحة للخروج منها.", line, 1)
+   EndIf
+EndSub
+
+Sub ProcessForLoopHeader()
+   tokensCount = Tokens.Count
+   If tokensCount < 6 Then
+      ReportError("صيغة حلقة التكرار 'من.. إلى' أقصر من اللازم", LineIndex, 1)
+      Return
+   EndIf
+   
+   varName = Tokens[2][3]
+   If IsValidVarName(varName, LineIndex, 2) = False Then
+      Return
+   EndIf
+   
+   If Tokens[3][3] <> "=" Then
+      ReportError("العلامة = مفقودة", LineIndex, 3)
+      Return
+   EndIf
+   startValue = EvaluateExpressionTokens(4)
+   
+   toToken = Tokens[5][3]
+   If toToken <> _To1 And toToken <> _To2 Then
+      ReportError("الكلمة 'إلى' مفقودة", LineIndex, 5)
+      Return
+   EndIf
+   
+   endValue = EvaluateExpressionTokens(6)
+   stepValue = 1
+   
+   If tokensCount > 6 Then
+      stepToken = Tokens[7][3]
+      If stepToken = _Step Then
+         If tokensCount < 8 Then
+            ReportError("مقدار الزيادة مفقود", LineIndex, 8)
+            Return
+         EndIf
+         stepValue = EvaluateExpressionTokens(8)
+      Else
+         ReportError("النص '" + stepToken + "' غير مسموح به في هذا الموضغ", LineIndex, 7)
+         Return
+      EndIf
+   EndIf
+   
+   Vars[varName] = startValue
+   loopObj = {varName, endValue, stepValue, LineIndex + 1, LineIndex}
+   Stack.PushValue(LoopStack, loopObj)
+EndSub
+
+Function IsValidVarName(name, line, tokenIndex)
+   If Text.IsNumeric(name[1]) Or
+         (Text.GetLength(name) = 1 And Chars.IsLetter(name) = False) Then
+      ReportError("الاسم '" + name + "' لا يصلح كاسم متغير", line, tokenIndex)
+      Return False
+   EndIf
+   
+   Return True
+EndFunction
+
+Sub ProcessForLoopNext()
+   varName = Tokens[2][3]
+   If Stack.GetCount(LoopStack) = 0 Then
+      ReportError("لا توجد حلقة تكرار مفتوحة", LineIndex, 1)
+      Return
+   EndIf
+   
+   loopObj = Stack.PeekValue(LoopStack)
+   If loopObj[1] <> varName Then
+      ReportError("اسم العداد (" + loopObj[1] + ") غير صحيح: ", LineIndex, 2)
+      Return
+   EndIf
+   
+   end = loopObj[2]
+   stepValue = loopObj[3]
+   newVal = Vars[varName] + stepValue
+   Vars[varName] = newVal
+   If (stepValue > 0 And newVal <= end) Or
+         (stepValue < 0 And newVal >= end) Then
+      LineIndex = loopObj[4] - 1 ' loop
+   Else
+      Stack.PopValue(LoopStack)
+   EndIf
+EndSub
+
+Sub ProcessWhileLoopHeader()
+   condition = EvaluateExpressionTokens(2)
+   If condition Then
+      Stack.PushValue(WhileStack, {LineIndex, LineIndex + 1})
+   Else
+      lineId = LineIndex
+      LineIndex = FindClosingToken(_While, _Wend, LineIndex + 1)
+      If LineIndex = 0 Then
+         ReportError("'" + _Wend + "' غير موجودة", lineId, 1)
+      EndIf
+   EndIf
+EndSub
+
+Sub ProcessWhileLoopEnd()
+   If Stack.GetCount(WhileStack) = 0 Then
+      ReportError("لا توجد حلقة تكرار مفتوحة", LineIndex, 1)
+      Return
+   EndIf
+   
+   whileObj = Stack.PeekValue(WhileStack)
+   TokenizeLine(Statements[whileObj[1]], whileObj[1])
+   condition = EvaluateExpressionTokens(2)
+   
+   If condition Then
+      LineIndex = whileObj[2] - 1
+   Else
+      Stack.PopValue(WhileStack)
+   EndIf
+EndSub
+
+Sub ProcessIfBlock()
+   tokensCount = Tokens.Count
+   endIfLineIndex = FindClosingToken(_If, _EndIf, LineIndex + 1)
+   If endIfLineIndex = 0 Then
+      ReportError(_EndIf + " مفقودة", LineIndex, 1)
+      Return
+   EndIf
+   
+   If EvaluateExpressionTokens(2) Then ' Execute If Then branch
+      LineIndex = LineIndex + 1
+      While LineIndex <= Statements.Count
+         TokenizeLine(Statements[LineIndex], LineIndex)
+         If tokensCount > 0 Then
+            tokenFirst = Tokens[1][3]
+            If tokenFirst = _EndIf Then
+               Return
+            ElseIf tokenFirst = _ElseIf Or tokenFirst = _Else Then
+               ExitLoop
+            EndIf
+            
+            Execute()
+            ' The condition covers thee case of jumbing over EndIf like when using ExitLoop
+            If LineIndex > endIfLineIndex Then
+               Return
+            EndIf
+         EndIf
+         LineIndex = LineIndex + 1
+      Wend
+      
+      LineIndex = endIfLineIndex
+      Return
+   EndIf
+   
+   While True
+      LineIndex = FindNextBranch(LineIndex + 1, {_ElseIf, _Else})
+      TokenizeLine(Statements[LineIndex], LineIndex)
+      branchToken = Tokens[1][3]
+      
+      If branchToken <> _ElseIf Then
+         ExitLoop
+      EndIf
+      
+      If EvaluateExpressionTokens(2) Then ' Execute elseIf block
+         LineIndex = LineIndex + 1
+         While LineIndex <= Statements.Count
+            TokenizeLine(Statements[LineIndex], LineIndex)
+            If tokensCount > 0 Then
+               tokenFirst = Tokens[1][3]
+               If tokenFirst = _EndIf Then
+                  Return
+               ElseIf tokenFirst = _ElseIf Or tokenFirst = _Else Then
+                  ExitLoop
+               EndIf
+               
+               Execute()
+               If LineIndex > endIfLineIndex Then
+                  Return
+               EndIf
+            EndIf
+            LineIndex = LineIndex + 1
+         Wend
+         
+         LineIndex = endIfLineIndex
+         Return
+      EndIf
+   Wend
+   
+   If branchToken = _Else Then
+      LineIndex = LineIndex + 1
+      While LineIndex <= Statements.Count
+         TokenizeLine(Statements[LineIndex], LineIndex)
+         If tokensCount > 0 Then
+            If Tokens[1][3] = _EndIf Then
+               Return
+            EndIf
+            
+            Execute()
+            If LineIndex > endIfLineIndex Then
+               Return
+            EndIf
+         EndIf
+         LineIndex = LineIndex + 1
+      Wend
+   EndIf
+   
+EndSub
+
+Function FindClosingToken(openToken, closeToken, startLine)
+   nestingLevel = 0
+   For i = startLine To Statements.Count
+      statement = Text.Trim(Statements[i])
+      If statement.StartsWith(openToken) Then
+         nestingLevel = nestingLevel + 1
+      ElseIf statement.StartsWith(closeToken) Then
+         If nestingLevel = 0 Then
+            Return i
+         Else
+            nestingLevel = nestingLevel - 1
+         EndIf
+      EndIf
+   Next
+   Return 0
+EndFunction
+
+
+Function FindNextBranch(startLine, branchTokens)
+   nestingLevel = 0
+   For i = startLine To Statements.Count
+      statement = Text.Trim(Statements[i])
+      If statement.StartsWith(_If) Then
+         nestingLevel = nestingLevel + 1
+      ElseIf statement.StartsWith(_EndIf) Then
+         If nestingLevel = 0 Then
+            Return i
+         Else
+            nestingLevel = nestingLevel - 1
+         EndIf
+      ElseIf nestingLevel = 0 Then
+         ForEach token In branchTokens
+            If statement.StartsWith(token) Then
+               Return i
+            EndIf
+         Next
+      EndIf
+   Next
+   
+   Return 0
+EndFunction
+
+
+Function EvaluateExpressionTokens(start)
+   arr = ParseExpression(start)
+   Return arr[1]
+EndFunction
+
+Function ParseExpression(pos)
+   Return ParseOr(pos)
+EndFunction
+
+Function ParseOr(pos)
+   arr = ParseAnd(pos)
+   result = arr[1]
+   pos = arr[2]
+   tokensCount = Tokens.Count
+   
+   While pos <= tokensCount And Tokens[pos][3] = _Or
+      pos = pos + 1
+      arr2 = ParseAnd(pos)
+      result = (result Or arr2[1])
+      pos = arr2[2]
+   Wend
+   Return {result, pos}
+EndFunction
+
+Function ParseAnd(pos)
+   arr = ParseComparison(pos)
+   result = arr[1]
+   pos = arr[2]
+   tokensCount = Tokens.Count
+   
+   While pos <= tokensCount And Tokens[pos][3] = _And
+      pos = pos + 1
+      arr2 = ParseComparison(pos)
+      result = (result And arr2[1])
+      pos = arr2[2]
+   Wend
+   Return {result, pos}
+EndFunction
+
+Function ParseComparison(pos)
+   arr = ParseAddExpr(pos)
+   result = arr[1]
+   pos = arr[2]
+   
+   If pos <= Tokens.Count Then
+      op = Tokens[pos][3]
+      If pos <> "" And (op = "<" Or op = ">" Or op = "=") Then
+         nextOp = Tokens[pos + 1][3]
+         If nextOp = "=" Or nextOp = ">" Then
+            pos = pos + 2
+         Else
+            pos = pos + 1
+         EndIf
+         
+         arr2 = ParseAddExpr(pos)
+         right = arr2[1]
+         pos = arr2[2]
+         
+         If op = "<" Then
+            If nextOp = "=" Then
+               result = result <= right
+            ElseIf nextOp = ">" Then
+               result = result <> right
+            Else
+               result = result < right
+            EndIf
+            
+         ElseIf op = ">" Then
+            If nextOp = "=" Then
+               result = result >= right
+            Else
+               result = result > right
+            EndIf
+         Else
+            result = (result = right)
+         EndIf
+      EndIf
+   EndIf
+   Return {result, pos}
+EndFunction
+
+Function ParseAddExpr(pos)
+   arr = ParseTerm(pos)
+   leftValue = arr[1]
+   pos = arr[2]
+   op = Tokens[pos][3]
+   tokensCount = Tokens.Count
+   
+   While pos <= tokensCount And op <> "" And (op = "+" Or op = "-")
+      pos = pos + 1
+      arr2 = ParseTerm(pos)
+      rightValue = arr2[1]
+      
+      If op = "+" Then
+         leftValue = leftValue + rightValue
+      Else
+         leftValue = leftValue - rightValue
+      EndIf
+      
+      pos = arr2[2]
+      op = Tokens[pos][3]
+   Wend
+   Return {leftValue, pos}
+EndFunction
+
+Function ParseTerm(pos)
+   arr = ParseFactor(pos)
+   leftValue = arr[1]
+   pos = arr[2]
+   op = Tokens[pos][3]
+   tokensCount = Tokens.Count
+   
+   While pos <= tokensCount And op <> "" And (op = "*" Or op = "/" Or op = "%" Or op = "^")
+      pos = pos + 1
+      arr2 = ParseFactor(pos)
+      rightValue = arr2[1]
+      
+      If op = "^" Then
+         leftValue = Math.Power(leftValue, rightValue)
+      ElseIf op = "*" Then
+         leftValue = leftValue * rightValue
+      ElseIf op = "/" Then
+         leftValue = leftValue / rightValue
+      Else
+         leftValue = leftValue Mod rightValue
+      EndIf
+      
+      pos = arr2[2]
+      op = Tokens[pos][3]
+   Wend
+   
+   Return {leftValue, pos}
+EndFunction
+
+Function ParseFactor(pos)
+   If TW.IsClosed Then
+      Return {}
+   EndIf
+   
+   token = Tokens[pos][3]
+   tokensCount = Tokens.Count
+   
+   If token = _True Then
+      Return {True, pos + 1}
+      
+   ElseIf token = _False Then
+      Return {False, pos + 1}
+      
+   ElseIf token = "(" Then
+      wordID = pos
+      pos = pos + 1
+      arr = ParseExpression(pos)
+      result = arr[1]
+      pos = arr[2]
+      If pos <= tokensCount And Tokens[pos][3] = ")" Then
+         pos = pos + 1
+      Else
+         ReportError("نقص قوس اغلاق", LineIndex, wordID)
+      EndIf
+      Return {result, pos}
+      
+   ElseIf token = _Read Then
+      pos = pos + 1
+      If pos <= tokensCount Then
+         nextToken = Tokens[pos][3]
+         If nextToken = _Line1 Or nextToken = _Line2 Then
+            value = TextWindow.Read()
+            Return {value, pos + 1}
+         ElseIf nextToken = _Number1 Or nextToken = _Number2 Then
+            value = TextWindow.ReadNumber()
+            pos = pos + 1
+            Return {value, pos}
+         EndIf
+      EndIf
+      Return {0, pos}
+      
+   ElseIf Text.IsNumeric(token) Then
+      Return {token, pos + 1}
+      
+   ElseIf Text.StartsWith(token, """") And Text.EndsWith(token, """") Then
+      Return {Text.GetSubText(token, 2, Text.GetLength(token) - 2), pos + 1}
+      
+   ElseIf Vars.ContainsIndex(token) Then
+      Return {Vars[token], pos + 1}
+      
+   Else
+      If BlueWords.ContainsValue(token) Then
+         ReportError("الكلمة '" + token + "' هي كلمة أساسية ولا يمكن استخدامها في هذا الموضع", LineIndex, pos)
+      Else
+         ReportError("الكلمة '" + token + "' غير معروفة", LineIndex, pos)
+      EndIf
+   EndIf
+   
+   Return {0, pos + 1}
+EndFunction
+
+Sub TokenizeLine(line, lineNum)
+   line = Text.Trim(line)
+   Tokens = {}
+   tokenIndex = 1
+   currentToken = ""
+   tokenStartCol = 0
+   inString = False
+   len = Text.GetLength(line)
+   
+   For col = 1 To len
+      ch = line[col]
+      If ch = """" Then
+         If inString = False Then
+            inString = True
+            tokenStartCol = col
+            currentToken = ch
+         Else
+            currentToken = currentToken & ch
+            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+            tokenIndex = tokenIndex + 1
+            currentToken = ""
+            inString = False
+         EndIf
+      ElseIf inString Then
+         currentToken = currentToken & ch
+      ElseIf ch = " " Then
+         If currentToken <> "" Then
+            If tokenIndex = 2 And Tokens[1][3] = _Or And currentToken = _If Then
+               Tokens[1] = {lineNum, Tokens[1][2], _ElseIf}
+            Else
+               Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+               tokenIndex = tokenIndex + 1
+            EndIf
+            currentToken = ""
+         EndIf
+      ElseIf ch = "=" Or ch = "<" Or ch = ">" Or ch = "(" Or ch = ")"
+            Or ch = "+" Or ch = "-" Or ch = "*" Or ch = "/" Or ch = "%" Or ch = "^" Then
+         If currentToken <> "" Then
+            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+            tokenIndex = tokenIndex + 1
+            currentToken = ""
+         EndIf
+         Tokens[tokenIndex] = {lineNum, col, ch}
+         tokenIndex = tokenIndex + 1
+      Else
+         If currentToken = "" Then
+            tokenStartCol = col
+         EndIf
+         currentToken = currentToken & ch
+      EndIf
+   Next
+   
+   If inString Then
+      Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken + """"}
+   ElseIf currentToken <> "" Then
+      If tokenIndex = 2 And (Tokens[1][3] & " " & currentToken) = _EndIf Then
+         Tokens[1] = {lineNum, Tokens[1][2], _EndIf}
+      Else
+         Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+      EndIf
+   EndIf
+   
+EndSub
+
+Sub ReportError(msg, line, tokenIndex)
+   code = TxtCode.Text
+   pos = 0
+   For i = 1 To line - 1
+      pos = code.IndexOf(Chars.Lf, pos + 1, False)
+   Next
+   
+   TxtCode.Select(pos + 1, Text.GetLength(Statements[line]))
+   TxtCode.Focus()
+   
+   If TW.IsClosed = False Then
+      Terminate(
+         Array.Join(
+            {
+               "خطأ عند الكلمة رقم ", tokenIndex,
+               " في السطر رقم ", line,
+               Chars.Lf, msg,
+               Chars.Lf, ProEndMsg
+            },
+            ""
+         )
+      )
+   EndIf
+EndSub
+
+
+Sub TxtCode_OnTextChanged()
+   LblFormat.Text = TxtCode.Text
+EndSub
+
+Sub FormatCode()
+   Timer.Pause()
+   TxtCode.BackColor = Colors.White
+   LblFormat.Visible = False
+   LblFormat.Text = ""
+   
+   inputText = TxtCode.Text
+   textLength = inputText.Length
+   currentWord = ""
+   normalText = ""
+   currentString = ""
+   
+   For i = 1 To textLength
+      c = inputText[i]
+      
+      If c = """" Then
+         ' A new string literal is starting.
+         ' Flush any pending word first.
+         If currentWord <> "" Then
+            If BlueWords.ContainsValue(currentWord) Then
+               If normalText <> "" Then
+                  LblFormat.Append(normalText)
+                  normalText = ""
+               EndIf
+               LblFormat.AppendWithForeColor(currentWord, Colors.Blue)
+            ElseIf Text.IsNumeric(currentWord) Then
+               If normalText <> "" Then
+                  LblFormat.Append(normalText)
+                  normalText = ""
+               EndIf
+               LblFormat.AppendWithForeColor(currentWord, "#FF0000")
+            Else
+               normalText = normalText & currentWord
+            EndIf
+            currentWord = ""
+         EndIf
+         
+         If normalText <> "" Then
+            LblFormat.Append(normalText)
+            normalText = ""
+         EndIf
+         
+         qPos = Math.Min(
+            Text.IndexOf(inputText, """", i + 1, False),
+            Text.IndexOf(inputText, Chars.Lf, i + 1, False)
+         )
+         If qPos = 0 Then
+            qPos = textLength
+         EndIf
+         
+         currentString = Text.GetSubText(inputText, i, qPos - i + 1)
+         LblFormat.AppendWithForeColor(currentString, "#DF1111")
+         i = qPos
+         
+      ElseIf Chars.IsDigit(c) Or Chars.IsLetter(c) Or c = "_" Then
+         currentWord = currentWord & c
+      Else
+         ' Process any pending word when a non-word character is encountered.
+         If currentWord <> "" Then
+            If BlueWords.ContainsValue(currentWord) Then
+               If normalText <> "" Then
+                  LblFormat.Append(normalText)
+                  normalText = ""
+               EndIf
+               LblFormat.AppendWithForeColor(currentWord, Colors.DeepSkyBlue)
+            ElseIf Text.IsNumeric(currentWord) Then
+               If normalText <> "" Then
+                  LblFormat.Append(normalText)
+                  normalText = ""
+               EndIf
+               LblFormat.AppendWithForeColor(currentWord, "#FF0000")
+            Else
+               normalText = normalText & currentWord
+            EndIf
+            currentWord = ""
+         EndIf
+         normalText = normalText & c
+      EndIf
+   Next
+   
+   If currentWord <> "" Then
+      If BlueWords.ContainsValue(currentWord) Then
+         If normalText <> "" Then
+            LblFormat.Append(normalText)
+            normalText = ""
+         EndIf
+         LblFormat.AppendWithForeColor(currentWord, Colors.DeepSkyBlue)
+      ElseIf Text.IsNumeric(currentWord) Then
+         If normalText <> "" Then
+            LblFormat.Append(normalText)
+            normalText = ""
+         EndIf
+         LblFormat.AppendWithForeColor(currentWord, "#FF0000")
+      Else
+         normalText = normalText & currentWord
+      EndIf
+   EndIf
+   
+   If normalText <> "" Then
+      LblFormat.Append(normalText)
+   EndIf
+   
+   LblFormat.Visible = True
+   TxtCode.BackColor = Colors.Transparent
+EndSub
+
+Sub Form_OnShown()
+   TxtCode.OnScroll = OnScroll
+EndSub
+
+
+Sub OnScroll()
+   h = TxtCode.HorizontalScrollOffset
+   LblFormat.Width = TxtCode.Width + 2 * h
+   LblFormat.Left = -h - 3
+   
+   v = TxtCode.VerticalScrollOffset
+   LblFormat.Height = TxtCode.Height + v
+   LblFormat.Top = -v
+EndSub
+
+Sub BtnFormat_OnClick()
+   FormatCode()
+EndSub

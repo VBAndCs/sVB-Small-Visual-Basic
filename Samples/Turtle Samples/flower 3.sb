@@ -1,45 +1,92 @@
-' Modified from a SB sample
-
-Cc = {
-   Colors.Blue,
-   Colors.White,
-   Colors.Yellow,
-   Colors.Gray,
-   Colors.Lime
-}
-
-GW.BackgroundColor = Colors.Green
+' An sVB flower drawn by the turtle.
+' Modified from a Smal Basic sample To color the leaves
 GW.FullScreen = True
-W = GW.Width
-H = GW.Height
-Ss = 0
-W2 = W / 2 - 150
-H2 = H / 2 - 50
-W3 = W - W2 / 2
-C = 0
-X = W2
-Tm = 0
+Turtle.Show()
+Turtle.Speed = 50
+Turtle.UseAnimation = False
+Turtle.X = 400
+Turtle.Y = 300
+Turtle.DirectTurn(30)
+GW.PenWidth = 4
 
-GraphicsWindow.Left = 1
-GraphicsWindow.Top = 1
+DrawLeaves()
+DrawCenter()
+DrawStem()
+DrawLeafLines()
 
-
-For S = 10 To 200 Step 15
-   X = X * 5
-   If X > W3 Then
-      X = W2
-   EndIf
-   Bc = Cc[C.Remainder(5) + 1]
-   C = C + 1
-   For A = 0 To 6.28 Step 2 / (S * 6.28)
-      Sr = Math.Sin(Ss + A * 9) * S / 2
-      R = S + Sr
-      GraphicsWindow.SetPixel(
-         A.Sin * R + X + Tm.Sin / 2,
-         A.Cos * R + H2, Bc
-      )
-      Tm = Tm + 0.1
+' -----------------------------------
+Sub DrawLeaves()
+   GW.BrushColor = Colors.Yellow
+   GW.PenColor = Colors.Gold
+   
+   For a = 1 To 7
+      Turtle.CreateFigure()
+      DrawArc()
+      Turtle.DirectTurn(118)
+      DrawArc()
+      Turtle.DirectTurn(19)
+      Turtle.PenUp()
+      Turtle.DirectMove(40)
+      Turtle.FillFigure()
    Next
-   Ss = Ss + 0.1
-   Tm = 0
-Next
+EndSub
+
+' -----------------------------------
+Sub DrawArc()
+   Turtle.PenDown()
+   For i = 1 To 60
+      Turtle.DirectMove(5)
+      Turtle.DirectTurn(1)
+   Next
+EndSub
+
+' -----------------------------------
+Sub DrawCenter()
+   Turtle.X = 360
+   Turtle.Y = 300
+   GW.BrushColor = Colors.Green
+   Turtle.CreateFigure()
+   For i = 1 To 100
+      Turtle.Turn(3.6)
+      Turtle.Move(1.5)
+   Next
+   Turtle.FillFigure()
+EndSub
+
+' -----------------------------------
+Sub DrawStem()
+   Turtle.X = 376
+   Turtle.Y = 335
+   Turtle.DirectTurn(160)
+   
+   For i = 1 To 70
+      Turtle.PenDown()
+      GW.PenColor = Colors.Brown
+      Turtle.DirectMove(4)
+      Turtle.DirectTurn(-0.7)
+      Turtle.DirectMove(2)
+   Next
+EndSub
+
+
+' -----------------------------------
+Sub DrawLeafLines()
+   Turtle.X = 380
+   Turtle.Y = 310
+   Turtle.Angle = 10
+   GW.PenWidth = 2
+   For i = 1 To 7
+      Turtle.PenUp()
+      Turtle.DirectMove(70)
+      Turtle.PenDown()
+      For a = 0 To 90
+         GW.PenColor = Colors.Random
+         Turtle.DirectMove(1)
+      Next
+      Turtle.PenUp()
+      Turtle.MoveTo(380, 310)
+      Turtle.Angle = 10 + i * (360 / 7)
+   Next
+EndSub
+
+

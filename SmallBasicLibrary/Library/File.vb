@@ -56,7 +56,7 @@ Namespace Library
         Public Shared Function WriteContents(filePath As Primitive, contents As Primitive) As Primitive
             Try
                 LastError = New Primitive("")
-                Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
+                Dim path As String = Network.GetLocalFile(filePath)
 
                 Using writer As New StreamWriter(path, False, Encoding.Default)
                     If contents.IsArray Then
@@ -162,7 +162,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function ReadLines(filePath As Primitive) As Primitive
             LastError = New Primitive("")
-            Dim path As String = Environment.ExpandEnvironmentVariables(filePath)
+            Dim path As String = Network.GetLocalFile(filePath)
 
             Try
                 If Not IO.File.Exists(path) Then

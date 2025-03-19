@@ -10,7 +10,6 @@ Namespace Microsoft.Nautilus.Text.Editor
         Property Background As Brush
 
         ReadOnly Property SpanGeometry As ISpanGeometry
-
         Sub Invalidate()
         Sub OnScrollChanged(e As ScrollEventArgs)
 

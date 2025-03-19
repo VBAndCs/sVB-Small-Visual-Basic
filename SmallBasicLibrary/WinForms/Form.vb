@@ -459,7 +459,7 @@ Namespace WinForms
                         Dim frm = CType(Forms._forms(CStr(formName).ToLower), System.Windows.Window)
                         Dim menu As New Wpf.Menu()
                         menu.Name = controlName
-                        AddMenu(frm, menu)
+                        AddMenu(frm, menu, False)
 
                     Catch ex As Exception
                         Control.ReportSubError(menuName, "AddItem", ex)
@@ -469,8 +469,8 @@ Namespace WinForms
             Return New Primitive(key)
         End Function
 
-        Friend Shared Sub AddMenu(frm As Window, menu As Wpf.Menu)
-            menu.FlowDirection = frm.FlowDirection
+        Friend Shared Sub AddMenu(frm As Window, menu As Wpf.Menu, keepDirection As Boolean)
+            If Not keepDirection Then menu.FlowDirection = frm.FlowDirection
             Dim key = ValidateArgs(frm.Name, menu.Name)
             Forms._controls(key) = menu
 

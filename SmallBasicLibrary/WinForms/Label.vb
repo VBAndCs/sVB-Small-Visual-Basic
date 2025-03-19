@@ -5,6 +5,14 @@ Imports System.Windows.Media.Imaging
 Imports System.Windows
 Imports System.Windows.Navigation
 Imports System.Windows.Shapes
+Imports MS.Internal
+Imports System.Security.Policy
+Imports System.Windows.Documents
+Imports System.Runtime.CompilerServices
+Imports System.Globalization
+Imports System.Windows.Markup
+Imports System.Windows.Controls
+Imports System.Windows.Media
 
 Namespace WinForms
     <SmallVisualBasicType>
@@ -27,6 +35,44 @@ Namespace WinForms
             End If
             Return lbl
         End Function
+
+        <ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetVisible(controlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        GetVisible = GetLabel(controlName).IsVisible
+                    Catch ex As Exception
+                        Control.ReportError(controlName, "Visible", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        <ExProperty>
+        Public Shared Sub SetVisible(controlName As Primitive, value As Primitive)
+            If controlName.IsEmpty Then Stop
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim _label = GetLabel(controlName)
+                        Dim tb = TryCast(_label.Content, Wpf.TextBlock)
+                        If tb Is Nothing Then
+                            _label.Visibility = If(value, Visibility.Visible, Visibility.Hidden)
+                        Else
+                            If value Then
+                                _label.Visibility = Visibility.Visible
+                                tb.Visibility = Visibility.Visible
+                            Else
+                                _label.Visibility = Visibility.Hidden
+                                tb.Visibility = Visibility.Collapsed
+                            End If
+                        End If
+                    Catch ex As Exception
+                        Control.ReportPropertyError(controlName, "Visible", value, ex)
+                    End Try
+                End Sub)
+        End Sub
 
         ''' <summary>
         ''' Gets or sets the text that is displayed on the label
@@ -126,7 +172,8 @@ Namespace WinForms
             If tb Is Nothing Then
                 tb = New Wpf.TextBlock() With {
                     .TextWrapping = TextWrapping.Wrap,
-                    .Text = content?.ToString()
+                    .Text = content?.ToString(),
+                    .Padding = cntrl.Padding
                 }
                 cntrl.Content = tb
             End If
@@ -146,6 +193,7 @@ Namespace WinForms
         ''' <param name="foreColor">The color of the text. Send Colors.None to use the current label foreColor.</param>
         ''' <param name="backColor">The background color of the text. Send Colors.None to use the current label backColor.</param>
         ''' <param name="url">The address to navigate to. Send empty string to view a normal text, otherwise the formated text will be viewed as a hyper link that opens the given url.</param>
+
         <ExMethod>
         Public Shared Sub AppendFormatted(
                            labelName As Primitive,
@@ -164,29 +212,29 @@ Namespace WinForms
                 Sub()
                     Try
                         Dim lbl = GetLabel(labelName)
-                        lbl.Padding = New Thickness(5)
-
                         Dim txtRun As New Documents.Run()
                         txtRun.Text = text
 
-                        If fontName.AsString() <> "" Then
-                            txtRun.FontFamily = New Media.FontFamily(fontName)
+                        Dim _fontName = fontName.AsString()
+                        If _fontName <> "" Then
+                            txtRun.FontFamily = New Media.FontFamily(_fontName)
                         End If
 
-                        If fontSize > 0 Then
-                            txtRun.FontSize = fontSize
+                        Dim _fontSize = CDbl(fontSize)
+                        If _fontSize > 0 Then
+                            txtRun.FontSize = _fontSize
                         End If
 
                         If isBold.AsString() <> "" Then
-                            txtRun.FontWeight = If(isBold, FontWeights.Bold, FontWeights.Normal)
+                            txtRun.FontWeight = If(CBool(isBold), FontWeights.Bold, FontWeights.Normal)
                         End If
 
                         If isItalic.AsString() <> "" Then
-                            txtRun.FontStyle = If(isItalic, FontStyles.Italic, FontStyles.Normal)
+                            txtRun.FontStyle = If(CBool(isItalic), FontStyles.Italic, FontStyles.Normal)
                         End If
 
                         If isUnderlined.AsString() <> "" Then
-                            If isUnderlined Then txtRun.TextDecorations = TextDecorations.Underline
+                            If CBool(isUnderlined) Then txtRun.TextDecorations = TextDecorations.Underline
                         End If
 
                         If foreColor <> Colors.None Then
@@ -200,12 +248,10 @@ Namespace WinForms
                         Dim tb = GetTextBlock(labelName)
                         If url.AsString() = "" Then
                             tb.Inlines.Add(txtRun)
-
                         Else
                             Dim link As New Documents.Hyperlink(txtRun)
                             Try
-                                url = New Primitive(GetAbsUrl(url))
-                                link.NavigateUri = New Uri(url)
+                                link.NavigateUri = New Uri(GetAbsUrl(url.AsString()))
                             Catch ex As Exception
                                 link.NavigateUri = New Uri("about:blank")
                             End Try
@@ -222,10 +268,19 @@ Namespace WinForms
 
         Public Shared Function GetAbsUrl(url As String) As String
             Try
+                If url.ToLower().StartsWith("www.") Then
+                    Return "https://" & url
+                End If
+
+                If Not IO.Path.IsPathRooted(url) Then
+                    Dim fullPath = IO.Path.Combine(Program.Directory, url)
+                    If IO.File.Exists(fullPath) OrElse IO.Directory.Exists(fullPath) Then
+                        Return fullPath
+                    End If
+                End If
+
                 If IO.File.Exists(url) OrElse IO.Directory.Exists(url) Then
                     Return IO.Path.GetFullPath(url)
-                ElseIf url.ToLower().StartsWith("www.") Then
-                    Return "https://" & url
                 End If
             Catch
             End Try
@@ -378,9 +433,24 @@ Namespace WinForms
         ''' <param name="foreColor">The color of the text. Send Colors.None to use the current label foreColor.</param>
         <ExMethod>
         Public Shared Sub AppendWithForeColor(labelName As Primitive, text As Primitive, foreColor As Primitive)
-            Dim emptyStr As New Primitive("")
-            AppendFormatted(labelName, text, emptyStr, 0, emptyStr,
-                        emptyStr, emptyStr, foreColor, Colors.None, emptyStr)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim lbl = GetLabel(labelName)
+                        Dim txtRun As New Documents.Run()
+                        txtRun.Text = text
+
+                        If foreColor <> Colors.None Then
+                            txtRun.Foreground = Color.GetBrush(foreColor)
+                        End If
+
+                        Dim tb = GetTextBlock(labelName)
+                        tb.Inlines.Add(txtRun)
+
+                    Catch ex As Exception
+                        Control.ReportSubError(labelName, "AppendWithForeColor", ex)
+                    End Try
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -462,9 +532,18 @@ Namespace WinForms
         ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub Append(labelName As Primitive, text As Primitive)
-            Dim emptyStr As New Primitive("")
-            AppendFormatted(labelName, text, emptyStr, 0, emptyStr,
-                       emptyStr, emptyStr, Colors.None, Colors.None, emptyStr)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim lbl = GetLabel(labelName)
+                          Dim txtRun As New Documents.Run()
+                          txtRun.Text = text
+                          Dim tb = GetTextBlock(labelName)
+                          tb.Inlines.Add(txtRun)
+                      Catch ex As Exception
+                          Control.ReportSubError(labelName, "Append", ex)
+                      End Try
+                  End Sub)
         End Sub
 
         ''' <summary>
@@ -783,5 +862,22 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Forces the label to format the text with the local culture of the user's PC.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub UseLocalCulture(labelName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim tb = GetTextBlock(labelName)
+                        tb.Language = XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.Name)
+                        'Dim numSub As New NumberSubstitution()
+                        'numSub.Substitution = NumberSubstitutionMethod.Traditional
+                    Catch ex As Exception
+                        Control.ReportSubError(labelName, "UseLocalCulture", ex)
+                    End Try
+                End Sub)
+        End Sub
     End Class
 End Namespace

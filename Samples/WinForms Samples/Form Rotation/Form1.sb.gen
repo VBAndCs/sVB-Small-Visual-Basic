@@ -2,11 +2,24 @@
 '#Form1{
 '    Button1: Button
 '    TextBox1: TextBox
+'    Label1: Label
 '}
 
-Me = "Form1"
+Me = "form1"
 Button1 = "form1.button1"
 TextBox1 = "form1.textbox1"
-Form1 = Forms.LoadForm("Form1", "form1.xaml")
+Label1 = "form1.label1"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
 Form.AllowTransparency(Form1)
-Form.Show(Form1)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+
+Form.Show(Me)

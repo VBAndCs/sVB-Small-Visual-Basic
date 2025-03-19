@@ -7,7 +7,6 @@ Timer.Tick = OnTick
 Timer.Pause()
 BoingSound = Sound.Load("boing.wav")
 
-' ---------------------------------------------------------
 Sub TimerButton_OnClick()
    If TimerButton.Text = "Start" Then
       TimerButton.Text = "Stop"
@@ -20,7 +19,6 @@ Sub TimerButton_OnClick()
    EndIf
 EndSub
 
-' ---------------------------------------------------------
 Sub HideBalls()
    ForEach control1 In Me.Controls
       If control1.TypeName = ControlTypes.Label Then
@@ -29,7 +27,6 @@ Sub HideBalls()
    Next
 EndSub
 
-' ---------------------------------------------------------
 Sub InitializeBalls()
    ForEach ballLabel In Me.Controls
       If ballLabel.TypeName = ControlTypes.Label Then
@@ -46,8 +43,7 @@ Sub InitializeBalls()
    Next
 EndSub
 
-' ---------------------------------------------------------
-Sub OnTick
+Sub OnTick()
    ForEach control1 In Me.Controls
       If control1.TypeName = ControlTypes.Label Then
          MoveBall(control1)
@@ -62,7 +58,6 @@ Sub OnTick
    Next
 EndSub
 
-' ---------------------------------------------------------
 Sub MoveBall(ballLabel)
    ballSpeed = ballLabel.Tag
    ballLabel.Left = ballLabel.Left + ballSpeed[1]
@@ -95,7 +90,6 @@ Sub MoveBall(ballLabel)
 EndSub
 
 
-' ------------------------------------------------
 Sub CheckCollision(lblBall1, lblBall2)
    r1 = lblBall1.Width / 2
    x1 = lblBall1.Left + r1

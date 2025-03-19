@@ -1,0 +1,39 @@
+'@Form Hints:
+'#FrmAbout{
+'    Label1: Label
+'    Label2: Label
+'    Label3: Label
+'    Label4: Label
+'    Label5: Label
+'    Label6: Label
+'    Label7: Label
+'    Label8: Label
+'    LblYoutube: Label
+'    LblSVB: Label
+'    LblKP: Label
+'    LblSamples: Label
+'}
+
+Me = "frmabout"
+Label1 = "frmabout.label1"
+Label2 = "frmabout.label2"
+Label3 = "frmabout.label3"
+Label4 = "frmabout.label4"
+Label5 = "frmabout.label5"
+Label6 = "frmabout.label6"
+Label7 = "frmabout.label7"
+Label8 = "frmabout.label8"
+LblYoutube = "frmabout.lblyoutube"
+LblSVB = "frmabout.lblsvb"
+LblKP = "frmabout.lblkp"
+LblSamples = "frmabout.lblsamples"
+_path = Program.Directory + "\FrmAbout.xaml"
+FrmAbout = Forms.LoadForm("FrmAbout", _path)
+Form.SetArgsArr(frmabout, Stack.PopValue("_frmabout_argsArr"))
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)

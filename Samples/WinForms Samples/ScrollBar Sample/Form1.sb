@@ -1,0 +1,45 @@
+W = Label1.Width
+H = Label1.Height
+ScrollBar1.Minimum = 1
+ScrollBar1.Maximum = 200
+ScrollBar1.Value = 100
+
+' ------------------------------------------------
+Sub ScrollBar1_OnScroll()
+   zoom = ScrollBar1.Value / 100
+   
+   w2 = W * zoom
+   Label1.Width = w2
+   Label1.Left = (Me.Width - w2) / 2
+   
+   h2 = H * zoom
+   Label1.Height = h2
+   Label1.Top = (Me.Height - h2) / 2
+   
+   Me.Text = Math.Round(zoom * 100) & "%"
+EndSub
+
+
+' ------------------------------------------------
+Sub Form_OnPreviewMouseWheel()
+   ScrollBar1.Value = ScrollBar1.Value + 5 * Event.LastMouseWheelDirection
+EndSub
+
+
+' ------------------------------------------------
+Sub Form_OnPreviewKeyDown()
+   k = Event.LastKey
+   If k = Keys.Up Then
+      ScrollBar1.Value = ScrollBar1.Value + 5
+   ElseIf k = Keys.Down Then
+      ScrollBar1.Value = ScrollBar1.Value - 5
+   ElseIf k = Keys.PageUp Then
+      ScrollBar1.Value = ScrollBar1.Value + 10
+   ElseIf k = Keys.PageDown Then
+      ScrollBar1.Value = ScrollBar1.Value - 10
+   ElseIf k = Keys.End Then
+      ScrollBar1.Value = 1
+   ElseIf k = Keys.Home Then
+      ScrollBar1.Value = 200
+   EndIf
+EndSub

@@ -10,6 +10,8 @@
             <sbShell:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
+            <Style TargetType="ScrollBar" BasedOn="{StaticResource ScrollBarStyle}"/>
+
             <Style x:Key="CloseButtonStyle" TargetType="{x:Type Button}">
                 <Setter Property="Template">
                     <Setter.Value>
@@ -169,7 +171,7 @@
                                                    FontSize="18"  Height="27" BorderThickness ="0.8" BorderBrush="DimGray"
                                                    Value="100" VerticalAlignment="Center"  
                                                    ValueChanged="NumZoom_ValueChanged"         />
-                                            <TextBlock FontWeight="Bold" Margin="2">%</TextBlock>
+                                            <TextBlock FontWeight="Bold" Margin="2" VerticalAlignment="Center">%</TextBlock>
                                         </StackPanel>
 
                                         <Expander Name="detailsExpander" Grid.Column="3"

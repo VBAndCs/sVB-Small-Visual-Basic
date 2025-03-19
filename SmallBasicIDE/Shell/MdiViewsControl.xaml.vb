@@ -338,7 +338,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
 
         Private Sub ControlNames_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
             Dim cmb = CType(sender, ComboBox)
-            Dim controlName = CStr(cmb.SelectedItem)
+            Dim controlName = CStr(cmb.SelectedItem)?.Replace(MdiView.FormSuffix, "")
             Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
 
             If controlName = "" Then
@@ -393,9 +393,12 @@ Namespace Microsoft.SmallVisualBasic.Shell
             Dim eventName = CStr(cmb.SelectedItem)
             If eventName = "" Then Return
 
+            Dim controlName = CStr(selectedView.CmbControlNames.SelectedItem).Replace(MdiView.FormSuffix, "")
+            controlName = controlName.Replace(MdiView.FormSuffix, "")
+
             selectedView.Document.AddEventHandler(
-                selectedView.CmbControlNames.SelectedItem,
-                eventName
+                controlName, eventName, True,
+                controlName = selectedView.Document.Form
             )
         End Sub
 
@@ -481,7 +484,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
                      If cmbControls.SelectedIndex = 0 Then ' Global
                          SetItemsBold(CmbEvents, Nothing)
                      Else
-                         SelectHandlers(view, cmbControls.SelectedItem)
+                         SelectHandlers(view, CStr(cmbControls.SelectedItem))
                      End If
                  End Sub)
         End Sub
@@ -501,15 +504,22 @@ Namespace Microsoft.SmallVisualBasic.Shell
 
             Dim doc = selectedView.Document
             Dim handlers = If(controlName = GW, doc.GwHandlers, doc.EventHandlers)
+            controlName = controlName.Replace(MdiView.FormSuffix, "")
+            Dim isForm = (controlName = selectedView.Document.Form)
+            Dim prefix = If(isForm, "Form", controlName)
 
-            Dim eventNames = From h In handlers
-                             Let ev = h.Value.EventName
-                             Where h.Value.ControlName = controlName AndAlso
-                                 doc.FindEventHandler($"{controlName}_{h.Value.EventName}") > -1
-                             Order By ev
-                             Select ev
+            Dim eventNames As New List(Of String)
+            For Each h In handlers.Values
+                Dim ev = h.EventName
+                Dim c = h.ControlName
+                If (c = controlName OrElse (isForm AndAlso c = "Form")) AndAlso (
+                        doc.FindEventHandler($"{prefix}_{ev}") > -1 OrElse
+                        doc.FindEventHandler($"{controlName}_{ev}") > -1) Then
+                    eventNames.Add(ev)
+                End If
+            Next
 
-            If eventNames.Any Then
+            If eventNames.Count > 0 Then
                 Dim e = If(
                         eventName = "" OrElse
                             Not eventNames.Contains(eventName, ignorCase),

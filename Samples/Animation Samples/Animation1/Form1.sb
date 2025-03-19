@@ -1,47 +1,43 @@
 Timer.Tick = Rotate
-n = 0
-a1 = 0
-a2 = 0
-startTime = 0
-duration = 2000
+N = 0
+A1 = 0
+A2 = 0
+StartTime = 0
+Duration = 2000
 
-'------------------------------------------------
-Sub Button1_OnClick
+Sub Button1_OnClick()
    Button1.Enabled = False
-   n = n + 1
-   a1 = 0
-   a2 = 0
-   startTime = Clock.ElapsedMilliseconds
+   N = N + 1
+   A1 = 0
+   A2 = 0
+   StartTime = Clock.ElapsedMilliseconds
    Timer.Interval = 50
    
-   If Math.Remainder(n, 2) = 1 Then
-      TextBox1.AnimatePos(Me.Width - 100, Me.Height - 100, duration)
-      TextBox2.AnimatePos(0, Me.Height - 100, duration)
+   If Math.Remainder(N, 2) = 1 Then
+      TextBox1.AnimatePos(Me.Width - 100, Me.Height - 100, Duration)
+      TextBox2.AnimatePos(0, Me.Height - 100, Duration)
    Else
-      TextBox1.AnimatePos(200, 50, duration)
-      TextBox2.AnimatePos(400, 50, duration)
+      TextBox1.AnimatePos(200, 50, Duration)
+      TextBox2.AnimatePos(400, 50, Duration)
    EndIf
-   
 EndSub
 
 
-'------------------------------------------------
-Sub Rotate
-   t = Clock.ElapsedMilliseconds - startTime
-   If t > duration Then
-      t = duration
+Sub Rotate()
+   t = Clock.ElapsedMilliseconds - StartTime
+   If t > Duration Then
+      t = Duration
       Timer.Pause()
       Button1.Enabled = True
    EndIf
    
-   a = Math.Round(360 * t / duration)
-
-   If Math.Remainder(n, 2) = 1 Then
+   a = Math.Round(360 * t / Duration)
+   
+   If Math.Remainder(N, 2) = 1 Then
       TextBox1.Angle = a
       TextBox2.Angle = -a
    Else
       TextBox1.Angle = -a
       TextBox2.Angle = a
    EndIf
-   
 EndSub

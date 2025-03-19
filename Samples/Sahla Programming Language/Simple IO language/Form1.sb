@@ -1,0 +1,157 @@
+Tokens = {}
+Vars = {}
+ExpValue = ""
+TxtCode.MultiLine = True
+TxtCode.Padding = 10
+TW.RightToLeft = True
+
+
+Sub BtnRun_OnClick()
+   statements = Text.Split(TxtCode.Text, Chars.Lf, True, True)
+   For lineNum = 1 To statements.Count
+      TokenizeLine(statements[lineNum], lineNum)
+      ProcessTokens()
+   Next
+   TW.Write("انتهى البرنامج.. اضغط أي زر لإغلاقه...")
+   TW.PauseWithoutMessage()
+   TW.Close()
+EndSub
+
+Sub ProcessTokens()
+   tokenCount = Tokens.Count
+   If tokenCount = 0 Then
+      Return
+   EndIf
+   
+   command = Tokens[1][3]
+   nextCommand = Tokens[2][3]
+   
+   If command = "اكتب" And tokenCount >= 2 Then
+      If nextCommand = "سطرا" Or nextCommand = "السطر" Then
+         result = EvaluateExpressionTokens(3)
+         TextWindow.WriteLine(result)
+      Else
+         result = EvaluateExpressionTokens(2)
+         TextWindow.Write(result)
+      EndIf
+      
+   ElseIf tokenCount >= 3 And nextCommand = "=" Then
+      varName = command
+      result = EvaluateExpressionTokens(3)
+      Vars[varName] = result
+      
+   Else
+      TextWindow.WriteLine("أمر غير معروف: " + command)
+   EndIf
+EndSub
+
+Function EvaluateExpressionTokens(start)
+   result = ""
+   tokenCount = Tokens.Count
+   i = start
+   op = ""
+   
+   While i <= tokenCount
+      tokenVal = Tokens[i][3]
+      
+      If tokenVal = "+" Or tokenVal = "-" Or tokenVal = "/" Or tokenVal = "*" Then
+         op = tokenVal
+         i = i + 1
+         ContinueLoop
+      EndIf
+      
+      If tokenVal = "اقرأ" And i < tokenCount Then
+         nextVal = Tokens[i + 1][3]
+         If nextVal = "سطرا" Or nextVal = "السطر" Then
+            value = TextWindow.Read()
+            result = Eval(result, value, op)
+            i = i + 2
+            ContinueLoop
+         ElseIf nextVal = "عددا" Or nextVal = "العدد" Then
+            value = TextWindow.ReadNumber()
+            result = Eval(result, value, op)
+            i = i + 2
+            ContinueLoop
+         EndIf
+      EndIf
+      
+      If Text.StartsWith(tokenVal, """") And Text.EndsWith(tokenVal, """") Then
+         literal = Text.GetSubText(tokenVal, 2, Text.GetLength(tokenVal) - 2)
+         result = Eval(result, literal, op)
+      ElseIf Text.IsNumeric(tokenVal) Then
+         result = Eval(result, tokenVal, op)
+      ElseIf Vars[tokenVal] <> "" Then
+         result = Eval(result, Vars[tokenVal], op)
+      EndIf
+      i = i + 1
+   Wend
+   Return result
+EndFunction
+
+Function Eval(x, y, op)
+   If op = "+" Or op = "" Then
+      Return x + y
+   ElseIf op = "-" Then
+      Return x - y
+   ElseIf op = "*" Then
+      Return x * y
+   ElseIf op = "/" Then
+      Return x / y
+   EndIf
+   
+   Return ""
+EndFunction
+
+Sub TokenizeLine(line, lineNum)
+   Tokens = {}
+   tokenIndex = 1
+   currentToken = ""
+   tokenStartCol = 0
+   inString = False
+   
+   For col = 1 To Text.GetLength(line)
+      ch = Text.GetSubText(line, col, 1)
+      If ch = """" Then
+         If inString = False Then
+            inString = True
+            tokenStartCol = col
+            currentToken = ch
+         Else
+            currentToken = currentToken & ch
+            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+            tokenIndex = tokenIndex + 1
+            currentToken = ""
+            inString = False
+         EndIf
+         
+      ElseIf inString Then
+         currentToken = currentToken & ch
+      ElseIf ch = " " Then
+         If currentToken <> "" Then
+            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+            tokenIndex = tokenIndex + 1
+            currentToken = ""
+         EndIf
+         
+      ElseIf ch = "=" Or ch = "+" Or ch = "-" Or ch = "*" Or ch = "/" Then
+         If currentToken <> "" Then
+            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+            tokenIndex = tokenIndex + 1
+            currentToken = ""
+         EndIf
+         
+         Tokens[tokenIndex] = {lineNum, col, ch}
+         tokenIndex = tokenIndex + 1
+      Else
+         ' حرف عادي: إذا كانت بداية توكن جديد، سجل رقم العمود
+         If currentToken = "" Then
+            tokenStartCol = col
+         EndIf
+         currentToken = currentToken & ch
+      EndIf
+   Next
+   
+   If currentToken <> "" Then
+      Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+   EndIf
+EndSub

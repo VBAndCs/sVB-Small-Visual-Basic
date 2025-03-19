@@ -69,23 +69,17 @@ Namespace Microsoft.Windows.Controls
 
             For Each marker In markers
                 Dim span = marker.Span.GetSpan(textSnapshot)
-                If length > span.Start Then
-                    length = span.Start
-                End If
-
-                If pos < span.End Then
-                    pos = span.End
-                End If
-
+                If length > span.Start Then length = span.Start
+                If pos < span.End Then pos = span.End
                 _findMarkerList.Add(marker)
             Next
 
             If length < pos Then
                 RaiseEvent AdornmentsChanged(Me,
                          New AdornmentsChangedEventArgs(
-                                  New TextSpan(textSnapshot,
-                                               length, pos - length,
-                                               SpanTrackingMode.EdgeInclusive
+                                 New TextSpan(textSnapshot,
+                                          length, pos - length,
+                                          SpanTrackingMode.EdgeInclusive
                                  )
                         )
                )

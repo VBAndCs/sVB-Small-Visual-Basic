@@ -6,7 +6,6 @@ Namespace Microsoft.SmallVisualBasic.Utility
     <MarkupExtensionReturnType(GetType(String))>
     Public Class LocalizedExtension
         Inherits MarkupExtension
-
         Public Property ResourceId As String
 
         Public Sub New(resourceId As String)

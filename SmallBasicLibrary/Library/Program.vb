@@ -1,8 +1,11 @@
 
+Imports System.Globalization
 Imports System.IO
 Imports System.Reflection
 Imports System.Threading
 Imports System.Windows
+Imports System.Windows.Forms
+Imports System.Windows.Input
 Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
@@ -160,7 +163,12 @@ Namespace Library
                 End Sub)
         End Sub
 
-
+        ''' <summary>
+        ''' Switchs the keyboard language to the local language of the user's PC.
+        ''' </summary>
+        Public Shared Sub SwitchKeyboardToLocalLanguage()
+            Forms.Application.CurrentInputLanguage = InputLanguage.FromCulture(New CultureInfo("ar-EG"))
+        End Sub
 
     End Class
 End Namespace

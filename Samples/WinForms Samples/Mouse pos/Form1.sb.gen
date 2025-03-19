@@ -2,25 +2,27 @@
 '#Form1{
 '    TextBox1: TextBox
 '    TextBox2: TextBox
-'    Label1: Label
-'    Button1: Button
+'    LblScreen: Label
+'    BtnTrackScreen: Button
+'    Ellipse1: Control
 '}
 
-Me = "Form1"
+Me = "form1"
 TextBox1 = "form1.textbox1"
 TextBox2 = "form1.textbox2"
-Label1 = "form1.label1"
-Button1 = "form1.button1"
+LblScreen = "form1.lblscreen"
+BtnTrackScreen = "form1.btntrackscreen"
+Ellipse1 = "form1.ellipse1"
 _path = Program.Directory + "\Form1.xaml"
 Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
-Form.Show(Form1)
 '#Events{
-'    Button1: OnClick
+'    BtnTrackScreen: OnClick
 '}
 
-' Button1 Events:
-Control.HandleEvents(Button1)
-Control.OnClick = Button1_OnClick
+' BtnTrackScreen Events:
+Control.HandleEvents(BtnTrackScreen)
+Control.OnClick = BtnTrackScreen_OnClick
 
 
+Form.Show(Me)

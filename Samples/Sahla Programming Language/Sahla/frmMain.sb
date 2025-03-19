@@ -1,0 +1,436 @@
+Me.Width = Desktop.Width - 4
+Me.Height = Desktop.Height - 60
+Me.Icon = "s.png"
+SavedFile = ""
+IsModified = False
+SetProperties(Global.Ops)
+
+' Open .shl files  with Sahla
+If Program.ArgumentCount = 0 Then
+   Forms.ShowDialog("FrmAbout", "")
+Else
+   Open(Program.GetArgument(1))
+EndIf
+TxtEditor.Focus()
+
+Sub MnuNew_OnClick()
+   If AskToSave() = False Then
+      Return
+   EndIf
+   
+   TxtEditor.Text = ""
+   IsModified = False
+   SavedFile = ""
+   SetProperties(Global.Ops)
+EndSub
+
+Sub SetProperties(ops)
+   TxtEditor.Width = Me.Width
+   TxtEditor.Height = Me.Height
+   TxtEditor.Left = 0
+   TxtEditor.Top = 0
+   
+   TxtEditor.FontName = ops!FontName
+   TxtEditor.FontSize = ops!FontSize
+   TxtEditor.FontBold = ops!Bold
+   TxtEditor.FontItalic = ops!Italic
+   TxtEditor.Underlined = ops!Underlined
+   LblFormat.Font = TxtEditor.Font
+   
+   TxtEditor.ForeColor = Colors.Transparent
+   TxtEditor.BackColor = Colors.Transparent
+   LblFormat.ForeColor = ops!ForeColor
+   LblFormat.BackColor = ops!BackColor
+   
+   TxtEditor.RightToLeft = True
+   LblFormat.RightToLeft = True
+   TxtEditor.WordWrap = False
+   LblFormat.WordWrap = False
+   TxtEditor.MultiLine = True
+   
+   TxtEditor.Padding = 10
+   LblFormat.Padding = 10
+   LblFormat.UseLocalCulture()
+   
+   TW.RightToLeft = True
+   TW.FontName = "Simplified Arabic"
+   TW.FontSize = 16
+   TW.FontBold = True
+   
+   MainMenu1.BringToFront()
+   MnuEnd.Enabled = False
+   Global.EditorTextBox = TxtEditor
+   Global.LblFormat = LblFormat
+EndSub
+
+Sub MnuOpen_OnClick()
+   If AskToSave() Then
+      fileName = File.OpenFileDialog({"Sahla code files", "shl"})
+      If fileName <> "" Then
+         Open(fileName)
+         TxtEditor.Focus()
+      EndIf
+   EndIf
+EndSub
+
+Sub Open(fileName)
+   lines = File.ReadLines(fileName)
+   ops!FontName = lines[1]
+   ops!FontSize = lines[2]
+   ops!Bold = lines[3]
+   ops!Italic = lines[4]
+   ops!Underlined = lines[5]
+   ops!ForeColor = lines[6]
+   ops!BackColor = lines[7]
+   ops!RightToLeft = lines[8]
+   ops!MultiLine = lines[9]
+   ops!WordWrap = lines[10]
+   SetProperties(ops)
+   
+   txt = ""
+   For i = 11 To lines.Count - 1
+      txt = txt & lines[i] & Chars.Lf
+   Next
+   
+   TxtEditor.Text = txt & lines[i]
+   SavedFile = fileName
+   IsModified = False
+EndSub
+
+Sub MnuSave_OnClick()
+   Save()
+EndSub
+
+Sub MnuSaveAs_OnClick()
+   SaveAs()
+EndSub
+
+Function AskToSave()
+   If IsModified Then
+      result = Dialogs.MsgBox(
+         "حفظ التغييرات",
+         "هل تريد حفظ التغييرات قبل إغلاق ملف الكود الحالي؟" & Text.NewLine &
+         "Yes: " & "حفظ التغييرات" & Text.NewLine &
+         "No: " & "تجاهل التغييرات" & Text.NewLine &
+         "Cancel: " & "إلغاء العملية وإبقاء الملف الحالي مفتوحا"
+      )
+      
+      If result = DialogResults.Yes Then
+         If Save() = False Then
+            Return False
+         EndIf
+         
+      ElseIf result = DialogResults.Cancel Then
+         Return False
+      EndIf
+   EndIf
+   
+   Return True
+EndFunction
+
+
+Function Save()
+   If SavedFile = "" Then
+      Return SaveAs()
+   Else
+      ops = {}
+      ops!FontName = TxtEditor.FontName
+      ops!FontSize = TxtEditor.FontSize
+      ops!Bold = TxtEditor.FontBold
+      ops!Italic = TxtEditor.FontItalic
+      ops!Underlined = TxtEditor.Underlined
+      ops!ForeColor = LblFormat.ForeColor
+      ops!BackColor = LblFormat.BackColor
+      ops!RightToLeft = TxtEditor.RightToLeft
+      ops!MultiLine = TxtEditor.MultiLine
+      ops!WordWrap = TxtEditor.WordWrap
+      ops!Text = TxtEditor.Text
+      
+      If File.WriteContents(SavedFile, ops) = False Then
+         Me.ShowMessage(File.LastError, "Error")
+         Return False
+      EndIf
+   EndIf
+   
+   IsModified = False
+   Return True
+EndFunction
+
+Function SaveAs()
+   fileName = File.SaveFileDialog(
+      SavedFile,
+      {"Sahla code files", "shl"}
+   )
+   
+   If fileName = "" Then
+      Return False
+   Else
+      SavedFile = fileName
+      Return Save()
+   EndIf
+EndFunction
+
+Sub MnuClose_OnClick()
+   Me.Close()
+EndSub
+
+Sub MnuFile_OnOpen()
+   state = (SavedFile <> "")
+   MnuNew.Enabled = state Or IsModified
+   MnuSaveAs.Enabled = state
+   MnuSave.Enabled = IsModified
+EndSub
+
+Sub MnuUndo_OnClick()
+   TxtEditor.Undo()
+EndSub
+
+Sub MnuRedo_OnClick()
+   TxtEditor.Redo()
+EndSub
+
+
+Sub MnuCopy_OnClick()
+   TxtEditor.Copy()
+EndSub
+
+
+Sub MnuCut_OnClick()
+   TxtEditor.Cut()
+EndSub
+
+
+Sub MnuPaste_OnClick()
+   TxtEditor.Paste()
+EndSub
+
+Sub MnuDelete_OnClick()
+   TxtEditor.SelectedText = ""
+EndSub
+
+Sub MnuSelAll_OnClick()
+   TxtEditor.SelectAll()
+EndSub
+
+Sub MnuBold_OnCheck()
+   TxtEditor.FontBold = MnuBold.Checked
+   LblFormat.FontBold = TxtEditor.FontBold
+EndSub
+
+Sub MnuItalic_OnCheck()
+   TxtEditor.FontItalic = MnuItalic.Checked
+   LblFormat.FontItalic = TxtEditor.FontItalic
+EndSub
+
+Sub MnuUnderline_OnCheck()
+   TxtEditor.Underlined = MnuUnderline.Checked
+   LblFormat.Underlined = TxtEditor.Underlined
+EndSub
+
+Sub MnuEdit_OnOpen()
+   MnuUndo.Enabled = TxtEditor.CanUndo
+   MnuRedo.Enabled = TxtEditor.CanRedo
+   
+   hasSelection = TxtEditor.SelectionLength > 0
+   MnuCopy.Enabled = hasSelection
+   MnuCut.Enabled = hasSelection
+   MnuDelete.Enabled = hasSelection
+   MnuSelAll.Enabled = (TxtEditor.Text <> "")
+EndSub
+
+Sub MnuFont_OnClick()
+   LblFormat.ChooseFont()
+   TxtEditor.Font = LblFormat.Font
+   TxtEditor.ForeColor = Colors.Transparent
+EndSub
+
+
+Sub MnuForeColor_OnClick()
+   LblFormat.ChooseForeColor()
+EndSub
+
+Sub MnuBackColor_OnClick()
+   LblFormat.ChooseBackColor()
+EndSub
+
+Sub MnuOptions_OnClick()
+   Forms.ShowDialog("FrmOps", "")
+EndSub
+
+Sub MnuView_OnOpen()
+   MnuBold.Checked = TxtEditor.FontBold
+   MnuItalic.Checked = TxtEditor.FontItalic
+   MnuUnderline.Checked = TxtEditor.Underlined
+EndSub
+
+
+' ------------------------------------------------
+Sub FrmMain_OnClosing()
+   Event.Handled = (AskToSave() = False)
+EndSub
+
+Sub MnuFind_OnClick()
+   Me.ShowChildForm("FrmFind", TxtEditor)
+EndSub
+
+Sub Form_OnShown()
+   TxtEditor.OnScroll = OnScroll
+   Program.SwitchKeyboardToLocalLanguage()
+EndSub
+
+Sub OnScroll()
+   h = TxtEditor.HorizontalScrollOffset
+   LblFormat.Width = TxtEditor.Width + 2 * h
+   LblFormat.Left = -h - 3
+   
+   v = TxtEditor.VerticalScrollOffset
+   LblFormat.Height = TxtEditor.Height + v
+   LblFormat.Top = -v
+EndSub
+
+Sub MnuRun_OnClick()
+   MnuRun.Enabled = False
+   MnuEnd.Enabled = True
+   TW.Title = "نافذة المخرجات"
+   Global.Run()
+   MnuRun.Enabled = True
+   MnuEnd.Enabled = False
+EndSub
+
+Sub MnuEnd_OnClick()
+   TW.Close()
+   MnuEnd.Enabled = False
+   MnuRun.Enabled = True
+EndSub
+
+ExitTextChanged = False
+IsIndented = False
+
+Sub TxtEditor_OnTextChanged()
+   If ExitTextChanged Then
+      Return
+   EndIf
+   
+   k = Event.LastKey
+   If k = Keys.Enter Or k = Keys.Down Then
+      IsIndented = True
+      ExitTextChanged = True
+      Global.IndentCode()
+      Global.ColorCode()
+      ExitTextChanged = False
+   Else
+      Global.ColorCode()
+   EndIf
+   
+   IsModified = True
+   IsIndented = False
+   MnuFile_OnOpen()
+EndSub
+
+ExitSelection = False
+
+Sub TxtEditor_OnTextInput()
+   If Event.LastTextInput = " " Then
+      ExitTextChanged = True
+      ExitSelection = True
+      If Global.AutoComplete() Then
+         Global.ColorCode()
+      EndIf
+      ExitTextChanged = False
+   EndIf
+EndSub
+
+Sub MnuAbout_OnClick()
+   Forms.ShowDialog("FrmAbout", "")
+EndSub
+
+Sub TxtEditor_OnKeyDown()
+   k = Event.LastKey
+   If Keyboard.CtrlPressed And Keyboard.ShiftPressed Then
+      Event.Handled = True
+   ElseIf k = Keys.Up Or k = Keys.Down Then
+      If IsIndented = False Then
+         IsIndented = True
+         ExitTextChanged = True
+         Global.IndentCode()
+         Global.ColorCode()
+         ExitTextChanged = False
+      EndIf
+   EndIf
+EndSub
+
+
+Sub TxtEditor_OnSelection()
+   If ExitTextChanged Or TxtEditor.SelectionLength > 0 Then
+      Return
+   EndIf
+   
+   code = TxtEditor.Text
+   pos = TxtEditor.CaretIndex
+   
+   
+   If pos > 1 Then
+      For i = pos To 1 Step -1
+         ch = code[i]
+         If ch = Chars.Lf Then
+            ExitLoop
+         ElseIf ch <> " " Then
+            Return
+         EndIf
+      Next
+   EndIf
+   
+   For i = pos To code.Length
+      ch = code[i]
+      If ch <> " " Then
+         If i > pos Then
+            ExitTextChanged = True
+            TxtEditor.CaretIndex = i
+            ExitTextChanged = False
+         EndIf
+         Return
+      EndIf
+   Next
+EndSub
+
+
+Sub TxtEditor_OnMouseWheel()
+   If Keyboard.CtrlPressed Then
+      Event.Handled = True
+      size = TxtEditor.FontSize + Event.LastMouseWheelDirection
+      If size < 50 And size > 10 Then
+         TxtEditor.FontSize = size
+         LblFormat.FontSize = size
+      EndIf
+   EndIf
+EndSub
+
+
+Sub MnuOutput_OnClick()
+   Open("Syntax/1.shl")
+EndSub
+
+
+Sub MnuVars_OnClick()
+   Open("Syntax/2.shl")
+EndSub
+
+
+Sub MnuOps_OnClick()
+   Open("Syntax/3.shl")
+EndSub
+
+
+Sub MnuInput_OnClick()
+   Open("Syntax/4.shl")
+EndSub
+
+
+Sub MnuConditions_OnClick()
+   Open("Syntax/5.shl")
+EndSub
+
+
+Sub MnuLoops_OnClick()
+   Open("Syntax/6.shl")
+EndSub

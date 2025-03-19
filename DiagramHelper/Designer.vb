@@ -1,6 +1,7 @@
 ﻿Imports System.Collections.ObjectModel
 Imports System.ComponentModel
 Imports System.IO
+Imports System.Windows.Controls.Primitives
 Imports System.Windows.Interop
 Imports System.Windows.Markup
 Imports System.Xml
@@ -338,6 +339,7 @@ Public Class Designer
         m2.Items.Clear()
 
         If m IsNot Nothing Then
+            wnd.RtlToggleButton.IsChecked = (m.FlowDirection = FlowDirection.RightToLeft)
             For Each item In m.Items
                 m2.Items.Add(DiagramHelper.Helper.Clone(item))
             Next
@@ -608,7 +610,7 @@ Public Class Designer
 
             Dim v = diagram.GetValue(DiagramPanel.IsDiagramEnabledProperty)
             If diagram2.IsEnabled <> v Then diagram2.IsEnabled = v
-            Dim v2 = If(diagram.GetValue(DiagramPanel.IsdiagramVisibleProperty), Visibility.Visible, Visibility.Hidden)
+            Dim v2 = If(diagram.GetValue(DiagramPanel.IsDiagramVisibleProperty), Visibility.Visible, Visibility.Hidden)
             If diagram2.Visibility <> v2 Then diagram2.Visibility = v2
             If diagram2.MaxWidth <> pnl.MaxWidth Then diagram2.MaxWidth = pnl.MaxWidth
             If diagram2.MaxHeight <> pnl.MaxHeight Then diagram2.MaxHeight = pnl.MaxHeight
@@ -920,7 +922,6 @@ Public Class Designer
         End If
 
         diagram.ClearValue(ToolTipProperty)
-
 
         Dim OldState = New CollectionState(AddressOf AfterRestoreAction, Me.Items, diagram)
         AddHandler OldState.BeforeRemoveItem, AddressOf UndoRedo_BeforeRemoveItem
@@ -1382,8 +1383,8 @@ Public Class Designer
         If dlg.ShowDialog() = True Then
             SaveSetting("SmallVisualBasic", "Files", "Open", IO.Path.GetDirectoryName(dlg.FileName))
             If IO.Path.GetExtension(dlg.FileName).ToLower() = ".xaml" Then
-                If Not CurrentPage.IsDirty AndAlso
-                    CurrentPage.IsNew AndAlso Pages.Count = 1 Then
+                If CurrentPage IsNot Nothing AndAlso Not CurrentPage.IsDirty AndAlso
+                                CurrentPage.IsNew AndAlso Pages.Count = 1 Then
                     ClosePage(False, True)
                 End If
 
@@ -1940,7 +1941,9 @@ Public Class Designer
         Dim menu = CType(e.NewValue, Menu)
         If menu Is Nothing Then Return
 
+        CurrentPage.MenuBar.FlowDirection = menu.FlowDirection
         CurrentPage.MenuNames = New List(Of String)
+
         For Each item In menu.Items
             Dim m = CType(Helper.Clone(item), Control)
             menuItems.Add(m)
@@ -1959,7 +1962,6 @@ Public Class Designer
     End Sub
 
     Private Shared Sub menuItemClicked(sender As Object, e As MouseButtonEventArgs)
-
         If e.ClickCount > 1 OrElse TryCast(sender, ItemsControl)?.Items.Count = 0 Then
             dontShowMenuDesigner = True
             e.Handled = True

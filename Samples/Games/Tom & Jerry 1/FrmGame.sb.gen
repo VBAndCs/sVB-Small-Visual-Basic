@@ -11,16 +11,17 @@ Label1 = "frmgame.label1"
 Jerry = "frmgame.jerry"
 TOM = "frmgame.tom"
 Label2 = "frmgame.label2"
-_path = Program.Directory + "\FrmGame.xaml"
+_path = Program.Directory + "\frmgame.xaml"
 FrmGame = Forms.LoadForm("FrmGame", _path)
 Form.SetArgsArr(frmgame, Stack.PopValue("_frmgame_argsArr"))
-Form.Show(FrmGame)
+Form.Show(Me)
 '#Events{
 '    FrmGame: OnKeyDown
 '}
 
 ' FrmGame Events:
 Control.HandleEvents(FrmGame)
-Control.OnKeyDown = FrmGame_OnKeyDown
+Control.OnKeyDown = Form_OnKeyDown
 
 
+Form.Show(Me)

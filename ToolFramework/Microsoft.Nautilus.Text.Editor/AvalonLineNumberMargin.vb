@@ -146,7 +146,7 @@ Namespace Microsoft.Nautilus.Text.Editor
 
             Dim visuals As New List(Of AvalonLineNumberMarginDrawingVisual)
             Dim prevLineNum As Integer = -1
-            For Each formattedTextLine As ITextLine In formattedTextLines
+            For Each formattedTextLine In formattedTextLines
                 Dim lineNum = _textView.TextSnapshot.GetLineNumberFromPosition(formattedTextLine.LineSpan.Start) + 1
                 If lineNum = prevLineNum Then Continue For
 
@@ -164,10 +164,22 @@ Namespace Microsoft.Nautilus.Text.Editor
                         text = text.Substring(text.Length - "8888".Length)
                     End If
 
-                    Dim textLine = _textFormatter.FormatLine(New AvalonLineNumberMarginTextSource(text, _formatting), 0, MyBase.MinWidth, New TextFormattingParagraphProperties, Nothing)
-                    Dim bottom As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top + formattedTextLine.Height), Me)
-                    Dim top As Point = _textView.VisualElement.TranslatePoint(New Point(0.0, formattedTextLine.Top), Me)
-                    lineMarginVisual = New AvalonLineNumberMarginDrawingVisual(lineNum, textLine, MyBase.MinWidth - textLine.Width, bottom.Y - top.Y, top.Y)
+                    Dim textLine = New TextLine(_textFormatter.FormatLine(New AvalonLineNumberMarginTextSource(text, _formatting), 0, MyBase.MinWidth, New TextFormattingParagraphProperties, Nothing))
+                    Dim bottom As Point = _textView.VisualElement.TranslatePoint(
+                            New Point(0.0, formattedTextLine.Top + formattedTextLine.Height),
+                            Me
+                    )
+                    Dim top As Point = _textView.VisualElement.TranslatePoint(
+                            New Point(0.0, formattedTextLine.Top),
+                            Me
+                    )
+                    lineMarginVisual = New AvalonLineNumberMarginDrawingVisual(
+                            lineNum,
+                            textLine,
+                            MyBase.MinWidth - textLine.Width,
+                            bottom.Y - top.Y,
+                            top.Y
+                    )
                     cashedLines(lineNum) = lineMarginVisual
                 End If
                 visuals.Add(lineMarginVisual)

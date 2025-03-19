@@ -81,21 +81,21 @@
                                                   Height="5"/>
                                     <s:DsnResizeThumb   Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom"  ResizeAngle="-45"
                                                   Width="5" Height="5"/>
-                                    <Path   Grid.Row="1" Stroke="Red" Opacity="0.5"
+                                    <Path Grid.Row="1" Stroke="Red" Opacity="0.5"
                                               StrokeThickness="1" Visibility="{Binding DsnResizeThumb.MeasurementsVisibilty}"
                                               Width="10" HorizontalAlignment="Right"
                                               Margin="0,-2,-25,-2" Stretch="Fill"
                                               Data="M5,0 5,100 M 0,0 10,0 M 0,100 10,100"/>
-                                    <TextBlock   Grid.Row="1" Text="{Binding PageHeight, Converter={StaticResource CmConverter}}"
+                                    <TextBlock Grid.Row="1" Text="{Binding PageHeight, Converter={StaticResource CmConverter}}"
                                                Background="White" Visibility="{Binding DsnResizeThumb.MeasurementsVisibilty}"
                                                Foreground="Red" Padding="3,0,3,0" Margin="0,0,-38,0"
                                                HorizontalAlignment="Right" VerticalAlignment="Center" />
-                                    <Path   Grid.Row="1" Stroke="Red" Opacity="0.5"
+                                    <Path Grid.Row="1" Stroke="Red" Opacity="0.5"
                                               StrokeThickness="1" Visibility="{Binding DsnResizeThumb.MeasurementsVisibilty}"
                                               Height="10" VerticalAlignment="Bottom"
                                               Margin="-2,0,-2,-25" Stretch="Fill"
                                               Data="M0,0 0,10 M 0,5 100,5 M 100,0 100,10"/>
-                                    <TextBlock   Grid.Row="1" Text="{Binding PageWidth, Converter={StaticResource CmConverter}}"
+                                    <TextBlock Grid.Row="1" Text="{Binding PageWidth, Converter={StaticResource CmConverter}}"
                                                Background="White" Visibility="{Binding DsnResizeThumb.MeasurementsVisibilty}"
                                                Padding="3,0,3,0" Margin="0,0,0,-32"
                                                Foreground="Red"                                              
@@ -153,7 +153,6 @@
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
-
     </Style>
 
     <Style x:Key="listBoxItemStyle"  TargetType="ListBoxItem" >

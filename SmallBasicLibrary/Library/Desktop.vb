@@ -135,15 +135,19 @@ Namespace Library
             Get
                 Dim fonts As New Dictionary(Of Primitive, Primitive)
                 Dim n = 1
+                Dim _fontNames As New List(Of String)
 
                 For Each family In Media.Fonts.SystemFontFamilies
-                    fonts(n) = New Primitive(family.Source)
+                    _fontNames.Add(family.Source)
+                Next
+
+                _fontNames.Sort()
+                For Each fontName In _fontNames
+                    fonts(n) = New Primitive(fontName)
                     n += 1
                 Next
 
-                Dim result As New Primitive
-                result.ArrayMap = fonts
-                Return result
+                Return New Primitive() With {.ArrayMap = fonts}
             End Get
         End Property
     End Class

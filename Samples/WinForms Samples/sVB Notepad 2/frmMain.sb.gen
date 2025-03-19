@@ -63,13 +63,11 @@ MnuForeColor = "frmmain.mnuforecolor"
 MnuBackColor = "frmmain.mnubackcolor"
 MnuFrameColor = "frmmain.mnuframecolor"
 MnuOptions = "frmmain.mnuoptions"
-_path = Program.Directory + "\frmMain.xaml"
+_path = Program.Directory + "\frmmain.xaml"
 FrmMain = Forms.LoadForm("FrmMain", _path)
 Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
-Form.Show(FrmMain)
 '#Events{
 '    TxtEditor: OnTextChanged
-'    FrmMain: OnClosing
 '    MnuOpen: OnClick
 '    MnuNew: OnClick
 '    MnuSave: OnClick
@@ -102,10 +100,6 @@ Form.Show(FrmMain)
 ' TxtEditor Events:
 Control.HandleEvents(TxtEditor)
 TextBox.OnTextChanged = TxtEditor_OnTextChanged
-
-' FrmMain Events:
-Control.HandleEvents(FrmMain)
-Form.OnClosing = FrmMain_OnClosing
 
 ' MnuOpen Events:
 Control.HandleEvents(MnuOpen)
@@ -216,3 +210,4 @@ Control.HandleEvents(MnuFind)
 MenuItem.OnClick = MnuFind_OnClick
 
 
+Form.Show(Me)

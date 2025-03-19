@@ -205,7 +205,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 bag.CompletionItems.Add(New CompletionItem() With {
                     .Key = "msgbox",
                     .DisplayName = "MsgBox",
-                    .ReplacementText = "MsgBox",
+                    .ReplacementText = "MsgBox(",
                     .ItemType = CompletionItemType.SubroutineName
                 })
             End If

@@ -1,38 +1,48 @@
 TextBox1.OnMouseMove = OnMouseMove
 TextBox2.OnMouseMove = OnMouseMove
-Label1.OnMouseMove = OnMouseMove
-Me.OnMouseMove = OnMouseMove
+LblScreen.OnMouseMove = OnMouseMove
+BtnTrackScreen.OnMouseMove = OnMouseMove
+Ellipse1.OnMouseMove = OnMouseMove
 
-'----------------------------
+TraceScreen = False
+Timer.Interval = 20
+Timer.Pause()
+Timer.Tick = OnMouseMove
+
 Sub OnMouseMove()
    TextBox1.Text = Text.Format(
       "Pos relative to TextBox1: ([1], [2])",
       {TextBox1.MouseX, TextBox1.MouseY}
    )
    
-   
    TextBox2.Text = Text.Format(
       "Pos relative to TextBox2: ([1], [2])",
       {TextBox2.MouseX, TextBox2.MouseY}
    )
    
-   Form1.Text = Text.Format(
+   Me.Text = Text.Format(
       "Pos relative to Form: ([1], [2])",
       {Me.MouseX, Me.MouseY}
    )
    
    msg = "Pos relative to Screen: ("
-   Label1.Text = msg + Mouse.X + "," + Mouse.Y + ")"
+   LblScreen.Text = msg & Mouse.X & "," & Mouse.Y & ")"
+   Ellipse1.Left = Me.MouseX - Ellipse1.Width / 2
+   Ellipse1.Top = Me.MouseY - Ellipse1.Height / 2
    
 EndSub
 
 
-
-
-'------------------------------------------------
-Sub Button1_OnClick()
-   Timer.Interval = 20
-   Mouse.X = 0
-   Mouse.Y = 0
-   Timer.Tick = OnMouseMove
+Sub BtnTrackScreen_OnClick()
+   If TraceScreen Then
+      Timer.Pause()
+      BtnTrackScreen.Text = "Trace screen pos"
+      TraceScreen = False
+   Else
+      Timer.Resume()
+      BtnTrackScreen.Text = "Stop tracing screen pos"
+      Mouse.X = 0
+      Mouse.Y = 0
+      TraceScreen = True
+   EndIf
 EndSub

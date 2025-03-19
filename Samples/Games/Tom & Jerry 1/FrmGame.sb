@@ -1,33 +1,38 @@
+SpeedX = 20
+SpeedY = 20
 
-
-' ---------------------------------------------------------------------------MOHAMED NEGM--------------------------------
-Sub FrmGame_OnKeyDown()
+Sub Form_OnKeyDown()
    k = Keyboard.LastKey
    If k = Keys.Left Then
-      Jerry.Left = Jerry.Left - 20
-      If Jerry.Left < 0 Then
+      x = Jerry.Left - SpeedX
+      If x < 0 Then
          Jerry.Left = 0
+      Else
+         Jerry.Left = x
       EndIf
       
    ElseIf k = Keys.Right Then
-      Jerry.Left = Jerry.Left + 20
-      
-      If Jerry.Left > Me.Width - Jerry.Width Then
-         Jerry.Left = Me.Width - Jerry.Width
+      x = Jerry.Right + SpeedX
+      If x > Me.Width Then
+         Jerry.Right = Me.Width
+      Else
+         Jerry.Right = x
       EndIf
       
    ElseIf k = Keys.Up Then
-      Jerry.Top = Jerry.Top - 20
-      
-      If Jerry.Top < 0 Then
+      y = Jerry.Top - SpeedY
+      If y < 0 Then
          Jerry.Top = 0
+      Else
+         Jerry.Top = y
       EndIf
       
    ElseIf k = Keys.Down Then
-      Jerry.Top = Jerry.Top + 20
-      
-      If Jerry.Top > Me.Height - Jerry.Height Then
-         Jerry.Top = Me.Height - Jerry.Height
+      y = Jerry.Bottom + SpeedY
+      If y > Me.Height Then
+         Jerry.Bottom = Me.Height
+      Else
+         Jerry.Bottom = y
       EndIf
    EndIf
 EndSub

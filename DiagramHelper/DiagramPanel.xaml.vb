@@ -262,18 +262,24 @@ Public Class DiagramPanel
             Case Key.F2 ' Rename
                 DiagramObj.BeginEdit(True)
                 e.Handled = True
+
             Case Key.F9
                 Commands.ChangeBackground(Diagram)
                 ApplyLastChangeToSelected()
                 e.Handled = True
+
             Case Key.F3
                 Dim B = Commands.ChangeBorderBrush(Diagram)
-                If B IsNot Nothing Then ApplyLastChangeToSelected()
+                If B IsNot Nothing Then
+                    ApplyLastChangeToSelected()
+                End If
                 e.Handled = True
+
             Case Key.F1
                 Commands.ApplyLastChangeTo(Diagram)
                 ApplyLastChangeToSelected()
                 e.Handled = True
+
             Case Key.F6
                 If Keyboard.Modifiers = ModifierKeys.Shift Then
                     Commands.IncreaseBorderThickness(Diagram, -0.1)
@@ -283,12 +289,15 @@ Public Class DiagramPanel
 
                 ApplyLastChangeToSelected()
                 e.Handled = True
+
             Case Key.F7
                 Commands.ChangeBrush(Diagram, Control.ForegroundProperty)
                 ApplyLastChangeToSelected()
+
             Case Key.F11
                 Commands.IncreaseRotationAngle(Diagram, -45)
                 ApplyLastChangeToSelected()
+
             Case Key.F12
                 Commands.IncreaseRotationAngle(Diagram, 45)
                 ApplyLastChangeToSelected()
@@ -297,45 +306,55 @@ Public Class DiagramPanel
                     Commands.Skew(Diagram)
                     ApplyLastChangeToSelected()
                 End If
+
             Case Key.F
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     Commands.ChangeFont(Diagram)
                     ApplyLastChangeToSelected()
                 End If
+
             Case Key.Oem4
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     Commands.IncreaseFontSize(Diagram, -1)
                     ApplyLastChangeToSelected()
                 End If
+
             Case Key.Oem6
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     Commands.IncreaseFontSize(Diagram, +1)
                     ApplyLastChangeToSelected()
                 End If
+
             Case Key.B
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     MenuItem_SubmenuOpened(Nothing, Nothing)
                     BoldMenuItem.IsChecked = Not BoldMenuItem.IsChecked
                 End If
+
             Case Key.I
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     MenuItem_SubmenuOpened(Nothing, Nothing)
                     ItalicMenuItem.IsChecked = Not ItalicMenuItem.IsChecked
                 End If
+
             Case Key.U
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     MenuItem_SubmenuOpened(Nothing, Nothing)
                     UnderlineMenuItem.IsChecked = Not UnderlineMenuItem.IsChecked
                 End If
+
             Case Key.G
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     GroupMenuItem.IsChecked = Not GroupMenuItem.IsChecked
                 End If
+
             Case Key.Enter
                 DiagramObj.BeginEdit()
                 e.Handled = True
+
             Case Key.Delete
                 Dsn.RemoveSelectedItems()
+
             Case Key.Tab
                 If Keyboard.Modifiers = ModifierKeys.Shift Then
                     Dim I = Dsn.Items.IndexOf(Diagram) - 1
@@ -360,9 +379,11 @@ Public Class DiagramPanel
                     End If
                 End If
                 e.Handled = True
+
             Case Key.Up
                 DiagramObj.MoveDiagram(0, -offset, True)
                 e.Handled = True
+
             Case Key.PageUp
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     DiagramObj.MoveDiagram(-Scv.ViewportWidth, 0, True)
@@ -370,12 +391,15 @@ Public Class DiagramPanel
                     DiagramObj.MoveDiagram(0, -Scv.ViewportHeight, True)
                 End If
                 e.Handled = True
+
             Case Key.Left
                 DiagramObj.MoveDiagram(-offset, 0, True)
                 e.Handled = True
+
             Case Key.Down
                 DiagramObj.MoveDiagram(0, offset, True)
                 e.Handled = True
+
             Case Key.PageDown
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     DiagramObj.MoveDiagram(Scv.ViewportWidth, 0, True)
@@ -383,6 +407,7 @@ Public Class DiagramPanel
                     DiagramObj.MoveDiagram(0, Scv.ViewportHeight, True)
                 End If
                 e.Handled = True
+
             Case Key.Right
                 DiagramObj.MoveDiagram(offset, 0, True)
                 e.Handled = True
@@ -430,7 +455,9 @@ Public Class DiagramPanel
 
     Private Sub DiagramBorderBrushMenuItem_Click(sender As Object, e As RoutedEventArgs)
         Dim B = Commands.ChangeBorderBrush(Diagram)
-        If B IsNot Nothing Then ApplyLastChangeToSelected()
+        If B IsNot Nothing Then
+            ApplyLastChangeToSelected()
+        End If
     End Sub
 
     Private Sub IicreaseBorderThicknessMenuItem_Click(sender As Object, e As RoutedEventArgs)

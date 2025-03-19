@@ -142,7 +142,7 @@ Namespace WinForms
 
         ''' <summary>
         ''' Get a value that indicates the last mouse wheel movement direction:
-        '''  * 0 means down.
+        '''  * -1 means down.
         '''  * 1 means up.
         ''' </summary>
         <ReturnValueType(VariableType.Double)>

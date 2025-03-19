@@ -69,5 +69,21 @@ Namespace Library
             End If
             Return New Primitive("")
         End Function
+
+        ''' <summary>
+        ''' reads the last value pushed into the specified stack, whithout poping it out.
+        ''' </summary>
+        ''' <param name="stackName">The name of the stack.</param>
+        ''' <returns>
+        ''' The top value of the stack.
+        ''' </returns>
+        Public Shared Function PeekValue(stackName As Primitive) As Primitive
+            Dim stack As Stack(Of Primitive) = Nothing
+            If _stackMap.TryGetValue(Text.ToLower(stackName), stack) Then
+                If stack.Count > 0 Then Return stack.Peek()
+            End If
+            Return New Primitive("")
+        End Function
+
     End Class
 End Namespace

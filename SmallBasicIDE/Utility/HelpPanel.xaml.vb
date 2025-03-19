@@ -552,7 +552,11 @@ Namespace Microsoft.SmallVisualBasic.Utility
                         Dim globalFile = IO.Path.Combine(progDir, "global.sb")
                         If IO.File.Exists(globalFile) Then
                             Dim doc = MainWindow.OpenDocIfNot(globalFile)
-                            If identifier.Column > -1 Then SelectToken(identifier, doc)
+                            If identifier.Column > -1 Then
+                                Dispatcher.BeginInvoke(
+                                        Sub() SelectToken(identifier, doc)
+                                )
+                            End If
                         End If
                     End If
             End Select

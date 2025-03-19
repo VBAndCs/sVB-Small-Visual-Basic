@@ -13,10 +13,9 @@ TextBox2 = "form1.textbox2"
 Button1 = "form1.button1"
 ComboBox1 = "form1.combobox1"
 Button2 = "form1.button2"
-_path = Program.Directory + "\Form1.xaml"
+_path = Program.Directory + "\form1.xaml"
 Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
-Form.Show(Form1)
 '#Events{
 '    TextBox1: OnLostFocus OnGotFocus
 '    Button1: OnClick
@@ -48,3 +47,4 @@ Control.HandleEvents(Button2)
 Control.OnClick = Button2_OnClick
 
 
+Form.Show(Me)

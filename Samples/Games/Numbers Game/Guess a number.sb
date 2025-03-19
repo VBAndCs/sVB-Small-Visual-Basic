@@ -1,17 +1,30 @@
 N = Math.GetRandomNumber(100)
 Win = False
+MaxCount = 12
 Count = 0
+Min = 1
+Max = 100
 
 While Win = False
-   TW.Write("Guess the number between 1 & 100: ")
+   TW.WriteFormatted(
+      "Guess the number in the range [[1]-[2]]: ",
+      {Min, Max}
+   )
    X = TW.ReadNumber()
    Count = Count + 1
    If X = N Then
-      TW.WriteLine("Bravo. You win in " & Count & " steps.")
+      TW.WriteLine("Bravo. You won in " & Count & " steps.")
       Win = True
-   ElseIf X < N Then
-      TW.WriteLine("Try a bigger number!")
+   ElseIf Count > MaxCount Then
+      TW.WriteLine("You loose!")
+      ExitLoop
    Else
-      TW.WriteLine("Try a smaller number!")
+      TW.WriteLine("Wrong number!(Trials left: "
+         & (MaxCount - Count) & ")")
+      If X < N Then
+         Min = X + 1
+      Else
+         Max = X - 1
+      EndIf
    EndIf
 Wend

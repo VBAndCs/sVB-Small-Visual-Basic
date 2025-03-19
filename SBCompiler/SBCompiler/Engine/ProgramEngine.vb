@@ -274,7 +274,7 @@ Namespace Microsoft.SmallVisualBasic.Engine
                 Sub()
                     WinForms.GeometricPath.CreatePath()
                     Try
-                        Library.TextWindow.ClearIfLoaded()
+                        Library.TextWindow.DoClear()
                     Catch
                     End Try
 

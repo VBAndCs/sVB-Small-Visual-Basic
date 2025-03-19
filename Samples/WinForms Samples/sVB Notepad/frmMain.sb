@@ -76,7 +76,7 @@ IsModified = False
 SetProperties(Global.Ops)
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuNew_OnClick()
    If AskToSave() = False Then
       Return
@@ -88,7 +88,7 @@ Sub MenuNew_OnClick()
    SetProperties(Global.Ops)
 EndSub
 
-'-------------------------------------------
+' -------------------------------------------
 Sub SetProperties(ops)
    TxtEditor.FontName = ops!FontName
    TxtEditor.FontSize = ops!FontSize
@@ -103,7 +103,7 @@ Sub SetProperties(ops)
    TxtEditor.WordWrap = ops!WordWrap
 EndSub
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuOpen_OnClick()
    If AskToSave() = False Then
       Return
@@ -148,23 +148,20 @@ Sub MenuOpen_OnClick()
    SetProperties(ops)
 EndSub
 
-
-'------------------------------------------------
 Sub TxtEditor_OnTextChanged()
    IsModified = True
+   MnuFile_OnOpen
 EndSub
 
-'------------------------------------------------
 Sub MenuSave_OnClick()
    Save()
 EndSub
 
-'------------------------------------------------
 Sub MenuSaveAs_OnClick()
    SaveAs()
 EndSub
 
-'------------------------------------------------
+' ------------------------------------------------
 Function AskToSave()
    If IsModified Then
       result = Dialogs.MsgBox(
@@ -186,7 +183,7 @@ Function AskToSave()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Save()
    If SavedFile = "" Then
       Return SaveAs()
@@ -225,7 +222,7 @@ EndFunction
 
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function SaveAs()
    fileName = File.SaveFileDialog(
       SavedFile,
@@ -243,13 +240,13 @@ Function SaveAs()
    EndIf
 EndFunction
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuClose_OnClick()
    Me.Close()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuFile_OnOpen()
    state = (SavedFile <> "")
    MenuNew.Enabled = state Or IsModified
@@ -258,67 +255,67 @@ Sub MenuFile_OnOpen()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuUndo_OnClick()
    TxtEditor.Undo()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuRedo_OnClick()
    TxtEditor.Redo()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuCopy_OnClick()
    TxtEditor.Copy()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuCut_OnClick()
    TxtEditor.Cut()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuPaste_OnClick()
    TxtEditor.Paste()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuDelete_OnClick()
    TxtEditor.SelectedText = ""
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuSelAll_OnClick()
    TxtEditor.SelectAll()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuBold_OnCheck()
    TxtEditor.FontBold = MenuBold.Checked
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuItalic_OnCheck()
    TxtEditor.FontItalic = MenuItalic.Checked
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuUnderline_OnCheck()
    TxtEditor.Underlined = MenuUnderline.Checked
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuEdit_OnOpen()
    MenuUndo.Enabled = TxtEditor.CanUndo
    MenuRedo.Enabled = TxtEditor.CanRedo
@@ -331,7 +328,7 @@ Sub MenuEdit_OnOpen()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuWrap_OnCheck()
    TxtEditor.WordWrap = MenuWrap.Checked
 EndSub
@@ -340,43 +337,43 @@ Sub MenuRtl_OnCheck()
    TxtEditor.RightToLeft = MenuRtl.Checked
 EndSub
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuMuliline_OnCheck()
    TxtEditor.MultiLine = MenuMuliline.Checked
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuFont_OnClick()
    TxtEditor.ChooseFont()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuForeColor_OnClick()
    TxtEditor.ChooseForeColor()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuBackColor_OnClick()
    TxtEditor.ChooseBackColor()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuFrameColor_OnClick()
    Me.ChooseBackColor()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuOptions_OnClick()
    Forms.ShowDialog("FrmOps", "")
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuView_OnOpen()
    MenuRtl.Checked = TxtEditor.RightToLeft
    MenuWrap.Checked = TxtEditor.WordWrap
@@ -387,13 +384,13 @@ Sub MenuView_OnOpen()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub FrmMain_OnClosing()
    Event.Handled = (AskToSave() = False)
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub FrmMain_OnPreviewKeyDown()
    If Keyboard.CtrlPressed = False Then
       Return
@@ -429,7 +426,7 @@ Sub FrmMain_OnPreviewKeyDown()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MenuFind_OnClick()
    Me.ShowChildForm("FrmFind", TxtEditor)
 EndSub

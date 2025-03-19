@@ -66,14 +66,14 @@ For I = 1 To 7
    For A = 0 To 90
       GraphicsWindow.PenColor = GraphicsWindow.GetRandomColor()
       Turtle.DirectMove(1)
-   EndFor
+   Next
    Turtle.PenUp()
    Turtle.MoveTo(380, 310)
-   Turtle.Angle = I * (2 + 360 / 7)
+   Turtle.Angle = 10 + I * 360 / 7
 Next
 
 
-Sub DrawArc
+Sub DrawArc()
    Turtle.PenDown()
    For i = 1 To 60
       GraphicsWindow.PenColor = GraphicsWindow.GetRandomColor()

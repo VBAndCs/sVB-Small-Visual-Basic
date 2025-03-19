@@ -11,6 +11,11 @@
     <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Menu x:Name="MainMenu" DockPanel.Dock="Top"/>
         <StackPanel Orientation="Vertical" DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
+            <ToggleButton  x:Name="RtlToggleButton" Padding="10,5"
+                          HorizontalAlignment="Center" Background="Gold"
+                          Checked="RtlToggleButton_Checked"
+                          Unchecked="RtlToggleButton_Unchecked">Right To Left</ToggleButton>
+            
             <Border Margin="20" Background="LightCyan" BorderThickness="1" BorderBrush="Black">
                 <TextBlock x:Name="TbInfo" Margin="10" Foreground="Brown" >
                     <Bold>Notes:</Bold><LineBreak/>
@@ -38,7 +43,7 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Margin="15,0,0,0">Name:</TextBlock>
+                <TextBlock Margin="15,5,0,5">Name:</TextBlock>
                 <TextBox x:Name="TxtName" Grid.Column="1" Margin="5,5,15,5"
                          PreviewKeyDown="TxtName_PreviewKeyDown"
                          LostFocus="TxtName_LostFocus"
@@ -46,7 +51,7 @@
                          TextChanged="TxtName_TextChanged"
                          PreviewMouseLeftButtonUp="Controls_GotFocus"/>
 
-                <TextBlock Grid.Column="2" Margin="5,0,0,0">Text:</TextBlock>
+                <TextBlock Grid.Column="2" Margin="5,5,0,5">Text:</TextBlock>
                 <TextBox x:Name="TxtText" Grid.Column="3" Margin="5,5,15,5"
                          PreviewKeyDown="TxtText_PreviewKeyDown"
                          LostFocus="TxtText_LostFocus"
@@ -73,7 +78,7 @@
                     </StackPanel>
                 </GroupBox>
 
-                <GroupBox x:Name="GrpCheck" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="15,5"  Header="Check State: " BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left">
+                <GroupBox x:Name="GrpCheck" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="5,5"  Header="Check State: " BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal"  >
                         <CheckBox x:Name="ChkCheckable" Margin="25, 0, 0, 0" VerticalAlignment="Center"
                            Checked="ChkCheckable_Checked" Unchecked="ChkCheckable_Checked"

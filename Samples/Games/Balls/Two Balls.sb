@@ -33,7 +33,7 @@ Timer.Tick = TickSub
 Timer.Pause()
 ButtonClickedSub()
 
-Sub ButtonClickedSub
+Sub ButtonClickedSub()
    For i = 1 To 2
       BallX[i] = Math.GetRandomNumber(GraphicsWindow.Width - BallW) - 1
       BallY[i] = Math.GetRandomNumber(GraphicsWindow.Width - BallW) - 1
@@ -47,7 +47,7 @@ Sub ButtonClickedSub
    Timer.Resume()
 EndSub
 
-Sub TickSub
+Sub TickSub()
    For i = 1 To 2
       BallX[i] = BallX[i] + BallXSpeed[i]
       BallY[i] = BallY[i] + BallYSpeed[i]
@@ -91,5 +91,3 @@ Sub TickSub
       EndIf
    EndFor
 EndSub
-
-' End of the program ...

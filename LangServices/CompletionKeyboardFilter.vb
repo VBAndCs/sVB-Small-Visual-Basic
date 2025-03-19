@@ -40,15 +40,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         args.Handled = True
 
                     Case Key.Return
-                        args.Handled = CommitConditionally(textView, completionSurface, If(Keyboard.Modifiers And ModifierKeys.Control > 0, "+nl", ""))
-                        Dim repWith = CType(completionSurface.CompletionListBox.SelectedItem, CompletionItemWrapper).ReplacementText
-                        If repWith.EndsWith("(") Then
-                            textView.Caret.MoveToPreviousCaretPosition()
-                        End If
+                        args.Handled = CommitConditionally(textView, completionSurface, If(Keyboard.Modifiers And ModifierKeys.Control > 0, "+nl", ""),, True)
 
                     Case Key.Space, Key.Tab
-                        If CommitConditionally(textView, completionSurface, " ") Then
-                            textView.Caret.MoveToPreviousCaretPosition()
+                        If CommitConditionally(textView, completionSurface, " ",, True) Then
                             args.Handled = True
                         End If
 
@@ -113,16 +108,19 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                     Dim st = TryCast(provider.GetStatementAt(line), Statements.AssignmentStatement)
                                     Dim column = pos - line.Start
 
-                                    If st IsNot Nothing AndAlso st.StartToken.Line = line.LineNumber AndAlso
-                                        st.StartToken.Column <= column AndAlso st.StartToken.EndColumn >= column Then
+                                    If st IsNot Nothing AndAlso
+                                            st.StartToken.Line = line.LineNumber AndAlso
+                                            st.StartToken.Column <= column AndAlso
+                                            st.StartToken.EndColumn >= column Then
                                         Dim compList = completionSurface.CompletionListBox
                                         Dim itemWrapper = CType(compList.SelectedItem, CompletionItemWrapper)
+
                                         Select Case itemWrapper.CompletionItem.ItemType
                                             Case Completion.CompletionItemType.Label,
-                                                    Completion.CompletionItemType.Keyword,
-                                                    Completion.CompletionItemType.ModuleName,
-                                                    Completion.CompletionItemType.TypeName,
-                                                    Completion.CompletionItemType.SubroutineName
+                                                     Completion.CompletionItemType.Keyword,
+                                                     Completion.CompletionItemType.ModuleName,
+                                                     Completion.CompletionItemType.TypeName,
+                                                     Completion.CompletionItemType.SubroutineName
                                                 ' don't auto-complete
                                                 completionSurface.IsCommitting = False
                                                 If completionSurface.Adornment IsNot Nothing Then
@@ -146,7 +144,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             CommitConditionally(textView, completionSurface)
 
                         Case "{"
-                            If Not CommitConditionally(textView, completionSurface, "[]") Then
+                            If Not CommitConditionally(textView, completionSurface, "{}") Then
                                 Dim EditOps = EditorOperationsProvider.GetEditorOperations(textView)
                                 EditOps.InsertText("{}", UndoHistoryRegistry.GetHistory(textView.TextBuffer))
                             End If
@@ -162,8 +160,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             args.Handled = True
 
                         Case "("
-                            If CommitConditionally(textView, completionSurface, ")") Then
-                                textView.Caret.MoveToPreviousCaretPosition()
+                            If CommitConditionally(textView, completionSurface, ")",, True) Then
                                 args.Handled = True
                             End If
 
@@ -180,7 +177,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         textView As IAvalonTextView,
                         completionSurface As CompletionSurface,
                         Optional extraText As String = "",
-                        Optional showAgain As Boolean = False
+                        Optional showAgain As Boolean = False,
+                        Optional moveBack As Boolean = False
                      ) As Boolean
 
             If Not completionSurface.IsFaded AndAlso completionSurface.CompletionListBox.SelectedItem IsNot Nothing Then
@@ -190,7 +188,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim item = itemWrapper.CompletionItem
                 Dim repWith = itemWrapper.ReplacementText
                 Dim provider = textView.Properties.GetProperty(Of CompletionProvider)()
-                Dim replaceSpan = provider.GetReplacementSpane()
+                Dim replaceSpan = provider.GetReplacementSpan()
 
                 Dim key = item.GetHistoryKey()
                 If key <> "" Then
@@ -226,7 +224,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         If nextToken.IsIllegal OrElse
                                 nextToken.ParseType = ParseType.Operator OrElse
                                 nextToken.ParseType = ParseType.Keyword Then
-                            If extraText <> ")" Then extraText &= ")"
+                            If extraText <> ")" Then extraText = extraText.Trim & ")"
                         ElseIf extraText = ")" Then
                             extraText = ""
                         End If
@@ -271,6 +269,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 If extraText = ", " Then
                     provider.ShowHelp(", ")
                 ElseIf repWith.EndsWith("(") Then
+                    If moveBack And extraText.EndsWith(")") Then textView.Caret.MoveToPreviousCaretPosition()
                     provider.ShowHelp(True)
                 ElseIf showAgain Then
                     provider.ShowCompletionAdornment(

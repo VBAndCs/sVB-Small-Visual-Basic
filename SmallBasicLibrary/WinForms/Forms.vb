@@ -282,7 +282,7 @@ Namespace WinForms
                             If menu IsNot Nothing Then
                                 elements.Remove(menu)
                                 elementNum -= 1
-                                Form.AddMenu(wnd, menu)
+                                Form.AddMenu(wnd, menu, True)
                                 For Each m In menu.Items
                                     AddMenuNames(form_Name, m)
                                 Next
@@ -312,7 +312,7 @@ Namespace WinForms
             Program.ActiveWindow = sender
         End Sub
 
-        Friend Shared forceClose As Boolean = False
+        Friend Shared ForceClose As Boolean = False
         Private Shared _ColoredComboBoxStyle As Style
         Public Const FormPrefix As String = "_SmallVisualBasic_"
 
@@ -334,14 +334,15 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     For Each item In MenuItem.ShortcutHandlers
+                        Dim m = item.Key
                         Dim sh = item.Value
+                        If Not m.IsEnabled Then Continue For
                         If sh Is Nothing Then Continue For
                         If e.Key <> sh.key Then Continue For
                         If sh.Ctrl AndAlso (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Control) = 0 Then Continue For
                         If sh.Shift AndAlso (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Shift) = 0 Then Continue For
                         If sh.Alt AndAlso (e.KeyboardDevice.Modifiers And Input.ModifierKeys.Alt) = 0 Then Continue For
 
-                        Dim m = item.Key
                         If m.IsCheckable Then
                             m.IsChecked = Not m.IsChecked
                             ' If there is no OnCkeck handler, call the OnClick handler
@@ -440,16 +441,17 @@ Namespace WinForms
         End Function
 
         Friend Shared Sub Form_Closed(sender As Object, e As EventArgs)
-            If forceClose Then Return
+            If ForceClose Then Return
 
+            Dim handler As SmallVisualBasicCallback = Nothing
             Dim win = CType(sender, Window)
             Dim winName = win.Name.ToLower()
-            Dim handler As SmallVisualBasicCallback = Nothing
+
             Try
                 [Event]._senderControl = New Primitive(winName)
                 Dim keys = Form.ClosedHandlers.Keys
                 For i = 0 To Form.ClosedHandlers.Count - 1
-                    Dim key = Keys(i)
+                    Dim key = keys(i)
                     If key.EndsWith(":" & winName) Then
                         handler = Form.ClosedHandlers(key)
                         If handler IsNot Nothing Then
@@ -464,7 +466,11 @@ Namespace WinForms
                 Helper.ReportError($"The event handler sub `{handler.Method.Name}` fired by the `OnClosed` event, caused this error: {ex.Message}", ex)
             End Try
 
-            App.BeginInvoke(Sub() RemoveFormAndControls(win.Name.ToLower()))
+            If Not App.IsDebugging AndAlso _forms.Count = 1 Then
+                Process.GetCurrentProcess().Kill()
+            End If
+
+            App.BeginInvoke(Sub() RemoveFormAndControls(winName))
         End Sub
 
         Friend Shared Sub RemoveFormAndControls(formName As String)
@@ -501,6 +507,7 @@ Namespace WinForms
                     Forms.RemoveEventHandlers(controlKey)
                 End If
             Next
+
             If _forms.Count = 0 Then Program.End()
         End Sub
 

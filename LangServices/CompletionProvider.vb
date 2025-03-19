@@ -164,7 +164,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
 
                 Dim repWith = itemWrapper.ReplacementText
-                Dim replaceSpan = GetReplacementSpane()
+                Dim replaceSpan = GetReplacementSpan()
 
                 If replaceSpan.Length = 0 And replaceSpan.Start > 0 Then
                     Select Case textView.TextSnapshot(replaceSpan.Start - 1)
@@ -205,18 +205,28 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End If
         End Sub
 
-        Friend Function GetReplacementSpane() As SnapshotSpan
+        Friend Function GetReplacementSpan() As SnapshotSpan
             If adornment Is Nothing Then Return New SnapshotSpan(textView.TextSnapshot, textView.Caret.Position.TextInsertionIndex, 0)
 
             Dim replaceSpan = adornment.ReplaceSpan
             Dim snapshot = textView.TextSnapshot
             Dim span = replaceSpan.GetSpan(snapshot)
-            Dim start As Integer = span.Start
+            Dim start = span.Start
             Dim pos = textView.Caret.Position.TextInsertionIndex
-            If pos > span.End Then Return New SnapshotSpan(snapshot, pos - span.Length, span.Length)
+            Dim text = ""
 
-            Dim text = replaceSpan.GetText(replaceSpan.TextBuffer.CurrentSnapshot)
+            If pos > span.End Then
+                start = pos - span.Length
+                Dim l = span.Length
+                text = snapshot.GetText(start, l)
+                If Not Char.IsLetterOrDigit(text(0)) Then
+                    start += 1
+                    l -= 1
+                End If
+                Return New SnapshotSpan(snapshot, start, l)
+            End If
 
+            text = replaceSpan.GetText(snapshot)
             Dim newStart = start
             Dim tokens = LineScanner.GetTokens(text, 0)
             Dim n = tokens.Count - 1
@@ -1382,11 +1392,13 @@ LineShow:
 
         Private Function InferEspType(token As Token, line As ITextSnapshotLine) As String
             Dim especialItem = ""
-            Dim st = TryCast(GetStatementAt(line), Statements.AssignmentStatement)
+            Dim statement = GetStatementAt(line)
             Dim symbolTable = compHelper.SymbolTable
+            token.Parent = statement
             Dim varType = symbolTable.GetInferedType(token)
 
             If varType = VariableType.Any Then
+                Dim st = TryCast(statement, Statements.AssignmentStatement)
                 If st IsNot Nothing Then
                     Dim prop = TryCast(st.LeftValue, Expressions.PropertyExpression)
                     If prop Is Nothing OrElse Not prop.IsEvent Then

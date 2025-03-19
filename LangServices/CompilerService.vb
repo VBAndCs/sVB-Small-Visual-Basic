@@ -179,6 +179,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 indentationLevel -= 1
                                 AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
                                 indentationLevel += 1
+                                If tokens.Count > 1 AndAlso tokens(1).Type = TokenType.If Then
+                                    textEdit.Replace(line.Start + tokens(0).Column, tokens(1).EndColumn - tokens(0).Column, "ElseIf")
+                                    AddThen(snapshot, start, textEdit, lineNum, line, tokens)
+                                End If
 
                             Case TokenType.ElseIf
                                 indentationLevel -= 1
@@ -187,8 +191,28 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 AddThen(snapshot, start, textEdit, lineNum, line, tokens)
 
                             Case Else
-                                If tokens.Count > 1 AndAlso tokens(0).Type <> TokenType.Question AndAlso tokens(1).Type = TokenType.Colon Then
-                                    AdjustIndentation(textEdit, line, Integer.MaxValue, firstCharPos)
+                                If tokens.Count > 1 Then
+                                    If tokens(0).LCaseText = "end" Then
+                                        Select Case tokens(1).Type
+                                            Case TokenType.If, TokenType.For, TokenType.While
+                                                indentationLevel -= 1
+                                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                                                textEdit.Delete(line.Start + tokens(0).EndColumn, tokens(1).Column - tokens(0).EndColumn)
+
+                                            Case TokenType.Sub, TokenType.Function
+                                                indentationLevel = 0
+                                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                                                textEdit.Delete(line.Start + tokens(0).EndColumn, tokens(1).Column - tokens(0).EndColumn)
+
+                                            Case Else
+                                                AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                                        End Select
+
+                                    ElseIf tokens(0).Type <> TokenType.Question AndAlso tokens(1).Type = TokenType.Colon Then
+                                        AdjustIndentation(textEdit, line, Integer.MaxValue, firstCharPos)
+                                    Else
+                                        AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
+                                    End If
                                 Else
                                     AdjustIndentation(textEdit, line, indentationLevel, firstCharPos)
                                 End If
@@ -500,7 +524,6 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             Dim needsClosing = TokenCount(tokens, TokenType.LeftParens) > TokenCount(tokens, TokenType.RightParens)
                             ' Use actual last token
                             Dim lastToken = tokens(tokens.Count - 1)
-
                             If tokens.Count = 1 Then
                                 length = token.EndColumn - token.Column
                             ElseIf tokens(1).Type = TokenType.LeftParens AndAlso (
@@ -519,18 +542,22 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             )
                             Dim args = Parser.ParseCommaSeparatedList(tokens, If(startsWithLeftParens, 2, 1))
                             If args.Count = 0 Then
-                                textEdit.Insert(lineStart + lastToken.EndColumn, """"", ""Message"")")
-                            ElseIf args.Count > 1 Then
-                                If Not startsWithLeftParens OrElse lastToken.Type <> TokenType.RightParens OrElse
-                                        needsClosing Then
-                                    textEdit.Insert(lineStart + lastToken.EndColumn, ")")
+                                If needsClosing Then
+                                    textEdit.Insert(lineStart + lastToken.EndColumn, """"", ""Message"")")
+                                Else
+                                    textEdit.Insert(lineStart + lastToken.Column, """"", ""Message""")
                                 End If
-                            ElseIf startsWithLeftParens AndAlso
+                            ElseIf args.Count > 1 Then
+                                    If Not startsWithLeftParens OrElse lastToken.Type <> TokenType.RightParens OrElse
+                                        needsClosing Then
+                                        textEdit.Insert(lineStart + lastToken.EndColumn, ")")
+                                    End If
+                                ElseIf startsWithLeftParens AndAlso
                                         lastToken.Type = TokenType.RightParens AndAlso
                                         TokenCount(tokens, TokenType.LeftParens) = TokenCount(tokens, TokenType.RightParens) Then
-                                textEdit.Insert(lineStart + lastToken.Column, ", ""Message""")
-                            Else
-                                textEdit.Insert(lineStart + lastToken.EndColumn, ", ""Message"")")
+                                    textEdit.Insert(lineStart + lastToken.Column, ", ""Message""")
+                                Else
+                                    textEdit.Insert(lineStart + lastToken.EndColumn, ", ""Message"")")
                             End If
 
                         ElseIf token.ParseType = ParseType.Keyword OrElse
@@ -676,12 +703,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             If TypeOf id.Parent Is SubroutineStatement Then
                                 FixParans(id, line, textEdit)
                             ElseIf FixToken(id, line.Start, symbolTable.Subroutines, textEdit) Then
-                                Dim LeftSide = TryCast(id.Parent, AssignmentStatement)?.LeftValue
-                                If LeftSide IsNot Nothing Then
-                                    If TryCast(LeftSide, Expressions.PropertyExpression)?.IsEvent Then
-                                        FixParans(id, line, textEdit, True)
-                                    End If
-                                End If
+                                If IsEventHandler(id) Then FixParans(id, line, textEdit, True)
                             Else
                                 FixParans(id, line, textEdit, True)
                             End If
@@ -759,6 +781,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             End Using
         End Sub
 
+        Private Function IsEventHandler(id As Token) As Boolean
+            Dim assignment = TryCast(id.Parent, AssignmentStatement)
+            If assignment Is Nothing Then Return False
+            Dim prop = TryCast(assignment.LeftValue, Expressions.PropertyExpression)
+            If prop Is Nothing Then Return False
+            Return prop.IsEvent
+        End Function
+
         Private Sub FixParans(
                            id As Token,
                            line As ITextSnapshotLine,
@@ -826,10 +856,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Sub
 
         Public Function GetSymbolTable(buffer As ITextBuffer) As SymbolTable
-            DummyCompiler.Compile(New TextBufferReader(buffer.CurrentSnapshot), True)
-            Dim symbolTable = _compiler.Parser.SymbolTable
+            Dim compiler = DummyCompiler ' important to force the property to create the compilor
+            Dim symbolTable = compiler.Parser.SymbolTable
             symbolTable.ModuleNames = buffer.Properties.GetProperty(Of Dictionary(Of String, String))("ControlsInfo")
             symbolTable.ControlNames = GetControlNames(buffer)
+            compiler.Compile(New TextBufferReader(buffer.CurrentSnapshot), True)
             Return symbolTable
         End Function
 

@@ -44,6 +44,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
         End Property
 
         Dim _document As TextDocument
+        Friend Const FormSuffix As String = " (Form)"
 
         Public Property Document As TextDocument
             Get
@@ -99,9 +100,9 @@ Namespace Microsoft.SmallVisualBasic.Shell
             BeginAnimation([property], doubleAnimation2)
         End Sub
 
-        Friend Sub SelectEventName(controlName As String, eventName As String, freezeCmbEvents As Boolean)
+        Friend Sub SelectEventName(form As String, controlName As String, eventName As String, freezeCmbEvents As Boolean)
             _FreezeCmbEvents = freezeCmbEvents
-            _CmbControlNames.SelectedItem = controlName
+            _CmbControlNames.SelectedItem = If(form = controlName, form & FormSuffix, controlName)
             _CmbEventNames.SelectedItem = eventName
             MdiViews.SelectHandlers(Me, controlName, eventName)
             _FreezeCmbEvents = False

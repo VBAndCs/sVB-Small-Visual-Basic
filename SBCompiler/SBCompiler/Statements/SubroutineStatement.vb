@@ -431,14 +431,14 @@ Namespace Microsoft.SmallVisualBasic.Statements
             Return Nothing
         End Function
 
-        Sub SetParams(runner As ProgramRunner, args As List(Of Expressions.Expression))
+        Sub SetParams(parentRunner As ProgramRunner, targetRunner As ProgramRunner, args As List(Of Expressions.Expression))
             If Params IsNot Nothing AndAlso Params.Count > 0 Then
                 Dim subName = Name.LCaseText
                 Dim keyPrefix = subName & "."
 
                 For i = 0 To Params.Count - 1
                     Dim argKey = $"{subName}.{Params(i).LCaseText}"
-                    runner.Fields(argKey) = args(i).Evaluate(runner)
+                    targetRunner.Fields(argKey) = args(i).Evaluate(parentRunner)
                 Next
             End If
         End Sub

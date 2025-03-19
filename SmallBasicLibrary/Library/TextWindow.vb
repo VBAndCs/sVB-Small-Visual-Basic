@@ -1,5 +1,6 @@
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Library.Internal
+Imports Microsoft.SmallVisualBasic.WinForms
 
 Namespace Library
     ''' <summary>
@@ -18,17 +19,16 @@ Namespace Library
         Public Shared Property ForegroundColor As Primitive
             Get
                 VerifyAccess()
-                Return New Primitive(Console.ForegroundColor.ToString())
+                SmallBasicApplication.Invoke(
+                      Sub() ForegroundColor = New Primitive(WinForms.Color.GetHexaName(consoleWindow.ConsoleBox.Foreground))
+                )
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
-                Try
-                    Value = WinForms.Color.GetName(Value)
-                    Console.ForegroundColor = CType([Enum].Parse(GetType(ConsoleColor), Value, ignoreCase:=True), ConsoleColor)
-                Catch
-
-                End Try
+                SmallBasicApplication.Invoke(
+                      Sub() consoleWindow.ConsoleBox.Foreground = WinForms.Color.GetBrush(Value)
+                )
             End Set
         End Property
 
@@ -39,49 +39,69 @@ Namespace Library
         Public Shared Property BackgroundColor As Primitive
             Get
                 VerifyAccess()
-                Return New Primitive(Console.BackgroundColor.ToString())
+                SmallBasicApplication.Invoke(
+                      Sub() BackgroundColor = New Primitive(WinForms.Color.GetHexaName(consoleWindow.ConsoleBox.Background))
+                )
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
-                Try
-                    Value = WinForms.Color.GetName(Value)
-                    Console.BackgroundColor = CType([Enum].Parse(GetType(ConsoleColor), Value, ignoreCase:=True), ConsoleColor)
-                Catch
+                SmallBasicApplication.Invoke(
+                      Sub() consoleWindow.ConsoleBox.Background = WinForms.Color.GetBrush(Value)
+                )
+            End Set
+        End Property
 
-                End Try
+        Private Shared _rightToLeft As New Primitive(False)
+
+        ''' <summary>
+        ''' Gets or sets whether or not the console direction is from right to left.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property RightToLeft As Primitive
+            Get
+                Return _rightToLeft
+            End Get
+
+            Set(value As Primitive)
+                _rightToLeft = value
+                If _windowVisible Then
+                    SmallBasicApplication.Invoke(
+                      Sub() UpdateFlowDirection()
+                )
+                End If
             End Set
         End Property
 
         ''' <summary>
         ''' Gets or sets the cursor's column position on the text window.
         ''' </summary>
+        <HideFromIntellisense>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property CursorLeft As Primitive
             Get
                 VerifyAccess()
-                Return New Primitive(Console.CursorLeft)
+                Return 0
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
-                Console.CursorLeft = Value
             End Set
         End Property
 
         ''' <summary>
         ''' Gets or sets the cursor's row position on the text window.
         ''' </summary>
+        <HideFromIntellisense>
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property CursorTop As Primitive
             Get
                 VerifyAccess()
-                Return New Primitive(Console.CursorTop)
+                Return 0
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
-                Console.CursorTop = Value
             End Set
         End Property
 
@@ -92,26 +112,18 @@ Namespace Library
         Public Shared Property Left As Primitive
             Get
                 VerifyAccess()
-                Dim consoleWindow As IntPtr = NativeHelper.GetConsoleWindow()
-                Dim lpRect As RECT = Nothing
-                NativeHelper.GetWindowRect(consoleWindow, lpRect)
-                Return lpRect.Left
+                SmallBasicApplication.Invoke(
+                      Sub() Left = New Primitive(consoleWindow.Left)
+                )
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
-                Dim consoleWindow As IntPtr = NativeHelper.GetConsoleWindow()
-                Dim lpRect As RECT = Nothing
-                NativeHelper.GetWindowRect(consoleWindow, lpRect)
-                NativeHelper.SetWindowPos(consoleWindow, IntPtr.Zero, Value, lpRect.Top, 0, 0, 1UL)
+                SmallBasicApplication.Invoke(
+                    Sub() consoleWindow.Left = Value
+                )
             End Set
         End Property
-
-        <HideFromIntellisense>
-        Public Shared Sub ClearIfLoaded()
-            Dim consoleWindow = NativeHelper.GetConsoleWindow()
-            If consoleWindow <> IntPtr.Zero Then Console.Clear()
-        End Sub
 
         ''' <summary>
         ''' Gets or sets the Title for the text window.
@@ -120,12 +132,16 @@ Namespace Library
         Public Shared Property Title As Primitive
             Get
                 VerifyAccess()
-                Return New Primitive(Console.Title)
+                SmallBasicApplication.Invoke(
+                      Sub() Title = New Primitive(consoleWindow.Title)
+                )
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
-                Console.Title = Value
+                SmallBasicApplication.Invoke(
+                    Sub() consoleWindow.Title = Value
+                )
             End Set
         End Property
 
@@ -136,29 +152,81 @@ Namespace Library
         Public Shared Property Top As Primitive
             Get
                 VerifyAccess()
-                Dim consoleWindow As IntPtr = NativeHelper.GetConsoleWindow()
-                Dim lpRect As RECT = Nothing
-                NativeHelper.GetWindowRect(consoleWindow, lpRect)
-                Return lpRect.Top
+                SmallBasicApplication.Invoke(
+                      Sub() Top = New Primitive(consoleWindow.Top)
+                )
             End Get
 
             Set(Value As Primitive)
                 VerifyAccess()
-                Dim consoleWindow As IntPtr = NativeHelper.GetConsoleWindow()
-                Dim lpRect As RECT = Nothing
-                NativeHelper.GetWindowRect(consoleWindow, lpRect)
-                NativeHelper.SetWindowPos(consoleWindow, IntPtr.Zero, lpRect.Left, Value, 0, 0, 1UL)
+                SmallBasicApplication.Invoke(
+                    Sub() consoleWindow.Top = Value
+                )
             End Set
         End Property
 
+        ''' <summary>
+        ''' Gets or sets the font name that will be used to write to the TextWindow.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Property FontName As New Primitive("Consolas")
+
+        ''' <summary>
+        ''' Gets or sets the back color of the text that will be written to the TextWindow.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Color)>
+        Public Shared Property BackColor As Primitive = WinForms.Colors.None
+
+        ''' <summary>
+        ''' Gets or sets the font color of the text that will be written to the TextWindow.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Color)>
+        Public Shared Property ForeColor As Primitive = WinForms.Colors.None
+
+        Friend Shared _FontSize As New Primitive(14 * 4 / 3)
+
+        ''' <summary>
+        ''' Gets or sets the font size that will be used to write to the TextWindow.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Property FontSize As Primitive
+            Get
+                Return _FontSize * 0.75
+            End Get
+            Set
+                _FontSize = System.Math.Max(1, Value.AsDecimal) / 0.75
+            End Set
+        End Property
+
+        ''' <summary>
+        ''' Gets or sets whether or not the text will be written in italic font.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property FontItalic As New Primitive(False)
+
+        ''' <summary>
+        ''' Gets or sets whether or not the text will be underlined.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property FontUnderlined As New Primitive(False)
+
+        ''' <summary>
+        ''' Gets or sets whether or not the text will be written in bold font.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property FontBold As New Primitive(False)
+
         <HideFromIntellisense>
         Public Shared Sub Close()
-            Dim consoleWindow = NativeHelper.GetConsoleWindow()
-            If consoleWindow <> IntPtr.Zero Then
-                NativeHelper.ShowWindow(consoleWindow, 0)
-                NativeHelper.FreeConsole()
-            End If
+            SmallBasicApplication.Invoke(
+                Sub()
+                    If consoleWindow IsNot Nothing AndAlso Not consoleWindow.isWindowClosed Then
+                        consoleWindow.Close()
+                    End If
+                End Sub)
         End Sub
+
+        Friend Shared consoleWindow As WinForms.ConsoleWindow
 
         ''' <summary>
         ''' Shows the Text window to enable interactions with it.
@@ -167,32 +235,44 @@ Namespace Library
             If Not _windowVisible Then
                 SmallBasicApplication.Invoke(
                        Sub()
-                           Dim consoleWindow = NativeHelper.GetConsoleWindow()
-                           If consoleWindow = IntPtr.Zero Then
-                               NativeHelper.AllocConsole()
-                               consoleWindow = NativeHelper.GetConsoleWindow()
-                               'If SmallBasicApplication.IsDebugging Then
-                               Dim systemMenu = NativeHelper.GetSystemMenu(consoleWindow, False)
-                               NativeHelper.DeleteMenu(systemMenu, NativeHelper.SC_CLOSE, NativeHelper.MF_BYCOMMAND)
-                               'End If
+                           If consoleWindow Is Nothing OrElse consoleWindow.isWindowClosed Then
+                               consoleWindow = New WinForms.ConsoleWindow
                            End If
-
-                           NativeHelper.ShowWindow(consoleWindow, 5)
+                           consoleWindow.Show()
                            _windowVisible = True
+
+                           UpdateFlowDirection()
                        End Sub)
             End If
         End Sub
 
+        Private Shared Sub UpdateFlowDirection()
+            Dim dir = If(CBool(_rightToLeft),
+                                  System.Windows.FlowDirection.RightToLeft,
+                                  System.Windows.FlowDirection.LeftToRight)
+
+            Dim align = If(CBool(_rightToLeft),
+                                  System.Windows.HorizontalAlignment.Right,
+                                  System.Windows.HorizontalAlignment.Left)
+
+            consoleWindow.ConsoleBox.FlowDirection = dir
+            consoleWindow.InputTextBox.HorizontalAlignment = align
+            consoleWindow.InputTextBox.FlowDirection = dir
+            consoleWindow.InputDatePicker.HorizontalAlignment = align
+            consoleWindow.InputDatePicker.FlowDirection = dir
+        End Sub
 
         ''' <summary>
-        ''' Hides the text window.  Content is perserved when the window is shown again.
+        ''' Hides the text window. Content is perserved when the window is shown again.
         ''' </summary>
         Public Shared Sub Hide()
             If _windowVisible Then
-                Dim consoleWindow As IntPtr = NativeHelper.GetConsoleWindow()
-                If consoleWindow <> IntPtr.Zero Then
-                    SmallBasicApplication.BeginInvoke(Sub() NativeHelper.ShowWindow(consoleWindow, 0))
-                End If
+                SmallBasicApplication.Invoke(
+                        Sub()
+                            If consoleWindow IsNot Nothing AndAlso Not consoleWindow.isWindowClosed Then
+                                consoleWindow.Hide()
+                            End If
+                        End Sub)
                 _windowVisible = False
             End If
         End Sub
@@ -202,19 +282,31 @@ Namespace Library
         ''' </summary>
         Public Shared Sub Clear()
             VerifyAccess()
-            Console.Clear()
+            DoClear()
         End Sub
+
+        ' It is a boolean function just to keep it out of the sVB lib
+        ' but its return values has no use
+        Public Shared Function DoClear() As Boolean
+            SmallBasicApplication.Invoke(
+                    Sub()
+                        If consoleWindow IsNot Nothing AndAlso Not consoleWindow.isWindowClosed Then
+                            consoleWindow.Clear()
+                        End If
+                    End Sub)
+            Return False
+        End Function
 
         ''' <summary>
         ''' Waits for user input before returning.
         ''' </summary>
         Public Shared Sub Pause()
             VerifyAccess()
-            Console.WriteLine("Press any key to continue...")
-            Try
-                Console.ReadKey(intercept:=True)
-            Catch
-            End Try
+            SmallBasicApplication.Invoke(
+                Sub()
+                    consoleWindow.WriteLine("Press any key to continue...")
+                    consoleWindow.WaitForAnyKey()
+                End Sub)
         End Sub
 
         ''' <summary>
@@ -228,30 +320,18 @@ Namespace Library
         ''' Waits for user to press any key to close the window, otherwise it closes it directly.
         ''' </summary>
         Public Shared Sub PauseThenClose()
-            Try
-                If _windowVisible Then
-                    If addLine Then
-                        Console.WriteLine(vbCrLf & "Press any key to close the window...")
-                    Else
-                        Console.WriteLine("Press any key to close the window...")
-                    End If
-                    Console.ReadKey(intercept:=True)
-                End If
-
-                If WinForms.Forms._forms.Count = 0 AndAlso Not GraphicsWindow._windowVisible Then
-                    Program.End()
-                Else
-                    Hide()
-                End If
-
-            Catch ex As Exception
-                'If SmallBasicApplication.IsDebugging Then
-                '    Console.WriteLine("An error occured.")
-                '    Console.WriteLine("If you are debugging this sVB projet in VS.NET in its debugging mode, the console window will not work correctly.")
-                '    Console.WriteLine("Stop the VS debugger the Press Ctrl+F5 to run sVB im VS without debugging, then debug your project in sVB.")
-                '    Console.WriteLine(ex.Message)
-                'End If
-            End Try
+            If _windowVisible Then
+                SmallBasicApplication.Invoke(
+                    Sub()
+                        consoleWindow.WriteLine(If(addLine, vbCrLf, "") & "Press any key to close the window...")
+                        consoleWindow.WaitForAnyKey()
+                        If WinForms.Forms._forms.Count = 0 AndAlso Not GraphicsWindow._windowVisible Then
+                            Program.End()
+                        Else
+                            Close()
+                        End If
+                    End Sub)
+            End If
         End Sub
 
         ''' <summary>
@@ -259,10 +339,9 @@ Namespace Library
         ''' </summary>
         Public Shared Sub PauseWithoutMessage()
             VerifyAccess()
-            Try
-                Console.ReadKey(intercept:=True)
-            Catch
-            End Try
+            SmallBasicApplication.Invoke(
+                  Sub() consoleWindow.WaitForAnyKey()
+            )
         End Sub
 
         ''' <summary>
@@ -273,8 +352,9 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function Read() As Primitive
             VerifyAccess()
-            Dim x = Console.ReadLine()
-            Return New Primitive(x)
+            SmallBasicApplication.Invoke(
+                   Sub() Read = consoleWindow.ReadLine()
+            )
         End Function
 
         ''' <summary>
@@ -287,7 +367,9 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Function ReadKey() As Primitive
             VerifyAccess()
-            Return New Primitive(Console.ReadKey(intercept:=True).KeyChar)
+            SmallBasicApplication.Invoke(
+                   Sub() ReadKey = consoleWindow.ReadKey()
+            )
         End Function
 
         ''' <summary>
@@ -298,46 +380,24 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Function ReadNumber() As Primitive
             VerifyAccess()
-            Dim sbNumber As New StringBuilder
-            Dim exists As Boolean = False
-            Dim count As Integer = 0
-
-            Do
-                Dim keyInfo = Console.ReadKey(intercept:=True)
-                Dim c As Char = keyInfo.KeyChar
-                Dim isValid As Boolean = False
-                If (c = "-"c AndAlso count = 0) OrElse
-                        (c >= "0"c AndAlso c <= "9"c) Then
-                    isValid = True
-                ElseIf c = "."c AndAlso Not exists Then
-                    exists = True
-                    isValid = True
-                End If
-
-                If isValid Then
-                    Console.Write(c)
-                    sbNumber.Append(c)
-                    count += 1
-                ElseIf count > 0 AndAlso keyInfo.Key = ConsoleKey.Backspace Then
-                    Console.CursorLeft -= 1
-                    Console.Write(" ")
-                    Console.CursorLeft -= 1
-                    count -= 1
-                    c = sbNumber(count)
-                    If c = "."c Then exists = False
-                    sbNumber.Remove(count, 1)
-                ElseIf keyInfo.Key = ConsoleKey.Enter Then
-                    Exit Do
-                End If
-            Loop
-
-            Console.WriteLine()
-            If sbNumber.Length = 0 Then
-                Return New Primitive(0)
-            Else
-                Return New Primitive(sbNumber.ToString())
-            End If
+            SmallBasicApplication.Invoke(
+                   Sub() ReadNumber = consoleWindow.ReadNumber()
+            )
         End Function
+
+        ''' <summary>
+        ''' Reads a number from the text window.  This function will not return until the user hits ENTER.
+        ''' Use #? as a shortcut name for this method.
+        ''' </summary>
+        ''' <returns>The number that was read from the text window</returns>
+        <WinForms.ReturnValueType(VariableType.Date)>
+        Public Shared Function ReadDate() As Primitive
+            VerifyAccess()
+            SmallBasicApplication.Invoke(
+                   Sub() ReadDate = consoleWindow.ReadDate()
+            )
+        End Function
+
 
         ''' <summary>
         ''' Writes text or number to the text window.  A new line character will be appended to the output, so that the next time something is written to the text window, it will go in a new line.
@@ -346,7 +406,9 @@ Namespace Library
         ''' <param name="data">The text or number to write to the text window.</param>
         Public Shared Sub WriteLine(data As Primitive)
             VerifyAccess()
-            Console.WriteLine(data.AsString())
+            SmallBasicApplication.Invoke(
+                   Sub() consoleWindow.WriteLine(data.AsString())
+            )
             addLine = False
         End Sub
 
@@ -357,19 +419,22 @@ Namespace Library
         ''' <param name="lines">An array of text lines</param>
         Public Shared Sub WriteLines(lines As Primitive)
             VerifyAccess()
-            If lines.IsArray Then
-                Dim map = lines.ArrayMap
-                If map Is Nothing Then
-                    Console.WriteLine()
-                Else
-                    For Each line In map.Values
-                        Console.WriteLine(CStr(line))
-                    Next
-                End If
-            Else
-                Console.WriteLine(CStr(lines))
-            End If
-            addLine = False
+            SmallBasicApplication.Invoke(
+                   Sub()
+                       If lines.IsArray Then
+                           Dim map = lines.ArrayMap
+                           If map Is Nothing Then
+                               consoleWindow.WriteLine("")
+                           Else
+                               For Each line In map.Values
+                                   consoleWindow.WriteLine(CStr(line))
+                               Next
+                           End If
+                       Else
+                           consoleWindow.WriteLine(CStr(lines))
+                       End If
+                       addLine = False
+                   End Sub)
         End Sub
 
         ''' <summary>
@@ -379,8 +444,9 @@ Namespace Library
         ''' <param name="data">The text or number to write to the text window</param>
         Public Shared Sub Write(data As Primitive)
             VerifyAccess()
-            Dim x As String = data
-            Console.Write(x)
+            SmallBasicApplication.Invoke(
+                   Sub() consoleWindow.Write(data.AsString())
+            )
             addLine = True
         End Sub
 
@@ -399,5 +465,46 @@ Namespace Library
         Private Shared Sub VerifyAccess()
             If Not _windowVisible Then Show()
         End Sub
+
+        ''' <summary>
+        ''' Writes the given text to the Text Window with the given formats.
+        ''' </summary>
+        ''' <param name="text">The text to write to the TW</param>
+        ''' <param name="fontName">The name of the font to apply on the text. Send an empty string to use the TW.FontName</param>
+        ''' <param name="fontSize">The font size of the text. Send 0 to use the TW.FontSize</param>
+        ''' <param name="isBold">True to use a bold font, False otherwise. Send an empty string to use the TW.FontBold.</param>
+        ''' <param name="isItalic">True to use an italic font, False otherwise. Send an empty string to use the TW.FontItalic.</param>
+        ''' <param name="isUnderlined">True to draw aline under the text, False otherwise. Send an empty string to use TW.FontUnderlined.</param>
+        ''' <param name="foreColor">The color of the text. Send Colors.None to use theTW.ForeColor.</param>
+        ''' <param name="backColor">The background color of the text. Send Colors.None to use the TW.BackColor.</param>
+        Public Shared Sub AppendFormatted(
+                           text As Primitive,
+                           fontName As Primitive,
+                           fontSize As Primitive,
+                           isBold As Primitive,
+                           isItalic As Primitive,
+                           isUnderlined As Primitive,
+                           foreColor As Primitive,
+                           backColor As Primitive)
+
+            VerifyAccess()
+            SmallBasicApplication.Invoke(
+                  Sub() consoleWindow.AppendFormatted(text, fontName, fontSize, isBold, isItalic, isUnderlined, foreColor, backColor)
+            )
+            addLine = True
+        End Sub
+
+
+        ''' <summary>
+        ''' Returns True if the Text Window is closed, or False otherwise.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared ReadOnly Property IsClosed As Primitive
+            Get
+                SmallBasicApplication.Invoke(
+                      Sub() IsClosed = New Primitive(consoleWindow.isWindowClosed)
+                )
+            End Get
+        End Property
     End Class
 End Namespace

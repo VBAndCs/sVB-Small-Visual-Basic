@@ -46,12 +46,9 @@ Sub MoveBall()
       SpeedX = -SpeedX
       Sound.Play("boing.wav")
    EndIf
-   
-   
 EndSub
 
-'------------------------------------------------
-Sub Form1_OnKeyDown()
+Sub Form_OnKeyDown()
    If GameOver Then
       If Keyboard.LastKey = Keys.Space Then
          Ball.Left = 20
@@ -76,13 +73,10 @@ Sub Form1_OnKeyDown()
    
 EndSub
 
-'------------------------------------------------
-Sub Form1_OnKeyUp()
+Sub Form_OnKeyUp()
    RacketTimer.Pause()
 EndSub
 
-
-'------------------------------------------------
 Sub MoveRacket()
    Racket.Left = Racket.Left + RacketDelta
 EndSub

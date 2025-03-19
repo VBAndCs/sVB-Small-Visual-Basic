@@ -2,7 +2,6 @@ SavedFile = ""
 IsModified = False
 SetProperties(Global.Ops)
 
-'------------------------------------------------
 Sub MnuNew_OnClick()
    If AskToSave() = False Then
       Return
@@ -14,7 +13,7 @@ Sub MnuNew_OnClick()
    SetProperties(Global.Ops)
 EndSub
 
-'-------------------------------------------
+' -------------------------------------------
 Sub SetProperties(ops)
    TxtEditor.FontName = ops!FontName
    TxtEditor.FontSize = ops!FontSize
@@ -29,7 +28,7 @@ Sub SetProperties(ops)
    TxtEditor.WordWrap = ops!WordWrap
 EndSub
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuOpen_OnClick()
    If AskToSave() = False Then
       Return
@@ -75,22 +74,20 @@ Sub MnuOpen_OnClick()
 EndSub
 
 
-'------------------------------------------------
 Sub TxtEditor_OnTextChanged()
    IsModified = True
+   MnuFile_OnOpen()
 EndSub
 
-'------------------------------------------------
 Sub MnuSave_OnClick()
    Save()
 EndSub
 
-'------------------------------------------------
 Sub MnuSaveAs_OnClick()
    SaveAs()
 EndSub
 
-'------------------------------------------------
+' ------------------------------------------------
 Function AskToSave()
    If IsModified Then
       result = Dialogs.MsgBox(
@@ -112,7 +109,7 @@ Function AskToSave()
 EndFunction
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function Save()
    If SavedFile = "" Then
       Return SaveAs()
@@ -151,7 +148,7 @@ EndFunction
 
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Function SaveAs()
    fileName = File.SaveFileDialog(
       SavedFile,
@@ -169,13 +166,13 @@ Function SaveAs()
    EndIf
 EndFunction
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuClose_OnClick()
    Me.Close()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuFile_OnOpen()
    state = (SavedFile <> "")
    MnuNew.Enabled = state Or IsModified
@@ -184,67 +181,67 @@ Sub MnuFile_OnOpen()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuUndo_OnClick()
    TxtEditor.Undo()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuRedo_OnClick()
    TxtEditor.Redo()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuCopy_OnClick()
    TxtEditor.Copy()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuCut_OnClick()
    TxtEditor.Cut()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuPaste_OnClick()
    TxtEditor.Paste()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuDelete_OnClick()
    TxtEditor.SelectedText = ""
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuSelAll_OnClick()
    TxtEditor.SelectAll()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuBold_OnCheck()
    TxtEditor.FontBold = MnuBold.Checked
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuItalic_OnCheck()
    TxtEditor.FontItalic = MnuItalic.Checked
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuUnderline_OnCheck()
    TxtEditor.Underlined = MnuUnderline.Checked
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuEdit_OnOpen()
    MnuUndo.Enabled = TxtEditor.CanUndo
    MnuRedo.Enabled = TxtEditor.CanRedo
@@ -257,7 +254,7 @@ Sub MnuEdit_OnOpen()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuWrap_OnCheck()
    TxtEditor.WordWrap = MnuWrap.Checked
 EndSub
@@ -266,43 +263,43 @@ Sub MnuRtl_OnCheck()
    TxtEditor.RightToLeft = MnuRtl.Checked
 EndSub
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuMuliline_OnCheck()
    TxtEditor.MultiLine = MnuMuliline.Checked
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuFont_OnClick()
    TxtEditor.ChooseFont()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuForeColor_OnClick()
    TxtEditor.ChooseForeColor()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuBackColor_OnClick()
    TxtEditor.ChooseBackColor()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuFrameColor_OnClick()
    Me.ChooseBackColor()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuOptions_OnClick()
    Forms.ShowDialog("FrmOps", "")
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuView_OnOpen()
    MnuRtl.Checked = TxtEditor.RightToLeft
    MnuWrap.Checked = TxtEditor.WordWrap
@@ -313,13 +310,13 @@ Sub MnuView_OnOpen()
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub FrmMain_OnClosing()
    Event.Handled = (AskToSave() = False)
 EndSub
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub MnuFind_OnClick()
    Me.ShowChildForm("FrmFind", TxtEditor)
 EndSub

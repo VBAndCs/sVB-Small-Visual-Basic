@@ -1,0 +1,47 @@
+﻿<Window x:Class="WinForms.ConsoleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Microsoft.SmallVisualBasic"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="Text Window" Height="450" Width="800"
+        Closed="Window_Closed"
+        PreviewKeyDown="Window_PreviewKeyDown">
+    <Grid>
+        <RichTextBox x:Name="ConsoleBox"
+                     Background="Black"
+                     Foreground="White"
+                     VerticalAlignment="Stretch"
+                     HorizontalAlignment="Stretch"
+                     IsReadOnly="True"
+                     IsReadOnlyCaretVisible="True"
+                     AcceptsReturn="True"
+                     VerticalScrollBarVisibility="Auto">
+            <FlowDocument>
+                <Paragraph x:Name="paragraph"/>
+            </FlowDocument>
+        </RichTextBox>
+        <TextBox x:Name="InputTextBox"
+                 Visibility="Collapsed"
+                 PreviewKeyDown="InputTextBox_KeyDown"
+                 LostFocus="Input_LostFocus"
+                 TextChanged="InputTextBox_TextChanged"    
+                 PreviewTextInput="InputTextBox_TextInput"
+                 SelectionChanged="InputTextBox_SelectionChanged"
+                 MinWidth="100"
+                 Height="Auto"
+                 VerticalAlignment="Top"
+                 HorizontalAlignment="Left"
+                 TextWrapping="NoWrap"
+                 Padding="3,0"/>
+        <DatePicker x:Name="InputDatePicker"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                PreviewKeyDown="InputDatePicker_PreviewKeyDown"
+                Visibility="Collapsed" 
+                MinWidth="100"   
+                Padding="3,0"/>
+    </Grid>
+</Window>

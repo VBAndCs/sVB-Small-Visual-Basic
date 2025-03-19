@@ -5,6 +5,7 @@ Imports System.Globalization
 Imports System.Windows
 Imports System.Windows.Media
 Imports System.Windows.Media.TextFormatting
+Imports Microsoft.Nautilus.Text.StringRebuilder
 
 Namespace Microsoft.Nautilus.Text.Editor
 
@@ -14,13 +15,13 @@ Namespace Microsoft.Nautilus.Text.Editor
 
         Private Const _newLineWidth As Double = 10.0
         Private Const _lineHeightPadding As Double = 2.0
-        Private _textView As ITextView
+        Private _textView As AvalonTextView
         Private _span As ITextSpan
         Private _sourceIndex As Integer
         Private _textLines As IList(Of TextLine)
         Private _textLineDistances As List(Of Double)
         Private _textLineStartIndices As List(Of Integer)
-        Private _newLineLength As Integer
+        Private _lineLength As Integer
         Private _virtualCharacterPositions As List(Of Integer)
         Private _lineContainsBidi As Boolean?
         Private _horizontalOffset As Double
@@ -99,13 +100,13 @@ Namespace Microsoft.Nautilus.Text.Editor
             End Get
         End Property
 
-        Public ReadOnly Property NewlineLength As Integer Implements ITextLine.NewlineLength
+        Public ReadOnly Property LineLength As Integer Implements ITextLine.LineLength
             Get
                 If IsDisposed Then
                     Throw New ObjectDisposedException("TextLineVisual")
                 End If
 
-                Return _newLineLength
+                Return _lineLength
             End Get
         End Property
 
@@ -228,25 +229,30 @@ Namespace Microsoft.Nautilus.Text.Editor
                 Return _textView.Caret.MoveTo(LineSpan.Start, CaretPlacement.LeadingEdgeOfCharacter)
             End If
 
-            If NewlineLength = 0 Then
+            If LineLength = 0 Then
                 If num >= Width Then
                     Return _textView.Caret.MoveTo(LineSpan.End, CaretPlacement.LeadingEdgeOfCharacter)
                 End If
             ElseIf num >= Width - 10.0 Then
-                Return _textView.Caret.MoveTo(LineSpan.End - NewlineLength, CaretPlacement.LeadingEdgeOfCharacter)
+                Return _textView.Caret.MoveTo(LineSpan.End - LineLength, CaretPlacement.LeadingEdgeOfCharacter)
             End If
 
-            Dim indexOfTextLineAtDistance As Integer = GetIndexOfTextLineAtDistance(num)
-            Dim textLine1 As TextLine = _textLines(indexOfTextLineAtDistance)
-            Dim num2 As Double = _textLineDistances(indexOfTextLineAtDistance)
-            Dim characterHitFromDistance As CharacterHit = textLine1.GetCharacterHitFromDistance(num - num2)
-            Dim bufferRelativePosition As Integer = GetBufferRelativePosition(characterHitFromDistance.FirstCharacterIndex)
+            Dim index = GetIndexOfTextLineAtDistance(num)
+            Dim textLine = _textLines(index)
+            Dim distance = _textLineDistances(index)
+            Dim charHit = textLine.GetCharacterHitFromDistance(num - distance)
+            Dim pos = GetBufferRelativePosition(charHit.FirstCharacterIndex)
 
-            If bufferRelativePosition > LineSpan.End - NewlineLength Then
-                Return _textView.Caret.MoveTo(LineSpan.End - NewlineLength, CaretPlacement.LeadingEdgeOfCharacter)
+            If pos > LineSpan.End - LineLength Then
+                Return _textView.Caret.MoveTo(LineSpan.End - LineLength, CaretPlacement.LeadingEdgeOfCharacter)
             End If
 
-            Return _textView.Caret.MoveTo(bufferRelativePosition, If((characterHitFromDistance.TrailingLength <> 0), CaretPlacement.TrailingEdgeOfCharacter, CaretPlacement.LeadingEdgeOfCharacter))
+            Return _textView.Caret.MoveTo(
+                pos,
+                If(charHit.TrailingLength <> 0,
+                    CaretPlacement.TrailingEdgeOfCharacter,
+                    CaretPlacement.LeadingEdgeOfCharacter)
+            )
         End Function
 
         Public Function GetTextElementIndex(textBufferIndex As Integer) As Integer Implements ITextLine.GetTextElementIndex
@@ -254,7 +260,7 @@ Namespace Microsoft.Nautilus.Text.Editor
                 Throw New ObjectDisposedException("TextLineVisual")
             End If
 
-            If textBufferIndex < LineSpan.Start OrElse textBufferIndex > LineSpan.End - NewlineLength Then
+            If textBufferIndex < LineSpan.Start OrElse textBufferIndex > LineSpan.End - LineLength Then
                 Throw New ArgumentOutOfRangeException("textBufferIndex")
             End If
 
@@ -274,39 +280,39 @@ Namespace Microsoft.Nautilus.Text.Editor
                 Throw New ObjectDisposedException("TextLineVisual")
             End If
 
-            If textElementIndex < 0 OrElse textElementIndex > GetTextElementIndex(LineSpan.End - NewlineLength) Then
+            If textElementIndex < 0 OrElse textElementIndex > GetTextElementIndex(LineSpan.End - LineLength) Then
                 Throw New ArgumentOutOfRangeException("textElementIndex")
             End If
 
             Return CType(_textElementSpans(textElementIndex), Span)
         End Function
 
-        Public Function GetPositionFromXCoordinate(x1 As Double) As Integer? Implements ITextLine.GetPositionFromXCoordinate
+        Public Function GetPositionFromXCoordinate(x As Double) As Integer? Implements ITextLine.GetPositionFromXCoordinate
             If IsDisposed Then
                 Throw New ObjectDisposedException("TextLineVisual")
             End If
 
-            If Double.IsNaN(x1) Then
+            If Double.IsNaN(x) Then
                 Throw New ArgumentOutOfRangeException("x")
             End If
 
-            Dim num As Double = x1 - Left
-            If num < 0.0 Then Return Nothing
+            Dim margin = x - Left
+            If margin < 0.0 Then Return Nothing
 
-            If num >= (If((NewlineLength = 0), Width, (Width - 10.0))) Then
+            If margin >= (If((LineLength = 0), Width, (Width - 10.0))) Then
                 Return Nothing
             End If
 
-            Dim indexOfTextLineAtDistance As Integer = GetIndexOfTextLineAtDistance(num)
-            Dim textLine1 As TextLine = _textLines(indexOfTextLineAtDistance)
-            Dim num2 As Double = _textLineDistances(indexOfTextLineAtDistance)
-            Dim bufferRelativePosition As Integer = GetBufferRelativePosition(textLine1.GetCharacterHitFromDistance(num - num2).FirstCharacterIndex)
+            Dim index = GetIndexOfTextLineAtDistance(margin)
+            Dim textLine = _textLines(index)
+            Dim distance = _textLineDistances(index)
+            Dim pos = GetBufferRelativePosition(textLine.GetCharacterHitFromDistance(margin - distance).FirstCharacterIndex)
 
-            If bufferRelativePosition >= LineSpan.End - NewlineLength Then
+            If pos >= LineSpan.End - LineLength Then
                 Return Nothing
             End If
 
-            Return bufferRelativePosition
+            Return pos
         End Function
 
         Public Function GetCharacterBounds(textBufferIndex As Integer) As TextBounds Implements ITextLine.GetCharacterBounds
@@ -346,59 +352,58 @@ Namespace Microsoft.Nautilus.Text.Editor
             Dim [end] As Integer = LineSpan.End
             If textBufferIndex > [end] Then Return False
 
-            If textBufferIndex = [end] AndAlso ([end] <> _textView.TextSnapshot.Length OrElse NewlineLength <> 0) Then
+            If textBufferIndex = [end] AndAlso ([end] <> _textView.TextSnapshot.Length OrElse LineLength <> 0) Then
                 Return False
             End If
 
             Return True
         End Function
 
-        Public Function GetTextBounds(span1 As Span) As ReadOnlyCollection(Of TextBounds) Implements ITextLine.GetTextBounds
+        Public Function GetTextBounds(span As Span) As ReadOnlyCollection(Of TextBounds) Implements ITextLine.GetTextBounds
             If IsDisposed Then
                 Throw New ObjectDisposedException("TextLineVisual")
             End If
 
-            If span1.End > _textView.TextSnapshot.Length Then
+            If span.End > _textView.TextSnapshot.Length Then
                 Throw New ArgumentOutOfRangeException("span")
             End If
 
-            Dim list1 As New List(Of TextBounds)
-            Dim span2 As Span = span1
+            Dim textBounds As New List(Of TextBounds)
+            Dim span2 As Span = span
 
-            If Not LineSpan.Contains(span1) Then
-                Dim span3 = LineSpan.Overlap(span1)
-                If Not span3.HasValue Then Return list1.AsReadOnly()
-                span2 = span3.Value
+            If Not LineSpan.Contains(span) Then
+                Dim overlap = LineSpan.Overlap(span)
+                If Not overlap.HasValue Then Return textBounds.AsReadOnly()
+                span2 = overlap.Value
             End If
 
-            Dim lineRelativePosition As Integer = GetLineRelativePosition(span2.Start)
-            Dim lineRelativePosition2 As Integer = GetLineRelativePosition(span2.End)
-            Dim indexOfLineContaining As Integer = GetIndexOfLineContaining(lineRelativePosition)
+            Dim startPos = GetLineRelativePosition(span2.Start)
+            Dim endPos = GetLineRelativePosition(span2.End)
+            Dim lineIndex = GetIndexOfLineContaining(startPos)
 
-            For i As Integer = indexOfLineContaining To _textLines.Count - 1
-                Dim textLine1 As TextLine = _textLines(i)
-                Dim num As Integer = _textLineStartIndices(i)
-                Dim horizontalOffset As Double = _textLineDistances(i)
+            For i As Integer = lineIndex To _textLines.Count - 1
+                Dim textLine = _textLines(i)
+                Dim lineStart = _textLineStartIndices(i)
+                Dim horizontalOffset = _textLineDistances(i)
 
-                Dim num2 As Integer = lineRelativePosition
-                If num2 < num Then num2 = num
+                Dim startIndex = startPos
+                If startIndex < lineStart Then startIndex = lineStart
 
-                Dim num3 As Integer = lineRelativePosition2
-                If num3 > num + textLine1.Length Then
-                    num3 = num + textLine1.Length
+                Dim endIndex = endPos
+                If endIndex > lineStart + textLine.Length Then
+                    endIndex = lineStart + textLine.Length
                 End If
 
-                list1.AddRange(GetTextBoundsOnLine(textLine1, horizontalOffset, num2, num3))
-                If lineRelativePosition2 <= num + textLine1.Length Then
-                    Exit For
-                End If
+                textBounds.AddRange(GetTextBoundsOnLine(
+                          textLine, horizontalOffset, startIndex, endIndex))
+                If endPos <= lineStart + textLine.Length Then Exit For
             Next
 
-            If span1.End >= LineSpan.End AndAlso NewlineLength > 0 Then
-                list1.Add(New TextBounds(Left + Width - 10.0, Top, 10.0, Height))
+            If span.End >= LineSpan.End AndAlso LineLength > 0 Then
+                textBounds.Add(New TextBounds(Left + Width - 10.0, Top, 10.0, Height))
             End If
 
-            Return list1.AsReadOnly()
+            Return textBounds.AsReadOnly()
         End Function
 
         Public Function GetIndentation() As Double
@@ -418,25 +423,35 @@ Namespace Microsoft.Nautilus.Text.Editor
             Return result
         End Function
 
-        Friend Sub New(textView As ITextView, textLines As IList(Of TextLine), sourceIndex As Integer, lineSpan1 As Span, newLineLength1 As Integer, virtualCharacterPositions As IList(Of Integer), horizontalOffset As Double, verticalOffset As Double)
+        Dim _lineSpan As Span
+
+        Friend Sub New(
+                      textView As AvalonTextView,
+                      textLines As IList(Of TextLine),
+                      sourceIndex As Integer,
+                      lineSpan As Span,
+                      lineLength As Integer,
+                      virtualCharacterPositions As IList(Of Integer),
+                      horizontalOffset As Double,
+                      verticalOffset As Double)
+
+            _lineSpan = lineSpan
             _textView = textView
             _textLines = textLines
             _sourceIndex = sourceIndex
-            _newLineLength = newLineLength1
+            _lineLength = lineLength
             _horizontalOffset = horizontalOffset
             _verticalOffset = verticalOffset
-            _span = textView.TextSnapshot.CreateTextSpan(lineSpan1, SpanTrackingMode.EdgeInclusive)
+            _span = textView.TextSnapshot.CreateTextSpan(lineSpan, SpanTrackingMode.EdgeInclusive)
             _transform = New TranslateTransform(Left, Top)
             _textElementSpans = New ArrayList
             MyBase.Transform = _transform
             _virtualCharacterPositions = New List(Of Integer)
 
-            For Each virtualCharacterPosition As Integer In virtualCharacterPositions
-                If virtualCharacterPosition >= lineSpan1.Start Then
-                    If virtualCharacterPosition > lineSpan1.End Then
-                        Exit For
-                    End If
-                    _virtualCharacterPositions.Add(virtualCharacterPosition)
+            For Each pos In virtualCharacterPositions
+                If pos >= lineSpan.Start Then
+                    If pos > lineSpan.End Then Exit For
+                    _virtualCharacterPositions.Add(pos)
                 End If
             Next
 
@@ -447,13 +462,14 @@ Namespace Microsoft.Nautilus.Text.Editor
         Friend Sub RenderText()
             Dim dc = RenderOpen()
             Dim x = 0.0
-
             For Each line In _textLines
-                Dim y = Baseline - line.Baseline + 1.0
+                Dim y = Baseline - line.Baseline + 1.0 + TextLine.LineSpacing / 2
                 line.Draw(dc, New Point(x, y), InvertAxes.None)
+                _textView.Editor.RaiseLineRenderedEvent(
+                        _textView.TextSnapshot.GetLineFromPosition(_lineSpan.Start),
+                        dc, x, y - TextLine.LineSpacing / 2)
                 x += line.WidthIncludingTrailingWhitespace
             Next
-
             dc.Close()
         End Sub
 
@@ -470,12 +486,12 @@ Namespace Microsoft.Nautilus.Text.Editor
                 Throw New ArgumentOutOfRangeException("bufferPosition")
             End If
 
-            If bufferPosition > LineSpan.End - NewlineLength Then
+            If bufferPosition > LineSpan.End - LineLength Then
                 Return New Span(LineSpan.End, 0)
             End If
 
-            If bufferPosition = LineSpan.End - NewlineLength Then
-                Return New Span(LineSpan.End - NewlineLength, NewlineLength)
+            If bufferPosition = LineSpan.End - LineLength Then
+                Return New Span(LineSpan.End - LineLength, LineLength)
             End If
 
             Dim num As Integer = GetLineRelativePosition(bufferPosition)
@@ -502,32 +518,32 @@ Namespace Microsoft.Nautilus.Text.Editor
             _textLineDistances = New List(Of Double)
             _textLineStartIndices = New List(Of Integer)
 
-            For Each textLine1 As TextLine In _textLines
-                If textLine1.Height > _height Then
-                    _height = textLine1.Height
+            For Each textLine In _textLines
+                If textLine.Height > _height Then
+                    _height = textLine.Height
                 End If
 
-                If textLine1.Baseline > _baseline Then
-                    _baseline = textLine1.Baseline
+                If textLine.Baseline > _baseline Then
+                    _baseline = textLine.Baseline
                 End If
 
-                If textLine1.Extent > _extent Then
-                    _extent = textLine1.Extent
+                If textLine.Extent > _extent Then
+                    _extent = textLine.Extent
                 End If
 
-                If textLine1.OverhangAfter > _overhangAfter Then
-                    _overhangAfter = textLine1.OverhangAfter
+                If textLine.OverhangAfter > _overhangAfter Then
+                    _overhangAfter = textLine.OverhangAfter
                 End If
 
-                _width += textLine1.WidthIncludingTrailingWhitespace
+                _width += textLine.WidthIncludingTrailingWhitespace
                 _textLineDistances.Add(distance)
-                distance += textLine1.WidthIncludingTrailingWhitespace
+                distance += textLine.WidthIncludingTrailingWhitespace
                 _textLineStartIndices.Add(index)
-                index += textLine1.Length
+                index += textLine.Length
             Next
 
             _height += 2.0
-            If _newLineLength > 0 Then _width += 10.0
+            If _lineLength > 0 Then _width += 10.0
         End Sub
 
         Private Function GetIndexOfTextLineAtDistance(offset As Double) As Integer
@@ -578,7 +594,12 @@ Namespace Microsoft.Nautilus.Text.Editor
             End If
 
             For Each textBounds In textLine.GetTextBounds(startIndex, endIndex - startIndex)
-                bounds.Add(New TextBounds(textBounds.Rectangle.Left + horizontalOffset + Left, Top, textBounds.Rectangle.Width, Height))
+                bounds.Add(New TextBounds(
+                           textBounds.Rectangle.Left + horizontalOffset + Left,
+                           Top,
+                           textBounds.Rectangle.Width,
+                           Height)
+               )
             Next
 
             Return bounds

@@ -1,0 +1,41 @@
+'@Form Hints:
+'#Form1{
+'    TxtCode: TextBox
+'    BtnRun: Button
+'    LblFormat: Label
+'    BtnFormat: Button
+'}
+
+Me = "form1"
+TxtCode = "form1.txtcode"
+BtnRun = "form1.btnrun"
+LblFormat = "form1.lblformat"
+BtnFormat = "form1.btnformat"
+_path = Program.Directory + "\Form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    BtnRun: OnClick
+'    TxtCode: OnTextChanged
+'    BtnFormat: OnClick
+'    Form1: OnShown
+'}
+
+' BtnRun Events:
+Control.HandleEvents(BtnRun)
+Control.OnClick = BtnRun_OnClick
+
+' TxtCode Events:
+Control.HandleEvents(TxtCode)
+TextBox.OnTextChanged = TxtCode_OnTextChanged
+
+' BtnFormat Events:
+Control.HandleEvents(BtnFormat)
+Control.OnClick = BtnFormat_OnClick
+
+' Form1 Events:
+Control.HandleEvents(Form1)
+Form.OnShown = Form_OnShown
+
+
+Form.Show(Me)

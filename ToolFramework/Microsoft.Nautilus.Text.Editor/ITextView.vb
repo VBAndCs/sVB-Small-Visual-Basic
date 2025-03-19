@@ -2,6 +2,7 @@
 Namespace Microsoft.Nautilus.Text.Editor
     Public Interface ITextView
         Inherits IPropertyOwner
+
         ReadOnly Property ViewScroller As IViewScroller
 
         ReadOnly Property FormattedTextLines As IFormattedTextLineCollection

@@ -237,6 +237,9 @@ Namespace WinForms
                            Dim c = GetSlider(sliderName)
                            c.SetValue(ThumbColorProperty, value.AsString())
                            Dim path = TryCast(c.GetChild("Background"), System.Windows.Shapes.Path)
+                           If path Is Nothing Then ' Tempkate changed in Win 10
+                               path = TryCast(c.GetChild("grip"), System.Windows.Shapes.Path)
+                           End If
                            If path IsNot Nothing Then
                                path.Fill = Color.GetBrush(value)
                            End If

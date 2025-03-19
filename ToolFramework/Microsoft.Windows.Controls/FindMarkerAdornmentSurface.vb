@@ -74,11 +74,10 @@ Namespace Microsoft.Windows.Controls
         Private Sub TextView_LayoutChanged(sender As Object, e As TextViewLayoutChangedEventArgs)
             If Not e.ChangeSpan.HasValue Then Return
 
-            For Each findMarker1 As FindMarker In findMarkerList
-                Dim span1 As Span = findMarker1.Span.GetSpan(textView.TextSnapshot)
-                If e.ChangeSpan.Value.OverlapsWith(span1) Then
-                    Dim markerGeometry As Geometry = textView.SpanGeometry.GetMarkerGeometry(span1)
-                    findMarkerGeometry(findMarker1) = markerGeometry
+            For Each marker In findMarkerList
+                Dim span = marker.Span.GetSpan(textView.TextSnapshot)
+                If e.ChangeSpan.Value.OverlapsWith(span) Then
+                    findMarkerGeometry(marker) = textView.SpanGeometry.GetMarkerGeometry(span)
                 End If
             Next
 
@@ -87,9 +86,8 @@ Namespace Microsoft.Windows.Controls
 
         Protected Overrides Sub OnRender(dc As DrawingContext)
             MyBase.OnRender(dc)
-            For Each findMarker1 As FindMarker In findMarkerList
-                Dim geometry1 As Geometry = findMarkerGeometry(findMarker1)
-                dc.DrawGeometry(findMarker1.Brush, findMarker1.Pen, geometry1)
+            For Each marker In findMarkerList
+                dc.DrawGeometry(marker.Brush, marker.Pen, findMarkerGeometry(marker))
             Next
         End Sub
     End Class

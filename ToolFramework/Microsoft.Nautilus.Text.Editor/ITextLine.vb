@@ -16,7 +16,7 @@ Namespace Microsoft.Nautilus.Text.Editor
 
         ReadOnly Property LineSpan As Span
 
-        ReadOnly Property NewlineLength As Integer
+        ReadOnly Property LineLength As Integer
 
         ReadOnly Property Left As Double
 

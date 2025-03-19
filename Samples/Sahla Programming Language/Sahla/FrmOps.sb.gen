@@ -1,0 +1,96 @@
+'@Form Hints:
+'#FrmOps{
+'    Label1: Label
+'    Label2: Label
+'    LblBackColor: Label
+'    Label6: Label
+'    ChkUnderlined: CheckBox
+'    ChkBold: CheckBox
+'    ChkItalic: CheckBox
+'    LblForeColor: Label
+'    Label8: Label
+'    CmbFont: ComboBox
+'    CmbSize: ComboBox
+'    Label9: Label
+'    Label10: Label
+'    BtnOk: Button
+'    BtnCancel: Button
+'    LblFrame: Label
+'    TxtPreview: TextBox
+'    TextBox2: TextBox
+'}
+
+Me = "frmops"
+Label1 = "frmops.label1"
+Label2 = "frmops.label2"
+LblBackColor = "frmops.lblbackcolor"
+Label6 = "frmops.label6"
+ChkUnderlined = "frmops.chkunderlined"
+ChkBold = "frmops.chkbold"
+ChkItalic = "frmops.chkitalic"
+LblForeColor = "frmops.lblforecolor"
+Label8 = "frmops.label8"
+CmbFont = "frmops.cmbfont"
+CmbSize = "frmops.cmbsize"
+Label9 = "frmops.label9"
+Label10 = "frmops.label10"
+BtnOk = "frmops.btnok"
+BtnCancel = "frmops.btncancel"
+LblFrame = "frmops.lblframe"
+TxtPreview = "frmops.txtpreview"
+TextBox2 = "frmops.textbox2"
+_path = Program.Directory + "\FrmOps.xaml"
+FrmOps = Forms.LoadForm("FrmOps", _path)
+Form.SetArgsArr(frmops, Stack.PopValue("_frmops_argsArr"))
+'#Events{
+'    BtnOk: OnClick
+'    BtnCancel: OnClick
+'    LblBackColor: OnClick
+'    ChkBold: OnCheck
+'    ChkItalic: OnCheck
+'    ChkUnderlined: OnCheck
+'    LblForeColor: OnClick
+'    CmbFont: OnSelection OnLostFocus
+'    CmbSize: OnSelection OnLostFocus
+'}
+
+' BtnOk Events:
+Control.HandleEvents(BtnOk)
+Control.OnClick = BtnOk_OnClick
+
+' BtnCancel Events:
+Control.HandleEvents(BtnCancel)
+Control.OnClick = BtnCancel_OnClick
+
+' LblBackColor Events:
+Control.HandleEvents(LblBackColor)
+Control.OnClick = LblBackColor_OnClick
+
+' ChkBold Events:
+Control.HandleEvents(ChkBold)
+CheckBox.OnCheck = ChkBold_OnCheck
+
+' ChkItalic Events:
+Control.HandleEvents(ChkItalic)
+CheckBox.OnCheck = ChkItalic_OnCheck
+
+' ChkUnderlined Events:
+Control.HandleEvents(ChkUnderlined)
+CheckBox.OnCheck = ChkUnderlined_OnCheck
+
+' LblForeColor Events:
+Control.HandleEvents(LblForeColor)
+Control.OnClick = LblForeColor_OnClick
+
+' CmbFont Events:
+Control.HandleEvents(CmbFont)
+ComboBox.OnSelection = CmbFont_OnSelection
+Control.OnLostFocus = CmbFont_OnLostFocus
+
+' CmbSize Events:
+Control.HandleEvents(CmbSize)
+ComboBox.OnSelection = CmbSize_OnSelection
+Control.OnLostFocus = CmbSize_OnLostFocus
+
+
+Form.Show(Me)

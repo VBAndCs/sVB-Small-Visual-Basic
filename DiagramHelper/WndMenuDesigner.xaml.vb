@@ -696,4 +696,11 @@
 
         If suggestedName <> "" Then TxtText.Text = suggestedName
     End Sub
+    Private Sub RtlToggleButton_Checked(sender As Object, e As RoutedEventArgs)
+        MainMenu.FlowDirection = FlowDirection.RightToLeft
+    End Sub
+
+    Private Sub RtlToggleButton_Unchecked(sender As Object, e As RoutedEventArgs)
+        MainMenu.FlowDirection = FlowDirection.LeftToRight
+    End Sub
 End Class

@@ -1,0 +1,93 @@
+EditorTextBox = Me.ArgsArr
+RdoDown.Checked = True
+TxtFind.Text = Text.Trim(EditorTextBox.SelectedText)
+
+Sub BtnFind_OnClick()
+   Find()
+EndSub
+
+Sub BtnReplace_OnClick()
+   Replace()
+EndSub
+
+Function Find()
+   _text = EditorTextBox.Text
+   _find = TxtFind.Text
+   
+   If ChkCase.Checked = False Then
+      _text = _text.LowerCase
+      _find = _find.LowerCase
+   EndIf
+   
+   goBack = RdoUp.Checked
+   pos = EditorTextBox.SelectionStart
+   If goBack = False Then
+      pos = pos + EditorTextBox.SelectionLength
+   EndIf
+   
+   While True
+      pos = _text.GetIndexOf(_find, pos, goBack)
+      
+      If pos = 0 Then
+         Sound.PlayBellRing()
+         Return False
+         
+      ElseIf ChkWord.Checked Then
+         nextPos = pos + _find.Length
+         prevChar = _text[pos - 1]
+         nextChar = _text[nextPos]
+         
+         If Chars.IsDigit(prevChar) Or
+               Chars.IsDigit(nextChar) Or
+               Chars.IsLetter(prevChar) Or
+               Chars.IsLetter(nextChar) Then
+            
+            If goBack Then
+               pos = pos - 1
+            Else
+               pos = nextPos
+            EndIf
+            
+            ContinueLoop
+         EndIf
+      EndIf
+      
+      ExitLoop
+   Wend
+   
+   EditorTextBox.Select(pos, _find.Length)
+   EditorTextBox.Focus()
+   
+   Return True
+EndFunction
+
+Function Replace()
+   If EditorTextBox.SelectionLength = 0 Then
+      If Find() = False Then
+         Sound.PlayBellRing()
+         Return False
+      EndIf
+   EndIf
+   
+   
+   _text = EditorTextBox.SelectedText
+   _find = TxtFind.Text
+   
+   If ChkCase.Checked = False Then
+      _text = _text.LowerCase
+      _find = _find.LowerCase
+   EndIf
+   
+   If _text = _find Then
+      EditorTextBox.SelectedText = TxtReplace.Text
+      Return True
+   Else
+      EditorTextBox.SelectionLength = 0
+      Return Replace()
+   EndIf
+EndFunction
+
+Sub BtnReplaceAll_OnClick()
+   While Replace()
+   Wend
+EndSub

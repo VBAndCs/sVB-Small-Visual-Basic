@@ -1,4 +1,5 @@
 ﻿Imports System.Windows
+Imports System.Windows.Controls
 Imports System.Windows.Media
 
 Namespace WinForms
@@ -26,10 +27,15 @@ Namespace WinForms
 
         <System.Runtime.CompilerServices.Extension()>
         Public Function GetChild(Of T)(parent As UIElement, Optional recurse As Boolean = False) As T
-            For Each c In parent.GetChildren(recurse)
-                If TypeOf c Is T Then Return CObj(c)
-            Next
-            Return Nothing
+            Library.Internal.SmallBasicApplication.Invoke(
+            Sub()
+                For Each c In parent.GetChildren(recurse)
+                    If TypeOf c Is T Then
+                        GetChild = CObj(c)
+                        Return
+                    End If
+                Next
+            End Sub)
         End Function
 
         <System.Runtime.CompilerServices.Extension()>

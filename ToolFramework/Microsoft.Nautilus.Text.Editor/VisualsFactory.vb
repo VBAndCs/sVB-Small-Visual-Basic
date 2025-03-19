@@ -7,19 +7,28 @@ Namespace Microsoft.Nautilus.Text.Editor
     Friend Class VisualsFactory
         Private _classifier As IClassifier
         Private _classificationFormatMap As IClassificationFormatMap
-        Private _textView As ITextView
+        Private _textView As AvalonTextView
         Private _classificationTypeRegistry As IClassificationTypeRegistry
         Private _paragraphProperties As New TextFormattingParagraphProperties
         Private Shared _textFormatter As TextFormatter
 
-        Public Sub New(textView As ITextView, classifier As IClassifier, classificationFormatMap As IClassificationFormatMap, classificationTypeRegistry As IClassificationTypeRegistry)
+        Public Sub New(textView As AvalonTextView, classifier As IClassifier, classificationFormatMap As IClassificationFormatMap, classificationTypeRegistry As IClassificationTypeRegistry)
             _textView = textView
             _classifier = classifier
             _classificationFormatMap = classificationFormatMap
             _classificationTypeRegistry = classificationTypeRegistry
         End Sub
 
-        Public Function CreateLineVisuals(line As ITextSnapshotLine, position As Integer, horizontalOffset As Double, verticalOffset As Double, maxIndent As Double, maxWidth As Double, spaceNegotiations As IList(Of SpaceNegotiation)) As IList(Of TextLineVisual)
+        Public Function CreateLineVisuals(
+                               line As ITextSnapshotLine,
+                               position As Integer,
+                               horizontalOffset As Double,
+                               verticalOffset As Double,
+                               maxIndent As Double,
+                               maxWidth As Double,
+                               spaceNegotiations As IList(Of SpaceNegotiation)
+                    ) As IList(Of TextLineVisual)
+
             EditorTrace.TraceTextRenderStart()
             Dim lineEnd = line.EndIncludingLineBreak
             Dim positions As New List(Of Integer)
@@ -53,17 +62,17 @@ Namespace Microsoft.Nautilus.Text.Editor
 
             Do
                 Dim lines As New List(Of TextLine)
-                Dim newLineLength = 0
-                Dim pos2 = curPos
-                Dim index2 = index
+                Dim lineLength = 0
+                Dim nextPos = curPos
+                Dim nextIndex = index
                 Dim previousLineBreak As TextLineBreak = Nothing
 
                 Do
-                    Dim formatedLine = _textFormatter.FormatLine(formattingSource, index2, maxWidth, _paragraphProperties, previousLineBreak)
+                    Dim formatedLine = _textFormatter.FormatLine(formattingSource, nextIndex, maxWidth, _paragraphProperties, previousLineBreak)
                     previousLineBreak = formatedLine.GetTextLineBreak()
-                    lines.Add(formatedLine)
-                    Dim endPos As Integer = formatedLine.Length
-                    index2 += endPos
+                    lines.Add(New TextLine(formatedLine))
+                    Dim endPos = formatedLine.Length
+                    nextIndex += endPos
 
                     For Each pos In positions
                         If pos >= curPos Then
@@ -72,10 +81,10 @@ Namespace Microsoft.Nautilus.Text.Editor
                         End If
                     Next
 
-                    pos2 += endPos
-                    If pos2 >= lineEnd Then
-                        newLineLength = line.LineBreakLength
-                        pos2 = lineEnd
+                    nextPos += endPos
+                    If nextPos >= lineEnd Then
+                        lineLength = line.LineBreakLength
+                        nextPos = lineEnd
                         Exit Do
                     End If
                 Loop While maxWidth = 0.0
@@ -84,15 +93,15 @@ Namespace Microsoft.Nautilus.Text.Editor
                         _textView,
                         lines,
                         index,
-                        New Span(curPos, pos2 - curPos),
-                        newLineLength,
+                        New Span(curPos, nextPos - curPos),
+                        lineLength,
                         positions,
                         horizontalOffset,
                         verticalOffset
                  )
                 lineVisuals.Add(lineVisual)
 
-                If pos2 >= lineEnd Then Exit Do
+                If nextPos >= lineEnd Then Exit Do
 
                 verticalOffset += lineVisual.Height
                 If curPos = line.Start AndAlso maxIndent > 0.0 Then
@@ -103,8 +112,8 @@ Namespace Microsoft.Nautilus.Text.Editor
                     maxIndent = 0.0
                 End If
 
-                curPos = pos2
-                index = index2
+                curPos = nextPos
+                index = nextIndex
             Loop
 
             EditorTrace.TraceTextRenderEnd()

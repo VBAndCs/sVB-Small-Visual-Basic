@@ -4,14 +4,12 @@ TextBox1.ToolTip = "This is a test"
 TextBox2.OnGotFocus = TextBox1_OnGotFocus
 ComboBox1.OnGotFocus = TextBox1_OnGotFocus
 
-'------------------------------------------------
 Sub TextBox1_OnGotFocus()
    senderControl = Event.SenderControl
    senderControl.BackColor = Colors.AliceBlue
 EndSub
 
-'------------------------------------------------
-Sub TextBox1_OnLostFocus
+Sub TextBox1_OnLostFocus()
    If TextBox1.Text = "" Then
       TextBox1.Error = "Don't keep me empty!"
    Else
@@ -22,7 +20,6 @@ Sub TextBox1_OnLostFocus
 EndSub
 
 
-'------------------------------------------------
 Sub TextBox2_OnLostFocus()
    n = TextBox2.Text
    If Text.IsNumeric(n) = False Then
@@ -36,7 +33,6 @@ Sub TextBox2_OnLostFocus()
    TextBox2.BackColor = Colors.White
 EndSub
 
-'------------------------------------------------
 Sub ComboBox1_OnLostFocus()
    If ComboBox1.SelectedIndex = 0 Then
       ComboBox1.Error = "Please choose a number from the list"
@@ -47,13 +43,10 @@ Sub ComboBox1_OnLostFocus()
    ComboBox1.BackColor = Colors.White
 EndSub
 
-
-'------------------------------------------------
 Sub ComboBox1_OnSelection()
    ComboBox1.Validate()
 EndSub
 
-'------------------------------------------------
 Sub Button1_OnClick()
    isValid = True
    ForEach control1 In Me.Controls
@@ -71,9 +64,6 @@ Sub Button1_OnClick()
    EndIf
 EndSub
 
-
-
-'------------------------------------------------
 Sub Button2_OnClick()
    If Me.Validate() Then
       Me.ShowMessage("OK", "Validation")

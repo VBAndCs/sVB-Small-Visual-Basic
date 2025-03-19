@@ -298,6 +298,16 @@ Namespace WinForms
         End Function
 
         ''' <summary>
+        ''' Checks if the given character is a digit (0-9).
+        ''' </summary>
+        ''' <returns>True or False.</returns>
+        <ReturnValueType(VariableType.Boolean)>
+        <ExProperty>
+        Public Shared Function GetIsDigit(text As Primitive) As Primitive
+            Return Chars.IsDigit(text)
+        End Function
+
+        ''' <summary>
         ''' Converts the current hexadecimal string to a decimal number. 
         ''' You can use the Math.Hex method to convert a decimal number to a hexadecimal number.
         ''' </summary>

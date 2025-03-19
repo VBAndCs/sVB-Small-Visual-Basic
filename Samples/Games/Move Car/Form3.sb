@@ -8,7 +8,6 @@ DirTimer.OnTick = ChangeDir
 DirTimer.Pause()
 Direction = 0
 
-' ------------------------------------------------
 Sub MoveCar()
    If Car.Top <= -Car.Height Then
       Car.Top = Me.Height
@@ -18,8 +17,7 @@ Sub MoveCar()
 EndSub
 
 
-' ------------------------------------------------
-Sub Form3_OnKeyDown()
+Sub Form_OnKeyDown()
    lastKey = Keyboard.LastKey
    If lastKey = Keys.Escape Then
       Timer.Pause()
@@ -39,7 +37,6 @@ Sub Form3_OnKeyDown()
 EndSub
 
 
-' ------------------------------------------------
 Sub ChangeDir()
    Car.Left = Car.Left + SpeedX * Direction
    If Car.Left < 0 Then
@@ -51,8 +48,7 @@ Sub ChangeDir()
 EndSub
 
 
-' ------------------------------------------------
-Sub Form3_OnKeyUp()
+Sub Form_OnKeyUp()
    DirTimer.Pause()
 EndSub
 

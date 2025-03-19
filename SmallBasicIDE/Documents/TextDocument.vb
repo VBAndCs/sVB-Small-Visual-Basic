@@ -21,6 +21,7 @@ Imports System.Windows
 Imports Microsoft.SmallBasic
 Imports System.Windows.Input
 Imports System.ComponentModel
+Imports Microsoft.Nautilus.Text.StringRebuilder
 
 Namespace Microsoft.SmallVisualBasic.Documents
     Public Class TextDocument
@@ -134,6 +135,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     AddHandler _editorControl.KeyUp, AddressOf OnKeyUp
                     AddHandler _editorControl.PreviewTextInput, AddressOf OnTextInput
                     AddHandler _editorControl.PropertyChanged, AddressOf OnPropertyChanged
+                    AddHandler _editorControl.LineRendered, AddressOf OnLineRendered
 
                     App.GlobalDomain.AddComponent(_editorControl)
                     App.GlobalDomain.Bind()
@@ -160,6 +162,33 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 Return _editorControl
             End Get
         End Property
+
+        Dim lineSeparatorPen As New Pen(Brushes.Black, 0.5)
+
+        Private Sub OnLineRendered(curLine As ITextSnapshotLine, dc As DrawingContext, x As Double, y As Double)
+            Dim textView = _editorControl.TextView
+            Dim n = curLine.LineNumber
+            If n > 0 Then
+                Dim prevLine = textView.TextSnapshot.GetLineFromLineNumber(n - 1)
+                If prevLine.GetText().StartsWith("'") Then Return
+
+                Dim text = curLine.GetText().ToLower()
+                If text.StartsWith("sub") OrElse text.StartsWith("function") Then
+                    dc.DrawLine(lineSeparatorPen, New Point(x, y), New Point(textView.ViewportWidth - x, y))
+                ElseIf text.StartsWith("'") Then
+                    For i = n + 1 To textView.TextSnapshot.LineCount - 1
+                        Dim textLine = textView.TextSnapshot.GetLineFromLineNumber(i)
+                        text = textLine.GetText().ToLower()
+                        If Not text.StartsWith("'") Then
+                            If text.StartsWith("sub") OrElse text.StartsWith("function") Then
+                                dc.DrawLine(lineSeparatorPen, New Point(x, y), New Point(textView.ViewportWidth - x, y))
+                            End If
+                            Exit For
+                        End If
+                    Next
+                End If
+            End If
+        End Sub
 
         Private Sub OnPropertyChanged(sender As Object, e As PropertyChangedEventArgs)
             If MdiView Is Nothing Then Return
@@ -363,34 +392,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                         Try
                             Dim handlerName = GetCurrentSubName()
                             _MdiView.FreezeCmbEvents = True
-                            If _EventHandlers.ContainsKey(handlerName) Then
-                                UpdateCombos(_EventHandlers(handlerName))
-
-                            ElseIf handlerName.StartsWith(GW & "_") Then
-                                Dim eventName = handlerName.Substring(GW.Length + 1)
-                                If GWEventNames.Contains(eventName) Then
-                                    UpdateCombos(New EventInformation(GW, eventName))
-                                Else ' Global
-                                    FixGlobalSubs(handlerName)
-                                    _MdiView.CmbControlNames.SelectedIndex = 0
-                                    _MdiView.SelectEventName(handlerName)
-                                End If
-                            Else
-                                Dim eventInfo = GetHandlerInfo(handlerName)
-                                If eventInfo.ControlName <> "" Then
-                                    ' Restore a broken handler. This can happen when deleting a control then restoring it.
-                                    _EventHandlers.Add(handlerName, eventInfo)
-                                    UpdateCombos(eventInfo)
-
-                                ElseIf _MdiView.CmbControlNames IsNot Nothing Then ' Global
-                                    _MdiView.CmbControlNames.SelectedIndex = 0
-                                    If handlerName = "" Then
-                                        _MdiView.SelectEventName("-1") ' Select item at index -1
-                                    Else
-                                        _MdiView.SelectEventName(handlerName)
-                                    End If
-                                End If
-                            End If
+                            SelectControlAndEvent(handlerName)
                             _MdiView.FreezeCmbEvents = False
 
                             If sourceCodeChanged OrElse Not (
@@ -400,7 +402,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
                                 If sourceCodeChanged Then
                                     sourceCodeChanged = False
-                                    needsToReCompile = True
+                                    needsToRecompile = True
                                     _editorControl.ClearHighlighting()
                                 End If
 
@@ -415,6 +417,38 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     End Sub,
                  DispatcherPriority.ContextIdle)
 
+        End Sub
+
+        Private Sub SelectControlAndEvent(handlerName As String)
+            If _EventHandlers.ContainsKey(handlerName) Then
+                UpdateCombos(_EventHandlers(handlerName))
+
+            ElseIf handlerName.StartsWith(GW & "_") Then
+                Dim eventName = handlerName.Substring(GW.Length + 1)
+                If GwEventNames.Contains(eventName) Then
+                    UpdateCombos(New EventInformation(GW, eventName))
+                Else ' Global
+                    FixGlobalSubs(handlerName)
+                    _MdiView.CmbControlNames.SelectedIndex = 0
+                    _MdiView.SelectEventName(handlerName)
+                End If
+            Else
+                Dim eventInfo = GetHandlerInfo(handlerName)
+                If eventInfo.ControlName <> "" Then
+                    ' Restore a broken handler. This can happen when deleting a control then restoring it.
+                    _EventHandlers.Add(handlerName, eventInfo)
+                    UpdateCombos(eventInfo)
+                    IsDirty = True
+
+                ElseIf _MdiView.CmbControlNames IsNot Nothing Then ' Global
+                    _MdiView.CmbControlNames.SelectedIndex = 0
+                    If handlerName = "" Then
+                        _MdiView.SelectEventName("-1") ' Select item at index -1
+                    Else
+                        _MdiView.SelectEventName(handlerName)
+                    End If
+                End If
+            End If
         End Sub
 
         Sub HighlightMatchingPair()
@@ -650,10 +684,10 @@ Namespace Microsoft.SmallVisualBasic.Documents
         End Function
 
         Private Sub CompileForHighlight()
-            If GetProperty(Of Boolean)("GlobalChanged") Then needsToReCompile = True
+            If GetProperty(Of Boolean)("GlobalChanged") Then needsToRecompile = True
             CompileGlobalModule()
-            If needsToReCompile Then
-                needsToReCompile = False
+            If needsToRecompile Then
+                needsToRecompile = False
                 highlightCompiler.Compile(New StringReader(Me.Text), True)
             End If
         End Sub
@@ -705,8 +739,10 @@ Namespace Microsoft.SmallVisualBasic.Documents
         Sub UpdateCombos(eventInfo As EventInformation)
             If _MdiView.CmbControlNames Is Nothing Then Return
 
-            If CStr(_MdiView.CmbControlNames.SelectedItem) <> eventInfo.ControlName Then
-                _MdiView.CmbControlNames.SelectedItem = eventInfo.ControlName
+            Dim controlName = eventInfo.ControlName
+            If controlName = Form Then controlName &= MdiView.FormSuffix
+            If CStr(_MdiView.CmbControlNames.SelectedItem) <> controlName Then
+                _MdiView.CmbControlNames.SelectedItem = controlName
             End If
 
             _MdiView.SelectEventName(eventInfo.EventName)
@@ -716,6 +752,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             RemoveHandler _editorControl.TextView.Caret.PositionChanged, AddressOf OnCaretPositionChanged
             RemoveHandler _editorControl.KeyUp, AddressOf OnKeyUp
             RemoveHandler _editorControl.PropertyChanged, AddressOf OnPropertyChanged
+            RemoveHandler _editorControl.LineRendered, AddressOf OnLineRendered
             RemoveHandler _editorControl.LineNumberMargin.LineBreakpointChanged, AddressOf ToggleBreakpoint
             RemoveHandler _textBuffer.Changed, AddressOf OnTextBufferChanged
             RemoveHandler _undoHistory.UndoRedoHappened, AddressOf UndoRedoHappened
@@ -749,16 +786,21 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End Try
         End Sub
 
-        Private Sub CreateBuffer()
-            If IsNew OrElse Me.File = "" Then
-                _textBuffer = New BufferFactory().CreateTextBuffer()
 
+        Private Sub CreateBuffer()
+            Dim bufferFactory As New BufferFactory()
+            Dim contetntType = "text.smallbasic"
+
+            If IsNew OrElse Me.File = "" Then
+                _textBuffer = bufferFactory.CreateTextBuffer()
             Else
-                Using reader As StreamReader = New StreamReader(Me.File)
-                    _textBuffer = New BufferFactory().CreateTextBuffer(reader, GetContentTypeFromFileExtension())
+                Using reader As New StreamReader(Me.File)
+                    _textBuffer = bufferFactory.CreateTextBuffer(reader, contetntType)
                 End Using
             End If
 
+            'Dim codeCollapser As New CodeCollapser(_textBuffer, contetntType)
+            '_textBuffer = codeCollapser.ProjectionBuffer
             AddHandler _textBuffer.Changed, AddressOf OnTextBufferChanged
             AddProperty("WordHighlightColor", _WordHighlightColor)
         End Sub
@@ -799,7 +841,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
         Dim _formatting As Boolean
         Dim sourceCodeChanged As Boolean = True
-        Dim needsToReCompile As Boolean
+        Dim needsToRecompile As Boolean
         Dim needsToFormat As Boolean = True
 
         Private Sub OnTextBufferChanged(sender As Object, e As TextChangedEventArgs)
@@ -819,6 +861,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             If _formatting OrElse _IgnoreCaretPosChange OrElse StillWorking Then Return
 
             StillWorking = True
+
             Try
                 EditorControl.Dispatcher.BeginInvoke(
                   Sub()
@@ -849,7 +892,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
                       Next
 
                       StillWorking = False
-
                       OnCaretPositionChanged(Nothing, Nothing)
                   End Sub, DispatcherPriority.ContextIdle)
 
@@ -866,6 +908,17 @@ Namespace Microsoft.SmallVisualBasic.Documents
             Dim line = snapshot.GetLineFromPosition(insertionIndex)
             Dim code = line.GetText()
 
+            If Input.Keyboard.Modifiers = ModifierKeys.Control Then
+                Select Case e.Key
+                    Case Input.Key.Up
+                        e.Handled = SelectSubroutine(True)
+                        Return
+                    Case Input.Key.Down
+                        e.Handled = SelectSubroutine(False)
+                        Return
+                End Select
+            End If
+
             Select Case e.Key
                 Case Input.Key.F1
                     Dim m = Helper.MainWindow
@@ -878,6 +931,8 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
                 Case Input.Key.Up, Input.Key.Down,
                          Input.Key.PageUp, Input.Key.PageDown
+                    ' When you move to an empty code line,
+                    ' go to its end to hounor its indentation
                     If code.Trim(" "c, vbTab) = "" Then
                         textView.Caret.MoveTo(line.End)
                     End If
@@ -891,6 +946,38 @@ Namespace Microsoft.SmallVisualBasic.Documents
             End Select
 
         End Sub
+        Public Function SelectSubroutine(moveUp As Boolean) As Boolean
+            Dim textView = _editorControl.TextView
+            Dim snapshot = textView.TextSnapshot
+            Dim caret = textView.Caret
+            Dim insertionIndex = caret.Position.TextInsertionIndex
+            Dim LineNumber = snapshot.GetLineNumberFromPosition(insertionIndex)
+            Dim start, [end], [step] As Integer
+
+            If moveUp Then
+                start = LineNumber - 1
+                [end] = 0
+                [step] = -1
+            Else
+                start = LineNumber + 1
+                [end] = snapshot.LineCount - 1
+                [step] = 1
+            End If
+
+            For i = start To [end] Step [step]
+                Dim line = snapshot.GetLineFromLineNumber(i)
+                Dim token = LineScanner.GetFirstToken(line.GetText(), i)
+
+                Select Case token.Type
+                    Case TokenType.Sub, TokenType.Function
+                        caret.MoveTo(line.Start)
+                        SelectCurrentWord()
+                        Return True
+                End Select
+            Next
+
+            Return False
+        End Function
 
         Private Sub OnTextInput(sender As Object, e As TextCompositionEventArgs)
             Dim completionSurface = _editorControl.TextView.Properties.GetProperty(Of CompletionSurface)()
@@ -1244,7 +1331,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             controlNamesList.Add(GW)
             controlsInfoList(formName.ToLower()) = "Form"
             controlsInfoList("me") = "Form"
-            controlNamesList.Add(formName)
+            controlNamesList.Add(formName & MdiView.FormSuffix)
             declaration.AppendLine($"Me = ""{formName.ToLower()}""")
 
             For Each c As UIElement In formDesigner.Items
@@ -1292,7 +1379,9 @@ Namespace Microsoft.SmallVisualBasic.Documents
 
             ' Remove Hamdlers of deleted or renamed controls
             For i = _EventHandlers.Count - 1 To 0 Step -1
-                If Not controlNamesList.Contains(_EventHandlers.Values(i).ControlName) Then
+                Dim name = _EventHandlers.Values(i).ControlName
+                If name = Me.Form Then name &= " (Form)"
+                If Not controlNamesList.Contains(name) Then
                     _EventHandlers.Remove(_EventHandlers.Keys(i))
                 End If
             Next
@@ -1329,22 +1418,23 @@ Namespace Microsoft.SmallVisualBasic.Documents
             ' Remove handlers of renamed subs
             RemoveBrokenHandlers()
 
-            If EventHandlers.Count > 0 Then
+            If _EventHandlers.Count > 0 Then
                 genCode.AppendLine("'#Events{")
                 Dim sbHandlers As New Text.StringBuilder
-                Dim controlEvents = From eventHandler In EventHandlers
+                Dim controlEvents = From eventHandler In _EventHandlers
                                     Group By eventHandler.Value.ControlName
                                     Into EventInfo = Group
 
                 For Each ev In controlEvents
                     If ev.ControlName = GW Then Continue For
 
-                    genCode.Append($"'    {ev.ControlName}:")
-                    sbHandlers.AppendLine($"' {ev.ControlName} Events:")
-                    sbHandlers.AppendLine($"Control.HandleEvents({ev.ControlName})")
+                    Dim controlName = ev.ControlName.Replace(MdiView.FormSuffix, "")
+                    genCode.Append($"'    {controlName}:")
+                    sbHandlers.AppendLine($"' {controlName} Events:")
+                    sbHandlers.AppendLine($"Control.HandleEvents({controlName})")
 
+                    controlName = controlName.ToLower
                     For Each info In ev.EventInfo
-                        Dim controlName = ev.ControlName.ToLower
                         If _ControlsInfo.ContainsKey(controlName) Then
                             genCode.Append($" {info.Value.EventName}")
                             Dim module1 = _ControlsInfo(controlName)
@@ -1409,6 +1499,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
             _ControlNames.Clear()
             _ControlNames.Add(GlobalSection)
             _ControlNames.Add(GW)
+            _ControlNames.Add(Form & MdiView.FormSuffix)
 
             For Each c In info.ControlNames
                 _ControlNames.Add(c)
@@ -1430,7 +1521,6 @@ Namespace Microsoft.SmallVisualBasic.Documents
 Timer.Interval = 20
 Timer.Tick = Timer_OnTick
 
-'------------------------------------------------
 Sub Timer_OnTick()
    
 EndSub
@@ -1458,7 +1548,6 @@ EndSub
         Private Const SubBodyOffset As Integer = 18
         Private Const AddNewSub As String = "(Add New Sub)"
         Private ReadOnly subDefinition As String = vbCrLf & "
-'------------------------------------------------
 Sub #()
    
 EndSub
@@ -1466,7 +1555,6 @@ EndSub
         Private Const funcBodyOffset As Integer = 36
         Private Const AddNewFunc As String = "(Add New Function)"
         Private ReadOnly funcDefinition As String = vbCrLf & "
-'------------------------------------------------
 Function #()
    
    Return 0
@@ -1476,7 +1564,6 @@ EndFunction
         Private Const testBodyOffset As Integer = 373
         Private Const AddNewTest As String = "(Add New Test)"
         Private ReadOnly testDefinition As String = vbCrLf & "
-'------------------------------------------------
 Function #()   
    ' To run test functions, call the Form.RunTests or UnitTest.RunAllTests methods
    Return UnitTest.AssertEqual(
@@ -1500,13 +1587,16 @@ EndFunction
         Public Function AddEventHandler(
                            controlName As String,
                            eventName As String,
-                           Optional selectSubName As Boolean = True
+                           Optional selectSubName As Boolean = True,
+                           Optional isForm As Boolean = False
                     ) As Boolean
 
             Dim alreadyExists = False
             Dim isGlobal = (controlName = GlobalSection)
-            Dim handlerName = If(isGlobal, "", controlName & "_") &
+            Dim prefix = If(isForm, "Form", controlName)
+            Dim handlerName = If(isGlobal, "", prefix & "_") &
                         If(eventName.StartsWith("(Add New "), "", eventName)
+            Dim handlerName2 = controlName & "_" & eventName
 
             Dim pos = -1
             If handlerName = "" Then
@@ -1516,12 +1606,17 @@ EndFunction
                     _EventHandlers.ContainsKey(handlerName) OrElse
                     _GwHandlers.ContainsKey(handlerName) Then
                 pos = FindEventHandler(handlerName)
+                If isForm AndAlso pos = -1 Then pos = FindEventHandler(handlerName2)
+
+            ElseIf isForm AndAlso _EventHandlers.ContainsKey(handlerName2) Then
+                pos = FindEventHandler(handlerName2)
+                If pos = -1 Then pos = FindEventHandler(handlerName)
 
             Else ' Restore Broken Handler
                 pos = FindEventHandler(handlerName)
                 If pos > -1 Then
                     If controlName = GW Then
-                        If GWEventNames.Contains(eventName) Then
+                        If GwEventNames.Contains(eventName) Then
                             _GwHandlers(handlerName) = New EventInformation(controlName, eventName)
                         Else
                             FixGlobalSubs(handlerName)
@@ -1634,7 +1729,7 @@ EndFunction
 
             Me.Focus()
 
-            MdiView.SelectEventName(controlName, If(isGlobal, handlerName, eventName), True)
+            MdiView.SelectEventName(Form, controlName, If(isGlobal, handlerName, eventName), True)
 
             If Not (selectSubName OrElse alreadyExists) Then
                 _editorControl.EditorOperations.MoveLineDown(False)
@@ -1702,6 +1797,8 @@ EndFunction
             caret.MoveTo(pos)
             sv.ScrollViewportVerticallyByPage(Nautilus.Text.Editor.ScrollDirection.Down)
             caret.EnsureVisible()
+            sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
+            sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
             sv.ScrollViewportVerticallyByLine(Nautilus.Text.Editor.ScrollDirection.Up)
         End Sub
 
@@ -1793,7 +1890,6 @@ EndFunction
                         If Tokens(1).LCaseText = name Then Return line.Start + Tokens(1).Column
                     End If
                 End If
-
             Next
             Return -1
         End Function
@@ -1819,7 +1915,7 @@ EndFunction
                     If token.Type = TokenType.Identifier Then
                         Dim subName = token.Text
                         If Not _EventHandlers.ContainsKey(subName) Then
-                            ' If name has the form Control_Event, add ot to EventHandlers.
+                            ' If name has the form Control_Event, add it to EventHandlers.
                             Dim info = GetHandlerInfo(subName)
                             If info.ControlName = "" Then
                                 _GlobalSubs.Add(subName)
@@ -1830,6 +1926,7 @@ EndFunction
                                 _GwHandlers(subName) = info
                             Else
                                 _EventHandlers(subName) = info
+                                IsDirty = True
                             End If
                         End If
                     End If
@@ -1863,15 +1960,18 @@ EndFunction
             If _ControlsInfo Is Nothing Then Return Nothing
 
             subName = subName.ToLower()
+            Dim formName = Form.ToLower()
+
             For Each controlInfo In _ControlsInfo
                 Dim controlName = controlInfo.Key
-                If subName.StartsWith(controlName & "_") Then
-                    Dim eventName = subName.Substring(controlName.Length + 1)
+                If subName.StartsWith(controlName & "_") OrElse (controlName = formName AndAlso subName.StartsWith("form_")) Then
+                    Dim eventName = subName.Substring(subName.IndexOf("_") + 1)
                     Dim events = PreCompiler.GetEvents(controlInfo.Value)
                     For Each ev In events
                         If ev.ToLower() = eventName Then
                             For Each name In _ControlNames
-                                If name.ToLower = controlName Then Return New EventInformation(name, ev)
+                                name = name.Replace(MdiView.FormSuffix, "")
+                                If name.ToLower() = controlName Then Return New EventInformation(name, ev)
                             Next
                             Return New EventInformation("", "")
                         End If
@@ -1897,9 +1997,17 @@ EndFunction
                         Dim subName = Tokens.Current.Text
                         If _EventHandlers.ContainsKey(subName) Then
                             found.Add(subName)
+                        ElseIf Not subName.StartsWith(GW & "_") Then
+                            Dim eventInfo = GetHandlerInfo(subName)
+                                If eventInfo.ControlName <> "" Then
+                                    ' Restore a broken handler. This can happen when deleting a control then restoring it.
+                                    _EventHandlers.Add(subName, eventInfo)
+                                    found.Add(subName)
+                                    IsDirty = True
+                                End If
+                            End If
                         End If
                     End If
-                End If
             Next
 
             If _EventHandlers.Count > found.Count Then
@@ -1914,18 +2022,31 @@ EndFunction
             End If
         End Sub
 
-        Friend Sub FixEventHandlers(oldName As String, newName As String)
+        Friend Sub FixEventHandlers(oldName As String, newName As String, isForm As Boolean)
             Dim keys = EventHandlers.Keys
 
             For i = keys.Count - 1 To 0 Step -1
                 Dim oldHandler = keys(i)
                 Dim eventInfo = EventHandlers(oldHandler)
+                Dim prefix As String
+
                 If eventInfo.ControlName.ToLower() = oldName.ToLower() Then
-                    Dim newHandler = $"{newName}_{eventInfo.EventName}"
-                    Dim pos = FindEventHandler(oldHandler)
-                    If pos > -1 Then
-                        _editorControl.EditorOperations.ReplaceText(New Span(pos, oldHandler.Length), newHandler, _undoHistory)
+                    If isForm Then
+                        If oldHandler.StartsWith("Form_") Then
+                            EventHandlers(oldHandler) = New EventInformation(newName, eventInfo.EventName)
+                            Continue For
+                        Else
+                            prefix = "Form"
+                        End If
+                    Else
+                        prefix = newName
                     End If
+
+                    Dim newHandler = $"{prefix}_{eventInfo.EventName}"
+                    Dim pos = FindEventHandler(oldHandler)
+                    If pos > -1 Then _editorControl.EditorOperations.ReplaceText(
+                                                    New Span(pos, oldHandler.Length),
+                                                    newHandler, _undoHistory)
                     EventHandlers.Remove(oldHandler)
                     EventHandlers(newHandler) = New EventInformation(newName, eventInfo.EventName)
                 End If

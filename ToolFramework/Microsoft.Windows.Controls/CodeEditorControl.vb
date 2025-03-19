@@ -14,6 +14,7 @@ Imports Microsoft.Nautilus.Text.AdornmentSystem
 Imports Microsoft.Nautilus.Text.Classification
 Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.Nautilus.Text.Operations
+Imports Microsoft.Nautilus.Text.StringRebuilder
 
 Namespace Microsoft.Windows.Controls
     Public Class CodeEditorControl
@@ -99,7 +100,7 @@ Namespace Microsoft.Windows.Controls
             Set(value As Boolean)
                 _isLineNumberMarginVisible = value
                 If _textViewHost IsNot Nothing Then
-                    Dim textViewMargin As ITextViewMargin = _textViewHost.GetTextViewMargin(LineNumberMarginName)
+                    Dim textViewMargin = _textViewHost.GetTextViewMargin(LineNumberMarginName)
                     If textViewMargin IsNot Nothing Then
                         textViewMargin.MarginVisible = value
                         _lineNumberMargin = TryCast(textViewMargin, Canvas)
@@ -156,15 +157,15 @@ Namespace Microsoft.Windows.Controls
 
         Public Property TextBuffer As ITextBuffer
             Get
-                Dim textBuffer1 As ITextBuffer = CType(GetValue(TextBufferProperty), ITextBuffer)
-                If textBuffer1 Is Nothing AndAlso BindingOperations.GetBinding(Me, TextBufferProperty) Is Nothing Then
-                    textBuffer1 = If(BufferFactory Is Nothing,
+                Dim _textBuffer = CType(GetValue(TextBufferProperty), ITextBuffer)
+                If _textBuffer Is Nothing AndAlso BindingOperations.GetBinding(Me, TextBufferProperty) Is Nothing Then
+                    _textBuffer = If(BufferFactory Is Nothing,
                             New BufferFactory().CreateTextBuffer("", ContentType),
                             BufferFactory.CreateTextBuffer("", ContentType)
                         )
                 End If
 
-                Return textBuffer1
+                Return _textBuffer
             End Get
 
             Set(value As ITextBuffer)
@@ -458,12 +459,16 @@ Namespace Microsoft.Windows.Controls
             If ContainsWordHighlights AndAlso IsHighlighted(pos) Then Return
 
             If HighlightSearchHits AndAlso _textView.Selection.ActiveSnapshotSpan.Length > 2 Then
-                Dim text As String = _textView.Selection.ActiveSnapshotSpan.GetText()
+                Dim text = _textView.Selection.ActiveSnapshotSpan.GetText()
                 HighlightMatches(text, ignoreCase:=True)
             Else
                 ClearHighlighting()
             End If
         End Sub
 
+        Public Event LineRendered(line As ITextSnapshotLine, dc As DrawingContext, x As Double, y As Double)
+        Public Sub RaiseLineRenderedEvent(line As ITextSnapshotLine, dc As DrawingContext, x As Double, y As Double)
+            RaiseEvent LineRendered(line, dc, x, y)
+        End Sub
     End Class
 End Namespace

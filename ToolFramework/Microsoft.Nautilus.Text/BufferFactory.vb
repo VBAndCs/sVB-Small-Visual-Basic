@@ -191,7 +191,12 @@ Namespace Microsoft.Nautilus.Text
             Return Make(contentType, stringRebuilder)
         End Function
 
-        Public Function CreateProjectionBuffer(projectionEditResolver As IProjectionEditResolver, contentType As String, textSpans As IList(Of ITextSpan)) As IProjectionBuffer Implements IProjectionBufferFactory.CreateProjectionBuffer
+        Public Function CreateProjectionBuffer(
+                              projectionEditResolver As IProjectionEditResolver,
+                              contentType As String,
+                              textSpans As IList(Of ITextSpan)
+                   ) As IProjectionBuffer Implements IProjectionBufferFactory.CreateProjectionBuffer
+
             Return New ProjectionBuffer(projectionEditResolver, contentType, textSpans)
         End Function
     End Class

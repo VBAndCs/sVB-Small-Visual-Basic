@@ -1,0 +1,22 @@
+'@Form Hints:
+'#Form1{
+'    TxtCode: TextBox
+'    BtnRun: Button
+'}
+
+Me = "form1"
+TxtCode = "form1.txtcode"
+BtnRun = "form1.btnrun"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    BtnRun: OnClick
+'}
+
+' BtnRun Events:
+Control.HandleEvents(BtnRun)
+Control.OnClick = BtnRun_OnClick
+
+
+Form.Show(Me)

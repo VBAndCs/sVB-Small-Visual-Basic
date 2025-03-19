@@ -5,8 +5,7 @@
      DisplayImage="ScrollBar.png">
 
          <d:SBControl.Control>
-
-            <ScrollBar d:Designer.FrameWidth="180" d:Designer.FrameHeight="30" 
+            <ScrollBar d:Designer.FrameWidth="180" d:Designer.FrameHeight="30" Background="White"
                 Maximum = "100" Orientation="Horizontal" SmallChange="5" LargeChange="10"/>
          </d:SBControl.Control>
 

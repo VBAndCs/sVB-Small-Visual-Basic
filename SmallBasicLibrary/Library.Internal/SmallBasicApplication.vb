@@ -101,7 +101,7 @@ Namespace Library.Internal
                         End If
 
                         Stack._stackMap = New Dictionary(Of Primitive, Stack(Of Primitive))
-                        TextWindow.Hide()
+                        TextWindow.Close()
                         WinForms.Forms.ForceCloseAll()
 
                     Else

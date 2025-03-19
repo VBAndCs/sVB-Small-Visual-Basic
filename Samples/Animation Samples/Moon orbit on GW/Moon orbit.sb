@@ -1,0 +1,24 @@
+Cycles = 10
+CycleDuration = 5000
+
+GW.BackgroundColor = Colors.Black
+X = GW.Width / 2 - 200
+Y = GW.Height / 2 - 200
+
+' Orbit
+GW.PenColor = Colors.SkyBlue
+GW.DrawEllipse(X, Y, 400, 400)
+
+' Earth
+GW.BrushColor = Colors.Blue
+GW.FillEllipse(X + 150, Y + 150, 100, 100)
+
+' Moon
+Moon = Controls.AddLabel("", X - 25, Y + 175)
+Moon.AddEllipse(50, 50, Colors.None, 0, Colors.White)
+
+' Animate moon aroound earth
+Moon.RotationCenterX = X + 200
+Moon.RotationCenterY = Y + 200
+Moon.AnimateAngle(360 * Cycles, CycleDuration * Cycles)
+

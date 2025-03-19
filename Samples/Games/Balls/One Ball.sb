@@ -29,7 +29,7 @@ Timer.Tick = OnTick
 
 
 
-Sub ButtonClicked
+Sub ButtonClicked()
    If TimerButton.Text = "Start" Then
       TimerButton.Text = "Stop"
       Timer.Resume()
@@ -40,12 +40,12 @@ Sub ButtonClicked
 EndSub
 
 
-Sub OnTick
+Sub OnTick()
    MoveX()
    MoveY()
 EndSub
 
-Sub MoveX
+Sub MoveX()
    BallX = BallX + BallXSpeed
    Shapes.Move(Ball, BallX, BallY)
    x = GraphicsWindow.Width - BallW
@@ -65,7 +65,6 @@ Sub MoveX
       
       Sound.Play(BoingSound)
    EndIf
-   
 EndSub
 
 Sub MoveY()
@@ -77,7 +76,6 @@ Sub MoveY()
       BallYSpeed = -BallYSpeed
       ' Sound.PlayChimes()
       ' Sound.PlayMusic("O4L16 ML CDEFGAB")
-      
       Sound.Play(BoingSound)
       
    ElseIf (BallY <= 0) Then
@@ -85,7 +83,6 @@ Sub MoveY()
       BallYSpeed = -BallYSpeed
       ' Sound.PlayBellRingAndWait()
       ' Sound.PlayMusic("O6L16 ML CDEFGAB")
-      
       Sound.Play(BoingSound)
    EndIf
 EndSub

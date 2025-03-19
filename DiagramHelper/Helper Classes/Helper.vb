@@ -65,6 +65,21 @@ Public Class Helper
         Loop
     End Function
 
+    Public Shared Function FindVisualChild(Of T As DependencyObject)(ByVal parent As DependencyObject) As T
+        For i As Integer = 0 To VisualTreeHelper.GetChildrenCount(parent) - 1
+            Dim child = VisualTreeHelper.GetChild(parent, i)
+            If child IsNot Nothing AndAlso TypeOf child Is T Then
+                Return CType(child, T)
+            End If
+
+            Dim childOfChild = FindVisualChild(Of T)(child)
+            If childOfChild IsNot Nothing Then
+                Return childOfChild
+            End If
+        Next
+        Return Nothing
+    End Function
+
     Shared Function GetListBoxItem(element As DependencyObject) As ListBoxItem
         If element Is Nothing Then Return Nothing
         Dim Parent = VisualTreeHelper.GetParent(element)

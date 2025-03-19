@@ -2,34 +2,27 @@ L = LblRange.Width
 St = LblRange.Left
 LblSrart.Width = 0
 LblEnd.Width = 0
-LblMsg.Width = 0
 TextBox1.Focus()
 Num = Math.GetRandomNumber(100)
 Trials = 0
 Start = Date.Now
 Min = 1
 
-' ------------------------------------------------
 Sub BtnRand_OnClick()
    TextBox1.Text = ""
    Trials = 0
    LblRange.Left = St
    LblRange.Width = L
-   Min = Math.Rnd(0, 10) * 10 + 1
-   LblSrart.Text = Min - 1
+   Min = Math.Rnd(1, 10) * 10
+   LblSrart.Text = Min
    LblSrart.Right = St
-   LblEnd.Text = Min + 100
+   LblEnd.Text = Min + 100 - 1
    LblEnd.Left = LblRange.Right
-   LblMsg.Text = Text.Format(
-      "Guess a number between [1] and [2]",
-      {Min, Min + 99}
-   )
    Num = Math.Rnd(Min, Min + 99)
    TextBox1.Focus()
    Start = Date.Now
 EndSub
 
-' ------------------------------------------------
 Sub BtnGuess_OnClick()
    BtnRand.Enabled = False
    d = Date.Now - Start
@@ -52,12 +45,12 @@ Sub BtnGuess_OnClick()
       If n < Num Then
          LblRange.Left = x
          LblRange.Width = LblEnd.Left - LblRange.Left
-         LblSrart.Text = n
+         LblSrart.Text = n + 1
          LblSrart.Right = LblRange.Left
       Else
          LblRange.Width = x - LblSrart.Right
          LblRange.Right = x
-         LblEnd.Text = n
+         LblEnd.Text = n - 1
          LblEnd.Left = LblRange.Right
       EndIf
    EndIf
@@ -67,7 +60,6 @@ Sub BtnGuess_OnClick()
 EndSub
 
 
-' ------------------------------------------------
 Sub TextBox1_OnKeyDown()
    If Event.LastKey = Keys.Enter Then
       BtnGuess_OnClick()

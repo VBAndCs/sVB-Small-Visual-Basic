@@ -50,9 +50,9 @@ Namespace Microsoft.Nautilus.Text.Projection.Implementation
                 End If
 
                 Dim projectionBuffer = CType(textBuffer, IProjectionBuffer)
-                Dim snapshotPoint1 As SnapshotPoint = projectionBuffer.CurrentProjectionSnapshot.MapToSourceSnapshot(position)
-                position = snapshotPoint1.Position
-                textSnapshot = snapshotPoint1.Snapshot
+                Dim snapshotPoint = projectionBuffer.CurrentProjectionSnapshot.MapToSourceSnapshot(position)
+                position = snapshotPoint.Position
+                textSnapshot = snapshotPoint.Snapshot
                 textBuffer = textSnapshot.TextBuffer
             End While
 
@@ -72,14 +72,12 @@ Namespace Microsoft.Nautilus.Text.Projection.Implementation
                 Return point
             End If
 
-            Dim list1 As List(Of IProjectionBuffer) = targetBufferMap(point.Snapshot.TextBuffer)
-            For Each item As IProjectionBuffer In list1
-                Dim snapshotPoint1 = item.CurrentProjectionSnapshot.MapFromSourceSnapshot(point)
-                If snapshotPoint1.HasValue Then
-                    snapshotPoint1 = MapUpToTopGuts(snapshotPoint1.Value)
-                    If snapshotPoint1.HasValue Then
-                        Return snapshotPoint1
-                    End If
+            Dim projectionBuffers = targetBufferMap(point.Snapshot.TextBuffer)
+            For Each projBuffer In projectionBuffers
+                Dim snapshotPoint = projBuffer.CurrentProjectionSnapshot.MapFromSourceSnapshot(point)
+                If snapshotPoint.HasValue Then
+                    snapshotPoint = MapUpToTopGuts(snapshotPoint.Value)
+                    If snapshotPoint.HasValue Then Return snapshotPoint
                 End If
             Next
 
@@ -113,113 +111,117 @@ Namespace Microsoft.Nautilus.Text.Projection.Implementation
             Return New NormalizedSpanCollection(targetSpans)
         End Function
 
-        Private Function MapDownOneLevel(inputSpans As List(Of SnapshotSpan), targetBuffer As ITextBuffer, ByRef targetSpans As List(Of Span)) As List(Of SnapshotSpan)
-            Dim list1 As New List(Of SnapshotSpan)
+        Private Function MapDownOneLevel(
+                              inputSpans As List(Of SnapshotSpan),
+                              targetBuffer As ITextBuffer,
+                              ByRef targetSpans As List(Of Span)
+                     ) As List(Of SnapshotSpan)
+
+            Dim results As New List(Of SnapshotSpan)
             For Each inputSpan As SnapshotSpan In inputSpans
-                Dim projectionBuffer As IProjectionBuffer = CType(inputSpan.Snapshot.TextBuffer, IProjectionBuffer)
-                Dim list2 As IList(Of SnapshotSpan) = projectionBuffer.CurrentProjectionSnapshot.MapToSourceSnapshots(inputSpan)
-                For Each item As SnapshotSpan In list2
-                    Dim textBuffer As ITextBuffer = item.Snapshot.TextBuffer
+                Dim projectionBuffer = CType(inputSpan.Snapshot.TextBuffer, IProjectionBuffer)
+                Dim snapshotSpans = projectionBuffer.CurrentProjectionSnapshot.MapToSourceSnapshots(inputSpan)
+                For Each snapshotSpan In snapshotSpans
+                    Dim textBuffer = snapshotSpan.Snapshot.TextBuffer
                     If textBuffer Is targetBuffer Then
-                        targetSpans.Add(item.Span)
+                        targetSpans.Add(snapshotSpan.Span)
                     ElseIf TypeOf textBuffer Is IProjectionBuffer Then
-                        list1.Add(item)
+                        results.Add(snapshotSpan)
                     End If
                 Next
             Next
-            Return list1
+            Return results
         End Function
 
-        Public Function MapUpToTop(span1 As SnapshotSpan) As NormalizedSpanCollection Implements IBufferGraph.MapUpToTop
-            If Not targetBufferMap.ContainsKey(span1.Snapshot.TextBuffer) Then
+        Public Function MapUpToTop(span As SnapshotSpan) As NormalizedSpanCollection Implements IBufferGraph.MapUpToTop
+            If Not targetBufferMap.ContainsKey(span.Snapshot.TextBuffer) Then
                 Throw New ArgumentException("specified SnapshotSpan does not belong to a TextBuffer that is a member of buffer graph")
             End If
 
-            If span1.Snapshot.TextBuffer Is _TopBuffer Then
-                Return New NormalizedSpanCollection(span1)
+            If span.Snapshot.TextBuffer Is _TopBuffer Then
+                Return New NormalizedSpanCollection(span)
             End If
 
             Dim topSpans As New List(Of Span)
-            Dim list1 As New List(Of SnapshotSpan)(1)
-            list1.Add(span1)
+            Dim snapshotSpans As New List(Of SnapshotSpan)(1)
+            snapshotSpans.Add(span)
 
             Do
-                list1 = MapUpOneLevel(list1, topSpans)
-            Loop While list1.Count > 0
+                snapshotSpans = MapUpOneLevel(snapshotSpans, topSpans)
+            Loop While snapshotSpans.Count > 0
 
             Return New NormalizedSpanCollection(topSpans)
         End Function
 
         Private Function MapUpOneLevel(spans As List(Of SnapshotSpan), ByRef topSpans As List(Of Span)) As List(Of SnapshotSpan)
-            Dim list1 As New List(Of SnapshotSpan)
-            For Each span1 As SnapshotSpan In spans
-                Dim value1 As Collections.Generic.List(Of IProjectionBuffer) = Nothing
-                If Not targetBufferMap.TryGetValue(span1.Snapshot.TextBuffer, value1) Then
+            Dim topSnapshotSpans As New List(Of SnapshotSpan)
+            For Each span In spans
+                Dim projectionBuffers As List(Of IProjectionBuffer) = Nothing
+                If Not targetBufferMap.TryGetValue(span.Snapshot.TextBuffer, projectionBuffers) Then
                     Continue For
                 End If
-                For Each item As IProjectionBuffer In value1
-                    Dim list2 As IList(Of Span) = item.CurrentProjectionSnapshot.MapFromSourceSnapshot(span1)
-                    If item Is _TopBuffer Then
-                        topSpans.AddRange(list2)
+
+                For Each projectionBuffer In projectionBuffers
+                    Dim topSpans2 = projectionBuffer.CurrentProjectionSnapshot.MapFromSourceSnapshot(span)
+                    If projectionBuffer Is _TopBuffer Then
+                        topSpans.AddRange(topSpans2)
                         Continue For
                     End If
 
-                    For Each item2 As Span In list2
-                        list1.Add(New SnapshotSpan(item.CurrentSnapshot, item2))
+                    For Each topSpan As Span In topSpans2
+                        topSnapshotSpans.Add(New SnapshotSpan(projectionBuffer.CurrentSnapshot, topSpan))
                     Next
                 Next
             Next
-            Return list1
+
+            Return topSnapshotSpans
         End Function
 
         Private Sub SourceBuffersChanged(sender As Object, e As BuffersChangedEventArgs)
-            Dim projBuffer As IProjectionBuffer = CType(sender, IProjectionBuffer)
-            For Each addedBuffer As ITextBuffer In e.AddedBuffers
+            Dim projBuffer = CType(sender, IProjectionBuffer)
+            For Each addedBuffer In e.AddedBuffers
                 AddSourceBuffer(projBuffer, addedBuffer)
             Next
 
-            For Each removedBuffer As ITextBuffer In e.RemovedBuffers
+            For Each removedBuffer In e.RemovedBuffers
                 RemoveSourceBuffer(projBuffer, removedBuffer)
             Next
         End Sub
 
         Private Sub AddSourceBuffer(projBuffer As IProjectionBuffer, addedBuffer As ITextBuffer)
             Dim flag As Boolean = False
-            Dim value1 As Collections.Generic.List(Of IProjectionBuffer) = Nothing
-            If Not targetBufferMap.TryGetValue(addedBuffer, value1) Then
-                value1 = New List(Of IProjectionBuffer)
-                targetBufferMap.Add(addedBuffer, value1)
+            Dim projectionBuffers As Collections.Generic.List(Of IProjectionBuffer) = Nothing
+            If Not targetBufferMap.TryGetValue(addedBuffer, projectionBuffers) Then
+                projectionBuffers = New List(Of IProjectionBuffer)
+                targetBufferMap.Add(addedBuffer, projectionBuffers)
                 flag = True
             End If
 
-            value1.Add(projBuffer)
-
+            projectionBuffers.Add(projBuffer)
             If Not TypeOf addedBuffer Is IProjectionBuffer Then Return
-            Dim projectionBuffer = CType(addedBuffer, IProjectionBuffer)
 
+            Dim projectionBuffer = CType(addedBuffer, IProjectionBuffer)
             If flag Then
                 AddHandler projectionBuffer.SourceBuffersChanged, AddressOf SourceBuffersChanged
             End If
 
-            For Each sourceBuffer As ITextBuffer In projectionBuffer.SourceBuffers
+            For Each sourceBuffer In projectionBuffer.SourceBuffers
                 AddSourceBuffer(projectionBuffer, sourceBuffer)
             Next
         End Sub
 
         Private Sub RemoveSourceBuffer(projBuffer As IProjectionBuffer, removedBuffer As ITextBuffer)
-            Dim list1 As IList(Of IProjectionBuffer) = targetBufferMap(removedBuffer)
-            list1.Remove(projBuffer)
-            If list1.Count <> 0 Then
-                Return
-            End If
+            Dim projectionBuffers = targetBufferMap(removedBuffer)
+            projectionBuffers.Remove(projBuffer)
+            If projectionBuffers.Count <> 0 Then Return
 
             targetBufferMap.Remove(removedBuffer)
-
             If Not TypeOf removedBuffer Is IProjectionBuffer Then Return
-            Dim projectionBuffer = CType(removedBuffer, IProjectionBuffer)
 
+            Dim projectionBuffer = CType(removedBuffer, IProjectionBuffer)
             RemoveHandler projectionBuffer.SourceBuffersChanged, AddressOf SourceBuffersChanged
-            For Each sourceBuffer As ITextBuffer In projectionBuffer.SourceBuffers
+
+            For Each sourceBuffer In projectionBuffer.SourceBuffers
                 RemoveSourceBuffer(projectionBuffer, sourceBuffer)
             Next
         End Sub

@@ -306,7 +306,7 @@ Namespace Microsoft.Nautilus.Text.Editor
                                 Dim val4 As T = _textLines(num)
                                 If val4.LineSpan.End = _textView.TextSnapshot.Length Then
                                     Dim val5 As T = _textLines(num)
-                                    Return val5.NewlineLength = 0
+                                    Return val5.LineLength = 0
                                 End If
                             End If
                             Return False

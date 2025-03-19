@@ -105,10 +105,11 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
             If recursive Then
                 Dim keyPrefix = subName & "."
+                Dim returnKey = keyPrefix & "return"
                 locals = New Dictionary(Of String, Library.Primitive)
 
                 For Each item In targetRunner.Fields
-                    If item.Key.StartsWith(keyPrefix) Then
+                    If item.Key <> returnKey AndAlso item.Key.StartsWith(keyPrefix) Then
                         locals(item.Key) = item.Value
                     End If
                 Next
@@ -141,7 +142,7 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
             targetRunner.runnerThread = runner.runnerThread
             Dim subStatement As SubroutineStatement = subToken.Parent
-            subStatement.SetParams(targetRunner, Args)
+            subStatement.SetParams(runner, targetRunner, Args)
 
             Dim result = subStatement.Execute(targetRunner)
 
