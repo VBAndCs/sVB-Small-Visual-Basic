@@ -1,9 +1,7 @@
-<div style="text-align:center;">
-  <h1>Small Visual Basic 3.5</h1>
-  <h2>Meet the sVB little daughter, Sahla</h2>
-  <h3>Sahla is an Arabic Basic dialect written with sVB</h3>
-  <p>You can easily customize Sahla by translating its keywords into your language to create your own localized Basic dialect.</p>
-</div>
+<h1 align="center">Small Visual Basic 3.5</h1>
+<h2 align="center">Meet the sVB little daughter, Sahla</h2>
+<h3 align="center">Sahla is an Arabic Basic dialect written with sVB</h3>
+<p align="center">You can easily customize Sahla by translating its keywords into your language to create your own localized Basic dialect.</p>
 <br><br>
 <span style="font-size:2em;">You can download the sVB installer from the <a href="https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller"><u>VS marketplace</u></a>.</span>
 <br><br></center></b>
