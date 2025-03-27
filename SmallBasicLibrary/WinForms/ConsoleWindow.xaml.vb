@@ -22,11 +22,14 @@ Namespace WinForms
             ConsoleBox.CaretPosition = ConsoleBox.Document.ContentEnd
             ConsoleBox.Focus()
             Me.Activate()
+            DoEvents() ' To allow user to close the window if the program is stuck in an infinite loop
         End Sub
 
         Public Sub WriteLine(text As String)
             If text <> "" Then Write(text)
             paragraph.Inlines.Add(New LineBreak())
+            ConsoleBox.ScrollToEnd()
+            ConsoleBox.CaretPosition = ConsoleBox.Document.ContentEnd
         End Sub
 
         Friend isWindowClosed As Boolean = False
@@ -42,8 +45,7 @@ Namespace WinForms
         End Function
 
         Private Sub ShowInputTextBox()
-            Dim caretPosition = ConsoleBox.CaretPosition
-            Dim textPointer = caretPosition.GetCharacterRect(LogicalDirection.Forward)
+            Dim rect = GetCaretPos()
 
             With InputTextBox
                 .Text = ""
@@ -55,14 +57,34 @@ Namespace WinForms
                 .FontStyle = If(CBool(TextWindow.FontItalic), FontStyles.Italic, FontStyles.Normal)
                 .TextDecorations = If(CBool(TextWindow.FontUnderlined), TextDecorations.Underline, Nothing)
                 If ConsoleBox.FlowDirection = FlowDirection.RightToLeft Then
-                    .Margin = New Thickness(0, textPointer.Y, textPointer.X, 0)
+                    .Margin = New Thickness(0, rect.Y, rect.X, 0)
                 Else
-                    .Margin = New Thickness(textPointer.X, textPointer.Y, 0, 0)
+                    .Margin = New Thickness(rect.X, rect.Y, 0, 0)
                 End If
                 .Visibility = Visibility.Visible
                 .Focus()
             End With
         End Sub
+
+        Private Function GetCaretPos() As System.Windows.Rect
+            Dim rect As System.Windows.Rect
+            Dim caretPosition = ConsoleBox.CaretPosition
+            If ConsoleBox.FlowDirection = FlowDirection.RightToLeft Then
+                Dim previousPosition = caretPosition.GetPositionAtOffset(-1)
+                If previousPosition IsNot Nothing Then
+                    Dim precedingChar = (New TextRange(previousPosition, caretPosition)).Text
+                    If precedingChar <> "" AndAlso Char.IsDigit(precedingChar(0)) Then
+                        'Add space to fix caret pos within the Arabic numbers
+                        caretPosition.InsertTextInRun(" ")
+                        ConsoleBox.CaretPosition = ConsoleBox.Document.ContentEnd
+                        rect = ConsoleBox.CaretPosition.GetCharacterRect(LogicalDirection.Forward)
+                        Return rect
+                    End If
+                End If
+            End If
+
+            Return caretPosition.GetCharacterRect(LogicalDirection.Forward)
+        End Function
 
         Dim allowNumbersOnly = False
 
@@ -240,8 +262,7 @@ Namespace WinForms
         End Function
 
         Private Sub ShowDatePicker()
-            Dim caretPosition = ConsoleBox.CaretPosition
-            Dim textPointer = caretPosition.GetCharacterRect(LogicalDirection.Forward)
+            Dim rect = GetCaretPos()
 
             With InputDatePicker
                 .Text = ""
@@ -249,9 +270,9 @@ Namespace WinForms
                 .FontSize = TextWindow._FontSize
                 .FontWeight = If(CBool(TextWindow.FontBold), FontWeights.Bold, FontWeights.Normal)
                 If ConsoleBox.FlowDirection = FlowDirection.RightToLeft Then
-                    .Margin = New Thickness(0, textPointer.Y, textPointer.X, 0)
+                    .Margin = New Thickness(0, rect.Y, rect.X, 0)
                 Else
-                    .Margin = New Thickness(textPointer.X, textPointer.Y, 0, 0)
+                    .Margin = New Thickness(rect.X, rect.Y, 0, 0)
                 End If
                 .Visibility = Visibility.Visible
                 .Focus()

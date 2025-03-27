@@ -1,6 +1,8 @@
 ﻿
+Imports System.Globalization
 Imports System.Windows
 Imports System.Windows.Controls
+Imports System.Windows.Markup
 Imports System.Windows.Media
 Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
@@ -733,6 +735,7 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
+        ''' Gets or sets the visibilty state of the control:
         ''' When it is True, the control is displayed on the form.
         ''' When it is False,  the control is hidden.
         ''' </summary>
@@ -790,6 +793,37 @@ Namespace WinForms
                            ReportPropertyError(controlName, "RightToLeft", value, ex)
                        End Try
                    End Sub)
+        End Sub
+
+
+        ''' <summary>
+        ''' Gets or sets the culture that the control will use to show its content and format its text.
+        ''' Valid values are in the form en-US (for English Uinted States), ar-Eg (for Arabic Egypt)... etc 
+        ''' </summary>
+        <ExProperty>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function GetLanguage(ControlName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim ctrl = GetControl(ControlName)
+                        GetLanguage = ctrl.Language.ToString()
+                    Catch ex As Exception
+                        ReportError(ControlName, "Language", ex)
+                    End Try
+                End Sub)
+        End Function
+
+        Public Shared Sub SetLanguage(ControlName As Primitive, cultureName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim ctrl = GetControl(ControlName)
+                        ctrl.Language = XmlLanguage.GetLanguage(cultureName.AsString())
+                    Catch ex As Exception
+                        ReportPropertyError(ControlName, "Language", cultureName, ex)
+                    End Try
+                End Sub)
         End Sub
 
 
@@ -1093,6 +1127,7 @@ Namespace WinForms
             Dim L = TryCast(c, Wpf.Label)
             If L IsNot Nothing Then
                 If TypeOf L.Content Is System.Windows.Shapes.Shape Then
+                    L.Background = Nothing
                     CType(L.Content, System.Windows.Shapes.Shape).Fill = brush
                 Else
                     L.Background = brush
@@ -2383,6 +2418,114 @@ Namespace WinForms
                          ReportSubError(controlName, "SendToBack", ex)
                      End Try
                  End Sub)
+        End Sub
+
+        Private Shared Sub CloneMenuItemsRecursive(formName As String, sourceItem As Wpf.MenuItem, targetItem As Wpf.MenuItem)
+            targetItem.Header = sourceItem.Header
+            targetItem.IsCheckable = sourceItem.IsCheckable
+            targetItem.IsChecked = sourceItem.IsChecked
+            targetItem.InputGestureText = sourceItem.InputGestureText
+
+            Dim menuItemName = formName & "." & sourceItem.Name
+
+            Dim key = (senderAssembly & ":" & menuItemName & ".OnClick").ToLower()
+            If MenuItem.MenuEventHandlers.ContainsKey(key) Then
+                AddHandler targetItem.Click, MenuItem.MenuEventHandlers(key)
+            End If
+
+            If sourceItem.IsCheckable Then
+                key = (senderAssembly & ":" & menuItemName & ".OnCheck").ToLower()
+                If MenuItem.MenuEventHandlers.ContainsKey(key) Then
+                    Dim h = MenuItem.MenuEventHandlers(key)
+                    AddHandler targetItem.Checked, h
+                    AddHandler targetItem.Unchecked, h
+                End If
+            End If
+
+            If sourceItem.HasItems Then
+                For Each subItem As Wpf.Control In sourceItem.Items
+                    If TypeOf subItem Is Wpf.Separator Then
+                        targetItem.Items.Add(New Wpf.Separator())
+                    Else
+                        Dim clonedSubItem As New Wpf.MenuItem()
+                        CloneMenuItemsRecursive(formName, subItem, clonedSubItem)
+                        targetItem.Items.Add(clonedSubItem)
+                    End If
+                Next
+
+                key = (senderAssembly & ":" & sourceItem.Name & ".OnOpen").ToLower()
+                If MenuItem.MenuEventHandlers.ContainsKey(key) Then
+                    AddHandler targetItem.SubmenuOpened, MenuItem.MenuEventHandlers(key)
+                End If
+            End If
+        End Sub
+
+        ''' <summary>
+        ''' Sets the context menu of the control.
+        ''' </summary>
+        ''' <param name="sourceMenuName">The menu you want to show its items in the context menu.</param>
+        ''' <param name="clone">
+        ''' Use True to copy the items from the source menu. They will have the same properties and event handlers as the original items. This is helpful when you need to show the same commands in the main menu and the context menu, like the edit command of the textbox.
+        ''' Use False to remove the  items from the source menu and add them to the context. In such case, you should hide the source menu from the user. This is helpful when you need a unique context menu, so you can create its items using the menu designer then use this method to move them to the context menu.
+        ''' </param>
+        <ExMethod>
+        Public Shared Sub SetContextMenu(controlName As Primitive, sourceMenuName As Primitive, clone As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim control = GetControl(controlName)
+                        Dim mi = MenuItem.GetMenuItem(sourceMenuName)
+                        Dim contextMenu As New ContextMenu()
+                        control.ContextMenu = contextMenu
+
+                        If Not CBool(clone) Then
+                            Dim RemovedItems As New List(Of Wpf.Control)
+                            For Each item In mi.Items
+                                RemovedItems.Add(item)
+                            Next
+
+                            mi.Items.Clear()
+
+                            For Each item In RemovedItems
+                                contextMenu.Items.Add(item)
+                            Next
+                            Return
+                        End If
+
+                        Dim key = (senderAssembly & ":" & sourceMenuName.AsString() & ".OnOpen").ToLower()
+                        If MenuItem.MenuEventHandlers.ContainsKey(key) Then
+                            Dim h = MenuItem.MenuEventHandlers(key)
+                            Dim SourceItems = mi.Items
+                            AddHandler contextMenu.Opened,
+                                Sub(Sender As Wpf.Control, e As RoutedEventArgs)
+                                    h.Invoke(Sender, e)
+                                    Dim items = contextMenu.Items
+                                    For i = 0 To items.Count - 1
+                                        Dim menuItem = TryCast(items(i), Wpf.MenuItem)
+                                        If menuItem IsNot Nothing Then
+                                            Dim sourceItem = CType(SourceItems(i), Wpf.MenuItem)
+                                            menuItem.Visibility = sourceItem.Visibility
+                                            menuItem.IsEnabled = sourceItem.IsEnabled
+                                            menuItem.IsChecked = sourceItem.IsChecked
+                                        End If
+                                    Next
+                                End Sub
+                        End If
+
+                        For Each item As Wpf.Control In mi.Items
+                            If TypeOf item Is Wpf.Separator Then
+                                contextMenu.Items.Add(New Wpf.Separator())
+                            Else
+                                Dim clonedItem As New Wpf.MenuItem()
+                                CloneMenuItemsRecursive(GetFormName(controlName), item, clonedItem)
+                                contextMenu.Items.Add(clonedItem)
+                            End If
+                        Next
+
+                    Catch ex As Exception
+                        ReportSubError(controlName, "SetContextMenu", ex)
+                    End Try
+                End Sub)
         End Sub
 
         Private Shared Function GetFormName(controlName As Primitive) As String

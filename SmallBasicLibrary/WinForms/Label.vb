@@ -13,6 +13,8 @@ Imports System.Globalization
 Imports System.Windows.Markup
 Imports System.Windows.Controls
 Imports System.Windows.Media
+Imports System.IO
+Imports System.Text
 
 Namespace WinForms
     <SmallVisualBasicType>
@@ -36,6 +38,11 @@ Namespace WinForms
             Return lbl
         End Function
 
+        ''' <summary>
+        ''' Gets or sets the visibilty state of the label:
+        ''' When it is True, the label is displayed on the form.
+        ''' When it is False,  the label is hidden.
+        ''' </summary>
         <ReturnValueType(VariableType.Boolean)>
         <ExProperty>
         Public Shared Function GetVisible(controlName As Primitive) As Primitive
@@ -51,7 +58,6 @@ Namespace WinForms
 
         <ExProperty>
         Public Shared Sub SetVisible(controlName As Primitive, value As Primitive)
-            If controlName.IsEmpty Then Stop
             App.Invoke(
                 Sub()
                     Try
@@ -268,6 +274,7 @@ Namespace WinForms
 
         Public Shared Function GetAbsUrl(url As String) As String
             Try
+
                 If url.ToLower().StartsWith("www.") Then
                     Return "https://" & url
                 End If
@@ -535,11 +542,8 @@ Namespace WinForms
             App.Invoke(
                   Sub()
                       Try
-                          Dim lbl = GetLabel(labelName)
-                          Dim txtRun As New Documents.Run()
-                          txtRun.Text = text
                           Dim tb = GetTextBlock(labelName)
-                          tb.Inlines.Add(txtRun)
+                          tb.Inlines.Add(New Documents.Run(text))
                       Catch ex As Exception
                           Control.ReportSubError(labelName, "Append", ex)
                       End Try
@@ -552,11 +556,17 @@ Namespace WinForms
         ''' <param name="text">The text to add to the label</param>
         <ExMethod>
         Public Shared Sub AppendLine(labelName As Primitive, text As Primitive)
-            Dim emptyStr As New Primitive("")
-            AppendFormatted(labelName,
-                        New Primitive(text.AsString() + vbCrLf),
-                        emptyStr, 0, emptyStr, emptyStr, emptyStr,
-                        Colors.None, Colors.None, emptyStr)
+            App.Invoke(
+                  Sub()
+                      Try
+                          Dim tb = GetTextBlock(labelName)
+                          Dim x = text.AsString()
+                          If x <> "" Then tb.Inlines.Add(New Documents.Run(x))
+                          tb.Inlines.Add(New LineBreak())
+                      Catch ex As Exception
+                          Control.ReportSubError(labelName, "Append", ex)
+                      End Try
+                  End Sub)
         End Sub
 
 
@@ -863,21 +873,134 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Forces the label to format the text with the local culture of the user's PC.
+        ''' Copies the a portion of the label's content as a rich-text format (RTF) to the clipboard.
         ''' </summary>
+        ''' <param name="start">the start position of the text to copy</param>
+        ''' <param name="length">the no of chars to copy</param>
         <ExMethod>
-        Public Shared Sub UseLocalCulture(labelName As Primitive)
+        Public Shared Sub CopyFormattedText(labelName As Primitive, start As Primitive, length As Primitive)
             App.Invoke(
-                Sub()
-                    Try
-                        Dim tb = GetTextBlock(labelName)
-                        tb.Language = XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.Name)
-                        'Dim numSub As New NumberSubstitution()
-                        'numSub.Substitution = NumberSubstitutionMethod.Traditional
-                    Catch ex As Exception
-                        Control.ReportSubError(labelName, "UseLocalCulture", ex)
-                    End Try
-                End Sub)
+                 Sub()
+                     Try
+                         Dim startPos = Math.Max(0, start.AsDecimal() - 1)
+                         Dim textBlock = GetTextBlock(labelName)
+                         Dim flowDoc As New FlowDocument()
+                         flowDoc.Blocks.Add(CreateParagraph(textBlock))
+
+                         Dim startTextPointer = GetTextPointerAtOffset(flowDoc, GetCorrectedVisibleOffset(textBlock.Text, startPos))
+                         If startTextPointer Is Nothing Then
+                             Control.ReportSubError(labelName, "CopyFormattedText", New Exception("Invalid start position"))
+                             Return
+                         End If
+
+                         Dim endTextPointer = GetTextPointerAtOffset(flowDoc, GetCorrectedVisibleOffset(textBlock.Text, startPos + length))
+                         If endTextPointer Is Nothing Then
+                             Control.ReportSubError(labelName, "CopyFormattedText", New Exception("Invalid length - exceeds content boundaries."))
+                             Return
+                         End If
+
+                         Dim selectionRange As New TextRange(startTextPointer, endTextPointer)
+                         Using ms As New MemoryStream()
+                             selectionRange.Save(ms, DataFormats.Rtf)
+                             Dim rtfData = Encoding.UTF8.GetString(ms.ToArray())
+                             Dim dataObject As New DataObject()
+                             dataObject.SetData(DataFormats.Rtf, rtfData)
+                             dataObject.SetData(DataFormats.Text, textBlock.Text.Substring(startPos, length))
+                             Clipboard.SetDataObject(dataObject, True)
+                         End Using
+
+                     Catch ex As Exception
+                         Control.ReportSubError(labelName, "CopyFormattedText", ex)
+                     End Try
+                 End Sub)
         End Sub
+
+        Private Shared Function CreateParagraph(textBlock As TextBlock) As Paragraph
+            Dim paragraph As New Paragraph() With {
+                 .FontFamily = textBlock.FontFamily,
+                 .FontSize = textBlock.FontSize,
+                 .FontStyle = textBlock.FontStyle,
+                 .FontWeight = textBlock.FontWeight,
+                 .Foreground = textBlock.Foreground,
+                 .FlowDirection = textBlock.FlowDirection
+             }
+
+            For Each inline As Inline In textBlock.Inlines
+                Dim item = CType(Clone(inline), Inline)
+                Dim run = TryCast(item, Run)
+                If run Is Nothing Then
+                    paragraph.Inlines.Add(item)
+                Else
+                    Dim runText = run.Text
+                    Dim pos = 0
+                    Dim endPos = runText.Length - 1
+
+                    Do
+                        Dim newPos = runText.IndexOf(vbLf, pos)
+                        If newPos = -1 Then
+                            If pos > 0 Then
+                                run.Text = runText.Substring(pos, endPos - pos + 1)
+                            End If
+                            paragraph.Inlines.Add(run)
+                            Exit Do
+                        End If
+
+                        Dim subRun = runText.Substring(pos, newPos - pos)
+                        If subRun <> "" Then
+                            run.Text = subRun
+                            paragraph.Inlines.Add(Clone(run))
+                        End If
+                        paragraph.Inlines.Add(New LineBreak)
+
+                        If newPos = endPos Then Exit Do
+                        pos = newPos + 1
+                    Loop
+                End If
+            Next
+
+            Return paragraph
+        End Function
+
+        Private Shared Function GetCorrectedVisibleOffset(plainText As String, originalOffset As Integer) As Integer
+            Dim correctedOffset As Integer = originalOffset
+            For i = 0 To originalOffset - 1
+                If plainText(i) = vbLf Then
+                    If i > 0 AndAlso plainText(i - 1) = vbCr Then
+                        correctedOffset -= 2
+                    Else
+                        correctedOffset -= 1
+                    End If
+                End If
+            Next
+
+            Return correctedOffset
+        End Function
+
+        Private Shared Function GetTextPointerAtOffset(flowDoc As FlowDocument, visibleOffset As Integer) As TextPointer
+            Dim currentOffset = 0
+            Dim pointer = flowDoc.ContentStart
+
+            Do While currentOffset < visibleOffset
+                Dim nextPointer = pointer.GetNextInsertionPosition(LogicalDirection.Forward)
+                If nextPointer Is Nothing Then Exit Do
+
+                If nextPointer.GetPointerContext(LogicalDirection.Backward) = TextPointerContext.Text Then
+                    currentOffset += 1
+                End If
+
+                pointer = nextPointer
+            Loop
+
+            ' Move beyond any inline or formatting tags after finding the position.
+            Do While pointer.GetPointerContext(LogicalDirection.Forward) = TextPointerContext.ElementEnd
+                Dim nextPointer = pointer.GetNextInsertionPosition(LogicalDirection.Forward)
+                If nextPointer Is Nothing Then Exit Do
+                pointer = nextPointer
+            Loop
+
+            Return pointer
+        End Function
+
     End Class
+
 End Namespace

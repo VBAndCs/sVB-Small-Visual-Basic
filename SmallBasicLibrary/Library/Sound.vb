@@ -281,7 +281,7 @@ Namespace Library
                         GetMediaPlayer = mp
 
                     Catch ex As Exception
-                        MsgBox(ex.Message)
+                        ReportError("Error in loading sound. Make sure that the filee name is valid "" " & filePath & """", ex)
                     End Try
                 End Sub)
 

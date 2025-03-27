@@ -1191,6 +1191,8 @@ Namespace Microsoft.SmallVisualBasic
 
             If formDesigner.Name = "global" Then
                 Dim globFile = formDesigner.CodeFile
+                If globFile = "" Then Return
+
                 If Not IO.File.Exists(globFile) Then
                     IO.File.Create(globFile).Close()
                 End If

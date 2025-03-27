@@ -2,6 +2,7 @@
 Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows.Threading
+Imports System.Windows.Controls
 
 Namespace WinForms
 
@@ -81,28 +82,34 @@ Namespace WinForms
 
         Friend Shared Sub SetSelectedIndex(listName As Primitive, index As Primitive)
             App.Invoke(
-                Sub()
-                    Try
-                        Dim lst = GetSelector(listName)
-                        Dim i As Integer
-                        If Not index.IsNumber Then
-                            i = -1
-                        Else
-                            i = index
-                        End If
+                CType(Sub()
+                          Try
+                              Dim lst = GetSelector(listName)
+                              Dim i As Integer
 
-                        If i < 1 OrElse i > lst.Items.Count Then
-                            i = -1
-                        Else
-                            i -= 1
-                        End If
+                              If Not index.IsNumber Then
+                                  i = -1
+                              Else
+                                  i = index
+                              End If
 
-                        lst.SelectedIndex = i
+                              If i < 1 OrElse i > lst.Items.Count Then
+                                  i = -1
+                              Else
+                                  i -= 1
+                              End If
 
-                    Catch ex As Exception
-                        Control.ReportPropertyError(listName, "SelectedIndex", index, ex)
-                    End Try
-                End Sub)
+                              lst.SelectedIndex = i
+                              Dim listbox = CType(lst, Wpf.ListBox)
+                              Dim listBoxItem = CType(listbox.ItemContainerGenerator.ContainerFromIndex(i), ListBoxItem)
+                              If listBoxItem IsNot Nothing Then
+                                  listBoxItem.BringIntoView()
+                              End If
+
+                          Catch ex As Exception
+                              Control.ReportPropertyError(listName, "SelectedIndex", index, ex)
+                          End Try
+                      End Sub, Library.Internal.InvokeHelper))
         End Sub
 
         Friend Shared Function GetItemAt(listName As Primitive, index As Primitive) As Primitive

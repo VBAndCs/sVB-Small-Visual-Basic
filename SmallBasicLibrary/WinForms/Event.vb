@@ -32,7 +32,7 @@ Namespace WinForms
         ''' </summary>
         ''' <returns></returns>
         <ReturnValueType(VariableType.Boolean)>
-        Public Shared Property Handled As Primitive
+        Public Shared Property Handled As New Primitive(False)
 
         ''' <summary>
         ''' Returns the last Key pressed on the keyboard. 
@@ -94,9 +94,11 @@ Namespace WinForms
 
                 Call userEventHandler()
 
-                ' the handler may set the Handled property. We will use it and reset it.
-                e.Handled = _Handled
-                _Handled = False
+                ' the handler may set the Handled property. We will use it then reset it.
+                If CBool(_Handled) Then
+                    e.Handled = CBool(_Handled)
+                    _Handled = False
+                End If
 
             Catch ex As Exception
                 ReportError($"The event handler sub `{userEventHandler.Method.Name}` caused this error: {ex.Message}", ex)

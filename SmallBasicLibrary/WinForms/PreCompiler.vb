@@ -146,6 +146,7 @@ Namespace WinForms
 
         Private Shared typeShortcuts() As ShortcutInfo = {
                 New ShortcutInfo("Str", VariableType.String),
+                New ShortcutInfo("Text", VariableType.String),
                 New ShortcutInfo("String", VariableType.String),
                 New ShortcutInfo("Arr", VariableType.Array),
                 New ShortcutInfo("Array", VariableType.Array),

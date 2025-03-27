@@ -6,11 +6,12 @@
         xmlns:local="clr-namespace:Microsoft.SmallVisualBasic"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Text Window" Height="450" Width="800"
+        Title="Text Window" Height="600" Width="800"
         Closed="Window_Closed"
         PreviewKeyDown="Window_PreviewKeyDown">
     <Grid>
         <RichTextBox x:Name="ConsoleBox"
+                     Padding="5"
                      Background="Black"
                      Foreground="White"
                      VerticalAlignment="Stretch"
@@ -23,6 +24,7 @@
                 <Paragraph x:Name="paragraph"/>
             </FlowDocument>
         </RichTextBox>
+        
         <TextBox x:Name="InputTextBox"
                  Visibility="Collapsed"
                  PreviewKeyDown="InputTextBox_KeyDown"
@@ -35,7 +37,8 @@
                  VerticalAlignment="Top"
                  HorizontalAlignment="Left"
                  TextWrapping="NoWrap"
-                 Padding="3,0"/>
+                 Padding="3,0" />
+        
         <DatePicker x:Name="InputDatePicker"
                 VerticalAlignment="Top"
                 HorizontalAlignment="Left"

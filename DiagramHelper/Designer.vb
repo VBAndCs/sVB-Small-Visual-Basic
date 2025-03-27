@@ -612,6 +612,8 @@ Public Class Designer
             If diagram2.IsEnabled <> v Then diagram2.IsEnabled = v
             Dim v2 = If(diagram.GetValue(DiagramPanel.IsDiagramVisibleProperty), Visibility.Visible, Visibility.Hidden)
             If diagram2.Visibility <> v2 Then diagram2.Visibility = v2
+            If diagram2.MinWidth <> pnl.MinWidth Then diagram2.MinWidth = pnl.MinWidth
+            If diagram2.MinHeight <> pnl.MinHeight Then diagram2.MinHeight = pnl.MinHeight
             If diagram2.MaxWidth <> pnl.MaxWidth Then diagram2.MaxWidth = pnl.MaxWidth
             If diagram2.MaxHeight <> pnl.MaxHeight Then diagram2.MaxHeight = pnl.MaxHeight
 
@@ -763,12 +765,17 @@ Public Class Designer
 
                     Dim pnl = Helper.GetDiagramPanel(diagram)
                     If pnl IsNot Nothing Then
+                        pnl.MinWidth = diagram.MinWidth
+                        diagram.MinWidth = 0
+                        pnl.MinHeight = diagram.MinHeight
+                        diagram.MinHeight = 0
                         pnl.MaxWidth = diagram.MaxWidth
                         diagram.MaxWidth = Double.PositiveInfinity
                         pnl.MaxHeight = diagram.MaxHeight
                         diagram.MaxHeight = Double.PositiveInfinity
                         pnl.SetSize(diagram.Width, diagram.Height)
                     End If
+
                     diagram.ClearValue(WidthProperty)
                     diagram.ClearValue(HeightProperty)
 

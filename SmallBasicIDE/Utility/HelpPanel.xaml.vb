@@ -563,12 +563,16 @@ Namespace Microsoft.SmallVisualBasic.Utility
         End Sub
 
         Private Shared Sub SelectToken(identifier As Token, doc As TextDocument)
-            Dim editor = doc.EditorControl
-            Dim snapshot = editor.TextView.TextSnapshot
-            Dim lineStart = snapshot.GetLineFromLineNumber(identifier.Line).Start
-            Dim pos = lineStart + identifier.Column
-            doc.EnsureAtTop(pos)
-            editor.EditorOperations.SelectCurrentWord()
+            Try
+                Dim editor = doc.EditorControl
+                Dim snapshot = editor.TextView.TextSnapshot
+                Dim lineStart = snapshot.GetLineFromLineNumber(identifier.Line).Start
+                Dim pos = lineStart + identifier.Column
+                doc.EnsureAtTop(pos)
+                editor.EditorOperations.SelectCurrentWord()
+
+            Catch ex As Exception
+            End Try
         End Sub
     End Class
 End Namespace

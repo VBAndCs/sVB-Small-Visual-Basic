@@ -2,6 +2,11 @@
 '#FrmMain{
 '    TxtEditor: TextBox
 '    LblFormat: Label
+'    LblLine: Label
+'    LblBackground: Label
+'    LblMargin: Label
+'    LblNum: Label
+'    LstCompletion: ListBox
 '    MainMenu1: MainMenu
 '    MnuFile: MenuItem
 '    MnuNew: MenuItem
@@ -21,6 +26,7 @@
 '    MnuProgram: MenuItem
 '    MnuRun: MenuItem
 '    MnuEnd: MenuItem
+'    MnuFormat: MenuItem
 '    MnuView: MenuItem
 '    MnuBold: MenuItem
 '    MnuItalic: MenuItem
@@ -38,12 +44,18 @@
 '    MnuInput: MenuItem
 '    MnuConditions: MenuItem
 '    MnuLoops: MenuItem
+'    MnuSounds: MenuItem
 '    MnuAbout: MenuItem
 '}
 
 Me = "frmmain"
 TxtEditor = "frmmain.txteditor"
 LblFormat = "frmmain.lblformat"
+LblLine = "frmmain.lblline"
+LblBackground = "frmmain.lblbackground"
+LblMargin = "frmmain.lblmargin"
+LblNum = "frmmain.lblnum"
+LstCompletion = "frmmain.lstcompletion"
 MainMenu1 = "frmmain.mainmenu1"
 MnuFile = "frmmain.mnufile"
 MnuNew = "frmmain.mnunew"
@@ -63,6 +75,7 @@ MnuFind = "frmmain.mnufind"
 MnuProgram = "frmmain.mnuprogram"
 MnuRun = "frmmain.mnurun"
 MnuEnd = "frmmain.mnuend"
+MnuFormat = "frmmain.mnuformat"
 MnuView = "frmmain.mnuview"
 MnuBold = "frmmain.mnubold"
 MnuItalic = "frmmain.mnuitalic"
@@ -80,6 +93,7 @@ MnuOps = "frmmain.mnuops"
 MnuInput = "frmmain.mnuinput"
 MnuConditions = "frmmain.mnuconditions"
 MnuLoops = "frmmain.mnuloops"
+MnuSounds = "frmmain.mnusounds"
 MnuAbout = "frmmain.mnuabout"
 _path = Program.Directory + "\frmmain.xaml"
 FrmMain = Forms.LoadForm("FrmMain", _path)
@@ -110,9 +124,13 @@ Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
 '    MnuFind: OnClick
 '    MnuRun: OnClick
 '    MnuEnd: OnClick
-'    TxtEditor: OnTextChanged OnTextInput OnKeyDown OnSelection OnMouseWheel
+'    TxtEditor: OnTextChanged OnTextInput OnKeyDown OnSelection OnMouseWheel OnMouseRightDown OnMouseLeftDown
 '    MnuAbout: OnClick
 '    FrmMain: OnClosing OnShown
+'    MnuSounds: OnClick
+'    LblMargin: OnMouseLeftDown OnMouseMove
+'    LstCompletion: OnKeyDown OnDoubleClick
+'    MnuFormat: OnClick
 '    MnuOutput: OnClick
 '    MnuVars: OnClick
 '    MnuOps: OnClick
@@ -228,6 +246,8 @@ TextBox.OnTextInput = TxtEditor_OnTextInput
 Control.OnKeyDown = TxtEditor_OnKeyDown
 TextBox.OnSelection = TxtEditor_OnSelection
 Control.OnMouseWheel = TxtEditor_OnMouseWheel
+Control.OnMouseRightDown = TxtEditor_OnMouseRightDown
+Control.OnMouseLeftDown = TxtEditor_OnMouseLeftDown
 
 ' MnuAbout Events:
 Control.HandleEvents(MnuAbout)
@@ -237,6 +257,24 @@ MenuItem.OnClick = MnuAbout_OnClick
 Control.HandleEvents(FrmMain)
 Form.OnClosing = FrmMain_OnClosing
 Form.OnShown = Form_OnShown
+
+' MnuSounds Events:
+Control.HandleEvents(MnuSounds)
+MenuItem.OnClick = MnuSounds_OnClick
+
+' LblMargin Events:
+Control.HandleEvents(LblMargin)
+Control.OnMouseLeftDown = LblMargin_OnMouseLeftDown
+Control.OnMouseMove = LblMargin_OnMouseMove
+
+' LstCompletion Events:
+Control.HandleEvents(LstCompletion)
+Control.OnKeyDown = LstCompletion_OnKeyDown
+Control.OnDoubleClick = LstCompletion_OnDoubleClick
+
+' MnuFormat Events:
+Control.HandleEvents(MnuFormat)
+MenuItem.OnClick = MnuFormat_OnClick
 
 ' MnuOutput Events:
 Control.HandleEvents(MnuOutput)

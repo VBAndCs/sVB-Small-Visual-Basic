@@ -170,5 +170,33 @@ Namespace Library
             Forms.Application.CurrentInputLanguage = InputLanguage.FromCulture(New CultureInfo("ar-EG"))
         End Sub
 
+        Private Shared _useLocalCulture As Primitive = False
+
+        ''' <summary>
+        ''' Set it to true to use the local culture of the User's PC to show numerics and dates.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property UseLocalCulture As Primitive
+            Get
+                Return _useLocalCulture
+            End Get
+
+            Set(value As Primitive)
+                Dim v = CBool(value)
+                If v = _useLocalCulture Then Return
+
+                _useLocalCulture = v
+                SmallBasicApplication.Invoke(
+                    Sub()
+                        If _useLocalCulture Then
+                            Dim ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name)
+                            ci.NumberFormat.DigitSubstitution = DigitShapes.NativeNational
+                            System.Threading.Thread.CurrentThread.CurrentCulture = ci
+                        Else
+                            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentUICulture
+                        End If
+                    End Sub)
+            End Set
+        End Property
     End Class
 End Namespace

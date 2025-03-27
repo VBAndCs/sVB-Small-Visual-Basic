@@ -4,6 +4,7 @@ Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows
 Imports System.Windows.Controls
 Imports Microsoft.SmallVisualBasic.Library.Primitive
+Imports System.Windows.Media
 
 Namespace WinForms
     ''' <summary>
@@ -254,6 +255,45 @@ Namespace WinForms
                 End Sub)
         End Function
 
+        ''' <summary>
+        ''' Get the top position of the caret, relative to the textbox top.
+        ''' This pos is also the top of the line that contains the caret
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetCaretLeft(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim tb = GetTextBox(textBoxName)
+                        Dim caretRect As Rect = tb.GetRectFromCharacterIndex(tb.CaretIndex)
+                        GetCaretLeft = caretRect.X
+                    Catch ex As Exception
+                        Control.ReportError(textBoxName, "CaretLeft", ex)
+                    End Try
+                End Sub)
+        End Function
+
+
+        ''' <summary>
+        ''' Get the top position of the caret, relative to the textbox top.
+        ''' This pos is also the top of the line that contains the caret
+        ''' </summary>
+        <ReturnValueType(VariableType.Double)>
+        <ExProperty>
+        Public Shared Function GetCaretTop(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim tb = GetTextBox(textBoxName)
+                        Dim caretRect As Rect = tb.GetRectFromCharacterIndex(tb.CaretIndex)
+                        GetCaretTop = caretRect.Y
+                    Catch ex As Exception
+                        Control.ReportError(textBoxName, "CaretTop", ex)
+                    End Try
+                End Sub)
+        End Function
+
 
         ''' <summary>
         ''' Selects a part ot the text displayed in the textbox.
@@ -279,6 +319,11 @@ Namespace WinForms
                         End If
 
                         txt.Select(st, en)
+                        Dim scrollViewer = txt.GetChild(Of ScrollViewer)(True)
+                        Dim selectionStart = txt.SelectionStart
+                        Dim rect = txt.GetRectFromCharacterIndex(selectionStart)
+                        scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset + rect.Left)
+                        scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset + rect.Top)
 
                     Catch ex As Exception
                         Control.ReportSubError(textBoxName, "Select", ex)
@@ -466,6 +511,24 @@ Namespace WinForms
                  End Sub)
         End Sub
 
+
+        ''' <summary>
+        ''' Call this method to clear the undo and redo stacks. This is useful when you open a new file for example.
+        ''' </summary>
+        <ExMethod>
+        Public Shared Sub RestUndo(textBoxName As Primitive)
+            App.Invoke(
+                 Sub()
+                     Try
+                         Dim tb = GetTextBox(textBoxName)
+                         tb.UndoLimit = 0
+                         tb.UndoLimit = -1
+                     Catch ex As Exception
+                         Control.ReportSubError(textBoxName, "Undo", ex)
+                     End Try
+                 End Sub)
+        End Sub
+
         ''' <summary>
         ''' Call this method to undo the last action on the TextBox
         ''' </summary>
@@ -527,38 +590,22 @@ Namespace WinForms
         End Sub
 
         ''' <summary>
-        ''' Gets the start position of the first visible line and the last position of the last visuble line in the textbox.
+        ''' Gets the start position of the first visible line
         ''' </summary>
         ''' <returns>
-        ''' an array containing 2 items:
-        ''' 1. the start position of the first visible line 
-        ''' 2. the last position of the last visuble line in the textbox
+        ''' the index of first char of the first visible line        
         ''' </returns>
         <ExMethod>
-        <ReturnValueType(VariableType.Array)>
-        Private Shared Function GetVisibleTextRange(textBoxName As Primitive) As Primitive
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetFirstVisibleLineStartPos(textBoxName As Primitive) As Primitive
             App.Invoke(
                  Sub()
                      Try
                          Dim tb = GetTextBox(textBoxName)
                          Dim firstVisibleLineIndex = tb.GetFirstVisibleLineIndex()
-                         Dim lastVisibleLineIndex = tb.GetLastVisibleLineIndex()
-                         Dim range As New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
-                         Dim lastLineStartIndex = tb.GetCharacterIndexFromLineIndex(lastVisibleLineIndex)
-                         Dim lastLineLength = tb.GetLineText(lastVisibleLineIndex).Length
-
-                         range(1) = tb.GetCharacterIndexFromLineIndex(firstVisibleLineIndex) + 1
-                         If lastLineLength > 0 Then
-                             range(2) = lastLineStartIndex + lastLineLength
-                         Else
-                             range(2) = lastLineStartIndex + 1
-                         End If
-                         range(3) = firstVisibleLineIndex + 1
-
-                         GetVisibleTextRange = New Primitive With {.ArrayMap = range}
-
+                         GetFirstVisibleLineStartPos = tb.GetCharacterIndexFromLineIndex(firstVisibleLineIndex) + 1
                      Catch ex As Exception
-                         Control.ReportSubError(textBoxName, "GetVisibleTextRange", ex)
+                         Control.ReportSubError(textBoxName, "GetFirstVisibleLineStartPos", ex)
                      End Try
                  End Sub)
         End Function
@@ -581,6 +628,7 @@ Namespace WinForms
                         NameOf(OnTextChanged),
                         Sub() RemoveHandler _sender.TextChanged, h
                     )
+
                     AddHandler _sender.TextChanged, h
 
                 Catch ex As Exception
@@ -594,6 +642,7 @@ Namespace WinForms
             RaiseEvent()
             End RaiseEvent
         End Event
+
 
         ''' <summary>
         ''' Fired just before text is written to the TextBox. 

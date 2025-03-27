@@ -1,4 +1,6 @@
-﻿Imports System.Windows.Threading
+﻿Imports System.Windows.Markup
+Imports System.Windows.Threading
+Imports System.Xml
 Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 
@@ -48,5 +50,11 @@ Module Helper
     Public Function ExitFrame(f As Object) As Object
         CType(f, DispatcherFrame).Continue = False
         Return Nothing
+    End Function
+
+    Function Clone(Element As Object) As Object
+        If Element Is Nothing Then Return Nothing
+        Dim xaml = XamlWriter.Save(Element)
+        Return XamlReader.Load(XmlReader.Create(New IO.StringReader(xaml)))
     End Function
 End Module

@@ -1,4 +1,4 @@
-
+Me.Icon = "s.ico"
 CmbFont.AddItem(Global.FontNames)
 CmbSize.AddItem({
       8, 9, 10, 11, 12,

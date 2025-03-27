@@ -1,3 +1,4 @@
+Me.Icon = "s.ico"
 X = LblYoutube.Text
 LblYoutube.Text = ""
 LblYoutube.AppendBoldLink(X, "https://www.youtube.com/@smallvisualbasic")
@@ -12,4 +13,11 @@ LblKP.AppendBoldLink(X, "https://www.amazon.com/dp/B0DNX2ZR4D")
 
 X = LblSamples.Text
 LblSamples.Text = ""
-LblSamples.AppendBoldLink(X, "Samples/")
+LblSamples.AppendBoldLink(X, "%USERPROFILE%\Documents\Sahla Samples")
+
+
+Sub Form_OnKeyDown()
+   If Event.LastKey = Keys.Escape Then
+      Me.Close()
+   EndIf
+EndSub

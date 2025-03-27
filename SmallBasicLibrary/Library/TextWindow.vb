@@ -1,4 +1,7 @@
+Imports System.Globalization
 Imports System.Text
+Imports System.Windows.Documents
+Imports System.Windows.Markup
 Imports Microsoft.SmallVisualBasic.Library.Internal
 Imports Microsoft.SmallVisualBasic.WinForms
 
@@ -216,6 +219,70 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Property FontBold As New Primitive(False)
 
+        ''' <summary>
+        ''' Gets or sets an array containing the font properties under the keys: Name, Size, Bold, Italic, Underlined and Color, so you can use them as dynamic properties.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Array)>
+        Public Shared Property Font As Primitive
+            Get
+                Dim _font As New Primitive
+
+                Dim key As New Primitive("Name")
+                _font.Items(key) = FontName
+
+                key._stringValue = "Size"
+                _font.Items(key) = FontSize
+
+                key._stringValue = "Bold"
+                _font.Items(key) = FontBold
+
+                key._stringValue = "Italic"
+                _font.Items(key) = FontItalic
+
+                key._stringValue = "Underlined"
+                _font.Items(key) = FontUnderlined
+
+                key._stringValue = "Color"
+                _font.Items(key) = ForeColor
+
+                Return _font
+            End Get
+
+            Set(_font As Primitive)
+                If _font.IsEmpty Then Return
+
+                Dim key As New Primitive("Name")
+                If _font.ContainsKey(key) Then
+                    FontName = _font.Items(key)
+                End If
+
+                key._stringValue = "Size"
+                If _font.ContainsKey(key) Then
+                    FontSize = _font.Items(key)
+                End If
+
+                key._stringValue = "Bold"
+                If _font.ContainsKey(key) Then
+                    FontBold = _font.Items(key)
+                End If
+
+                key._stringValue = "Italic"
+                If _font.ContainsKey(key) Then
+                    FontItalic = _font.Items(key)
+                End If
+
+                key._stringValue = "Color"
+                If _font.ContainsKey(key) Then
+                    ForeColor = _font.Items(key)
+                End If
+
+                key._stringValue = "Underlined"
+                If _font.ContainsKey(key) Then
+                    FontUnderlined = _font.Items(key)
+                End If
+            End Set
+        End Property
+
         <HideFromIntellisense>
         Public Shared Sub Close()
             SmallBasicApplication.Invoke(
@@ -247,9 +314,13 @@ Namespace Library
         End Sub
 
         Private Shared Sub UpdateFlowDirection()
-            Dim dir = If(CBool(_rightToLeft),
-                                  System.Windows.FlowDirection.RightToLeft,
-                                  System.Windows.FlowDirection.LeftToRight)
+            Dim dir As System.Windows.FlowDirection
+
+            If CBool(_rightToLeft) Then
+                dir = System.Windows.FlowDirection.RightToLeft
+            Else
+                dir = System.Windows.FlowDirection.LeftToRight
+            End If
 
             Dim align = If(CBool(_rightToLeft),
                                   System.Windows.HorizontalAlignment.Right,

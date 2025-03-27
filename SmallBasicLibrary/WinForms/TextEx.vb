@@ -416,5 +416,22 @@ Namespace WinForms
             Return Library.Text.Repeat(text, count)
         End Function
 
+        ''' <summary>
+        ''' Replaces all occurences of the given sub-text with the given reeplacement text.
+        ''' </summary>
+        ''' <param name="subText">the target text fo find and replace.</param>
+        ''' <param name="repalcementText">the replacement text.</param>
+        ''' <returns>
+        ''' a new text with all occurences of the subtext replaced.
+        ''' </returns>
+        <ReturnValueType(VariableType.String)>
+        <ExMethod>
+        Public Shared Function Replace(
+                       text As Primitive,
+                       subText As Primitive,
+                       repalcementText As Primitive
+                   ) As Primitive
+            Return Library.Text.Replace(text, subText, repalcementText)
+        End Function
     End Class
 End Namespace

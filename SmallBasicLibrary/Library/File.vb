@@ -34,7 +34,7 @@ Namespace Library
                     Return New Primitive("")
                 End If
 
-                Using reader As New StreamReader(path, Encoding.Default)
+                Using reader As New StreamReader(path, Encoding.UTF8)
                     Dim value As String = reader.ReadToEnd()
                     Return New Primitive(value)
                 End Using
@@ -58,7 +58,7 @@ Namespace Library
                 LastError = New Primitive("")
                 Dim path As String = Network.GetLocalFile(filePath)
 
-                Using writer As New StreamWriter(path, False, Encoding.Default)
+                Using writer As New StreamWriter(path, False, Encoding.UTF8)
                     If contents.IsArray Then
                         Dim lines = contents.ArrayMap.Values
                         Dim n = lines.Count - 1
@@ -92,7 +92,7 @@ Namespace Library
                 LastError = New Primitive("")
                 Dim path As String = Network.GetLocalFile(filePath)
 
-                Using writer As New StreamWriter(path, False, Encoding.Default)
+                Using writer As New StreamWriter(path, False, Encoding.UTF8)
                     writer.Write(array.AsString())
                 End Using
 
@@ -132,7 +132,7 @@ Namespace Library
                     Return New Primitive("")
                 End If
 
-                Using reader As New StreamReader(path, Encoding.Default)
+                Using reader As New StreamReader(path, Encoding.UTF8)
                     For i = 1 To CInt(lineNumber) - 1
                         If reader.ReadLine() Is Nothing Then
                             LastError = New Primitive($"{lineNumber} is not a valid line number.")
@@ -173,7 +173,7 @@ Namespace Library
                 Dim lines As New Dictionary(Of Primitive, Primitive)
                 Dim n = 1
 
-                Using reader As New StreamReader(path, Encoding.Default)
+                Using reader As New StreamReader(path, Encoding.UTF8)
                     Do
                         Dim line = reader.ReadLine()
                         If line Is Nothing Then Exit Do
@@ -209,7 +209,7 @@ Namespace Library
                     Return New Primitive("")
                 End If
 
-                Dim arr = New Primitive(My.Computer.FileSystem.ReadAllText(path, Encoding.Default))
+                Dim arr = New Primitive(My.Computer.FileSystem.ReadAllText(path, Encoding.UTF8))
                 If arr.IsArray Then Return arr
                 LastError = New Primitive("The file content is not a valid array!")
                 Return New Primitive("")
@@ -246,15 +246,15 @@ Namespace Library
 
             Try
                 If Not IO.File.Exists(path1) Then
-                    Using writer1 As New StreamWriter(path1, False, Encoding.Default)
+                    Using writer1 As New StreamWriter(path1, False, Encoding.UTF8)
                         writer1.WriteLine(CStr(contents))
                     End Using
 
                     Return True
                 End If
 
-                Using writer2 As New StreamWriter(tempFileName, False, Encoding.Default)
-                    Using reader As New StreamReader(path1, Encoding.Default)
+                Using writer2 As New StreamWriter(tempFileName, False, Encoding.UTF8)
+                    Using reader As New StreamReader(path1, Encoding.UTF8)
                         Dim num As Integer = 1
                         While True
                             Dim text As String = reader.ReadLine()
@@ -308,15 +308,15 @@ Namespace Library
 
             Try
                 If Not IO.File.Exists(path1) Then
-                    Using writer As New StreamWriter(path1, False, Encoding.Default)
+                    Using writer As New StreamWriter(path1, False, Encoding.UTF8)
                         WriteLines(writer, lines)
                     End Using
 
                     Return True
                 End If
 
-                Using writer As New StreamWriter(tempFileName, False, Encoding.Default)
-                    Using reader As New StreamReader(path1, Encoding.Default)
+                Using writer As New StreamWriter(tempFileName, False, Encoding.UTF8)
+                    Using reader As New StreamReader(path1, Encoding.UTF8)
                         Dim num As Integer = 1
                         While True
                             Dim text = reader.ReadLine()
@@ -389,14 +389,14 @@ Namespace Library
 
             Try
                 If Not IO.File.Exists(path1) Then
-                    Using writer As New StreamWriter(path1, False, Encoding.Default)
+                    Using writer As New StreamWriter(path1, False, Encoding.UTF8)
                         WriteLines(writer, lines)
                     End Using
                     Return True
                 End If
 
-                Using writer As New StreamWriter(tempFileName, False, Encoding.Default)
-                    Using reader As New StreamReader(path1, Encoding.Default)
+                Using writer As New StreamWriter(tempFileName, False, Encoding.UTF8)
+                    Using reader As New StreamReader(path1, Encoding.UTF8)
                         Dim num As Integer = 1
                         While True
                             Dim text As String = reader.ReadLine()
@@ -450,7 +450,7 @@ Namespace Library
             Dim path1 As String = Network.GetLocalFile(filePath)
 
             Try
-                Using writer As New StreamWriter(path1, append:=True, Encoding.Default)
+                Using writer As New StreamWriter(path1, append:=True, Encoding.UTF8)
                     If lines.IsArray Then
                         For Each line In lines.ArrayMap.Values
                             writer.WriteLine(line.AsString())
@@ -481,7 +481,7 @@ Namespace Library
             Dim path1 As String = Network.GetLocalFile(filePath)
 
             Try
-                Using writer As New StreamWriter(path1, append:=True, Encoding.Default)
+                Using writer As New StreamWriter(path1, append:=True, Encoding.UTF8)
                     writer.Write(contents.AsString())
                 End Using
                 Return True
@@ -717,7 +717,7 @@ Namespace Library
                 .Filter = filter,
                 .Title = "Open File",
                 .RestoreDirectory = False,
-                .InitialDirectory = GetSetting("SmallVisualBasic", "OpenFile", key, ""),
+                .InitialDirectory = GetSetting("SmallVisualBasic", "OpenFile", key, Program.Directory),
                 .FilterIndex = CInt(GetSetting("SmallVisualBasic", "OpenFile", key & "_FilterIndex", "1"))
             }
 

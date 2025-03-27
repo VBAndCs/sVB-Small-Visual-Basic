@@ -1,3 +1,4 @@
+Me.Icon = "s.ico"
 EditorTextBox = Me.ArgsArr
 RdoDown.Checked = True
 TxtFind.Text = Text.Trim(EditorTextBox.SelectedText)

@@ -3,6 +3,7 @@
 Imports Wpf = System.Windows.Controls
 Imports Microsoft.SmallVisualBasic.Library
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
+Imports System.Windows
 
 Namespace WinForms
     ''' <summary>
@@ -15,7 +16,10 @@ Namespace WinForms
     <SmallVisualBasicType>
     <HideFromIntellisense>
     Public NotInheritable Class MenuItem
-        Private Shared Function GetMenuItem(itemName As String) As Wpf.MenuItem
+
+        Friend Shared MenuEventHandlers As New Dictionary(Of String, RoutedEventHandler)
+
+        Friend Shared Function GetMenuItem(itemName As String) As Wpf.MenuItem
             Dim c = Control.GetControl(itemName)
             Dim m = TryCast(c, Wpf.MenuItem)
             If m Is Nothing Then
@@ -223,6 +227,8 @@ Namespace WinForms
                             End Sub
                         )
                         AddHandler _sender.Click, h
+                        Dim key = (Control.senderAssembly & ":" & [Event].SenderControl.AsString() & ".OnClick").ToLower()
+                        MenuEventHandlers(key) = h
                     End Sub)
             End AddHandler
 
@@ -251,6 +257,8 @@ Namespace WinForms
                         Sub() RemoveHandler _sender.SubmenuOpened, h
                     )
                     AddHandler _sender.SubmenuOpened, h
+                    Dim key = (Control.senderAssembly & ":" & [Event].SenderControl.AsString() & ".OnOpen").ToLower()
+                    MenuEventHandlers(key) = h
 
                 Catch ex As Exception
                     [Event].ShowErrorMessage(NameOf(OnOpen), ex)
@@ -292,6 +300,8 @@ Namespace WinForms
                             )
                             AddHandler _sender.Checked, h
                             AddHandler _sender.Unchecked, h
+                            Dim key = (Control.senderAssembly & ":" & [Event].SenderControl.AsString() & ".OnCheck").ToLower()
+                            MenuEventHandlers(key) = h
 
                         Catch ex As Exception
                             [Event].ShowErrorMessage(NameOf(OnCheck), ex)

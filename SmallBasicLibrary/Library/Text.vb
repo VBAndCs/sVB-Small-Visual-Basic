@@ -166,15 +166,9 @@ Namespace Library
         ''' <summary>
         ''' Gets a sub-text from the given text.
         ''' </summary>
-        ''' <param name="text">
-        ''' The text to derive the sub-text from.
-        ''' </param>
-        ''' <param name="start">
-        ''' Specifies where to start from.
-        ''' </param>
-        ''' <param name="length">
-        ''' Specifies the length of the sub text.
-        ''' </param>
+        ''' <param name="text">The text to derive the sub-text from.</param>
+        ''' <param name="start">Specifies where to start from.</param>
+        ''' <param name="length">Specifies the length of the sub text.</param>
         ''' <returns>
         ''' The requested sub-text
         ''' </returns>
@@ -189,19 +183,19 @@ Namespace Library
 
             Dim strText = text.AsString()
             Dim textLength = strText.Length
+            Dim intStart As Integer
 
             If start.IsEmpty Then
-                start = 0
+                intStart = 1
             ElseIf start > textLength Then
                 Return New Primitive("")
             End If
 
-            Dim intStart = System.Math.Max(CInt(start), 1)
+            intStart = System.Math.Max(CInt(start), 1)
             intStart = System.Math.Min(intStart, textLength)
 
             Dim intLength = System.Math.Min(CInt(length), textLength)
-            intLength = System.Math.Max(0, intLength)
-            If intLength = 0 Then Return New Primitive("")
+            If intLength <= 0 Then Return New Primitive("")
 
             If intStart + intLength <= textLength Then
                 Return New Primitive(strText.Substring(intStart - 1, intLength))
@@ -209,6 +203,30 @@ Namespace Library
 
             Return New Primitive(strText.Substring(intStart - 1))
         End Function
+
+        ''' <summary>
+        ''' Replaces all occurences of the given sub-text with the given reeplacement text.
+        ''' </summary>
+        ''' <param name="text">The text to derive the sub-text from.</param>
+        ''' <param name="subText">the target text fo find and replace.</param>
+        ''' <param name="repalcementText">the replacement text.</param>
+        ''' <returns>
+        ''' a new text with all occurences of the subtext replaced.
+        ''' </returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function Replace(
+                       text As Primitive,
+                       subText As Primitive,
+                       repalcementText As Primitive
+                   ) As Primitive
+
+            If text.IsEmpty Then Return New Primitive("")
+            If subText.IsEmpty Then Return text
+
+            Dim s = text.AsString()
+            Return New Primitive(s.Replace(subText.AsString(), repalcementText.AsString()))
+        End Function
+
 
         ''' <summary>
         ''' Gets a sub-text from the given text from a specified position to the end.

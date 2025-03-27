@@ -12,6 +12,7 @@
 '    LblSVB: Label
 '    LblKP: Label
 '    LblSamples: Label
+'    Label9: Label
 '}
 
 Me = "frmabout"
@@ -27,13 +28,17 @@ LblYoutube = "frmabout.lblyoutube"
 LblSVB = "frmabout.lblsvb"
 LblKP = "frmabout.lblkp"
 LblSamples = "frmabout.lblsamples"
+Label9 = "frmabout.label9"
 _path = Program.Directory + "\FrmAbout.xaml"
 FrmAbout = Forms.LoadForm("FrmAbout", _path)
 Form.SetArgsArr(frmabout, Stack.PopValue("_frmabout_argsArr"))
-Form.Show(Me)
-Form.Show(Me)
-Form.Show(Me)
-Form.Show(Me)
-Form.Show(Me)
-Form.Show(Me)
+'#Events{
+'    FrmAbout: OnKeyDown
+'}
+
+' FrmAbout Events:
+Control.HandleEvents(FrmAbout)
+Control.OnKeyDown = Form_OnKeyDown
+
+
 Form.Show(Me)

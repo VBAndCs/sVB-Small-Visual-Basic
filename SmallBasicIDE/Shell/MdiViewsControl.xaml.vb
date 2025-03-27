@@ -406,9 +406,9 @@ Namespace Microsoft.SmallVisualBasic.Shell
             If e.Text = "" Then Return
 
             Dim selectedView As MdiView = FindViewContainingTemplateItem(TryCast(sender, UIElement))
-            Dim startPos = If(selectedView.CmbControlNames.SelectedIndex = 0, 0, 2)
             Dim cmb = CType(sender, ComboBox)
             Dim c = e.Text.ToUpper()(0)
+            Dim OnC = "On" & c
             Dim items = cmb.Items
 
             Dim st As Integer = cmb.SelectedIndex
@@ -422,7 +422,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
 
             For i = st + 1 To items.Count - 1
                 Dim eventName = CStr(items(i))
-                If eventName.IndexOf(c, startPos) > -1 Then
+                If eventName.StartsWith(c) OrElse eventName.StartsWith(OnC) Then
                     HighlightItem(cmb, i)
                     e.Handled = True
                     Return
@@ -431,7 +431,7 @@ Namespace Microsoft.SmallVisualBasic.Shell
 
             For i = 0 To st
                 Dim eventName = CStr(items(i))
-                If eventName.IndexOf(c, startPos) > -1 Then
+                If eventName.StartsWith(c) OrElse eventName.StartsWith(OnC) Then
                     HighlightItem(cmb, i)
                     e.Handled = True
                     Return
