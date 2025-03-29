@@ -3,7 +3,7 @@ LineIndex = 1 	    			' Our program counter
 Tokens = {}					' Tokens array for the current line
 Vars = {}						' Array containing variables of current proogram
 WhileStack = "WhileStack"		' Stack name for WHILE loops
-LoopStack = "LoopStack"			' Stack name for FOR loops
+ForStack = "ForStack"			' Stack name for FOR loops
 
 EditorTextBox = ""
 LblFormat = ""
@@ -133,6 +133,9 @@ EndSub
 Sub Run()
    TW.Clear()
    Vars = {}
+   Stack.Clear(WhileStack)
+   Stack.Clear(ForStack)
+   
    Statements = Text.Split(EditorTextBox.Text, Chars.Lf, False, False)
    LineIndex = 1
    statementsCount = Statements.Count
@@ -145,11 +148,13 @@ Sub Run()
       EndIf
       
       If TW.IsClosed Then
+         EditorTextBox.Focus()
          Return
       EndIf
    Wend
    
    Terminate(ProEndMsg, False)
+   EditorTextBox.Focus()
 EndSub
 
 Sub EndProgram()
@@ -326,22 +331,26 @@ EndFunction
 
 Sub ProcessExitLoop(line)
    If Stack.GetCount(WhileStack) > 0 Then
-      LineIndex = FindClosingToken(_While, _Wend, LineIndex + 1)
-      If LineIndex = 0 Then
-         ReportError("'" & _Wend & "' غير موجودة", line, 1)
-         Return
-      Else
-         Stack.PopValue(WhileStack)
-      EndIf
+      lastWhile = Stack.PeekValue(WhileStack)
+      lastWhileLine = lastWhile[1]
+   Else
+      lastWhileLine = 0
+   EndIf
+   
+   If Stack.GetCount(ForStack) > 0 Then
+      lastFor = Stack.PeekValue(ForStack)
+      lastForLine = lastFor[4]
+   Else
+      lastForLine = 0
+   EndIf
+   
+   If lastWhileLine > lastForLine Then
+      LineIndex = lastWhile[2]
+      Stack.PopValue(WhileStack)
       
-   ElseIf Stack.GetCount(LoopStack) > 0 Then
-      LineIndex = FindClosingToken(_For, _Next, LineIndex + 1)
-      If LineIndex = 0 Then
-         ReportError("'" & _Next & "' غير موجودة", line, 1)
-         Return
-      EndIf
-      Stack.PopValue(LoopStack)
-      
+   ElseIf lastForLine > 0 Then
+      LineIndex = lastFor[5]
+      Stack.PopValue(ForStack)
    Else
       ReportError("لا توجد حلقة مفتوحة للخروج منها.", line, 1)
    EndIf
@@ -400,16 +409,44 @@ Sub ProcessForLoopHeader()
       stepValue = result[1]
    EndIf
    
-   Vars[varName] = startValue
-   loopObj = {varName, endValue, stepValue, LineIndex}
-   Stack.PushValue(LoopStack, loopObj)
+   nextLineIndex = FindClosingToken(_For, _Next, LineIndex + 1)
+   If nextLineIndex = 0 Then
+      ReportError("'" & _Next & " " & varName & "' مفقودة", LineIndex, 1)
+   Else
+      Vars[varName] = startValue
+      loopObj = {varName, endValue, stepValue, LineIndex, nextLineIndex}
+      Stack.PushValue(ForStack, loopObj)
+   EndIf
 EndSub
 
 Function IsValidVarName(name, line, tokenIndex)
-   If Text.IsNumeric(name[1]) Or
-         (Text.GetLength(name) = 1 And Chars.IsLetter(name) = False) Then
-      ReportError("الاسم '" & name & "' لا يصلح كاسم متغير", line, tokenIndex)
+   If Text.IsNumeric(name[1]) Then
+      ReportError("الاسم '" & name & "' لا يصلح كاسم متغير لأنه يبدأ برقم", line, tokenIndex)
       Return False
+   ElseIf name = "_" Then
+      ReportError("العلامة _ لا تصلح بمفردها كاسم متغير، لكن يمكن أن تستخدم ضصمن اسم متغير", line, tokenIndex)
+      Return False
+   Else
+      ForEach c In name
+         If (c = "_" Or Chars.IsDigit(c) Or Chars.IsLetter(c)) = False Then
+            ReportError("الاسم '" & name & "' لا يصلح كاسم متغير بسبب وجود الرمز '" & c & "'", line, tokenIndex)
+            Return False
+         EndIf
+      Next
+   EndIf
+   
+   Return True
+EndFunction
+
+Function IsValidVarName2(name)
+   If name = _And Or Text.IsNumeric(name[1]) Then
+      Return False
+   Else
+      ForEach c In name
+         If (c = "_" Or Chars.IsDigit(c) Or Chars.IsLetter(c)) = False Then
+            Return False
+         EndIf
+      Next
    EndIf
    
    Return True
@@ -417,12 +454,12 @@ EndFunction
 
 Sub ProcessForLoopNext()
    varName = Tokens[2][3]
-   If Stack.GetCount(LoopStack) = 0 Then
+   If Stack.GetCount(ForStack) = 0 Then
       ReportError("لا توجد حلقة تكرار مفتوحة", LineIndex, 1)
       Return
    EndIf
    
-   loopObj = Stack.PeekValue(LoopStack)
+   loopObj = Stack.PeekValue(ForStack)
    If loopObj[1] <> varName Then
       ReportError("اسم العداد '" & varName & "' غير صحيح:" & Text.NewLine &
          "يجب أن تستخدم '" & loopObj[1] & "'", LineIndex, 2)
@@ -437,7 +474,7 @@ Sub ProcessForLoopNext()
          (stepValue < 0 And newVal >= end) Then
       LineIndex = loopObj[4] ' loop
    Else
-      Stack.PopValue(LoopStack)
+      Stack.PopValue(ForStack)
    EndIf
 EndSub
 
@@ -449,9 +486,15 @@ Sub ProcessWhileLoopHeader()
       Return
    EndIf
    
+   wendLineIndex = FindClosingToken(_While, _Wend, LineIndex + 1)
+   If wendLineIndex = 0 Then
+      ReportError("'" & _Wend & "' مفقودة", LineIndex, 1)
+      Return
+   EndIf
+   
    condition = result[1]
    If condition Then
-      Stack.PushValue(WhileStack, LineIndex)
+      Stack.PushValue(WhileStack, {LineIndex, wendLineIndex})
    Else
       lineId = LineIndex
       LineIndex = FindClosingToken(_While, _Wend, LineIndex + 1)
@@ -467,7 +510,8 @@ Sub ProcessWhileLoopEnd()
       Return
    EndIf
    
-   whileLinIndex = Stack.PeekValue(WhileStack)
+   lastWhile = Stack.PeekValue(WhileStack)
+   whileLinIndex = lastWhile[1]
    Tokenize(Statements[whileLinIndex], whileLinIndex)
    result = EvaluateExpression(2)
    
@@ -519,7 +563,7 @@ Sub ProcessIfBlock()
    EndIf
    
    While True
-      LineIndex = FindNextBranch(LineIndex + 1, {_ElseIf, _Else})
+      LineIndex = FindNextIfBranch(LineIndex + 1)
       Tokenize(Statements[LineIndex], LineIndex)
       branchToken = Tokens[1][3]
       
@@ -583,44 +627,73 @@ Function FindClosingToken(openToken, closeToken, startLine)
    nestingLevel = 0
    For i = startLine To Statements.Count
       statement = Text.Trim(Statements[i])
-      If statement.StartsWith(openToken) Then
+      If StartsWithToken(statement, openToken) Then
          nestingLevel = nestingLevel + 1
-      ElseIf statement.StartsWith(closeToken) Then
+      ElseIf StartsWithToken(statement, closeToken) Then
          If nestingLevel = 0 Then
             Return i
          Else
             nestingLevel = nestingLevel - 1
          EndIf
+         
+         ' Next conditions prevents messed up blocks
+      ElseIf StartsWithToken(statement, _If) Then ' Works only with While and For
+         i = FindClosingToken(_If, _EndIf, i + 1)
+         If i = 0 Then
+            Return 0
+         EndIf
+      ElseIf StartsWithToken(statement, _While) Then ' Works only with If and For
+         i = FindClosingToken(_While, _Wend, i + 1)
+         If i = 0 Then
+            Return 0
+         EndIf
+      ElseIf StartsWithToken(statement, _For) Then ' Works only with If and while
+         i = FindClosingToken(_For, _Next, i + 1)
+         If i = 0 Then
+            Return 0
+         EndIf
+      ElseIf StartsWithToken(statement, _EndIf)
+            Or StartsWithToken(statement, _Wend)
+            Or StartsWithToken(statement, _Next) Then
+         Return 0
       EndIf
    Next
    Return 0
 EndFunction
 
 
-Function FindNextBranch(startLine, branchTokens)
+Function FindNextIfBranch(startLine)
    nestingLevel = 0
    For i = startLine To Statements.Count
       statement = Text.Trim(Statements[i])
-      If statement.StartsWith(_If) Then
+      If StartsWithToken(statement, _If) Then
          nestingLevel = nestingLevel + 1
-      ElseIf statement.StartsWith(_EndIf) Then
+      ElseIf StartsWithToken(statement, _EndIf) Then
          If nestingLevel = 0 Then
             Return i
          Else
             nestingLevel = nestingLevel - 1
          EndIf
       ElseIf nestingLevel = 0 Then
-         ForEach token In branchTokens
-            If statement.StartsWith(token) Then
-               Return i
-            EndIf
-         Next
+         If StartsWithToken(statement, _ElseIf) Or StartsWithToken(statement, _Else) Then
+            Return i
+         EndIf
       EndIf
    Next
    
    Return 0
 EndFunction
 
+Function StartsWithToken(statement, token)
+   If Text.StartsWith(statement, token) = False Then
+      Return False
+   ElseIf statement = token Then
+      Return True
+   EndIf
+   
+   nextChar = statement[Text.GetLength(token) + 1]
+   Return (nextChar = "_" Or Chars.IsDigit(nextChar) Or Chars.IsLetter(nextChar)) = False
+EndFunction
 
 Function EvaluateExpression(start)
    result = ParseExpression(start)
@@ -1298,31 +1371,26 @@ Function AutoCompleteBlock()
    spaces = Text.Repeat(" ", prev.Length - word.Length)
    
    If word = _If Then
-      EditorTextBox.Text =
-         Text.Trim(txt.SubText(1, pos - 1)) & " " & "شرط " & Chars.CrLf
+      EditorTextBox.SelectedText = " " & "شرط " & Chars.CrLf
          & spaces & "    " & Chars.CrLf
-         & spaces & _EndIf & Chars.CrLf
-         & Text.Trim(txt.SubText(lineEnd + 1, txt.Length - pos))
+         & spaces & _EndIf
       EditorTextBox.CaretIndex = pos + 1
       Return 3
       
    ElseIf word = _While Then
-      EditorTextBox.Text =
-         Text.Trim(txt.SubText(1, pos - 1)) & " " & _True & Chars.CrLf
+      EditorTextBox.SelectedText =
+         " " & _True & Chars.CrLf
          & spaces & spaces & "    " & Chars.CrLf
-         & spaces & _Wend & Chars.CrLf
-         & Text.Trim(txt.SubText(lineEnd + 1, txt.Length - pos))
+         & spaces & _Wend
       EditorTextBox.CaretIndex = pos + 1
       Return _True.Length
       
    ElseIf word = _For Then
       forVar = GetForVar()
-      x = " " & forVar & " = 1 " & _To1 & " 10"
-      EditorTextBox.Text =
-         Text.Trim(txt.SubText(1, pos - 1)) & x & Chars.CrLf
+      EditorTextBox.SelectedText =
+         " " & forVar & " = 1 " & _To1 & " 10" & Chars.CrLf
          & spaces & "    " & Chars.CrLf
-         & spaces & _Next & " " & forVar & Chars.CrLf
-         & Text.Trim(txt.SubText(lineEnd + 1, txt.Length - pos))
+         & spaces & _Next & " " & forVar
       EditorTextBox.CaretIndex = pos + 1
       Return 1
    EndIf
@@ -1406,7 +1474,7 @@ Function GetVarNames()
          space = Text.IndexOf(line, " ", pos, True)
          If space = 0 Or space = pos - 1 Then
             varName = Text.Trim(Text.GetSubText(line, 1, space - 1))
-            If varName <> "" And varName.Contains(" ") = False
+            If varName <> "" And IsValidVarName2(varName)
                   And Vars.ContainsValue(varName) = False Then
                Vars.Append(varName)
             EndIf
@@ -1416,3 +1484,39 @@ Function GetVarNames()
    
    Return Vars
 EndFunction
+
+Sub FixNextVarName(ixdex, lineText)
+   forPos = lineText.IndexOf(_For, 1, False)
+   If forPos = 0 Then
+      Return
+   EndIf
+   
+   Tokenize(lineText, 1)
+   varName = Tokens[2][3]
+   If varName = "" Then
+      Return
+   EndIf
+   
+   code = Text.GetSubTextToEnd(EditorTextBox.Text, ixdex)
+   Statements = Text.Split(code, Chars.Lf, False, False)
+   nextLineIndex = FindClosingToken(_For, _Next, 2)
+   If nextLineIndex = 0 Then
+      Return
+   EndIf
+   
+   Tokenize(Statements[nextLineIndex], nextLineIndex)
+   nextVarName = Tokens[2][3]
+   
+   If nextVarName <> varName Then
+      lineStart = ixdex
+      For i = 1 To nextLineIndex - 1
+         lineStart = lineStart + Text.GetLength(Statements[i]) + 1
+      Next
+      
+      caretPos = EditorTextBox.CaretIndex
+      EditorTextBox.SelectionStart = lineStart + Tokens[2][2] - 1
+      EditorTextBox.SelectionLength = Text.GetLength(nextVarName)
+      EditorTextBox.SelectedText = varName
+      EditorTextBox.CaretIndex = caretPos
+   EndIf
+EndSub

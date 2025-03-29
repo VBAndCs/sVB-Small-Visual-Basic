@@ -182,10 +182,7 @@ Namespace Library
             End Get
 
             Set(value As Primitive)
-                Dim v = CBool(value)
-                If v = _useLocalCulture Then Return
-
-                _useLocalCulture = v
+                _useLocalCulture = CBool(value)
                 SmallBasicApplication.Invoke(
                     Sub()
                         If _useLocalCulture Then
@@ -193,7 +190,9 @@ Namespace Library
                             ci.NumberFormat.DigitSubstitution = DigitShapes.NativeNational
                             System.Threading.Thread.CurrentThread.CurrentCulture = ci
                         Else
-                            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentUICulture
+                            Dim ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentUICulture.Name)
+                            ci.NumberFormat.DigitSubstitution = DigitShapes.None
+                            System.Threading.Thread.CurrentThread.CurrentCulture = ci
                         End If
                     End Sub)
             End Set

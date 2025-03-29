@@ -5,9 +5,17 @@ Imports System.Threading.Tasks
 Imports Microsoft.SmallVisualBasic.Library
 Imports Microsoft.SmallVisualBasic.Library.Internal
 Imports System.Windows.Controls
+Imports System.Windows.Controls.Primitives
+Imports System.Windows.Threading
 
 Namespace WinForms
     Partial Public Class ConsoleWindow
+        Private Shared _threadTimer As New System.Threading.Timer(AddressOf ResponeToUser)
+
+        Private Shared Sub ResponeToUser(state As Object)
+            SmallBasicApplication.Invoke(Sub() DoEvents())
+        End Sub
+
         Public Sub Write(text As String)
             paragraph.Inlines.Add(New Run(text) With {
                 .Foreground = Color.GetBrush(If(TextWindow.ForeColor = Colors.None, TextWindow.ForegroundColor, TextWindow.ForeColor)),
@@ -21,15 +29,25 @@ Namespace WinForms
             ConsoleBox.ScrollToEnd()
             ConsoleBox.CaretPosition = ConsoleBox.Document.ContentEnd
             ConsoleBox.Focus()
+            If Me.WindowState = WindowState.Minimized Then
+                SystemCommands.RestoreWindow(Me)
+            End If
             Me.Activate()
-            DoEvents() ' To allow user to close the window if the program is stuck in an infinite loop
         End Sub
 
         Public Sub WriteLine(text As String)
             If text <> "" Then Write(text)
+
             paragraph.Inlines.Add(New LineBreak())
             ConsoleBox.ScrollToEnd()
             ConsoleBox.CaretPosition = ConsoleBox.Document.ContentEnd
+
+            If text <> "" Then
+                If Me.WindowState = WindowState.Minimized Then
+                    SystemCommands.RestoreWindow(Me)
+                End If
+                Me.Activate()
+            End If
         End Sub
 
         Friend isWindowClosed As Boolean = False
@@ -45,6 +63,10 @@ Namespace WinForms
         End Function
 
         Private Sub ShowInputTextBox()
+            If Me.WindowState = WindowState.Minimized Then
+                SystemCommands.RestoreWindow(Me)
+            End If
+            Me.Activate()
             Dim rect = GetCaretPos()
 
             With InputTextBox
@@ -141,6 +163,8 @@ Namespace WinForms
         Private Sub Window_Closed(sender As Object, e As EventArgs)
             isWindowClosed = True
             TextWindow._windowVisible = False
+            _threadTimer.Change(-1, -1)
+            Program.ActivateWindow()
         End Sub
 
         Friend Sub WaitForAnyKey()
@@ -262,6 +286,10 @@ Namespace WinForms
         End Function
 
         Private Sub ShowDatePicker()
+            If Me.WindowState = WindowState.Minimized Then
+                SystemCommands.RestoreWindow(Me)
+            End If
+            Me.Activate()
             Dim rect = GetCaretPos()
 
             With InputDatePicker
@@ -274,8 +302,14 @@ Namespace WinForms
                 Else
                     .Margin = New Thickness(rect.X, rect.Y, 0, 0)
                 End If
+
                 .Visibility = Visibility.Visible
-                .Focus()
+                .Dispatcher.BeginInvoke(DispatcherPriority.Render,
+                    Sub()
+                        .Focus()
+                        Dim textBox = TryCast(.Template.FindName("PART_TextBox", InputDatePicker), DatePickerTextBox)
+                        If textBox IsNot Nothing Then textBox.Focus()
+                    End Sub)
             End With
         End Sub
 
@@ -300,6 +334,14 @@ Namespace WinForms
             WriteLine([Date].GetShortDate(d2))
             ConsoleBox.Focus()
             ConsoleBox.CaretPosition = ConsoleBox.Document.ContentEnd
+        End Sub
+
+        Private Sub ConsoleWindow_IsVisibleChanged(sender As Object, e As DependencyPropertyChangedEventArgs) Handles Me.IsVisibleChanged
+            If Me.IsVisible Then
+                _threadTimer.Change(1000, 1000)
+            Else
+                _threadTimer.Change(-1, -1)
+            End If
         End Sub
     End Class
 End Namespace

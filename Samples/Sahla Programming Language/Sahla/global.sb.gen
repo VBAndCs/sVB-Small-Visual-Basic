@@ -1,0 +1,11 @@
+'@Form Hints:
+'#global{
+'    Label1: Label
+'}
+
+Me = "global"
+Label1 = "global.label1"
+_path = Program.Directory + "\Global.xaml"
+global = Forms.LoadForm("global", _path)
+Form.SetArgsArr(global, Stack.PopValue("_global_argsArr"))
+Form.Show(Me)

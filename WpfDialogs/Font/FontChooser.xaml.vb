@@ -22,7 +22,7 @@ Public Class FontChooser
     Private _currentFeature As DependencyProperty
     Private _currentFeaturePage As TypographyFeaturePage
 
-    Private Shared ReadOnly CommonlyUsedFontSizes() As Double = {3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 12.5, 13.0, 13.5, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 22.0, 24.0, 26.0, 28.0, 30.0, 32.0, 34.0, 36.0, 38.0, 40.0, 42.0, 44.0, 46.0, 48.0, 50.0, 52.0, 56.0, 60.0, 64.0, 68.0, 72.0, 76.0, 80.0}
+    Private Shared ReadOnly commonlyUsedFontSizes() As Double = {3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 12.5, 13.0, 13.5, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 22.0, 24.0, 26.0, 28.0, 30.0, 32.0, 34.0, 36.0, 38.0, 40.0, 42.0, 44.0, 46.0, 48.0, 50.0, 52.0, 56.0, 60.0, 64.0, 68.0, 72.0, 76.0, 80.0}
 
     ' Specialized metadata object for font chooser dependency properties
     Private Class FontPropertyMetadata
@@ -123,6 +123,7 @@ Public Class FontChooser
         For Each value As Double In CommonlyUsedFontSizes
             sizeList.Items.Add(value)
         Next value
+
         OnSelectedFontSizeChanged(FontSizeInPoints)
 
         previewTextBox.Text = _previewSampleText
@@ -811,11 +812,11 @@ Public Class FontChooser
 
     Public Property FontSizeInPoints() As Double
         Get
-            Return SelectedFontSize * 72 / 96
+            Return SelectedFontSize * 3 / 4
         End Get
 
         Set(ByVal value As Double)
-            SelectedFontSize = value * 96 / 72
+            SelectedFontSize = value * 4 / 3
         End Set
     End Property
 

@@ -717,7 +717,7 @@ Namespace Library
                 .Filter = filter,
                 .Title = "Open File",
                 .RestoreDirectory = False,
-                .InitialDirectory = GetSetting("SmallVisualBasic", "OpenFile", key, Program.Directory),
+                .InitialDirectory = GetSetting("SmallVisualBasic", "OpenFile", key, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
                 .FilterIndex = CInt(GetSetting("SmallVisualBasic", "OpenFile", key & "_FilterIndex", "1"))
             }
 
@@ -746,7 +746,7 @@ Namespace Library
                 Sub()
                     Dim folder = GeIinitialFolder(initialFolder.AsString())
                     If folder = "" Then folder = GeIinitialFolder(System.Windows.Clipboard.GetText())
-                    If folder = "" Then folder = GeIinitialFolder(GetSetting("SmallVisualBasic", "OpenFolder", "LastFolder", ""))
+                    If folder = "" Then folder = GeIinitialFolder(GetSetting("SmallVisualBasic", "OpenFolder", "LastFolder", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)))
 
                     Dim th As New Threading.Thread(
                          Sub()
@@ -828,7 +828,7 @@ Namespace Library
                 name = IO.Path.GetFileName(file)
 
                 If file = "" OrElse file.ToLower() = name.ToLower() Then
-                    d = GetSetting("SmallVisualBasic", "SaveFile", key, "")
+                    d = GetSetting("SmallVisualBasic", "SaveFile", key, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
                 Else
                     d = IO.Path.GetDirectoryName(file)
                 End If

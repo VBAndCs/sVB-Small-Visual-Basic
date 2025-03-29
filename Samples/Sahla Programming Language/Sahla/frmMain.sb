@@ -1,4 +1,4 @@
-Program.UseLocalCulture = True
+Program.UseLocalCulture = False
 SetProperties(Global.Ops)
 
 TxtEditor.SetContextMenu(MnuEdit, True)
@@ -30,6 +30,8 @@ EndIf
 ExitSelection = False
 ExitTextChanged = False
 IsIndented = False
+FixLA = False
+AlreadyFixedLA = False
 AutoCompToken = ""
 IsModified = False
 TxtEditor.Focus()
@@ -258,9 +260,6 @@ EndSub
 
 
 Sub MnuCopy_OnClick()
-   selLen = TxtEditor.SelectionLength
-   FormatCode()
-   TxtEditor.SelectionLength = selLen
    LblFormat.CopyFormattedText(TxtEditor.SelectionStart, TxtEditor.SelectionLength)
 EndSub
 
@@ -415,9 +414,11 @@ Sub TxtEditor_OnTextChanged()
       Return
    EndIf
    
+   lastTextInput = Event.LastTextInput
    If Event.LastKey = Keys.Enter Then
       FormatCode()
-   ElseIf Event.LastKey = Keys.Back Or Chars.IsLetter(Event.LastTextInput) Then
+   ElseIf Event.LastKey = Keys.Back Or lastTextInput = "_"
+         Or Chars.IsDigit(lastTextInput) Or Chars.IsLetter(lastTextInput) Then
       ShowAutoComp()
    EndIf
    
@@ -425,7 +426,6 @@ Sub TxtEditor_OnTextChanged()
    IsIndented = False
    MnuFile_OnOpen()
 EndSub
-
 
 Sub ShowAutoComp()
    pos = TxtEditor.CaretIndex
@@ -459,13 +459,11 @@ Sub ShowAutoComp()
          isCommand = False
          ExitLoop
          
-      ElseIf Chars.IsLetter(c) = False Then
-         found = True
-      EndIf
-      
-      If found = False Then
+      ElseIf c = "_" Or Chars.IsDigit(c) Or Chars.IsLetter(c) Then
          index = i
          AutoCompToken = c & AutoCompToken
+      Else
+         found = True
       EndIf
    Next
    
@@ -530,7 +528,21 @@ EndSub
 Sub TxtEditor_OnTextInput()
    lastInput = Event.LastTextInput
    
-   If lastInput = " " Then
+   If FixLA And (lastInput = "ل" Or lastInput = "ا") Then
+      If AlreadyFixedLA Then
+         AlreadyFixedLA = False
+      Else
+         AlreadyFixedLA = True
+         LstCompletion.Visible = False
+         ExitSelection = True
+         TxtEditor.SelectedText = "لا"
+         TxtEditor.SelectionLength = 0
+         ExitSelection = False
+         TxtEditor.CaretIndex = TxtEditor.CaretIndex + 2
+      EndIf
+      Event.Handled = True
+      
+   ElseIf lastInput = " " Then
       AutoCompleteBlock()
       
    ElseIf LstCompletion.Visible Then
@@ -570,17 +582,14 @@ Sub MnuAbout_OnClick()
 EndSub
 
 Sub TxtEditor_OnKeyDown()
+   FixLA = False
    k = Event.LastKey
+   
    If Keyboard.CtrlPressed And Keyboard.ShiftPressed Then
       Event.Handled = True
       
    ElseIf k = Keys.B Then ' Solve the issue of Arabic لا
-      ExitSelection = True
-      TxtEditor.SelectedText = "لا"
-      TxtEditor.SelectionLength = 0
-      ExitSelection = False
-      TxtEditor.CaretIndex = TxtEditor.CaretIndex + 2
-      Event.Handled = True
+      FixLA = True
       
    ElseIf LstCompletion.Visible Then
       If k = Keys.Escape Then
@@ -620,6 +629,7 @@ Sub TxtEditor_OnKeyDown()
    EndIf
 EndSub
 
+LastlineStart = 0
 LastLineIndex = 0
 LastlinesCount = 0
 
@@ -704,6 +714,7 @@ Sub UpdateLine()
       lineText = code.SubText(lineStart, lineEnd - lineStart + 1)
    EndIf
    
+   lastLineText = LblLine.Text
    
    If lineText = "" Then
       LblLine.Text = ""
@@ -719,9 +730,12 @@ Sub UpdateLine()
       LastlinesCount = linesCount
       IsIndented = True
       ExitTextChanged = True
+      Global.FixNextVarName(LastlineStart, lastLineText)
       Global.IndentCode()
       ExitTextChanged = False
    EndIf
+   
+   LastlineStart = lineStart
 EndSub
 Sub TxtEditor_OnMouseWheel()
    If Keyboard.CtrlPressed Then

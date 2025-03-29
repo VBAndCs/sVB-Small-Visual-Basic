@@ -1011,6 +1011,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_484F0048E5DF46858D5BC1EDC6A1D1E7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_488606683A824F609B841014D1E00358"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -4139,7 +4145,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.5.1_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.5.2_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -7515,6 +7521,26 @@
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Prim Numbers 2.shl"
             "TargetName" = "8:Prim Numbers 2.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_484F0048E5DF46858D5BC1EDC6A1D1E7"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\IsPrime.shl"
+            "TargetName" = "8:IsPrime.shl"
             "Tag" = "8:"
             "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
@@ -18905,7 +18931,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.5.1"
+        "ProductName" = "8:Small Visual Basic 3.5.2"
         "ProductCode" = "8:{004F0DE1-7938-43C4-9CAC-59D32A7CCCE6}"
         "PackageCode" = "8:{69D9A160-0775-4300-8782-A0E4BD492588}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -19085,7 +19111,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.5.1"
+            "Name" = "8:sVB 3.5.2"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -19127,7 +19153,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.5.1"
+            "Name" = "8:sVB 3.5.2"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -19155,7 +19181,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.5.1"
+            "Name" = "8:sVB 3.5.2"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

@@ -625,7 +625,6 @@ Namespace WinForms
 
                           Dim ch As New Wpf.CheckBox With {
                                .Name = controlName,
-                               .Content = text,
                                .RenderTransformOrigin = New Point(0.5, 0.5)
                           }
 
@@ -642,6 +641,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(ch)
                           Forms._controls(key) = ch
+                          CheckBox.SetText(key, text)
                           AddHandler ch.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
@@ -686,7 +686,6 @@ Namespace WinForms
 
                           Dim rd As New Wpf.RadioButton With {
                                .Name = controlName,
-                               .Content = text,
                                .GroupName = groupName,
                                .IsChecked = isChecked,
                                .RenderTransformOrigin = New Point(0.5, 0.5)
@@ -698,6 +697,7 @@ Namespace WinForms
                           Dim cnv = GetCanvas(frm)
                           cnv.Children.Add(rd)
                           Forms._controls(key) = rd
+                          RadioButton.SetText(key, text)
                           AddHandler rd.LostKeyboardFocus, AddressOf Control.OnLostKeyboardFocus
 
                       Catch ex As Exception
