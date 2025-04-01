@@ -171,6 +171,8 @@ Namespace Library
         End Sub
 
         Private Shared _useLocalCulture As Primitive = False
+        Private Shared _Product As Primitive
+        Private Shared _Title As Primitive
 
         ''' <summary>
         ''' Set it to true to use the local culture of the User's PC to show numerics and dates.

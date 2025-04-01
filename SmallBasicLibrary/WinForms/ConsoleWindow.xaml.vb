@@ -13,7 +13,9 @@ Namespace WinForms
         Private Shared _threadTimer As New System.Threading.Timer(AddressOf ResponeToUser)
 
         Private Shared Sub ResponeToUser(state As Object)
-            SmallBasicApplication.Invoke(Sub() DoEvents())
+            If Not HandleKey Then
+                SmallBasicApplication.Invoke(Sub() DoEvents())
+            End If
         End Sub
 
         Public Sub Write(text As String)
@@ -167,16 +169,23 @@ Namespace WinForms
             Program.ActivateWindow()
         End Sub
 
+        Private Shared HandleKey As Boolean = False
+
         Friend Sub WaitForAnyKey()
             isKeyPressed = False
+            HandleKey = True
             Do
                 DoEvents()
-                If isKeyPressed OrElse isWindowClosed Then Return
+                If isKeyPressed OrElse isWindowClosed Then
+                    HandleKey = False
+                    Return
+                End If
             Loop
         End Sub
 
         Private Sub Window_PreviewKeyDown(sender As Object, e As KeyEventArgs)
             isKeyPressed = True
+            e.Handled = HandleKey
         End Sub
 
         Dim _readOneKey As Boolean = False

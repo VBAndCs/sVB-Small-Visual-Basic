@@ -1,5 +1,6 @@
 Program.UseLocalCulture = False
-SetProperties(Global.Ops)
+Ops = Global.Ops
+SetProperties(Ops)
 
 TxtEditor.SetContextMenu(MnuEdit, True)
 LblNum.OnMouseLeftDown = LblMargin_OnMouseLeftDown
@@ -18,9 +19,10 @@ LblNum.Visible = True
 
 ' Open .shl files  with Sahla
 If Program.ArgumentCount = 0 Then
-   If Program.GetSetting("Sahla", "FirstTime", True) Then
+   If Ops!FirstTime Then
       Open("Syntax/0.shl")
-      Program.SaveSetting("Sahla", "FirstTime", False)
+      Ops!FirstTime = False
+      Global.SaveSettings(Ops)
    EndIf
    Forms.ShowDialog("FrmAbout", "")
 Else
@@ -33,20 +35,13 @@ IsIndented = False
 FixLA = False
 AlreadyFixedLA = False
 AutoCompToken = ""
+HorizontalScrollOffset = 0
+LastlineStart = 0
+LastLineIndex = 0
+LastlinesCount = 0
+StartSelectionIndex = 0
 IsModified = False
 TxtEditor.Focus()
-
-Sub MnuNew_OnClick()
-   If AskToSave() = False Then
-      Return
-   EndIf
-   
-   TxtEditor.Text = ""
-   IsModified = False
-   SavedFile = ""
-   SetProperties(Global.Ops)
-   TxtEditor.RestUndo()
-EndSub
 
 Sub SetProperties(ops)
    LblFormat.Text = ""
@@ -127,6 +122,58 @@ Sub SetProperties(ops)
    Global.LblLine = LblLine
 EndSub
 
+Sub OnScroll()
+   If ExitTextChanged Or ExitSelection Then
+      Return
+   EndIf
+   
+   HorizontalScrollOffset = TxtEditor.HorizontalScrollOffset
+   LblFormat.Width = TxtEditor.Width + 2 * HorizontalScrollOffset
+   LblFormat.Left = -HorizontalScrollOffset - 3
+   
+   v = TxtEditor.VerticalScrollOffset
+   LblFormat.Height = TxtEditor.Height + v
+   LblFormat.Top = -v
+   AdjustLabels()
+   TxtEditor_OnSelection()
+EndSub
+
+Sub AdjustLabels()
+   w = TxtEditor.Width + 2 * HorizontalScrollOffset
+   LblLine.Width = w
+   LblBackground.Width = w
+   
+   x = -HorizontalScrollOffset - 3 - TxtEditor.Padding
+   LblLine.Left = x
+   LblBackground.Left = x
+   
+   top = TxtEditor.CaretTop
+   LblLine.Top = top
+   LblBackground.Top = top
+   LblNum.Top = top + (LblLine.Height - LblNum.Height) / 2
+EndSub
+
+Sub Form_OnShown()
+   TxtEditor.OnScroll = OnScroll
+   Program.SwitchKeyboardToLocalLanguage()
+EndSub
+
+Sub FrmMain_OnClosing()
+   Event.Handled = (AskToSave() = False)
+EndSub
+
+Sub MnuNew_OnClick()
+   If AskToSave() = False Then
+      Return
+   EndIf
+   
+   TxtEditor.Text = ""
+   IsModified = False
+   SavedFile = ""
+   SetProperties(Global.Ops)
+   TxtEditor.RestUndo()
+EndSub
+
 Sub MnuOpen_OnClick()
    If AskToSave() Then
       fileName = File.OpenFileDialog({"Sahla code files", "shl"})
@@ -139,17 +186,19 @@ EndSub
 
 Sub Open(fileName)
    lines = File.ReadLines(fileName)
-   ops!FontName = lines[1]
-   ops!FontSize = lines[2]
-   ops!Bold = lines[3]
-   ops!Italic = lines[4]
-   ops!Underlined = lines[5]
-   ops!ForeColor = lines[6]
-   ops!BackColor = lines[7]
-   ops!RightToLeft = lines[8]
-   ops!MultiLine = lines[9]
-   ops!WordWrap = lines[10]
-   SetProperties(ops)
+   If lines.Count > 0 Then
+      Ops!FontName = lines[1]
+      Ops!FontSize = lines[2]
+      Ops!Bold = lines[3]
+      Ops!Italic = lines[4]
+      Ops!Underlined = lines[5]
+      Ops!ForeColor = lines[6]
+      Ops!BackColor = lines[7]
+      Ops!RightToLeft = lines[8]
+      Ops!MultiLine = lines[9]
+      Ops!WordWrap = lines[10]
+      SetProperties(Ops)
+   EndIf
    
    txt = ""
    For i = 11 To lines.Count - 1
@@ -160,15 +209,14 @@ Sub Open(fileName)
    SavedFile = fileName
    IsModified = False
    TxtEditor.RestUndo()
+   OnScroll()
 EndSub
 
 Sub MnuSave_OnClick()
-   FormatCode()
    Save()
 EndSub
 
 Sub MnuSaveAs_OnClick()
-   FormatCode()
    SaveAs()
 EndSub
 
@@ -200,20 +248,21 @@ Function Save()
    If SavedFile = "" Then
       Return SaveAs()
    Else
-      ops = {}
-      ops!FontName = TxtEditor.FontName
-      ops!FontSize = TxtEditor.FontSize
-      ops!Bold = TxtEditor.FontBold
-      ops!Italic = TxtEditor.FontItalic
-      ops!Underlined = TxtEditor.Underlined
-      ops!ForeColor = LblFormat.ForeColor
-      ops!BackColor = LblFormat.BackColor
-      ops!RightToLeft = TxtEditor.RightToLeft
-      ops!MultiLine = TxtEditor.MultiLine
-      ops!WordWrap = TxtEditor.WordWrap
-      ops!Text = TxtEditor.Text
+      FormatCode()
+      Ops = {}
+      Ops!FontName = TxtEditor.FontName
+      Ops!FontSize = TxtEditor.FontSize
+      Ops!Bold = TxtEditor.FontBold
+      Ops!Italic = TxtEditor.FontItalic
+      Ops!Underlined = TxtEditor.Underlined
+      Ops!ForeColor = LblFormat.ForeColor
+      Ops!BackColor = LblFormat.BackColor
+      Ops!RightToLeft = TxtEditor.RightToLeft
+      Ops!MultiLine = TxtEditor.MultiLine
+      Ops!WordWrap = TxtEditor.WordWrap
+      Ops!Text = TxtEditor.Text
       
-      If File.WriteContents(SavedFile, ops) = False Then
+      If File.WriteContents(SavedFile, Ops) = False Then
          Me.ShowMessage(File.LastError, "Error")
          Return False
       EndIf
@@ -230,6 +279,7 @@ Function SaveAs()
    )
    
    If fileName = "" Then
+      FormatCode()
       Return False
    Else
       SavedFile = fileName
@@ -346,50 +396,8 @@ Sub MnuView_OnOpen()
    MnuUnderline.Checked = TxtEditor.Underlined
 EndSub
 
-Sub FrmMain_OnClosing()
-   Event.Handled = (AskToSave() = False)
-EndSub
-
 Sub MnuFind_OnClick()
    Me.ShowChildForm("FrmFind", TxtEditor)
-EndSub
-
-Sub Form_OnShown()
-   TxtEditor.OnScroll = OnScroll
-   Program.SwitchKeyboardToLocalLanguage()
-EndSub
-
-HorizontalScrollOffset = 0
-
-Sub OnScroll()
-   If ExitTextChanged Or ExitSelection Then
-      Return
-   EndIf
-   
-   HorizontalScrollOffset = TxtEditor.HorizontalScrollOffset
-   LblFormat.Width = TxtEditor.Width + 2 * HorizontalScrollOffset
-   LblFormat.Left = -HorizontalScrollOffset - 3
-   
-   v = TxtEditor.VerticalScrollOffset
-   LblFormat.Height = TxtEditor.Height + v
-   LblFormat.Top = -v
-   AdjustLabels()
-   TxtEditor_OnSelection()
-EndSub
-
-Sub AdjustLabels()
-   w = TxtEditor.Width + 2 * HorizontalScrollOffset
-   LblLine.Width = w
-   LblBackground.Width = w
-   
-   x = -HorizontalScrollOffset - 3 - TxtEditor.Padding
-   LblLine.Left = x
-   LblBackground.Left = x
-   
-   top = TxtEditor.CaretTop
-   LblLine.Top = top
-   LblBackground.Top = top
-   LblNum.Top = top + (LblLine.Height - LblNum.Height) / 2
 EndSub
 
 Sub MnuRun_OnClick()
@@ -409,6 +417,99 @@ Sub MnuEnd_OnClick()
    MnuRun.Enabled = True
 EndSub
 
+Sub MnuOutput_OnClick()
+   If AskToSave() Then
+      Open("Syntax/1.shl")
+   EndIf
+EndSub
+
+
+Sub MnuVars_OnClick()
+   If AskToSave() Then
+      Open("Syntax/2.shl")
+   EndIf
+EndSub
+
+Sub MnuOps_OnClick()
+   If AskToSave() Then
+      Open("Syntax/3.shl")
+   EndIf
+EndSub
+
+Sub MnuInput_OnClick()
+   If AskToSave() Then
+      Open("Syntax/4.shl")
+   EndIf
+EndSub
+
+
+Sub MnuConditions_OnClick()
+   If AskToSave() Then
+      Open("Syntax/5.shl")
+   EndIf
+EndSub
+
+
+Sub MnuLoops_OnClick()
+   If AskToSave() Then
+      Open("Syntax/6.shl")
+   EndIf
+EndSub
+
+Sub MnuSounds_OnClick()
+   If AskToSave() Then
+      Open("Syntax/7.shl")
+   EndIf
+EndSub
+
+Sub MnuAbout_OnClick()
+   Forms.ShowDialog("FrmAbout", "")
+EndSub
+
+Sub MnuFormat_OnClick()
+   FormatCode()
+EndSub
+
+
+Sub LstCompletion_OnKeyDown()
+   k = Event.LastKey
+   If k = Keys.Enter Then
+      AutoCompleteWord(5)
+   ElseIf k = Keys.Escape Then
+      LstCompletion.Visible = False
+      TxtEditor.Focus()
+   EndIf
+EndSub
+
+Sub LstCompletion_OnDoubleClick()
+   AutoCompleteWord(7)
+EndSub
+
+Sub LblMargin_OnMouseLeftDown()
+   FormatCode()
+   If Keyboard.ShiftPressed Then
+      StartSelectionIndex = TxtEditor.CaretIndex
+      ExtendSelection()
+   Else
+      StartSelectionIndex = GetLineStartIndex(LblMargin.MouseY)
+      TxtEditor.CaretIndex = StartSelectionIndex
+   EndIf
+EndSub
+
+Sub LblMargin_OnMouseMove()
+   If Mouse.IsLeftButtonDown Then
+      ExtendSelection()
+   EndIf
+EndSub
+
+Sub TxtEditor_OnMouseLeftDown()
+   LstCompletion.Visible = False
+EndSub
+
+Sub TxtEditor_OnMouseRightDown()
+   LstCompletion.Visible = False
+EndSub
+
 Sub TxtEditor_OnTextChanged()
    If ExitTextChanged Or ExitSelection Then
       Return
@@ -425,6 +526,123 @@ Sub TxtEditor_OnTextChanged()
    IsModified = True
    IsIndented = False
    MnuFile_OnOpen()
+EndSub
+
+Sub TxtEditor_OnTextInput()
+   lastInput = Event.LastTextInput
+   
+   If FixLA And (lastInput = "ل" Or lastInput = "ا") Then
+      If AlreadyFixedLA Then
+         AlreadyFixedLA = False
+      Else
+         AlreadyFixedLA = True
+         LstCompletion.Visible = False
+         ExitSelection = True
+         TxtEditor.SelectedText = "لا"
+         TxtEditor.SelectionLength = 0
+         ExitSelection = False
+         TxtEditor.CaretIndex = TxtEditor.CaretIndex + 2
+      EndIf
+      Event.Handled = True
+      
+   ElseIf lastInput = " " Then
+      AutoCompleteBlock()
+      
+   ElseIf LstCompletion.Visible Then
+      If lastInput = "=" Then
+         If Array.ContainsValue(Global.CommandsCompletionList, LstCompletion.SelectedItem) Then
+            LstCompletion.Visible = False
+         Else
+            AutoCompleteWord(1)
+         EndIf
+      ElseIf lastInput = """" Then
+         If Array.ContainsValue(Global.CommandsCompletionList, LstCompletion.SelectedItem) Then
+            AutoCompleteWord(6)
+         Else
+            LstCompletion.Visible = False
+         EndIf
+      ElseIf Array.ContainsValue(Global.Opertors, lastInput) Then
+         AutoCompleteWord(2)
+      Else
+         LstCompletion.Visible = False
+      EndIf
+   EndIf
+EndSub
+
+
+Sub TxtEditor_OnKeyDown()
+   FixLA = False
+   k = Event.LastKey
+   
+   If Keyboard.CtrlPressed And Keyboard.ShiftPressed Then
+      Event.Handled = True
+      
+   ElseIf k = Keys.B Then ' Solve the issue of Arabic لا
+      FixLA = True
+      
+   ElseIf LstCompletion.Visible Then
+      If k = Keys.Escape Then
+         LstCompletion.Visible = False
+         Event.Handled = True
+         
+      ElseIf k = Keys.Enter Then
+         AutoCompleteWord(3)
+         Event.Handled = True
+         
+         
+      ElseIf k = Keys.Space Then
+         AutoCompleteWord(4)
+         
+      ElseIf k = Keys.Up Then
+         i = LstCompletion.SelectedIndex
+         If i > 1 Then
+            LstCompletion.SelectedIndex = LstCompletion.SelectedIndex - 1
+         Else
+            LstCompletion.SelectedIndex = LstCompletion.ItemsCount
+         EndIf
+         Event.Handled = True
+         
+      ElseIf k = Keys.Down Then
+         i = LstCompletion.SelectedIndex
+         If i < LstCompletion.ItemsCount Then
+            LstCompletion.SelectedIndex = LstCompletion.SelectedIndex + 1
+         Else
+            LstCompletion.SelectedIndex = 1
+         EndIf
+         Event.Handled = True
+         
+      ElseIf k = Keys.Delete Or k = Keys.Left Or k = Keys.Right
+            Or k = Keys.PageUp Or k = Keys.PageDown Or k = Keys.Home Or k = Keys.End Then
+         LstCompletion.Visible = False
+      EndIf
+   EndIf
+EndSub
+
+Sub TxtEditor_OnSelection()
+   If ExitSelection Or TxtEditor.SelectionLength > 1 Then
+      Return
+   EndIf
+   
+   If ExitTextChanged Then
+      AdjustLabels()
+      Return
+   EndIf
+   
+   UpdateLine()
+EndSub
+
+Sub TxtEditor_OnMouseWheel()
+   If Keyboard.CtrlPressed Then
+      size = TxtEditor.FontSize + Event.LastMouseWheelDirection
+      If size < 50 And size > 10 Then
+         TxtEditor.FontSize = size
+         LblFormat.FontSize = size
+         LblLine.FontSize = size
+         LblBackground.FontSize = size
+         TW.FontSize = TxtEditor.FontSize
+      EndIf
+      Event.Handled = True
+   EndIf
 EndSub
 
 Sub ShowAutoComp()
@@ -516,54 +734,12 @@ Sub ShowAutoComp()
    EndIf
 EndSub
 
-
 Sub FormatCode()
    IsIndented = True
    ExitTextChanged = True
    Global.IndentCode()
    ExitTextChanged = False
    TxtEditor_OnSelection()
-EndSub
-
-Sub TxtEditor_OnTextInput()
-   lastInput = Event.LastTextInput
-   
-   If FixLA And (lastInput = "ل" Or lastInput = "ا") Then
-      If AlreadyFixedLA Then
-         AlreadyFixedLA = False
-      Else
-         AlreadyFixedLA = True
-         LstCompletion.Visible = False
-         ExitSelection = True
-         TxtEditor.SelectedText = "لا"
-         TxtEditor.SelectionLength = 0
-         ExitSelection = False
-         TxtEditor.CaretIndex = TxtEditor.CaretIndex + 2
-      EndIf
-      Event.Handled = True
-      
-   ElseIf lastInput = " " Then
-      AutoCompleteBlock()
-      
-   ElseIf LstCompletion.Visible Then
-      If lastInput = "=" Then
-         If Array.ContainsValue(Global.CommandsCompletionList, LstCompletion.SelectedItem) Then
-            LstCompletion.Visible = False
-         Else
-            AutoCompleteWord(1)
-         EndIf
-      ElseIf lastInput = """" Then
-         If Array.ContainsValue(Global.CommandsCompletionList, LstCompletion.SelectedItem) Then
-            AutoCompleteWord(6)
-         Else
-            LstCompletion.Visible = False
-         EndIf
-      ElseIf Array.ContainsValue(Global.Opertors, lastInput) Then
-         AutoCompleteWord(2)
-      Else
-         LstCompletion.Visible = False
-      EndIf
-   EndIf
 EndSub
 
 Sub AutoCompleteBlock()
@@ -575,75 +751,6 @@ Sub AutoCompleteBlock()
       Event.Handled = True
    EndIf
    ExitTextChanged = False
-EndSub
-
-Sub MnuAbout_OnClick()
-   Forms.ShowDialog("FrmAbout", "")
-EndSub
-
-Sub TxtEditor_OnKeyDown()
-   FixLA = False
-   k = Event.LastKey
-   
-   If Keyboard.CtrlPressed And Keyboard.ShiftPressed Then
-      Event.Handled = True
-      
-   ElseIf k = Keys.B Then ' Solve the issue of Arabic لا
-      FixLA = True
-      
-   ElseIf LstCompletion.Visible Then
-      If k = Keys.Escape Then
-         LstCompletion.Visible = False
-         Event.Handled = True
-         
-      ElseIf k = Keys.Enter Then
-         AutoCompleteWord(3)
-         Event.Handled = True
-         
-         
-      ElseIf k = Keys.Space Then
-         AutoCompleteWord(4)
-         
-      ElseIf k = Keys.Up Then
-         i = LstCompletion.SelectedIndex
-         If i > 1 Then
-            LstCompletion.SelectedIndex = LstCompletion.SelectedIndex - 1
-         Else
-            LstCompletion.SelectedIndex = LstCompletion.ItemsCount
-         EndIf
-         Event.Handled = True
-         
-      ElseIf k = Keys.Down Then
-         i = LstCompletion.SelectedIndex
-         If i < LstCompletion.ItemsCount Then
-            LstCompletion.SelectedIndex = LstCompletion.SelectedIndex + 1
-         Else
-            LstCompletion.SelectedIndex = 1
-         EndIf
-         Event.Handled = True
-         
-      ElseIf k = Keys.Delete Or k = Keys.Left Or k = Keys.Right
-            Or k = Keys.PageUp Or k = Keys.PageDown Or k = Keys.Home Or k = Keys.End Then
-         LstCompletion.Visible = False
-      EndIf
-   EndIf
-EndSub
-
-LastlineStart = 0
-LastLineIndex = 0
-LastlinesCount = 0
-
-Sub TxtEditor_OnSelection()
-   If ExitSelection Or TxtEditor.SelectionLength > 1 Then
-      Return
-   EndIf
-   
-   If ExitTextChanged Then
-      AdjustLabels()
-      Return
-   EndIf
-   
-   UpdateLine()
 EndSub
 
 Sub UpdateLine()
@@ -737,74 +844,7 @@ Sub UpdateLine()
    
    LastlineStart = lineStart
 EndSub
-Sub TxtEditor_OnMouseWheel()
-   If Keyboard.CtrlPressed Then
-      size = TxtEditor.FontSize + Event.LastMouseWheelDirection
-      If size < 50 And size > 10 Then
-         TxtEditor.FontSize = size
-         LblFormat.FontSize = size
-         LblLine.FontSize = size
-         LblBackground.FontSize = size
-         TW.FontSize = TxtEditor.FontSize
-      EndIf
-      Event.Handled = True
-   EndIf
-EndSub
 
-
-Sub MnuOutput_OnClick()
-   If AskToSave() Then
-      Open("Syntax/1.shl")
-   EndIf
-EndSub
-
-
-Sub MnuVars_OnClick()
-   If AskToSave() Then
-      Open("Syntax/2.shl")
-   EndIf
-EndSub
-
-Sub MnuOps_OnClick()
-   If AskToSave() Then
-      Open("Syntax/3.shl")
-   EndIf
-EndSub
-
-Sub MnuInput_OnClick()
-   If AskToSave() Then
-      Open("Syntax/4.shl")
-   EndIf
-EndSub
-
-
-Sub MnuConditions_OnClick()
-   If AskToSave() Then
-      Open("Syntax/5.shl")
-   EndIf
-EndSub
-
-
-Sub MnuLoops_OnClick()
-   If AskToSave() Then
-      Open("Syntax/6.shl")
-   EndIf
-EndSub
-
-Sub MnuSounds_OnClick()
-   If AskToSave() Then
-      Open("Syntax/7.shl")
-   EndIf
-EndSub
-
-Sub MnuFormat_OnClick()
-   FormatCode()
-EndSub
-
-
-Sub LstCompletion_OnDoubleClick()
-   AutoCompleteWord(7)
-EndSub
 
 Sub AutoCompleteWord(debug)
    ' Forms.ShowMessage(debug, "Message")
@@ -827,17 +867,6 @@ Sub AutoCompleteWord(debug)
    EndIf
 EndSub
 
-Sub LstCompletion_OnKeyDown()
-   k = Event.LastKey
-   If k = Keys.Enter Then
-      AutoCompleteWord(5)
-   ElseIf k = Keys.Escape Then
-      LstCompletion.Visible = False
-      TxtEditor.Focus()
-   EndIf
-EndSub
-
-
 Function GetLineStartIndex(y)
    lineHeight = LblLine.Height
    code = TxtEditor.Text
@@ -858,25 +887,6 @@ Function GetLineStartIndex(y)
    
    Return 0
 EndFunction
-
-StartSelectionIndex = 0
-
-Sub LblMargin_OnMouseLeftDown()
-   FormatCode()
-   If Keyboard.ShiftPressed Then
-      StartSelectionIndex = TxtEditor.CaretIndex
-      ExtendSelection()
-   Else
-      StartSelectionIndex = GetLineStartIndex(LblMargin.MouseY)
-      TxtEditor.CaretIndex = StartSelectionIndex
-   EndIf
-EndSub
-
-Sub LblMargin_OnMouseMove()
-   If Mouse.IsLeftButtonDown Then
-      ExtendSelection()
-   EndIf
-EndSub
 
 Sub ExtendSelection()
    currentIndex = GetLineStartIndex(LblMargin.MouseY)
@@ -901,13 +911,4 @@ Sub ExtendSelection()
    ExitSelection = False
 EndSub
 
-
-Sub TxtEditor_OnMouseLeftDown()
-   LstCompletion.Visible = False
-EndSub
-
-
-Sub TxtEditor_OnMouseRightDown()
-   LstCompletion.Visible = False
-EndSub
 

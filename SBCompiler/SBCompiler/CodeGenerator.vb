@@ -109,6 +109,55 @@ Namespace Microsoft.SmallVisualBasic
                 New Object() {".NETFramework,Version=v4.8"}
             ))
 
+            Dim info = ProgramInfo.GetProperties(
+                IO.Path.Combine(IO.Path.GetDirectoryName(_directory), "app.json")
+            )
+
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Reflection.AssemblyTitleAttribute).GetConstructor(New Type() {GetType(String)}),
+                New Object() {info.Title}
+            ))
+
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Reflection.AssemblyDescriptionAttribute).GetConstructor(New Type() {GetType(String)}),
+                New Object() {info.Description}
+            ))
+
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Reflection.AssemblyCompanyAttribute).GetConstructor(New Type() {GetType(String)}),
+                New Object() {info.Company}
+            ))
+
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Reflection.AssemblyProductAttribute).GetConstructor(New Type() {GetType(String)}),
+                New Object() {info.Product}
+            ))
+
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Reflection.AssemblyCopyrightAttribute).GetConstructor(New Type() {GetType(String)}),
+                New Object() {info.Copyright}
+            ))
+
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Reflection.AssemblyTrademarkAttribute).GetConstructor(New Type() {GetType(String)}),
+                New Object() {info.Trademark}
+            ))
+
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Reflection.AssemblyVersionAttribute).GetConstructor(New Type() {GetType(String)}),
+                New Object() {info.Version}
+            ))
+
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Reflection.AssemblyFileVersionAttribute).GetConstructor(New Type() {GetType(String)}),
+                New Object() {info.Version.ToString()}
+            ))
+
+            asm.SetCustomAttribute(New CustomAttributeBuilder(
+                GetType(System.Runtime.InteropServices.ComVisibleAttribute).GetConstructor(New Type() {GetType(Boolean)}),
+                New Object() {False}
+            ))
+
             Dim moduleBuilder = asm.DefineDynamicModule(_outputName & ".exe", emitSymbolInfo:=True)
             Dim typeBuilder = moduleBuilder.DefineType("_SmallVisualBasic_Program", TypeAttributes.Sealed)
             entryPoint = typeBuilder.DefineMethod("_Main", MethodAttributes.Static)
@@ -133,6 +182,7 @@ Namespace Microsoft.SmallVisualBasic
                 asm.Save(_outputName & ".exe")
                 Dim _path = IO.Path.Combine(_directory, _outputName)
                 _xmlDoc.Save(_path & ".xml")
+                NativeResourceUpdater.UpdateVersionResource(_path & ".exe", info)
                 Return asm.GetReferencedAssemblies()
             End If
 

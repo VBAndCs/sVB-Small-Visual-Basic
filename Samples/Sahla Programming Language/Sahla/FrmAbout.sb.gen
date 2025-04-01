@@ -29,7 +29,7 @@ LblSVB = "frmabout.lblsvb"
 LblKP = "frmabout.lblkp"
 LblSamples = "frmabout.lblsamples"
 Label9 = "frmabout.label9"
-_path = Program.Directory + "\FrmAbout.xaml"
+_path = Program.Directory + "\frmabout.xaml"
 FrmAbout = Forms.LoadForm("FrmAbout", _path)
 Form.SetArgsArr(frmabout, Stack.PopValue("_frmabout_argsArr"))
 '#Events{

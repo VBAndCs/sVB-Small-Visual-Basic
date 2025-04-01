@@ -95,7 +95,7 @@ MnuConditions = "frmmain.mnuconditions"
 MnuLoops = "frmmain.mnuloops"
 MnuSounds = "frmmain.mnusounds"
 MnuAbout = "frmmain.mnuabout"
-_path = Program.Directory + "\frmmain.xaml"
+_path = Program.Directory + "\frmMain.xaml"
 FrmMain = Forms.LoadForm("FrmMain", _path)
 Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
 '#Events{

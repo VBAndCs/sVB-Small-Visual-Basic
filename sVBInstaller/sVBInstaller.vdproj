@@ -4145,7 +4145,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.5.2_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.5.3_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -18931,7 +18931,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.5.2"
+        "ProductName" = "8:Small Visual Basic 3.5.3"
         "ProductCode" = "8:{004F0DE1-7938-43C4-9CAC-59D32A7CCCE6}"
         "PackageCode" = "8:{69D9A160-0775-4300-8782-A0E4BD492588}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -19111,7 +19111,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.5.2"
+            "Name" = "8:sVB 3.5.3"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -19153,7 +19153,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.5.2"
+            "Name" = "8:sVB 3.5.3"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -19181,7 +19181,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.5.2"
+            "Name" = "8:sVB 3.5.3"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -19437,8 +19437,8 @@
                             "Type" = "3:3"
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1202"
+                            "Setting" = "3:2"
+                            "Value" = "8:Small Visual Basic @Mohammad Hamdy Ghanem"
                             "DefaultValue" = "8:#1202"
                             "UsePlugInResources" = "11:TRUE"
                             }

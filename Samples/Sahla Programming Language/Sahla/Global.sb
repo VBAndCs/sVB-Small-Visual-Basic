@@ -1,18 +1,6 @@
-Statements = {}				' Array of code lines (strings)
-LineIndex = 1 	    			' Our program counter
-Tokens = {}					' Tokens array for the current line
-Vars = {}						' Array containing variables of current proogram
-WhileStack = "WhileStack"		' Stack name for WHILE loops
-ForStack = "ForStack"			' Stack name for FOR loops
-
-EditorTextBox = ""
-LblFormat = ""
-LblLine = ""
-
 ProEndMsg = "انتهى البرنامج.. اضغط أي زر لإغلاقه..."
 UnknownCommandMsg = "أمر غير معروف: "
 
-_KeywordsColor = "#7777ff"
 _CommmentSymbol = "#"
 _True = "نعم"
 _False = "لا"
@@ -75,7 +63,6 @@ OperatorsCompletionList = {
    _To1, _To2, _Step, _Random
 }
 
-
 Opertors = {
    "=", "<", ">", "(", ")",
    "+", "-", "*", "×", "/", "÷", "%", "^"
@@ -83,9 +70,8 @@ Opertors = {
 
 FontNames = Desktop.FontNames
 
-
-_File = File.GetSettingsFilePath()
-_Settings = File.ReadLines(_File)
+_SettingsFile = "%LOCALAPPDATA%/Sahla.settings"
+_Settings = File.ReadLines(_SettingsFile)
 If _Settings = "" Then
    Ops!FontName = "Segoe UI"
    Ops!FontSize = 20
@@ -94,9 +80,7 @@ If _Settings = "" Then
    Ops!Underlined = False
    Ops!ForeColor = Colors.Black
    Ops!BackColor = Colors.White
-   Ops!RightToLeft = False
-   Ops!MultiLine = True
-   Ops!WordWrap = True
+   Ops!FirstTime = True
 Else
    Ops!FontName = _Settings[1]
    Ops!FontSize = _Settings[2]
@@ -105,32 +89,113 @@ Else
    Ops!Underlined = _Settings[5]
    Ops!ForeColor = _Settings[6]
    Ops!BackColor = _Settings[7]
-   Ops!RightToLeft = _Settings[8]
-   Ops!MultiLine = _Settings[9]
-   Ops!WordWrap = _Settings[10]
+   Ops!FirstTime = _Settings[8]
 EndIf
 
-_ColoringRequested = False
-_StillColoring = False
+Statements = {}				' Array of code lines (strings)
+LineIndex = 1 	    			' Our program counter
+Tokens = {}					' Tokens array for the current line
+Vars = {}						' Array containing variables of current proogram
+WhileStack = "WhileStack"		' Stack name for WHILE loops
+ForStack = "ForStack"			' Stack name for FOR loops
+_KeywordsColor = "#7777ff"
+EditorTextBox = ""
+LblFormat = ""
+LblLine = ""
+Terminated = False
+
 Timer.Interval = 20
 Timer.Tick = ManageCodeColoring
+_ColoringRequested = False
+_StillColoring = False
 
-Sub ManageCodeColoring()
-   If _StillColoring = False And _ColoringRequested Then
-      Timer.Pause()
-      _ColoringRequested = False
-      _StillColoring = True
-      _ColorCode(LblFormat, EditorTextBox.Text)
-      _StillColoring = False
-      Timer.Resume()
+Sub Tokenize(line, lineNum)
+   ' line = Text.Trim(line)
+   Tokens = {}
+   tokenIndex = 1
+   currentToken = ""
+   tokenStartCol = 0
+   inString = False
+   len = Text.GetLength(line)
+   
+   For col = 1 To len
+      ch = line[col]
+      
+      If ch = Chars.Cr Or ch = Chars.Lf Then
+         ContinueLoop
+      ElseIf ch = """" Then
+         If inString = False Then
+            If currentToken <> "" Then
+               Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+               tokenIndex = tokenIndex + 1
+            EndIf
+            inString = True
+            tokenStartCol = col
+            currentToken = ch
+         Else
+            currentToken = currentToken & ch
+            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+            tokenIndex = tokenIndex + 1
+            currentToken = ""
+            inString = False
+         EndIf
+         
+      ElseIf inString Then
+         currentToken = currentToken & ch
+         
+      ElseIf ch = _CommmentSymbol Then
+         If currentToken <> "" Then
+            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+            tokenIndex = tokenIndex + 1
+         EndIf
+         
+         For i = col - 1 To 1 Step -1
+            If line[i] <> " " Then
+               col = i + 1
+               ExitLoop
+            EndIf
+         Next
+         
+         Tokens[tokenIndex] = {lineNum, col, Text.GetSubTextToEnd(line, col)}
+         Return
+         
+      ElseIf ch = " " Then
+         If currentToken <> "" Then
+            If tokenIndex = 2 And Tokens[1][3] = _Or And currentToken = _If Then
+               Tokens[1] = {lineNum, Tokens[1][2], _ElseIf}
+            Else
+               Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+               tokenIndex = tokenIndex + 1
+            EndIf
+            currentToken = ""
+         EndIf
+         
+      ElseIf Opertors.ContainsValue(ch) Then
+         If currentToken <> "" Then
+            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+            tokenIndex = tokenIndex + 1
+            currentToken = ""
+         EndIf
+         Tokens[tokenIndex] = {lineNum, col, ch}
+         tokenIndex = tokenIndex + 1
+         
+      Else
+         If currentToken = "" Then
+            tokenStartCol = col
+         EndIf
+         currentToken = currentToken & ch
+      EndIf
+   Next
+   
+   If inString Then
+      Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken & """"}
+   ElseIf currentToken <> "" Then
+      Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
    EndIf
 EndSub
 
-Sub ColorCode()
-   _ColoringRequested = True
-EndSub
-
 Sub Run()
+   Terminated = False
    TW.Clear()
    Vars = {}
    Stack.Clear(WhileStack)
@@ -942,102 +1007,24 @@ Function ParseFactor(pos)
    Return {0, pos + 1}
 EndFunction
 
-Sub Tokenize(line, lineNum)
-   ' line = Text.Trim(line)
-   Tokens = {}
-   tokenIndex = 1
-   currentToken = ""
-   tokenStartCol = 0
-   inString = False
-   len = Text.GetLength(line)
-   
-   For col = 1 To len
-      ch = line[col]
-      
-      If ch = Chars.Cr Or ch = Chars.Lf Then
-         ContinueLoop
-      ElseIf ch = """" Then
-         If inString = False Then
-            If currentToken <> "" Then
-               Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
-               tokenIndex = tokenIndex + 1
-            EndIf
-            inString = True
-            tokenStartCol = col
-            currentToken = ch
-         Else
-            currentToken = currentToken & ch
-            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
-            tokenIndex = tokenIndex + 1
-            currentToken = ""
-            inString = False
-         EndIf
-         
-      ElseIf inString Then
-         currentToken = currentToken & ch
-         
-      ElseIf ch = _CommmentSymbol Then
-         If currentToken <> "" Then
-            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
-            tokenIndex = tokenIndex + 1
-         EndIf
-         
-         For i = col - 1 To 1 Step -1
-            If line[i] <> " " Then
-               col = i + 1
-               ExitLoop
-            EndIf
-         Next
-         
-         Tokens[tokenIndex] = {lineNum, col, Text.GetSubTextToEnd(line, col)}
-         Return
-         
-      ElseIf ch = " " Then
-         If currentToken <> "" Then
-            If tokenIndex = 2 And Tokens[1][3] = _Or And currentToken = _If Then
-               Tokens[1] = {lineNum, Tokens[1][2], _ElseIf}
-            Else
-               Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
-               tokenIndex = tokenIndex + 1
-            EndIf
-            currentToken = ""
-         EndIf
-         
-      ElseIf Opertors.ContainsValue(ch) Then
-         If currentToken <> "" Then
-            Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
-            tokenIndex = tokenIndex + 1
-            currentToken = ""
-         EndIf
-         Tokens[tokenIndex] = {lineNum, col, ch}
-         tokenIndex = tokenIndex + 1
-         
-      Else
-         If currentToken = "" Then
-            tokenStartCol = col
-         EndIf
-         currentToken = currentToken & ch
-      EndIf
-   Next
-   
-   If inString Then
-      Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken & """"}
-   ElseIf currentToken <> "" Then
-      Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
+Sub ReportError(msg, line, tokenIndex)
+   If Terminated Then
+      Return
    EndIf
    
-EndSub
-
-Sub ReportError(msg, line, tokenIndex)
-   pos = 0
+   Terminated = True
    code = EditorTextBox.Text
+   token = Tokens[tokenIndex]
+   
+   pos = 0
    For i = 1 To line - 1
       pos = code.IndexOf(Chars.Lf, pos + 1, False)
    Next
+   pos = pos + token[2]
    
    EditorTextBox.Focus()
-   EditorTextBox.CaretIndex = pos + 1
-   EditorTextBox.Select(pos + 1, Text.GetLength(Statements[line]))
+   EditorTextBox.CaretIndex = pos
+   EditorTextBox.Select(pos, Text.GetLength(token[3]))
    
    If TW.IsClosed = False Then
       Terminate(
@@ -1208,6 +1195,22 @@ Function IndentLine()
    
    Return indent & lineText
 EndFunction
+
+
+Sub ManageCodeColoring()
+   If _StillColoring = False And _ColoringRequested Then
+      Timer.Pause()
+      _ColoringRequested = False
+      _StillColoring = True
+      _ColorCode(LblFormat, EditorTextBox.Text)
+      _StillColoring = False
+      Timer.Resume()
+   EndIf
+EndSub
+
+Sub ColorCode()
+   _ColoringRequested = True
+EndSub
 
 Sub ColorLine(inputText)
    _ColorCode(LblLine, inputText)
@@ -1419,6 +1422,74 @@ Function GetForVar()
    Next
 EndFunction
 
+Sub FixNextVarName(ixdex, lineText)
+   forPos = lineText.IndexOf(_For, 1, False)
+   If forPos = 0 Then
+      Return
+   EndIf
+   
+   Tokenize(lineText, 1)
+   varName = Tokens[2][3]
+   If varName = "" Then
+      Return
+   EndIf
+   
+   code = Text.GetSubTextToEnd(EditorTextBox.Text, ixdex)
+   Statements = Text.Split(code, Chars.Lf, False, False)
+   nextLineIndex = FindClosingToken(_For, _Next, 2)
+   If nextLineIndex = 0 Then
+      Return
+   EndIf
+   
+   Tokenize(Statements[nextLineIndex], nextLineIndex)
+   nextVarName = Tokens[2][3]
+   
+   If nextVarName <> varName Then
+      lineStart = ixdex
+      For i = 1 To nextLineIndex - 1
+         lineStart = lineStart + Text.GetLength(Statements[i]) + 1
+      Next
+      
+      caretPos = EditorTextBox.CaretIndex
+      EditorTextBox.SelectionStart = lineStart + Tokens[2][2] - 1
+      EditorTextBox.SelectionLength = Text.GetLength(nextVarName)
+      EditorTextBox.SelectedText = varName
+      EditorTextBox.CaretIndex = caretPos
+   EndIf
+EndSub
+
+Function GetVarNames()
+   code = EditorTextBox.Text
+   end = code.IndexOf(Chars.Lf, EditorTextBox.CaretIndex, True)
+   If end = 0 Then
+      Return {}
+   EndIf
+   
+   lines = Text.Split(code.SubText(1, end - 1), Chars.Lf, True, True)
+   Vars = {}
+   
+   ForEach line In lines
+      If Text.StartsWith(line, _For & " ") Then
+         line = Text.GetSubTextToEnd(line, _For.Length + 2)
+      EndIf
+      
+      pos = Text.IndexOf(line, "=", 1, False)
+      If pos > 0 Then
+         space = Text.IndexOf(line, " ", pos, True)
+         If space = 0 Or space = pos - 1 Then
+            varName = Text.Trim(Text.GetSubText(line, 1, space - 1))
+            If varName <> "" And IsValidVarName2(varName)
+                  And Vars.ContainsValue(varName) = False Then
+               Vars.Append(varName)
+            EndIf
+         EndIf
+      EndIf
+   Next
+   
+   Return Vars
+EndFunction
+
+
 Function IsLiteralOrComment(pos)
    code = EditorTextBox.Text
    c = code[pos - 1]
@@ -1454,69 +1525,9 @@ Function IsLiteralOrComment(pos)
    Return False
 EndFunction
 
-Function GetVarNames()
-   code = EditorTextBox.Text
-   end = code.IndexOf(Chars.Lf, EditorTextBox.CaretIndex, True)
-   If end = 0 Then
-      Return {}
-   EndIf
-   
-   lines = Text.Split(code.SubText(1, end - 1), Chars.Lf, True, True)
-   Vars = {}
-   
-   ForEach line In lines
-      If Text.StartsWith(line, _For & " ") Then
-         line = Text.GetSubTextToEnd(line, _For.Length + 2)
-      EndIf
-      
-      pos = Text.IndexOf(line, "=", 1, False)
-      If pos > 0 Then
-         space = Text.IndexOf(line, " ", pos, True)
-         If space = 0 Or space = pos - 1 Then
-            varName = Text.Trim(Text.GetSubText(line, 1, space - 1))
-            If varName <> "" And IsValidVarName2(varName)
-                  And Vars.ContainsValue(varName) = False Then
-               Vars.Append(varName)
-            EndIf
-         EndIf
-      EndIf
-   Next
-   
-   Return Vars
-EndFunction
-
-Sub FixNextVarName(ixdex, lineText)
-   forPos = lineText.IndexOf(_For, 1, False)
-   If forPos = 0 Then
+Sub SaveSettings(ops)
+   If File.WriteContents(_SettingsFile, ops) = 0 Then
+      Forms.ShowMessage(File.LastError, "Error")
       Return
-   EndIf
-   
-   Tokenize(lineText, 1)
-   varName = Tokens[2][3]
-   If varName = "" Then
-      Return
-   EndIf
-   
-   code = Text.GetSubTextToEnd(EditorTextBox.Text, ixdex)
-   Statements = Text.Split(code, Chars.Lf, False, False)
-   nextLineIndex = FindClosingToken(_For, _Next, 2)
-   If nextLineIndex = 0 Then
-      Return
-   EndIf
-   
-   Tokenize(Statements[nextLineIndex], nextLineIndex)
-   nextVarName = Tokens[2][3]
-   
-   If nextVarName <> varName Then
-      lineStart = ixdex
-      For i = 1 To nextLineIndex - 1
-         lineStart = lineStart + Text.GetLength(Statements[i]) + 1
-      Next
-      
-      caretPos = EditorTextBox.CaretIndex
-      EditorTextBox.SelectionStart = lineStart + Tokens[2][2] - 1
-      EditorTextBox.SelectionLength = Text.GetLength(nextVarName)
-      EditorTextBox.SelectedText = varName
-      EditorTextBox.CaretIndex = caretPos
    EndIf
 EndSub

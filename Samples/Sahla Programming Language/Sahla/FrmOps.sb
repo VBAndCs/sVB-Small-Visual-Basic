@@ -75,14 +75,10 @@ Sub BtnOk_OnClick()
    Ops!Underlined = ChkUnderlined.Checked
    Ops!ForeColor = LblForeColor.BackColor
    Ops!BackColor = LblBackColor.BackColor
+   Ops!FirstTime = False
    Global.Ops = Ops
    
-   _file = File.GetSettingsFilePath()
-   If File.WriteContents(_file, Ops) = 0 Then
-      Me.ShowMessage(File.LastError, "Error")
-      Return
-   EndIf
-   
+   Global.SaveSettings(Ops)
    Me.DialogResult = DialogResults.OK
    Me.Close()
 EndSub

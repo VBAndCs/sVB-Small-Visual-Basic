@@ -87,7 +87,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SmallBasicLibrary">
-      <HintPath>..\..\SmallBasicIDE\SB.Lib\SmallBasicLibrary.dll</HintPath>
+      <HintPath>Z:\sVB-Small-Visual-Basic-master\SBCompiler\SBCompiler\bin\Release\SmallBasicLibrary.dll</HintPath>
     </Reference>
     <Reference Include="StringResources, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -96,6 +96,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -114,6 +115,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NativeResourceUpdater.vb" />
     <Compile Include="Completion\CompletionBag.vb" />
     <Compile Include="Completion\CompletionHelper.vb" />
     <Compile Include="Completion\CompletionItem.vb" />
@@ -144,6 +146,7 @@
     <Compile Include="Expressions\MethodCallExpression.vb" />
     <Compile Include="Expressions\NegativeExpression.vb" />
     <Compile Include="Expressions\PropertyExpression.vb" />
+    <Compile Include="ProgramInfo.vb" />
     <Compile Include="Program.vb" />
     <Compile Include="Statements\AssignmentStatement.vb" />
     <Compile Include="Statements\ElseIfStatement.vb" />
