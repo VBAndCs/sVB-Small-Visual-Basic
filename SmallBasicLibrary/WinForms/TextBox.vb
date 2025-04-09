@@ -592,10 +592,7 @@ Namespace WinForms
         ''' <summary>
         ''' Gets the start position of the first visible line
         ''' </summary>
-        ''' <returns>
-        ''' the index of first char of the first visible line        
-        ''' </returns>
-        <ExMethod>
+        <ExProperty>
         <ReturnValueType(VariableType.Double)>
         Public Shared Function GetFirstVisibleLineStartPos(textBoxName As Primitive) As Primitive
             App.Invoke(
@@ -605,11 +602,45 @@ Namespace WinForms
                          Dim firstVisibleLineIndex = tb.GetFirstVisibleLineIndex()
                          GetFirstVisibleLineStartPos = tb.GetCharacterIndexFromLineIndex(firstVisibleLineIndex) + 1
                      Catch ex As Exception
-                         Control.ReportSubError(textBoxName, "GetFirstVisibleLineStartPos", ex)
+                         Control.ReportError(textBoxName, "FirstVisibleLineStartPos", ex)
                      End Try
                  End Sub)
         End Function
 
+        ''' <summary>
+        ''' Gets the index of the line that currently contains the curret.
+        ''' </summary>               
+        <ExProperty>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetCurrentLineIndex(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                 Sub()
+                     Try
+                         Dim tb = GetTextBox(textBoxName)
+                         GetCurrentLineIndex = tb.GetLineIndexFromCharacterIndex(tb.CaretIndex) + 1
+                     Catch ex As Exception
+                         Control.ReportError(textBoxName, "CurrentLineIndex", ex)
+                     End Try
+                 End Sub)
+        End Function
+
+
+        ''' <summary>
+        ''' Gets the count of lines of the textbox.
+        ''' </summary>               
+        <ExProperty>
+        <ReturnValueType(VariableType.Double)>
+        Public Shared Function GetLineCount(textBoxName As Primitive) As Primitive
+            App.Invoke(
+                 Sub()
+                     Try
+                         Dim tb = GetTextBox(textBoxName)
+                         GetLineCount = tb.LineCount
+                     Catch ex As Exception
+                         Control.ReportError(textBoxName, "LineCount", ex)
+                     End Try
+                 End Sub)
+        End Function
 
         ''' <summary>
         ''' Fired when the text is changed.

@@ -1,0 +1,23 @@
+﻿Segoe UI
+19
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write "Hello.. I am Sahla. What's your name? "
+name = Read Text
+
+While name = ""
+    Write "Please enter your name! "
+    name = Read Text
+Wend
+
+Write Line "I'm delighted by your presence.. Allow me to welcome you 5 times:"
+
+For n = 1 To 5
+    Write Line n + "- Hello, (" + name + ")! "
+Next n

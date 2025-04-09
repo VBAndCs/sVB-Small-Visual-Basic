@@ -1,0 +1,33 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write Line "Calculating the greatest common divisor for a set of numbers:"
+Write "Enter a number: "
+number1 = Read Number
+number2 = number1
+
+While number2 > 0
+    numerator = number1
+    divisor = number2
+    
+    While divisor < > 0
+        remainder = numerator % divisor
+        numerator = divisor
+        divisor = remainder
+    Wend
+    
+    number1 = numerator
+    
+    Write "Enter another number or zero to finish the program: "
+    number2 = Read Number
+Wend
+
+gcd = numerator
+Write Line "The greatest common divisor = " + gcd

@@ -1,0 +1,37 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write Line "Dialogue with the grocer"
+Write Line "--------------------"
+Write Line "A piece of candy, please."
+Write "5 pounds.. How much money do you have? "
+money = Read Number
+remainder = money - 5
+
+If remainder = 0
+    Write Line "Here is your candy."
+ElseIf remainder < 0
+    Write "You gave me " + money + " pounds and you're short by "
+    Write Line ( 0 - remainder ) + " pounds"
+    Write Line "If you please, I'll pay it next time."
+    Write Line "No problem."
+ElseIf ( remainder % 10 ) > 0
+    Write "You need " + remainder + " pounds from me but I don't have coins for amounts less than 10. "
+    If remainder < 10
+        Write Line "Would you take them as candy?"
+    Else
+        Write "Please take " + ( ( remainder \ 10 ) * 10 ) + " pounds"
+        Write Line " and take " + ( remainder % 10 ) + " pounds as candy!"
+    EndIf
+Else
+    Write Line "Here is your " + remainder + " pounds."
+EndIf
+
+Write Line "Alright, thank you."

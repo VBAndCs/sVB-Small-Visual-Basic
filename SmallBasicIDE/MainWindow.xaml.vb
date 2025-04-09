@@ -1314,7 +1314,9 @@ Namespace Microsoft.SmallVisualBasic
             formDesigner.CodeFile = doc.File
 
             Try
-                IO.File.WriteAllText(formPath & ".sb.gen", doc.GenerateCodeBehind(formDesigner, True))
+                If formName.ToLower() <> "global" Then
+                    IO.File.WriteAllText(formPath & ".sb.gen", doc.GenerateCodeBehind(formDesigner, True))
+                End If
             Finally
                 OpeningDoc = False
             End Try

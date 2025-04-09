@@ -25,7 +25,6 @@
 '    MnuFind: MenuItem
 '    MnuProgram: MenuItem
 '    MnuRun: MenuItem
-'    MnuEnd: MenuItem
 '    MnuFormat: MenuItem
 '    MnuView: MenuItem
 '    MnuBold: MenuItem
@@ -74,7 +73,6 @@ MnuSelAll = "frmmain.mnuselall"
 MnuFind = "frmmain.mnufind"
 MnuProgram = "frmmain.mnuprogram"
 MnuRun = "frmmain.mnurun"
-MnuEnd = "frmmain.mnuend"
 MnuFormat = "frmmain.mnuformat"
 MnuView = "frmmain.mnuview"
 MnuBold = "frmmain.mnubold"
@@ -95,7 +93,7 @@ MnuConditions = "frmmain.mnuconditions"
 MnuLoops = "frmmain.mnuloops"
 MnuSounds = "frmmain.mnusounds"
 MnuAbout = "frmmain.mnuabout"
-_path = Program.Directory + "\frmMain.xaml"
+_path = Program.Directory + "\frmmain.xaml"
 FrmMain = Forms.LoadForm("FrmMain", _path)
 Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
 '#Events{
@@ -123,7 +121,6 @@ Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
 '    MnuView: OnOpen
 '    MnuFind: OnClick
 '    MnuRun: OnClick
-'    MnuEnd: OnClick
 '    TxtEditor: OnTextChanged OnTextInput OnKeyDown OnSelection OnMouseWheel OnMouseRightDown OnMouseLeftDown
 '    MnuAbout: OnClick
 '    FrmMain: OnClosing OnShown
@@ -234,10 +231,6 @@ MenuItem.OnClick = MnuFind_OnClick
 ' MnuRun Events:
 Control.HandleEvents(MnuRun)
 MenuItem.OnClick = MnuRun_OnClick
-
-' MnuEnd Events:
-Control.HandleEvents(MnuEnd)
-MenuItem.OnClick = MnuEnd_OnClick
 
 ' TxtEditor Events:
 Control.HandleEvents(TxtEditor)

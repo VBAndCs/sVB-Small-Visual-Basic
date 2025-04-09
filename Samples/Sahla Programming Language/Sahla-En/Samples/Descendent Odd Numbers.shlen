@@ -1,0 +1,16 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write Line "Printing odd numbers in descending order from 11 to 1"
+
+neg2 = 0 - 2
+For n = 11 To 1 Step neg2
+    Write Line n
+Next n

@@ -1,0 +1,74 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Sahla Syntax: 6. Loops:
+' -------------------------------------------------------------------------------
+'
+' Review the following explanation then run this sample program to see the examples in action.
+'
+' While loop (While ... Wend):
+' The While loop is used to repeat a block of code as long as a condition remains true.
+' The loop block ends with the Wend token.
+' In the following example, the program continually asks for your favorite fruit until you enter an empty string.
+' Initially, the variable is assigned a non-empty string (for example, a space) and is then used to receive input.
+' The loop continues as long as the variable contains any text.
+' When the condition becomes false, the loop terminates and execution moves to the line following Wend.
+FavoriteFruit = " "
+While FavoriteFruit < > ""
+    Write "What is your favorite fruit? "
+    FavoriteFruit = Read Text
+Wend
+Write Line "Thank you"
+'
+' For loop ("For ... Next"):
+' This loop is useful when you need to repeat a block of code a known number of times.
+' In a For loop, you choose a counter variable,
+' specify its starting value And the value at which To end the loop.
+' The loop block ends with the Next token, which increments the counter by 1.
+' This continues as long as the counter has not exceeded the end value.
+' The following example displays the numbers from 1 to 5:
+Write Line "-------------------------------------------"
+Write Line "Printing numbers from 1 to 5"
+For i = 1 To 5
+    Write Line i
+Next i
+'
+' You can also use the "Step" clause to increment the counter by any value you like instead of 1.
+' The following example prints the odd numbers, starting from 1 and increasing by 2 each iteration, until the number exceeds 10:
+Write Line "-------------------------------------------"
+Write Line "Printing odd numbers between 1 and 10"
+For i = 1 To 10 Step 2
+    Write Line i
+Next i
+'
+' If the step is negative, the loop will go in descending order.
+' Sahla does not allow you to write negative numbers directly,
+' but you can obtain them by subtracting a positive number from zero.
+' The following example prints the numbers between 100 and 10 in descending order:
+Write Line "-------------------------------------------"
+Write Line "Printing numbers between 100 and 10 in descending order"
+For i = 100 To 10 Step ( 0 - 10 )
+    Write Line i
+Next i
+'
+' You can terminate While and For loops using the Exit command.
+' This command is typically used for breaking out of the loop when a specific condition is met.
+' The following example reworks the favorite fruit scenario using the Exit command.
+' Here, we will use True as the condition of While, which will make it loop forever,
+' but we wiil terminate it by calling the Exit command wheen the user enters an empty string:
+Write Line "-------------------------------------------"
+While True
+    Write "What is your favorite fruit? "
+    FavoriteFruit = Read Text
+    If FavoriteFruit = ""
+        Exit
+    EndIf
+Wend
+Write Line "Thank you"

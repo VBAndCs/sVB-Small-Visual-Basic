@@ -1,0 +1,95 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Sahla Syntax: 5. Conditional Statements:
+' -------------------------------------------------------------------------------
+'
+' Review the following explanation then run this sample program to see the examples in action.
+'
+' Conditional statements allow you to create different execution paths by testing one or more conditions
+' and executing code based on which condition is true.
+' The "If" statement is used to test a condition and run a block of code only when that condition is true.
+' The code block is placed between the "If" and the "EndIf" tokens. Example:
+Write "How old are you? "
+Age = Read Number
+If Age < 18
+    Write Line "You are a child."
+EndIf
+'
+If Age > = 18
+    Write Line "You are an adult."
+EndIf
+'
+' You can also use "Else" to execute an alternate block of code when the condition is false,
+' which can simplify the previous example and eliminated the need to test the opposite condition separately:
+If Age < 18
+    Write Line "You are a child"
+Else
+    Write Line "You are an adult"
+EndIf
+'
+' The following example determines if a number entered by the user is even or odd:
+Write "Enter a number: "
+Number = Read Number
+If Number % 2 = 0    ' The remainder of division by 2 equals zero, meaning the number is even.
+    Write Line Number + " is an even number"
+Else                           ' Otherwise, the number is odd.
+    Write Line Number + " is an odd number"
+EndIf
+'
+' In the complete form of the "If" statement, you can test several sequential conditions using "ElseIf" branches.
+' The code for the first branch that evaluates to true will run, and the remaining branches are skipped.
+' If none of the conditions are true, the code in the "Else" branch is run.
+' The following example prompts the user to enter an exam score and displays the corresponding grade:
+Write "Enter your exam score: "
+Score = Read Number
+Write "Grade: "
+If Score > = 90
+    Write Line "Excellent"
+ElseIf Score > = 75
+    Write Line "Very Good"
+ElseIf Score > = 60
+    Write Line "Good"
+ElseIf Score > = 50
+    Write Line "Pass"
+Else
+    Write Line "Fail"
+EndIf
+'
+' The following operators can be used to compose conditions:
+'    =    means equal to
+'    <>   means not equal to
+'    <    means less than
+'    <=   means less than or equal to
+'    >    means greater than
+'    >=   means greater than or equal to
+'
+' The "And" operator combines two conditions such that both must be true,
+' while the "Or" operator combines two conditions such that at least one must be true.
+' Example:
+Write "Enter your age: "
+Age = Read Number
+Write "Enter your years of experience: "
+Experience = Read Number
+If ( Age > = 22 And Experience > = 5 ) Or Age > = 30
+    Write Line "You are eligible to apply for the job"
+Else
+    Write Line "You are not eligible to apply for the job"
+EndIf
+'
+' Note that evaluating a condition returns either True or False.
+Write Line "Is 3 less than or equal to 4? " + ( 3 < = 4 )
+Write Line "Is Mohammed equal to Ahmed? " + ( "Mohammed" = "Ahmed" )
+'
+' You can also use the keywords True and False directly in your code.
+Condition = ( 4 = 3 )
+If Condition = False
+    Write Line "The condition is false"
+EndIf

@@ -1,0 +1,947 @@
+Program.UseLocalCulture = False
+RightToLeft = False
+' The Shl is for the arabic version
+' The Engkish version uses shlen
+' You should use the same formula for other langauges like shlfr
+SahlaFilesExtension = "shlen"
+Ops = Global.Ops
+SetProperties(Ops)
+
+MainMenu1.BringToFront()
+MainMenu1.FontSize = 12
+TxtEditor.SetContextMenu(MnuEdit, True)
+
+LblNum.OnMouseLeftDown = LblMargin_OnMouseLeftDown
+LblNum.OnMouseMove = LblMargin_OnMouseMove
+LblNum.OnMouseLeftUp = ExtendSelection
+
+Me.Icon = "s.ico"
+SavedFile = ""
+
+TxtEditor.Visible = True
+LblFormat.Visible = True
+LblLine.Visible = True
+LblBackground.Visible = True
+LblMargin.Visible = True
+LblNum.Visible = True
+
+' Open .SahlaFilesExtension files  with Sahla
+If Program.ArgumentCount = 0 Then
+   If Ops!FirstTime Then
+      Open("Syntax/0." & SahlaFilesExtension)
+      Ops!FirstTime = False
+      Global.SaveSettings(Ops)
+   EndIf
+   Forms.ShowDialog("FrmAbout", "")
+Else
+   Open(Program.GetArgument(1))
+EndIf
+
+ExitSelection = False
+ExitTextChanged = False
+IsIndented = False
+FixLA = False
+AlreadyFixedLA = False
+AutoCompToken = ""
+LastlineStart = 0
+LastLineIndex = 0
+LastlinesCount = 0
+StartSelectionIndex = 0
+IsModified = False
+TxtEditor.Focus()
+
+
+Sub Form_OnShown()
+   TxtEditor.OnScroll = OnScroll
+   ' Uncomment next line to switch keyboard input language to your local langauge when Sahal starts.
+   ' Program.SwitchKeyboardToLocalLanguage()
+EndSub
+
+Sub SetProperties(ops)
+   LblFormat.Text = ""
+   LblLine.Text = ""
+   LblBackground.Text = ""
+   TxtEditor.Left = LblMargin.Width
+   TxtEditor.Top = 0
+   w = Desktop.Width - 4
+   h = Desktop.Height - 60
+   LblMargin.Left = 0
+   LblMargin.Top = 0
+   LblMargin.Height = h
+   TxtEditor.Width = w - LblMargin.Width
+   TxtEditor.Height = h
+   Me.Width = w
+   Me.Height = h
+   
+   LblLine.Height = 0
+   LblBackground.Height = 0
+   
+   TxtEditor.FontName = ops!FontName
+   TxtEditor.FontSize = ops!FontSize
+   TxtEditor.FontBold = ops!Bold
+   TxtEditor.FontItalic = ops!Italic
+   TxtEditor.Underlined = ops!Underlined
+   font = TxtEditor.Font
+   LblFormat.Font = font
+   LblLine.Font = font
+   LblBackground.Font = font
+   LblMargin.Font = font
+   LblNum.Width = 0
+   LblNum.Height = 0
+   LblNum.Left = LblMargin.Left
+   LblNum.Top = 10
+   
+   TxtEditor.ForeColor = Colors.Transparent
+   TxtEditor.BackColor = Colors.Transparent
+   LblFormat.ForeColor = ops!ForeColor
+   LblFormat.BackColor = ops!BackColor
+   
+   LblLine.ForeColor = ops!ForeColor
+   currentLineBackColor = Color.ChangeTransparency(Colors.PeachPuff, 50)
+   LblLine.BackColor = currentLineBackColor
+   LblBackground.ForeColor = ops!ForeColor
+   LblBackground.BackColor = Colors.Yellow
+   
+   TxtEditor.RightToLeft = RightToLeft
+   LblFormat.RightToLeft = RightToLeft
+   LblLine.RightToLeft = RightToLeft
+   LblBackground.RightToLeft = RightToLeft
+   LblNum.RightToLeft = RightToLeft
+   
+   TxtEditor.WordWrap = False
+   LblFormat.WordWrap = False
+   LblLine.WordWrap = False
+   LblBackground.WordWrap = False
+   TxtEditor.MultiLine = True
+   
+   TxtEditor.Padding = 10
+   LblFormat.Padding = 10
+   LblLine.Padding = 0
+   LblBackground.Padding = 0
+   
+   TW.RightToLeft = RightToLeft
+   TW.FontName = "Segoe UI"
+   TW.FontSize = TxtEditor.FontSize
+   TW.FontBold = True
+   
+   LstCompletion.Width = 0
+   LstCompletion.Height = 0
+   LstCompletion.Padding = 10
+   LstCompletion.RightToLeft = RightToLeft
+   
+   Global.EditorTextBox = TxtEditor
+   Global.LblFormat = LblFormat
+   Global.LblLine = LblLine
+EndSub
+
+Sub OnScroll()
+   If ExitTextChanged Or ExitSelection Then
+      Return
+   EndIf
+   
+   AdjustLabels()
+   TxtEditor_OnSelection()
+EndSub
+
+Sub AdjustLabels()
+   horizontalScrollOffset = TxtEditor.HorizontalScrollOffset
+   LblFormat.Width = TxtEditor.Width + 2 * horizontalScrollOffset
+   
+   v = TxtEditor.VerticalScrollOffset
+   LblFormat.Height = TxtEditor.Height + v
+   LblFormat.Top = -v
+   
+   w = TxtEditor.Width + 2 * horizontalScrollOffset
+   LblLine.Width = w
+   LblBackground.Width = w
+   
+   If RightToLeft Then
+      x = TxtEditor.Left - horizontalScrollOffset - 3
+      x1 = x - TxtEditor.Padding
+   Else
+      x = TxtEditor.Left - horizontalScrollOffset + 3
+      x1 = x + TxtEditor.Padding
+   EndIf
+   
+   LblFormat.Left = x
+   LblLine.Left = x1
+   LblBackground.Left = x1
+   
+   top = TxtEditor.CaretTop
+   LblLine.Top = top
+   LblBackground.Top = top
+   LblNum.Top = top + (LblLine.Height - LblNum.Height) / 2
+EndSub
+
+Sub FrmMain_OnClosing()
+   Event.Handled = (AskToSave() = False)
+EndSub
+
+Sub MnuNew_OnClick()
+   If AskToSave() = False Then
+      Return
+   EndIf
+   
+   TxtEditor.Text = ""
+   IsModified = False
+   SavedFile = ""
+   SetProperties(Global.Ops)
+   TxtEditor.RestUndo()
+EndSub
+
+Sub MnuOpen_OnClick()
+   If AskToSave() Then
+      fileName = File.OpenFileDialog({"Sahla code files", SahlaFilesExtension})
+      If fileName <> "" Then
+         Open(fileName)
+         TxtEditor.Focus()
+      EndIf
+   EndIf
+EndSub
+
+Sub Open(fileName)
+   lines = File.ReadLines(fileName)
+   If lines.Count > 0 Then
+      Ops!FontName = lines[1]
+      Ops!FontSize = lines[2]
+      Ops!Bold = lines[3]
+      Ops!Italic = lines[4]
+      Ops!Underlined = lines[5]
+      Ops!ForeColor = lines[6]
+      Ops!BackColor = lines[7]
+      Ops!RightToLeft = lines[8]
+      Ops!MultiLine = lines[9]
+      Ops!WordWrap = lines[10]
+      SetProperties(Ops)
+   EndIf
+   
+   txt = ""
+   For i = 11 To lines.Count - 1
+      txt = txt & lines[i] & Text.NewLine
+   Next
+   
+   TxtEditor.Text = txt & lines[i]
+   SavedFile = fileName
+   IsModified = False
+   TxtEditor.RestUndo()
+   OnScroll()
+EndSub
+
+Sub MnuSave_OnClick()
+   FormatCode()
+   Save(SavedFile)
+EndSub
+
+Sub MnuSaveAs_OnClick()
+   FormatCode()
+   SaveAs()
+EndSub
+
+Function AskToSave()
+   FormatCode()
+   If IsModified Then
+      result = Global.ShowSaveMsg()
+      If result = DialogResults.Yes Then
+         If Save(SavedFile) = False Then
+            Return False
+         EndIf
+      ElseIf result = DialogResults.Cancel Then
+         Return False
+      EndIf
+   EndIf
+   
+   Return True
+EndFunction
+
+
+Function Save(fileName)
+   If fileName = "" Then
+      Return SaveAs()
+   ElseIf Text.EndsWith(Text.ToLower(fileName), ".sb") Then
+      sVBCode = Global.ConvertSahlaCode(False)
+      If File.WriteContents(fileName, sVBCode) = False Then
+         Me.ShowMessage(File.LastError, "Error")
+         Return False
+      EndIf
+   Else
+      Ops = {}
+      Ops!FontName = TxtEditor.FontName
+      Ops!FontSize = TxtEditor.FontSize
+      Ops!Bold = TxtEditor.FontBold
+      Ops!Italic = TxtEditor.FontItalic
+      Ops!Underlined = TxtEditor.Underlined
+      Ops!ForeColor = LblFormat.ForeColor
+      Ops!BackColor = LblFormat.BackColor
+      Ops!RightToLeft = TxtEditor.RightToLeft
+      Ops!MultiLine = TxtEditor.MultiLine
+      Ops!WordWrap = TxtEditor.WordWrap
+      If Text.EndsWith(Text.ToLower(fileName), ".shlen")
+            And SahlaFilesExtension <> ".shlen" Then
+         Ops!Text = Global.ConvertSahlaCode(True)
+      Else
+         Ops!Text = TxtEditor.Text
+      EndIf
+      
+      If File.WriteContents(fileName, Ops) = False Then
+         Me.ShowMessage(File.LastError, "Error")
+         Return False
+      EndIf
+      IsModified = False
+   EndIf
+   
+   Return True
+EndFunction
+
+FileNumber = 1
+Function SaveAs()
+   If SavedFile = "" Then
+      suggestedName = "App" & FileNumber & "." & SahlaFilesExtension
+   Else
+      suggestedName = SavedFile
+   EndIf
+   
+   If SahlaFilesExtension = "shlen" Then
+      filters = {
+         {"Sahla code files", SahlaFilesExtension},
+         {"Small Basic code files", "sb"}
+      }
+   Else
+      filters = {
+         {"Sahla code files", SahlaFilesExtension},
+         {"English Sahla code files", "shlen"},
+         {"Small Basic code files", "sb"}
+      }
+   EndIf
+   
+   fileName = File.SaveFileDialog(suggestedName, filters)
+   
+   If fileName = "" Then
+      FormatCode()
+      Return False
+   Else
+      If suggestedName.ToLower() <> fileName.ToLower() Then
+         FileNumber = FileNumber + 1
+      EndIf
+      
+      If Text.EndsWith(fileName.ToLower(),
+            "." & SahlaFilesExtension.ToLower()) Then
+         SavedFile = fileName
+      EndIf
+      
+      Return Save(fileName)
+   EndIf
+EndFunction
+
+Sub MnuClose_OnClick()
+   Me.Close()
+EndSub
+
+Sub MnuFile_OnOpen()
+   state = (SavedFile <> "")
+   MnuNew.Enabled = state Or IsModified
+   MnuSaveAs.Enabled = state
+   MnuSave.Enabled = IsModified
+EndSub
+
+Sub MnuUndo_OnClick()
+   TxtEditor.Undo()
+   FormatCode()
+EndSub
+
+Sub MnuRedo_OnClick()
+   TxtEditor.Redo()
+   FormatCode()
+EndSub
+
+
+Sub MnuCopy_OnClick()
+   Global.ColorCode()
+   LblFormat.CopyFormattedText(TxtEditor.SelectionStart, TxtEditor.SelectionLength)
+EndSub
+
+
+Sub MnuCut_OnClick()
+   MnuCopy_OnClick()
+   TxtEditor.SelectedText = ""
+EndSub
+
+
+Sub MnuPaste_OnClick()
+   TxtEditor.Paste()
+EndSub
+
+Sub MnuDelete_OnClick()
+   TxtEditor.SelectedText = ""
+EndSub
+
+Sub MnuSelAll_OnClick()
+   FormatCode()
+   TxtEditor.SelectAll()
+EndSub
+
+Sub MnuBold_OnCheck()
+   TxtEditor.FontBold = MnuBold.Checked
+   LblFormat.FontBold = TxtEditor.FontBold
+   LblLine.FontBold = TxtEditor.FontBold
+   LblBackground.FontBold = TxtEditor.FontBold
+EndSub
+
+Sub MnuItalic_OnCheck()
+   TxtEditor.FontItalic = MnuItalic.Checked
+   LblFormat.FontItalic = TxtEditor.FontItalic
+   LblLine.FontItalic = TxtEditor.FontItalic
+   LblBackground.FontItalic = TxtEditor.FontItalic
+EndSub
+
+Sub MnuUnderline_OnCheck()
+   TxtEditor.Underlined = MnuUnderline.Checked
+   LblFormat.Underlined = TxtEditor.Underlined
+   LblLine.Underlined = TxtEditor.Underlined
+   LblBackground.Underlined = TxtEditor.Underlined
+EndSub
+
+Sub MnuEdit_OnOpen()
+   MnuUndo.Enabled = TxtEditor.CanUndo
+   MnuRedo.Enabled = TxtEditor.CanRedo
+   
+   hasSelection = TxtEditor.SelectionLength > 0
+   MnuCopy.Enabled = hasSelection
+   MnuCut.Enabled = hasSelection
+   MnuDelete.Enabled = hasSelection
+   MnuSelAll.Enabled = (TxtEditor.Text <> "")
+EndSub
+
+Sub MnuFont_OnClick()
+   LblFormat.ChooseFont()
+   font = LblFormat.Font
+   LblLine.Font = font
+   LblBackground.Font = font
+   TxtEditor.Font = font
+   TxtEditor.ForeColor = Colors.Transparent
+   TW.FontSize = TxtEditor.FontSize
+EndSub
+
+
+Sub MnuForeColor_OnClick()
+   LblFormat.ChooseForeColor()
+   LblLine.ForeColor = LblFormat.ForeColor
+   LblBackground.ForeColor = LblFormat.ForeColor
+EndSub
+
+Sub MnuBackColor_OnClick()
+   LblFormat.ChooseBackColor()
+EndSub
+
+Sub MnuOptions_OnClick()
+   Forms.ShowDialog("FrmOps", "")
+EndSub
+
+Sub MnuView_OnOpen()
+   MnuBold.Checked = TxtEditor.FontBold
+   MnuItalic.Checked = TxtEditor.FontItalic
+   MnuUnderline.Checked = TxtEditor.Underlined
+EndSub
+
+Sub MnuFind_OnClick()
+   Me.ShowChildForm("FrmFind", TxtEditor)
+EndSub
+
+Sub MnuRun_OnClick()
+   FormatCode()
+   
+   Me.Enabled = False
+   TW.Title = "نافذة المخرجات"
+   Global.Run()
+   Me.Enabled = True
+EndSub
+
+Sub MnuOutput_OnClick()
+   If AskToSave() Then
+      Open("Syntax/1." & SahlaFilesExtension)
+   EndIf
+EndSub
+
+
+Sub MnuVars_OnClick()
+   If AskToSave() Then
+      Open("Syntax/2." & SahlaFilesExtension)
+   EndIf
+EndSub
+
+Sub MnuOps_OnClick()
+   If AskToSave() Then
+      Open("Syntax/3." & SahlaFilesExtension)
+   EndIf
+EndSub
+
+Sub MnuInput_OnClick()
+   If AskToSave() Then
+      Open("Syntax/4." & SahlaFilesExtension)
+   EndIf
+EndSub
+
+
+Sub MnuConditions_OnClick()
+   If AskToSave() Then
+      Open("Syntax/5." & SahlaFilesExtension)
+   EndIf
+EndSub
+
+
+Sub MnuLoops_OnClick()
+   If AskToSave() Then
+      Open("Syntax/6." & SahlaFilesExtension)
+   EndIf
+EndSub
+
+Sub MnuSounds_OnClick()
+   If AskToSave() Then
+      Open("Syntax/7." & SahlaFilesExtension)
+   EndIf
+EndSub
+
+
+Sub MnuLocalize_OnClick()
+   If AskToSave() Then
+      Open("Syntax/8." & SahlaFilesExtension)
+   EndIf
+EndSub
+
+Sub MnuAbout_OnClick()
+   Forms.ShowDialog("FrmAbout", "")
+EndSub
+
+Sub MnuFormat_OnClick()
+   FormatCode()
+EndSub
+
+
+Sub LstCompletion_OnKeyDown()
+   k = Event.LastKey
+   If k = Keys.Enter Then
+      AutoCompleteWord(5)
+   ElseIf k = Keys.Escape Then
+      LstCompletion.Visible = False
+      TxtEditor.Focus()
+   EndIf
+EndSub
+
+Sub LstCompletion_OnDoubleClick()
+   AutoCompleteWord(7)
+EndSub
+
+Sub LblMargin_OnMouseLeftDown()
+   FormatCode()
+   If Keyboard.ShiftPressed Then
+      StartSelectionIndex = TxtEditor.CaretIndex
+      ExtendSelection()
+   Else
+      StartSelectionIndex = GetLineStartIndex(LblMargin.MouseY)
+      TxtEditor.CaretIndex = StartSelectionIndex
+   EndIf
+EndSub
+
+Sub LblMargin_OnMouseMove()
+   If Mouse.IsLeftButtonDown Then
+      ExtendSelection()
+   EndIf
+EndSub
+
+Sub TxtEditor_OnMouseLeftDown()
+   LstCompletion.Visible = False
+EndSub
+
+Sub TxtEditor_OnMouseRightDown()
+   LstCompletion.Visible = False
+EndSub
+
+Sub TxtEditor_OnTextChanged()
+   If ExitTextChanged Or ExitSelection Then
+      Return
+   EndIf
+   
+   lastTextInput = Event.LastTextInput
+   If Event.LastKey = Keys.Enter Then
+      FormatCode()
+   ElseIf Event.LastKey = Keys.Back Or lastTextInput = "_"
+         Or Chars.IsDigit(lastTextInput) Or Chars.IsLetter(lastTextInput) Then
+      ShowAutoComp()
+   EndIf
+   
+   IsModified = True
+   IsIndented = False
+   MnuFile_OnOpen()
+EndSub
+
+Sub TxtEditor_OnTextInput()
+   lastInput = Event.LastTextInput
+   
+   If FixLA And (lastInput = "ل" Or lastInput = "ا") Then
+      If AlreadyFixedLA Then
+         AlreadyFixedLA = False
+      Else
+         AlreadyFixedLA = True
+         LstCompletion.Visible = False
+         ExitSelection = True
+         TxtEditor.SelectedText = "لا"
+         TxtEditor.SelectionLength = 0
+         ExitSelection = False
+         TxtEditor.CaretIndex = TxtEditor.CaretIndex + 2
+      EndIf
+      Event.Handled = True
+      
+   ElseIf lastInput = " " Then
+      AutoCompleteBlock()
+      
+   ElseIf LstCompletion.Visible Then
+      If lastInput = "=" Then
+         If Array.ContainsValue(Global.CommandsCompletionList, LstCompletion.SelectedItem) Then
+            LstCompletion.Visible = False
+         Else
+            AutoCompleteWord(1)
+         EndIf
+      ElseIf lastInput = """" Then
+         If Array.ContainsValue(Global.CommandsCompletionList, LstCompletion.SelectedItem) Then
+            AutoCompleteWord(6)
+         Else
+            LstCompletion.Visible = False
+         EndIf
+      ElseIf Array.ContainsValue(Global.Opertors, lastInput) Then
+         AutoCompleteWord(2)
+      Else
+         LstCompletion.Visible = False
+      EndIf
+   EndIf
+EndSub
+
+
+Sub TxtEditor_OnKeyDown()
+   FixLA = False
+   k = Event.LastKey
+   
+   If Keyboard.CtrlPressed And Keyboard.ShiftPressed Then
+      Event.Handled = True
+      
+   ElseIf k = Keys.B Then ' Solve the issue of Arabic لا
+      FixLA = True
+      
+   ElseIf LstCompletion.Visible Then
+      If k = Keys.Escape Then
+         LstCompletion.Visible = False
+         Event.Handled = True
+         
+      ElseIf k = Keys.Enter Then
+         AutoCompleteWord(3)
+         Event.Handled = True
+         
+         
+      ElseIf k = Keys.Space Then
+         AutoCompleteWord(4)
+         
+      ElseIf k = Keys.Up Then
+         i = LstCompletion.SelectedIndex
+         If i > 1 Then
+            LstCompletion.SelectedIndex = LstCompletion.SelectedIndex - 1
+         Else
+            LstCompletion.SelectedIndex = LstCompletion.ItemsCount
+         EndIf
+         Event.Handled = True
+         
+      ElseIf k = Keys.Down Then
+         i = LstCompletion.SelectedIndex
+         If i < LstCompletion.ItemsCount Then
+            LstCompletion.SelectedIndex = LstCompletion.SelectedIndex + 1
+         Else
+            LstCompletion.SelectedIndex = 1
+         EndIf
+         Event.Handled = True
+         
+      ElseIf k = Keys.Delete Or k = Keys.Left Or k = Keys.Right
+            Or k = Keys.PageUp Or k = Keys.PageDown Or k = Keys.Home Or k = Keys.End Then
+         LstCompletion.Visible = False
+      EndIf
+   EndIf
+EndSub
+
+Sub TxtEditor_OnSelection()
+   If ExitSelection Or TxtEditor.SelectionLength > 1 Then
+      Return
+   EndIf
+   
+   If ExitTextChanged Then
+      AdjustLabels()
+      Return
+   EndIf
+   
+   UpdateLine()
+EndSub
+
+Sub TxtEditor_OnMouseWheel()
+   If Keyboard.CtrlPressed Then
+      size = TxtEditor.FontSize + Event.LastMouseWheelDirection
+      If size < 50 And size > 10 Then
+         TxtEditor.FontSize = size
+         LblFormat.FontSize = size
+         LblLine.FontSize = size
+         LblBackground.FontSize = size
+         TW.FontSize = TxtEditor.FontSize
+      EndIf
+      Event.Handled = True
+   EndIf
+EndSub
+
+Sub ShowAutoComp()
+   pos = TxtEditor.CaretIndex
+   If Global.IsLiteralOrComment(pos - 1) Then
+      Return
+   EndIf
+   
+   code = Text.ToLower(TxtEditor.Text)
+   AutoCompToken = ""
+   found = False
+   isCommand = True
+   index = 0
+   LstCompletion.RemoveAllItems()
+   
+   For i = pos - 1 To 1 Step -1
+      c = code[i]
+      If c = Chars.Lf Then
+         ExitLoop
+      ElseIf found And c <> " " Then
+         lineStart = code.IndexOf(Chars.Lf, i, True) + 1
+         prev = Text.Trim(code.SubText(lineStart, i - lineStart + 1))
+         If (prev.Contains("=") Or prev.Contains(" ")) = False Then
+            x = Text.ToLower(prev & " " & AutoCompToken)
+            ForEach word In Global.CommandsCompletionList
+               If Text.StartsWith(Text.ToLower(word), x) Then
+                  LstCompletion.AddItem(Text.GetSubTextToEnd(word, prev.Length + 2))
+               EndIf
+            Next
+         EndIf
+         
+         isCommand = False
+         ExitLoop
+         
+      ElseIf c = "_" Or Chars.IsDigit(c) Or Chars.IsLetter(c) Then
+         index = i
+         AutoCompToken = c & AutoCompToken
+      Else
+         found = True
+      EndIf
+   Next
+   
+   If AutoCompToken = "" Then
+      LstCompletion.Visible = False
+      Return
+   EndIf
+   
+   varNames = Global.GetVarNames()
+   
+   If isCommand Then
+      completionList = Global.CommandsCompletionList
+   Else
+      completionList = Global.OperatorsCompletionList
+   EndIf
+   
+   lcAutoCompToken = AutoCompToken.ToLower()
+   If varNames.Count > 0 Then
+      ForEach word In varNames
+         If Text.StartsWith(Text.ToLower(word), lcAutoCompToken) Then
+            LstCompletion.AddItem(word)
+         EndIf
+      Next
+   EndIf
+   
+   ForEach word In completionList
+      lcWord = Text.ToLower(word)
+      If Text.StartsWith(lcWord, lcAutoCompToken) Then
+         LstCompletion.AddItem(word)
+      Else
+         i = Text.IndexOf(lcWord, " " & lcAutoCompToken, 1, False)
+         If i > 0 Then
+            end = pos
+            For j = 3 To pos
+               If code[pos - j] = " " Then
+                  end = end - 1
+               Else
+                  ExitLoop
+               EndIf
+            Next
+            
+            w = code.SubText(end - i - 1, i - 1)
+            If Text.StartsWith(lcWord, w.Trim()) Then
+               LstCompletion.AddItem(Text.GetSubTextToEnd(word, i + 1))
+            EndIf
+         EndIf
+      EndIf
+   Next
+   
+   count = LstCompletion.ItemsCount
+   
+   If count = 0 Or (count = 1 And LstCompletion.GetItemAt(1) = AutoCompToken) Then
+      LstCompletion.Visible = False
+   Else
+      LstCompletion.Left = TxtEditor.Left + TxtEditor.CaretLeft
+      top = TxtEditor.CaretTop + LblLine.Height
+      If (top + LstCompletion.Height / 2) > Me.Height Then
+         top = TxtEditor.CaretTop - LstCompletion.Height
+      EndIf
+      
+      LstCompletion.Top = top
+      LstCompletion.Visible = True
+      LstCompletion.SelectedIndex = 1
+   EndIf
+EndSub
+
+Sub FormatCode()
+   IsIndented = True
+   ExitTextChanged = True
+   Global.IndentCode()
+   ExitTextChanged = False
+   TxtEditor_OnSelection()
+EndSub
+
+Sub AutoCompleteBlock()
+   ExitTextChanged = True
+   len = Global.AutoCompleteBlock()
+   If len > 0 Then
+      FormatCode()
+      TxtEditor.SelectionLength = len
+      Event.Handled = True
+   EndIf
+   ExitTextChanged = False
+EndSub
+
+Sub UpdateLine()
+   code = TxtEditor.Text
+   pos = TxtEditor.CaretIndex
+   lineIndex = 1
+   lineStart = 1
+   codeLength = code.Length
+   lineEnd = codeLength
+   moveCaret = (TxtEditor.SelectionLength = 0)
+   
+   If code[pos] = Chars.Lf Then
+      pos = pos - 1
+      moveCaret = False
+   EndIf
+   
+   lineStart = Text.IndexOf(code, Chars.Lf, pos, True) + 1
+   lineEnd = Text.IndexOf(code, Chars.Lf, pos, False) - 1
+   If lineEnd = -1 Then
+      lineEnd = codeLength
+   EndIf
+   
+   lineIndex = TxtEditor.CurrentLineIndex
+   linesCount = TxtEditor.LineCount
+   LblNum.Text = lineIndex
+   If code[lineEnd] = Chars.Cr Then
+      lineText = code.SubText(lineStart, lineEnd - lineStart)
+   Else
+      lineText = code.SubText(lineStart, lineEnd - lineStart + 1)
+   EndIf
+   
+   lastLineText = LblLine.Text
+   
+   If lineText = "" Then
+      LblLine.Text = ""
+   Else
+      ' Skip leading spaces
+      indentationPart = code.SubText(lineStart, pos - lineStart + 1)
+      If indentationPart.Trim() = "" Then
+         For i = pos + 1 To lineEnd
+            If code[i] <> " " Then
+               ExitTextChanged = True
+               TxtEditor.CaretIndex = i
+               ExitTextChanged = False
+               ExitLoop
+            EndIf
+         Next
+      EndIf
+      Global.ColorLine(lineText)
+   EndIf
+   
+   If linesCount <> LastlinesCount Or lineIndex <> LastLineIndex Then
+      LstCompletion.Visible = False
+      LastLineIndex = lineIndex
+      LastlinesCount = linesCount
+      IsIndented = True
+      ExitTextChanged = True
+      Global.FixNextVarName(LastlineStart, lastLineText)
+      Global.IndentCode()
+      ExitTextChanged = False
+   EndIf
+   
+   AdjustLabels()
+   LastlineStart = lineStart
+EndSub
+
+
+Sub AutoCompleteWord(debug)
+   ' Forms.ShowMessage(debug, "Message")
+   
+   LstCompletion.Visible = False
+   TxtEditor.Focus()
+   If LstCompletion.SelectedIndex > 0 Then
+      ExitSelection = True
+      pos = TxtEditor.CaretIndex
+      code = TxtEditor.Text
+      word = LstCompletion.SelectedItem
+      len = AutoCompToken.Length
+      start = pos - len
+      TxtEditor.SelectionStart = start
+      TxtEditor.SelectionLength = len
+      TxtEditor.SelectedText = word
+      ExitSelection = False
+      TxtEditor.CaretIndex = start + word.Length
+      AutoCompleteBlock()
+   EndIf
+EndSub
+
+Function GetLineStartIndex(y)
+   lineHeight = LblLine.Height
+   code = TxtEditor.Text
+   visibleIndex = TxtEditor.GetFirstVisibleLineStartPos()
+   fractionalPart = TxtEditor.VerticalScrollOffset - Math.Truncate(TxtEditor.VerticalScrollOffset)
+   offsetPixels = fractionalPart * lineHeight
+   h = TxtEditor.Padding + lineHeight - offsetPixels
+   
+   For i = visibleIndex To code.Length
+      If h >= y Then
+         Return i
+      EndIf
+      
+      If code[i] = Chars.Lf Then
+         h = h + lineHeight
+      EndIf
+   Next
+   
+   Return 0
+EndFunction
+
+Sub ExtendSelection()
+   currentIndex = GetLineStartIndex(LblMargin.MouseY)
+   
+   If StartSelectionIndex < currentIndex Then
+      lowerIndex = StartSelectionIndex
+      upperIndex = currentIndex
+   Else
+      lowerIndex = currentIndex
+      upperIndex = StartSelectionIndex
+   EndIf
+   
+   code = TxtEditor.Text
+   upperLineEnd = code.IndexOf(Chars.Lf, upperIndex, False)
+   If upperLineEnd = 0 Then
+      upperLineEnd = code.Length
+   EndIf
+   
+   ExitSelection = True
+   TxtEditor.SelectionStart = lowerIndex
+   TxtEditor.SelectionLength = upperLineEnd - lowerIndex + 1
+   ExitSelection = False
+EndSub
+
+
+
+

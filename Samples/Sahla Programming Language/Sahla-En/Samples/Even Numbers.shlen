@@ -1,0 +1,15 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write Line "Even numbers from 2 to 20:"
+
+For Number = 2 To 20 Step 2
+    Write Line Number
+Next Number

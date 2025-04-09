@@ -1,0 +1,77 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Sahla Syntax: 2. Variables:
+' -------------------------------------------------------------------------------
+'
+' Review the following explanation then run this sample program to see the examples in action.
+'
+' A variable represents a storage location in memory. You assign a value to a variable using the '=' operator.
+' In an assignment, the value on the right-hand side is stored in the variable on the left-hand side:
+Start = 1
+Write "Start = "
+Write Line Start
+'
+' Variable names must consist of letters and may include numbers, provided they do not begin with a digit.
+Value1 = 1
+Value2 = 2
+Write "First value = "
+Write Line Value1
+Write "Second value = "
+Write Line Value2
+'
+' Variable names cannot contain spaces.
+' Therefore, if you want to use a variable name composed of two words, join them with an underscore (_):
+Third_value = 3
+Write "Third value = "
+Write Line Third_value
+'
+' You may also drop the underscore and join the two words, with the second one starting with an uppercase letter for readability:
+ThirdValue = 3
+Write "Third value = "
+Write Line ThirdValue
+'
+' Note: Sahla is case-insensitive.
+' That means identifiers are evaluated without considering letter casing.
+' For example, ThirdValue, thirdvalue, and THIRDVALUE all refer to the same variable.
+ThirdValue = 42
+Write "Third value (using lower-case): "
+Write Line thirdvalue
+'
+' You can update a variable’s value at any time. For example:
+s = 10
+s = 15
+'
+' You can retrieve the value of a variable by referring to it on the right-hand side of an assignment.
+' For example, the following command copies the value from the variable "Start" into the variable "Position":
+Start = 10
+Position = Start
+Write "Position = "
+Write Line Position
+'
+' You can update a variable’s value by using it on both sides of the '=' operator.
+' The following command increments the value of Position by 2:
+Position = Position + 2
+Write "Position after adding 2 = "
+Write Line Position
+'
+' The previous command is equivalent to the two commands below:
+NewValue = Position + 2
+Position = NewValue
+'
+' You can assign a text to variables by enclosing it within quotation marks:
+Example = "This is an example of a text."
+Write Line Example
+'
+' You can concatenate strings using the '+' operator:
+FirstName = "Mohammad"
+LastName = "Hamdy"
+FullName = FirstName + " " + LastName
+Write Line "Full Name: " + FullName

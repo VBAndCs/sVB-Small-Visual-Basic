@@ -1,0 +1,304 @@
+'@Form Hints:
+'#FrmMain{
+'    TxtEditor: TextBox
+'    LblFormat: Label
+'    LblLine: Label
+'    LblBackground: Label
+'    LblMargin: Label
+'    LblNum: Label
+'    LstCompletion: ListBox
+'    MainMenu1: MainMenu
+'    MnuFile: MenuItem
+'    MnuNew: MenuItem
+'    MnuOpen: MenuItem
+'    MnuSave: MenuItem
+'    MnuSaveAs: MenuItem
+'    MnuClose: MenuItem
+'    MnuEdit: MenuItem
+'    MnuUndo: MenuItem
+'    MnuRedo: MenuItem
+'    MnuCopy: MenuItem
+'    MnuCut: MenuItem
+'    MnuPaste: MenuItem
+'    MnuDelete: MenuItem
+'    MnuSelAll: MenuItem
+'    MnuFind: MenuItem
+'    MnuProgram: MenuItem
+'    MnuRun: MenuItem
+'    MnuFormat: MenuItem
+'    MnuView: MenuItem
+'    MnuBold: MenuItem
+'    MnuItalic: MenuItem
+'    MnuUnderline: MenuItem
+'    MnuFont: MenuItem
+'    MnuColors: MenuItem
+'    MnuForeColor: MenuItem
+'    MnuBackColor: MenuItem
+'    MnuOptions: MenuItem
+'    MnuHelp: MenuItem
+'    MnuSyntax: MenuItem
+'    MnuOutput: MenuItem
+'    MnuVars: MenuItem
+'    MnuOps: MenuItem
+'    MnuInput: MenuItem
+'    MnuConditions: MenuItem
+'    MnuLoops: MenuItem
+'    MnuSounds: MenuItem
+'    MnuLocalize: MenuItem
+'    MnuAbout: MenuItem
+'}
+
+Me = "frmmain"
+TxtEditor = "frmmain.txteditor"
+LblFormat = "frmmain.lblformat"
+LblLine = "frmmain.lblline"
+LblBackground = "frmmain.lblbackground"
+LblMargin = "frmmain.lblmargin"
+LblNum = "frmmain.lblnum"
+LstCompletion = "frmmain.lstcompletion"
+MainMenu1 = "frmmain.mainmenu1"
+MnuFile = "frmmain.mnufile"
+MnuNew = "frmmain.mnunew"
+MnuOpen = "frmmain.mnuopen"
+MnuSave = "frmmain.mnusave"
+MnuSaveAs = "frmmain.mnusaveas"
+MnuClose = "frmmain.mnuclose"
+MnuEdit = "frmmain.mnuedit"
+MnuUndo = "frmmain.mnuundo"
+MnuRedo = "frmmain.mnuredo"
+MnuCopy = "frmmain.mnucopy"
+MnuCut = "frmmain.mnucut"
+MnuPaste = "frmmain.mnupaste"
+MnuDelete = "frmmain.mnudelete"
+MnuSelAll = "frmmain.mnuselall"
+MnuFind = "frmmain.mnufind"
+MnuProgram = "frmmain.mnuprogram"
+MnuRun = "frmmain.mnurun"
+MnuFormat = "frmmain.mnuformat"
+MnuView = "frmmain.mnuview"
+MnuBold = "frmmain.mnubold"
+MnuItalic = "frmmain.mnuitalic"
+MnuUnderline = "frmmain.mnuunderline"
+MnuFont = "frmmain.mnufont"
+MnuColors = "frmmain.mnucolors"
+MnuForeColor = "frmmain.mnuforecolor"
+MnuBackColor = "frmmain.mnubackcolor"
+MnuOptions = "frmmain.mnuoptions"
+MnuHelp = "frmmain.mnuhelp"
+MnuSyntax = "frmmain.mnusyntax"
+MnuOutput = "frmmain.mnuoutput"
+MnuVars = "frmmain.mnuvars"
+MnuOps = "frmmain.mnuops"
+MnuInput = "frmmain.mnuinput"
+MnuConditions = "frmmain.mnuconditions"
+MnuLoops = "frmmain.mnuloops"
+MnuSounds = "frmmain.mnusounds"
+MnuLocalize = "frmmain.mnulocalize"
+MnuAbout = "frmmain.mnuabout"
+_path = Program.Directory + "\frmmain.xaml"
+FrmMain = Forms.LoadForm("FrmMain", _path)
+Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
+'#Events{
+'    MnuNew: OnClick
+'    MnuOpen: OnClick
+'    MnuSave: OnClick
+'    MnuSaveAs: OnClick
+'    MnuClose: OnClick
+'    MnuFile: OnOpen
+'    MnuUndo: OnClick
+'    MnuRedo: OnClick
+'    MnuCopy: OnClick
+'    MnuCut: OnClick
+'    MnuPaste: OnClick
+'    MnuDelete: OnClick
+'    MnuSelAll: OnClick
+'    MnuBold: OnCheck
+'    MnuItalic: OnCheck
+'    MnuUnderline: OnCheck
+'    MnuEdit: OnOpen
+'    MnuFont: OnClick
+'    MnuForeColor: OnClick
+'    MnuBackColor: OnClick
+'    MnuOptions: OnClick
+'    MnuView: OnOpen
+'    MnuFind: OnClick
+'    MnuRun: OnClick
+'    TxtEditor: OnTextChanged OnTextInput OnKeyDown OnSelection OnMouseWheel OnMouseRightDown OnMouseLeftDown
+'    MnuAbout: OnClick
+'    FrmMain: OnClosing OnShown
+'    MnuLocalize: OnClick
+'    MnuSounds: OnClick
+'    LblMargin: OnMouseLeftDown OnMouseMove
+'    LstCompletion: OnKeyDown OnDoubleClick
+'    MnuFormat: OnClick
+'    MnuOutput: OnClick
+'    MnuVars: OnClick
+'    MnuOps: OnClick
+'    MnuInput: OnClick
+'    MnuConditions: OnClick
+'    MnuLoops: OnClick
+'}
+
+' MnuNew Events:
+Control.HandleEvents(MnuNew)
+MenuItem.OnClick = MnuNew_OnClick
+
+' MnuOpen Events:
+Control.HandleEvents(MnuOpen)
+MenuItem.OnClick = MnuOpen_OnClick
+
+' MnuSave Events:
+Control.HandleEvents(MnuSave)
+MenuItem.OnClick = MnuSave_OnClick
+
+' MnuSaveAs Events:
+Control.HandleEvents(MnuSaveAs)
+MenuItem.OnClick = MnuSaveAs_OnClick
+
+' MnuClose Events:
+Control.HandleEvents(MnuClose)
+MenuItem.OnClick = MnuClose_OnClick
+
+' MnuFile Events:
+Control.HandleEvents(MnuFile)
+MenuItem.OnOpen = MnuFile_OnOpen
+
+' MnuUndo Events:
+Control.HandleEvents(MnuUndo)
+MenuItem.OnClick = MnuUndo_OnClick
+
+' MnuRedo Events:
+Control.HandleEvents(MnuRedo)
+MenuItem.OnClick = MnuRedo_OnClick
+
+' MnuCopy Events:
+Control.HandleEvents(MnuCopy)
+MenuItem.OnClick = MnuCopy_OnClick
+
+' MnuCut Events:
+Control.HandleEvents(MnuCut)
+MenuItem.OnClick = MnuCut_OnClick
+
+' MnuPaste Events:
+Control.HandleEvents(MnuPaste)
+MenuItem.OnClick = MnuPaste_OnClick
+
+' MnuDelete Events:
+Control.HandleEvents(MnuDelete)
+MenuItem.OnClick = MnuDelete_OnClick
+
+' MnuSelAll Events:
+Control.HandleEvents(MnuSelAll)
+MenuItem.OnClick = MnuSelAll_OnClick
+
+' MnuBold Events:
+Control.HandleEvents(MnuBold)
+MenuItem.OnCheck = MnuBold_OnCheck
+
+' MnuItalic Events:
+Control.HandleEvents(MnuItalic)
+MenuItem.OnCheck = MnuItalic_OnCheck
+
+' MnuUnderline Events:
+Control.HandleEvents(MnuUnderline)
+MenuItem.OnCheck = MnuUnderline_OnCheck
+
+' MnuEdit Events:
+Control.HandleEvents(MnuEdit)
+MenuItem.OnOpen = MnuEdit_OnOpen
+
+' MnuFont Events:
+Control.HandleEvents(MnuFont)
+MenuItem.OnClick = MnuFont_OnClick
+
+' MnuForeColor Events:
+Control.HandleEvents(MnuForeColor)
+MenuItem.OnClick = MnuForeColor_OnClick
+
+' MnuBackColor Events:
+Control.HandleEvents(MnuBackColor)
+MenuItem.OnClick = MnuBackColor_OnClick
+
+' MnuOptions Events:
+Control.HandleEvents(MnuOptions)
+MenuItem.OnClick = MnuOptions_OnClick
+
+' MnuView Events:
+Control.HandleEvents(MnuView)
+MenuItem.OnOpen = MnuView_OnOpen
+
+' MnuFind Events:
+Control.HandleEvents(MnuFind)
+MenuItem.OnClick = MnuFind_OnClick
+
+' MnuRun Events:
+Control.HandleEvents(MnuRun)
+MenuItem.OnClick = MnuRun_OnClick
+
+' TxtEditor Events:
+Control.HandleEvents(TxtEditor)
+TextBox.OnTextChanged = TxtEditor_OnTextChanged
+TextBox.OnTextInput = TxtEditor_OnTextInput
+Control.OnKeyDown = TxtEditor_OnKeyDown
+TextBox.OnSelection = TxtEditor_OnSelection
+Control.OnMouseWheel = TxtEditor_OnMouseWheel
+Control.OnMouseRightDown = TxtEditor_OnMouseRightDown
+Control.OnMouseLeftDown = TxtEditor_OnMouseLeftDown
+
+' MnuAbout Events:
+Control.HandleEvents(MnuAbout)
+MenuItem.OnClick = MnuAbout_OnClick
+
+' FrmMain Events:
+Control.HandleEvents(FrmMain)
+Form.OnClosing = FrmMain_OnClosing
+Form.OnShown = Form_OnShown
+
+' MnuLocalize Events:
+Control.HandleEvents(MnuLocalize)
+MenuItem.OnClick = MnuLocalize_OnClick
+
+' MnuSounds Events:
+Control.HandleEvents(MnuSounds)
+MenuItem.OnClick = MnuSounds_OnClick
+
+' LblMargin Events:
+Control.HandleEvents(LblMargin)
+Control.OnMouseLeftDown = LblMargin_OnMouseLeftDown
+Control.OnMouseMove = LblMargin_OnMouseMove
+
+' LstCompletion Events:
+Control.HandleEvents(LstCompletion)
+Control.OnKeyDown = LstCompletion_OnKeyDown
+Control.OnDoubleClick = LstCompletion_OnDoubleClick
+
+' MnuFormat Events:
+Control.HandleEvents(MnuFormat)
+MenuItem.OnClick = MnuFormat_OnClick
+
+' MnuOutput Events:
+Control.HandleEvents(MnuOutput)
+MenuItem.OnClick = MnuOutput_OnClick
+
+' MnuVars Events:
+Control.HandleEvents(MnuVars)
+MenuItem.OnClick = MnuVars_OnClick
+
+' MnuOps Events:
+Control.HandleEvents(MnuOps)
+MenuItem.OnClick = MnuOps_OnClick
+
+' MnuInput Events:
+Control.HandleEvents(MnuInput)
+MenuItem.OnClick = MnuInput_OnClick
+
+' MnuConditions Events:
+Control.HandleEvents(MnuConditions)
+MenuItem.OnClick = MnuConditions_OnClick
+
+' MnuLoops Events:
+Control.HandleEvents(MnuLoops)
+MenuItem.OnClick = MnuLoops_OnClick
+
+
+Form.Show(Me)

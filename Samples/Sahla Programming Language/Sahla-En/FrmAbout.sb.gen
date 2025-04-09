@@ -1,0 +1,40 @@
+'@Form Hints:
+'#FrmAbout{
+'    Label1: Label
+'    Label3: Label
+'    Label4: Label
+'    LblMhmd: Label
+'    Label6: Label
+'    Label7: Label
+'    Label9: Label
+'    LblSamples: Label
+'    LblKP: Label
+'    LblSVB: Label
+'    Label10: Label
+'}
+
+Me = "frmabout"
+Label1 = "frmabout.label1"
+Label3 = "frmabout.label3"
+Label4 = "frmabout.label4"
+LblMhmd = "frmabout.lblmhmd"
+Label6 = "frmabout.label6"
+Label7 = "frmabout.label7"
+Label9 = "frmabout.label9"
+LblSamples = "frmabout.lblsamples"
+LblKP = "frmabout.lblkp"
+LblSVB = "frmabout.lblsvb"
+Label10 = "frmabout.label10"
+_path = Program.Directory + "\frmabout.xaml"
+FrmAbout = Forms.LoadForm("FrmAbout", _path)
+Form.SetArgsArr(frmabout, Stack.PopValue("_frmabout_argsArr"))
+'#Events{
+'    FrmAbout: OnKeyDown
+'}
+
+' FrmAbout Events:
+Control.HandleEvents(FrmAbout)
+Control.OnKeyDown = Form_OnKeyDown
+
+
+Form.Show(Me)

@@ -173,7 +173,7 @@ Namespace Microsoft.SmallVisualBasic.Documents
                 If prevLine.GetText().StartsWith("'") Then Return
 
                 Dim text = curLine.GetText().ToLower()
-                If text.StartsWith("sub") OrElse text.StartsWith("function") Then
+                If text.StartsWith("sub ") OrElse text.StartsWith("function ") Then
                     dc.DrawLine(lineSeparatorPen, New Point(x, y), New Point(textView.ViewportWidth - x, y))
                 ElseIf text.StartsWith("'") Then
                     For i = n + 1 To textView.TextSnapshot.LineCount - 1
@@ -1965,7 +1965,7 @@ EndFunction
             For Each controlInfo In _ControlsInfo
                 Dim controlName = controlInfo.Key
                 If subName.StartsWith(controlName & "_") OrElse (controlName = formName AndAlso subName.StartsWith("form_")) Then
-                    Dim eventName = subName.Substring(subName.IndexOf("_") + 1)
+                    Dim eventName = subName.Substring(subName.LastIndexOf("_") + 1)
                     Dim events = PreCompiler.GetEvents(controlInfo.Value)
                     For Each ev In events
                         If ev.ToLower() = eventName Then

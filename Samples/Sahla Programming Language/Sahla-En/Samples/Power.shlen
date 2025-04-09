@@ -1,0 +1,23 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write "Enter the base: "
+base = Read Number
+
+Write "Enter the exponent: "
+exp = Read Number
+
+result = 1
+For n = 1 To exp
+    result = result * base
+Next n
+
+Write Line "Result using repeated multiplication = " + result
+Write Line "Result using the ^ operator = " + ( base ^ exp )

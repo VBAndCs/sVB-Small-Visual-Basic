@@ -295,7 +295,7 @@ Namespace WinForms
         <WinForms.ReturnValueType(VariableType.Double)>
         <ExMethod>
         Public Shared Function ToDecimal(hex As Primitive) As Primitive
-            Return Convert.ToInt32(hex, 16)
+            Return System.Convert.ToInt32(hex, 16)
         End Function
 
 

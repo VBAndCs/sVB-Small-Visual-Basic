@@ -1,0 +1,22 @@
+Me.Icon = "s.ico"
+LblMhmd.Text = ""
+LblMhmd.Append("Copyrights @")
+LblMhmd.AppendLink("Eng. M. Hamdy", "www.github.com/VBAndCs")
+X = LblSVB.Text
+LblSVB.Text = ""
+LblSVB.AppendBoldLink(X, "https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller")
+
+X = LblKP.Text
+LblKP.Text = ""
+LblKP.AppendBoldLink(X, "https://www.amazon.com/dp/B0DNX2ZR4D")
+
+X = LblSamples.Text
+LblSamples.Text = ""
+LblSamples.AppendBoldLink(X, "%USERPROFILE%\Documents\Sahla-En Samples")
+
+
+Sub Form_OnKeyDown()
+   If Event.LastKey = Keys.Escape Then
+      Me.Close()
+   EndIf
+EndSub

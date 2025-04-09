@@ -1,0 +1,29 @@
+﻿Segoe UI
+17
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Sahla Syntax: 1. Writing to the Output Window:
+' -------------------------------------------------------------------------------
+'
+' Review the following explanation then run this sample program to see the examples in action.
+' Lines beginning with the comment symbol (') are just annotations and will not be executed.
+'
+' To output text without advancing to a new line, use the Write command
+' followed by some text to be displayed at the current cursor position:
+Write "Welcome to Sahla"
+'
+' To move the cursor to a new line, use the Write Line command.
+' For example, the following commands will force a line break after the welcome message:
+Write Line
+Write "Learn programming the easy way"
+Write Line
+'
+' Alternatively, you can output a message and add a new line in a single operation:
+Write Line "Welcome to Sahla"
+Write Line "Learn programming the easy way"

@@ -1,0 +1,21 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write "Enter the rectangle's length in meters: "
+length = Read Number
+
+Write "Enter the rectangle's width in meters: "
+width = Read Number
+
+perimeter = 2 * ( length + width )
+area = length * width
+
+Write Line "Rectangle perimeter = " + perimeter + " meters"
+Write Line "Rectangle area = " + area + " square meters"

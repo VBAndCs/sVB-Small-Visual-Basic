@@ -1,0 +1,29 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+num = 1000001
+
+While num > 1000000
+    Write "Enter a number less than or equal to one million: "
+    num = Read Number
+Wend
+
+isPrime = True
+For n = 2 To num ^ 0.5
+    If num % n = 0
+        Write Line "The number " + num + " is not prime, because it is divisible by " + n
+        isPrime = False
+        Exit
+    EndIf
+Next n
+
+If isPrime
+    Write "The number " + num + " is prime."
+EndIf

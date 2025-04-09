@@ -858,7 +858,7 @@ Namespace Library
                 .RestoreDirectory = False,
                 .InitialDirectory = d,
                 .FileName = name,
-                .FilterIndex = index
+                .FilterIndex = index - 1
             }
 
             If dlg.ShowDialog() = True Then

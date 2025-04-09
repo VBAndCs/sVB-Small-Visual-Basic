@@ -1,0 +1,34 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Sahla Syntax: 4. Reading Inputs:
+' -------------------------------------------------------------------------------
+'
+' Review the following explanation then run this sample program to see the examples in action.
+'
+' The "Read Number" command is used to read a numeric value from the user.
+' This command displays a text box at the current output position,
+' allowing the user to enter digits only, then press the Enter key to submit the number.
+' You recive this nubmber in a variable to be able to use it in subsequent arithmetic operations.
+' Example: Reading two numbers from the user and adding them:
+Write "Enter the first number: "
+Number1 = Read Number
+Write "Enter the second number: "
+Number2 = Read Number
+Write Line "The sum of the two numbers = " + ( Number1 + Number2 )
+'
+' The "Read Text" command is used to read a string from the user.
+' In this example, the user is prompted to enter his first name and last name,
+' and then the full name is printed on the screen:
+Write "Enter your first name: "
+FirstName = Read Text
+Write "Enter your last name: "
+LastName = Read Text
+Write Line "Hello, " + FirstName + " " + LastName

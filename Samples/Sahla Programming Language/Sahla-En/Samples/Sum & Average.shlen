@@ -1,0 +1,28 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+total = 0
+iterations = 0
+Number = 1
+Write Line "The program will continuously ask you to enter numbers."
+Write Line "Enter zero to stop, and to calculate the sum and average of the entered numbers:"
+
+While Number > 0
+    Write "Enter a number: "
+    Number = Read Number
+    total = total + Number
+    iterations = iterations + 1
+Wend
+
+ItemsCount = iterations - 1
+Write Line "Number of items = " + ItemsCount
+Write Line "Their sum = " + total
+Write "Their average = (" + total + "/" + ItemsCount + ") = "
+Write Line ( total / ItemsCount )

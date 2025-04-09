@@ -1,0 +1,50 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Sahla Syntax: 7. Sounds:
+' -------------------------------------------------------------------------------
+'
+' Review the following explanation then run this sample program to see the examples in action.
+'
+' The Sound command is used to play built-in tones,
+' or to play an audio file with a .wav or .mp3 extension from the user's device.
+'
+' The built-in sounds include the Beep, Bell, Ding, Click, and Chime.
+' The following example plays them all:
+Write Line "Playing Beep sound:"
+Play Beep
+Wait
+Write Line "Playing Bell sound:"
+Play Bell
+Wait
+Write Line "Playing Ding sound:"
+Play Ding
+Wait
+Write Line "Playing Click sound:"
+Play Click
+Wait
+Write Line "Playing Piano tone:"
+Play Chime
+Wait
+'
+' Note: The Wait command pauses the program for a second, allowing the sound to finish playing.
+' Without it, each new sound would cancel the previous one, so only the last sound would be heard.
+' You can also provide a time period (in milliseconds) after the Wait command,
+' For example, "Wait 2000" pauses for 2000 milliseconds (2 seconds),
+' while "Wait 500" pauses for half a second.
+' The following example plays the chime sound three times consecutively,
+' waiting two seconds between each iteration, and finally plays the Beep sound.
+' (If you remove the Wait commands, you will hear only the Beep sound!)
+Write Line "Playing the Piano tone 3 times then the Beep sound:"
+For s = 1 To 3
+    Play Chime
+    Wait 2000
+Next s
+Play Beep

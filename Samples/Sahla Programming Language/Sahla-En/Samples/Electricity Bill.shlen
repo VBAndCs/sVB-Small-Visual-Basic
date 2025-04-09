@@ -1,0 +1,53 @@
+﻿Segoe UI
+23.2
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' The Egyptian electricity tariff slate prices and customer service tax per slab:
+' Update these values whenever they change:
+ServiceCharge = 900    ' Service charge fee
+Slab1 = 68
+Tax1 = 100
+Slab2 = 78
+Tax2 = 200
+Slab3 = 95
+Tax3 = 500
+Slab4 = 155
+Tax4 = 1100
+Slab5 = 195
+Tax5 = 1500
+Slab6 = 210
+Tax6 = 2500
+Slab7 = 223
+Tax7 = 4000
+
+' Calculating the electricity bill:
+Write Line "Welcome to the Electricity Bill Calculator program."
+
+Write "Enter the monthly consumption: "
+consumption = Read Number
+
+If consumption = 0
+    bill = ServiceCharge
+ElseIf consumption < = 50
+    bill = consumption × Slab1 + Tax1
+ElseIf consumption < = 100
+    bill = 50 × Slab1 + ( consumption - 50 ) × Slab2 + Tax2
+ElseIf consumption < = 200
+    bill = consumption × Slab3 + Tax3
+ElseIf consumption < = 350
+    bill = 200 × Slab3 + ( consumption - 200 ) × Slab4 + Tax4
+ElseIf consumption < = 650
+    bill = 200 × Slab3 + 150 × Slab4 + ( consumption - 350 ) × Slab5 + Tax5
+ElseIf consumption < = 1000
+    bill = consumption × Slab6 + Tax6
+Else
+    bill = consumption × Slab7 + Tax7
+EndIf
+
+Write Line "The bill = " + bill / 100 + " pounds"

@@ -2,6 +2,7 @@ Program.UseLocalCulture = False
 Ops = Global.Ops
 SetProperties(Ops)
 
+MainMenu1.FontSize = 14
 TxtEditor.SetContextMenu(MnuEdit, True)
 LblNum.OnMouseLeftDown = LblMargin_OnMouseLeftDown
 LblNum.OnMouseMove = LblMargin_OnMouseMove
@@ -35,7 +36,6 @@ IsIndented = False
 FixLA = False
 AlreadyFixedLA = False
 AutoCompToken = ""
-HorizontalScrollOffset = 0
 LastlineStart = 0
 LastLineIndex = 0
 LastlinesCount = 0
@@ -111,7 +111,6 @@ Sub SetProperties(ops)
    TW.FontBold = True
    
    MainMenu1.BringToFront()
-   MnuEnd.Enabled = False
    
    LstCompletion.Width = 0
    LstCompletion.Height = 0
@@ -127,23 +126,24 @@ Sub OnScroll()
       Return
    EndIf
    
-   HorizontalScrollOffset = TxtEditor.HorizontalScrollOffset
-   LblFormat.Width = TxtEditor.Width + 2 * HorizontalScrollOffset
-   LblFormat.Left = -HorizontalScrollOffset - 3
-   
-   v = TxtEditor.VerticalScrollOffset
-   LblFormat.Height = TxtEditor.Height + v
-   LblFormat.Top = -v
    AdjustLabels()
    TxtEditor_OnSelection()
 EndSub
 
 Sub AdjustLabels()
-   w = TxtEditor.Width + 2 * HorizontalScrollOffset
+   horizontalScrollOffset = TxtEditor.HorizontalScrollOffset
+   LblFormat.Width = TxtEditor.Width + 2 * horizontalScrollOffset
+   LblFormat.Left = -horizontalScrollOffset - 3
+   
+   v = TxtEditor.VerticalScrollOffset
+   LblFormat.Height = TxtEditor.Height + v
+   LblFormat.Top = -v
+   
+   w = TxtEditor.Width + 2 * horizontalScrollOffset
    LblLine.Width = w
    LblBackground.Width = w
    
-   x = -HorizontalScrollOffset - 3 - TxtEditor.Padding
+   x = -horizontalScrollOffset - 3 - TxtEditor.Padding
    LblLine.Left = x
    LblBackground.Left = x
    
@@ -213,14 +213,17 @@ Sub Open(fileName)
 EndSub
 
 Sub MnuSave_OnClick()
-   Save()
+   FormatCode()
+   Save(SavedFile)
 EndSub
 
 Sub MnuSaveAs_OnClick()
+   FormatCode()
    SaveAs()
 EndSub
 
 Function AskToSave()
+   FormatCode()
    If IsModified Then
       result = Dialogs.MsgBox(
          "حفظ التغييرات",
@@ -231,7 +234,7 @@ Function AskToSave()
       )
       
       If result = DialogResults.Yes Then
-         If Save() = False Then
+         If Save(SavedFile) = False Then
             Return False
          EndIf
          
@@ -244,11 +247,16 @@ Function AskToSave()
 EndFunction
 
 
-Function Save()
-   If SavedFile = "" Then
+Function Save(fileName)
+   If fileName = "" Then
       Return SaveAs()
+   ElseIf Text.EndsWith(Text.ToLower(fileName), ".sb") Then
+      sVBCode = Global.ConvertSahlaCode(False)
+      If File.WriteContents(fileName, sVBCode) = False Then
+         Me.ShowMessage(File.LastError, "Error")
+         Return False
+      EndIf
    Else
-      FormatCode()
       Ops = {}
       Ops!FontName = TxtEditor.FontName
       Ops!FontSize = TxtEditor.FontSize
@@ -260,30 +268,50 @@ Function Save()
       Ops!RightToLeft = TxtEditor.RightToLeft
       Ops!MultiLine = TxtEditor.MultiLine
       Ops!WordWrap = TxtEditor.WordWrap
-      Ops!Text = TxtEditor.Text
+      If Text.EndsWith(Text.ToLower(fileName), ".shlen") Then
+         Ops!Text = Global.ConvertSahlaCode(True)
+      Else
+         Ops!Text = TxtEditor.Text
+      EndIf
       
-      If File.WriteContents(SavedFile, Ops) = False Then
+      If File.WriteContents(fileName, Ops) = False Then
          Me.ShowMessage(File.LastError, "Error")
          Return False
       EndIf
+      IsModified = False
    EndIf
    
-   IsModified = False
    Return True
 EndFunction
 
+FileNumber = 1
 Function SaveAs()
+   If SavedFile = "" Then
+      suggestedName = "App" & FileNumber & ".shl"
+   Else
+      suggestedName = SavedFile
+   EndIf
+   
    fileName = File.SaveFileDialog(
-      SavedFile,
-      {"Sahla code files", "shl"}
-   )
+      suggestedName, {
+         {"Sahla code files", "shl"},
+         {"English Sahla code files", "shlen"},
+         {"Small Basic code files", "sb"}
+      })
    
    If fileName = "" Then
       FormatCode()
       Return False
    Else
-      SavedFile = fileName
-      Return Save()
+      If suggestedName.ToLower() <> fileName.ToLower() Then
+         FileNumber = FileNumber + 1
+      EndIf
+      
+      If Text.EndsWith(fileName.ToLower(), ".shl") Then
+         SavedFile = fileName
+      EndIf
+      
+      Return Save(fileName)
    EndIf
 EndFunction
 
@@ -300,16 +328,17 @@ EndSub
 
 Sub MnuUndo_OnClick()
    TxtEditor.Undo()
-   UpdateLine()
+   FormatCode()
 EndSub
 
 Sub MnuRedo_OnClick()
    TxtEditor.Redo()
-   UpdateLine()
+   FormatCode()
 EndSub
 
 
 Sub MnuCopy_OnClick()
+   Global.ColorCode()
    LblFormat.CopyFormattedText(TxtEditor.SelectionStart, TxtEditor.SelectionLength)
 EndSub
 
@@ -403,18 +432,10 @@ EndSub
 Sub MnuRun_OnClick()
    FormatCode()
    
-   MnuRun.Enabled = False
-   MnuEnd.Enabled = True
+   Me.Enabled = False
    TW.Title = "نافذة المخرجات"
    Global.Run()
-   MnuRun.Enabled = True
-   MnuEnd.Enabled = False
-EndSub
-
-Sub MnuEnd_OnClick()
-   TW.Close()
-   MnuEnd.Enabled = False
-   MnuRun.Enabled = True
+   Me.Enabled = True
 EndSub
 
 Sub MnuOutput_OnClick()
@@ -712,13 +733,25 @@ Sub ShowAutoComp()
       Else
          i = Text.IndexOf(word, " " & AutoCompToken, 1, False)
          If i > 0 Then
-            LstCompletion.AddItem(Text.GetSubTextToEnd(word, i + 1))
+            end = pos
+            For j = 3 To pos
+               If code[pos - j] = " " Then
+                  end = end - 1
+               Else
+                  ExitLoop
+               EndIf
+            Next
+            
+            w = code.SubText(end - i - 1, i - 1)
+            If Text.StartsWith(word, w.Trim()) Then
+               LstCompletion.AddItem(Text.GetSubTextToEnd(word, i + 1))
+            EndIf
          EndIf
       EndIf
    Next
    
-   
    count = LstCompletion.ItemsCount
+   
    If count = 0 Or (count = 1 And LstCompletion.GetItemAt(1) = AutoCompToken) Then
       LstCompletion.Visible = False
    Else
@@ -767,53 +800,14 @@ Sub UpdateLine()
       moveCaret = False
    EndIf
    
-   ' Skip leading spaces
-   ' If there is any previous non-space char, do nothing
-   If pos = 1 Then
-      moveCaret = False
-   Else
-      For i = pos To 1 Step -1
-         ch = code[i]
-         If ch = Chars.Lf Then
-            If lineStart = 1 Then
-               lineStart = i + 1
-               If i = pos Then
-                  moveCaret = False
-               EndIf
-            EndIf
-            lineIndex = lineIndex + 1
-            
-         ElseIf lineStart = 1 And ch <> " " Then
-            moveCaret = False
-         EndIf
-      Next
+   lineStart = Text.IndexOf(code, Chars.Lf, pos, True) + 1
+   lineEnd = Text.IndexOf(code, Chars.Lf, pos, False) - 1
+   If lineEnd = -1 Then
+      lineEnd = codeLength
    EndIf
    
-   linesCount = lineIndex
-   If pos = codeLength Then
-      moveCaret = False
-   EndIf
-   
-   ' Move thee caret to the next  non-space char
-   For i = pos To codeLength
-      ch = code[i]
-      If moveCaret And ch <> " " Then
-         If i > pos Then
-            moveCaret = False
-            ExitTextChanged = True
-            TxtEditor.CaretIndex = i
-            ExitTextChanged = False
-         EndIf
-      EndIf
-      
-      If ch = Chars.Lf Then
-         If lineEnd = codeLength Then
-            lineEnd = i - 1
-         EndIf
-         linesCount = linesCount + 1
-      EndIf
-   Next
-   
+   lineIndex = TxtEditor.CurrentLineIndex
+   linesCount = TxtEditor.LineCount
    LblNum.Text = lineIndex
    If code[lineEnd] = Chars.Cr Then
       lineText = code.SubText(lineStart, lineEnd - lineStart)
@@ -826,10 +820,20 @@ Sub UpdateLine()
    If lineText = "" Then
       LblLine.Text = ""
    Else
+      ' Skip leading spaces
+      indentationPart = code.SubText(lineStart, pos - lineStart + 1)
+      If indentationPart.Trim() = "" Then
+         For i = pos + 1 To lineEnd
+            If code[i] <> " " Then
+               ExitTextChanged = True
+               TxtEditor.CaretIndex = i
+               ExitTextChanged = False
+               ExitLoop
+            EndIf
+         Next
+      EndIf
       Global.ColorLine(lineText)
    EndIf
-   
-   AdjustLabels()
    
    If linesCount <> LastlinesCount Or lineIndex <> LastLineIndex Then
       LstCompletion.Visible = False
@@ -842,6 +846,7 @@ Sub UpdateLine()
       ExitTextChanged = False
    EndIf
    
+   AdjustLabels()
    LastlineStart = lineStart
 EndSub
 

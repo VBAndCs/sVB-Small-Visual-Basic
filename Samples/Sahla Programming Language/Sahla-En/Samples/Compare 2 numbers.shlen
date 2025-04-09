@@ -1,0 +1,23 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Example: Comparing Two Numbers:
+Write "Enter the first number: "
+num1 = Read Number
+Write "Enter the second number: "
+num2 = Read Number
+
+If num1 > num2
+    Write Line "The first number (" + num1 + ") is greater than the second number (" + num2 + ")"
+ElseIf num1 < num2
+    Write Line "The first number (" + num1 + ") is less than the second number (" + num2 + ")"
+Else
+    Write Line "The two numbers are equal and their value is = " + num1
+EndIf

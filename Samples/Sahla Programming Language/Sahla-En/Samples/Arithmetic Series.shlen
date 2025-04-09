@@ -1,0 +1,25 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write "Enter the first term of the arithmetic sequence: "
+Term = Read Number
+Write "Enter the increment: "
+Increment = Read Number
+Write "Enter the number of terms: "
+Count = Read Number
+
+Write Line "----" × ( Count + 3 )
+Write "Sequence: "
+For n = 1 To Count - 1
+    Write Term + ", "
+    Term = Term + Increment
+Next n
+Write Line Term
+Write Line "----" × ( Count + 3 )

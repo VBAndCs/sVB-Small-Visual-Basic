@@ -1,0 +1,80 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Create Your Own Native Sahla in a few minutes!
+' -----------------------------------------------------
+' It is easy to translate Sahla syntax to your native language, allowing your kids
+' to learn programming easily without hitting the foriegn language barrier.
+' This will allow you to introduce basic programming concepts to little kids,
+' showing them how to apply math to solve small problems.
+' I know you may think this may isolate them from the international programming
+' society and main stream programming languages, but Sahla is designed to
+' avoid this:
+' * Sahla allows to convert the native code to the Sahla English syntax,
+'   which allows kids from all nations to communicate and share there codes.
+'   This also allows the kid to easily switch from programming with his native
+'   language to programming with English using the same IDE and concepts.
+'   To convert native code to English, use the File\Save As menu and in the
+'    save file window, open the "save as type" list and choose
+'   "English Sahla Code Files ("*.shlen")
+'
+' * Sahla is very small, and kids will soon feel the need to move on to
+'    a "bigger" language. The next best move is Small visual Basic (sVB),
+'   the language that Sahla is written with, and uses its code library to write,
+'   read, play sounds, and do calculations. Small Visual Basic is an easy and
+'   powerful educational programming language that comes with more than
+'   160 various samples and a full PDF reference book. It also has the
+'   kid programmer book series published on Amazon.
+'   Small Visual Basic is designed as an easy doorway to VB .NET and C#.
+'   To make the transition to sVB easy, Sahla also allows to convert its code to sVB.
+'   To do that use the File \ Save As menu and in the
+'    save file window, open the "save as type" list and choose
+'   "Small Basic Files ("*.sb")
+'
+' If you find this interesting, let's start creating your native Sahla:
+' 1- The source code of Sahla is included in the sVB samples folder,
+'      so you should start by installing sVB on your Windows PC:
+'      https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller
+' 2- After installing sVB, double-click the sVB Samples shortcut on your desktop,
+'     and navigate to the "sVB Samples\Sahla Programming Language\Sahla-En"
+'    Folder, and double-click the Global.sb file to open it in sVB.
+' 3- You will find 64 lines at the top of the global file, that defines the
+'     error messages and keywords of Sahla. They are in English and you
+'     can translate them to your own language. You should not use any spaces or symbols
+'    in keyword names.
+' 4- Use the upper right list to navigate to the MapLetters subroutine
+'     which is used to convert variable names written with your language letters
+'     to English ones, to make the converted code to English Sahla readable.
+'     The default subroutine code maps Arabic letters to English ones.
+'     Any letter that is not mapped will be used as it is in the translated code,
+'     so, if you can keep your own variable names by just ignore this subroutine.
+' 5- Switch to the "Form design tab", and double-click the "frmMain" item from
+'     the project files list to open its code file. At the top of this file, set the value
+'     of the RightToLeft variable to True if your language goes from right to left.
+' 6- The Program.UseLocalCulture property affects how numbers appear.
+'     Setting it to false shows numbers in English, while True shows them in your
+'     native language. There is a third option, by deleting or commenting out this
+'     property, to show the numbers according to the context. You may try the
+'     three alternatives to see what is the best for you.
+' 7- You also need to set the value of the SahlaFilesExtension variable.
+'     "shl" is used of the Arabic dialect, "shlen" is used for the English one, and
+'     you should follow the same formula, like using "shlfr" for the French dialect
+' 8- Scroll down to the Form_OnShown subroutine, and remove the uncomment
+'     the last line in this subroutine, which makes Sahla switch the keyboard input
+'     language to the user's PC local language:
+'     Program.SwitchKeyboardToLocalLanguage()
+' 9- Switch back to the form design and right-click any empty area of the form,
+'     and click the "Menu designer" command to show it. Use the menu designer
+'     to translate menu items names to your language.
+' 10- You can easily localize the other windows like the about window using
+'     the form designer.
+'
+' And that is it! Click the frmMain to open it and press F5 to run the project.
+' You can now enjoy programming using your native Sahla!

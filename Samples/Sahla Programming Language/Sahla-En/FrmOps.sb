@@ -1,0 +1,88 @@
+Me.Icon = "s.ico"
+CmbFont.AddItem(Global.FontNames)
+CmbSize.AddItem({
+      8, 9, 10, 11, 12,
+      14, 16, 18, 20, 22, 24, 26, 28,
+      32, 36, 40, 44, 48, 56, 64, 72
+   })
+
+Ops = Global.Ops
+CmbFont.Text = Ops!FontName
+CmbSize.Text = Ops!FontSize
+ChkBold.Checked = Ops!Bold
+ChkItalic.Checked = Ops!Italic
+ChkUnderlined.Checked = Ops!Underlined
+LblForeColor.BackColor = Ops!ForeColor
+LblBackColor.BackColor = Ops!BackColor
+
+Sub LblBackColor_OnClick()
+   LblBackColor.ChooseBackColor()
+   TxtPreview.BackColor = LblBackColor.BackColor
+EndSub
+
+Sub LblForeColor_OnClick()
+   LblForeColor.ChooseBackColor()
+   TxtPreview.ForeColor = LblForeColor.BackColor
+EndSub
+
+Sub ChkBold_OnCheck()
+   TxtPreview.FontBold = ChkBold.Checked
+EndSub
+
+Sub ChkItalic_OnCheck()
+   TxtPreview.FontItalic = ChkItalic.Checked
+EndSub
+
+Sub ChkUnderlined_OnCheck()
+   TxtPreview.Underlined = ChkUnderlined.Checked
+EndSub
+
+Sub CmbFont_OnSelection()
+   TxtPreview.FontName = CmbFont.SelectedItem
+EndSub
+
+Sub CmbSize_OnSelection()
+   TxtPreview.FontSize = CmbSize.SelectedItem
+EndSub
+
+Sub CmbSize_OnLostFocus()
+   size = CmbSize.Text
+   If Text.IsNumeric(size) = False Or size <= 0 Or size > 100 Then
+      CmbSize.Error = "Invalid font size."
+   Else
+      CmbSize.Error = ""
+      TxtPreview.FontSize = CmbSize.Text
+   EndIf
+EndSub
+
+Sub CmbFont_OnLostFocus()
+   If CmbFont.SelectedIndex = 0 Then
+      CmbFont.Error = "You must choose a defined font name."
+   Else
+      CmbFont.Error = ""
+   EndIf
+EndSub
+
+Sub BtnOk_OnClick()
+   If Me.Validate() = False Then
+      Return
+   EndIf
+   
+   Ops!FontName = CmbFont.Text
+   Ops!FontSize = CmbSize.Text
+   Ops!Bold = ChkBold.Checked
+   Ops!Italic = ChkItalic.Checked
+   Ops!Underlined = ChkUnderlined.Checked
+   Ops!ForeColor = LblForeColor.BackColor
+   Ops!BackColor = LblBackColor.BackColor
+   Ops!FirstTime = False
+   Global.Ops = Ops
+   
+   Global.SaveSettings(Ops)
+   Me.DialogResult = DialogResults.OK
+   Me.Close()
+EndSub
+
+Sub BtnCancel_OnClick()
+   Me.Close()
+EndSub

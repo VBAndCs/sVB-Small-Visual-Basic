@@ -1,0 +1,86 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Sahla Syntax: 3. Mathematical Operations:
+' -------------------------------------------------------------------------------
+'
+' Review the following explanation then run this sample program to see the examples in action.
+'
+' The + operator is used to add numbers or concatenate strings:
+Operation = "5 + 2 = "
+Result = 5 + 2
+Write Line Operation + Result
+'
+' The - operator is used to subtract numbers:
+Start = 11
+Position = 20
+Length = Position - Start + 1
+Write Line "Start = " + Start
+Write Line "Position = " + Position
+Write Line "Length = " + Length
+'
+' The * operator is used for multiplication:
+Write "4 * 5 = "
+Write Line 4 * 5
+'
+' The / operator is used to perform division, resulting in decimal values when applicable:
+Result = 5 / 2
+Write Line "The result of dividing 5 by 2 is " + Result
+'
+' The \ operator is used to perform integer division, discarding any fractional part:
+DecimalValue = 21 / 5
+IntegerValue = 21 \ 5
+Write Line "Dividing 21 by 5 results in " + DecimalValue
+Write Line " and, without decimals, " + IntegerValue
+'
+' The % operator is used to obtain the remainder of a division:
+Result = 21 \ 4
+Remainder = 21 % 4
+Write Line "21 \ 4 = " + Result + " with a remainder of " + Remainder
+'
+' The ^ operator is used for exponentiation:
+Write "10 raised to 2 = "
+Write Line 10 ^ 2
+'
+' Arithmetic expressions may contain multiple operators; the standard order of operations applies:
+' first exponentiation, then multiplication and division, and finally addition and subtraction:
+Write "4 + 2 × 15 - 9 / 3 = "
+Write Line 4 + 2 × 15 - 9 / 3
+'
+' Parentheses can be used to enforce a specific order of operations:
+Write "(4 + 2) × (15 - 9) / 3 = "
+Write Line ( 4 + 2 ) × ( 15 - 9 ) / 3
+'
+' Parentheses can also be used to differentiate between numerical addition and string concatenation:
+Write Line "Without parentheses: 5 + 3 = " + 5 + 3
+Write Line "With parentheses: 5 + 3 = " + ( 5 + 3 )
+'
+' The Random command is used to obtain a random number within the range 1 to 100:
+r = Random
+'
+' To change the range of random numbers, division and multiplication can be applied.
+' For example, to obtain a random number between 20 and 40:
+' Divide the random number by 5 to produce a value between 0 and 20, then add 20 to guarantee the final result is between 20 and 40:
+Write Line "------------------------------------------"
+Write Line "10 random numbers between 20 and 40:"
+For s = 1 To 10
+    Write Line 20 + Random \ 5
+Next s
+'
+' You may also use the remainder operator
+' to ensure that the random number doesn't exceed a certain maximum value.
+' For example, to obtain a random number between 23 and 77,
+' use Random % 55 which returns a value in the range 0 to 54,
+' then add 23 to get a value in the range 23 to 77.
+Write Line "------------------------------------------"
+Write Line "10 random numbers between 23 and 77:"
+For s = 1 To 10
+    Write Line 23 + Random % 55
+Next s

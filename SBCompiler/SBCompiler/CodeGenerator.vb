@@ -110,7 +110,8 @@ Namespace Microsoft.SmallVisualBasic
             ))
 
             Dim info = ProgramInfo.GetProperties(
-                IO.Path.Combine(IO.Path.GetDirectoryName(_directory), "app.json")
+                IO.Path.Combine(IO.Path.GetDirectoryName(_directory), "app.json"),
+                _outputName
             )
 
             asm.SetCustomAttribute(New CustomAttributeBuilder(

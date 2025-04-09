@@ -271,7 +271,7 @@ Namespace WinForms
             If customColorsStr <> "" Then
                 customColors.AddRange(
                         From s In customColorsStr.Split(",")
-                        Select Convert.ToInt32(s)
+                        Select System.Convert.ToInt32(s)
                 )
             End If
         End Sub

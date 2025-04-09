@@ -1,0 +1,29 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write Line "Prime numbers between 2 and 50"
+Write Line "Do you want to also display non-prime numbers (yes/no)?"
+showNonPrimes = ( Read Text = "yes" )
+
+For Number = 3 To 50
+    isPrime = True
+    For divisor = 2 To Number - 1
+        If Number % divisor = 0
+            isPrime = False
+            If showNonPrimes
+                Write Line Number + " is not a prime number"
+            EndIf
+            Exit
+        EndIf
+    Next divisor
+    If isPrime
+        Write Line Number + " is a prime number"
+    EndIf
+Next Number

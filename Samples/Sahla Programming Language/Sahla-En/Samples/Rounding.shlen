@@ -1,0 +1,37 @@
+﻿Segoe UI
+18
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' A Program for rounding numbers:
+' Sahla does not include a built-in rounding function, so we will use the following rounding algorithm:
+' We obtain a scaling factor, which is a decimal number with zeros corresponding to the number of decimal places desired.
+' For example, if rounding to two decimal places, we use 10^2 to obtain 100.
+' We then multiply the number by the scaling factor to shift the desired number of decimal places into the integer part.
+' For instance, 4.123 becomes 412.3.
+' Next, we add 0.5 to the fractional part; if the fractional part is less than 0.5, the integer part remains unchanged,
+' but if it is greater than or equal to 0.5, it will add 1 to the integer part.
+' For example, 412.3 becomes 412.8 while 412.6 becomes 413.1, which demonstrates the rounding process.
+' Then, we perform an integer division (dividing by 1) on the result to discard the fractional part.
+' For example, 412.8 becomes 412 while 413.1 becomes 413.
+' Finally, we restore the shifted decimal places to their original position by dividing by the scaling factor,
+' but this time using decimal division to retain the fractional part.
+
+While True
+    Write "Enter a decimal number: "
+    Number = Read Number
+    
+    Write "How many decimal places do you want to round to? "
+    decimals = Read Number
+    
+    shift = 10 ^ decimals
+    result = ( Number * shift + 0.5 ) \ 1 / shift
+    Write Line "Rounded number = " + result
+    
+    Write Line "----------------------------------"
+Wend

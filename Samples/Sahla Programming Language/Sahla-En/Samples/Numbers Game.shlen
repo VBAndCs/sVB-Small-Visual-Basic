@@ -1,0 +1,36 @@
+﻿Segoe UI
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+randomNumber = Random
+guess = 0
+Write Line "In this game, we will choose a random number between 1 and 100"
+Write Line "You have 10 attempts to guess it."
+
+For attempt = 1 To 10
+    Write attempt + ". Enter your guess: "
+    guess = Read Number
+    If guess = randomNumber
+        Write Line "Awesome.. Your guess is correct!"
+        Play Chime
+        Exit
+    ElseIf guess < randomNumber
+        Write Line "The required number is higher than " + guess
+        Play Bell
+    Else
+        Write Line "The required number is lower than " + guess
+        Play Bell
+    EndIf
+Next attempt
+
+If attempt = 11
+    Write Line
+    Write Line "You've exceeded the number of attempts... better luck in the next game!"
+    Play Beep
+EndIf

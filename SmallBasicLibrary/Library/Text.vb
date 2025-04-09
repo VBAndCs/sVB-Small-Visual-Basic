@@ -629,5 +629,22 @@ Namespace Library
                 Return WinForms.Date.CreateDuration(0, 0, 0, 0, 0)
             End If
         End Function
+
+        ''' <summary>
+        ''' Checks wether or not the given two texts are the same. In most cases you should use the = ooperator directly, unless you want to ignore letter casing, or you are comapring with the True or False strings, which may give you unexpecteed results due to the boolean logic of sVB!
+        ''' </summary>
+        ''' <param name="str1">The first text</param>
+        ''' <param name="str2">The second text</param>
+        ''' <param name="isCaseSevsitive">Use False to ignore the letter casing (for ex: A  and a will be considered the same letter). Otherwise use True for a case-sensitive comparison.</param>
+        ''' <returns>Ture is the two texts are the same, otherwise False.</returns>
+        Public Shared Function AreEquals(str1 As Primitive, str2 As Primitive, isCaseSevsitive As Primitive) As Primitive
+            Dim s1 = str1.AsString()
+            Dim s2 = str2.AsString()
+            If CBool(isCaseSevsitive) Then
+                Return s1 = s2
+            Else
+                Return s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase)
+            End If
+        End Function
     End Class
 End Namespace

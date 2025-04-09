@@ -1,0 +1,30 @@
+﻿Segoe UI
+14
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+' Welcome to "Sahla" .. the easy educational programming language
+' Sahla is written in the educational programming language Small Visual Basic
+' You will find the complete Sahla code in the Small Visual Basic samples folder
+' To learn the rules of "Sahla", open the "Help" menu,
+' then choose topics from the "Sahal Syntax" submenu.
+' Each topic will display an educational program with explanatory comments
+' and examples like the one you are reading now.
+' There are also some examples bundled with the language, with a shortcut on the desktop.
+' You can double-click any of the example files (with the .shlen extension) in the Windows File Explorer,
+' to open it directly in "Sahla", hence you can run it by clicking the "Run" command from the "Program" menu,
+' or you can simply press the F5 key located on the top row of the keyboard.
+' As an example, press F5 to run this program:
+Write Line "In the name of Allah, the Most Gracious, the Most Merciful"
+Write Line "Welcome to Sahla"
+Write Line "Wishing everyone success:"
+Write Line "Eng. Mohammad Hamdy Ganem,"
+Write Line "Damietta, Egypt 2025"
+' Note: The font size of the output window is the same as that in the code editor here,
+' and you can increase it by scrolling the mouse wheel up or down
+' while holding the Ctrl key on the keyboard

@@ -143,10 +143,8 @@ Namespace WinForms
             End Select
         End Function
 
-
         Private Shared typeShortcuts() As ShortcutInfo = {
                 New ShortcutInfo("Str", VariableType.String),
-                New ShortcutInfo("Text", VariableType.String),
                 New ShortcutInfo("String", VariableType.String),
                 New ShortcutInfo("Arr", VariableType.Array),
                 New ShortcutInfo("Array", VariableType.Array),
@@ -187,8 +185,9 @@ Namespace WinForms
                 New ShortcutInfo("Slider", VariableType.Slider),
                 New ShortcutInfo("ScrollBar", VariableType.ScrollBar),
                 New ShortcutInfo("ImageBox", VariableType.ImageBox),
-                New ShortcutInfo("Timer", VariableType.WinTimer)
-    }
+                New ShortcutInfo("Timer", VariableType.WinTimer),
+                New ShortcutInfo("Text", VariableType.String)
+        }
 
         Public Shared Function GetVarType(variableName As String) As VariableType
             variableName = variableName.Trim("_")

@@ -93,6 +93,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_03A10CDEB8834BB1A74720C2CF90F463"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_047B001090D944289339D2D65D464271"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -178,6 +184,12 @@
         "Entry"
         {
         "MsmKey" = "8:_08797EFF34DA465CAD320B8123F93FF2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0889BF5905504486B29C477865F75FCD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -303,6 +315,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0F4339E9FB3D4314AD219931C4A289D1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0FD7DE484E86405EB5C0784473C6FF22"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -352,6 +370,12 @@
         "Entry"
         {
         "MsmKey" = "8:_132B22897A59499D8B284F4A7815EB91"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_13EAB3F933A144ABB454A538B012525C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -465,6 +489,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_1B8603E3368F4FE9BE077FE123A54876"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1C1BE13194B247BC96C3F8D516D8FC64"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -556,6 +586,12 @@
         "Entry"
         {
         "MsmKey" = "8:_2106FB05243948D3A965B6DC5873F6E0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_213866B8534A4A9DA18B8C629E3200BD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -759,6 +795,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_2ED06F8A852C45F2A08D1F00C3775983"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_2EE1BD74EE034B69AF2D349665462A31"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -819,6 +861,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_3308A7DF3D02424987E11AFF7156BC98"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_33981EC6851D4F989BD87B3ED9353AC9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -855,6 +903,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_35ECAE45427D4913BA713755D7DC1F8A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_35EDEF6076FD4DB4A991F44A6EA008F4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -874,6 +928,12 @@
         "Entry"
         {
         "MsmKey" = "8:_3ABDF0FA1AD04C57AED3B884802E670D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3ACEE59EBFA44748B643E91161A49D68"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -915,6 +975,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_3D50FBB64BBB4BC0A3CDB3D0847A3036"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3DEFBA0C58104A83A4C4E57F383EFBE5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -922,6 +988,12 @@
         "Entry"
         {
         "MsmKey" = "8:_3E4752F3D37D4684B43B54565C3ADD0A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3E8F585A64F64644B9FABA3BC7B25477"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -957,6 +1029,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4397E947299A4B79844A7F3AF09413AC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_43A0EB188A58493287C87EE9D53D413E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -987,6 +1065,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_44F0215F9E134C929E6850C0B2A783C6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_45B9F24C4EFA4E488D4A64BF5A8E1B35"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -999,19 +1083,13 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_473EB2A7CF014CEBB1AD22268F53DCC8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4816AB4676C24CCA9F9DA0FBB8952423"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484938F9B26A4DB5946B364FECC0DB7D"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_484F0048E5DF46858D5BC1EDC6A1D1E7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1023,13 +1101,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4B61F9D399C9455FB7E9C383068E91D2"
+        "MsmKey" = "8:_499BA7A93B0E44F0B7EF9C4F455163C0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_4B72A4B69E1142C8A4FFD1DA8566D471"
+        "MsmKey" = "8:_4ABA717040054513B8D2D2C84405947F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4B61F9D399C9455FB7E9C383068E91D2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1065,7 +1149,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4DD234D47FEB44E79BB7609632158191"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4E49635F437745368A0C2AEFE1C12889"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4E72E63911344FFFB1281EC721E71F2E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1078,6 +1174,12 @@
         "Entry"
         {
         "MsmKey" = "8:_4EDEB26D4CA34FB89B0977A2A3B22D98"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4EF2E19D0D4446779BE9C84FB3577BC8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1102,6 +1204,12 @@
         "Entry"
         {
         "MsmKey" = "8:_517EE0384B5D462687BA014E17122A0F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_51BFFF2FE91C42ACB69A337073E13D66"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1155,7 +1263,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_54F00DC861054336AE3703D8A0C737F6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_557872B7563D4FF182C03921E14C4662"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_55CE22518C784E8CB5D40AF478C7D95D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1180,12 +1300,6 @@
         "Entry"
         {
         "MsmKey" = "8:_585042DCFAFC4C93B94CCB7D47B139E3"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_58563D3C870D435287C84F49B8563D6B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1251,6 +1365,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5B1EDC56A47E4DA38122D931C9922531"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5B35A6FFAD9F43E0906C2C1AC993F18E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1288,12 +1408,6 @@
         "Entry"
         {
         "MsmKey" = "8:_5D89D81679DF4410BB2963AB55BA03A3"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_5D8BFCB3DD9C40DE8ACEBBF067FF1DE8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1360,6 +1474,18 @@
         "Entry"
         {
         "MsmKey" = "8:_61B8617B2BD4460CAF8864815DC07C84"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6215A81809214A399A02080BA7731962"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_625D974E1457426FA2CECF1A54AB4CD3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1581,6 +1707,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6E11BCBF8D6B4A9295EAAF4A3204F79B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6E3026C205524DE59D0AD40935905A7B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1588,6 +1720,18 @@
         "Entry"
         {
         "MsmKey" = "8:_6EF0712D62B84EABBBFFE39BFE117DBD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6FC9266869C345C2A36D72F90884CE73"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7001500118624ECBBF739D8AACE03208"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1845,7 +1989,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7EE30FB9CCAE480DB53F086E2EA91297"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7EFCFBEA095A438EB6B8EB00504AC2E2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7F3F80218AFB4AF4B2BD39F119FA076C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1911,6 +2067,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_8361B03B0AC64E8198976E256D449323"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_839A99C37C46446F97B0BA6AE88E33B2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1918,12 +2080,6 @@
         "Entry"
         {
         "MsmKey" = "8:_83E7B884A8A74317AC3867A64965BB9A"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_857242821552414C8B0B4086EA733AF8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1942,6 +2098,18 @@
         "Entry"
         {
         "MsmKey" = "8:_86F8683210FA4E9C9CA63B9EB1CA5EE4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_86F8D76374BF4F2984BF7087E9592A5E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_877669EC284D4DE0A02B22D7C2D65E6E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1966,6 +2134,12 @@
         "Entry"
         {
         "MsmKey" = "8:_88FB31C66A8043FBB05B66CFF1A0F671"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_89726000D2D945BCB8800CEC557241D2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2050,6 +2224,18 @@
         "Entry"
         {
         "MsmKey" = "8:_8F918814C62E484D90B6BF0B0CBAA8E0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8FC524B99668405193E006F421BBC580"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9082FF8B6B544ED2B706BB882D6376BA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2163,6 +2349,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_977EF19D824A4DCAA251F9ADB5AE6067"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_978ABB5530774543A8463A77C706DEF4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2217,6 +2409,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_9B76AF08C5334494B4FD44357F3F8308"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9B95972B206540FEB84A847D0DEF8215"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2241,7 +2439,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_9C29E47976CF443A96F99705089DDAF1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9CAAE474781E45089CD2CFD09D63BE08"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9CABAE5B585D4180963675034FD2D6C9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2284,12 +2494,6 @@
         "Entry"
         {
         "MsmKey" = "8:_9FC3ADAFF5324903B7A3FE759DFA0A29"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A0123B080CD14A34A215A663E94861E8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2355,7 +2559,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A413A31A4FDB4A18B372A38C9354ABEA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A5D213EC34B94CCE9EFA34B7EE6DBE82"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A60D284BAC28474EA91888BBA445DA43"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2505,6 +2721,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_AD884FB6B09C4DDA8B13317BB9773063"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_AD8AF319697D356B7D7AA0820FA04186"
         "OwnerKey" = "8:_19DF04B8416CA6BB1291D8B56FEBD9D0"
         "MsmSig" = "8:_UNDEFINED"
@@ -2625,6 +2847,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B34807DFB34F47C5995484140845E475"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B377FC1609B64C738ABA771C0EA2F177"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2650,6 +2878,12 @@
         "Entry"
         {
         "MsmKey" = "8:_B5D1FEDB841B402B8B448C20D926208A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B6A18506FBD14A0D836EE2E00666ECFA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2698,6 +2932,18 @@
         "Entry"
         {
         "MsmKey" = "8:_BA29429636C54D09A494E93D0B64DD60"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BA9E9CEE748346D6B588903A98050DD3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BAC2E25104B34352B01D8551A3C273E9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2757,6 +3003,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_BE0892162FD2449CB926EBFBCDB9EAA7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_BEC3C6472DB14141A364794C3F230CF7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2770,12 +3022,6 @@
         "Entry"
         {
         "MsmKey" = "8:_BF98EA8C61944333949110BC373BDC42"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_BFC16080C7E645FABCC43E3EA26894CE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2817,7 +3063,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C2912713FAEE408BA6E6A6D8FEE11B40"
+        "MsmKey" = "8:_C27A53B6BD794E88895F9D834EB92982"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2967,6 +3213,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C8777B1263C346CCB5DFF8482267C1A1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C8DC05DB12F5431FA7788CE498FB5EC4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2992,6 +3244,12 @@
         "Entry"
         {
         "MsmKey" = "8:_CAC14365B29B4DB28E78750AFA465986"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CAEEEE14B1224D31A8CB1F24A5649D4F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3201,6 +3459,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D6DC3053301C4B92A7910651E67E7DE1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D71363F9FDFF4F57AFF295CD66AFD995"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3249,6 +3513,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D939B0A20C2A4569B16F92FF017597CE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D94A7B828AFC467EBBA03A2596CB53C5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3267,6 +3537,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_DA86C37800EC460CAF1CC7B30E3E5ECE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DAB7C0AAE10A4436B012E111BB6666AE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_DAC4F6683EF84EBDAF997390940958BE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3274,6 +3556,12 @@
         "Entry"
         {
         "MsmKey" = "8:_DB0D9A65AC554130BA27E095796AC4C7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DB2D13FD0D7944E4845B718BE6678BAB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3316,6 +3604,18 @@
         "Entry"
         {
         "MsmKey" = "8:_DCFC402AAC5343E79057AF8A2CB84329"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DD6253D6FD404393AAF3911130DBA8CA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DDC1BB06292540E3A964BE20063FA06F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3549,6 +3849,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E7403C3FE58048CBB97B19ACD5EC4B94"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E78F2B6A0A554A01B3A051501BD9B77F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E7961039B71D4387857A383A34A80B86"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3556,12 +3868,6 @@
         "Entry"
         {
         "MsmKey" = "8:_E80AF9E1E4ED4D5A9A3A263106513F9D"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E8B4552DAD224054B147493F7D50C227"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3580,6 +3886,12 @@
         "Entry"
         {
         "MsmKey" = "8:_E98AFF2183194489AA4D0F7BCE46613C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E991591FF269486EA686C4827783F283"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3604,6 +3916,12 @@
         "Entry"
         {
         "MsmKey" = "8:_EA06DBD071924E7B8A5289F26C18ADC8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EA6A0AEBB9FC42159A56462F26459860"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3688,6 +4006,12 @@
         "Entry"
         {
         "MsmKey" = "8:_EF8306988B7346178FE2728CB70CCEBC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EFB0177D080B459E81A103CC24E0D198"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3921,7 +4245,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_FC8E7F1023034AD0A794B194A9323280"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_FCEB262D9E584CA8A7549A3C2C03D645"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FD71B9625367409FA97DCF39AE28F540"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3976,6 +4312,12 @@
         "Entry"
         {
         "MsmKey" = "8:_FFF266F079954487AE95D7F760F0A0FC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FFF5817CA087457C8E3AA17D2874C737"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4145,7 +4487,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.5.3_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.5.5.5_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -4460,6 +4802,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_03A10CDEB8834BB1A74720C2CF90F463"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\7.shlen"
+            "TargetName" = "8:7.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_047B001090D944289339D2D65D464271"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Controls\\RadioButton.png"
@@ -4757,6 +5119,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_29EF84A6D29746FABC6676049BA75DD3"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0889BF5905504486B29C477865F75FCD"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\LCD.shl"
+            "TargetName" = "8:LCD.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -5153,6 +5535,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0F4339E9FB3D4314AD219931C4A289D1"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Arithmetic Series.shl"
+            "TargetName" = "8:Arithmetic Series.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0FD7DE484E86405EB5C0784473C6FF22"
             {
             "SourcePath" = "8:..\\Samples\\Animation Samples\\Animation1\\Form1.sb.gen"
@@ -5330,6 +5732,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_420049878BD743D9AD7791CCC40AD62F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_13EAB3F933A144ABB454A538B012525C"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Rounding.shl"
+            "TargetName" = "8:Rounding.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -5726,6 +6148,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1B8603E3368F4FE9BE077FE123A54876"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Electricity Bill.shlen"
+            "TargetName" = "8:Electricity Bill.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1C1BE13194B247BC96C3F8D516D8FC64"
             {
             "SourcePath" = "8:..\\Samples\\Games\\Move Car\\Form3.sb"
@@ -6032,6 +6474,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_1663B9ABAC4C4C39998ECE63EE8A5191"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_213866B8534A4A9DA18B8C629E3200BD"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Rectangle.shl"
+            "TargetName" = "8:Rectangle.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6697,6 +7159,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2ED06F8A852C45F2A08D1F00C3775983"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Prpgrammer.png"
+            "TargetName" = "8:Prpgrammer.png"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2EE1BD74EE034B69AF2D349665462A31"
             {
             "SourcePath" = "8:..\\Samples\\sVB Syntax Samples\\Reverse String.sb"
@@ -6897,6 +7379,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3308A7DF3D02424987E11AFF7156BC98"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\IsPrime.shlen"
+            "TargetName" = "8:IsPrime.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_33981EC6851D4F989BD87B3ED9353AC9"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\TextBox Lines\\form1.sb.gen"
@@ -7017,6 +7519,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_35ECAE45427D4913BA713755D7DC1F8A"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Arithmetic Series.shlen"
+            "TargetName" = "8:Arithmetic Series.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_35EDEF6076FD4DB4A991F44A6EA008F4"
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\FrmOps.xaml"
@@ -7083,6 +7605,26 @@
             "TargetName" = "8:FrmControlTests.xaml"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3ACEE59EBFA44748B643E91161A49D68"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Prim Numbers 1.shl"
+            "TargetName" = "8:Prim Numbers 1.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7217,6 +7759,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3D50FBB64BBB4BC0A3CDB3D0847A3036"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\app.json"
+            "TargetName" = "8:app.json"
+            "Tag" = "8:"
+            "Folder" = "8:_E5F66A24B37B42BCA5A86942F3BB3E92"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3DEFBA0C58104A83A4C4E57F383EFBE5"
             {
             "SourcePath" = "8:..\\Samples\\Animation Samples\\Moon orbit on GW\\Moon orbit.sb"
@@ -7243,6 +7805,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_4C52D3FD481B4844B93533D8D8549DDD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3E8F585A64F64644B9FABA3BC7B25477"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Sum & Average.shl"
+            "TargetName" = "8:Sum & Average.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7357,6 +7939,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4397E947299A4B79844A7F3AF09413AC"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Fractions.shl"
+            "TargetName" = "8:Fractions.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_43A0EB188A58493287C87EE9D53D413E"
             {
             "SourcePath" = "8:..\\Small Visual Basic Documentations\\sVB Docs.pdf"
@@ -7457,6 +8059,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_44F0215F9E134C929E6850C0B2A783C6"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Descendent Odd Numbers.shlen"
+            "TargetName" = "8:Descendent Odd Numbers.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_45B9F24C4EFA4E488D4A64BF5A8E1B35"
             {
             "SourcePath" = "8:..\\Samples\\Turtle Samples\\Draw Circles.sb"
@@ -7497,52 +8119,32 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_473EB2A7CF014CEBB1AD22268F53DCC8"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Fractions.shlen"
+            "TargetName" = "8:Fractions.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4816AB4676C24CCA9F9DA0FBB8952423"
             {
             "SourcePath" = "8:..\\Samples\\Turtle Samples\\Draw Tree.sb"
             "TargetName" = "8:Draw Tree.sb"
             "Tag" = "8:"
             "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_484938F9B26A4DB5946B364FECC0DB7D"
-            {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Prim Numbers 2.shl"
-            "TargetName" = "8:Prim Numbers 2.shl"
-            "Tag" = "8:"
-            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_484F0048E5DF46858D5BC1EDC6A1D1E7"
-            {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\IsPrime.shl"
-            "TargetName" = "8:IsPrime.shl"
-            "Tag" = "8:"
-            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7577,12 +8179,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B61F9D399C9455FB7E9C383068E91D2"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_499BA7A93B0E44F0B7EF9C4F455163C0"
             {
-            "SourcePath" = "8:..\\Samples\\Turtle Samples\\China Flag.sb"
-            "TargetName" = "8:China Flag.sb"
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\FrmAbout.sb"
+            "TargetName" = "8:FrmAbout.sb"
             "Tag" = "8:"
-            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7597,12 +8199,32 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B72A4B69E1142C8A4FFD1DA8566D471"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4ABA717040054513B8D2D2C84405947F"
             {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Compare 2 numbers.shl"
-            "TargetName" = "8:Compare 2 numbers.shl"
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Numbers Game.shl"
+            "TargetName" = "8:Numbers Game.shl"
             "Tag" = "8:"
             "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B61F9D399C9455FB7E9C383068E91D2"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\China Flag.sb"
+            "TargetName" = "8:China Flag.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7717,12 +8339,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4DD234D47FEB44E79BB7609632158191"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\FrmOps.sb"
+            "TargetName" = "8:FrmOps.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4E49635F437745368A0C2AEFE1C12889"
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\s.ico"
             "TargetName" = "8:s.ico"
             "Tag" = "8:"
             "Folder" = "8:_E5F66A24B37B42BCA5A86942F3BB3E92"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4E72E63911344FFFB1281EC721E71F2E"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\6.shlen"
+            "TargetName" = "8:6.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7763,6 +8425,26 @@
             "TargetName" = "8:form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_3F1849C673764FCCAFF7B5E1FCD155EE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4EF2E19D0D4446779BE9C84FB3577BC8"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\2.shlen"
+            "TargetName" = "8:2.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7843,6 +8525,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_0633EAB0E90D4517BE76251C88ACAB85"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_51BFFF2FE91C42ACB69A337073E13D66"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\1.shlen"
+            "TargetName" = "8:1.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8017,12 +8719,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_54F00DC861054336AE3703D8A0C737F6"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Sahla.jpg"
+            "TargetName" = "8:Sahla.jpg"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_557872B7563D4FF182C03921E14C4662"
             {
             "SourcePath" = "8:..\\Samples\\Turtle Samples\\Colored Sectors.sb"
             "TargetName" = "8:Colored Sectors.sb"
             "Tag" = "8:"
             "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_55CE22518C784E8CB5D40AF478C7D95D"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Circle.shl"
+            "TargetName" = "8:Circle.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8103,26 +8845,6 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_F5F05E190F9D49C69A307907112C9CC9"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_58563D3C870D435287C84F49B8563D6B"
-            {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Hello.shl"
-            "TargetName" = "8:Hello.shl"
-            "Tag" = "8:"
-            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8337,6 +9059,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5B1EDC56A47E4DA38122D931C9922531"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Power.shl"
+            "TargetName" = "8:Power.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5B35A6FFAD9F43E0906C2C1AC993F18E"
             {
             "SourcePath" = "8:..\\Samples\\Animation Samples\\Twister.sb"
@@ -8474,26 +9216,6 @@
             "TargetName" = "8:FrmOps.sb"
             "Tag" = "8:"
             "Folder" = "8:_E8779BA8720944D9A122A3F9D02BCDEF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5D8BFCB3DD9C40DE8ACEBBF067FF1DE8"
-            {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Numbers Game.shl"
-            "TargetName" = "8:Numbers Game.shl"
-            "Tag" = "8:"
-            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8714,6 +9436,46 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_97E228EF22CC4B5E8CDA9E9FA0099962"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6215A81809214A399A02080BA7731962"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Rectangle.shlen"
+            "TargetName" = "8:Rectangle.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_625D974E1457426FA2CECF1A54AB4CD3"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Hello.shl"
+            "TargetName" = "8:Hello.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9459,6 +10221,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6E11BCBF8D6B4A9295EAAF4A3204F79B"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Compare 2 numbers.shlen"
+            "TargetName" = "8:Compare 2 numbers.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6E3026C205524DE59D0AD40935905A7B"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\sVB Notepad 2\\FrmFind.xaml"
@@ -9485,6 +10267,46 @@
             "TargetName" = "8:Draw Pentagon.sb"
             "Tag" = "8:"
             "Folder" = "8:_DAB52AD240CA42F0B1D8BA2BF41EC1BA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6FC9266869C345C2A36D72F90884CE73"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\s.ico"
+            "TargetName" = "8:s.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7001500118624ECBBF739D8AACE03208"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Prim Numbers 2.shl"
+            "TargetName" = "8:Prim Numbers 2.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10361,12 +11183,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7EE30FB9CCAE480DB53F086E2EA91297"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Electricity Bill.shl"
+            "TargetName" = "8:Electricity Bill.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7EFCFBEA095A438EB6B8EB00504AC2E2"
             {
             "SourcePath" = "8:..\\Samples\\Drawing Samples\\Snakes.sb"
             "TargetName" = "8:Snakes.sb"
             "Tag" = "8:"
             "Folder" = "8:_29351D70CCB044B581F9453C9FD90166"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7F3F80218AFB4AF4B2BD39F119FA076C"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Grocery.shlen"
+            "TargetName" = "8:Grocery.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10581,6 +11443,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8361B03B0AC64E8198976E256D449323"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\frmMain.sb.gen"
+            "TargetName" = "8:frmMain.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_839A99C37C46446F97B0BA6AE88E33B2"
             {
             "SourcePath" = "8:..\\Samples\\Turtle Samples\\Spirals\\Form1.xaml"
@@ -10607,26 +11489,6 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_C21E789187B1430D9500D018DD972A7C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_857242821552414C8B0B4086EA733AF8"
-            {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Prim Numbers 1.shl"
-            "TargetName" = "8:Prim Numbers 1.shl"
-            "Tag" = "8:"
-            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10687,6 +11549,46 @@
             "TargetName" = "8:sVB Kid Programmer.htm"
             "Tag" = "8:"
             "Folder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_86F8D76374BF4F2984BF7087E9592A5E"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Even Numbers.shl"
+            "TargetName" = "8:Even Numbers.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_877669EC284D4DE0A02B22D7C2D65E6E"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Prim Numbers 1.shlen"
+            "TargetName" = "8:Prim Numbers 1.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10767,6 +11669,26 @@
             "TargetName" = "8:Label.png"
             "Tag" = "8:"
             "Folder" = "8:_8BD34D234F094C07B3CD431D3C229EAA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_89726000D2D945BCB8800CEC557241D2"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\GCM.shlen"
+            "TargetName" = "8:GCM.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11047,6 +11969,46 @@
             "TargetName" = "8:EnemyFire.wav"
             "Tag" = "8:"
             "Folder" = "8:_717C010AB5674EB18D0906F14B797D8C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8FC524B99668405193E006F421BBC580"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\3.shlen"
+            "TargetName" = "8:3.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9082FF8B6B544ED2B706BB882D6376BA"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\FrmOps.sb.gen"
+            "TargetName" = "8:FrmOps.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11421,6 +12383,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_977EF19D824A4DCAA251F9ADB5AE6067"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\LCD & GCM.shl"
+            "TargetName" = "8:LCD & GCM.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_978ABB5530774543A8463A77C706DEF4"
             {
             "SourcePath" = "8:..\\sVB Tests\\FrmClockTests.sb"
@@ -11601,6 +12583,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B76AF08C5334494B4FD44357F3F8308"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\4.shlen"
+            "TargetName" = "8:4.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B95972B206540FEB84A847D0DEF8215"
             {
             "SourcePath" = "8:..\\Samples\\Turtle Samples\\Radials\\Form1.sb.gen"
@@ -11681,12 +12683,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9C29E47976CF443A96F99705089DDAF1"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Circle.shlen"
+            "TargetName" = "8:Circle.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9CAAE474781E45089CD2CFD09D63BE08"
             {
             "SourcePath" = "8:..\\Samples\\Drawing Samples\\Rotating circles 2.sb"
             "TargetName" = "8:Rotating circles 2.sb"
             "Tag" = "8:"
             "Folder" = "8:_29351D70CCB044B581F9453C9FD90166"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9CABAE5B585D4180963675034FD2D6C9"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Prim Numbers 2.shlen"
+            "TargetName" = "8:Prim Numbers 2.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11827,26 +12869,6 @@
             "TargetName" = "8:9.png"
             "Tag" = "8:"
             "Folder" = "8:_293DC1A2F74F492D998EA9E73CC1AFEC"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A0123B080CD14A34A215A663E94861E8"
-            {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Electricity Bill.shl"
-            "TargetName" = "8:Electricity Bill.shl"
-            "Tag" = "8:"
-            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12072,12 +13094,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A413A31A4FDB4A18B372A38C9354ABEA"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Even Numbers.shlen"
+            "TargetName" = "8:Even Numbers.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5D213EC34B94CCE9EFA34B7EE6DBE82"
             {
             "SourcePath" = "8:..\\Samples\\Turtle Samples\\flower 1.sb"
             "TargetName" = "8:flower 1.sb"
             "Tag" = "8:"
             "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A60D284BAC28474EA91888BBA445DA43"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Global.sb"
+            "TargetName" = "8:Global.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12543,6 +13605,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AD884FB6B09C4DDA8B13317BB9773063"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Descendent Odd Numbers.shl"
+            "TargetName" = "8:Descendent Odd Numbers.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AD8AF319697D356B7D7AA0820FA04186"
             {
             "AssemblyRegister" = "3:1"
@@ -12945,6 +14027,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B34807DFB34F47C5995484140845E475"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\frmMain.sb"
+            "TargetName" = "8:frmMain.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B377FC1609B64C738ABA771C0EA2F177"
             {
             "SourcePath" = "8:..\\Samples\\Games\\Cars\\bin\\Cars\\10.png"
@@ -13031,6 +14133,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_FDA3157006534D579F7DC40BD325EC00"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B6A18506FBD14A0D836EE2E00666ECFA"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\FrmFind.xaml"
+            "TargetName" = "8:FrmFind.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13202,6 +14324,46 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_A17D095879A0498FA9EA044C30535B45"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BA9E9CEE748346D6B588903A98050DD3"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Compare 2 numbers.shl"
+            "TargetName" = "8:Compare 2 numbers.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BAC2E25104B34352B01D8551A3C273E9"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Sum & Average.shlen"
+            "TargetName" = "8:Sum & Average.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13396,6 +14558,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BE0892162FD2449CB926EBFBCDB9EAA7"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\8.shlen"
+            "TargetName" = "8:8.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BEC3C6472DB14141A364794C3F230CF7"
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Adding If and loops\\Form1.sb"
@@ -13442,26 +14624,6 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_791D583C7C14471D93BCCE8466FE0A70"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BFC16080C7E645FABCC43E3EA26894CE"
-            {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Grocery.shl"
-            "TargetName" = "8:Grocery.shl"
-            "Tag" = "8:"
-            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13576,10 +14738,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C2912713FAEE408BA6E6A6D8FEE11B40"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C27A53B6BD794E88895F9D834EB92982"
             {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Sum & Average.shl"
-            "TargetName" = "8:Sum & Average.shl"
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\GCM.shl"
+            "TargetName" = "8:GCM.shl"
             "Tag" = "8:"
             "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
@@ -14067,6 +15229,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C8777B1263C346CCB5DFF8482267C1A1"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\FrmOps.xaml"
+            "TargetName" = "8:FrmOps.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C8DC05DB12F5431FA7788CE498FB5EC4"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Controls\\Button.xaml"
@@ -14153,6 +15335,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_1663B9ABAC4C4C39998ECE63EE8A5191"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CAEEEE14B1224D31A8CB1F24A5649D4F"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\LCD.shlen"
+            "TargetName" = "8:LCD.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -14858,6 +16060,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D6DC3053301C4B92A7910651E67E7DE1"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Numbers Game.shlen"
+            "TargetName" = "8:Numbers Game.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D71363F9FDFF4F57AFF295CD66AFD995"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Controls\\Button.jpg"
@@ -15018,6 +16240,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D939B0A20C2A4569B16F92FF017597CE"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\IsPrime.shl"
+            "TargetName" = "8:IsPrime.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D94A7B828AFC467EBBA03A2596CB53C5"
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\FrmFind.sb"
@@ -15078,6 +16320,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DA86C37800EC460CAF1CC7B30E3E5ECE"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\LCD & GCM.shlen"
+            "TargetName" = "8:LCD & GCM.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DAB7C0AAE10A4436B012E111BB6666AE"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Power.shlen"
+            "TargetName" = "8:Power.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DAC4F6683EF84EBDAF997390940958BE"
             {
             "SourcePath" = "8:..\\Samples\\Games\\Numbers Game\\Form1.sb"
@@ -15104,6 +16386,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_1A4F0917A4FE47F387CF6333DE5F20E4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DB2D13FD0D7944E4845B718BE6678BAB"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\app.json"
+            "TargetName" = "8:app.json"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15244,6 +16546,46 @@
             "TargetName" = "8:FrmArrayTests.sb"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DD6253D6FD404393AAF3911130DBA8CA"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\FrmAbout.xaml"
+            "TargetName" = "8:FrmAbout.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DDC1BB06292540E3A964BE20063FA06F"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\FrmAbout.sb.gen"
+            "TargetName" = "8:FrmAbout.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15849,6 +17191,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E7403C3FE58048CBB97B19ACD5EC4B94"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\FrmFind.sb.gen"
+            "TargetName" = "8:FrmFind.sb.gen"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E78F2B6A0A554A01B3A051501BD9B77F"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\0.shlen"
+            "TargetName" = "8:0.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E7961039B71D4387857A383A34A80B86"
             {
             "SourcePath" = "8:..\\Samples\\sVB Syntax Samples\\Arrays.sb"
@@ -15875,26 +17257,6 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_D4DCD81E2F204D92AE28C7E9443161A9"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E8B4552DAD224054B147493F7D50C227"
-            {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Even Numbers.shl"
-            "TargetName" = "8:Even Numbers.shl"
-            "Tag" = "8:"
-            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15955,6 +17317,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_15AF76DB06C24944B165AA3EF0DCC0BD"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E991591FF269486EA686C4827783F283"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Hello.shlen"
+            "TargetName" = "8:Hello.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -16035,6 +17417,26 @@
             "TargetName" = "8:FrmControlTests.sb"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EA6A0AEBB9FC42159A56462F26459860"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\FrmFind.sb"
+            "TargetName" = "8:FrmFind.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -16315,6 +17717,26 @@
             "TargetName" = "8:Color Boxes.sb"
             "Tag" = "8:"
             "Folder" = "8:_20408A2B7CAA4506B5991882B81A9512"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EFB0177D080B459E81A103CC24E0D198"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\frmMain.xaml"
+            "TargetName" = "8:frmMain.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_056D8B74058D4B8984422BEB9AD8DB02"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -17080,12 +18502,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FC8E7F1023034AD0A794B194A9323280"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\5.shlen"
+            "TargetName" = "8:5.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FCEB262D9E584CA8A7549A3C2C03D645"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Controls\\ScrollBar.xaml"
             "TargetName" = "8:ScrollBar.xaml"
             "Tag" = "8:"
             "Folder" = "8:_8BD34D234F094C07B3CD431D3C229EAA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FD71B9625367409FA97DCF39AE28F540"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Rounding.shlen"
+            "TargetName" = "8:Rounding.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -17266,6 +18728,26 @@
             "TargetName" = "8:FrmTestResults.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_A7AF2C6B342D4451B798AAAFA9691C1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FFF5817CA087457C8E3AA17D2874C737"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Grocery.shl"
+            "TargetName" = "8:Grocery.shl"
+            "Tag" = "8:"
+            "Folder" = "8:_47C5DE816CD74A3A9B0504EEEF96F748"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -18117,6 +19599,39 @@
                             "Property" = "8:_91CB23D0B41C40CB93917268193714AE"
                                 "Folders"
                                 {
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_056D8B74058D4B8984422BEB9AD8DB02"
+                                    {
+                                    "Name" = "8:Sahla-En"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_56FD5A8392ED4D02BAB7FD924FB15B35"
+                                        "Folders"
+                                        {
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_B04B54CB55A94BD0992C25D69E67CC21"
+                                            {
+                                            "Name" = "8:Syntax"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_6A0E2D5546A04974AC0A894E7BAA6D5D"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_FEDC5F61FA3840FC984CB56AF9679838"
+                                            {
+                                            "Name" = "8:Samples"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_171AAD1B7A404B0DB979B99856A9416A"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
+                                        }
+                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_87F52E895C52469A9CA41A37CA872EE2"
                                     {
                                     "Name" = "8:Adding If and loops"
@@ -18931,7 +20446,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.5.3"
+        "ProductName" = "8:Small Visual Basic 3.5.5.5"
         "ProductCode" = "8:{004F0DE1-7938-43C4-9CAC-59D32A7CCCE6}"
         "PackageCode" = "8:{69D9A160-0775-4300-8782-A0E4BD492588}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -19111,7 +20626,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.5.3"
+            "Name" = "8:sVB 3.5.5.5"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -19153,7 +20668,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.5.3"
+            "Name" = "8:sVB 3.5.5.5"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -19181,7 +20696,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.5.3"
+            "Name" = "8:sVB 3.5.5.5"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
