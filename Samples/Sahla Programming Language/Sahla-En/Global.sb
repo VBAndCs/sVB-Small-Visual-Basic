@@ -1,10 +1,13 @@
+' ==================================================================
+' ===You may translate string literals in this section to your langauge to get a native Sahla===
+' ==================================================================
 _ProEnd = "Press any key to close the window ..."
 _ErrorAtToken = "Error at token #"
 _ErrorAtLine = "at line #"
 _UnknownCommand = "is not a valid command"
 _UnknownToken = "is not recognized!"
 _Unexpected = "is not expected here!"
-_InvallidDuration = "is not a valid duration!"
+_InvalidDuration = "is not a valid duration!"
 _NoMsg = "Please provide the output text after"
 _NoSound = "Please provied a sound name or a file path"
 _NoLoop = "There is no loop to exit!"
@@ -60,8 +63,10 @@ _Bell = "Bell"
 _Ding = "Ding"
 _Click = "Click"
 _Chime = "Chime"
-_IntegralDibision = "\"
+_IntegralDivision = "\"
 _CommmentSymbol = "'"
+' ================================================================
+' ================================================================
 
 BasicWords = {
    _True, _False, _If, _Else, _ElseIf, _EndIf, _And, _Or,
@@ -93,7 +98,7 @@ OperatorsCompletionList = {
 
 Opertors = {
    "=", "<", ">", "(", ")",
-   "+", "-", "*", "×", "/", _IntegralDibision, "%", "^"
+   "+", "-", "*", "/", _IntegralDivision, "%", "^"
 }
 
 FontNames = Desktop.FontNames
@@ -120,6 +125,41 @@ Else
    Ops!FirstTime = _Settings[8]
 EndIf
 
+' For converting your native code to Engkish sahla. Don't change these tokens:
+_EnTrue = "True"
+_EnFalse = "False"
+_EnIf = "If"
+_EnElseIf = "ElseIf"
+_EnElse = "Else"
+_EnEndIf = "EndIf"
+_EnAnd = "And"
+_EnOr = "Or"
+_EnWhile = "While"
+_EnWend = "Wend"
+_EnFor = "For"
+_EnTo = "To"
+_EnStep = "Step"
+_EnNext = "Next"
+_EnExitLoop = "Exit"
+_EnWrite = "Write"
+_EnLine = "Line"
+_EnRead = "Read"
+_EnText = "Text"
+_EnNumber = "Number"
+_EnRandom = "Random"
+_EnWait = "Wait"
+_EnSound = "Play"
+_EnBeep = "Beep"
+_EnBell = "Bell"
+_EnDing = "Ding"
+_EnClick = "Click"
+_EnChime = "Chime"
+_EnIntegralDivision = "\"
+_EnCommmentSymbol = "'"
+
+OrgTokes = {}
+DestTokes = {}
+
 Statements = {}				' Array of code lines (strings)
 LineIndex = 1 	    			' Our program counter
 Tokens = {}					' Tokens array for the current line
@@ -137,7 +177,7 @@ Timer.Tick = ManageCodeColoring
 _ColoringRequested = False
 _StillColoring = False
 
-Sub Tokenize(line, lineNum)
+Sub Tokenize(line, lineNum, commmentSymbol)
    Tokens = {}
    tokenIndex = 1
    currentToken = ""
@@ -170,7 +210,7 @@ Sub Tokenize(line, lineNum)
       ElseIf inString Then
          currentToken = currentToken & ch
          
-      ElseIf ch = _CommmentSymbol Then
+      ElseIf ch = commmentSymbol Then
          If currentToken <> "" Then
             Tokens[tokenIndex] = {lineNum, tokenStartCol, currentToken}
             tokenIndex = tokenIndex + 1
@@ -237,7 +277,7 @@ Sub Run()
    statementsCount = Statements.Count
    
    While LineIndex <= statementsCount
-      Tokenize(Statements[LineIndex], LineIndex)
+      Tokenize(Statements[LineIndex], LineIndex, _CommmentSymbol)
       ExecuteLine()
       If LineIndex <= Statements.Count Then
          LineIndex = LineIndex + 1
@@ -299,7 +339,7 @@ Sub ExecuteLine()
          If Text.IsNumeric(t) Then
             Program.Delay(t)
          Else
-            ReportError("'" & t & "' " & _InvallidDuration, LineIndex, 2)
+            ReportError("'" & t & "' " & _InvalidDuration, LineIndex, 2)
          EndIf
       EndIf
       
@@ -630,7 +670,7 @@ Sub ProcessWhileLoopEnd()
    
    lastWhile = Stack.PeekValue(WhileStack)
    whileLinIndex = lastWhile[1]
-   Tokenize(Statements[whileLinIndex], whileLinIndex)
+   Tokenize(Statements[whileLinIndex], whileLinIndex, _CommmentSymbol)
    result = EvaluateExpression(2)
    
    If result[1] Then ' Condition is true
@@ -658,7 +698,7 @@ Sub ProcessIfBlock()
    If result[1] Then ' Condition is true. Execute If Then branch
       LineIndex = LineIndex + 1
       While LineIndex <= Statements.Count
-         Tokenize(Statements[LineIndex], LineIndex)
+         Tokenize(Statements[LineIndex], LineIndex, _CommmentSymbol)
          If tokensCount > 0 Then
             tokenFirst = Tokens[1][3]
             If tokenFirst = _EndIf Then
@@ -682,7 +722,7 @@ Sub ProcessIfBlock()
    
    While True
       LineIndex = FindNextIfBranch(LineIndex + 1)
-      Tokenize(Statements[LineIndex], LineIndex)
+      Tokenize(Statements[LineIndex], LineIndex, _CommmentSymbol)
       branchToken = Tokens[1][3]
       
       If Text.AreEquals(branchToken, _ElseIf, False) = False Then
@@ -699,7 +739,7 @@ Sub ProcessIfBlock()
       If result[1] Then ' Execute elseIf block
          LineIndex = LineIndex + 1
          While LineIndex <= Statements.Count
-            Tokenize(Statements[LineIndex], LineIndex)
+            Tokenize(Statements[LineIndex], LineIndex, _CommmentSymbol)
             If tokensCount > 0 Then
                tokenFirst = Tokens[1][3]
                If Text.AreEquals(tokenFirst, _EndIf, False) Then
@@ -725,7 +765,7 @@ Sub ProcessIfBlock()
    If Text.AreEquals(branchToken, _Else, False) Then
       LineIndex = LineIndex + 1
       While LineIndex <= Statements.Count
-         Tokenize(Statements[LineIndex], LineIndex)
+         Tokenize(Statements[LineIndex], LineIndex, _CommmentSymbol)
          If tokensCount > 0 Then
             If Text.AreEquals(Tokens[1][3], _EndIf, False) Then
                Return
@@ -979,7 +1019,7 @@ Function ParseTerm(pos)
    
    While pos <= tokensCount And (
          Text.AreEquals(op, "*", True) Or Text.AreEquals(op, "/", True) Or
-         Text.AreEquals(op, _IntegralDibision, True)
+         Text.AreEquals(op, _IntegralDivision, True)
          Or Text.AreEquals(op, "%", True) Or Text.AreEquals(op, "^", True)
       )
       pos = pos + 1
@@ -990,7 +1030,7 @@ Function ParseTerm(pos)
          leftValue = leftValue * rightValue
       ElseIf op = "/" Then
          leftValue = leftValue / rightValue
-      ElseIf op = _IntegralDibision Then
+      ElseIf op = _IntegralDivision Then
          leftValue = Math.Truncate(leftValue / rightValue)
       Else
          leftValue = leftValue Mod rightValue
@@ -1129,7 +1169,7 @@ Sub IndentCode()
          caretLineIndex = lineIndex
       EndIf
       
-      Tokenize(Text.Trim(origLine), lineIndex)
+      Tokenize(Text.Trim(origLine), lineIndex, _CommmentSymbol)
       
       If Tokens.Count > 0 Then
          formattedLine = IndentLine()
@@ -1487,7 +1527,7 @@ Sub FixNextVarName(ixdex, lineText)
       Return
    EndIf
    
-   Tokenize(lineText, 1)
+   Tokenize(lineText, 1, _CommmentSymbol)
    varName = Tokens[2][3]
    If varName = "" Then
       Return
@@ -1500,7 +1540,7 @@ Sub FixNextVarName(ixdex, lineText)
       Return
    EndIf
    
-   Tokenize(Statements[nextLineIndex], nextLineIndex)
+   Tokenize(Statements[nextLineIndex], nextLineIndex, _CommmentSymbol)
    nextVarName = Tokens[2][3]
    
    If Text.AreEquals(nextVarName, varName, False) = False Then
@@ -1567,7 +1607,7 @@ Function IsLiteralOrComment(pos)
    
    line = code.SubText(start, end - start)
    col = pos - start + 1
-   Tokenize(line, 1)
+   Tokenize(line, 1, _CommmentSymbol)
    
    ForEach token In Tokens
       start = token[2]
@@ -1593,14 +1633,222 @@ Sub SaveSettings(ops)
 EndSub
 
 
+Function ShowSaveMsg()
+   Return Dialogs.MsgBox(
+      _SaveChanges,
+      _ConfirmCllosing & Text.NewLine &
+      "Yes: " & _SaveChanges & Text.NewLine &
+      "No: " & _DiscardChanges & Text.NewLine &
+      "Cancel: " & _CancelClosing
+   )
+EndFunction
+
 ' ==========Shala to Small Visual Basic Converter ==========
 
 ConvertToEnSahla = False
 
+
+Sub InitTransTokes(forwardConversion)
+   If forwardConversion Then
+      OrgTokes[_EnTrue] = _True
+      DestTokes[_EnTrue] = _EnTrue
+      
+      OrgTokes[_EnFalse] = _False
+      DestTokes[_EnFalse] = _EnFalse
+      
+      OrgTokes[_EnIf] = _If
+      DestTokes[_EnIf] = _EnIf
+      
+      OrgTokes[_EnElseIf] = _ElseIf
+      DestTokes[_EnElseIf] = _EnElseIf
+      
+      OrgTokes[_EnElse] = _Else
+      DestTokes[_EnElse] = _EnElse
+      
+      OrgTokes[_EnEndIf] = _EndIf
+      DestTokes[_EnEndIf] = _EnEndIf
+      
+      OrgTokes[_EnAnd] = _And
+      DestTokes[_EnAnd] = _EnAnd
+      
+      OrgTokes[_EnOr] = _Or
+      DestTokes[_EnOr] = _EnOr
+      
+      OrgTokes[_EnWhile] = _While
+      DestTokes[_EnWhile] = _EnWhile
+      
+      OrgTokes[_EnWend] = _Wend
+      DestTokes[_EnWend] = _EnWend
+      
+      OrgTokes[_EnFor] = _For
+      DestTokes[_EnFor] = _EnFor
+      
+      OrgTokes[_EnTo] = _To
+      DestTokes[_EnTo] = _EnTo
+      
+      OrgTokes[_EnStep] = _Step
+      DestTokes[_EnStep] = _EnStep
+      
+      OrgTokes[_EnNext] = _Next
+      DestTokes[_EnNext] = _EnNext
+      
+      OrgTokes[_EnExitLoop] = _ExitLoop
+      DestTokes[_EnExitLoop] = _EnExitLoop
+      
+      OrgTokes[_EnWrite] = _Write
+      DestTokes[_EnWrite] = _EnWrite
+      
+      OrgTokes[_EnLine] = _Line
+      DestTokes[_EnLine] = _EnLine
+      
+      OrgTokes[_EnRead] = _Read
+      DestTokes[_EnRead] = _EnRead
+      
+      OrgTokes[_EnText] = _Text
+      DestTokes[_EnText] = _EnText
+      
+      OrgTokes[_EnNumber] = _Number
+      DestTokes[_EnNumber] = _EnNumber
+      
+      OrgTokes[_EnRandom] = _Random
+      DestTokes[_EnRandom] = _EnRandom
+      
+      OrgTokes[_EnWait] = _Wait
+      DestTokes[_EnWait] = _EnWait
+      
+      OrgTokes[_EnSound] = _Sound
+      DestTokes[_EnSound] = _EnSound
+      
+      OrgTokes[_EnBeep] = _Beep
+      DestTokes[_EnBeep] = _EnBeep
+      
+      OrgTokes[_EnBell] = _Bell
+      DestTokes[_EnBell] = _EnBell
+      
+      OrgTokes[_EnDing] = _Ding
+      DestTokes[_EnDing] = _EnDing
+      
+      OrgTokes[_EnClick] = _Click
+      DestTokes[_EnClick] = _EnClick
+      
+      OrgTokes[_EnChime] = _Chime
+      DestTokes[_EnChime] = _EnChime
+      
+      OrgTokes[_EnIntegralDivision] = _IntegralDivision
+      DestTokes[_EnIntegralDivision] = _EnIntegralDivision
+      
+      OrgTokes[_EnCommmentSymbol] = _CommmentSymbol
+      DestTokes[_EnCommmentSymbol] = _EnCommmentSymbol
+      
+   Else
+      ' Reverse conversion: English → native.
+      OrgTokes[_EnTrue] = _EnTrue
+      DestTokes[_EnTrue] = _True
+      
+      OrgTokes[_EnFalse] = _EnFalse
+      DestTokes[_EnFalse] = _False
+      
+      OrgTokes[_EnIf] = _EnIf
+      DestTokes[_EnIf] = _If
+      
+      OrgTokes[_EnElseIf] = _EnElseIf
+      DestTokes[_EnElseIf] = _ElseIf
+      
+      OrgTokes[_EnElse] = _EnElse
+      DestTokes[_EnElse] = _Else
+      
+      OrgTokes[_EnEndIf] = _EnEndIf
+      DestTokes[_EnEndIf] = _EndIf
+      
+      OrgTokes[_EnAnd] = _EnAnd
+      DestTokes[_EnAnd] = _And
+      
+      OrgTokes[_EnOr] = _EnOr
+      DestTokes[_EnOr] = _Or
+      
+      OrgTokes[_EnWhile] = _EnWhile
+      DestTokes[_EnWhile] = _While
+      
+      OrgTokes[_EnWend] = _EnWend
+      DestTokes[_EnWend] = _Wend
+      
+      OrgTokes[_EnFor] = _EnFor
+      DestTokes[_EnFor] = _For
+      
+      OrgTokes[_EnTo] = _EnTo
+      DestTokes[_EnTo] = _To
+      
+      OrgTokes[_EnStep] = _EnStep
+      DestTokes[_EnStep] = _Step
+      
+      OrgTokes[_EnNext] = _EnNext
+      DestTokes[_EnNext] = _Next
+      
+      OrgTokes[_EnExitLoop] = _EnExitLoop
+      DestTokes[_EnExitLoop] = _ExitLoop
+      
+      OrgTokes[_EnWrite] = _EnWrite
+      DestTokes[_EnWrite] = _Write
+      
+      OrgTokes[_EnLine] = _EnLine
+      DestTokes[_EnLine] = _Line
+      
+      OrgTokes[_EnRead] = _EnRead
+      DestTokes[_EnRead] = _Read
+      
+      OrgTokes[_EnText] = _EnText
+      DestTokes[_EnText] = _Text
+      
+      OrgTokes[_EnNumber] = _EnNumber
+      DestTokes[_EnNumber] = _Number
+      
+      OrgTokes[_EnRandom] = _EnRandom
+      DestTokes[_EnRandom] = _Random
+      
+      OrgTokes[_EnWait] = _EnWait
+      DestTokes[_EnWait] = _Wait
+      
+      OrgTokes[_EnSound] = _EnSound
+      DestTokes[_EnSound] = _Sound
+      
+      OrgTokes[_EnBeep] = _EnBeep
+      DestTokes[_EnBeep] = _Beep
+      
+      OrgTokes[_EnBell] = _EnBell
+      DestTokes[_EnBell] = _Bell
+      
+      OrgTokes[_EnDing] = _EnDing
+      DestTokes[_EnDing] = _Ding
+      
+      OrgTokes[_EnClick] = _EnClick
+      DestTokes[_EnClick] = _Click
+      
+      OrgTokes[_EnChime] = _EnChime
+      DestTokes[_EnChime] = _Chime
+      
+      OrgTokes[_EnIntegralDivision] = _EnIntegralDivision
+      DestTokes[_EnIntegralDivision] = _IntegralDivision
+      
+      OrgTokes[_EnCommmentSymbol] = _EnCommmentSymbol
+      DestTokes[_EnCommmentSymbol] = _CommmentSymbol
+   EndIf
+EndSub
+
+Function ConvertToNativeSahlaCode(enCode)
+   Return _ConvertSahlaCode(enCode, True, False)
+EndFunction
+
 Function ConvertSahlaCode(toEnSahla)
-   ConvertToEnSahla = toEnSahla
-   Vars = {}
    code = Text.Replace(EditorTextBox.Text, Chars.CrLf, Chars.Lf)
+   Return _ConvertSahlaCode(code, toEnSahla, True)
+EndFunction
+
+Function _ConvertSahlaCode(code, toEnSahla, forwardConversion)
+   ConvertToEnSahla = toEnSahla
+   InitTransTokes(forwardConversion)
+   MapLetters(forwardConversion)
+   
+   Vars = {}
    Statements = Text.Split(code, Chars.Lf, False, False)
    LineIndex = 1
    sVBLines = {}
@@ -1615,7 +1863,7 @@ Function ConvertSahlaCode(toEnSahla)
          EndIf
       Next
       
-      Tokenize(statement, LineIndex)
+      Tokenize(statement, LineIndex, OrgTokes[_EnCommmentSymbol])
       sVBLines.Append(Text.Repeat(" ", indentLength) & ConvertLine())
       LineIndex = LineIndex + 1
    Next
@@ -1624,171 +1872,196 @@ Function ConvertSahlaCode(toEnSahla)
 EndFunction
 
 
-Sub MapLetters()
-   LettersMap["ا"] = "a"
-   LettersMap["أ"] = "a_"
-   LettersMap["آ"] = "aa_"
-   LettersMap["إ"] = "a1_"
-   LettersMap["ء"] = "a2_"
-   LettersMap["ئ"] = "a3_"
-   LettersMap["ؤ"] = "a4_"
-   LettersMap["ب"] = "b"
-   LettersMap["ت"] = "t"
-   LettersMap["ث"] = "th_"
-   LettersMap["ج"] = "g"
-   LettersMap["ح"] = "hh_"
-   LettersMap["خ"] = "kh_"
-   LettersMap["د"] = "d"
-   LettersMap["ذ"] = "the_"
-   LettersMap["ر"] = "r"
-   LettersMap["ز"] = "z"
-   LettersMap["س"] = "s"
-   LettersMap["ش"] = "sh_"
-   LettersMap["ص"] = "ss_"
-   LettersMap["ض"] = "dh_"
-   LettersMap["ط"] = "t1_"
-   LettersMap["ظ"] = "zh_"
-   LettersMap["ع"] = "_3_"
-   LettersMap["غ"] = "gh_"
-   LettersMap["ف"] = "f"
-   LettersMap["ق"] = "q"
-   LettersMap["ك"] = "k"
-   LettersMap["ل"] = "l"
-   LettersMap["م"] = "m"
-   LettersMap["ن"] = "n"
-   LettersMap["ه"] = "h"
-   LettersMap["و"] = "o"
-   LettersMap["ي"] = "y"
-   LettersMap["ة"] = "t2_"
+Sub MapLetters(forwardConversion)
+   LettersMap = {}
+   If forwardConversion Then
+      ' Use your lamgauge letters as keys, and map them to English letters
+      ' This the Arabic ketters ,ap for example
+      LettersMap["ا"] = "a"
+      LettersMap["أ"] = "a_"
+      LettersMap["آ"] = "aa_"
+      LettersMap["إ"] = "a1_"
+      LettersMap["ء"] = "a2_"
+      LettersMap["ئ"] = "a3_"
+      LettersMap["ؤ"] = "a4_"
+      LettersMap["ب"] = "b"
+      LettersMap["ت"] = "t"
+      LettersMap["ث"] = "th_"
+      LettersMap["ج"] = "g"
+      LettersMap["ح"] = "hh_"
+      LettersMap["خ"] = "kh_"
+      LettersMap["د"] = "d"
+      LettersMap["ذ"] = "the_"
+      LettersMap["ر"] = "r"
+      LettersMap["ز"] = "z"
+      LettersMap["س"] = "s"
+      LettersMap["ش"] = "sh_"
+      LettersMap["ص"] = "ss_"
+      LettersMap["ض"] = "dh_"
+      LettersMap["ط"] = "t1_"
+      LettersMap["ظ"] = "zh_"
+      LettersMap["ع"] = "_3_"
+      LettersMap["غ"] = "gh_"
+      LettersMap["ف"] = "f"
+      LettersMap["ق"] = "q"
+      LettersMap["ك"] = "k"
+      LettersMap["ل"] = "l"
+      LettersMap["م"] = "m"
+      LettersMap["ن"] = "n"
+      LettersMap["ه"] = "h"
+      LettersMap["و"] = "o"
+      LettersMap["ي"] = "y"
+      LettersMap["ة"] = "t2_"
+   Else
+      ' Use Englis litters as keys. here I map each letter to itself to do no change,
+      ' but you should provide a real map if your language uses none latin letters
+      LettersMap["a"] = "a"
+      LettersMap["b"] = "b"
+      LettersMap["c"] = "c"
+      LettersMap["d"] = "d"
+      LettersMap["e"] = "e"
+      LettersMap["f"] = "f"
+      LettersMap["g"] = "g"
+      LettersMap["h"] = "h"
+      LettersMap["i"] = "i"
+      LettersMap["j"] = "j"
+      LettersMap["k"] = "k"
+      LettersMap["l"] = "l"
+      LettersMap["m"] = "m"
+      LettersMap["n"] = "n"
+      LettersMap["o"] = "o"
+      LettersMap["p"] = "p"    '
+      LettersMap["q"] = "q"
+      LettersMap["r"] = "r"
+      LettersMap["s"] = "s"
+      LettersMap["t"] = "t"
+      LettersMap["u"] = "u"
+      LettersMap["v"] = "v"
+      LettersMap["w"] = "w"
+      LettersMap["x"] = "x"
+      LettersMap["y"] = "y"
+      LettersMap["z"] = "z"
+   EndIf
 EndSub
 
 Function ConvertLine()
-   If LettersMap.Count = 0 Then
-      MapLetters()
-   EndIf
-   
    tokensCount = Tokens.Count
    command = Text.Trim(Tokens[1][3])
    
-   If command[1] = _CommmentSymbol Then
-      command[1] = "'"
+   If command[1] = OrgTokes[_EnCommmentSymbol] Then
+      command[1] = DestTokes[_EnCommmentSymbol]
       Return command
       
-   ElseIf Text.AreEquals(command, _Wait, False) Then
+   ElseIf Text.AreEquals(command, OrgTokes[_EnWait], False) Then
       If tokensCount = 1 Then
          If ConvertToEnSahla Then
-            Return "Wait"
+            Return DestTokes[_EnWait]
          EndIf
          Return "Program.Delay(1000)"
       Else
          result = BuildExpressionText(2)
          If ConvertToEnSahla Then
-            Return "Wait " & result[1]
+            Return DestTokes[_EnWait] & " " & result[1]
          EndIf
          Return "Program.Delay(" & result[1] & ")"
       EndIf
       
-   ElseIf Text.AreEquals(command, _Write, False) Then
+   ElseIf Text.AreEquals(command, OrgTokes[_EnWrite], False) Then
       nextCommand = Tokens[2][3]
-      If Text.AreEquals(nextCommand, _Line, False) Then
+      If Text.AreEquals(nextCommand, OrgTokes[_EnLine], False) Then
          If tokensCount = 2 Then
             If ConvertToEnSahla Then
-               Return "Write Line"
+               Return DestTokes[_EnWrite] & " " & DestTokes[_EnLine]
             EndIf
-            Return "TW.WriteLine("""")"
+            Return "TW.WriteLine(\" \")"
          Else
             result = BuildExpressionText(3)
             If ConvertToEnSahla Then
-               Return "Write Line " & result[1]
+               Return DestTokes[_EnWrite] & " " & DestTokes[_EnLine] & " " & result[1]
             EndIf
             Return "TW.WriteLine(" & result[1] & ")"
          EndIf
-         
       Else
          result = BuildExpressionText(2)
          If ConvertToEnSahla Then
-            Return "Write " & result[1]
+            Return DestTokes[_EnWrite] & " " & result[1]
          EndIf
          Return "TW.Write(" & result[1] & ")"
       EndIf
       
-   ElseIf Text.AreEquals(command, _For, False) Then
+   ElseIf Text.AreEquals(command, OrgTokes[_EnFor], False) Then
       Return ConvertForLoopHeader()
       
-   ElseIf Text.AreEquals(command, _Next, False) Then
+   ElseIf Text.AreEquals(command, OrgTokes[_EnNext], False) Then
       If ConvertToEnSahla Then
-         Return "Next " & Vars[Tokens[2][3]]
+         Return DestTokes[_EnNext] & " " & Vars[Tokens[2][3]]
       EndIf
-      Return "Next"
+      Return DestTokes[_EnNext]
       
-   ElseIf Text.AreEquals(command, _While, False) Then
+   ElseIf Text.AreEquals(command, OrgTokes[_EnWhile], False) Then
       result = BuildExpressionText(2)
-      Return "While " & result[1]
+      Return DestTokes[_EnWhile] & " " & result[1]
       
-   ElseIf Text.AreEquals(command, _Wend, False) Then
-      Return "Wend"
+   ElseIf Text.AreEquals(command, OrgTokes[_EnWend], False) Then
+      Return DestTokes[_EnWend]
       
-   ElseIf Text.AreEquals(command, _If, False) Then
-      result = BuildExpressionText(2)
-      If ConvertToEnSahla Then
-         Return "If " & result[1]
-      EndIf
-      Return "If " & result[1] & " Then"
-      
-   ElseIf Text.AreEquals(command, _ElseIf, False) Then
+   ElseIf Text.AreEquals(command, OrgTokes[_EnIf], False) Then
       result = BuildExpressionText(2)
       If ConvertToEnSahla Then
-         Return "ElseIf " & result[1]
+         Return DestTokes[_EnIf] & " " & result[1]
       EndIf
-      Return "ElseIf " & result[1] & " Then"
+      Return DestTokes[_EnIf] & " " & result[1] & " Then"
       
-   ElseIf Text.AreEquals(command, _Else, False) Then
-      Return "Else"
-      
-   ElseIf Text.AreEquals(command, _EndIf, False) Then
-      Return "EndIf"
-      
-   ElseIf Text.AreEquals(command, _ExitLoop, False) Then
+   ElseIf Text.AreEquals(command, OrgTokes[_EnElseIf], False) Then
+      result = BuildExpressionText(2)
       If ConvertToEnSahla Then
-         Return "Exit"
+         Return DestTokes[_EnElseIf] & " " & result[1]
+      EndIf
+      Return DestTokes[_EnElseIf] & " " & result[1] & " Then"
+      
+   ElseIf Text.AreEquals(command, OrgTokes[_EnElse], False) Then
+      Return DestTokes[_EnElse]
+      
+   ElseIf Text.AreEquals(command, OrgTokes[_EnEndIf], False) Then
+      Return DestTokes[_EnEndIf]
+      
+   ElseIf Text.AreEquals(command, OrgTokes[_EnExitLoop], False) Then
+      If ConvertToEnSahla Then
+         Return DestTokes[_EnExitLoop]
       EndIf
       Return "ExitLoop"
       
-   ElseIf Text.AreEquals(command, _Sound, False) Then
+   ElseIf Text.AreEquals(command, OrgTokes[_EnSound], False) Then
       nextCommand = Tokens[2][3]
-      If Text.AreEquals(nextCommand, _Beep, False) Then
+      If Text.AreEquals(nextCommand, OrgTokes[_EnBeep], False) Then
          If ConvertToEnSahla Then
-            Return "Play Beep"
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnBeep]
          EndIf
          Return "Sound.PlayBeep()"
-         
-      ElseIf Text.AreEquals(nextCommand, _Bell, False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnBell], False) Then
          If ConvertToEnSahla Then
-            Return "Play Bell"
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnBell]
          EndIf
          Return "Sound.PlayBellRing()"
-         
-      ElseIf Text.AreEquals(nextCommand, _Ding, False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDing], False) Then
          If ConvertToEnSahla Then
-            Return "Play Ding"
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnDing]
          EndIf
          Return "Sound.PlayDing()"
-         
-      ElseIf Text.AreEquals(nextCommand, _Click, False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnClick], False) Then
          If ConvertToEnSahla Then
-            Return "Play Click"
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnClick]
          EndIf
          Return "Sound.PlayClick()"
-         
-      ElseIf Text.AreEquals(nextCommand, _Chime, False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnChime], False) Then
          If ConvertToEnSahla Then
-            Return "Play Chime"
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnChime]
          EndIf
          Return "Sound.PlayChime()"
       Else
          result = BuildExpressionText(2)
          If ConvertToEnSahla Then
-            Return "Play " & result[1]
+            Return DestTokes[_EnSound] & " " & result[1]
          EndIf
          Return "Sound.Play(" & result[1] & ")"
       EndIf
@@ -1814,18 +2087,24 @@ Function ConvertForLoopHeader()
    nextToken = Tokens[nextPos][3]
    result = BuildExpressionText(nextPos + 1)
    endValue = result[1]
-   stepValue = 1
    nextPos = result[2]
+   stepIsMissing = True
    
    If nextPos <= tokensCount Then
       nextToken = Tokens[nextPos][3]
-      If Text.AreEquals(nextToken, _Step, False) Then
+      If Text.AreEquals(nextToken, OrgTokes[_EnStep], False) Then
          result = BuildExpressionText(nextPos + 1)
          stepValue = result[1]
+         stepIsMissing = False
       EndIf
    EndIf
    
-   Return "For " & Vars[varName] & " = " & startValue & " To " & endValue & " Step " & stepValue
+   forHeader = DestTokes[_EnFor] & " " & Vars[varName] & " = " & startValue & " " & DestTokes[_EnTo] & " " & endValue
+   If stepIsMissing Then
+      Return forHeader
+   Else
+      Return forHeader & " " & DestTokes[_EnStep] & " " & stepValue
+   EndIf
 EndFunction
 
 
@@ -1834,8 +2113,9 @@ Function BuildExpressionText(start)
    nextPos = result[2]
    token = Tokens[nextPos][3]
    
-   If Text.StartsWith(Text.Trim(token), _CommmentSymbol) Then
-      token[token[Text.IndexOf(token, _CommmentSymbol, 1, False)] = "'"] = "'"
+   If Text.StartsWith(Text.Trim(token), OrgTokes[_EnCommmentSymbol]) Then
+      i = Text.IndexOf(token, OrgTokes[_EnCommmentSymbol], 1, False)
+      token[i] = DestTokes[_EnCommmentSymbol]
       Return {result[1] & token, nextPos + 1}
    Else
       Return result
@@ -1852,10 +2132,10 @@ Function ConvertOr(pos)
    pos = arr[2]
    tokensCount = Tokens.Count
    
-   While pos <= tokensCount And Text.AreEquals(Tokens[pos][3], _Or, False)
+   While pos <= tokensCount And Text.AreEquals(Tokens[pos][3], OrgTokes[_EnOr], False)
       pos = pos + 1
       arr2 = ConvertAnd(pos)
-      result = " " & result & " Or " & arr2[1]
+      result = " " & result & " " & DestTokes[_EnOr] & " " & arr2[1]
       pos = arr2[2]
    Wend
    Return {result, pos}
@@ -1867,10 +2147,10 @@ Function ConvertAnd(pos)
    pos = arr[2]
    tokensCount = Tokens.Count
    
-   While pos <= tokensCount And Text.AreEquals(Tokens[pos][3], _And, False)
+   While pos <= tokensCount And Text.AreEquals(Tokens[pos][3], OrgTokes[_EnAnd], False)
       pos = pos + 1
       arr2 = ConvertComparison(pos)
-      result = " " & result & " And " & arr2[1]
+      result = " " & result & " " & DestTokes[_EnAnd] & " " & arr2[1]
       pos = arr2[2]
    Wend
    Return {result, pos}
@@ -1963,7 +2243,12 @@ Function ConvertPower(pos)
       pos = pos + 1
       arr2 = ConvertFactor(pos)
       rightValue = arr2[1]
-      leftValue = "Math.Power(" & leftValue & ", " & rightValue & ")"
+      If ConvertToEnSahla Then
+         leftValue = " " & leftValue & " ^ " & rightValue
+      Else
+         leftValue = "Math.Power(" & leftValue & ", " & rightValue & ")"
+      EndIf
+      
       pos = arr2[2]
       op = Tokens[pos][3]
    Wend
@@ -1978,11 +2263,12 @@ Function ConvertTerm(pos)
    op = Text.Trim(Tokens[pos][3])
    tokensCount = Tokens.Count
    
-   While pos <= tokensCount And (
-         Text.AreEquals(op, "*", True) Or Text.AreEquals(op, "/", True)
-         Or Text.AreEquals(op, _IntegralDibision, True)
-         Or Text.AreEquals(op, "%", True) Or Text.AreEquals(op, "^", True)
-      )
+   While pos <= tokensCount And ( _
+         Text.AreEquals(op, "*", True) _
+         Or Text.AreEquals(op, "/", True) _
+         Or Text.AreEquals(op, OrgTokes[_EnIntegralDivision], True) _
+         Or Text.AreEquals(op, "%", True) _
+         Or Text.AreEquals(op, "^", True))
       pos = pos + 1
       arr2 = ConvertPower(pos)
       rightValue = arr2[1]
@@ -1991,11 +2277,12 @@ Function ConvertTerm(pos)
          leftValue = " " & leftValue & " * " & rightValue
       ElseIf op = "/" Then
          leftValue = " " & leftValue & " / " & rightValue
-      ElseIf op = _IntegralDibision Then
+      ElseIf op = OrgTokes[_EnIntegralDivision] Then
          If ConvertToEnSahla Then
-            leftValue = " " & leftValue & " \ " & rightValue
+            leftValue = " " & leftValue & " " & DestTokes[_EnIntegralDivision] & " " & rightValue
+         Else
+            leftValue = "Math.Truncate(" & leftValue & " / " & rightValue & ")"
          EndIf
-         leftValue = "Math.Truncate(" & leftValue & " / " & rightValue & ")"
       ElseIf ConvertToEnSahla Then
          leftValue = " " & leftValue & " % " & rightValue
       Else
@@ -2013,11 +2300,11 @@ Function ConvertFactor(pos)
    token = Text.Trim(Tokens[pos][3])
    tokensCount = Tokens.Count
    
-   If Text.AreEquals(token, _True, False) Then
-      Return {"True", pos + 1}
+   If Text.AreEquals(token, OrgTokes[_EnTrue], False) Then
+      Return {DestTokes[_EnTrue], pos + 1}
       
-   ElseIf Text.AreEquals(token, _False, False) Then
-      Return {"False", pos + 1}
+   ElseIf Text.AreEquals(token, OrgTokes[_EnFalse], False) Then
+      Return {DestTokes[_EnFalse], pos + 1}
       
    ElseIf Text.AreEquals(token, "(", True) Then
       wordID = pos
@@ -2030,25 +2317,25 @@ Function ConvertFactor(pos)
       EndIf
       Return {result, pos}
       
-   ElseIf Text.AreEquals(token, _Random, False) Then
+   ElseIf Text.AreEquals(token, OrgTokes[_EnRandom], False) Then
       If ConvertToEnSahla Then
-         Return {"Random", pos + 1}
+         Return {DestTokes[_EnRandom], pos + 1}
       EndIf
       Return {"Math.GetRandomNumber(100)", pos + 1}
       
-   ElseIf Text.AreEquals(token, _Read, False) Then
+   ElseIf Text.AreEquals(token, OrgTokes[_EnRead], False) Then
       pos = pos + 1
       If pos <= tokensCount Then
          nextToken = Tokens[pos][3]
-         If Text.AreEquals(nextToken, _Text, False) Then
+         If Text.AreEquals(nextToken, OrgTokes[_EnText], False) Then
             If ConvertToEnSahla Then
-               Return {"Read Text", pos + 1}
+               Return {DestTokes[_EnRead] & " " & DestTokes[_EnText], pos + 1}
             EndIf
             Return {"TextWindow.Read()", pos + 1}
             
-         ElseIf Text.AreEquals(nextToken, _Number, False) Then
+         ElseIf Text.AreEquals(nextToken, OrgTokes[_EnNumber], False) Then
             If ConvertToEnSahla Then
-               Return {"Read Number", pos + 1}
+               Return {DestTokes[_EnRead] & " " & DestTokes[_EnNumber], pos + 1}
             EndIf
             Return {"TextWindow.ReadNumber()", pos + 1}
          EndIf
@@ -2076,17 +2363,4 @@ Function ConvertVarName(varName)
       EndIf
    Next
    Return newName
-EndFunction
-
-
-
-
-Function ShowSaveMsg()
-   Return Dialogs.MsgBox(
-      _SaveChanges,
-      _ConfirmCllosing & Text.NewLine &
-      "Yes: " & _SaveChanges & Text.NewLine &
-      "No: " & _DiscardChanges & Text.NewLine &
-      "Cancel: " & _CancelClosing
-   )
 EndFunction

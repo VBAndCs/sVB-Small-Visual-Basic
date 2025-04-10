@@ -11,14 +11,14 @@ False
 Write "Enter the circle's radius in meters: "
 radius = Read Number
 
-pi = 22 / 7
-circumference = 2 × pi × radius
+pi =  22 / 7
+circumference =   2 * pi * radius
 ' Round the circumference to the nearest two decimal places
-circumference = ( circumference × 100 + 0.5 ) \ 1 / 100
+circumference =   (  circumference * 100 + 0.5) \ 1 / 100
 
-area = pi × radius × radius
+area =   pi * radius * radius
 ' Round the area to the nearest two decimal places
-area = ( area × 100 + 0.5 ) \ 1 / 100
+area =   (  area * 100 + 0.5) \ 1 / 100
 
-Write Line "The circumference of the circle = " + circumference + " meters"
-Write Line "The area of the circle = " + area + " square meters"
+Write Line   "The circumference of the circle = " + circumference + " meters"
+Write Line   "The area of the circle = " + area + " square meters"

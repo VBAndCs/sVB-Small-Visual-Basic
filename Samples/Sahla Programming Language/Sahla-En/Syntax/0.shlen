@@ -1,5 +1,5 @@
 ﻿Segoe UI
-14
+17
 False
 False
 False
@@ -11,6 +11,16 @@ False
 ' Welcome to "Sahla" .. the easy educational programming language
 ' Sahla is written in the educational programming language Small Visual Basic
 ' You will find the complete Sahla code in the Small Visual Basic samples folder
+' It started as an Arabic dialect, then I provided teh English dialect to be easy to use to create
+' any other native dialect. I tested that by createing a Frensh Shala dialect in 2 minutes!
+' See "Create your native Sahla" in the Help menu.
+' Note that Sahla allows you to convert your native dialect to the English one and vice versa
+' Just choose the file type from the dialog windows when you ooen or save files.
+' This allows kids from diffrent natiossn to program in thier own tongue, while still being able
+' to communicate with each other and share codes in the English dialect that can be
+' converted to each of their dielects. Eventually this will help kids to het used to prpgram in English.
+' Sahla also allows to convert its dialects to Small Visual Basic code, to allow kids to graduate
+' to a the next programming level.
 ' To learn the rules of "Sahla", open the "Help" menu,
 ' then choose topics from the "Sahal Syntax" submenu.
 ' Each topic will display an educational program with explanatory comments

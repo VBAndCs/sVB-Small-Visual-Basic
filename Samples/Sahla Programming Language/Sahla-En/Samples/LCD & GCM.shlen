@@ -19,12 +19,12 @@ number2 = Read Number
 numerator = number1
 divisor = number2
 
-While divisor > 0
-    remainder = numerator % divisor
+While  divisor > 0
+    remainder =  numerator % divisor
     numerator = divisor
     divisor = remainder
 Wend
 
 gcd = numerator
-Write Line "Greatest common divisor = " + gcd
-Write Line "Least common multiple = " + number1 × number2 \ gcd
+Write Line  "Greatest common divisor = " + gcd
+Write Line  "Least common multiple = " +   number1 * number2 \ gcd

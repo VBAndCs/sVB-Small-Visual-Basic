@@ -176,7 +176,10 @@ EndSub
 
 Sub MnuOpen_OnClick()
    If AskToSave() Then
-      fileName = File.OpenFileDialog({"Sahla code files", "shl"})
+      fileName = File.OpenFileDialog({
+            {"Sahla code files", "shl"},
+            {"English Sahla code files", "shlen"}
+         })
       If fileName <> "" Then
          Open(fileName)
          TxtEditor.Focus()
@@ -205,11 +208,22 @@ Sub Open(fileName)
       txt = txt & lines[i] & Text.NewLine
    Next
    
-   TxtEditor.Text = txt & lines[i]
-   SavedFile = fileName
-   IsModified = False
+   code = txt & lines[i]
+   
+   If Text.EndsWith(Text.ToLower(fileName), ".shlen") Then
+      TxtEditor.Text = Global.ConvertToNativeSahlaCode(code)
+      IsModified = True
+      SavedFile = ""
+   Else
+      TxtEditor.Text = code
+      SavedFile = fileName
+      IsModified = False
+   EndIf
+   
    TxtEditor.RestUndo()
-   OnScroll()
+   TxtEditor.CaretIndex = TxtEditor.Length
+   TxtEditor.CaretIndex = 1
+   TxtEditor.Focus()
 EndSub
 
 Sub MnuSave_OnClick()
@@ -436,6 +450,8 @@ Sub MnuRun_OnClick()
    TW.Title = "نافذة المخرجات"
    Global.Run()
    Me.Enabled = True
+   Me.Focus()
+   TxtEditor.Focus()
 EndSub
 
 Sub MnuOutput_OnClick()

@@ -15,11 +15,11 @@ Increment = Read Number
 Write "Enter the number of terms: "
 Count = Read Number
 
-Write Line "----" × ( Count + 3 )
+Write Line  "----" * ( Count + 3)
 Write "Sequence: "
-For n = 1 To Count - 1
-    Write Term + ", "
-    Term = Term + Increment
+For n = 1 To  Count - 1
+    Write  Term + ", "
+    Term =  Term + Increment
 Next n
 Write Line Term
-Write Line "----" × ( Count + 3 )
+Write Line  "----" * ( Count + 3)

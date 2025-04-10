@@ -25,30 +25,30 @@ D = Read Number
 gcd = B
 divisor = D
 
-While divisor > 0
-    remainder = gcd % divisor
+While  divisor > 0
+    remainder =  gcd % divisor
     gcd = divisor
     divisor = remainder
 Wend
 
-lcm = B × D \ gcd
+lcm =   B * D \ gcd
 
 ' Calculate the numerator of the resulting fraction:
-resultNumerator = lcm / B × A + lcm / D × C
+resultNumerator =    lcm / B * A +   lcm / D * C
 
 ' Print the result:
-Write A + "/" + B
+Write   A + "/" + B
 Write " + "
-Write C + "/" + D
+Write   C + "/" + D
 Write " = "
-Write resultNumerator + "/" + lcm
+Write   resultNumerator + "/" + lcm
 
 ' Simplify the resulting common fraction:
-If resultNumerator > lcm
-    integerPart = resultNumerator \ lcm
-    remainder = resultNumerator % lcm
-    Write " = " + integerPart
-    If remainder > 0
-        Write " + " + remainder + "\" + lcm
+If  resultNumerator > lcm
+    integerPart =  resultNumerator \ lcm
+    remainder =  resultNumerator % lcm
+    Write  " = " + integerPart
+    If  remainder > 0
+        Write    " + " + remainder + "\" + lcm
     EndIf
 EndIf

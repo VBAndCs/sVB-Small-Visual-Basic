@@ -14,21 +14,21 @@ num1 = Read Number
 num2 = num1
 lcm = num1
 
-While num2 < > 0
+While  num2 <> 0
     a = num1
     b = num2
-    
-    While b < > 0
-        remainder = a % b
+        
+    While  b <> 0
+        remainder =  a % b
         a = b
         b = remainder
     Wend
-    
-    lcm = num1 × num2 \ a
+        
+    lcm =   num1 * num2 \ a
     num1 = lcm
-    
+        
     Write "Enter another number or zero to finish the program: "
     num2 = Read Number
 Wend
 
-Write Line "The least common multiple = " + lcm
+Write Line  "The least common multiple = " + lcm
