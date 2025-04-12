@@ -1,5 +1,5 @@
 ﻿Segoe UI
-17
+15
 False
 False
 False
@@ -9,26 +9,27 @@ False
 True
 False
 ' Welcome to "Sahla" .. the easy educational programming language
-' Sahla is written in the educational programming language Small Visual Basic
-' You will find the complete Sahla code in the Small Visual Basic samples folder
-' It started as an Arabic dialect, then I provided teh English dialect to be easy to use to create
-' any other native dialect. I tested that by createing a Frensh Shala dialect in 2 minutes!
+' Sahla is written with the educational programming language Small Visual Basic
+' You will find the complete Sahla source code in the Small Visual Basic samples folder
+' It started as an Arabic dialect, then I provided the English dialect "Sahla-En" to be easy to use to create
+' any other native dialect. I tested that by creating a French Sahla dialect in 2 minutes! Watch this video:
+' https://youtu.be/VY6VG8nwFhc
 ' See "Create your native Sahla" in the Help menu.
 ' Note that Sahla allows you to convert your native dialect to the English one and vice versa
-' Just choose the file type from the dialog windows when you ooen or save files.
-' This allows kids from diffrent natiossn to program in thier own tongue, while still being able
+' Just choose the file type from the dialog windows when you open or save files.
+' This allows kids from different nations to program in their own tongue, while still being able
 ' to communicate with each other and share codes in the English dialect that can be
-' converted to each of their dielects. Eventually this will help kids to het used to prpgram in English.
+' converted to each of their dialects. Eventually this will help kids to hit used to program in English.
 ' Sahla also allows to convert its dialects to Small Visual Basic code, to allow kids to graduate
 ' to a the next programming level.
 ' To learn the rules of "Sahla", open the "Help" menu,
-' then choose topics from the "Sahal Syntax" submenu.
+' then choose topics from the "Sahla Syntax" submenu.
 ' Each topic will display an educational program with explanatory comments
 ' and examples like the one you are reading now.
 ' There are also some examples bundled with the language, with a shortcut on the desktop.
 ' You can double-click any of the example files (with the .shlen extension) in the Windows File Explorer,
-' to open it directly in "Sahla", hence you can run it by clicking the "Run" command from the "Program" menu,
-' or you can simply press the F5 key located on the top row of the keyboard.
+' to open it directly in "Sahla", hence you can run it by clicking the "Run" command from the
+' "Program" menu, or you can simply press the F5 key located on the top row of the keyboard.
 ' As an example, press F5 to run this program:
 Write Line "In the name of Allah, the Most Gracious, the Most Merciful"
 Write Line "Welcome to Sahla"

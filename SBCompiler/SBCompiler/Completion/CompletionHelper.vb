@@ -31,6 +31,11 @@ Namespace Microsoft.SmallVisualBasic.Completion
                     Dim symbolTable = _compiler.Parser.SymbolTable
                     identifier.Parent = GetStatement(_compiler, identifier.Line)
                     Dim varType = symbolTable.GetInferedType(identifier)
+                    If varType = VariableType.Any Then
+                        If symbolTable.IsGlobalVar(identifier) OrElse symbolTable.IsLocalVar(identifier) Then
+                            varType = VariableType.String
+                        End If
+                    End If
                     Return WinForms.PreCompiler.GetTypeName(varType)
             End Select
         End Function

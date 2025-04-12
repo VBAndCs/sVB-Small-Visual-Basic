@@ -1,5 +1,5 @@
 ﻿Segoe UI
-20
+17
 False
 False
 False
@@ -14,10 +14,10 @@ num1 = Read Number
 Write "Enter the second number: "
 num2 = Read Number
 
-If num1 > num2
-    Write Line "The first number (" + num1 + ") is greater than the second number (" + num2 + ")"
-ElseIf num1 < num2
-    Write Line "The first number (" + num1 + ") is less than the second number (" + num2 + ")"
+If  num1 > num2
+    Write Line     "The first number (" + num1 + ") is greater than the second number (" + num2 + ")"
+ElseIf  num1 < num2
+    Write Line     "The first number (" + num1 + ") is less than the second number (" + num2 + ")"
 Else
-    Write Line "The two numbers are equal and their value is = " + num1
+    Write Line  "The two numbers are equal and their value is = " + num1
 EndIf

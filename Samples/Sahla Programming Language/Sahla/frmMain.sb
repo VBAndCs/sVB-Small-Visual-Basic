@@ -18,10 +18,13 @@ LblBackground.Visible = True
 LblMargin.Visible = True
 LblNum.Visible = True
 
+Contents = File.ReadContents("Syntax/0.shl")
+UseParentFolder = File.LastError <> ""
+
 ' Open .shl files  with Sahla
 If Program.ArgumentCount = 0 Then
    If Ops!FirstTime Then
-      Open("Syntax/0.shl")
+      Open(GetPath("Syntax/0.shl"))
       Ops!FirstTime = False
       Global.SaveSettings(Ops)
    EndIf
@@ -454,48 +457,56 @@ Sub MnuRun_OnClick()
    TxtEditor.Focus()
 EndSub
 
+Function GetPath(filePath)
+   If UseParentFolder Then
+      Return "../" & filePath
+   Else
+      Return filePath
+   EndIf
+EndFunction
+
 Sub MnuOutput_OnClick()
    If AskToSave() Then
-      Open("Syntax/1.shl")
+      Open(GetPath("Syntax/1.shl"))
    EndIf
 EndSub
 
 
 Sub MnuVars_OnClick()
    If AskToSave() Then
-      Open("Syntax/2.shl")
+      Open(GetPath("Syntax/2.shl"))
    EndIf
 EndSub
 
 Sub MnuOps_OnClick()
    If AskToSave() Then
-      Open("Syntax/3.shl")
+      Open(GetPath("Syntax/3.shl"))
    EndIf
 EndSub
 
 Sub MnuInput_OnClick()
    If AskToSave() Then
-      Open("Syntax/4.shl")
+      Open(GetPath("Syntax/4.shl"))
    EndIf
 EndSub
 
 
 Sub MnuConditions_OnClick()
    If AskToSave() Then
-      Open("Syntax/5.shl")
+      Open(GetPath("Syntax/5.shl"))
    EndIf
 EndSub
 
 
 Sub MnuLoops_OnClick()
    If AskToSave() Then
-      Open("Syntax/6.shl")
+      Open(GetPath("Syntax/6.shl"))
    EndIf
 EndSub
 
 Sub MnuSounds_OnClick()
    If AskToSave() Then
-      Open("Syntax/7.shl")
+      Open(GetPath("Syntax/7.shl"))
    EndIf
 EndSub
 

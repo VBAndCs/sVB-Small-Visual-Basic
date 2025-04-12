@@ -11,6 +11,7 @@
 '    LblKP: Label
 '    LblSVB: Label
 '    Label10: Label
+'    LblNative: Label
 '}
 
 Me = "frmabout"
@@ -25,6 +26,7 @@ LblSamples = "frmabout.lblsamples"
 LblKP = "frmabout.lblkp"
 LblSVB = "frmabout.lblsvb"
 Label10 = "frmabout.label10"
+LblNative = "frmabout.lblnative"
 _path = Program.Directory + "\frmabout.xaml"
 FrmAbout = Forms.LoadForm("FrmAbout", _path)
 Form.SetArgsArr(frmabout, Stack.PopValue("_frmabout_argsArr"))

@@ -6,13 +6,24 @@ X = LblSVB.Text
 LblSVB.Text = ""
 LblSVB.AppendBoldLink(X, "https://marketplace.visualstudio.com/items?itemName=ModernVBNET.sVBInstaller")
 
+X = LblNative.Text
+LblNative.Text = ""
+LblNative.AppendBoldLink(X, "https://youtu.be/VY6VG8nwFhc")
+
 X = LblKP.Text
 LblKP.Text = ""
 LblKP.AppendBoldLink(X, "https://www.amazon.com/dp/B0DNX2ZR4D")
 
 X = LblSamples.Text
 LblSamples.Text = ""
-LblSamples.AppendBoldLink(X, "%USERPROFILE%\Documents\Sahla-En Samples")
+SamplesFile = "%USERPROFILE%\Documents\Sahla-En Samples"
+Files = File.GetFiles(SamplesFile)
+If Files.Count = 0 Then
+   LblSamples.AppendBoldLink(X, "..\Samples")
+Else
+   LblSamples.AppendBoldLink(X, SamplesFile)
+EndIf
+
 
 
 Sub Form_OnKeyDown()

@@ -1,8 +1,8 @@
 {
-  "Title": "Sahla",
-  "Description": "Sahla is an Arabic programming language created by Mohammad Hamdy Ghanem, using Small Visual Basic",
+  "Title": "Sahla-En",
+  "Description": "Sahla is a very small programming language created by Mohammad Hamdy Ghanem, using Small Visual Basic",
   "Company": "Modern VB",
-  "Product": "Sahla",
+  "Product": "Sahla-En",
   "Copyright": "Copyright © 2025",
-  "Version": "1.0.3"
+  "Version": "1.0.5.1"
 }

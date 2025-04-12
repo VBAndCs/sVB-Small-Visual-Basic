@@ -1873,6 +1873,7 @@ EndFunction
 
 
 Sub MapLetters(forwardConversion)
+   ' You may also need to modify the ConvertVarName subroutine
    LettersMap = {}
    If forwardConversion Then
       ' Use your lamgauge letters as keys, and map them to English letters
@@ -1915,6 +1916,20 @@ Sub MapLetters(forwardConversion)
    Else
       ' Use Englis litters as keys. here I map each letter to itself to do no change,
       ' but you should provide a real map if your language uses none latin letters
+      LettersMap["ce"] = "ce"
+      LettersMap["ci"] = "ci"
+      LettersMap["cy"] = "cy"
+      LettersMap["ch"] = "ch"
+      LettersMap["sh"] = "sh"
+      LettersMap["ph"] = "ph"
+      LettersMap["gh"] = "gh"
+      LettersMap["th"] = "th"
+      LettersMap["ie"] = "ie"
+      LettersMap["ei"] = "ei"
+      LettersMap["ea"] = "ea"
+      LettersMap["ou"] = "ou"
+      LettersMap["ow"] = "ow"
+      
       LettersMap["a"] = "a"
       LettersMap["b"] = "b"
       LettersMap["c"] = "c"
@@ -2353,13 +2368,94 @@ Function ConvertFactor(pos)
 EndFunction
 
 Function ConvertVarName(varName)
+   ' In Sahal-En, we don't need to change variable names,
+   ' but in your native Sahal, tou may need to remove the next code line,
+   ' and modfy the provided converter to fit your needs:
+   Return varName
+   
+   toNative = LettersMap["a"] <> ""
+   If toNative Then
+      varName = varName.Replace("asion", "ajn")
+      varName = varName.Replace("esion", "ejn")
+      varName = varName.Replace("ision", "ijn")
+      varName = varName.Replace("osion", "ojn")
+      varName = varName.Replace("usion", "ujn")
+      varName = varName.Replace("rsion", "rjn")
+      varName = varName.Replace("ssion", "shn")
+      varName = varName.Replace("sion", "shn")
+      varName = varName.Replace("stion", "stshn")
+      varName = varName.Replace("tion", "shn")
+   EndIf
+   
    newName = ""
-   ForEach arChar In varName
-      enChar = LettersMap[arChar]
-      If enChar = "" Then
-         newName = newName + arChar
+   prevC = ""
+   len = Text.GetLength(varName)
+   
+   For i = 1 To len
+      c = varName[i]
+      If toNative Then
+         If i = 1 Then
+            If c = "a" Then
+               newName = newName + "أ"
+               ContinueLoop
+               
+            ElseIf c = "o" Then
+               nextC = varName[i + 1]
+               If nextC = "u" Then
+                  newName = newName + "آو"
+               ElseIf nextC = "w" Then
+                  newName = newName + "أو"
+               Else
+                  newName = newName + "أ"
+               EndIf
+               ContinueLoop
+               
+            ElseIf c = "e" Then
+               If nextC = "a" Or nextC = "e" Or nextC = "i" Then
+                  newName = newName + "إي"
+               ElseIf nextC = "y" Then
+                  newName = newName + "آي"
+               Else
+                  newName = newName + "إ"
+               EndIf
+               ContinueLoop
+               
+            ElseIf c = "i" Then
+               newName = newName + "إ"
+               ContinueLoop
+            ElseIf c = "u" Then
+               newName = newName + "يو"
+               ContinueLoop
+            EndIf
+            
+         ElseIf i = len And c = "e" Then
+            ExitLoop
+         ElseIf newName.EndsWith("_") = False And c <> Text.ToLower(c) Then
+            newName = newName + "_"
+         EndIf
+      EndIf
+      
+      c2 = Text.GetSubText(varName, i, 2)
+      outChar = LettersMap[c2]
+      
+      If i = len Or outChar = "" Then
+         If prevC <> c Then
+            If c.ToLower() = "x" And (i = 1 Or newName.EndsWith("_")) Then
+               newName = newName + "إكس"
+            Else
+               outChar = LettersMap[c]
+               If outChar = "" Then
+                  newName = newName + c
+               Else
+                  newName = newName + outChar
+               EndIf
+            EndIf
+            prevC = c
+         EndIf
       Else
-         newName = newName + enChar
+         newName = newName + outChar
+         i = i + 1
+         prevC = ""
       EndIf
    Next
    Return newName

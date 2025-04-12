@@ -75,6 +75,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_01D4DECFCFD64187801C255CBAB377E8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_020F7FE33F6543BF9871813C5F82285F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -333,6 +339,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_10B197687B74486CB7CB76541DD6A095"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_10EA55A285604C3EB4922B7810CFC2F1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_113282A2CBF142A9B55CF365906E577D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -532,6 +550,12 @@
         "Entry"
         {
         "MsmKey" = "8:_1E2E6E7AEFF641ABA7401F94E4154EB2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1E7DA7E2666443E9B02EF40A2FA840EA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1107,6 +1131,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4A81411079DA4783A3D69722E136090E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4ABA717040054513B8D2D2C84405947F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1186,6 +1216,18 @@
         "Entry"
         {
         "MsmKey" = "8:_4F355AC3C1154675BE72C7765DD9B9B0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_506EFE707DF64BCB90AA85F911F9B03E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5107AF6AB1994166A0EF35DB1B9737C5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1312,6 +1354,12 @@
         "Entry"
         {
         "MsmKey" = "8:_586B47CAC8FA478C860A2FF7F020A79C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_59106B0909674B9FAA3596E115F44943"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2163,6 +2211,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_8ACB5D9DFEB04858922B9B8E7F699637"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8ACD66BE1FCD4970AA6447B20326DDDF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2218,6 +2272,12 @@
         "Entry"
         {
         "MsmKey" = "8:_8F28FCABFF9E44CAA26E742456DE6280"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8F666A07E4104FFE9C828E98694BD5E5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2561,6 +2621,12 @@
         {
         "MsmKey" = "8:_A413A31A4FDB4A18B372A38C9354ABEA"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A4F2C031030ED6B77FDCB01AAB4E4654"
+        "OwnerKey" = "8:_10B197687B74486CB7CB76541DD6A095"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3345,6 +3411,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D1C23DDA8E944FE79A15263EE22D64D0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D251517AA1BA404A9DDBFB2F4EC8183A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3651,6 +3723,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E00CB8087FC346D3B95A8655E43A4CEC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E03E1FDC98EF44659BCDCC8DD2424125"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3706,6 +3784,12 @@
         "Entry"
         {
         "MsmKey" = "8:_E1EF7E36B9457542B8A250ED7A9E99AB"
+        "OwnerKey" = "8:_FF523F361B9C49B59D255757C99A3C17"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E1EF7E36B9457542B8A250ED7A9E99AB"
         "OwnerKey" = "8:_CD76A335BFF74C3C849A048650AF85C9"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3737,6 +3821,18 @@
         {
         "MsmKey" = "8:_E1EF7E36B9457542B8A250ED7A9E99AB"
         "OwnerKey" = "8:_12BFD2D2728A41D2A07FB20BDB6EBAC8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E1EF7E36B9457542B8A250ED7A9E99AB"
+        "OwnerKey" = "8:_10B197687B74486CB7CB76541DD6A095"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E1EF7E36B9457542B8A250ED7A9E99AB"
+        "OwnerKey" = "8:_A4F2C031030ED6B77FDCB01AAB4E4654"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3873,6 +3969,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E94BF1E7DCFA4E74ACA0F42CDB2F2E4C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E967C2F9FA8D4846BC0D2F74BCA70790"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3916,6 +4018,12 @@
         "Entry"
         {
         "MsmKey" = "8:_EA06DBD071924E7B8A5289F26C18ADC8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EA56CF9D992E488EA212446BDD3FBE95"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4299,6 +4407,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_FF523F361B9C49B59D255757C99A3C17"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_FF75750AF6284F05B1AE084D96E9EB2E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -4325,6 +4439,18 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_12BFD2D2728A41D2A07FB20BDB6EBAC8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_FF523F361B9C49B59D255757C99A3C17"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E00CB8087FC346D3B95A8655E43A4CEC"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4379,6 +4505,18 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_15A01C7C0B8748758DA54304CE9A2620"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_10B197687B74486CB7CB76541DD6A095"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A4F2C031030ED6B77FDCB01AAB4E4654"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4487,7 +4625,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.5.5.6_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.5.5.7_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -4728,6 +4866,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_29376ECD515A4BB1A5463159001B06B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_01D4DECFCFD64187801C255CBAB377E8"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\Prpgrammer.png"
+            "TargetName" = "8:Prpgrammer.png"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -5595,6 +5753,57 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_10B197687B74486CB7CB76541DD6A095"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Sahla-en, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_10B197687B74486CB7CB76541DD6A095"
+                    {
+                    "Name" = "8:Sahla-en.exe"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\Sahla-en.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_10EA55A285604C3EB4922B7810CFC2F1"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\FrmAbout.xaml"
+            "TargetName" = "8:FrmAbout.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_113282A2CBF142A9B55CF365906E577D"
             {
             "SourcePath" = "8:..\\Samples\\Games\\Starship\\UpFireBullet.png"
@@ -6294,6 +6503,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_0C24E2A711034BE6843910F320031226"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1E7DA7E2666443E9B02EF40A2FA840EA"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\FrmOps.xaml"
+            "TargetName" = "8:FrmOps.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8199,6 +8428,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4A81411079DA4783A3D69722E136090E"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\Sahla-en.xml"
+            "TargetName" = "8:Sahla-en.xml"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4ABA717040054513B8D2D2C84405947F"
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Samples\\Numbers Game.shl"
@@ -8465,6 +8714,46 @@
             "TargetName" = "8:FrmFind.xaml"
             "Tag" = "8:"
             "Folder" = "8:_E5F66A24B37B42BCA5A86942F3BB3E92"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_506EFE707DF64BCB90AA85F911F9B03E"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\Sahla-en.pdb"
+            "TargetName" = "8:Sahla-en.pdb"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5107AF6AB1994166A0EF35DB1B9737C5"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\frmMain.xaml"
+            "TargetName" = "8:frmMain.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8885,6 +9174,26 @@
             "TargetName" = "8:FrmDateTests.xaml"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_59106B0909674B9FAA3596E115F44943"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\FrmMsg.xaml"
+            "TargetName" = "8:FrmMsg.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11763,6 +12072,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8ACB5D9DFEB04858922B9B8E7F699637"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\FrmInput.xaml"
+            "TargetName" = "8:FrmInput.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8ACD66BE1FCD4970AA6447B20326DDDF"
             {
             "SourcePath" = "8:..\\Samples\\sVB Libraries\\Dialogs\\FrmMain.xaml"
@@ -11949,6 +12278,26 @@
             "TargetName" = "8:5.shl"
             "Tag" = "8:"
             "Folder" = "8:_BE5FF6BFAF9C461D964DA3FC4D61A41B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8F666A07E4104FFE9C828E98694BD5E5"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\RuntimeErrors.txt"
+            "TargetName" = "8:RuntimeErrors.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13112,6 +13461,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A4F2C031030ED6B77FDCB01AAB4E4654"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Dialogs, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_A4F2C031030ED6B77FDCB01AAB4E4654"
+                    {
+                    "Name" = "8:Dialogs.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Dialogs.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5D213EC34B94CCE9EFA34B7EE6DBE82"
@@ -15680,6 +16060,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D1C23DDA8E944FE79A15263EE22D64D0"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\FrmFind.xaml"
+            "TargetName" = "8:FrmFind.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D251517AA1BA404A9DDBFB2F4EC8183A"
             {
             "SourcePath" = "8:..\\Samples\\Animation Samples\\Move & Rorate Rect.sb"
@@ -16700,6 +17100,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E00CB8087FC346D3B95A8655E43A4CEC"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:SmallVisualBasicLibrary, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_E00CB8087FC346D3B95A8655E43A4CEC"
+                    {
+                    "Name" = "8:SmallVisualBasicLibrary.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\SmallVisualBasicLibrary.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E03E1FDC98EF44659BCDCC8DD2424125"
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\FrmOps.sb.gen"
@@ -17271,6 +17702,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E94BF1E7DCFA4E74ACA0F42CDB2F2E4C"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\Sahla.jpg"
+            "TargetName" = "8:Sahla.jpg"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E967C2F9FA8D4846BC0D2F74BCA70790"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Toggle Buttons\\form1.sb.gen"
@@ -17417,6 +17868,26 @@
             "TargetName" = "8:FrmControlTests.sb"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EA56CF9D992E488EA212446BDD3FBE95"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\s.ico"
+            "TargetName" = "8:s.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -18682,6 +19153,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FF523F361B9C49B59D255757C99A3C17"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Dialogs, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_FF523F361B9C49B59D255757C99A3C17"
+                    {
+                    "Name" = "8:Dialogs.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\Dialogs.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FF75750AF6284F05B1AE084D96E9EB2E"
             {
             "SourcePath" = "8:..\\Samples\\Color Samples\\Color labels\\FrmColors.xaml"
@@ -18767,7 +19269,7 @@
         {
             "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_03AF5E11B50F4312943B26E3C4318D9D"
             {
-            "Name" = "8:SB files"
+            "Name" = "8:Small Basic files"
             "Description" = "8:Small Basic files"
             "Extensions" = "8:sb"
             "MIME" = "8:"
@@ -18780,6 +19282,29 @@
                 "Verbs"
                 {
                     "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_2CEEE7DB2C2B4E1980C4BF6252C75CC9"
+                    {
+                    "Command" = "8:&Open"
+                    "Verb" = "8:open"
+                    "Arguments" = "8:\"%1\""
+                    "Order" = "3:0"
+                    }
+                }
+            }
+            "{5EB83D71-FA18-4901-BE56-DE22E13CC478}:_5890EB1394C34744AB2DE8E0366E369E"
+            {
+            "Name" = "8:Sahla-En Files"
+            "Description" = "8:"
+            "Extensions" = "8:shlen"
+            "MIME" = "8:"
+            "Icon" = "8:_EA56CF9D992E488EA212446BDD3FBE95"
+            "IconIndex" = "3:0"
+                "Command"
+                {
+                "Command" = "8:_10B197687B74486CB7CB76541DD6A095"
+                }
+                "Verbs"
+                {
+                    "{95C0C507-CBF0-42B8-B119-07219E384A4A}:_CB2776D8B5454AD2A161BF4C51EA9934"
                     {
                     "Command" = "8:&Open"
                     "Verb" = "8:open"
@@ -19619,6 +20144,17 @@
                                                 {
                                                 }
                                             }
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_CD706DA7FC664D0FBE935AADF22F8A1E"
+                                            {
+                                            "Name" = "8:bin"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_E4B01598E5714E4397EEE0961CDF0B51"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_FEDC5F61FA3840FC984CB56AF9679838"
                                             {
                                             "Name" = "8:Samples"
@@ -20446,9 +20982,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.5.5.6"
+        "ProductName" = "8:Small Visual Basic 3.5.5.7"
         "ProductCode" = "8:{004F0DE1-7938-43C4-9CAC-59D32A7CCCE6}"
-        "PackageCode" = "8:{69D9A160-0775-4300-8782-A0E4BD492588}"
+        "PackageCode" = "8:{051296AF-8772-495E-8E76-C9F3D03C9A3B}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -20582,6 +21118,34 @@
             "Icon" = "8:_AEA2C095F4A245AB99A489E9380AB74F"
             "Feature" = "8:"
             }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_6B990B2AAB6B47109BEF05330CA62CA2"
+            {
+            "Name" = "8:Sahla-En IDE"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_10B197687B74486CB7CB76541DD6A095"
+            "Folder" = "8:_45AF70F6A9AB4B84A7B68CC624BC02FD"
+            "WorkingFolder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Icon" = "8:_EA56CF9D992E488EA212446BDD3FBE95"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_850CDA09D67E4C6AA0DD242DD88566AA"
+            {
+            "Name" = "8:Sahla-En IDE"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_10B197687B74486CB7CB76541DD6A095"
+            "Folder" = "8:_57E649E5DD7D47328FA49ED3E67CC196"
+            "WorkingFolder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8D040BDC7DDF4114A7AD2190224D6685"
             {
             "Name" = "8:sVB Samples"
@@ -20626,7 +21190,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_C2829D7F2D264D8EAF52B87D19E8E928"
             {
-            "Name" = "8:sVB 3.5.5.6"
+            "Name" = "8:sVB 3.5.5.7"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -20668,7 +21232,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DEFF71B2D77349E1B3B660BC8C8590EA"
             {
-            "Name" = "8:sVB 3.5.5.6"
+            "Name" = "8:sVB 3.5.5.7"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -20696,7 +21260,7 @@
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_ECD2DFA8A2D24991AECB14B825CB480A"
             {
-            "Name" = "8:sVB 3.5.5.6"
+            "Name" = "8:sVB 3.5.5.7"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"

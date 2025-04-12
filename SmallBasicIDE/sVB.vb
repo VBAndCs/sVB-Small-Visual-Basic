@@ -240,7 +240,7 @@ Class sVB
                             If controlName = "" Then
                                 Dim varType = _compiler.Parser.SymbolTable.GetInferedType([error].Token)
                                 If varType = VariableType.Any Then
-                                    normalErrors.Add([error])
+                                    variableTypes(obj) = VariableType.String
                                 Else
                                     variableTypes(obj) = varType
                                 End If

@@ -1,23 +1,21 @@
 # Sahla-En 1.0
 
 **Sahla** can simplify coding for children. Currently, it includes Arabic and English dialects, but it is easy to create more dialects. This enables kids to program in their native tongue starting at the age of 6, following a gradual learning path to professionalism:
-
 - **Native Sahla** →  
 - **English Sahla** →  
 - **Small Basic** →  
 - **Small Visual Basic** →  
 - **Visual Basic .NET** →  
 - **C#**
-
 ---
 
 # Create Your Own Native Sahla in a Few Minutes!
 
 It is easy to translate Sahla syntax into your native language, allowing your kids to learn programming without the foreign language barrier. This approach introduces basic programming concepts to little kids and shows them how to apply math to solve small problems.
-
 While you might worry that this could isolate them from the international programming community and mainstream programming languages, Sahla is designed to avoid that:
 
 - **Code Conversion:**  
+  You can slso watch [this video](https://youtu.be/VY6VG8nwFhc)
   Sahla allows you to convert native code to the Sahla English syntax. This means kids from all nations can communicate and share their code. It also enables a smooth transition from programming with their native language to programming in English—all using the same IDE and familiar concepts. To convert native code to English, use the **File → Save As** menu and, in the save file window, open the "save as type" list and choose **English Sahla Code Files ("*.shlen")**.
 
 - **Stepping-up to Advanced Languages:**  
