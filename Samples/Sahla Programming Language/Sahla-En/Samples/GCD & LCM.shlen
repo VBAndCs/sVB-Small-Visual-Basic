@@ -1,0 +1,30 @@
+﻿Segoe UI
+19
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write Line "Calculating the greatest common divisor and least common multiple for two numbers:"
+
+Write "Enter the first number: "
+number1 = Read Number
+
+Write "Enter the second number: "
+number2 = Read Number
+
+numerator = number1
+divisor = number2
+
+While  divisor > 0
+    remainder =  numerator % divisor
+    numerator = divisor
+    divisor = remainder
+Wend
+
+gcd = numerator
+Write Line  "Greatest common divisor = " + gcd
+Write Line  "Least common multiple = " +   number1 * number2 \ gcd

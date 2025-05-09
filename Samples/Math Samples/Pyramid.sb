@@ -1,0 +1,5 @@
+Width = 35
+For Blocks = 1 To Width Step 2
+   Spaces = (Width - Blocks) / 2
+   TW.WriteLine((" " * Spaces) + ("@" * Blocks))
+Next

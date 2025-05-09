@@ -32,6 +32,7 @@ Form.SetArgsArr(frmfind, Stack.PopValue("_frmfind_argsArr"))
 '    BtnFind: OnClick
 '    BtnReplace: OnClick
 '    BtnReplaceAll: OnClick
+'    FrmFind: OnPreviewKeyDown
 '}
 
 ' BtnFind Events:
@@ -45,6 +46,10 @@ Control.OnClick = BtnReplace_OnClick
 ' BtnReplaceAll Events:
 Control.HandleEvents(BtnReplaceAll)
 Control.OnClick = BtnReplaceAll_OnClick
+
+' FrmFind Events:
+Control.HandleEvents(FrmFind)
+Form.OnPreviewKeyDown = Form_OnPreviewKeyDown
 
 
 Form.Show(Me)

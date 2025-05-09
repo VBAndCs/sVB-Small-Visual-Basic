@@ -273,7 +273,7 @@ Namespace Library
                         Dim mp As MediaPlayer = Nothing
 
                         If Not _mediaPlayerMap.TryGetValue(uri1, mp) Then
-                            mp = New MediaPlayer
+                            mp = New MediaPlayer()
                             _mediaPlayerMap(uri1) = mp
                             mp.Open(uri1)
                         End If

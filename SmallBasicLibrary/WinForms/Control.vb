@@ -758,7 +758,22 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetControl(controlName).Visibility = If(value, Visibility.Visible, Visibility.Hidden)
+                        Dim ctrl = GetControl(controlName)
+                        If TypeOf ctrl Is Wpf.Label Then
+                            Dim _label = CType(ctrl, Wpf.Label)
+                            Dim tb = TryCast(_label.Content, Wpf.TextBlock)
+                            If tb Is Nothing Then
+                                _label.Visibility = If(value, Visibility.Visible, Visibility.Hidden)
+                            ElseIf CBool(value) Then
+                                _label.Visibility = Visibility.Visible
+                                tb.Visibility = Visibility.Visible
+                            Else
+                                _label.Visibility = Visibility.Hidden
+                                tb.Visibility = Visibility.Collapsed
+                            End If
+                        Else
+                            ctrl.Visibility = If(value, Visibility.Visible, Visibility.Hidden)
+                        End If
                     Catch ex As Exception
                         ReportPropertyError(controlName, "Visible", value, ex)
                     End Try

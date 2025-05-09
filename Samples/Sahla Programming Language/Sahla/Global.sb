@@ -1255,74 +1255,7 @@ Sub _DoColorCode(targetLabel, code)
    For i = 1 To textLength
       c = inputText[i]
       
-      If c = _CommentSymbol Or c = """" Or Opertors.ContainsValue(c) Then
-         ' A new cooment or a string literal is starting.  Flush any pending word first.
-         If currentWord <> "" Then
-            If BasicWords.ContainsValue(currentWord) Then
-               If normalText <> "" Then
-                  targetLabel.Append(normalText)
-                  normalText = ""
-               EndIf
-               
-               If currentWord = _Number2 And prevWord <> _Read Then
-                  normalText = currentWord
-               ElseIf currentWord = _Line2 And prevWord <> _Write Then
-                  normalText = currentWord
-               Else
-                  targetLabel.AppendFormatted(
-                     currentWord, "", 0, True, False, False,
-                     _KeywordsColor, Colors.None, "")
-               EndIf
-               
-            ElseIf currentWord.IsNumeric Then
-               If normalText <> "" Then
-                  targetLabel.Append(normalText)
-                  normalText = ""
-               EndIf
-               targetLabel.AppendWithForeColor(currentWord, "#FF0000")
-            Else
-               normalText = normalText & currentWord
-            EndIf
-            prevWord = currentWord
-            currentWord = ""
-         EndIf
-         
-         If normalText <> "" Then
-            targetLabel.Append(normalText)
-            normalText = ""
-         EndIf
-         
-         lfPos = Text.IndexOf(inputText, Chars.Lf, i + 1, False)
-         
-         If c = _CommentSymbol Then
-            If lfPos = 0 Then
-               lfPos = textLength
-            EndIf
-            
-            currentString = Text.GetSubText(inputText, i, lfPos - i + 1)
-            targetLabel.AppendWithForeColor(currentString, "#FF008020")
-            i = lfPos
-            
-         ElseIf c = """" Then
-            qPos = Text.IndexOf(inputText, """", i + 1, False)
-            
-            If lfPos = 0 Then
-               If qPos = 0 Then
-                  qPos = textLength
-               EndIf
-            ElseIf qPos = 0 Or qPos > lfPos Then
-               qPos = lfPos
-            EndIf
-            
-            currentString = Text.GetSubText(inputText, i, qPos - i + 1)
-            targetLabel.AppendWithForeColor(currentString, "#DF1111")
-            i = qPos
-            
-         Else ' Operator
-            targetLabel.AppendWithForeColor(c, "#800000")
-         EndIf
-         
-      ElseIf c.IsDigit Or c.IsLetter Or c = "_" Or c = "." Then
+      If c.IsDigit Or c.IsLetter Or c = "_" Or c = "." Then
          currentWord = currentWord & c
       Else
          ' Process any pending word when a non-word character is encountered.
@@ -1355,7 +1288,45 @@ Sub _DoColorCode(targetLabel, code)
             prevWord = currentWord
             currentWord = ""
          EndIf
-         normalText = normalText & c
+         
+         If c = _CommentSymbol Or c = """" Or Opertors.ContainsValue(c) Then
+            If normalText <> "" Then
+               targetLabel.Append(normalText)
+               normalText = ""
+            EndIf
+            
+            lfPos = Text.IndexOf(inputText, Chars.Lf, i + 1, False)
+            
+            If c = _CommentSymbol Then
+               If lfPos = 0 Then
+                  lfPos = textLength
+               EndIf
+               
+               currentString = Text.GetSubText(inputText, i, lfPos - i + 1)
+               targetLabel.AppendWithForeColor(currentString, "#FF008020")
+               i = lfPos
+               
+            ElseIf c = """" Then
+               qPos = Text.IndexOf(inputText, """", i + 1, False)
+               
+               If lfPos = 0 Then
+                  If qPos = 0 Then
+                     qPos = textLength
+                  EndIf
+               ElseIf qPos = 0 Or qPos > lfPos Then
+                  qPos = lfPos
+               EndIf
+               
+               currentString = Text.GetSubText(inputText, i, qPos - i + 1)
+               targetLabel.AppendWithForeColor(currentString, "#DF1111")
+               i = qPos
+               
+            Else ' Operator
+               targetLabel.AppendWithForeColor(c, "#800000")
+            EndIf
+         Else
+            normalText = normalText & c
+         EndIf
       EndIf
    Next
    
@@ -1530,12 +1501,13 @@ Function IsLiteralOrComment(pos)
    
    ForEach token In Tokens
       start = token[2]
-      tokenText = Text.Trim(token[3])
+      tokenText = token[3]
       end = start + tokenText.Length - 1
       
       If col >= start And col <= end Then
-         If tokenText.IsNumeric Or tokenText[1] = Chars.Quote
-               Or tokenText[1] = _CommentSymbol Then
+         tokenText = Text.Trim(tokenText)
+         c = tokenText[1]
+         If tokenText.IsNumeric Or c = Chars.Quote Or c = _CommentSymbol Then
             Return True
          EndIf
       EndIf
@@ -2338,6 +2310,8 @@ Function ConvertVarName(varName)
       varName = varName.Replace("sion", "shn")
       varName = varName.Replace("stion", "stshn")
       varName = varName.Replace("tion", "shn")
+      varName = varName.Replace("igh", "ay")
+      varName = varName.Replace("ugh", "")
    EndIf
    
    newName = ""

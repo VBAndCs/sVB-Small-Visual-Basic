@@ -25,7 +25,7 @@ LblBackground.Visible = True
 LblMargin.Visible = True
 LblNum.Visible = True
 
-Contents = File.ReadContents("Syntax/0.shl")
+Contents = File.ReadContents("Syntax/0." & SahlaFilesExtension)
 UseParentFolder = File.LastError <> ""
 
 ' Open .SahlaFilesExtension files  with Sahla
@@ -473,7 +473,7 @@ Sub MnuRun_OnClick()
    FormatCode()
    
    Me.Enabled = False
-   TW.Title = "نافذة المخرجات"
+   TW.Title = "Text Window"
    Global.Run()
    Me.Enabled = True
    Me.Focus()
@@ -552,7 +552,7 @@ EndSub
 Sub LstCompletion_OnKeyDown()
    k = Event.LastKey
    If k = Keys.Enter Then
-      AutoCompleteWord(5)
+      AutoCompleteWord()
    ElseIf k = Keys.Escape Then
       LstCompletion.Visible = False
       TxtEditor.Focus()
@@ -560,7 +560,7 @@ Sub LstCompletion_OnKeyDown()
 EndSub
 
 Sub LstCompletion_OnDoubleClick()
-   AutoCompleteWord(7)
+   AutoCompleteWord()
 EndSub
 
 Sub LblMargin_OnMouseLeftDown()
@@ -631,16 +631,16 @@ Sub TxtEditor_OnTextInput()
          If Array.ContainsValue(Global.CommandsCompletionList, LstCompletion.SelectedItem) Then
             LstCompletion.Visible = False
          Else
-            AutoCompleteWord(1)
+            AutoCompleteWord()
          EndIf
       ElseIf lastInput = """" Then
          If Array.ContainsValue(Global.CommandsCompletionList, LstCompletion.SelectedItem) Then
-            AutoCompleteWord(6)
+            AutoCompleteWord()
          Else
             LstCompletion.Visible = False
          EndIf
       ElseIf Array.ContainsValue(Global.Opertors, lastInput) Then
-         AutoCompleteWord(2)
+         AutoCompleteWord()
       Else
          LstCompletion.Visible = False
       EndIf
@@ -652,8 +652,13 @@ Sub TxtEditor_OnKeyDown()
    FixLA = False
    k = Event.LastKey
    
-   If Keyboard.CtrlPressed And Keyboard.ShiftPressed Then
-      Event.Handled = True
+   If Keyboard.CtrlPressed Then
+      If Keyboard.ShiftPressed Then
+         Event.Handled = True
+      ElseIf k = Keys.Space Then
+         ShowAutoComp()
+         Event.Handled = True
+      EndIf
       
    ElseIf k = Keys.B Then ' Solve the issue of Arabic لا
       FixLA = True
@@ -664,12 +669,11 @@ Sub TxtEditor_OnKeyDown()
          Event.Handled = True
          
       ElseIf k = Keys.Enter Then
-         AutoCompleteWord(3)
+         AutoCompleteWord()
          Event.Handled = True
          
-         
       ElseIf k = Keys.Space Then
-         AutoCompleteWord(4)
+         AutoCompleteWord()
          
       ElseIf k = Keys.Up Then
          i = LstCompletion.SelectedIndex
@@ -891,6 +895,7 @@ Sub UpdateLine()
             EndIf
          Next
       EndIf
+      
       Global.ColorLine(lineText)
    EndIf
    
@@ -910,7 +915,7 @@ Sub UpdateLine()
 EndSub
 
 
-Sub AutoCompleteWord(debug)
+Sub AutoCompleteWord()
    ' Forms.ShowMessage(debug, "Message")
    
    LstCompletion.Visible = False

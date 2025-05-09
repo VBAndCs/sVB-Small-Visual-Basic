@@ -97,9 +97,11 @@ Namespace Library
         End Function
 
         Shared Function GetFullPath(localFileName As String) As String
+            localFileName = localFileName.Replace(IO.Path.AltDirectorySeparatorChar, IO.Path.DirectorySeparatorChar)
+
             If IO.Path.IsPathRooted(localFileName) Then
-                If localFileName.StartsWith("\") OrElse localFileName.StartsWith("/") Then
-                    localFileName = IO.Path.Combine(Program.Directory, localFileName.TrimStart({"\"c, "/"c}))
+                If localFileName.StartsWith(IO.Path.DirectorySeparatorChar) Then
+                    localFileName = IO.Path.Combine(Program.Directory, localFileName.TrimStart(IO.Path.DirectorySeparatorChar))
                 End If
             Else
                 localFileName = IO.Path.Combine(Program.Directory, localFileName)

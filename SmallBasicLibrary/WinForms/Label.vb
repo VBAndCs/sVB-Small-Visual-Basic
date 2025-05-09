@@ -56,30 +56,6 @@ Namespace WinForms
                 End Sub)
         End Function
 
-        <ExProperty>
-        Public Shared Sub SetVisible(controlName As Primitive, value As Primitive)
-            App.Invoke(
-                Sub()
-                    Try
-                        Dim _label = GetLabel(controlName)
-                        Dim tb = TryCast(_label.Content, Wpf.TextBlock)
-                        If tb Is Nothing Then
-                            _label.Visibility = If(value, Visibility.Visible, Visibility.Hidden)
-                        Else
-                            If value Then
-                                _label.Visibility = Visibility.Visible
-                                tb.Visibility = Visibility.Visible
-                            Else
-                                _label.Visibility = Visibility.Hidden
-                                tb.Visibility = Visibility.Collapsed
-                            End If
-                        End If
-                    Catch ex As Exception
-                        Control.ReportPropertyError(controlName, "Visible", value, ex)
-                    End Try
-                End Sub)
-        End Sub
-
         ''' <summary>
         ''' Gets or sets the text that is displayed on the label
         ''' </summary>

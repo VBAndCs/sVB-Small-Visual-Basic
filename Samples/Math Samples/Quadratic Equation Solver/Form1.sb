@@ -1,0 +1,37 @@
+TxtA.OnLostFocus = Validate
+TxtB.OnLostFocus = Validate
+TxtC.OnLostFocus = Validate
+
+' ------------------------------------------------
+Sub Validate()
+   txtNum = Event.SenderControl
+   If Text.IsNumeric(txtNum.Text) Then
+      txtNum.Error = ""
+   Else
+      txtNum.Error = "Please enter a valid number!"
+   EndIf
+EndSub
+
+' ------------------------------------------------
+Sub Button1_OnClick()
+   If Me.Validate() = False Then
+      Return
+   EndIf
+   
+   a = TxtA.Text
+   b = TxtB.Text
+   c = TxtC.Text
+   r = b * b - 4 * a * c
+   If r = 0 Then
+      LblSolution.Text = "x = " & -b / (2 * a)
+   ElseIf r < 0 Then
+      LblSolution.Text = "There is no real solution!"
+   Else
+      LblSolution.Text = ""
+      s = r.SquareRoot
+      LblSolution.AppendLine("x = " & (-b + s) / (2 * a) & " or")
+      LblSolution.AppendLine("x = " & (-b - s) / (2 * a))
+   EndIf
+EndSub
+
+

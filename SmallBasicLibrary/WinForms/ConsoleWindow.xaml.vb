@@ -166,7 +166,11 @@ Namespace WinForms
             isWindowClosed = True
             TextWindow._windowVisible = False
             _threadTimer.Change(-1, -1)
-            Program.ActivateWindow()
+            If Forms._forms.Count = 0 Then
+                Program.End()
+            Else
+                Program.ActivateWindow()
+            End If
         End Sub
 
         Private Shared HandleKey As Boolean = False

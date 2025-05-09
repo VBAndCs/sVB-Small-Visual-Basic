@@ -1,0 +1,152 @@
+TW.WriteLine("A program for factoring a quadratic function in the form:")
+TW.WriteLine("F(x) = ax^2 + bx + c")
+TW.WriteLine("")
+
+While TW.IsClosed = False
+   TW.Write("a = ")
+   A = TextWindow.ReadNumber()
+   TW.Write("b = ")
+   B = TextWindow.ReadNumber()
+   TW.Write("c = ")
+   C = TextWindow.ReadNumber()
+   
+   If TW.IsClosed Or (A = 0 And B = 0 And C = 0) Then
+      ExitLoop
+   EndIf
+   
+   ' Printing the function format:
+   Func = Factor(A, "x^2")
+   
+   If Func = "" Then
+      Func = Factor(B, "x")
+   Else
+      Func = Func & Factor2(B, "x")
+   EndIf
+   
+   If Func = "" Then
+      Func = C
+   Else
+      Func = Func & Factor2(C, "")
+   EndIf
+   
+   TW.WriteLine("F(x) = " & Func)
+   
+   Decompose = False
+   
+   If A <> 0 Then
+      If C = 0 Then
+         F1 = B
+         F2 = 0
+         Decompose = True
+      Else
+         AC = A * C
+         V = Math.Abs(AC)
+         For N = -V To V
+            If (N <> 0) And (AC Mod N = 0) Then
+               Qasm = AC / N
+               If (N + Qasm = B) Then
+                  F1 = N
+                  F2 = Qasm
+                  Decompose = True
+                  ExitLoop
+               EndIf
+            EndIf
+         Next
+      EndIf
+   EndIf
+   
+   If Decompose Then
+      ' Rewriting the function in the intermediate form: A x^2 + F1 x + F2 x + C
+      ' Which equals: x (Ax + F1) + (F2 x + C)
+      ' The goal is to factor it into (M1 x + N1)(M2 x + N2)
+      ' This requires finding the greatest common divisor:
+      ' Q1 = GCD(A, F1)   → M1 = Q1
+      ' Q2 = GCD(C, F2)   → N1 = Q2
+      ' M2 = F2/Q2
+      ' N2 = C/Q2
+      
+      ' Finding Q1
+      Q1 = GCM(A, F1)
+      
+      ' Finding Q2
+      If F2 = 0 Then
+         Q2 = 0
+      Else
+         Q2 = GCM(F2, C)
+      EndIf
+      
+      M1 = Q1
+      N1 = Q2
+      If C <> 0 Then
+         M2 = F2 / Q2
+         N2 = C / Q2
+      Else
+         M2 = A / Q1
+         N2 = B / Q1
+      EndIf
+      
+      Term1 = Parans(M1, N1)
+      Term2 = Parans(M2, N2)
+      
+      TW.WriteLine("F(x) = (" & Term1 & ") (" & Term2 & ")")
+      If M1 = M2 And N1 = N2 Then
+         TW.WriteLine("F(x) = (" & Term1 & ")^2")
+      EndIf
+   EndIf
+   
+   TW.WriteLine("-------------------------------------------")
+Wend
+
+Function Factor(f, x)
+   If f = -1 Then
+      Return "-" & x
+   ElseIf f = 1 Then
+      Return x
+   ElseIf f <> 0 Then
+      Return f & x
+   Else
+      Return ""
+   EndIf
+EndFunction
+
+Function Factor2(f, x)
+   If x <> "" And f = -1 Then
+      Return " - " & x
+   ElseIf x <> "" And f = 1 Then
+      Return " + " & x
+   ElseIf f < 0 Then
+      Return " - " & -f & x
+   ElseIf f > 0 Then
+      Return " + " & f & x
+   Else
+      Return ""
+   EndIf
+EndFunction
+
+Function GCM(x, y)
+   num1 = Math.Abs(x)
+   num2 = Math.Abs(y)
+   
+   While num2 > 0
+      remainder = num1 Mod num2
+      num1 = num2
+      num2 = remainder
+   Wend
+   
+   If x < 0 Then
+      Return -num1
+   Else
+      Return num1
+   EndIf
+EndFunction
+
+Function Parans(a, b)
+   x = Factor(a, "x")
+   If b > 0 Then
+      Return x & " + " & b
+   ElseIf b < 0 Then
+      Return x & " - " & -b
+   Else
+      Return x
+   EndIf
+EndFunction

@@ -622,8 +622,13 @@ Sub TxtEditor_OnKeyDown()
    FixLA = False
    k = Event.LastKey
    
-   If Keyboard.CtrlPressed And Keyboard.ShiftPressed Then
-      Event.Handled = True
+   If Keyboard.CtrlPressed Then
+      If Keyboard.ShiftPressed Then
+         Event.Handled = True
+      ElseIf k = Keys.Space Then
+         ShowAutoComp()
+         Event.Handled = True
+      EndIf
       
    ElseIf k = Keys.B Then ' Solve the issue of Arabic لا
       FixLA = True

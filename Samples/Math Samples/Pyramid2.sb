@@ -1,0 +1,9 @@
+Width = 15
+For Blocks = 1 To Width Step 2
+   Spaces = (Width - Blocks) * 3 / 2
+   TW.Write(" " * Spaces)
+   TW.WriteLine("..." * Blocks & ".")
+   TW.Write(" " * Spaces)
+   TW.WriteLine("|  " * Blocks & "|")
+Next
+TW.WriteLine("..." * Width & ".")

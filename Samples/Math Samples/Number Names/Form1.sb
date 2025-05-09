@@ -1,0 +1,109 @@
+
+Numbers = ""
+Numbers[1] = "one"
+Numbers[2] = "two"
+Numbers[3] = "three"
+Numbers[4] = "four"
+Numbers[5] = "five"
+Numbers[6] = "six"
+Numbers[7] = "seven"
+Numbers[8] = "eight"
+Numbers[9] = "nine"
+Numbers[10] = "ten"
+Numbers[11] = "eleven"
+Numbers[12] = "twelve"
+Numbers[13] = "thirteen"
+Numbers[14] = "fourteen"
+Numbers[15] = "fifteen"
+Numbers[16] = "sixteen"
+Numbers[17] = "seventeen"
+Numbers[18] = "eighteen"
+Numbers[19] = "nineteen"
+Numbers[20] = "twenty"
+Numbers[30] = "thirty"
+Numbers[40] = "forty"
+Numbers[50] = "fifty"
+Numbers[60] = "sixty"
+Numbers[70] = "seventy"
+Numbers[80] = "eighty"
+Numbers[90] = "ninety"
+
+Thousands = ""
+Thousands[1] = "thousand"
+Thousands[2] = "million"
+Thousands[3] = "billion"
+Thousands[4] = "trillion"
+
+Label1.Height = 0
+
+Sub Button1_OnClick()
+   n = TextBox1.Text
+   
+   If (n = "0") Then
+      Label1.Text = "zero"
+   Else
+      Label1.Text = GetNumberName(n)
+   EndIf
+EndSub
+
+
+
+
+Function GetName(num)
+   If num = 0 Then
+      Return ""
+   EndIf
+   
+   name = ""
+   d100 = num.SubText(1, 1)
+   
+   If (d100 > 0) Then
+      name = Numbers[d100] & " hundred"
+   EndIf
+   
+   d10 = num.SubText(2, 1)
+   d1 = num.SubText(3, 1)
+   
+   If (d10 = 0 And d1 = 0) Then
+      Return name
+   EndIf
+   
+   If (d10 > 1) Then
+      name = name & " " & Numbers[d10 * 10]
+      If (d1 > 0) Then
+         name = name & " " & Numbers[d1]
+      EndIf
+   ElseIf (d10 = 1) Then
+      name = name & " " & Numbers[d10 * 10 + d1]
+   Else
+      name = name & " " & Numbers[d1]
+   EndIf
+   
+   Return Text.Trim(name)
+EndFunction
+
+Function GetNumberName(n)
+   l = Text.GetLength(n)
+   
+   If (l Mod 3 > 0) Then
+      n = Text.Repeat("0", 3 - l Mod 3) & n
+      l = n.Length
+   EndIf
+   
+   name = ""
+   
+   For i = 1 To l Step 3
+      x = GetName(n.SubText(i, 3))
+      If (x <> "") Then
+         y = Thousands[Math.Truncate((l - i) / 3)]
+         If (y = "") Then
+            name = name & " " & x
+         Else
+            name = name & " " & x & " " & y & ","
+         EndIf
+      EndIf
+   Next
+   
+   Return name
+EndFunction
+

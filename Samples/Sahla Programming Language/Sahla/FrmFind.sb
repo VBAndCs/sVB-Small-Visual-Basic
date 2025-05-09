@@ -1,7 +1,9 @@
 Me.Icon = "s.ico"
 EditorTextBox = Me.ArgsArr
+MainForm = EditorTextBox.ParentForm
 RdoDown.Checked = True
 TxtFind.Text = Text.Trim(EditorTextBox.SelectedText)
+TxtFind.Focus()
 
 Sub BtnFind_OnClick()
    Find()
@@ -56,8 +58,10 @@ Function Find()
       ExitLoop
    Wend
    
-   EditorTextBox.Select(pos, _find.Length)
+   MainForm.Focus()
    EditorTextBox.Focus()
+   EditorTextBox.CaretIndex = pos
+   EditorTextBox.Select(pos, _find.Length)
    
    Return True
 EndFunction
@@ -91,4 +95,12 @@ EndFunction
 Sub BtnReplaceAll_OnClick()
    While Replace()
    Wend
+EndSub
+
+
+Sub Form_OnPreviewKeyDown()
+   If Keyboard.LastKey = Keys.Enter Then
+      BtnFind_OnClick()
+      Event.Handled = True
+   EndIf
 EndSub

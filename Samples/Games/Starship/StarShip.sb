@@ -11,8 +11,8 @@ Thread.InitializationDelay = 3
 ExitUpdateFrame = False
 EnemyShipLabel2 = ""
 EnemyShipLabel3 = ""
-PlayerSpeed = 3
-BulletSpeed = 10
+PlayerSpeed = 7
+BulletSpeed = 15
 
 ' -------------------------------------------------------------------
 ' Using ListBox to add and remove items has better performance that SB array.
@@ -50,12 +50,14 @@ Timer.Tick = UpdateFrame
 CreateEnemies()
 
 
+' ------------------------------------------------
 Sub CreateEnemies()
    For i = 1 To 3
       CreateEnemy()
    Next
 EndSub
 
+' ------------------------------------------------
 Sub CreateEnemy()
    lblEnemy = GetHiddenLabel(Enemies)
    If lblEnemy = "" Then
@@ -65,7 +67,7 @@ Sub CreateEnemy()
          0
       )
       lblEnemy.Tag = {
-         Math.Rnd(-15, 15),	' Speed X
+         Math.Rnd(-15, 15),		' Speed X
          Math.Rnd(2, 4),		' Speed y
          Math.Rnd(20, 50)		' Bullet frequency
       }
@@ -76,6 +78,9 @@ Sub CreateEnemy()
    EndIf
 EndSub
 
+
+' --------------------------------------------------
+
 Function CreateShip(image, x, y)
    ship = Controls.AddLabel("", x, y)
    ship.Image = image
@@ -84,6 +89,7 @@ Function CreateShip(image, x, y)
    Return ship
 EndFunction
 
+' --------------------------------------------------
 Sub UpdateFrame()
    MovePlayerShip()
    If ExitUpdateFrame Then
@@ -98,16 +104,22 @@ Sub UpdateFrame()
    EndIf
    
    Thread.SubToRun = MoveBullets
+   Thread.SubToRun = MoveEnemyBullets
+   Thread.SubToRun = MoveEnemies
    
+   ExitUpdateFrame = False
+EndSub
+' -----------------------------------------------------------------
+
+Sub MoveEnemies()
    For i = 1 To Enemies.Count
       EnemyShipLabel = Enemies[i]
       If EnemyShipLabel.Visible Then
          Thread.SubToRun = MoveEnemy
       EndIf
    Next
-   
-   ExitUpdateFrame = False
 EndSub
+' -----------------------------------------------------------------
 
 Sub MoveEnemy()
    lblEnemy = EnemyShipLabel
@@ -149,6 +161,7 @@ Sub MoveEnemy()
    EnemyShipLabel3 = lblEnemy
    Thread.SubToRun = CheckEnemyAndBuulets
 EndSub
+' -----------------------------------------------------------------
 
 Sub FireEnemyBullet()
    lblEnemy = EnemyShipLabel2
@@ -166,6 +179,7 @@ Sub FireEnemyBullet()
       lblBullet.Visible = True
    EndIf
 EndSub
+' -----------------------------------------------------------------
 
 Sub CheckEnemyAndBuulets()
    lblEnemy = EnemyShipLabel3
@@ -176,6 +190,7 @@ Sub CheckEnemyAndBuulets()
    EndIf
 EndSub
 
+' -----------------------------------------------------------------
 Sub MoveBullets()
    For i = Bullets.Count To 1 Step -1
       lblBullet = Bullets[i]
@@ -186,7 +201,10 @@ Sub MoveBullets()
          EndIf
       EndIf
    Next
-   
+EndSub
+
+' -----------------------------------------------------------------
+Sub MoveEnemyBullets()
    ForEach lblBullet In EnemyBullets
       If lblBullet.Visible Then
          lblBullet.Top = lblBullet.Top + BulletSpeed
@@ -205,7 +223,7 @@ Sub MoveBullets()
       EndIf
    Next
 EndSub
-
+' -----------------------------------------------------------
 Function CollideWithPlayerBullets(lblEnemy)
    ForEach lblBullet In Bullets
       If lblBullet.Visible Then
@@ -218,6 +236,7 @@ Function CollideWithPlayerBullets(lblEnemy)
    Return False
 EndFunction
 
+' -----------------------------------------------------------
 Function BulletHitsEnemy(lblBullet, lblEnemy)
    If ImageList.Collide(
          lblBullet.Left, lblBullet.Top, UpBulletImage,
@@ -232,6 +251,7 @@ Function BulletHitsEnemy(lblBullet, lblEnemy)
    Return False
 EndFunction
 
+' --------------------------------------------------
 Function EnemyHitsPlayer(lblEnemy)
    If lblEnemy.Tag = "" Then
       image = DownBulletImage
@@ -253,6 +273,7 @@ Function EnemyHitsPlayer(lblEnemy)
    Return False
 EndFunction
 
+' --------------------------------------------------
 Sub GraphicsWindow_KeyDown()
    k = Keyboard.LastKey
    
@@ -275,6 +296,7 @@ Sub GraphicsWindow_KeyDown()
    EndIf
 EndSub
 
+' ------------------------------------------------
 Sub MovePlayerShip()
    If Keyboard.IsKeyDown(Keys.Left) Then
       PlayerShip.Left = PlayerShip.Left - PlayerSpeed
@@ -302,6 +324,7 @@ Sub MovePlayerShip()
    EndIf
 EndSub
 
+' ------------------------------------------------
 Function GetHiddenLabel(arr)
    ForEach _label In arr
       If _label.Visible = False Then

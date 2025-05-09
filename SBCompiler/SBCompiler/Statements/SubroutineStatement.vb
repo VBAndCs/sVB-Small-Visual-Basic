@@ -433,11 +433,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
 
         Sub SetParams(parentRunner As ProgramRunner, targetRunner As ProgramRunner, args As List(Of Expressions.Expression))
             If Params IsNot Nothing AndAlso Params.Count > 0 Then
-                Dim subName = Name.LCaseText
-                Dim keyPrefix = subName & "."
+                Dim keyPrefix = Name.LCaseText & "."
 
                 For i = 0 To Params.Count - 1
-                    Dim argKey = $"{subName}.{Params(i).LCaseText}"
+                    Dim argKey = keyPrefix & Params(i).LCaseText
                     targetRunner.Fields(argKey) = args(i).Evaluate(parentRunner)
                 Next
             End If

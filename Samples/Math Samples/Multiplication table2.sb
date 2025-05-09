@@ -1,0 +1,27 @@
+TW.Write("   |")
+For I = 1 To 12
+   TW.Write(PadRight(I))
+Next
+TW.WriteLine("")
+TW.WriteLine("----------------------------------------------------")
+
+For I = 1 To 12
+   TW.Write(PadRight(I))
+   For J = 1 To 12
+      TW.Write(PadRight(I * J))
+   Next
+   TW.WriteLine("")
+Next
+TW.WriteLine("----------------------------------------------------")
+
+' -------------------------------------------------
+Function PadRight(txt)
+   If txt.Length = 1 Then
+      Return txt + "  |"
+   ElseIf txt.Length = 2 Then
+      Return txt + " |"
+   Else
+      Return txt + "|"
+   EndIf
+   Return txt
+EndFunction
