@@ -105,10 +105,15 @@ LblFormat = ""
 LblLine = ""
 Terminated = False
 
-Timer.Interval = 20
-Timer.Tick = ManageCodeColoring
 _ColoringRequested = False
 _StillColoring = False
+_Initializing = True
+
+Sub StartColoringTimer()
+   _Initializing = False
+   Timer.Interval = 20
+   Timer.Tick = ManageCodeColoring
+EndSub
 
 Sub Tokenize(line, lineNum, commentSymbol)
    Tokens = {}
@@ -332,6 +337,7 @@ Sub ExecuteLine()
       ProcessExitLoop(LineIndex)
       
    ElseIf command = _ElseIf Or command = _Else Or command = _EndIf Then
+      ReportError("جملة الشرط 'لو' غير موجودة. '" & command & "' غير متوقعة هنا", LineIndex, 3)
       Return
       
    ElseIf command = _Sound Then
@@ -458,7 +464,13 @@ Sub ProcessForLoopHeader()
    
    result = EvaluateExpression(nextPos + 1)
    endValue = result[1]
-   stepValue = 1
+   
+   If startValue <= endValue Then
+      stepValue = 1
+   Else
+      stepValue = -1
+   EndIf
+   
    nextPos = result[2]
    
    If nextPos <= tokensCount Then
@@ -577,7 +589,7 @@ Sub ProcessWhileLoopHeader()
    EndIf
    
    condition = result[1]
-   If condition Then
+   If IsTrue(condition) Then
       Stack.PushValue(WhileStack, {LineIndex, wendLineIndex})
    Else
       lineId = LineIndex
@@ -621,7 +633,7 @@ Sub ProcessIfBlock()
       Return
    EndIf
    
-   If result[1] Then ' Execute If Then branch
+   If IsTrue(result[1]) Then ' Execute If Then branch
       LineIndex = LineIndex + 1
       While LineIndex <= Statements.Count
          Tokenize(Statements[LineIndex], LineIndex, _CommentSymbol)
@@ -662,7 +674,7 @@ Sub ProcessIfBlock()
          Return
       EndIf
       
-      If result[1] Then ' Execute elseIf block
+      If IsTrue(result[1]) Then ' Execute elseIf block
          LineIndex = LineIndex + 1
          While LineIndex <= Statements.Count
             Tokenize(Statements[LineIndex], LineIndex, _CommentSymbol)
@@ -704,8 +716,11 @@ Sub ProcessIfBlock()
          LineIndex = LineIndex + 1
       Wend
    EndIf
-   
 EndSub
+
+Function IsTrue(value)
+   Return value Or Text.AreEquals(value, _True, False)
+EndFunction
 
 Function FindClosingToken(openToken, closeToken, startLine)
    nestingLevel = 0
@@ -848,7 +863,7 @@ Function ParseComparison(pos)
             If nextOp = "=" Then
                result = result <= right
             ElseIf nextOp = ">" Then
-               result = result <> right
+               result = (AreEquals(result, right) = False)
             Else
                result = result < right
             EndIf
@@ -859,12 +874,30 @@ Function ParseComparison(pos)
             Else
                result = result > right
             EndIf
+            
          Else
-            result = (result = right)
+            result = AreEquals(result, right)
          EndIf
       EndIf
    EndIf
+   
    Return {result, pos}
+EndFunction
+
+Function AreEquals(left, right)
+   If Text.AreEquals(left, right, True) Then
+      Return True
+   ElseIf Text.AreEquals(left, _True, False) Then
+      Return Text.AreEquals(right, True, False)
+   ElseIf Text.AreEquals(right, _True, False) Then
+      Return Text.AreEquals(left, True, False)
+   ElseIf Text.AreEquals(left, _False, False) Then
+      Return Text.AreEquals(right, False, False)
+   ElseIf Text.AreEquals(left, _False, False) Then
+      Return Text.AreEquals(left, False, False)
+   Else
+      Return False
+   EndIf
 EndFunction
 
 Function ParseAddExpr(pos)
@@ -1063,6 +1096,10 @@ EndSub
 IndentLevel = 0
 
 Sub IndentCode()
+   If _Initializing Then
+      Return
+   EndIf
+   
    originalText = EditorTextBox.Text
    normalizedText = originalText.Replace(Chars.CrLf, Chars.Lf)
    Statements = normalizedText.Split(Chars.Lf, False, False)
@@ -1090,7 +1127,7 @@ Sub IndentCode()
       Tokenize(Text.Trim(origLine), lineIndex, _CommentSymbol)
       
       If Tokens.Count > 0 Then
-         formattedLine = IndentLine()
+         formattedLine = _IndentLine()
       ElseIf lineIndex Then
          formattedLine = Text.Repeat(" ", IndentLevel)
       EndIf
@@ -1148,7 +1185,7 @@ Sub IndentCode()
 EndSub
 
 
-Function IndentLine()
+Function _IndentLine()
    currentWord = ""
    tokensCount = Tokens.Count
    
@@ -1271,9 +1308,7 @@ Sub _DoColorCode(targetLabel, code)
                ElseIf currentWord = _Line2 And prevWord <> _Write Then
                   normalText = currentWord
                Else
-                  targetLabel.AppendFormatted(
-                     currentWord, "", 0, True, False, False,
-                     _KeywordsColor, Colors.None, "")
+                  targetLabel.AppendWithForeColor(currentWord, _KeywordsColor)
                EndIf
                
             ElseIf currentWord.IsNumeric Then
@@ -1413,14 +1448,14 @@ Function GetForVar()
 EndFunction
 
 Sub FixNextVarName(ixdex, lineText)
-   forPos = lineText.IndexOf(_For, 1, False)
-   If forPos = 0 Then
+   forPos = Text.IndexOf(lineText.Trim(), _For, 1, False)
+   If forPos <> 1 Then
       Return
    EndIf
    
    Tokenize(lineText, 1, _CommentSymbol)
    varName = Tokens[2][3]
-   If varName = "" Then
+   If varName = "" Or IsValidVarName2(varName) = False Then
       Return
    EndIf
    

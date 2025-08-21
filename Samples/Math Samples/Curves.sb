@@ -1,0 +1,39 @@
+' sVB code
+
+GW.BackgroundColor = Colors.White
+GW.Width = 600
+GW.Height = 600
+
+' Draw axes
+GW.PenColor = Colors.Black
+GW.DrawLine(50, 550, 550, 550) ' x-axis
+GW.DrawLine(50, 550, 50, 50)   ' y-axis
+GW.DrawLine(50, 550, 550, 50)   ' y = x
+
+' Draw y = x^n and y = x^(1/n) for n = 2 to 10
+For N = 2 To 10
+   ' y = x^n
+   GW.PenColor = Colors.Random
+   PrevX = 50
+   PrevY = 550
+   For X = 0 To 500
+      Px = 50 + X
+      Py = 550 - (Math.Power(X / 500, N) * 500)
+      GW.DrawLine(PrevX, PrevY, Px, Py)
+      PrevX = Px
+      PrevY = Py
+   Next
+   
+   ' y = x^(1/n)
+   GW.PenColor = Colors.Random
+   PrevX = 50
+   PrevY = 550
+   For X = 0 To 500
+      Y = Math.Power(X / 500, 1 / N)
+      Px = 50 + X
+      Py = 550 - (Y * 500)
+      GW.DrawLine(PrevX, PrevY, Px, Py)
+      PrevX = Px
+      PrevY = Py
+   Next
+Next

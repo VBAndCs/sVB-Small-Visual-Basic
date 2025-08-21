@@ -1,0 +1,92 @@
+On = Colors.Red
+Off = "#FFE9E9E9"
+DigitColors = {
+   {On, On, On, On, On, On, Off}, ' 0
+   {Off, On, On, Off, Off, Off, Off}, ' 1
+   {On, On, Off, On, On, Off, On}, ' 2
+   {On, On, On, On, Off, Off, On}, ' 3
+   {Off, On, On, Off, Off, On, On}, ' 4
+   {On, Off, On, On, Off, On, On}, ' 5
+   {On, Off, On, On, On, On, On}, ' 6
+   {On, On, On, Off, Off, Off, Off}, ' 7
+   {On, On, On, On, On, On, On}, ' 8
+   {On, On, On, On, Off, On, On}  ' 9
+}
+
+H1Segments = Create7Segment(50, 100)
+H2Segments = Create7Segment(140, 100)
+AddColon(240, 130)
+M1Segments = Create7Segment(270, 100)
+M2Segments = Create7Segment(360, 100)
+AddColon(460, 130)
+S1Segments = Create7Segment(490, 100)
+S2Segments = Create7Segment(580, 100)
+
+Timer.Interval = 1000
+Timer.Tick = Timer_OnTick
+Timer_OnTick()
+
+Sub Timer_OnTick()
+   now = Date.Now
+   h = now.Hour
+   m = now.Minute
+   s = now.Second
+   
+   h1 = Math.Truncate(h / 10)
+   h2 = h Mod 10
+   m1 = Math.Truncate(m / 10)
+   m2 = m Mod 10
+   s1 = Math.Truncate(s / 10)
+   s2 = s Mod 10
+   
+   DisplayDigit(H1Segments, h1)
+   DisplayDigit(H2Segments, h2)
+   DisplayDigit(M1Segments, m1)
+   DisplayDigit(M2Segments, m2)
+   DisplayDigit(S1Segments, s1)
+   DisplayDigit(S2Segments, s2)
+EndSub
+
+Function Create7Segment(x, y)
+   w = 60
+   h = 10
+   t = Date.Now
+   n = t.Ticks & Math.GetRandomNumber(10000)
+   
+   segments = {
+      Me.AddLabel("A" & n, x + h, y, w, h),
+      Me.AddLabel("B" & n, x + w + h, y + h, h, w),
+      Me.AddLabel("C" & n, x + w + h, y + w + 2 * h, h, w),
+      Me.AddLabel("D" & n, x + h, y + 2 * w + 2 * h, w, h),
+      Me.AddLabel("E" & n, x, y + w + 2 * h, h, w),
+      Me.AddLabel("F" & n, x, y + h, h, w),
+      Me.AddLabel("G" & n, x + h, y + w + h, w, h)
+   }
+   
+   segment = ControlTypes.Label
+   ForEach segment In segments
+      segment.BackColor = Off
+   Next
+   
+   Return segments
+EndFunction
+
+Sub DisplayDigit(segments, digit)
+   lit = DigitColors[digit + 1]
+   segment = ControlTypes.Label
+   For j = 1 To 7
+      segment = segments[j]
+      segment.BackColor = lit[j]
+   Next
+EndSub
+
+Sub AddColon(x, y)
+   w = 10
+   h = 60
+   t = Date.Now
+   n = t.Ticks & Math.GetRandomNumber(10000)
+   dot1 = Me.AddLabel("dot1" & n, x, y + h / 2, w, w)
+   dot1.BackColor = On
+   dot2 = Me.AddLabel("dot2" & n, x, y + h, w, w)
+   dot2.BackColor = On
+EndSub

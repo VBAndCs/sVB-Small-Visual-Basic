@@ -68,17 +68,17 @@ Namespace Library
         Friend _stringValue As String
         Private _decimalValue As Decimal?
 
-        Private _arrMap As Dictionary(Of Primitive, Primitive)
+        Private _arrayMap As Dictionary(Of Primitive, Primitive)
         Friend _isArray As Boolean
 
         Public Property ArrayMap As Dictionary(Of Primitive, Primitive)
             Get
                 ConstructArrayMap()
-                Return _arrMap
+                Return _arrayMap
             End Get
 
             Set(value As Dictionary(Of Primitive, Primitive))
-                _arrMap = value
+                _arrayMap = value
             End Set
         End Property
 
@@ -95,7 +95,7 @@ Namespace Library
                     Return New Primitive(s(index - 1).ToString())
 
                 ElseIf CBool(ContainsKey(index)) Then
-                    Return _arrMap(index)
+                    Return _arrayMap(index)
                 End If
 
                 Return New Primitive("")
@@ -104,7 +104,7 @@ Namespace Library
             Set(Value As Primitive)
                 If IsArray OrElse _stringValue = "" Then
                     Me._decimalValue = Nothing
-                    _arrMap(index) = Value
+                    _arrayMap(index) = Value
 
                 ElseIf index.IsNumber Then
                     If index < 1 Then
@@ -166,9 +166,9 @@ Namespace Library
                         End If
                 End Select
 
-            ElseIf _arrMap IsNot Nothing AndAlso _arrMap.Count > 0 Then
+            ElseIf _arrayMap IsNot Nothing AndAlso _arrayMap.Count > 0 Then
                 Dim sb As New StringBuilder
-                For Each entry In _arrMap
+                For Each entry In _arrayMap
                     sb.AppendFormat("{0}={1};", Escape(entry.Key), Escape(entry.Value))
                 Next
 
@@ -189,7 +189,7 @@ Namespace Library
             Get
                 If _isArray Then Return True
                 ConstructArrayMap()
-                Return _arrMap.Count > 0
+                Return _arrayMap.Count > 0
             End Get
         End Property
 
@@ -197,13 +197,13 @@ Namespace Library
             Get
                 Return _stringValue = "" AndAlso
                         Not _decimalValue.HasValue AndAlso
-                        (_arrMap Is Nothing OrElse _arrMap.Count = 0)
+                        (_arrayMap Is Nothing OrElse _arrayMap.Count = 0)
             End Get
         End Property
 
         Public ReadOnly Property IsNumber As Boolean
             Get
-                If _arrMap?.Count > 0 Then Return False
+                If _arrayMap?.Count > 0 Then Return False
                 If _stringValue = "" Then Return True ' Consider it 0
 
                 Dim result As Decimal = 0D
@@ -218,13 +218,13 @@ Namespace Library
         Public Sub New(primitiveText As String)
             _stringValue = If(primitiveText, "")
             _decimalValue = Nothing
-            _arrMap = Nothing
+            _arrayMap = Nothing
         End Sub
 
         Public Sub New(primitiveInteger As Integer)
             _decimalValue = primitiveInteger
             _stringValue = Nothing
-            _arrMap = Nothing
+            _arrayMap = Nothing
         End Sub
 
         Dim numberType As NumberType
@@ -232,7 +232,7 @@ Namespace Library
         Public Sub New(primitiveDecimal As Decimal, Optional numberType As NumberType = NumberType.Decimal)
             _decimalValue = primitiveDecimal
             _stringValue = Nothing
-            _arrMap = Nothing
+            _arrayMap = Nothing
             Me.numberType = numberType
         End Sub
 
@@ -251,23 +251,23 @@ Namespace Library
         Public Sub New(primitiveLong As Long)
             _decimalValue = primitiveLong
             _stringValue = Nothing
-            _arrMap = Nothing
+            _arrayMap = Nothing
         End Sub
 
         Public Sub New(primitiveObject As Object)
             _stringValue = primitiveObject.ToString()
             _decimalValue = Nothing
-            _arrMap = Nothing
+            _arrayMap = Nothing
         End Sub
 
         Public Sub New(arr() As String, removeEmpty As Boolean)
-            _arrMap = New Dictionary(Of Primitive, Primitive)
+            _arrayMap = New Dictionary(Of Primitive, Primitive)
             _isArray = True
 
             For i = 0 To arr.Count - 1
                 Dim item = arr(i)
                 If Not removeEmpty OrElse item <> "" Then
-                    _arrMap(i + 1) = New Primitive(item)
+                    _arrayMap(i + 1) = New Primitive(item)
                 End If
             Next
         End Sub
@@ -279,7 +279,7 @@ Namespace Library
             Else
                 _stringValue = "False"
             End If
-            _arrMap = Nothing
+            _arrayMap = Nothing
         End Sub
 
         Public Function Append(primitive As Primitive) As Primitive
@@ -306,12 +306,12 @@ Namespace Library
 
         Public Function ContainsKey(key As Primitive) As Primitive
             ConstructArrayMap()
-            Return _arrMap.ContainsKey(key)
+            Return _arrayMap.ContainsKey(key)
         End Function
 
         Public Function ContainsValue(value As Primitive) As Primitive
             ConstructArrayMap()
-            Return _arrMap.ContainsValue(value)
+            Return _arrayMap.ContainsValue(value)
         End Function
 
         Public Function GetAllIndices() As Primitive
@@ -319,9 +319,9 @@ Namespace Library
             Dim indices As Dictionary(Of Primitive, Primitive)
 
             If IsArray Then
-                indices = New Dictionary(Of Primitive, Primitive)(_arrMap.Count, PrimitiveComparer.Instance)
+                indices = New Dictionary(Of Primitive, Primitive)(_arrayMap.Count, PrimitiveComparer.Instance)
                 Dim key = 1
-                For Each index In _arrMap.Keys
+                For Each index In _arrayMap.Keys
                     indices(key) = index
                     key += 1
                 Next
@@ -339,7 +339,7 @@ Namespace Library
 
         Public Function GetItemCount() As Primitive
             ConstructArrayMap()
-            Return _arrMap.Count
+            Return _arrayMap.Count
         End Function
 
         Public Function Subtract(addend As Primitive) As Primitive
@@ -414,7 +414,7 @@ Namespace Library
             If Me.IsNumber AndAlso comparer.IsNumber Then
                 Return Me.AsDecimal() < comparer.AsDecimal()
             ElseIf Me.IsArray AndAlso comparer.IsArray Then
-                Return Me._arrMap?.Count < comparer._arrMap?.Count()
+                Return Me._arrayMap?.Count < comparer._arrayMap?.Count()
             Else
                 Return Me.AsString() < comparer.AsString()
             End If
@@ -430,7 +430,7 @@ Namespace Library
             If Me.IsNumber AndAlso comparer.IsNumber Then
                 Return Me.AsDecimal() > comparer.AsDecimal()
             ElseIf Me.IsArray AndAlso comparer.IsArray Then
-                Return Me._arrMap?.Count > comparer._arrMap?.Count()
+                Return Me._arrayMap?.Count > comparer._arrayMap?.Count()
             Else
                 Return Me.AsString() > comparer.AsString()
             End If
@@ -440,7 +440,7 @@ Namespace Library
             If Me.IsNumber AndAlso comparer.IsNumber Then
                 Return Me.AsDecimal() <= comparer.AsDecimal()
             ElseIf Me.IsArray AndAlso comparer.IsArray Then
-                Return Me._arrMap?.Count <= comparer._arrMap?.Count()
+                Return Me._arrayMap?.Count <= comparer._arrayMap?.Count()
             Else
                 Return Me.AsString() <= comparer.AsString()
             End If
@@ -450,7 +450,7 @@ Namespace Library
             If Me.IsNumber AndAlso comparer.IsNumber Then
                 Return Me.AsDecimal() >= comparer.AsDecimal()
             ElseIf Me.IsArray AndAlso comparer.IsArray Then
-                Return Me._arrMap?.Count >= comparer._arrMap?.Count()
+                Return Me._arrayMap?.Count >= comparer._arrayMap?.Count()
             Else
                 Return Me.AsString() >= comparer.AsString()
             End If
@@ -508,14 +508,14 @@ Namespace Library
         End Function
 
         Friend Sub ConstructArrayMap()
-            If _arrMap Is Nothing Then
-                _arrMap = New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
-            ElseIf _arrMap.Count > 0 Then
+            If _arrayMap Is Nothing Then
+                _arrayMap = New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
+            ElseIf _arrayMap.Count > 0 Then
                 Return
             End If
 
             If _stringValue = "" OrElse _stringValue.Length < 4 Then Return
-            FillSubArray(_arrMap, _stringValue.ToCharArray(), 0)
+            FillSubArray(_arrayMap, _stringValue.ToCharArray(), 0)
         End Sub
 
 
@@ -552,7 +552,7 @@ Namespace Library
                         map.Clear()
                         Return
                     End If
-                    arr._arrMap = map2
+                    arr._arrayMap = map2
                     map(New Primitive(key)) = arr
                 Else
                     map(New Primitive(key)) = New Primitive(value)
@@ -637,7 +637,7 @@ Namespace Library
             s = s.ToLower()
             If s = "false" Then Return False
             If s = "true" Then Return True
-            If value.IsArray Then Return value._arrMap?.Count > 0
+            If value.IsArray Then Return value._arrayMap?.Count > 0
             Dim d = value.TryGetAsDecimal()
             Return d.HasValue  ' we tested for zoro before, so, if it is numeric it is non zero, if it's not numeric, it is any string which means false
         End Operator
@@ -655,8 +655,8 @@ Namespace Library
 
             If p1.IsArray Then
                 If Not p2.IsArray Then Return False
-                Dim map1 = p1._arrMap
-                Dim map2 = p2._arrMap
+                Dim map1 = p1._arrayMap
+                Dim map2 = p2._arrayMap
                 Dim n = map1.Count
                 If n <> map2.Count Then Return False
 
@@ -792,7 +792,7 @@ Namespace Library
                 Return array.Items(indexer)
             Else
                 Dim value As Primitive = Nothing
-                If Not array._arrMap.TryGetValue(indexer, value) Then
+                If Not array._arrayMap.TryGetValue(indexer, value) Then
                     value = CType(Nothing, Primitive)
                 End If
                 Return value
@@ -805,10 +805,10 @@ Namespace Library
             Dim arr = arrStr.Split({",", " "}, StringSplitOptions.RemoveEmptyEntries)
 
             Dim array As New Primitive
-            array._arrMap = New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
+            array._arrayMap = New Dictionary(Of Primitive, Primitive)(PrimitiveComparer.Instance)
 
             For i = 0 To arr.Length - 1
-                array._arrMap.Add(New Primitive((i + 1)), New Primitive(arr(i)))
+                array._arrayMap.Add(New Primitive((i + 1)), New Primitive(arr(i)))
             Next
 
             Return array
@@ -853,7 +853,7 @@ Namespace Library
                 array.Items(indexer) = value
                 Return array
             Else
-                Dim map As New Dictionary(Of Primitive, Primitive)(array._arrMap, PrimitiveComparer.Instance)
+                Dim map As New Dictionary(Of Primitive, Primitive)(array._arrayMap, PrimitiveComparer.Instance)
                 map(indexer) = value
                 Return ConvertFromMap(map)
             End If
@@ -862,7 +862,7 @@ Namespace Library
 
         Public Shared Function ConvertFromMap(map As Dictionary(Of Primitive, Primitive)) As Primitive
             Dim result As New Primitive
-            result._arrMap = map
+            result._arrayMap = map
             result._isArray = True
             Return result
         End Function

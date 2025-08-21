@@ -1,0 +1,18 @@
+'@Form Hints:
+'#Form1{
+'}
+
+Me = "form1"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)
+Form.Show(Me)

@@ -171,11 +171,15 @@ EditorTextBox = ""
 LblFormat = ""
 LblLine = ""
 Terminated = False
-
-Timer.Interval = 20
-Timer.Tick = ManageCodeColoring
 _ColoringRequested = False
 _StillColoring = False
+_Initializing = True
+
+Sub StartColoringTimer()
+   _Initializing = False
+   Timer.Interval = 20
+   Timer.Tick = ManageCodeColoring
+EndSub
 
 Sub Tokenize(line, lineNum, commmentSymbol, ignoreComments)
    Tokens = {}
@@ -536,7 +540,13 @@ Sub ProcessForLoopHeader()
    
    result = EvaluateExpression(nextPos + 1)
    endValue = result[1]
-   stepValue = 1
+   
+   If startValue < endValue Then
+      stepValue = 1
+   Else
+      stepValue = -1
+   EndIf
+   
    nextPos = result[2]
    
    If nextPos <= tokensCount Then
@@ -1149,6 +1159,10 @@ EndSub
 IndentLevel = 0
 
 Sub IndentCode()
+   If _Initializing Then
+      Return
+   EndIf
+   
    originalText = EditorTextBox.Text
    normalizedText = originalText.Replace(Chars.CrLf, Chars.Lf)
    Statements = normalizedText.Split(Chars.Lf, False, False)
@@ -1176,7 +1190,7 @@ Sub IndentCode()
       Tokenize(Text.Trim(origLine), lineIndex, _CommentSymbol, False)
       
       If Tokens.Count > 0 Then
-         formattedLine = IndentLine()
+         formattedLine = _IndentLine()
       ElseIf lineIndex Then
          formattedLine = Text.Repeat(" ", IndentLevel)
       EndIf
@@ -1233,7 +1247,7 @@ Sub IndentCode()
 EndSub
 
 
-Function IndentLine()
+Function _IndentLine()
    currentWord = ""
    tokensCount = Tokens.Count
    
@@ -1525,14 +1539,14 @@ Function GetForVar()
 EndFunction
 
 Sub FixNextVarName(ixdex, lineText)
-   forPos = lineText.IndexOf(_For, 1, False)
-   If forPos = 0 Then
+   forPos = Text.IndexOf(lineText.Trim(), _For & " ", 1, False)
+   If forPos <> 1 Then
       Return
    EndIf
    
    Tokenize(lineText, 1, _CommentSymbol, True)
    varName = Tokens[2][3]
-   If varName = "" Then
+   If varName = "" Or IsValidVarName2(varName) = False Then
       Return
    EndIf
    

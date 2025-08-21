@@ -1,4 +1,3 @@
-' To configure or remove Option's included in result, go to Options/Advanced Options...
 Option Compare Text
 Option Explicit On
 Option Infer On
@@ -78,7 +77,7 @@ Namespace Library
         ''' Adds many items to the array.
         ''' </summary>
         ''' <param name="array">the input array</param>
-        ''' <param name="items">an array containing the items to add eact of them as a single item at the end of the array.</param>
+        ''' <param name="items">an array of items, to be added individually to the end of the array.</param>
         ''' <returns>a new array with the given items. The input array will not be changed</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function AddItems(array As Primitive, items As Primitive) As Primitive
@@ -118,15 +117,40 @@ Namespace Library
         ''' Adds an item to the array, with the given key and value
         ''' </summary>
         ''' <param name="array">the input array</param>
-        ''' <param name="key">the key of the item. If there is already an item with this key, it's value will be modified</param>
+        ''' <param name="key">the key of the item. If there is already an item with this key, it's value will be modified. You can also send an array of keys to be inserted individually with their corresponding values</param>
         ''' <param name="value">the value of the item</param>
-        ''' <returns>a new arry with the item added. the input array will not be changed</returns>
+        ''' <returns>a new array with the item added. the input array will not be changed</returns>
         <WinForms.ReturnValueType(VariableType.Array)>
         Public Shared Function AddKeyValue(
                    array As Primitive,
                    key As Primitive,
                    value As Primitive
         ) As Primitive
+
+            If key.IsEmpty Then Return array
+
+            If key.IsArray Then
+                Dim keys = key.ArrayMap.Values
+                Dim map As New Dictionary(Of Primitive, Primitive)(Primitive.PrimitiveComparer.Instance)
+
+                Dim values As New List(Of Primitive)
+                If value.IsArray Then
+                    values.AddRange(value.ArrayMap.Values)
+                Else
+                    values.Add(value)
+                End If
+                Dim valuesCount = values.Count
+
+                For i = 0 To keys.Count - 1
+                    If i < ValuesCount Then
+                        map(keys(i)) = values(i)
+                    Else
+                        map(keys(i)) = New Primitive()
+                    End If
+                Next
+
+                Return Primitive.ConvertFromMap(map)
+            End If
 
             Return Primitive.SetArrayValue(value, array, key)
         End Function

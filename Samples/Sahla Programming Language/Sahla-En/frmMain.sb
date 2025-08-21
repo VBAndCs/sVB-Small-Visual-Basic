@@ -52,7 +52,8 @@ LastlinesCount = 0
 StartSelectionIndex = 0
 IsModified = False
 TxtEditor.Focus()
-
+Global.StartColoringTimer()
+OnScroll()
 
 Sub Form_OnShown()
    TxtEditor.OnScroll = OnScroll

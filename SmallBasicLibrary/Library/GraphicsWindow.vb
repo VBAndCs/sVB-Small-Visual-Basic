@@ -34,8 +34,8 @@ Namespace Library
         Friend Shared _windowVisible As Boolean = False
         Friend Shared _windowCreated As Boolean = False
         Friend Shared _window As Window
-        Friend Shared _pen As Media.Pen
-        Friend Shared _fillBrush As Media.Brush = Media.Brushes.SlateBlue
+        Private Shared _pen As Media.Pen
+        Private Shared _fillBrush As Media.Brush
         Friend Shared _fontFamily As Media.FontFamily
         Friend Shared _fontSize As Double = 12.0
         Friend Shared _fontStyle As System.Windows.FontStyle = FontStyles.Normal
@@ -47,7 +47,6 @@ Namespace Library
         Private Shared _random As Random
         Private Shared _backgroundColor As Primitive
         Friend Shared _objectsMap As New Dictionary(Of String, UIElement)
-        Private Shared _scaleTransformMap As New Dictionary(Of String, ScaleTransform)
         Private Shared _mainCanvas As Canvas
         Private Shared _mainDrawing As DrawingGroup
         Private Shared _visualContainer As VisualContainer
@@ -1243,6 +1242,31 @@ Namespace Library
         End Sub
 
         Private Shared dispatcher As Threading.Dispatcher = SmallBasicApplication.Dispatcher
+        Friend Shared ReadOnly Property FillBrush As Media.Brush
+            Get
+                GraphicsWindow.Invoke(
+                     Sub()
+                         If _fillBrush Is Nothing Then
+                             _fillBrush = WinForms.Color.GetBrush(_brushColor)
+                         End If
+                         FillBrush = _fillBrush
+                     End Sub)
+            End Get
+        End Property
+
+        Friend Shared ReadOnly Property Pen As Media.Pen
+            Get
+                GraphicsWindow.Invoke(
+                     Sub()
+                         If _pen Is Nothing Then
+                             _pen = New Media.Pen(Media.Brushes.Black, 2.0)
+                         End If
+                         Pen = _pen
+                     End Sub)
+            End Get
+        End Property
+
+
 
         Shared Sub New()
             ' Ensure Keyboard and Mouse modules are loaded, 

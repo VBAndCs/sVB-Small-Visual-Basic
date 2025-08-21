@@ -1572,9 +1572,9 @@ Public Class Designer
 
         If Keyboard.Modifiers = ModifierKeys.Control Then
             Select Case e.Key
-                Case Key.OemPlus
+                Case Key.OemPlus, Key.Add
                     IncreaseGridThickness(0.1)
-                Case Key.OemMinus
+                Case Key.OemMinus, Key.Subtract
                     IncreaseGridThickness(-0.1)
                 Case Key.L
                     Commands.ChangeBrush(GridPen, Pen.BrushProperty)

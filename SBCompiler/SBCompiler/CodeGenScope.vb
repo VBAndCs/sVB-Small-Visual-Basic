@@ -77,7 +77,7 @@ Namespace Microsoft.SmallVisualBasic
 
             Set(value As CodeGenScope)
                 _parent = value
-                _fields = value._Fields
+                _Fields = value._Fields
                 _Labels = value._Labels
                 _locals = value._locals
                 _MethodBuilders = value.MethodBuilders

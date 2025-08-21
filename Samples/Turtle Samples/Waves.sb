@@ -1,0 +1,15 @@
+Math.UseRadianAngles = False
+Turtle.UseAnimation = False
+Turtle.Speed = 50
+F = 8 / 3
+Scale = 100 / F
+For Y = 0 To GW.Height + Scale Step Scale
+   Turtle.X = 0
+   Turtle.Y = Y
+   Turtle.CreateFigure()
+   For X = 0 To 1080 Step 5
+      Turtle.MoveTo(X, Y + Scale * Math.Sin(X) * Math.Cos(F * X))
+   Next
+   GW.BrushColor = Colors.Random
+   Turtle.FillFigure()
+Next

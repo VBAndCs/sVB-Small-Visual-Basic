@@ -34,9 +34,9 @@ Namespace Library
                     Dim shape As New Rectangle With {
                             .Width = width,
                             .Height = height,
-                            .Fill = GraphicsWindow._fillBrush,
-                            .Stroke = GraphicsWindow._pen.Brush,
-                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                            .Fill = GraphicsWindow.FillBrush,
+                            .Stroke = GraphicsWindow.Pen.Brush,
+                            .StrokeThickness = GraphicsWindow.Pen.Thickness
                      }
                     GraphicsWindow.AddShape(name, shape)
                 End Sub)
@@ -59,9 +59,9 @@ Namespace Library
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     Dim path = WinForms.GeometricPath._path
-                    path.Fill = GraphicsWindow._fillBrush
-                    path.Stroke = GraphicsWindow._pen.Brush
-                    path.StrokeThickness = GraphicsWindow._pen.Thickness
+                    path.Fill = GraphicsWindow.FillBrush
+                    path.Stroke = GraphicsWindow.Pen.Brush
+                    path.StrokeThickness = GraphicsWindow.Pen.Thickness
                     GraphicsWindow.AddShape(name, path)
                 End Sub)
             Return New Primitive(name)
@@ -90,9 +90,9 @@ Namespace Library
                     Dim shape As New Ellipse With {
                             .Width = width,
                             .Height = height,
-                            .Fill = GraphicsWindow._fillBrush,
-                            .Stroke = GraphicsWindow._pen.Brush,
-                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                            .Fill = GraphicsWindow.FillBrush,
+                            .Stroke = GraphicsWindow.Pen.Brush,
+                            .StrokeThickness = GraphicsWindow.Pen.Thickness
                      }
                     GraphicsWindow.AddShape(name, shape)
                 End Sub)
@@ -140,9 +140,9 @@ Namespace Library
                             New Point(x2, y2),
                             New Point(x3, y3)
                         },
-                        .Fill = GraphicsWindow._fillBrush,
-                        .Stroke = GraphicsWindow._pen.Brush,
-                        .StrokeThickness = GraphicsWindow._pen.Thickness
+                        .Fill = GraphicsWindow.FillBrush,
+                        .Stroke = GraphicsWindow.Pen.Brush,
+                        .StrokeThickness = GraphicsWindow.Pen.Thickness
                     })
                 End Sub)
             Return New Primitive(name)
@@ -175,9 +175,9 @@ Namespace Library
                         name,
                         New Polygon With {
                             .Points = Points,
-                            .Fill = GraphicsWindow._fillBrush,
-                            .Stroke = GraphicsWindow._pen.Brush,
-                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                            .Fill = GraphicsWindow.FillBrush,
+                            .Stroke = GraphicsWindow.Pen.Brush,
+                            .StrokeThickness = GraphicsWindow.Pen.Thickness
                         }
                     )
                 End Sub)
@@ -218,8 +218,8 @@ Namespace Library
                         .Y1 = y1,
                         .X2 = x2,
                         .Y2 = y2,
-                        .Stroke = GraphicsWindow._pen.Brush,
-                        .StrokeThickness = GraphicsWindow._pen.Thickness
+                        .Stroke = GraphicsWindow.Pen.Brush,
+                        .StrokeThickness = GraphicsWindow.Pen.Thickness
                     })
                 End Sub)
             Return New Primitive(name)
@@ -272,7 +272,7 @@ Namespace Library
                     GraphicsWindow.VerifyAccess()
                     Dim shape As New TextBlock With {
                         .Text = text,
-                        .Foreground = GraphicsWindow._fillBrush,
+                        .Foreground = GraphicsWindow.FillBrush,
                         .FontFamily = GraphicsWindow._fontFamily,
                         .FontStyle = GraphicsWindow._fontStyle,
                         .FontSize = GraphicsWindow._fontSize,
@@ -442,9 +442,10 @@ Namespace Library
                     Sub()
                         GraphicsWindow.DoubleAnimateProperty(shape, Canvas.LeftProperty, x, duration)
                         GraphicsWindow.DoubleAnimateProperty(shape, Canvas.TopProperty, y, duration)
-                        Turtle.WaitForReturn(duration)
-                        Canvas.SetLeft(shape, x)
-                        Canvas.SetTop(shape, y)
+                        Helper.RunLater(shape, Sub()
+                                                   Canvas.SetLeft(shape, x)
+                                                   Canvas.SetTop(shape, y)
+                                               End Sub, duration)
                     End Sub)
             End If
         End Sub
@@ -658,9 +659,9 @@ Namespace Library
                     Dim shape As New Rectangle With {
                             .Width = width,
                             .Height = height,
-                            .Fill = GraphicsWindow._fillBrush,
-                            .Stroke = GraphicsWindow._pen.Brush,
-                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                            .Fill = GraphicsWindow.FillBrush,
+                            .Stroke = GraphicsWindow.Pen.Brush,
+                            .StrokeThickness = GraphicsWindow.Pen.Thickness
                      }
                     Canvas.SetLeft(shape, x)
                     Canvas.SetTop(shape, y)
@@ -691,9 +692,9 @@ Namespace Library
                     Dim shape As New Ellipse With {
                             .Width = width,
                             .Height = height,
-                            .Fill = GraphicsWindow._fillBrush,
-                            .Stroke = GraphicsWindow._pen.Brush,
-                            .StrokeThickness = GraphicsWindow._pen.Thickness
+                            .Fill = GraphicsWindow.FillBrush,
+                            .Stroke = GraphicsWindow.Pen.Brush,
+                            .StrokeThickness = GraphicsWindow.Pen.Thickness
                      }
                     Canvas.SetLeft(shape, x)
                     Canvas.SetTop(shape, y)
@@ -753,7 +754,7 @@ Namespace Library
                     GraphicsWindow.VerifyAccess()
                     Dim shape As New TextBlock With {
                         .Text = text,
-                        .Foreground = GraphicsWindow._fillBrush,
+                        .Foreground = GraphicsWindow.FillBrush,
                         .FontFamily = GraphicsWindow._fontFamily,
                         .FontStyle = GraphicsWindow._fontStyle,
                         .FontSize = GraphicsWindow._fontSize,

@@ -1507,7 +1507,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Function GetLevel(tokenEnum As TokenEnumerator) As Integer
             tokenEnum.MoveNext()
             Dim upLevel = 0
-            Do Until tokenEnum.IsEnd
+            Do Until tokenEnum.IsEndOrComment
                 If tokenEnum.Current.Type = TokenType.Subtraction Then
                     If upLevel = -1 OrElse upLevel >= 1000 Then
                         AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnum.Current.Text))

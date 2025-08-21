@@ -45,6 +45,8 @@ LastlinesCount = 0
 StartSelectionIndex = 0
 IsModified = False
 TxtEditor.Focus()
+Global.StartColoringTimer()
+OnScroll()
 
 Sub SetProperties(ops)
    LblFormat.Text = ""
@@ -949,3 +951,13 @@ Sub ExtendSelection()
 EndSub
 
 
+
+
+Sub MnuAddFilePath_OnClick()
+   fileName = File.OpenFileDialog({"Sound Files", "wav", "mp3"})
+   If fileName <> "" Then
+      TxtEditor.SelectedText = """" & fileName & """"
+      TxtEditor.Focus()
+      TxtEditor.SelectionStart = TxtEditor.SelectionStart + TxtEditor.SelectionLength
+   EndIf
+EndSub

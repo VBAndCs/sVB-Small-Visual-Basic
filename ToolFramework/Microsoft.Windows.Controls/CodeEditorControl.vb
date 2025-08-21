@@ -425,16 +425,15 @@ Namespace Microsoft.Windows.Controls
         End Sub
 
         Protected Overrides Sub OnKeyDown(e As KeyEventArgs)
-            Dim flag As Boolean = (Keyboard.Modifiers And ModifierKeys.Shift) = ModifierKeys.Shift
+            'Dim flag As Boolean = (Keyboard.Modifiers And ModifierKeys.Shift) = ModifierKeys.Shift
             If (Keyboard.Modifiers And ModifierKeys.Control) = ModifierKeys.Control Then
-                If e.Key = Key.Add OrElse (e.Key = Key.OemPlus AndAlso flag) Then
+                If e.Key = Key.Add OrElse e.Key = Key.OemPlus Then
                     ScaleFactor = Math.Round(ScaleFactor * 1.02, 2)
                     e.Handled = True
 
                 ElseIf e.Key = Key.Subtract OrElse e.Key = Key.OemMinus Then
                     ScaleFactor = Math.Round(ScaleFactor / 1.02, 2)
                     e.Handled = True
-
                 End If
             End If
 

@@ -2015,7 +2015,9 @@ Namespace WinForms
             AddHandler(handler As SmallVisualBasicCallback)
                 Dim _sender = GetSender(NameOf(OnDoubleClick))
                 Dim h = Sub(Sender As Object, e As Input.MouseButtonEventArgs)
-                            If e.ClickCount > 1 Then [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                            If e.ClickCount > 1 Then
+                                [Event].HandleEvent(CType(Sender, FrameworkElement), e, handler)
+                            End If
                         End Sub
 
                 If TypeOf _sender Is Wpf.Canvas Then

@@ -231,8 +231,13 @@ Class sVB
                 ElseIf normalErrors.Count = 0 Then
                     Dim pos = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
                     Dim obj As String = errMsg.Substring(pos, errMsg.Length - pos - 2).ToLower()
+                    Dim key = obj
 
-                    If Not controlNamesList.ContainsKey(obj) AndAlso Not variableTypes.ContainsKey(obj) Then
+                    If _compiler.Parser.SymbolTable.IsLocalVar([error].Token) Then
+                        key = [error].Token.SubroutineName.ToLower() + "." + obj
+                    End If
+
+                    If Not controlNamesList.ContainsKey(obj) AndAlso Not variableTypes.ContainsKey(key) Then
                         If sVBCompiler.hints IsNot Nothing AndAlso sVBCompiler.hints.ControlsInfo.ContainsKey(obj) Then
                             controlNamesList(obj) = sVBCompiler.hints.ControlsInfo(obj)
                         Else
@@ -240,9 +245,9 @@ Class sVB
                             If controlName = "" Then
                                 Dim varType = _compiler.Parser.SymbolTable.GetInferedType([error].Token)
                                 If varType = VariableType.Any Then
-                                    variableTypes(obj) = VariableType.String
+                                    variableTypes(key) = VariableType.String
                                 Else
-                                    variableTypes(obj) = varType
+                                    variableTypes(key) = varType
                                 End If
                             Else
                                 controlNamesList(obj) = controlName
@@ -280,7 +285,13 @@ Class sVB
                 ElseIf normalErrors.Count = 0 Then
                     Dim pos = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
                     Dim obj As String = errMsg.Substring(pos, errMsg.Length - pos - 2).ToLower()
-                    If Not controlNames.ContainsKey(obj) AndAlso Not variableTypes.ContainsKey(obj) Then
+                    Dim key = obj
+
+                    If _compiler.Parser.SymbolTable.IsLocalVar([error].Token) Then
+                        key = [error].Token.SubroutineName.ToLower() + "." + obj
+                    End If
+
+                    If Not controlNames.ContainsKey(obj) AndAlso Not variableTypes.ContainsKey(key) Then
                         normalErrors.Add([error])
                     End If
                 End If
@@ -332,9 +343,14 @@ Class sVB
             Dim pos = errMsg.LastIndexOf("'", errMsg.Length - 3) + 1
             Dim objName = errMsg.Substring(pos, errMsg.Length - pos - 2)
             Dim obj = objName.ToLower()
+            Dim key = obj
+
+            If _compiler.Parser.SymbolTable.IsLocalVar(err.Token) Then
+                key = err.Token.SubroutineName.ToLower() + "." + obj
+            End If
 
             Dim controlName = If(controlNames.ContainsKey(obj), controlNames(obj), "")
-            Dim varType = If(variableTypes.ContainsKey(obj), variableTypes(obj), VariableType.Any)
+            Dim varType = If(variableTypes.ContainsKey(key), variableTypes(key), VariableType.Any)
 
             'use (lineNum) to be passed by value
             Dim tokens = LineScanner.GetTokens(line, (lineNum), lines)

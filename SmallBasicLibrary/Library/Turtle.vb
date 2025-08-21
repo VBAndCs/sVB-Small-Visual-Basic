@@ -268,7 +268,7 @@ Namespace Library
             GraphicsWindow.BeginInvoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
-                    _path.Fill = GraphicsWindow._fillBrush
+                    _path.Fill = GraphicsWindow.FillBrush
                     GraphicsWindow.AddShape(name, _path)
                     _path = Nothing
                 End Sub)
@@ -313,8 +313,8 @@ Namespace Library
                                   .Name = name,
                                   .X1 = _currentX,
                                   .Y1 = _currentY,
-                                  .Stroke = GraphicsWindow._pen.Brush,
-                                  .StrokeThickness = GraphicsWindow._pen.Thickness
+                                  .Stroke = GraphicsWindow.Pen.Brush,
+                                  .StrokeThickness = GraphicsWindow.Pen.Thickness
                             }
                             GraphicsWindow.AddShape(name, turtleLine)
 
@@ -377,8 +377,8 @@ Namespace Library
                               .X2 = newX,
                               .Y1 = _currentY,
                               .Y2 = newY,
-                              .Stroke = GraphicsWindow._pen.Brush,
-                              .StrokeThickness = GraphicsWindow._pen.Thickness
+                              .Stroke = GraphicsWindow.Pen.Brush,
+                              .StrokeThickness = GraphicsWindow.Pen.Thickness
                         }
 
                         Shapes.Move(_turtleName, newX, newY)

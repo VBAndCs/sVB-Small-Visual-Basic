@@ -3,6 +3,7 @@ Imports Wpf = System.Windows.Controls
 Imports App = Microsoft.SmallVisualBasic.Library.Internal.SmallBasicApplication
 Imports System.Windows.Threading
 Imports System.Windows.Controls
+Imports System.Windows.Documents
 
 Namespace WinForms
 
@@ -62,7 +63,9 @@ Namespace WinForms
             App.Invoke(
                 Sub()
                     Try
-                        GetSelector(listName).SelectedItem = CStr(item)
+                        Dim lst = GetSelector(listName)
+                        lst.SelectedItem = CStr(item)
+                        BringIntoView(lst)
                     Catch ex As Exception
                         Control.ReportPropertyError(listName, "SelectedItem", item, ex)
                     End Try
@@ -100,16 +103,23 @@ Namespace WinForms
                               End If
 
                               lst.SelectedIndex = i
-                              Dim listbox = CType(lst, Wpf.ListBox)
-                              Dim listBoxItem = CType(listbox.ItemContainerGenerator.ContainerFromIndex(i), ListBoxItem)
-                              If listBoxItem IsNot Nothing Then
-                                  listBoxItem.BringIntoView()
-                              End If
+                              BringIntoView(lst)
 
                           Catch ex As Exception
                               Control.ReportPropertyError(listName, "SelectedIndex", index, ex)
                           End Try
                       End Sub, Library.Internal.InvokeHelper))
+        End Sub
+
+        Private Shared Sub BringIntoView(lst As Wpf.Primitives.Selector)
+            Dim listbox = TryCast(lst, Wpf.ListBox)
+            If listbox IsNot Nothing Then
+                Dim i = listbox.SelectedIndex
+                Dim listBoxItem = CType(listbox.ItemContainerGenerator.ContainerFromIndex(i), ListBoxItem)
+                If listBoxItem IsNot Nothing Then
+                    listBoxItem.BringIntoView()
+                End If
+            End If
         End Sub
 
         Friend Shared Function GetItemAt(listName As Primitive, index As Primitive) As Primitive
