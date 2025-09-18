@@ -86,6 +86,12 @@ Namespace Microsoft.SmallVisualBasic
             GetType(MainWindow)
         )
 
+        Public Shared InsertFilePathCommand As New RoutedUICommand(
+            "Insert a file path",
+            "InsertFilePathCommand",
+            GetType(MainWindow)
+        )
+
         Public Shared FindNextCommand As New RoutedUICommand(
             ResourceHelper.GetString("FindNextCommand"),
             ResourceHelper.GetString("FindNextCommand"),
@@ -2110,6 +2116,29 @@ Namespace Microsoft.SmallVisualBasic
 
         Private Sub BtnProps_Click(sender As Object, e As RoutedEventArgs)
             formDesigner.ShowProperties()
+        End Sub
+
+        Private Sub OnInsertFilePath(sender As Object, e As ExecutedRoutedEventArgs)
+            Dim openFileDialog As New OpenFileDialog()
+            openFileDialog.Filter = "Image Files|*.sb;*.smallbasic"
+            openFileDialog.Filter = "Image & Sound Files|*.bmp;*.jpg;*.gif;*.png;*.ico;*.wav;*.mp3;"
+
+            If openFileDialog.ShowDialog() = True Then
+                Dim doc = ActiveDocument
+                Dim fileName = IO.Path.GetFileName(openFileDialog.FileName)
+
+                Dim dir = Path.GetDirectoryName(doc.File)
+                Dim newFileName = Path.Combine(dir, fileName)
+                If Not IO.File.Exists(newFileName) Then
+                    Try
+                        IO.File.Copy(openFileDialog.FileName, newFileName)
+                    Catch ex As Exception
+                        MsgBox(ex.Message)
+                    End Try
+                End If
+
+                doc.EditorControl.EditorOperations.InsertText("""" & fileName & """", doc.UndoHistory)
+            End If
         End Sub
     End Class
 End Namespace

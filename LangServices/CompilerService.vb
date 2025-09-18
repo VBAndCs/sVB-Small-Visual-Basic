@@ -446,7 +446,11 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                         If token.Type = TokenType.LineContinuity Then Continue For
                         If token.Type = TokenType.Colon Then Continue For
 
-                        If token.Type = TokenType.Question Then
+                        If token.Type = TokenType.DateLiteral Then
+                            If token.Text.Contains("\") Then
+                                textEdit.Replace(line.Start + token.Column, token.EndColumn-token.Column, token.Text.Replace("\", "/"))
+                            End If
+                        ElseIf token.Type = TokenType.Question Then
                             If i = 0 Then
                                 If n = 1 Then
                                     textEdit.Replace(line.Start + token.Column, 1, "TW.WriteLine("""")")
@@ -504,7 +508,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                             ElseIf tokens(i - 1).ParseType = ParseType.Operator OrElse
                                      tokens(i - 1).Type = TokenType.Question OrElse
                                      tokens(i - 1).Type = TokenType.To Then
-                                textEdit.Replace(line.Start + token.Column, 1, "TW.Read()")
+                                textEdit.Replace(line.Start + token.Column, 1, "TW.ReadText()")
                             End If
 
                         ElseIf token.Type = TokenType.HashQuestion Then

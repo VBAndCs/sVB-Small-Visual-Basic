@@ -417,14 +417,27 @@ Namespace Library
 
         ''' <summary>
         ''' Reads a line of text from the text window.  This function will not return until the user hits ENTER.
-        ''' Use ? as a shortcut name for this method.
         ''' </summary>
         ''' <returns>The text that was read from the text window</returns>
         <WinForms.ReturnValueType(VariableType.String)>
+        <HideFromIntellisense>
         Public Shared Function Read() As Primitive
             VerifyAccess()
             SmallBasicApplication.Invoke(
                    Sub() Read = consoleWindow.ReadLine()
+            )
+        End Function
+
+        ''' <summary>
+        ''' Reads a line of text from the text window.  This function will not return until the user hits ENTER.
+        ''' Use ? as a shortcut name for this method.
+        ''' </summary>
+        ''' <returns>The text that was read from the text window</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function ReadText() As Primitive
+            VerifyAccess()
+            SmallBasicApplication.Invoke(
+                   Sub() ReadText = consoleWindow.ReadLine()
             )
         End Function
 

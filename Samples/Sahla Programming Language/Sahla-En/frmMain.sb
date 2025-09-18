@@ -981,6 +981,11 @@ Sub ExtendSelection()
    ExitSelection = False
 EndSub
 
-
-
-
+Sub MnuAddSoundPath_OnClick()
+   fileName = File.OpenFileDialog({"Sound Files", "wav", "mp3"})
+   If fileName <> "" Then
+      TxtEditor.SelectedText = """" & fileName & """"
+      TxtEditor.Focus()
+      TxtEditor.SelectionStart = TxtEditor.SelectionStart + TxtEditor.SelectionLength
+   EndIf
+EndSub

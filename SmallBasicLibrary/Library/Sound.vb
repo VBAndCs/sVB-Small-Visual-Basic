@@ -262,6 +262,30 @@ Namespace Library
             End If
         End Sub
 
+        Private Shared _volume As New Primitive(50)
+        ''' <summary>
+        ''' Gets or sets the volume of the played sound files. Valid values are between 0 and 100. The default value is 50.
+        ''' Note that changing this value will only affect the files you play afterwards.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Property Volume As Primitive
+            Get
+                Return _volume
+            End Get
+
+            Set(value As Primitive)
+                Dim v As Integer = value.AsDecimal
+                Select Case v
+                    Case < 0
+                        _volume = 0
+                    Case > 100
+                        _volume = 100
+                    Case Else
+                        _volume = value
+                End Select
+            End Set
+        End Property
+
         Private Shared Function GetMediaPlayer(filePath As Primitive) As MediaPlayer
             If filePath.IsEmpty Then Return Nothing
 
@@ -278,6 +302,7 @@ Namespace Library
                             mp.Open(uri1)
                         End If
 
+                        mp.Volume = _volume / 100
                         GetMediaPlayer = mp
 
                     Catch ex As Exception

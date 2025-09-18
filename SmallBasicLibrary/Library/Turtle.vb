@@ -33,6 +33,7 @@ Namespace Library
         ''' Note that changeing the turtle width will also set its height to the same value.
         ''' </summary>     
         <WinForms.ReturnValueType(VariableType.Double)>
+        <HideFromIntellisense>
         Public Shared Property Width As Primitive
             Get
                 Return _width
@@ -48,7 +49,22 @@ Namespace Library
         ''' Note that changeing the turtle height will also set its width to the same value.
         ''' </summary>     
         <WinForms.ReturnValueType(VariableType.Double)>
+        <HideFromIntellisense>
         Public Shared Property Height As Primitive
+            Get
+                Return _height
+            End Get
+
+            Set(value As Primitive)
+                ChangeSize(value)
+            End Set
+        End Property
+
+        ''' <summary>
+        ''' Gets or sets the turtle size, which is the side length of its containing square. The default value is 16, and the minimum value is 4.
+        ''' </summary>     
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Property Size As Primitive
             Get
                 Return _height
             End Get
@@ -265,7 +281,7 @@ Namespace Library
             If _path Is Nothing Then Return
 
             Dim name = Shapes.GenerateNewName("GeoPath")
-            GraphicsWindow.BeginInvoke(
+            GraphicsWindow.Invoke(
                 Sub()
                     GraphicsWindow.VerifyAccess()
                     _path.Fill = GraphicsWindow.FillBrush
@@ -326,10 +342,12 @@ Namespace Library
                             animationX.From = _currentX
                             animationX.To = newX
                             animationX.Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
+                            animationX.DecelerationRatio = 0.2
 
                             animationY.From = _currentY
                             animationY.To = newY
                             animationY.Duration = New Duration(TimeSpan.FromMilliseconds(animateTime))
+                            animationY.DecelerationRatio = 0.2
 
                             turtleLine.BeginAnimation(Line.X2Property, animationX)
                             turtleLine.BeginAnimation(Line.Y2Property, animationY)

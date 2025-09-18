@@ -1,5 +1,5 @@
 SpeedX = 5
-SpeedY = 10
+SpeedY = 5
 GameOver = False
 Score = 0
 RacketDelta = 15
@@ -10,32 +10,6 @@ RacketTimer.Pause()
 RacketTimer.OnTick = MoveRacket
 
 Sub MoveBall()
-   Ball.Top = Ball.Top + SpeedY
-   If GameOver And Ball.Top > Me.Height Then
-      Timer.Pause()
-      Sound.Play("game_over.mp3")
-      Me.ShowMessage("Your score = " + Score, "Game over")
-      Return
-   EndIf
-   
-   If Ball.Bottom >= Racket.Top Then
-      If Ball.Right >= Racket.Left
-            And Ball.Left <= Racket.Right Then
-         Ball.Bottom = Racket.Top
-         SpeedY = -SpeedY
-         Score = Score + 1
-         Me.Text = Score
-         Sound.Play("ball_hit.mp3")
-      Else
-         GameOver = True
-      EndIf
-      
-   ElseIf Ball.Top < 0 Then
-      Ball.Top = 0
-      SpeedY = -SpeedY
-      Sound.Play("boing.wav")
-   EndIf
-   
    Ball.Left = Ball.Left + SpeedX
    If Ball.Right > Me.Width Then
       Ball.Right = Me.Width
@@ -46,7 +20,37 @@ Sub MoveBall()
       SpeedX = -SpeedX
       Sound.Play("boing.wav")
    EndIf
+   
+   Ball.Top = Ball.Top + SpeedY
+   If Ball.Top > Me.Height Then
+      Timer.Pause()
+      Sound.Play("game_over.mp3")
+      Me.ShowMessage("Your score = " + Score + ". Press space tp play again.", "Game over")
+   ElseIf Ball.Top < 0 Then
+      Ball.Top = 0
+      SpeedY = -SpeedY
+      Sound.Play("boing.wav")
+   EndIf
+   
+   If GameOver = False And Ball.Bottom >= Racket.Top Then
+      If Ball.Right >= Racket.Left
+            And Ball.Left <= Racket.Right Then
+         Ball.Bottom = Racket.Top
+         SpeedY = -SpeedY
+         Score = Score + 1
+         Me.Text = Score
+         Sound.Play("ball_hit.mp3")
+         If Score Mod 10 = 0 Then
+            SpeedX = SpeedX * 1.1
+            SpeedY = SpeedY * 1.1
+         EndIf
+      ElseIf Ball.Top > Racket.Top + Racket.Height / 2 Then
+         GameOver = True
+         RacketTimer.Pause()
+      EndIf
+   EndIf
 EndSub
+
 
 Sub Form_OnKeyDown()
    If GameOver Then
@@ -60,17 +64,13 @@ Sub Form_OnKeyDown()
          Timer.Resume()
       EndIf
       
-      Return
-   EndIf
-   
-   If Keyboard.LastKey = Keys.Left Then
+   ElseIf Keyboard.LastKey = Keys.Left Then
       RacketDelta = -15
       RacketTimer.Resume()
    ElseIf Keyboard.LastKey = Keys.Right Then
       RacketDelta = 15
       RacketTimer.Resume()
    EndIf
-   
 EndSub
 
 Sub Form_OnKeyUp()

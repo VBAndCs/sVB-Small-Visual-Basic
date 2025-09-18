@@ -10,9 +10,9 @@ Imports System.Windows.Threading
 
 Namespace WinForms
     Partial Public Class ConsoleWindow
-        Private Shared _threadTimer As New System.Threading.Timer(AddressOf ResponeToUser)
+        Private Shared _threadTimer As New System.Threading.Timer(AddressOf RespondToUser)
 
-        Private Shared Sub ResponeToUser(state As Object)
+        Private Shared Sub RespondToUser(state As Object)
             If Not HandleKey Then
                 SmallBasicApplication.Invoke(Sub() DoEvents())
             End If
@@ -354,6 +354,24 @@ Namespace WinForms
                 _threadTimer.Change(1000, 1000)
             Else
                 _threadTimer.Change(-1, -1)
+            End If
+        End Sub
+
+        Private Sub ConsoleWindow_ContentRendered(sender As Object, e As EventArgs) Handles Me.ContentRendered
+            Dim textBox = TryCast(InputDatePicker.Template.FindName("PART_TextBox", InputDatePicker), DatePickerTextBox)
+            If textBox IsNot Nothing Then
+                AddHandler textBox.PreviewTextInput, AddressOf InputDatePickerTextBox_PreviewTextInput
+            End If
+        End Sub
+
+        Private Sub InputDatePickerTextBox_PreviewTextInput(sender As Object, e As TextCompositionEventArgs)
+            If e.Text = "\" Then
+                Dim textBox = TryCast(sender, DatePickerTextBox)
+                If textBox IsNot Nothing Then
+                    textBox.SelectedText = "/"
+                    textBox.SelectionStart += 1
+                    e.Handled = True
+                End If
             End If
         End Sub
     End Class

@@ -2,17 +2,23 @@ HornSound = Sound.Load("1.mp3")
 SrartEngineSound = Sound.Load("2.mp3")
 SlowdownSound = Sound.Load("3.mp3")
 MovingSound = Sound.Load("4.mp3")
-WasMoving = False
+
+Speed = 0
+Timer.Interval = 20
 Timer.Tick = MoveCar
-MaxTime = 0
+
+Sub MoveCar()
+   Car.Top = Car.Top - Speed
+   If Car.Top < -Car.Height Then
+      Car.Top = Me.Height
+   EndIf
+EndSub
 
 Sub RdoStop_OnCheck()
    If RdoStop.Checked Then
       RedLight.BackColor = Colors.Red
       HornSound.Play()
-      WasMoving = False
-      Timer.Pause()
-      Car.AnimatePos(Car.Left, Car.Top, 0)
+      Speed = 0
    Else
       RedLight.BackColor = Colors.DarkRed
       HornSound.Stop()
@@ -23,13 +29,12 @@ EndSub
 Sub RdoReady_OnCheck()
    If RdoReady.Checked Then
       YelloLight.BackColor = Colors.LightYellow
-      If WasMoving Then
+      If Speed > 0 Then
          SlowdownSound.Play()
-         WasMoving = False
+         Speed = 5
       Else
          SrartEngineSound.Play()
       EndIf
-      MaxTime = 10000
    Else
       YelloLight.BackColor = "#FF858504"
       SlowdownSound.Stop()
@@ -41,8 +46,7 @@ Sub RdoGo_OnCheck()
    If RdoGo.Checked Then
       GreenLight.BackColor = Colors.LightGreen
       MovingSound.Play()
-      WasMoving = True
-      MaxTime = 5000
+      Speed = 10
       MoveCar()
    Else
       GreenLight.BackColor = Colors.DarkGreen
@@ -51,13 +55,4 @@ Sub RdoGo_OnCheck()
 EndSub
 
 
-Sub MoveCar()
-   Timer.Pause()
-   If Car.Top <= -Car.Height Then
-      Car.Top = Me.Height
-   EndIf
-   distanceRatio = (Car.Top + Car.Height) / (Me.Height + Car.Height)
-   time = MaxTime * distanceRatio
-   Car.AnimatePos(Car.Left, -Car.Height, time)
-   Timer.Interval = time
-EndSub
+

@@ -22,6 +22,7 @@
 '    MnuPaste: MenuItem
 '    MnuDelete: MenuItem
 '    MnuSelAll: MenuItem
+'    MnuAddSoundPath: MenuItem
 '    MnuFind: MenuItem
 '    MnuProgram: MenuItem
 '    MnuRun: MenuItem
@@ -71,6 +72,7 @@ MnuCut = "frmmain.mnucut"
 MnuPaste = "frmmain.mnupaste"
 MnuDelete = "frmmain.mnudelete"
 MnuSelAll = "frmmain.mnuselall"
+MnuAddSoundPath = "frmmain.mnuaddsoundpath"
 MnuFind = "frmmain.mnufind"
 MnuProgram = "frmmain.mnuprogram"
 MnuRun = "frmmain.mnurun"
@@ -95,7 +97,7 @@ MnuLoops = "frmmain.mnuloops"
 MnuSounds = "frmmain.mnusounds"
 MnuLocalize = "frmmain.mnulocalize"
 MnuAbout = "frmmain.mnuabout"
-_path = Program.Directory + "\frmMain.xaml"
+_path = Program.Directory + "\frmmain.xaml"
 FrmMain = Forms.LoadForm("FrmMain", _path)
 Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
 '#Events{
@@ -126,6 +128,7 @@ Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
 '    TxtEditor: OnTextChanged OnTextInput OnKeyDown OnSelection OnMouseWheel OnMouseRightDown OnMouseLeftDown
 '    MnuAbout: OnClick
 '    FrmMain: OnClosing OnShown
+'    MnuAddSoundPath: OnClick
 '    MnuLocalize: OnClick
 '    MnuSounds: OnClick
 '    LblMargin: OnMouseLeftDown OnMouseMove
@@ -253,6 +256,10 @@ MenuItem.OnClick = MnuAbout_OnClick
 Control.HandleEvents(FrmMain)
 Form.OnClosing = FrmMain_OnClosing
 Form.OnShown = Form_OnShown
+
+' MnuAddSoundPath Events:
+Control.HandleEvents(MnuAddSoundPath)
+MenuItem.OnClick = MnuAddSoundPath_OnClick
 
 ' MnuLocalize Events:
 Control.HandleEvents(MnuLocalize)

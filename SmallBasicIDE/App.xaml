@@ -24,6 +24,7 @@
                                 <MenuItem Command="{x:Static sb:MainWindow.PasteCommand}" />
                                 <Separator />
                                 <MenuItem Command="{x:Static sb:MainWindow.FindCommand}" />
+                                <MenuItem Command="{x:Static sb:MainWindow.InsertFilePathCommand}" />
                                 <Separator />
                                 <MenuItem Command="{x:Static sb:MainWindow.FormatCommand}" />
                             </ContextMenu>

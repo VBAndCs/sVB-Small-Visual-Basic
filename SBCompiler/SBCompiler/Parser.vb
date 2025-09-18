@@ -1465,6 +1465,9 @@ Namespace Microsoft.SmallVisualBasic
                     tokenEnum.MoveNext()
                     If Not tokenEnum.IsEndOrComment Then
                         EatExpression(tokenEnum, returnExpr)
+                        If Not tokenEnum.IsEndOrComment Then
+                            AddError(tokenEnum.Current, String.Format(ResourceHelper.GetString("UnexpectedTokenAtLocation"), tokenEnum.Current.Text))
+                        End If
                     End If
 
                     Dim subroutine = SubroutineStatement.Current

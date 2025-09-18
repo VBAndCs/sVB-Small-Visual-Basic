@@ -1950,7 +1950,7 @@ Function ConvertLine()
             If ConvertToEnSahla Then
                Return DestTokes[_EnWrite] & " " & DestTokes[_EnLine1]
             EndIf
-            Return "TW.WriteLine(\" \")"
+            Return "TW.WriteLine("""")"
          Else
             result = BuildExpressionText(3)
             If ConvertToEnSahla Then
@@ -2310,14 +2310,14 @@ Function ConvertFactor(pos)
             If ConvertToEnSahla Then
                Return {DestTokes[_EnRead] & " " & DestTokes[_EnText1], pos + 1}
             EndIf
-            Return {"TextWindow.Read()", pos + 1}
+            Return {"TW.ReadText()", pos + 1}
             
          ElseIf Text.AreEquals(nextToken, OrgTokes[_EnNumber1], False)
                Or Text.AreEquals(nextToken, OrgTokes[_EnNumber2], False) Then
             If ConvertToEnSahla Then
                Return {DestTokes[_EnRead] & " " & DestTokes[_EnNumber1], pos + 1}
             EndIf
-            Return {"TextWindow.ReadNumber()", pos + 1}
+            Return {"TW.ReadNumber()", pos + 1}
          EndIf
       EndIf
       Return {0, pos}

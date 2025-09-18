@@ -293,59 +293,71 @@ Public Class DiagramPanel
             Case Key.F7
                 Commands.ChangeBrush(Diagram, Control.ForegroundProperty)
                 ApplyLastChangeToSelected()
+                e.Handled = True
 
             Case Key.F11
                 Commands.IncreaseRotationAngle(Diagram, -45)
                 ApplyLastChangeToSelected()
+                e.Handled = True
 
             Case Key.F12
                 Commands.IncreaseRotationAngle(Diagram, 45)
                 ApplyLastChangeToSelected()
+                e.Handled = True
+
             Case Key.K
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     Commands.Skew(Diagram)
                     ApplyLastChangeToSelected()
                 End If
+                e.Handled = True
 
             Case Key.F
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     Commands.ChangeFont(Diagram)
                     ApplyLastChangeToSelected()
                 End If
+                e.Handled = True
 
             Case Key.Oem4
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     Commands.IncreaseFontSize(Diagram, -1)
                     ApplyLastChangeToSelected()
+                    e.Handled = True
                 End If
 
             Case Key.Oem6
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     Commands.IncreaseFontSize(Diagram, +1)
                     ApplyLastChangeToSelected()
+                    e.Handled = True
                 End If
 
             Case Key.B
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     MenuItem_SubmenuOpened(Nothing, Nothing)
                     BoldMenuItem.IsChecked = Not BoldMenuItem.IsChecked
+                    e.Handled = True
                 End If
 
             Case Key.I
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     MenuItem_SubmenuOpened(Nothing, Nothing)
                     ItalicMenuItem.IsChecked = Not ItalicMenuItem.IsChecked
+                    e.Handled = True
                 End If
 
             Case Key.U
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     MenuItem_SubmenuOpened(Nothing, Nothing)
                     UnderlineMenuItem.IsChecked = Not UnderlineMenuItem.IsChecked
+                    e.Handled = True
                 End If
 
             Case Key.G
                 If Keyboard.Modifiers = ModifierKeys.Control Then
                     GroupMenuItem.IsChecked = Not GroupMenuItem.IsChecked
+                    e.Handled = True
                 End If
 
             Case Key.Enter
@@ -354,6 +366,7 @@ Public Class DiagramPanel
 
             Case Key.Delete
                 Dsn.RemoveSelectedItems()
+                e.Handled = True
 
             Case Key.Tab
                 If Keyboard.Modifiers = ModifierKeys.Shift Then

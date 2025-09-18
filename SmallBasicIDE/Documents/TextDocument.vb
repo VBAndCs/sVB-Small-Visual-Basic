@@ -1529,7 +1529,6 @@ EndSub
 Timer# = Controls.AddTimer(20)
 Timer#.OnTick = Timer#_OnTick
 
-' ------------------------------------------------
 Sub Timer#_OnTick()
    
 EndSub
@@ -1539,7 +1538,6 @@ EndSub
 Timer# = Me.AddTimer(""timer#"", 20)
 Timer#.OnTick = Timer#_OnTick
 
-' ------------------------------------------------
 Sub Timer#_OnTick()
    
 EndSub

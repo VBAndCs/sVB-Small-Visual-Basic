@@ -2,35 +2,13 @@ For I = 1 To 12
    For J = 1 To 12
       TW.WriteFormatted(
          "[1] x [2] = [3][4]",
-         {PadRight(I), PadLeft(J), PadLeft2(I * J), Text.NewLine}
+         {
+            Text.PadRight(I, 2),
+            Text.PadLeft(J, 2),
+            Text.PadLeft(I * J, 3),
+            Text.NewLine
+         }
       )
    Next
    TW.WriteLine("-------------------------")
 Next
-
-
-' ------------------------------------------------
-Function PadLeft(txt)
-   If txt.Length = 1 Then
-      Return " " + txt
-   EndIf
-   Return txt
-EndFunction
-
-' ------------------------------------------------
-Function PadLeft2(txt)
-   If txt.Length = 1 Then
-      Return "  " + txt
-   ElseIf txt.Length = 2 Then
-      Return " " + txt
-   EndIf
-   Return txt
-EndFunction
-
-' ------------------------------------------------
-Function PadRight(txt)
-   If txt.Length = 1 Then
-      Return txt + " "
-   EndIf
-   Return txt
-EndFunction

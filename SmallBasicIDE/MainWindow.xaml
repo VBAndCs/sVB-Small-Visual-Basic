@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v3.5.6.9" Loaded="Window_Loaded"
+        Title="Small Visual Basic v3.5.7.5" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -93,6 +93,8 @@
                     CanExecute="CanEditPaste" Executed="OnEditPaste" />
         <CommandBinding Command="{x:Static l:MainWindow.FindCommand}" 
                     Executed="OnFind" />
+        <CommandBinding Command="{x:Static l:MainWindow.InsertFilePathCommand}" 
+                    Executed="OnInsertFilePath" />        
         <CommandBinding Command="{x:Static l:MainWindow.FindNextCommand}" 
                     Executed="OnFindNext" />
         <CommandBinding Command="{x:Static l:MainWindow.SelectNextMatchCommand}" 
@@ -148,6 +150,8 @@
                 Gesture="Ctrl+V" />
         <KeyBinding Command="{x:Static l:MainWindow.FindCommand}" 
                 Gesture="Ctrl+F" />
+        <KeyBinding Command="{x:Static l:MainWindow.InsertFilePathCommand}" 
+                Gesture="F7" />        
         <KeyBinding Command="{x:Static l:MainWindow.FindNextCommand}" 
                 Gesture="F3" />
         <KeyBinding Command="{x:Static l:MainWindow.SelectNextMatchCommand}" 

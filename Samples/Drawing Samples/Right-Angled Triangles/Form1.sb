@@ -1,28 +1,23 @@
 GetTriangles()
 ListBox1.SelectedIndex = 1
+ListBox1.Focus()
 
-' ------------------------------------------------
 Sub GetTriangles()
-   sides = {}
-   For i = 2 To 100
-      i2 = i * i
-      For j = 2 To i - 1
-         j2 = j * j
-         k = Math.SquareRoot(i2 - j2)
-         If Math.Round(k) = k And Array.ContainsValue(sides[i], j) = False Then
-            sides[i] = Array.AddItem(sides[i], k)
-            ListBox1.AddItem(Text.Format("[1],[2],[3]", {j, k, i}))
-            ContinueLoop
+   For c = 1 To 100
+      c2 = c * c
+      For a = 1 To c - 1
+         a2 = a * a
+         b = Math.SquareRoot(c2 - a2)
+         If Math.Truncate(b) = b Then
+            ListBox1.AddItem(Text.Format("[1],[2],[3]", {a, b, c}))
          EndIf
       Next
    Next
 EndSub
 
-
-' ------------------------------------------------
 Sub ListBox1_OnSelection()
    sides = Text.Split(ListBox1.SelectedItem, ",", True, True)
-   scale = 7
+   scale = 6
    Label1.AddTriangle(
       0, Me.Height - 40,
       sides[2] * scale, Me.Height - 40,

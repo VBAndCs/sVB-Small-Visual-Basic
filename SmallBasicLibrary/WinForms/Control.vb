@@ -203,30 +203,20 @@ Namespace WinForms
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetRight(controlName As Primitive) As Primitive
-            App.Invoke(
-                Sub()
-                    Try
-                        Dim c = GetControl(controlName)
-                        GetRight = System.Math.Round(Wpf.Canvas.GetLeft(c) + c.ActualWidth, 2, MidpointRounding.AwayFromZero)
-                    Catch ex As Exception
-                        ReportError(controlName, "Right", ex)
-                    End Try
-                End Sub)
+            Try
+                GetRight = GetLeft(controlName) + GetWidth(controlName)
+            Catch ex As Exception
+                ReportError(controlName, "Right", ex)
+            End Try
         End Function
 
         <ExProperty>
         Public Shared Sub SetRight(controlName As Primitive, value As Primitive)
-            App.Invoke(
-                Sub()
-                    Try
-                        Dim c = GetControl(controlName)
-                        ' Remove any animation effect to allow setting the new value
-                        c.BeginAnimation(Wpf.Canvas.LeftProperty, Nothing)
-                        Wpf.Canvas.SetLeft(c, CDbl(value) - c.ActualWidth)
-                    Catch ex As Exception
-                        ReportPropertyError(controlName, "Right", value, ex)
-                    End Try
-                End Sub)
+            Try
+                SetLeft(controlName, value - GetWidth(controlName))
+            Catch ex As Exception
+                ReportPropertyError(controlName, "Right", value, ex)
+            End Try
         End Sub
 
 
@@ -268,30 +258,20 @@ Namespace WinForms
         <ReturnValueType(VariableType.Double)>
         <ExProperty>
         Public Shared Function GetBottom(controlName As Primitive) As Primitive
-            App.Invoke(
-                Sub()
-                    Try
-                        Dim c = GetControl(controlName)
-                        GetBottom = System.Math.Round(Wpf.Canvas.GetTop(c) + c.ActualWidth, 2, MidpointRounding.AwayFromZero)
-                    Catch ex As Exception
-                        ReportError(controlName, "Bottom", ex)
-                    End Try
-                End Sub)
+            Try
+                GetBottom = GetTop(controlName) + GetHeight(controlName)
+            Catch ex As Exception
+                ReportError(controlName, "Bottom", ex)
+            End Try
         End Function
 
         <ExProperty>
         Public Shared Sub SetBottom(controlName As Primitive, value As Primitive)
-            App.Invoke(
-                Sub()
-                    Try
-                        Dim c = GetControl(controlName)
-                        ' Remove any animation effect to allow setting the new value
-                        c.BeginAnimation(Wpf.Canvas.TopProperty, Nothing)
-                        Wpf.Canvas.SetTop(c, CDbl(value) - c.ActualHeight)
-                    Catch ex As Exception
-                        ReportPropertyError(controlName, "Bottom", value, ex)
-                    End Try
-                End Sub)
+            Try
+                SetTop(controlName, value - GetHeight(controlName))
+            Catch ex As Exception
+                ReportPropertyError(controlName, "Bottom", value, ex)
+            End Try
         End Sub
 
 

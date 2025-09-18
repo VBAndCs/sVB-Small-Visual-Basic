@@ -7,11 +7,9 @@
 Me = "form1"
 Ball = "form1.ball"
 Racket = "form1.racket"
-_path = Program.Directory + "\Form1.xaml"
+_path = Program.Directory + "\form1.xaml"
 Form1 = Forms.LoadForm("Form1", _path)
 Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
-Form.Show(Me)
-Form.Show(Me)
 '#Events{
 '    Form1: OnKeyDown OnKeyUp
 '}
