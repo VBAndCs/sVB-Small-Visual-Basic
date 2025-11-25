@@ -618,6 +618,12 @@ Sub ProcessForLoopNext()
       Return
    EndIf
    
+   If Keyboard.LastKey = Keys.Escape And GW.IsClosed = False Then
+      Terminated = True
+      Stack.PopValue(ForStack)
+      Return
+   EndIf
+   
    end = loopObj[2]
    stepValue = loopObj[3]
    newVal = Vars[varName] + stepValue
@@ -660,6 +666,12 @@ EndSub
 Sub ProcessWhileLoopEnd()
    If Stack.GetCount(WhileStack) = 0 Then
       ReportError("لا توجد حلقة تكرار مفتوحة", LineIndex, 1)
+      Return
+   EndIf
+   
+   If Keyboard.LastKey = Keys.Escape And GW.IsClosed = False Then
+      Terminated = True
+      Stack.PopValue(WhileStack)
       Return
    EndIf
    

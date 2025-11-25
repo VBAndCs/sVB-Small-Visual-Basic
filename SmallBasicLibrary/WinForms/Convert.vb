@@ -109,6 +109,16 @@ Namespace WinForms
         End Function
 
         ''' <summary>
+        ''' Makes sVB infer the given value as a music instrument.
+        ''' </summary>
+        ''' <param name="value">The value you need to infer its type.</param>
+        ''' <returns>The same exact value, but sVB will infer it as a music instrument.</returns>
+        <ReturnValueType(VariableType.MusicInstrument)>
+        Public Shared Function ToMusicInstrument(value As Primitive) As Primitive
+            Return value
+        End Function
+
+        ''' <summary>
         ''' Makes sVB infer the given value as a control type.
         ''' </summary>
         ''' <param name="value">The value you need to infer its type.</param>

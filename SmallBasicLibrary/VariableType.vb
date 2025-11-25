@@ -8,6 +8,7 @@
     Sound
     Shape
     Color
+    MusicInstrument
     Key
     DialogResult
     ControlType

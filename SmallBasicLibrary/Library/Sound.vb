@@ -2,6 +2,7 @@ Imports System.IO
 Imports System.Media
 Imports System.Threading
 Imports System.Windows.Media
+Imports System.Windows.Threading
 Imports Microsoft.SmallVisualBasic.Library.Internal
 
 Namespace Library
@@ -117,6 +118,21 @@ Namespace Library
         End Sub
 
         ''' <summary>
+        ''' Plays musical notes without deylaing the execution of the program code.
+        ''' This allows you to play more than one note a the same time and control the delay between them using the Programe.Delay.
+        ''' </summary>
+        ''' <param name="notes">
+        ''' A set of musical notes to play.  The format is a subset of the Music Macro Language supported by QBasic.
+        ''' </param>
+        Public Shared Sub PlayMusicAsync(notes As Primitive)
+            Dim channel = _musicChannel
+            Dim instrument = _musicInstrument
+            Dim volume = _volume
+            Dim keepTonesOn = _keepTonesOn
+            Task.Run(Sub() DoPlayMusic(notes, instrument, channel, volume, keepTonesOn))
+        End Sub
+
+        ''' <summary>
         ''' Plays musical notes.
         ''' </summary>
         ''' <param name="notes">
@@ -128,13 +144,28 @@ Namespace Library
         ''' </code>
         ''' </example>
         Public Shared Sub PlayMusic(notes As Primitive)
-            EnsureDeviceInit()
+            DoPlayMusic(notes, _musicInstrument, _musicChannel, _volume * 127 / 100, _keepTonesOn)
+        End Sub
+
+        Private Shared Sub DoPlayMusic(
+                notes As Primitive,
+                instrument As Byte,
+                channel As Byte,
+                volume As Byte,
+                keepTonesOn As Boolean)
+
+            Dim defaultLength = _defaultLength
+            Dim globalLength = _defaultLength
+
+            EnsureDeviceInit(instrument, channel)
+            volume *= 1.27
+
             If notes.IsArray Then
                 For Each note In notes.ArrayMap.Values
-                    PlayNotes(note)
+                    PlayNotes(note, channel, volume, keepTonesOn, defaultLength, globalLength)
                 Next
             Else
-                PlayNotes(notes)
+                PlayNotes(notes, channel, volume, keepTonesOn, defaultLength, globalLength)
             End If
         End Sub
 
@@ -151,7 +182,12 @@ Namespace Library
             SmallBasicApplication.Invoke(
                 Sub()
                     Dim mp = GetMediaPlayer(filePath)
-                    Load = New Primitive(If(mp Is Nothing, "", filePath))
+
+                    If mp Is Nothing Then
+                        Load = New Primitive("")
+                    Else
+                        Load = filePath
+                    End If
                 End Sub)
         End Function
 
@@ -262,7 +298,8 @@ Namespace Library
             End If
         End Sub
 
-        Private Shared _volume As New Primitive(50)
+        Private Shared _volume As Byte = 50
+
         ''' <summary>
         ''' Gets or sets the volume of the played sound files. Valid values are between 0 and 100. The default value is 50.
         ''' Note that changing this value will only affect the files you play afterwards.
@@ -281,7 +318,7 @@ Namespace Library
                     Case > 100
                         _volume = 100
                     Case Else
-                        _volume = value
+                        _volume = v
                 End Select
             End Set
         End Property
@@ -312,29 +349,47 @@ Namespace Library
 
         End Function
 
-        Private Shared Sub EnsureDeviceInit()
+        Private Shared Sub EnsureDeviceInit(instrument As Byte, channel As Byte)
             If _midiOut = 0 Then
                 NativeHelper.midiOutOpen(_midiOut, 0, 0, 0, 0UL)
-                ChangeInstrument(0)
             End If
+
+            ChangeInstrument(instrument, channel)
         End Sub
 
-        Private Shared Sub PlayNotes(song As String)
-            Dim i As Integer = 0
-            song = song.ToUpperInvariant()
-            Dim songLength As Integer = song.Length
+        Private Shared Sub PlayNotes(
+                song As String,
+                channel As Byte,
+                volume As Byte,
+                keepTonesOn As Boolean,
+                ByRef defaultLength As Integer,
+                ByRef globalLength As Integer)
 
-            While i < songLength
-                Dim length = _defaultLength
+            Dim i = 0
+            song = song.ToUpperInvariant().Trim()
+            Dim songLength = song.Length
+
+            If songLength = 0 Then
+                PlayNote(60, channel, 0)
+                Return
+            End If
+
+            Do While i < songLength
+                If globalLength <> _defaultLength Then
+                    defaultLength = _defaultLength
+                    globalLength = _defaultLength
+                End If
+
+                Dim length = defaultLength
                 Dim c As Char = song(i)
                 i += 1
 
                 If Char.IsLetter(c) Then
-                    Dim text As New String(c, 1)
+                    Dim note As New String(c, 1)
                     If i < songLength Then
                         c = song(i)
                         If c = "#"c OrElse c = "+"c OrElse c = "-"c Then
-                            text += New String(c, 1)
+                            note += New String(c, 1)
                             i += 1
                         End If
 
@@ -355,10 +410,10 @@ Namespace Library
                         End If
                     End If
 
-                    If text(0) = "O"c Then
+                    If note(0) = "O"c Then
                         _octave = length
                     Else
-                        PlayNote(_octave, text, length)
+                        PlayNote(_octave, note, length, channel, volume, keepTonesOn, defaultLength)
                     End If
 
                 Else
@@ -369,17 +424,47 @@ Namespace Library
                             _octave = System.Math.Max(0, _octave - 1)
                     End Select
                 End If
-            End While
+            Loop
         End Sub
 
-        Private Shared Sub PlayNote(octave As Integer, note As String, length As Integer)
+        Private Shared _keepTonesOn As Boolean = True
+
+        ''' <summary>
+        ''' Determines whether tones (played with the PlayMuseic and PlayMusicAsync methods) are allowed to sustain naturally or are forcibly terminated after their duration. 
+        ''' The default value is True, which is suitable for some instruments like piano and guitar.
+        ''' You should use False with some instruments (like sax and harmonica) to avoid noise.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property KeepTonesOn As Primitive
+            Get
+                Return New Primitive(_keepTonesOn)
+            End Get
+
+            Set(value As Primitive)
+                _keepTonesOn = CBool(value)
+            End Set
+        End Property
+
+        Private Shared Sub PlayNote(
+                           octave As Integer,
+                           note As String,
+                           length As Integer,
+                           channel As Byte,
+                           volume As Byte,
+                           keepTonesOn As Boolean,
+                           ByRef defaultLength As Integer)
+
             Dim delay As Double = 1600 / length
             Select Case note
                 Case "P", "R"
                     Thread.Sleep(delay)
                     Return
+                Case "S"
+                    defaultLength = length
+                    Return
                 Case "L"
                     _defaultLength = length
+                    defaultLength = length
                     Return
             End Select
 
@@ -387,29 +472,90 @@ Namespace Library
             If Not _notes.TryGetValue(note, value) Then
                 value = 0
             End If
+
             octave = System.Math.Min(System.Math.Max(0, octave), 8)
-            Dim number As Integer = octave * 12 + value
-            PlayNote(number)
+            Dim number = octave * 12 + value
+            PlayNote(number, channel, volume)
             Thread.Sleep(delay)
+            If Not keepTonesOn Then StopNote(number, channel)
         End Sub
 
-        Private Shared Sub PlayNote(number As Integer)
-            Dim dwMsg = BitConverter.ToUInt32(New Byte(3) {
-                144,
-                CByte(number),
-                _volume.AsDecimal * 127 / 100,
-                0
-            }, 0)
+        Private Shared Sub PlayNote(noteNumber As Integer, channel As Byte, volume As Byte)
+            Dim dwMsg = BitConverter.ToUInt32(
+                New Byte(3) {
+                    144 + channel,
+                    CByte(noteNumber),
+                    volume,
+                    0},
+                0)
             NativeHelper.midiOutShortMsg(_midiOut, dwMsg)
         End Sub
 
-        Private Shared Sub ChangeInstrument(InstrumentNumber As Byte)
-            Dim dwMsg = BitConverter.ToUInt32(New Byte(3) {
-                192,
-                InstrumentNumber,
-                0,
-                0
-            }, 0)
+        Private Shared Sub StopNote(noteNumber As Integer, channel As Byte)
+            Dim dwMsg = BitConverter.ToUInt32(
+                New Byte(3) {
+                    128 + channel,
+                    CByte(noteNumber),
+                    0,   ' velocity = 0
+                    0},
+                0)
+            NativeHelper.midiOutShortMsg(_midiOut, dwMsg)
+        End Sub
+
+        Private Shared _musicChannel As Byte = 0
+
+        ''' <summary>
+        ''' Gets or sets the music channel used by the PlayMusic method.
+        ''' Valid values are between 0 and 15. Use 9 for percussion instruments (beats).
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Double)>
+        Public Shared Property MusicChannel As Primitive
+            Get
+                Return _musicChannel
+            End Get
+
+            Set(value As Primitive)
+                Dim v = value.AsDecimal
+                If v < 0 Then
+                    _musicChannel = 0
+                ElseIf v > 15 Then
+                    _musicChannel = 15
+                Else
+                    _musicChannel = v
+                End If
+            End Set
+        End Property
+
+        Private Shared _musicInstrument As Byte = 0
+
+        ''' <summary>
+        ''' Gets or sets the music instrument that will be used by the PlayMusic method.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.MusicInstrument)>
+        Public Shared Property MusicInstrument As Primitive
+            Get
+                Return _musicInstrument
+            End Get
+
+            Set(value As Primitive)
+                Dim v = value.AsDecimal
+                If v < 0 Then
+                    _musicInstrument = 0
+                ElseIf v > 127 Then
+                    _musicInstrument = 127
+                Else
+                    _musicInstrument = v
+                End If
+            End Set
+        End Property
+
+        Private Shared Sub ChangeInstrument(instrumentNumber As Byte, channel As Byte)
+            Dim dwMsg = BitConverter.ToUInt32(
+                New Byte(3) {
+                    CByte(192 + channel),
+                    instrumentNumber,
+                    0, 0},
+                0)
             NativeHelper.midiOutShortMsg(_midiOut, dwMsg)
         End Sub
     End Class

@@ -1,0 +1,14 @@
+Sound.Volume = 100
+' Uncomment then next line to change the music instrument:
+' Sound.MusicInstrument = MusicInstruments.TaikoDrum
+TextWindow.WriteLine("A lovely day.")
+
+For I = 1 To 3
+   TW.WriteLine("...... " & I & "/3")
+   Sound.PlayMusicAsync("O6A O5A O6G O5C O6E O5E O6C O5F O6A O5A O6G O5C O6E O5D O6C O5F O6A O5A O6G O5C O6E O5E O6C O5F O6A O5A O6G O5C O6E O5D O6C O5F")
+   Program.Delay(6000)
+   Sound.PlayMusicAsync("O6A O5A O6G O5C O6E O5E O6C O5F O6A O5A O6G O5C O6E O5D O6C O5F O6A O5A O6G O5C O6E O5E O6C O5F O6A O5A O6G O5C O6E O5D O6C O5F")
+   Program.Delay(3000)
+   Sound.PlayMusicAsync("T240 O6A E O5A Q O6G E O5C H O6E E O5E Q O6C E O5F H O6A E O5A Q O6G E O5C H T240 O6A E O5A Q O6G E O5C H O6E E O5E Q O6C E O5F H O6A E O5A Q O6G E O5C H")
+   Program.Delay(13000)
+Next

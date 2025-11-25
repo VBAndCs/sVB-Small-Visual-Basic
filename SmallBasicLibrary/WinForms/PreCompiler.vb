@@ -76,7 +76,7 @@ Namespace WinForms
 
                 Case VariableType.Any, VariableType.Boolean,
                          VariableType.Key, VariableType.DialogResult,
-                         VariableType.ControlType
+                         VariableType.ControlType, VariableType.MusicInstrument
                     Return ""
 
                 Case Else

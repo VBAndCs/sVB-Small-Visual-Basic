@@ -1417,6 +1417,8 @@ LineShow:
                     especialItem = "Keys"
                 Case VariableType.DialogResult
                     especialItem = "DialogResults"
+                Case VariableType.MusicInstrument
+                    especialItem = "MusicInstruments"
                 Case VariableType.ControlType
                     especialItem = "ControlTypes"
                 Case VariableType.Boolean
@@ -1448,6 +1450,8 @@ LineShow:
                 Return "Keys"
             ElseIf name = "showdialog" OrElse name.Contains("dialogresult") Then
                 Return "DialogResults"
+            ElseIf name = "musicinstrument" Then
+                Return "MusicInstruments"
             ElseIf name.Contains("typename") OrElse name.Contains("controltype") Then
                 Return "ControlTypes"
             ElseIf name.Contains("fontname") Then

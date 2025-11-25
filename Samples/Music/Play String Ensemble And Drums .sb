@@ -1,0 +1,35 @@
+Sound.Volume = 100
+TextWindow.WriteLine("A lovely day.")
+Note1 = "O6A O5A O6G O5C O6E O5E O6C O5F " * 4
+Note2 = "T240 O6A E O5A Q O6G E O5C H O6E E O5E Q O6C E O5F H O6A E O5A Q O6G E O5C H " * 2
+N = 2
+For I = 1 To N
+   TW.WriteLine("...... " & I & "/" & N)
+   PlayNote(Note1, 6000, False)
+   PlayNote(Note1, 3000, True)
+   PlayNote(Note2, 13000, True)
+Next
+
+
+Sub PlayNote(note, delay, drums)
+   Sound.MusicChannel = 0
+   Sound.Volume = 90
+   Sound.KeepTonesOn = False
+   Sound.MusicInstrument = MusicInstruments.StringEnsemble1
+   Sound.PlayMusicAsync(note)
+   
+   If drums Then
+      Sound.KeepTonesOn = True
+      Sound.MusicChannel = 1
+      Sound.Volume = 75
+      Sound.MusicInstrument = MusicInstruments.TaikoDrum
+      Sound.PlayMusicAsync(note)
+      
+      Sound.MusicChannel = 2
+      Sound.Volume = 100
+      Sound.MusicInstrument = MusicInstruments.MelodicTom
+      Sound.PlayMusicAsync(note)
+   EndIf
+   
+   Program.Delay(delay)
+EndSub

@@ -61,6 +61,7 @@ Namespace Library.Internal
 
         Public Shared Sub BeginProgram()
             Program.IsTerminated = False
+            Sound.PlayMusic("") ' Initialize the sound device
             AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf HandleException
         End Sub
 

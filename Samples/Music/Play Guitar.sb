@@ -1,0 +1,15 @@
+TextWindow.WriteLine("A Peaceful Morning")
+Note1 = "O3 L8 CEG CEG" & "O3 L8 CEG CEG O4 L8 GCE GCE O5 L8 CEG CEG " * 10
+Sound.MusicChannel = 0
+Sound.Volume = 60
+Sound.KeepTonesOn = True
+Sound.MusicInstrument = MusicInstruments.AcousticGuitarSteel
+Sound.PlayMusicAsync(Note1)
+
+Program.Delay(2000)
+Note2 = "O5 L4 C D E G A G E D C O4 L4 C D E G A G E D C" * 10
+Sound.MusicChannel = 1
+Sound.Volume = 100
+Sound.KeepTonesOn = False
+Sound.MusicInstrument = MusicInstruments.VoiceOohs
+Sound.PlayMusicAsync(Note2)
