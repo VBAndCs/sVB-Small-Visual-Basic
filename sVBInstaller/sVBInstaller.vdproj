@@ -177,6 +177,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_067CA58AE87C46E393382F3735C314F6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_075BE26C5FC145DF839D4087B6913E06"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3381,12 +3387,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C8D7C38ADE94488BAF0594014CA686EC"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_C8DC05DB12F5431FA7788CE498FB5EC4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3676,6 +3676,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D94A7B828AFC467EBBA03A2596CB53C5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D99AEEEDB4F14311BCFE57EEE5B865BD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3976,12 +3982,6 @@
         "Entry"
         {
         "MsmKey" = "8:_E381DE4E5E2C4E0F93F32DB33662B541"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E3864C87D0B04C1DA34B872238493E37"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4727,7 +4727,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.5.8.7_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.5.8.8_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -5319,6 +5319,26 @@
             "TargetName" = "8:Play Piano.sb"
             "Tag" = "8:"
             "Folder" = "8:_0F774E12C7974F4F85319EDB1307847E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_067CA58AE87C46E393382F3735C314F6"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Triangles Art 2.sb"
+            "TargetName" = "8:Triangles Art 2.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -16051,26 +16071,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C8D7C38ADE94488BAF0594014CA686EC"
-            {
-            "SourcePath" = "8:C:\\Users\\Mhmd\\Documents\\sVB Samples\\Turtle Samples\\Triangles Art 2.sb"
-            "TargetName" = "8:Triangles Art 2.sb"
-            "Tag" = "8:"
-            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C8DC05DB12F5431FA7788CE498FB5EC4"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Controls\\Button.xaml"
@@ -17062,6 +17062,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D99AEEEDB4F14311BCFE57EEE5B865BD"
+            {
+            "SourcePath" = "8:..\\Samples\\Turtle Samples\\Triangles Art 1.sb"
+            "TargetName" = "8:Triangles Art 1.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D9C2E5ACDE9F41BD9EC54CAA02371F36"
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla\\Syntax\\3.shl"
@@ -17830,26 +17850,6 @@
             "TargetName" = "8:Rectangle.shl"
             "Tag" = "8:"
             "Folder" = "8:_C053F00B9BB1447099B6F148E41CAF84"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E3864C87D0B04C1DA34B872238493E37"
-            {
-            "SourcePath" = "8:C:\\Users\\Mhmd\\Documents\\sVB Samples\\Turtle Samples\\Triangles Art 1.sb"
-            "TargetName" = "8:Triangles Art 1.sb"
-            "Tag" = "8:"
-            "Folder" = "8:_B9AA47BC11AD43BC857EEC94A2C66249"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -21468,7 +21468,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.5.8.7"
+        "ProductName" = "8:Small Visual Basic 3.5.8.8"
         "ProductCode" = "8:{004F0DE1-7938-43C4-9CAC-59D32A7CCCE6}"
         "PackageCode" = "8:{6EEB4AD6-28A2-40EB-A3B8-407CBAF475F6}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"

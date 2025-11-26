@@ -11,34 +11,9 @@ Namespace Library
     ''' </summary>
     <SmallVisualBasicType>
     Public NotInheritable Class Sound
+
+#Region "MediaPlayer"
         Private Shared _mediaPlayerMap As New Dictionary(Of Uri, MediaPlayer)
-        Private Shared _midiOut As Integer = 0
-        Private Shared _octave As Integer = 4
-        Private Shared _defaultLength As Integer = 4
-        Private Shared _notes As New Dictionary(Of String, Integer) From {
-            {"C", 0},
-            {"C+", 1},
-            {"C#", 1},
-            {"D-", 1},
-            {"D", 2},
-            {"D+", 3},
-            {"D#", 3},
-            {"E-", 3},
-            {"E", 4},
-            {"F", 5},
-            {"F+", 6},
-            {"F#", 6},
-            {"G-", 6},
-            {"G", 7},
-            {"G+", 8},
-            {"G#", 8},
-            {"A-", 8},
-            {"A", 9},
-            {"A+", 10},
-            {"A#", 10},
-            {"B-", 10},
-            {"B", 11}
-        }
 
         ''' <summary>
         ''' Plays the ding sound.
@@ -115,58 +90,6 @@ Namespace Library
         ''' </summary>
         Public Shared Sub PlayBellRingAndWait()
             PlayStockSound(My.Resources.BellRing, sync:=True)
-        End Sub
-
-        ''' <summary>
-        ''' Plays musical notes without deylaing the execution of the program code.
-        ''' This allows you to play more than one note a the same time and control the delay between them using the Programe.Delay.
-        ''' </summary>
-        ''' <param name="notes">
-        ''' A set of musical notes to play.  The format is a subset of the Music Macro Language supported by QBasic.
-        ''' </param>
-        Public Shared Sub PlayMusicAsync(notes As Primitive)
-            Dim channel = _musicChannel
-            Dim instrument = _musicInstrument
-            Dim volume = _volume
-            Dim keepTonesOn = _keepTonesOn
-            Task.Run(Sub() DoPlayMusic(notes, instrument, channel, volume, keepTonesOn))
-        End Sub
-
-        ''' <summary>
-        ''' Plays musical notes.
-        ''' </summary>
-        ''' <param name="notes">
-        ''' A set of musical notes to play.  The format is a subset of the Music Macro Language supported by QBasic.
-        ''' </param>
-        ''' <example>
-        ''' <code>
-        ''' Sound.PlayMusic("O5 C8 C8 G8 G8 A8 A8 G4 F8 F8 E8 E8 D8 D8 C4")
-        ''' </code>
-        ''' </example>
-        Public Shared Sub PlayMusic(notes As Primitive)
-            DoPlayMusic(notes, _musicInstrument, _musicChannel, _volume * 127 / 100, _keepTonesOn)
-        End Sub
-
-        Private Shared Sub DoPlayMusic(
-                notes As Primitive,
-                instrument As Byte,
-                channel As Byte,
-                volume As Byte,
-                keepTonesOn As Boolean)
-
-            Dim defaultLength = _defaultLength
-            Dim globalLength = _defaultLength
-
-            EnsureDeviceInit(instrument, channel)
-            volume *= 1.27
-
-            If notes.IsArray Then
-                For Each note In notes.ArrayMap.Values
-                    PlayNotes(note, channel, volume, keepTonesOn, defaultLength, globalLength)
-                Next
-            Else
-                PlayNotes(notes, channel, volume, keepTonesOn, defaultLength, globalLength)
-            End If
         End Sub
 
         ''' <summary>
@@ -348,14 +271,107 @@ Namespace Library
                 End Sub)
 
         End Function
+#End Region
+
+#Region "Music"
+        Private Shared _midiOut As IntPtr = IntPtr.Zero
+        Private Shared _defaultOctave As Integer = 4
+        Private Shared _defaultLength As Integer = 4
+        Private Shared _notes As New Dictionary(Of String, Integer) From {
+            {"C", 0},
+            {"C+", 1},
+            {"C#", 1},
+            {"D-", 1},
+            {"D", 2},
+            {"D+", 3},
+            {"D#", 3},
+            {"E-", 3},
+            {"E", 4},
+            {"F", 5},
+            {"F+", 6},
+            {"F#", 6},
+            {"G-", 6},
+            {"G", 7},
+            {"G+", 8},
+            {"G#", 8},
+            {"A-", 8},
+            {"A", 9},
+            {"A+", 10},
+            {"A#", 10},
+            {"B-", 10},
+            {"B", 11}
+        }
 
         Private Shared Sub EnsureDeviceInit(instrument As Byte, channel As Byte)
-            If _midiOut = 0 Then
-                NativeHelper.midiOutOpen(_midiOut, 0, 0, 0, 0UL)
+            If _midiOut = IntPtr.Zero Then
+                NativeHelper.midiOutOpen(_midiOut, 0UI, IntPtr.Zero, IntPtr.Zero, 0UI)
             End If
-
             ChangeInstrument(instrument, channel)
         End Sub
+
+        Private Shared Sub ChangeInstrument(instrumentNumber As Byte, channel As Byte)
+            Dim status As Byte = CByte(&HC0 Or (channel And &HF))
+            Dim dwMsg = BitConverter.ToUInt32(
+                New Byte() {status, instrumentNumber, 0, 0},
+                0
+            )
+            NativeHelper.midiOutShortMsg(_midiOut, dwMsg)
+        End Sub
+
+        ''' <summary>
+        ''' Plays musical notes without deylaing the execution of the program code.
+        ''' This allows you to play more than one note a the same time and control the delay between them using the Programe.Delay.
+        ''' </summary>
+        ''' <param name="notes">
+        ''' A set of musical notes to play.  The format is a subset of the Music Macro Language supported by QBasic.
+        ''' </param>
+        Public Shared Sub PlayMusicAsync(notes As Primitive)
+            Dim channel = _musicChannel
+            Dim instrument = _musicInstrument
+            Dim volume = _volume
+            Dim keepTonesOn = _keepTonesOn
+            Task.Run(Sub() DoPlayMusic(notes, instrument, channel, volume, keepTonesOn))
+        End Sub
+
+        ''' <summary>
+        ''' Plays musical notes.
+        ''' </summary>
+        ''' <param name="notes">
+        ''' A set of musical notes to play.  The format is a subset of the Music Macro Language supported by QBasic.
+        ''' </param>
+        ''' <example>
+        ''' <code>
+        ''' Sound.PlayMusic("O5 C8 C8 G8 G8 A8 A8 G4 F8 F8 E8 E8 D8 D8 C4")
+        ''' </code>
+        ''' </example>
+        Public Shared Sub PlayMusic(notes As Primitive)
+            DoPlayMusic(notes, _musicInstrument, _musicChannel, _volume * 127 / 100, _keepTonesOn)
+        End Sub
+
+        Private Shared Sub DoPlayMusic(
+                notes As Primitive,
+                instrument As Byte,
+                channel As Byte,
+                volume As Byte,
+                keepTonesOn As Boolean)
+
+            Dim defaultLength = _defaultLength
+            Dim globalLength = _defaultLength
+            Dim octave = _defaultOctave
+            Dim globalOctave = _defaultOctave
+
+            EnsureDeviceInit(instrument, channel)
+            volume *= 1.27
+
+            If notes.IsArray Then
+                For Each note In notes.ArrayMap.Values
+                    PlayNotes(note, channel, volume, keepTonesOn, defaultLength, globalLength, octave, globalOctave)
+                Next
+            Else
+                PlayNotes(notes, channel, volume, keepTonesOn, defaultLength, globalLength, octave, globalOctave)
+            End If
+        End Sub
+
 
         Private Shared Sub PlayNotes(
                 song As String,
@@ -363,7 +379,9 @@ Namespace Library
                 volume As Byte,
                 keepTonesOn As Boolean,
                 ByRef defaultLength As Integer,
-                ByRef globalLength As Integer)
+                ByRef globalLength As Integer,
+                ByRef octave As Integer,
+                ByRef globalOctave As Integer)
 
             Dim i = 0
             song = song.ToUpperInvariant().Trim()
@@ -380,7 +398,12 @@ Namespace Library
                     globalLength = _defaultLength
                 End If
 
-                Dim length = defaultLength
+                If globalOctave <> _defaultOctave Then
+                    octave = _defaultOctave
+                    globalOctave = _defaultOctave
+                End If
+
+                Dim length = -1
                 Dim c As Char = song(i)
                 i += 1
 
@@ -410,40 +433,36 @@ Namespace Library
                         End If
                     End If
 
-                    If note(0) = "O"c Then
-                        _octave = length
-                    Else
-                        PlayNote(_octave, note, length, channel, volume, keepTonesOn, defaultLength)
-                    End If
+                    Select Case note(0)
+                        Case "O"c
+                            If length = -1 Then Exit Select
+                            octave = length
+                            If Not _IsolateMusicChannels Then
+                                _defaultOctave = length
+                            End If
+                        Case "V"c
+                            If length > -1 Then octave = length
+                        Case Else
+                            If length = -1 Then length = defaultLength
+                            PlayNote(octave, note, length, channel, volume, keepTonesOn, defaultLength)
+                    End Select
 
                 Else
                     Select Case c
                         Case ">"c
-                            _octave = System.Math.Min(8, _octave + 1)
+                            octave = System.Math.Min(8, octave + 1)
+                            If Not _IsolateMusicChannels Then
+                                _defaultOctave = octave
+                            End If
                         Case "<"c
-                            _octave = System.Math.Max(0, _octave - 1)
+                            octave = System.Math.Max(0, octave - 1)
+                            If Not _IsolateMusicChannels Then
+                                _defaultOctave = octave
+                            End If
                     End Select
                 End If
             Loop
         End Sub
-
-        Private Shared _keepTonesOn As Boolean = True
-
-        ''' <summary>
-        ''' Determines whether tones (played with the PlayMuseic and PlayMusicAsync methods) are allowed to sustain naturally or are forcibly terminated after their duration. 
-        ''' The default value is True, which is suitable for some instruments like piano and guitar.
-        ''' You should use False with some instruments (like sax and harmonica) to avoid noise.
-        ''' </summary>
-        <WinForms.ReturnValueType(VariableType.Boolean)>
-        Public Shared Property KeepTonesOn As Primitive
-            Get
-                Return New Primitive(_keepTonesOn)
-            End Get
-
-            Set(value As Primitive)
-                _keepTonesOn = CBool(value)
-            End Set
-        End Property
 
         Private Shared Sub PlayNote(
                            octave As Integer,
@@ -463,8 +482,10 @@ Namespace Library
                     defaultLength = length
                     Return
                 Case "L"
-                    _defaultLength = length
                     defaultLength = length
+                    If Not _IsolateMusicChannels Then
+                        _defaultLength = length
+                    End If
                     Return
             End Select
 
@@ -501,6 +522,24 @@ Namespace Library
                 0)
             NativeHelper.midiOutShortMsg(_midiOut, dwMsg)
         End Sub
+
+        Private Shared _keepTonesOn As Boolean = True
+
+        ''' <summary>
+        ''' Determines whether tones (played with the PlayMuseic and PlayMusicAsync methods) are allowed to sustain naturally or are forcibly terminated after their duration. 
+        ''' The default value is True, which is suitable for some instruments like piano and guitar.
+        ''' You should use False with some instruments (like sax and harmonica) to avoid noise.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property KeepTonesOn As Primitive
+            Get
+                Return New Primitive(_keepTonesOn)
+            End Get
+
+            Set(value As Primitive)
+                _keepTonesOn = CBool(value)
+            End Set
+        End Property
 
         Private Shared _musicChannel As Byte = 0
 
@@ -549,14 +588,25 @@ Namespace Library
             End Set
         End Property
 
-        Private Shared Sub ChangeInstrument(instrumentNumber As Byte, channel As Byte)
-            Dim dwMsg = BitConverter.ToUInt32(
-                New Byte(3) {
-                    CByte(192 + channel),
-                    instrumentNumber,
-                    0, 0},
-                0)
-            NativeHelper.midiOutShortMsg(_midiOut, dwMsg)
-        End Sub
+        Private Shared _IsolateMusicChannels As Boolean = False
+
+        ''' <summary>
+        ''' Set this property to True to prevent changes caused by using L, O, &gt; and &lt; in a music note played on one channel from affecting other notes on other channels.
+        ''' The default value is False to keep backward compatibility with Small Basic.
+        ''' You can also use V instead of O and S instead of L to keep changes isolated to the current music channel.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property IsolateMusicChannels As Primitive
+            Get
+                Return _IsolateMusicChannels
+            End Get
+
+            Set(value As Primitive)
+                _IsolateMusicChannels = CBool(value)
+            End Set
+        End Property
+
+#End Region
+
     End Class
 End Namespace

@@ -1,0 +1,46 @@
+Turtle.UseAnimation = False
+GW.BackgroundColor = Colors.Black
+GW.PenColor = Colors.White
+
+N = 8
+For I = 1 To N
+   DrawNestedRadials(6, 50, 5, 3, 25)
+   Turtle.Turn(360 / N)
+   Turtle.PenUp()
+   Turtle.Move(200)
+   Turtle.PenDown()
+Next
+
+
+
+Sub DrawPolygon(sides, length, fillColor)
+   Turtle.CreateFigure()
+   a = 360 / sides
+   For l = 1 To sides
+      Turtle.Move(length)
+      Turtle.Turn(a)
+   Next
+   GW.BrushColor = fillColor
+   Turtle.FillFigure()
+EndSub
+
+
+Sub DrawRadial(polygons, sides, length)
+   a = 360 / polygons
+   For k = 1 To polygons
+      DrawPolygon(sides, length, Colors.Random)
+      Turtle.Turn(a)
+   Next
+EndSub
+
+
+Sub DrawNestedRadials(radials, disatence, polygons, sides, length)
+   a = 360 / radials
+   For j = 1 To radials
+      DrawRadial(polygons, sides, length)
+      Turtle.Turn(a)
+      Turtle.PenUp()
+      Turtle.Move(disatence)
+      Turtle.PenDown()
+   Next
+EndSub

@@ -95,5 +95,23 @@ Namespace Library.Internal
         <DllImport("winmm.dll")>
         Public Shared Function midiOutShortMsg(midiOut As Integer, dwMsg As UInteger) As Integer
         End Function
+
+        <DllImport("winmm.dll")>
+        Public Shared Function midiOutOpen(
+            ByRef midiOut As IntPtr,
+            uDeviceID As UInteger,
+            dwCallback As IntPtr,
+            dwCallbackInstance As IntPtr,
+            dwFlags As UInteger
+        ) As Integer
+        End Function
+
+        <DllImport("winmm.dll")>
+        Public Shared Function midiOutShortMsg(
+            midiOut As IntPtr,
+            dwMsg As UInteger
+        ) As Integer
+        End Function
+
     End Class
 End Namespace

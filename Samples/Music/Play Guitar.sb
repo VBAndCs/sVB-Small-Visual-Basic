@@ -1,4 +1,7 @@
 TextWindow.WriteLine("A Peaceful Morning")
+' Try to play the misic then uncomment the next line and try again to see the difference!
+' Sound.IsolateMusicChannels = True
+
 Note1 = "O3 L8 CEG CEG" & "O3 L8 CEG CEG O4 L8 GCE GCE O5 L8 CEG CEG " * 10
 Sound.MusicChannel = 0
 Sound.Volume = 60
