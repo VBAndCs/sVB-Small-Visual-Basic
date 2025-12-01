@@ -90,6 +90,8 @@ Namespace Library
                     If Not index.IsNumber Then
                         Return New Primitive("")
                     End If
+
+                    AsString()
                     Dim s = If(_stringValue, "")
                     If index < 1 OrElse index > s.Length Then Return New Primitive("")
                     Return New Primitive(s(index - 1).ToString())
@@ -102,13 +104,10 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                If IsArray OrElse _stringValue = "" Then
-                    Me._decimalValue = Nothing
-                    _arrayMap(index) = Value
-
-                ElseIf index.IsNumber Then
+                If index.IsNumber Then
+                    Me._stringValue = CStr(Me._decimalValue)
                     If index < 1 Then
-                        Me._stringValue = CStr(Value) & Space(-index) & _stringValue
+                        Me._stringValue &= CStr(Value) & Space(-index) & _stringValue
                     ElseIf index > _stringValue.Length Then
                         Me._stringValue &= Space(index - _stringValue.Length - 1) & CStr(Value)
                     Else
@@ -120,6 +119,10 @@ Namespace Library
                     Else
                         Me._decimalValue = Nothing
                     End If
+
+                ElseIf IsArray OrElse _stringValue = "" Then
+                    Me._decimalValue = Nothing
+                    _arrayMap(index) = Value
                 End If
             End Set
         End Property

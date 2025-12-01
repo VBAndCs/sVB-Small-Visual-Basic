@@ -37,6 +37,18 @@ _Bell = "جرس"
 _Ding = "رنة"
 _Click = "ضغطة"
 _Chime = "نغمة"
+_Cat = "مواء"
+_Crow = "نعيق"
+_Cow = "خوار"
+_Dog = "نباح"
+_Donkey = "نهيق"
+_Duck = "بطبطة"
+_Elephant = "نهيم"
+_Horse = "صهيل"
+_Lion = "زئير"
+_Rooster = "صياح"
+_Sheep = "ثغاء"
+_Wolf = "عواء"
 _IntegralDivision = "÷"
 _CommentSymbol = "#"
 
@@ -46,7 +58,8 @@ BasicWords = {
    _Write, _Line1, _Line2,
    _Read, _Text1, _Text2, _Number1, _Number2,
    _Move, _Turn, _Speed, _Turtle,
-   _Wait, _Random, _Sound, _Beep, _Bell, _Ding, _Click, _Chime
+   _Wait, _Random, _Sound, _Beep, _Bell, _Ding, _Click, _Chime,
+   _Cat, _Crow, _Cow, _Dog, _Donkey, _Duck, _Elephant, _Horse, _Lion, _Rooster, _Sheep, _Wolf
 }
 
 CommandsCompletionList = {
@@ -63,7 +76,19 @@ CommandsCompletionList = {
    _Sound & " " & _Bell,
    _Sound & " " & _Ding,
    _Sound & " " & _Click,
-   _Sound & " " & _Chime
+   _Sound & " " & _Chime,
+   _Sound & " " & _Cat,
+   _Sound & " " & _Crow,
+   _Sound & " " & _Cow,
+   _Sound & " " & _Dog,
+   _Sound & " " & _Donkey,
+   _Sound & " " & _Duck,
+   _Sound & " " & _Elephant,
+   _Sound & " " & _Horse,
+   _Sound & " " & _Lion,
+   _Sound & " " & _Rooster,
+   _Sound & " " & _Sheep,
+   _Sound & " " & _Wolf
 }
 
 OperatorsCompletionList = {
@@ -215,7 +240,20 @@ Sub Tokenize(line, lineNum, commentSymbol)
    EndIf
 EndSub
 
+UseParentFolder = False
+
+Sub Play(filePath)
+   If UseParentFolder Then
+      Sound.Play("../Animal Sounds/" & filePath)
+   Else
+      Sound.Play("Animal Sounds/" & filePath)
+   EndIf
+EndSub
+
 Sub Run()
+   contents = File.ReadContents("Syntax/0.shl")
+   UseParentFolder = File.LastError <> ""
+   
    Terminated = False
    TW.Clear()
    TW.Hide()
@@ -431,6 +469,78 @@ Sub ExecuteLine()
             Return
          EndIf
          Sound.PlayChime()
+      ElseIf nextCommand = _Cat Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Cat.mp3")
+      ElseIf nextCommand = _Crow Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Crow.mp3")
+      ElseIf nextCommand = _Cow Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Cow.mp3")
+      ElseIf nextCommand = _Dog Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Dog.mp3")
+      ElseIf nextCommand = _Donkey Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Donkey.mp3")
+      ElseIf nextCommand = _Duck Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Duck.mp3")
+      ElseIf nextCommand = _Elephant Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Elephant.mp3")
+      ElseIf nextCommand = _Horse Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Horse.mp3")
+      ElseIf nextCommand = _Lion Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Lion.mp3")
+      ElseIf nextCommand = _Rooster Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Rooster.mp3")
+      ElseIf nextCommand = _Sheep Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Sheep.mp3")
+      ElseIf nextCommand = _Wolf Then
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
+            Return
+         EndIf
+         Play("Wolf.mp3")
       Else
          result = EvaluateExpression(2)
          nextPos = result[2]

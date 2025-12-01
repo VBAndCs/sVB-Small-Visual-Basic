@@ -1,0 +1,19 @@
+TextWindow.WriteLine("Play Musice")
+Sound.IsolateMusicChannels = True
+
+Note1 = "O5 L4 C D E G A G E D C O4 L4 C D E G A G E D C"
+' This is the drums channel. The note will play drums.
+Sound.MusicChannel = 9
+Sound.Volume = 100
+Sound.KeepTonesOn = True
+Sound.PlayMusicAsync(Note1 * 7)
+
+Program.Delay(2400)
+Note2 = "R O3 L4 CEG CEG" & "O3 L2 CEG CEG O4 L4 GCE GCE O5 L2 CEG CEG "
+Sound.MusicChannel = 0
+Sound.Volume = 80
+Sound.KeepTonesOn = True
+Sound.MusicInstrument = MusicInstruments.AcousticGuitarSteel
+Sound.PlayMusicAsync(Note2 * 4)
+
+

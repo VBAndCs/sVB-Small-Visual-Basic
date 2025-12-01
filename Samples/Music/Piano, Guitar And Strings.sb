@@ -1,0 +1,39 @@
+TextWindow.WriteLine("Playing music:")
+Sound.IsolateMusicChannels = True
+
+Note1 = "O4 CEG CEG O3 CEG CEG " &
+   "O5 FAC FAC O4 GCE GCE " &
+   "O6 CEG CEG O3 CEG CEG "
+
+Note2 = "O5 C D E G A G F E D O4 G A B C D C B A G "
+
+Sound.MusicChannel = 0
+Sound.Volume = 60
+Sound.KeepTonesOn = True
+Sound.MusicInstrument = MusicInstruments.AcousticGrandPiano
+Sound.PlayMusicAsync(Note1 * 3)
+
+Program.Delay(18 * 400)
+Sound.MusicChannel = 1
+Sound.Volume = 80
+Sound.KeepTonesOn = True
+Sound.MusicInstrument = MusicInstruments.AcousticGuitarSteel
+Sound.PlayMusicAsync(Note2)
+
+
+Program.Delay(18 * 400)
+Sound.MusicChannel = 2
+Sound.Volume = 100
+Sound.KeepTonesOn = False
+Sound.MusicInstrument = MusicInstruments.TremoloStrings
+Sound.PlayMusicAsync(Note2 * 2)
+
+Program.Delay(18 * 400)
+Sound.MusicChannel = 1
+Sound.Volume = 80
+Sound.KeepTonesOn = True
+Sound.MusicInstrument = MusicInstruments.AcousticGuitarSteel
+Sound.PlayMusicAsync(Note2 * 2)
+
+
+
