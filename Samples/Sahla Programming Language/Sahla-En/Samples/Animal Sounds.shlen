@@ -1,0 +1,38 @@
+﻿Times New Roman
+20
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write "Enter the animal name: "
+animal = Read Text
+
+If  animal = "cat"
+    Play Meow
+ElseIf  animal = "cow"
+    Play Moo
+ElseIf  animal = "crow"
+    Play Caw
+ElseIf  animal = "dog"
+    Play Bark
+ElseIf  animal = "donkey"
+    Play Bray
+ElseIf  animal = "duck"
+    Play Quack
+ElseIf  animal = "elephant"
+    Play Trumpet
+ElseIf  animal = "horse"
+    Play Neigh
+ElseIf  animal = "lion"
+    Play Roar
+ElseIf  animal = "rooster"
+    Play Crowing
+ElseIf  animal = "sheep"
+    Play Baa
+ElseIf  animal = "wolf"
+    Play Howl
+EndIf

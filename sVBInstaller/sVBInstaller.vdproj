@@ -303,6 +303,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0CB213D6E147444CA621B542622EE448"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0D6290D3D55345B9B71004D06CE4307D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -502,6 +508,18 @@
         "Entry"
         {
         "MsmKey" = "8:_1A3CE8EBF7DC4EE6999FAB43A8EA9861"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1A742BFB3F204774BE78899658D75844"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1ACC345195F642B08603CA5725E134A5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -837,6 +855,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_2B6FD002162A4DF981CE2647BDFA0B3C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_2BDF0B7A382E4C5EBF01A28FC0A6EEDF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1035,6 +1059,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_3A2D909D46774BBB8595103E5ADBF3CD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3A2DB53F740143EC9C396785820E40A0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1095,6 +1125,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_3E36B8FBA27B4CB9A89C336E30DF0A30"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3E3E63189B0440F8B74639CC48C6F330"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_3E4752F3D37D4684B43B54565C3ADD0A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1131,6 +1173,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_43754A86194B43579CEE35BC59237507"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_43A0EB188A58493287C87EE9D53D413E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1144,6 +1192,12 @@
         "Entry"
         {
         "MsmKey" = "8:_44157DD7C1084A04BD449B943732C10F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4425315DDE3B4250A4A1C634A03318E1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1174,6 +1228,12 @@
         "Entry"
         {
         "MsmKey" = "8:_460E7299171F4414866528628E94BC32"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4623394FDD5E4F89AAABC42A2828C101"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1288,6 +1348,12 @@
         "Entry"
         {
         "MsmKey" = "8:_4EF2E19D0D4446779BE9C84FB3577BC8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_4F34670DF17B43FEAAAADE3E7F718DD6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1743,6 +1809,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_68456509D7F64C73BF36487F8474219C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_68768F8FC1F74BC8A5E13135AFB7ABE2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1863,6 +1935,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6D84AB1BE6344638878F2499F6077F7A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6DBF12346E024ADD89CEF5DCB06A5EBF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1893,6 +1971,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_702610E58DA042B28C9824D2D12D6415"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_70D2E4A451704C0B96C7777F1E9F4424"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1918,6 +2002,12 @@
         "Entry"
         {
         "MsmKey" = "8:_7189B74818AD46F99F086D63F86D4198"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_724DBF740891412DA1697FAC48D0C077"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2392,6 +2482,12 @@
         "Entry"
         {
         "MsmKey" = "8:_8E1A7382CBC74526B7B2B6CA8CB431DF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8EA04BF3B9414D098DD4493B0C50FE06"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3189,6 +3285,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_BB05DC11904943ACACCD50FD527A4237"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_BB721779B0044D23908C43F5BAD3AF4C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3285,6 +3387,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_BC3BFAD86DBB457F85B847E689EC76D8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_BC3F069A5A8C4BE18F8F139C57513D91"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3328,6 +3436,12 @@
         "Entry"
         {
         "MsmKey" = "8:_BE0892162FD2449CB926EBFBCDB9EAA7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BE57D8A927094D42BE691CC1E4376FF5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3531,6 +3645,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C88E5B90E0544EBF91BEE50B0D39A6A5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C8DC05DB12F5431FA7788CE498FB5EC4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3640,6 +3760,12 @@
         "Entry"
         {
         "MsmKey" = "8:_CFA2ED5CA8E94D5E9A098C0EA70057A1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CFF57F20A1EC4A2682B72049560D58F9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4023,6 +4149,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E22EA17A82C94554BDBBB6BA40FACEA3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E236D04C10D349498070482E4FB39844"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -4131,6 +4263,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E75AD3F1321C4C0B9C67BA91ECFF8F5A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E78F2B6A0A554A01B3A051501BD9B77F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -4144,6 +4282,12 @@
         "Entry"
         {
         "MsmKey" = "8:_E80AF9E1E4ED4D5A9A3A263106513F9D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E8A11D02E4AA4677A3CDBB3CD64D5F96"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4323,6 +4467,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_F17633957B8240AF872DD143E8664422"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F1ADE63ECA3D4FFEBF9337EDB5E34D95"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -4492,6 +4642,12 @@
         "Entry"
         {
         "MsmKey" = "8:_F99185064CFD4B43A1F52337D6727D0F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F99821F7886142099C081253369FD111"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4811,7 +4967,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.5.8.9_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.5.9_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -5797,6 +5953,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0CB213D6E147444CA621B542622EE448"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Dog.mp3"
+            "TargetName" = "8:Dog.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0D6290D3D55345B9B71004D06CE4307D"
             {
             "SourcePath" = "8:..\\Samples\\Animation Samples\\Animation2\\Form1.sb"
@@ -6518,6 +6694,46 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_B99D70799CD2411E9609D52F0EB930E1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1A742BFB3F204774BE78899658D75844"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Horse.mp3"
+            "TargetName" = "8:Horse.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1ACC345195F642B08603CA5725E134A5"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Horse.mp3"
+            "TargetName" = "8:Horse.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7614,6 +7830,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2B6FD002162A4DF981CE2647BDFA0B3C"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Duck.mp3"
+            "TargetName" = "8:Duck.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2BDF0B7A382E4C5EBF01A28FC0A6EEDF"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Controls\\RadioButton.xaml"
@@ -8274,6 +8510,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3A2D909D46774BBB8595103E5ADBF3CD"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Crow.mp3"
+            "TargetName" = "8:Crow.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3A2DB53F740143EC9C396785820E40A0"
             {
             "SourcePath" = "8:..\\Samples\\sVB Libraries\\DemoLibSample\\Form1.xaml"
@@ -8474,6 +8730,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3E36B8FBA27B4CB9A89C336E30DF0A30"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Lion.mp3"
+            "TargetName" = "8:Lion.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3E3E63189B0440F8B74639CC48C6F330"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Sheep.mp3"
+            "TargetName" = "8:Sheep.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3E4752F3D37D4684B43B54565C3ADD0A"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\ListBox\\Form1.sb.gen"
@@ -8594,6 +8890,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_43754A86194B43579CEE35BC59237507"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Cat.mp3"
+            "TargetName" = "8:Cat.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_43A0EB188A58493287C87EE9D53D413E"
             {
             "SourcePath" = "8:..\\Small Visual Basic Documentations\\sVB Docs.pdf"
@@ -8640,6 +8956,26 @@
             "TargetName" = "8:RoundCorner.style"
             "Tag" = "8:"
             "Folder" = "8:_FDA3157006534D579F7DC40BD325EC00"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4425315DDE3B4250A4A1C634A03318E1"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Wolf.mp3"
+            "TargetName" = "8:Wolf.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8740,6 +9076,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_443A641196EB47B39DE3FD8A28756E22"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4623394FDD5E4F89AAABC42A2828C101"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Duck.mp3"
+            "TargetName" = "8:Duck.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9120,6 +9476,26 @@
             "TargetName" = "8:2.shlen"
             "Tag" = "8:"
             "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4F34670DF17B43FEAAAADE3E7F718DD6"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Dog.mp3"
+            "TargetName" = "8:Dog.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10645,6 +11021,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_68456509D7F64C73BF36487F8474219C"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Donkey.mp3"
+            "TargetName" = "8:Donkey.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_68768F8FC1F74BC8A5E13135AFB7ABE2"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Generate VB.NET class\\form3.sb.gen"
@@ -11056,6 +11452,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6D84AB1BE6344638878F2499F6077F7A"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Cat.mp3"
+            "TargetName" = "8:Cat.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6DBF12346E024ADD89CEF5DCB06A5EBF"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Simple Calculator\\frmcalc.xaml"
@@ -11156,6 +11572,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_702610E58DA042B28C9824D2D12D6415"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Sheep.mp3"
+            "TargetName" = "8:Sheep.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_70D2E4A451704C0B96C7777F1E9F4424"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Custom Styles\\RoundCorner2.style"
@@ -11242,6 +11678,26 @@
             "TargetName" = "8:FrmTestResults.sb"
             "Tag" = "8:"
             "Folder" = "8:_A7AF2C6B342D4451B798AAAFA9691C1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_724DBF740891412DA1697FAC48D0C077"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Elephant.mp3"
+            "TargetName" = "8:Elephant.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12855,6 +13311,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_4999EDFF421A4525A0B5F98C71AD83EA"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8EA04BF3B9414D098DD4493B0C50FE06"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Wolf.mp3"
+            "TargetName" = "8:Wolf.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15515,6 +15991,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BB05DC11904943ACACCD50FD527A4237"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Donkey.mp3"
+            "TargetName" = "8:Donkey.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BB721779B0044D23908C43F5BAD3AF4C"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Show Directory Contents\\Form1.xaml"
@@ -15604,6 +16100,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BC3BFAD86DBB457F85B847E689EC76D8"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Rooster.mp3"
+            "TargetName" = "8:Rooster.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BC3F069A5A8C4BE18F8F139C57513D91"
@@ -15752,6 +16268,26 @@
             "TargetName" = "8:8.shlen"
             "Tag" = "8:"
             "Folder" = "8:_B04B54CB55A94BD0992C25D69E67CC21"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BE57D8A927094D42BE691CC1E4376FF5"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Animal Sounds.shlen"
+            "TargetName" = "8:Animal Sounds.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -16406,6 +16942,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C88E5B90E0544EBF91BEE50B0D39A6A5"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Elephant.mp3"
+            "TargetName" = "8:Elephant.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C8DC05DB12F5431FA7788CE498FB5EC4"
             {
             "SourcePath" = "8:..\\SmallBasicIDE\\bin\\Release\\ToolBox\\Controls\\Button.xaml"
@@ -16783,6 +17339,26 @@
             "TargetName" = "8:Gradient Brushes.sb"
             "Tag" = "8:"
             "Folder" = "8:_29351D70CCB044B581F9453C9FD90166"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CFF57F20A1EC4A2682B72049560D58F9"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Cow.mp3"
+            "TargetName" = "8:Cow.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -18068,6 +18644,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E22EA17A82C94554BDBBB6BA40FACEA3"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Rooster.mp3"
+            "TargetName" = "8:Rooster.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E236D04C10D349498070482E4FB39844"
             {
             "SourcePath" = "8:..\\Samples\\Turtle Samples\\Draw Flag.sb"
@@ -18428,6 +19024,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E75AD3F1321C4C0B9C67BA91ECFF8F5A"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Lion.mp3"
+            "TargetName" = "8:Lion.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E78F2B6A0A554A01B3A051501BD9B77F"
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Syntax\\0.shlen"
@@ -18474,6 +19090,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_D4DCD81E2F204D92AE28C7E9443161A9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E8A11D02E4AA4677A3CDBB3CD64D5F96"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Samples\\Cat.shlen"
+            "TargetName" = "8:Cat.shlen"
+            "Tag" = "8:"
+            "Folder" = "8:_FEDC5F61FA3840FC984CB56AF9679838"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -19068,6 +19704,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F17633957B8240AF872DD143E8664422"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Cow.mp3"
+            "TargetName" = "8:Cow.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F1ADE63ECA3D4FFEBF9337EDB5E34D95"
             {
             "SourcePath" = "8:..\\Samples\\Math Samples\\Number Names\\Form1.xaml"
@@ -19625,6 +20281,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_5A7A702FE40946EEB447F1D2883BC055"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F99821F7886142099C081253369FD111"
+            {
+            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\Animal Sounds\\Crow.mp3"
+            "TargetName" = "8:Crow.mp3"
+            "Tag" = "8:"
+            "Folder" = "8:_1C5EADEDA16342B4B7540DB2370508ED"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -20994,6 +21670,17 @@
                                     "Property" = "8:_56FD5A8392ED4D02BAB7FD924FB15B35"
                                         "Folders"
                                         {
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_1C5EADEDA16342B4B7540DB2370508ED"
+                                            {
+                                            "Name" = "8:Animal Sounds"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_F6188A7BBD334A0DA40EF4811E74E2DD"
+                                                "Folders"
+                                                {
+                                                }
+                                            }
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_B04B54CB55A94BD0992C25D69E67CC21"
                                             {
                                             "Name" = "8:Syntax"
@@ -21014,6 +21701,17 @@
                                             "Property" = "8:_E4B01598E5714E4397EEE0961CDF0B51"
                                                 "Folders"
                                                 {
+                                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_0B4ACD19E6924BDFA51BD795C6DA2E10"
+                                                    {
+                                                    "Name" = "8:Animal Sounds"
+                                                    "AlwaysCreate" = "11:FALSE"
+                                                    "Condition" = "8:"
+                                                    "Transitive" = "11:FALSE"
+                                                    "Property" = "8:_5E20AD5052DF4C3F96DB3686F442C906"
+                                                        "Folders"
+                                                        {
+                                                        }
+                                                    }
                                                 }
                                             }
                                             "{9EF0B969-E518-4E46-987F-47570745A589}:_FEDC5F61FA3840FC984CB56AF9679838"
@@ -21843,7 +22541,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.5.8.9"
+        "ProductName" = "8:Small Visual Basic 3.5.9"
         "ProductCode" = "8:{004F0DE1-7938-43C4-9CAC-59D32A7CCCE6}"
         "PackageCode" = "8:{6EEB4AD6-28A2-40EB-A3B8-407CBAF475F6}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
@@ -22660,7 +23358,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C1A41205CDA4479E9BADF2A99BD8D2D9"
             {
-            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Debug\\sVB.exe"
+            "SourcePath" = "8:..\\SmallBasicIDE\\obj\\Release\\sVB.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_AE552A268DBF4375AB818E102A6786CD"

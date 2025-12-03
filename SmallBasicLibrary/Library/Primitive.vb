@@ -104,10 +104,14 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                If index.IsNumber Then
-                    Me._stringValue = CStr(Me._decimalValue)
+                If IsArray OrElse Not index.IsNumber Then
+                    Me._decimalValue = Nothing
+                    _arrayMap(index) = Value
+                Else
+                    If index.IsNumber And _stringValue = "" Then Me._stringValue = CStr(Me._decimalValue)
+
                     If index < 1 Then
-                        Me._stringValue &= CStr(Value) & Space(-index) & _stringValue
+                        Me._stringValue = CStr(Value) & Space(-index) & _stringValue
                     ElseIf index > _stringValue.Length Then
                         Me._stringValue &= Space(index - _stringValue.Length - 1) & CStr(Value)
                     Else
@@ -120,9 +124,6 @@ Namespace Library
                         Me._decimalValue = Nothing
                     End If
 
-                ElseIf IsArray OrElse _stringValue = "" Then
-                    Me._decimalValue = Nothing
-                    _arrayMap(index) = Value
                 End If
             End Set
         End Property
@@ -191,6 +192,7 @@ Namespace Library
         Public ReadOnly Property IsArray As Boolean
             Get
                 If _isArray Then Return True
+                If _decimalValue.HasValue Then Return False
                 ConstructArrayMap()
                 Return _arrayMap.Count > 0
             End Get

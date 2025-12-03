@@ -24,9 +24,7 @@ LblLine.Visible = True
 LblBackground.Visible = True
 LblMargin.Visible = True
 LblNum.Visible = True
-
-Contents = File.ReadContents("Syntax/0." & SahlaFilesExtension)
-UseParentFolder = File.LastError <> ""
+UseParentFolder = (File.Exists("Syntax") = False)
 
 ' Open .SahlaFilesExtension files  with Sahla
 If Program.ArgumentCount = 0 Then

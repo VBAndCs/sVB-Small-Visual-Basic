@@ -1,10 +1,8 @@
 
-
-'------------------------------------------------
 Function Test_Append()
    x = "."
    y = "test"
-   Return UnitTest.AssertTrue(
+   Return Unittest.AssertTrue(
       {
          y.Append(x) = "test.",
          Text.Append(y, x) = "test.",
@@ -16,12 +14,10 @@ Function Test_Append()
    )
 EndFunction
 
-
-'------------------------------------------------
 Function Test_IndexOf()
    a = "This is a test. Is not it?"
    
-   Return UnitTest.AssertTrue(
+   Return Unittest.AssertTrue(
       {
          Text.IndexOf(a, "This", 0, False) = 1,
          a.IndexOf("", 1, False) = 0,
@@ -43,13 +39,9 @@ Function Test_IndexOf()
    )
 EndFunction
 
-
-
-
-'------------------------------------------------
 Function Test_StringMult()
    a = {1, 2, 3}
-   Return UnitTest.AssertTrue({
+   Return Unittest.AssertTrue({
          "abc" * 2 = "abcabc",
          "200" * 2 = 400,
          2 * "abc" = "abcabc",
@@ -64,4 +56,75 @@ Function Test_StringMult()
          a * 2 = ""
       },
       "StringMult")
+EndFunction
+
+Function Test_TextIndexerStringKeys()
+   x = ""
+   x["Ali"] = 1
+   x["Sara"] = "Hello"
+   x[123] = "NumericKey"
+   x[""] = "EmptyKey"
+   x["Ali"] = 99   ' إعادة الكتابة على نفس المفتاح
+   
+   Return Unittest.AssertEqual(
+      {x["Ali"], x["Sara"], x[123], x[""]},
+      {"99", "Hello", "NumericKey", "EmptyKey"},
+      "Text Indexer String Keys"
+   )
+EndFunction
+
+
+Function Test_TextIndexerRead()
+   s = "abc"
+   Return Unittest.AssertTrue({
+         s[0] = "",
+         s[1] = "a",
+         s[2] = "b",
+         s[3] = "c",
+         s[0] = "",
+         s[4] = ""
+      }, "Text Indexer Read")
+EndFunction
+
+Function Test_TextIndexerWrite()
+   s = "abc"
+   s[1] = "X"
+   s[2] = "Y"
+   s[3] = "Z"
+   x = "abc"
+   x[-1] = "Q"
+   y = "abc"
+   y[0] = "Q"
+   z = "abc"
+   z[5] = "W"
+   Return Unittest.AssertEqual(
+      {s, x, y, z},
+      {"XYZ", "Q abc", "Qabc", "abc W"},
+      "Text Indexer Write")
+EndFunction
+
+Function Test_TextNumericIndexer()
+   s = 123
+   s[2] = 9
+   x = 123
+   x["test"] = 9
+   Return Unittest.AssertTrue({
+         s = "193",
+         s[1] = 1,
+         s[4] = "",
+         x[1] = "",
+         x["test"] = 9
+      }, "Numeric Indexer"
+   )
+EndFunction
+
+Function Test_IndexerEmptyString()
+   s = ""
+   s[1] = "A"
+   s[3] = "B"
+   Return Unittest.AssertEqual(
+      {s[1], s[2], s[3]},
+      {"A", "", "B"},
+      "Indexer for Empty String"
+   )
 EndFunction

@@ -1,0 +1,15 @@
+﻿Times New Roman
+28
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write Line "Why is the cat meowing?"
+For n = 1 To 5
+    Play Meow
+    Wait 1500
+Next n

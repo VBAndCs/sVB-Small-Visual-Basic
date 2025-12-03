@@ -17,9 +17,7 @@ LblLine.Visible = True
 LblBackground.Visible = True
 LblMargin.Visible = True
 LblNum.Visible = True
-
-Contents = File.ReadContents("Syntax/0.shl")
-UseParentFolder = File.LastError <> ""
+UseParentFolder = (File.Exists("Syntax") = False)
 
 ' Open .shl files  with Sahla
 If Program.ArgumentCount = 0 Then
@@ -482,7 +480,6 @@ Sub MnuOutput_OnClick()
       Open(GetPath("Syntax/1.shl"))
    EndIf
 EndSub
-
 
 Sub MnuVars_OnClick()
    If AskToSave() Then

@@ -1,5 +1,6 @@
 
 Imports System.IO
+Imports System.Runtime.InteropServices.WindowsRuntime
 Imports System.Text
 Imports Microsoft.SmallVisualBasic.Library.Internal
 
@@ -932,5 +933,17 @@ Namespace Library
                 filter.Append(If(i < n, ";", "|"))
             Next
         End Sub
+
+        ''' <summary>
+        ''' Checks whether or not the path of the given file or directory exists.
+        ''' </summary>
+        ''' <param name="path">the path of the file or directory to check.</param>
+        ''' <returns>True is the path exists, otherwise false</returns>
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Function Exists(path As Primitive) As Primitive
+            LastError = New Primitive("")
+            Dim _path As String = Network.GetLocalFile(path)
+            Return New Primitive(IO.File.Exists(_path) OrElse IO.Directory.Exists(_path))
+        End Function
     End Class
 End Namespace

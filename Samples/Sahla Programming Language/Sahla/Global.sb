@@ -59,7 +59,7 @@ BasicWords = {
    _Read, _Text1, _Text2, _Number1, _Number2,
    _Move, _Turn, _Speed, _Turtle,
    _Wait, _Random, _Sound, _Beep, _Bell, _Ding, _Click, _Chime,
-   _Cat, _Crow, _Cow, _Dog, _Donkey, _Duck, _Elephant, _Horse, _Lion, _Rooster, _Sheep, _Wolf
+   _Duck, _Sheep, _Cow, _Lion, _Horse, _Rooster, _Wolf, _Cat, _Dog, _Crow, _Donkey, _Elephant
 }
 
 CommandsCompletionList = {
@@ -77,18 +77,18 @@ CommandsCompletionList = {
    _Sound & " " & _Ding,
    _Sound & " " & _Click,
    _Sound & " " & _Chime,
-   _Sound & " " & _Cat,
-   _Sound & " " & _Crow,
-   _Sound & " " & _Cow,
-   _Sound & " " & _Dog,
-   _Sound & " " & _Donkey,
    _Sound & " " & _Duck,
-   _Sound & " " & _Elephant,
-   _Sound & " " & _Horse,
-   _Sound & " " & _Lion,
-   _Sound & " " & _Rooster,
    _Sound & " " & _Sheep,
-   _Sound & " " & _Wolf
+   _Sound & " " & _Cow,
+   _Sound & " " & _Lion,
+   _Sound & " " & _Horse,
+   _Sound & " " & _Rooster,
+   _Sound & " " & _Wolf,
+   _Sound & " " & _Cat,
+   _Sound & " " & _Dog,
+   _Sound & " " & _Crow,
+   _Sound & " " & _Donkey,
+   _Sound & " " & _Elephant
 }
 
 OperatorsCompletionList = {
@@ -142,6 +142,7 @@ Terminated = False
 _ColoringRequested = False
 _StillColoring = False
 _Initializing = True
+UseParentFolder = (File.Exists("Animal Sounds") = False)
 
 Sub StartColoringTimer()
    _Initializing = False
@@ -240,7 +241,6 @@ Sub Tokenize(line, lineNum, commentSymbol)
    EndIf
 EndSub
 
-UseParentFolder = False
 
 Sub Play(filePath)
    If UseParentFolder Then
@@ -250,10 +250,15 @@ Sub Play(filePath)
    EndIf
 EndSub
 
+Function GetSoundFile(animal)
+   If UseParentFolder Then
+      Return Program.Directory + "\..\Animal Sounds\" & animal & ".mp3"
+   Else
+      Return Program.Directory + "\Animal Sounds\" & animal & ".mp3"
+   EndIf
+EndFunction
+
 Sub Run()
-   contents = File.ReadContents("Syntax/0.shl")
-   UseParentFolder = File.LastError <> ""
-   
    Terminated = False
    TW.Clear()
    TW.Hide()
@@ -1780,6 +1785,18 @@ _EnBell = "Bell"
 _EnDing = "Ding"
 _EnClick = "Click"
 _EnChime = "Chime"
+_EnCat = "Meow"
+_EnCrow = "Caw"
+_EnCow = "Moo"
+_EnDog = "Bark"
+_EnDonkey = "Bray"
+_EnDuck = "Quack"
+_EnElephant = "Trumpet"
+_EnHorse = "Neigh"
+_EnLion = "Roar"
+_EnRooster = "Crowing"
+_EnSheep = "Baa"
+_EnWolf = "Howl"
 _EnIntegralDivision = "\"
 _EnCommmentSymbol = "'"
 
@@ -1889,6 +1906,42 @@ Sub InitTransTokes(forwardConversion)
       OrgTokes[_EnChime] = _Chime
       DestTokes[_EnChime] = _EnChime
       
+      OrgTokes[_EnCat] = _Cat
+      DestTokes[_EnCat] = _EnCat
+      
+      OrgTokes[_EnCrow] = _Crow
+      DestTokes[_EnCrow] = _EnCrow
+      
+      OrgTokes[_EnCow] = _Cow
+      DestTokes[_EnCow] = _EnCow
+      
+      OrgTokes[_EnDog] = _Dog
+      DestTokes[_EnDog] = _EnDog
+      
+      OrgTokes[_EnDonkey] = _Donkey
+      DestTokes[_EnDonkey] = _EnDonkey
+      
+      OrgTokes[_EnDuck] = _Duck
+      DestTokes[_EnDuck] = _EnDuck
+      
+      OrgTokes[_EnElephant] = _Elephant
+      DestTokes[_EnElephant] = _EnElephant
+      
+      OrgTokes[_EnHorse] = _Horse
+      DestTokes[_EnHorse] = _EnHorse
+      
+      OrgTokes[_EnLion] = _Lion
+      DestTokes[_EnLion] = _EnLion
+      
+      OrgTokes[_EnRooster] = _Rooster
+      DestTokes[_EnRooster] = _EnRooster
+      
+      OrgTokes[_EnSheep] = _Sheep
+      DestTokes[_EnSheep] = _EnSheep
+      
+      OrgTokes[_EnWolf] = _Wolf
+      DestTokes[_EnWolf] = _EnWolf
+      
       OrgTokes[_EnIntegralDivision] = _IntegralDivision
       DestTokes[_EnIntegralDivision] = _EnIntegralDivision
       
@@ -1997,6 +2050,42 @@ Sub InitTransTokes(forwardConversion)
       OrgTokes[_EnChime] = _EnChime
       DestTokes[_EnChime] = _Chime
       
+      OrgTokes[_EnCat] = _EnCat
+      DestTokes[_EnCat] = _Cat
+      
+      OrgTokes[_EnCrow] = _EnCrow
+      DestTokes[_EnCrow] = _Crow
+      
+      OrgTokes[_EnCow] = _EnCow
+      DestTokes[_EnCow] = _Cow
+      
+      OrgTokes[_EnDog] = _EnDog
+      DestTokes[_EnDog] = _Dog
+      
+      OrgTokes[_EnDonkey] = _EnDonkey
+      DestTokes[_EnDonkey] = _Donkey
+      
+      OrgTokes[_EnDuck] = _EnDuck
+      DestTokes[_EnDuck] = _Duck
+      
+      OrgTokes[_EnElephant] = _EnElephant
+      DestTokes[_EnElephant] = _Elephant
+      
+      OrgTokes[_EnHorse] = _EnHorse
+      DestTokes[_EnHorse] = _Horse
+      
+      OrgTokes[_EnLion] = _EnLion
+      DestTokes[_EnLion] = _Lion
+      
+      OrgTokes[_EnRooster] = _EnRooster
+      DestTokes[_EnRooster] = _Rooster
+      
+      OrgTokes[_EnSheep] = _EnSheep
+      DestTokes[_EnSheep] = _Sheep
+      
+      OrgTokes[_EnWolf] = _EnWolf
+      DestTokes[_EnWolf] = _Wolf
+      
       OrgTokes[_EnIntegralDivision] = _EnIntegralDivision
       DestTokes[_EnIntegralDivision] = _IntegralDivision
       
@@ -2047,6 +2136,7 @@ Sub MapLetters(forwardConversion)
    LettersMap = {}
    If forwardConversion Then
       LettersMap["ا"] = "a"
+      LettersMap["ى"] = "a"
       LettersMap["أ"] = "a_"
       LettersMap["آ"] = "aa_"
       LettersMap["إ"] = "a1_"
@@ -2292,6 +2382,79 @@ Function ConvertLine()
             Return DestTokes[_EnSound] & " " & DestTokes[_EnChime]
          EndIf
          Return "Sound.PlayChime()"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCat], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnCat]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Cat") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCrow], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnCrow]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Crow") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCow], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnCow]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Cow") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDog], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnDog]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Dog") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDonkey], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnDonkey]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Donkey") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDuck], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnDuck]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Duck") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnElephant], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnElephant]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Elephant") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnHorse], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnHorse]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Horse") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnLion], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnLion]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Lion") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnRooster], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnRooster]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Rooster") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnSheep], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnSheep]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Sheep") & """)"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnWolf], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnWolf]
+         EndIf
+         Return "Sound.Play(""" & GetSoundFile("Wolf") & """)"
+         
       Else
          result = BuildExpressionText(2)
          If ConvertToEnSahla Then

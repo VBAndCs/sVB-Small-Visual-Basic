@@ -34,6 +34,44 @@ Write Line "Playing Piano tone:"
 Play Chime
 Wait
 '
+' There are also names of the sounds of 12 animals, and the following example plays them all:
+Write Line "Play the cat sound:"
+Play Meow
+Wait 3000
+Write Line "Play the dog sound:"
+Play Bark
+Wait 3000
+Write Line "Play the wolf sound:"
+Play Howl
+Wait 3000
+Write Line "Play the lion sound:"
+Play Roar
+Wait 3000
+Write Line "Play the donkey sound:"
+Play Bray
+Wait 3000
+Write Line "Play the horse sound:"
+Play Neigh
+Wait 3000
+Write Line "Play the elephant sound:"
+Play Trumpet
+Wait 3000
+Write Line "Play the crow sound:"
+Play Caw
+Wait 3000
+Write Line "Play the duck sound:"
+Play Quack
+Wait 3000
+Write Line "Play the rooster sound:"
+Play Crowing
+Wait 3000
+Write Line "Play the cow sound:"
+Play Moo
+Wait 3000
+Write Line "Play the sheep sound:"
+Play Baa
+Wait 3000
+'
 ' Note: The Wait command pauses the program for a second, allowing the sound to finish playing.
 ' Without it, each new sound would cancel the previous one, so only the last sound would be heard.
 ' You can also provide a time period (in milliseconds) after the Wait command,
