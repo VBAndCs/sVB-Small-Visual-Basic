@@ -2,9 +2,11 @@ TxtInput.MultiLine = True
 BtnOK.Enabled = False
 LblMsg.Text = Me.ArgsArr
 LblMsg.WordWrap = True
+
+BtnOK.OnGotFocus = Button_OnGotFocus
+BtnCancel.OnGotFocus = Button_OnGotFocus
 TxtInput.Focus()
 
-'------------------------------------------------
 Sub BtnOK_OnClick()
    result!InputText = TxtInput.Text
    result!Button = DialogResults.OK
@@ -12,14 +14,24 @@ Sub BtnOK_OnClick()
    Me.Close()
 EndSub
 
-
-'------------------------------------------------
 Sub BtnCancel_OnClick()
    Me.Close()
 EndSub
 
-
-'------------------------------------------------
 Sub TxtInput_OnTextChanged()
    BtnOK.Enabled = (TxtInput.Text <> "")
+EndSub
+
+Sub Form_OnPreviewKeyDown()
+   If Keyboard.LastKey = Keys.Escape Then
+      Me.Close()
+   EndIf
+EndSub
+
+Sub Button_OnGotFocus()
+   BtnOK.FontBold = False
+   BtnCancel.FontBold = False
+   
+   btn = Event.SenderControl
+   btn.FontBold = True
 EndSub

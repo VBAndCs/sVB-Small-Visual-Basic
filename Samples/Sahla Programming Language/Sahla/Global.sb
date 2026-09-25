@@ -103,6 +103,19 @@ Opertors = {
    "+", "-", "*", "×", "/", _IntegralDivision, "%", "^"
 }
 
+AnimalSounds[_Cat] = "Cat.mp3"
+AnimalSounds[_Crow] = "Crow.mp3"
+AnimalSounds[_Cow] = "Cow.mp3"
+AnimalSounds[_Dog] = "Dog.mp3"
+AnimalSounds[_Donkey] = "Donkey.mp3"
+AnimalSounds[_Duck] = "Duck.mp3"
+AnimalSounds[_Elephant] = "Elephant.mp3"
+AnimalSounds[_Horse] = "Horse.mp3"
+AnimalSounds[_Lion] = "Lion.mp3"
+AnimalSounds[_Rooster] = "Rooster.mp3"
+AnimalSounds[_Sheep] = "Sheep.mp3"
+AnimalSounds[_Wolf] = "Wolf.mp3"
+
 FontNames = Desktop.FontNames
 
 _SettingsFile = "%LOCALAPPDATA%/Sahla.settings"
@@ -143,6 +156,14 @@ _ColoringRequested = False
 _StillColoring = False
 _Initializing = True
 UseParentFolder = (File.Exists("Animal Sounds") = False)
+GwForm = ""
+_GwFirstTime = True
+
+Sub StopTurtle()
+   GwForm.OnClosing = Nothing
+   Terminated = True
+   TW.Close()
+EndSub
 
 Sub StartColoringTimer()
    _Initializing = False
@@ -259,9 +280,11 @@ Function GetSoundFile(animal)
 EndFunction
 
 Sub Run()
+   _GwFirstTime = True
    Terminated = False
    TW.Clear()
    TW.Hide()
+   
    Vars = {}
    Stack.Clear(WhileStack)
    Stack.Clear(ForStack)
@@ -404,15 +427,31 @@ Sub ExecuteLine()
             If arg = "?" Then
                arg = 100
             EndIf
+            
+            If _GwFirstTime Then
+               _GwFirstTime = False
+               GwForm = GW.AsForm()
+               GwForm.OnClosing = StopTurtle
+            EndIf
             Turtle.Move(arg)
          ElseIf command = _Turn Then
             If arg = "?" Then
                arg = 90
             EndIf
+            If _GwFirstTime Then
+               _GwFirstTime = False
+               GwForm = GW.AsForm()
+               GwForm.OnClosing = StopTurtle
+            EndIf
             Turtle.Turn(arg)
          Else
             If arg = "?" Then
                arg = 25
+            EndIf
+            If _GwFirstTime Then
+               _GwFirstTime = False
+               GwForm = GW.AsForm()
+               GwForm.OnClosing = StopTurtle
             EndIf
             Turtle.Speed = arg
          EndIf
@@ -437,7 +476,7 @@ Sub ExecuteLine()
       ProcessExitLoop(LineIndex)
       
    ElseIf command = _ElseIf Or command = _Else Or command = _EndIf Then
-      ReportError("جملة الشرط 'لو' غير موجودة. '" & command & "' غير متوقعة هنا", LineIndex, 3)
+      ReportError("جملة الشرط 'لو' غير موجودة. '" & command & "' غير متوقعة هنا", LineIndex, 1)
       Return
       
    ElseIf command = _Sound Then
@@ -474,78 +513,12 @@ Sub ExecuteLine()
             Return
          EndIf
          Sound.PlayChime()
-      ElseIf nextCommand = _Cat Then
+      ElseIf AnimalSounds.ContainsIndex(nextCommand) Then
          If tokensCount > 2 Then
             ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
             Return
          EndIf
-         Play("Cat.mp3")
-      ElseIf nextCommand = _Crow Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Crow.mp3")
-      ElseIf nextCommand = _Cow Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Cow.mp3")
-      ElseIf nextCommand = _Dog Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Dog.mp3")
-      ElseIf nextCommand = _Donkey Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Donkey.mp3")
-      ElseIf nextCommand = _Duck Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Duck.mp3")
-      ElseIf nextCommand = _Elephant Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Elephant.mp3")
-      ElseIf nextCommand = _Horse Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Horse.mp3")
-      ElseIf nextCommand = _Lion Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Lion.mp3")
-      ElseIf nextCommand = _Rooster Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Rooster.mp3")
-      ElseIf nextCommand = _Sheep Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Sheep.mp3")
-      ElseIf nextCommand = _Wolf Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play("Wolf.mp3")
+         Play(AnimalSounds[nextCommand])
       Else
          result = EvaluateExpression(2)
          nextPos = result[2]
@@ -554,7 +527,12 @@ Sub ExecuteLine()
             Return
          EndIf
          
-         Sound.Play(result[1])
+         animalSound = result[1]
+         If AnimalSounds.ContainsIndex(animalSound) Then
+            Play(AnimalSounds[animalSound])
+         Else
+            Sound.Play(animalSound)
+         EndIf
       EndIf
       
    ElseIf tokensCount >= 3 And Tokens[2][3] = "=" Then ' varName
@@ -691,7 +669,10 @@ Function IsValidVarName(name, line, tokenIndex)
       ReportError("الاسم '" & name & "' لا يصلح كاسم متغير لأنه يبدأ برقم", line, tokenIndex)
       Return False
    ElseIf name = "_" Then
-      ReportError("العلامة _ لا تصلح بمفردها كاسم متغير، لكن يمكن أن تستخدم ضصمن اسم متغير", line, tokenIndex)
+      ReportError("العلامة _ لا تصلح بمفردها كاسم متغير، لكن يمكن أن تستخدم ضمن اسم متغير", line, tokenIndex)
+      Return False
+   ElseIf BasicWords.ContainsValue(name) Then
+      ReportError("لا يمكن استخدام الكلمات الأساسية كأسماء للمتغيرات", line, tokenIndex)
       Return False
    Else
       ForEach c In name
@@ -706,7 +687,7 @@ Function IsValidVarName(name, line, tokenIndex)
 EndFunction
 
 Function IsValidVarName2(name)
-   If name = _And Or Text.IsNumeric(name[1]) Then
+   If BasicWords.ContainsValue(name) Or Text.IsNumeric(name[1]) Then
       Return False
    Else
       ForEach c In name

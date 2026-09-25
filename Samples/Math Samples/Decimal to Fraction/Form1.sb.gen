@@ -1,0 +1,36 @@
+'@Form Hints:
+'#Form1{
+'    Button1: Button
+'    TxtDecimal: TextBox
+'    Label1: Label
+'    LblA: Label
+'    LblB: Label
+'    Label2: Label
+'    CmbPlaces: ComboBox
+'    Label3: Label
+'    LblNotes: Label
+'}
+
+Me = "form1"
+Button1 = "form1.button1"
+TxtDecimal = "form1.txtdecimal"
+Label1 = "form1.label1"
+LblA = "form1.lbla"
+LblB = "form1.lblb"
+Label2 = "form1.label2"
+CmbPlaces = "form1.cmbplaces"
+Label3 = "form1.label3"
+LblNotes = "form1.lblnotes"
+_path = Program.Directory + "\form1.xaml"
+Form1 = Forms.LoadForm("Form1", _path)
+Form.SetArgsArr(form1, Stack.PopValue("_form1_argsArr"))
+'#Events{
+'    Button1: OnClick
+'}
+
+' Button1 Events:
+Control.HandleEvents(Button1)
+Control.OnClick = Button1_OnClick
+
+
+Form.Show(Me)

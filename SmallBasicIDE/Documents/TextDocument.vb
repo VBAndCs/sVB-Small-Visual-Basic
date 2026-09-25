@@ -150,13 +150,14 @@ Namespace Microsoft.SmallVisualBasic.Documents
                     StatementMarkerProvider = StatementMarkerProvider.GetStatementMarkerProvider(_editorControl.TextView)
                     AddHandler _editorControl.LineNumberMargin.LineBreakpointChanged, AddressOf ToggleBreakpoint
 
-                    _editorControl.Dispatcher.BeginInvoke(DispatcherPriority.Render,
-                          CType(Function()
-                                    Me.Focus()
-                                    UpdateCaretPositionText()
-                                    Return Nothing
-                                End Function,
-                                DispatcherOperationCallback), Nothing)
+                    _editorControl.Dispatcher.BeginInvoke(DispatcherPriority.Render, CType(
+                        Function()
+                            Me.Focus()
+                            UpdateCaretPositionText()
+                            _editorControl.ChangeFont(GetSetting("SmallVisualBasic", "CodeEditor", "FontName", ""))
+                            Return Nothing
+                        End Function,
+                        DispatcherOperationCallback), Nothing)
                 End If
 
                 Return _editorControl
@@ -1708,7 +1709,7 @@ EndFunction
                     caret.MoveTo(Me.Text.Length)
                     Dim handler = subDefinition.Replace("#", handlerName)
                     If controlName = GW Then
-                        handler = handler.Insert(53, $"{vbCrLf}{controlName}.{eventName} = {handlerName}{vbCrLf}")
+                        handler = handler.Insert(2, $"{vbCrLf}{controlName}.{eventName} = {handlerName}{vbCrLf}")
                         _GwHandlers(handlerName) = New EventInformation(controlName, eventName)
                     Else
                         _EventHandlers(handlerName) = New EventInformation(controlName, eventName)

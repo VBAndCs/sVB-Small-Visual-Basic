@@ -6,7 +6,7 @@
     <sws:Export Name='ClassificationFormat'>
         <mntcd:ClassificationFormat 
           FontRenderingSize='22' 
-          FontFamily='Consolas' 
+          FontFamily='Cascadia Code' 
           ForegroundBrush='Black'>
             <mntcd:ClassificationFormat.ClassificationTypes>
                 <sys:String>text</sys:String>
@@ -33,7 +33,7 @@
     <sws:Export Name='ClassificationFormat'>
         <mntcd:ClassificationFormat 
           FontRenderingSize='22' 
-          FontFamily='Consolas' 
+          FontFamily='Cascadia Code' 
           FontWeight='Bold' 
           ForegroundBrush='#7777ff'>
             <mntcd:ClassificationFormat.ClassificationTypes>

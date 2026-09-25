@@ -1,19 +1,12 @@
-﻿Imports Microsoft.Nautilus.Text
-Imports Microsoft.SmallVisualBasic.com.smallbasic
-Imports Microsoft.SmallVisualBasic.Documents
-Imports Microsoft.SmallVisualBasic.LanguageService
-Imports Microsoft.SmallVisualBasic.Shell
-Imports Microsoft.SmallVisualBasic.Utility
-Imports Microsoft.Win32
-Imports Microsoft.Windows.Controls
-Imports System
+﻿Imports System
 Imports System.Collections.Generic
 Imports System.Collections.ObjectModel
 Imports System.ComponentModel
+Imports System.ComponentModel.Composition
 Imports System.Diagnostics
 Imports System.Globalization
 Imports System.IO
-Imports Nf = Microsoft.SmallVisualBasic.Utility.NotificationButtons
+Imports System.Linq
 Imports System.Reflection
 Imports System.Threading
 Imports System.Windows
@@ -22,14 +15,23 @@ Imports System.Windows.Input
 Imports System.Windows.Media
 Imports System.Windows.Media.Imaging
 Imports System.Windows.Threading
-Imports System.Linq
-Imports System.ComponentModel.Composition
-Imports sb = Microsoft.SmallVisualBasic.WinForms
-Imports Microsoft.VisualBasic
-Imports Microsoft.SmallBasic
-Imports Microsoft.SmallVisualBasic.Library
 Imports DiagramHelper
+Imports Microsoft.Nautilus.Text
+Imports Microsoft.Nautilus.Text.Classification
+Imports Microsoft.Nautilus.Text.Editor
+Imports Microsoft.SmallBasic
+Imports Microsoft.SmallVisualBasic.com.smallbasic
+Imports Microsoft.SmallVisualBasic.Documents
+Imports Microsoft.SmallVisualBasic.LanguageService
+Imports Microsoft.SmallVisualBasic.Library
+Imports Microsoft.SmallVisualBasic.Shell
+Imports Microsoft.SmallVisualBasic.Utility
+Imports Microsoft.VisualBasic
+Imports Microsoft.Win32
+Imports Microsoft.Windows.Controls
 Imports MS.Internal.Xaml
+Imports Nf = Microsoft.SmallVisualBasic.Utility.NotificationButtons
+Imports sb = Microsoft.SmallVisualBasic.WinForms
 
 Namespace Microsoft.SmallVisualBasic
     <Export("MainWindow")>
@@ -89,6 +91,12 @@ Namespace Microsoft.SmallVisualBasic
         Public Shared InsertFilePathCommand As New RoutedUICommand(
             "Insert a file path",
             "InsertFilePathCommand",
+            GetType(MainWindow)
+        )
+
+        Public Shared ChooseEditorFontCommand As New RoutedUICommand(
+            "Change Font",
+            "ChooseEditorFontCommand",
             GetType(MainWindow)
         )
 
@@ -2140,5 +2148,20 @@ Namespace Microsoft.SmallVisualBasic
                 doc.EditorControl.EditorOperations.InsertText("""" & fileName & """", doc.UndoHistory)
             End If
         End Sub
+
+        Private Sub OnChooseEditorFont(sender As Object, e As ExecutedRoutedEventArgs)
+            Dim dlg As New Forms.FontDialog()
+            dlg.ShowColor = False
+            dlg.ShowEffects = False
+            dlg.FontMustExist = True
+            dlg.Font = New System.Drawing.Font(GetSetting("SmallVisualBasic", "CodeEditor", "FontName", "Cascadia Code"), 10)
+
+            If dlg.ShowDialog() = Forms.DialogResult.OK Then
+                Dim fontName = dlg.Font.FontFamily.Name
+                SaveSetting("SmallVisualBasic", "CodeEditor", "FontName", fontName)
+                ActiveDocument.EditorControl.ChangeFont(fontName)
+            End If
+        End Sub
+
     End Class
 End Namespace

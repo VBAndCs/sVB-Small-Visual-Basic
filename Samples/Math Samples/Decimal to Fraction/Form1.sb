@@ -1,0 +1,37 @@
+CmbPlaces.SelectedIndex = 5
+
+Sub Button1_OnClick()
+   LblA.Text = "?"
+   LblB.Text = "?"
+   LblNotes.Text = "Calculating..."
+   ConvertToFraction(TxtDecimal.Text, CmbPlaces.SelectedItem)
+EndSub
+
+Sub ConvertToFraction(decimal, decimalPlaces)
+   If decimal.IsNumeric = False Then
+      LblNotes.Text = "Please Enter a valid number!"
+      Return
+   EndIf
+   
+   maxB = Math.Power(10, decimalPlaces)
+   maxError = 1 / maxB
+   
+   For b = 1 To maxB
+      n = decimal * b
+      
+      a = Math.Round(n)
+      approx = a / b
+      error = Math.Abs(approx - decimal)
+      If error = 0 Then
+         LblA.Text = a
+         LblB.Text = b
+         LblNotes.Text = "An exact fraction is found."
+         Return
+      ElseIf error <= maxError Then
+         LblA.Text = a
+         LblB.Text = b
+         LblNotes.Text = "An approximate fraction is found within about " & Math.Round2(error, decimalPlaces + 2) & " error margin."
+         Return
+      EndIf
+   Next
+EndSub

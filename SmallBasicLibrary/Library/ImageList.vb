@@ -140,7 +140,6 @@ Namespace Library
 
         Friend Shared Function GetBitmap(imageName As Primitive) As BitmapSource
             Dim value As BitmapSource = Nothing
-
             GraphicsWindow.Invoke(
                 Sub()
                     If imageName.IsEmpty Then
@@ -159,9 +158,13 @@ Namespace Library
                     Try
                         fileNameOrUrl = New Primitive(Environment.ExpandEnvironmentVariables(fileNameOrUrl))
                         Dim localFileName As String = Network.GetLocalFile(fileNameOrUrl)
+                        If localFileName = "" Then
+                            ReportError("Image error", New Exception($"'{fileNameOrUrl}' is not found or failed to dpwnload."))
+                            Return Nothing
+                        End If
                         Return New BitmapImage(New Uri(localFileName, UriKind.RelativeOrAbsolute))
-
                     Catch ex As Exception
+                        ReportError($"'{fileNameOrUrl}' is not found or failed to dpwnload.", ex)
                     End Try
 
                     Return Nothing
@@ -203,7 +206,7 @@ Namespace Library
                 Sub()
                     Dim wind = Application.Current.MainWindow
                     If wind Is Nothing Then
-                        GraphicsWindow.VerifyAccess()
+                        GraphicsWindow.VerifyAccess(False)
                         wind = GraphicsWindow._window
                     End If
                     Dim source = PresentationSource.FromVisual(wind)

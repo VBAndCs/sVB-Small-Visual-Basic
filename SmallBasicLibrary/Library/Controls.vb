@@ -40,7 +40,7 @@ Namespace Library
         ''' </summary>
         Public Shared Custom Event ButtonClicked As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                GraphicsWindow.VerifyAccess()
+                GraphicsWindow.VerifyAccess(False)
                 buttonClickedHandler = Value
             End AddHandler
 
@@ -60,7 +60,7 @@ Namespace Library
         ''' </summary>
         Public Shared Custom Event TextTyped As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                GraphicsWindow.VerifyAccess()
+                GraphicsWindow.VerifyAccess(False)
                 TextTypedHandler = Value
             End AddHandler
 
@@ -84,7 +84,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Button)>
         Public Shared Function AddButton(caption As Primitive, left As Primitive, top As Primitive) As Primitive
-            GraphicsWindow.VerifyAccess()
+            GraphicsWindow.VerifyAccess(False)
             Dim name As String = Shapes.GenerateNewName("Button", True)
             GraphicsWindow.Invoke(
                 Sub()
@@ -153,7 +153,7 @@ Namespace Library
         Public Shared Function AddTextBox(left As Primitive, top As Primitive) As Primitive
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("TextBox", True)
                     Dim textBox1 As New TextBox With {
                         .Width = 160.0,
@@ -188,7 +188,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("CheckBox", True)
                     Dim key = WinForms.Form.AddCheckBox(GW_NAME, New Primitive(name), left, top, caption, isChecked)
                     GraphicsWindow.AddControl(
@@ -221,7 +221,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("ComboBox", True)
                     Dim key = WinForms.Form.AddComboBox(
                         GW_NAME, New Primitive(name), left, top, width, height
@@ -256,7 +256,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("DatePicker", True)
                     Dim key = WinForms.Form.AddDatePicker(
                         GW_NAME, New Primitive(name), left, top, width, selectedDate
@@ -288,7 +288,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("Label", True)
                     Dim key = WinForms.Form.AddLabel(
                         GW_NAME, New Primitive(name), left, top, -1, -1
@@ -324,7 +324,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("ListBox", True)
                     Dim key = WinForms.Form.AddListBox(
                         GW_NAME, New Primitive(name), left, top, width, height
@@ -362,7 +362,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("ProgressBar", True)
                     Dim key = WinForms.Form.AddProgressBar(
                         GW_NAME, New Primitive(name),
@@ -400,7 +400,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("RadioButton", True)
                     Dim key = WinForms.Form.AddRadioButton(
                         GW_NAME, New Primitive(name),
@@ -443,7 +443,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("ScrollBar", True)
                     Dim key = WinForms.Form.AddScrollBar(
                         GW_NAME, New Primitive(name),
@@ -488,7 +488,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("Slider", True)
                     Dim key = WinForms.Form.AddSlider(
                         GW_NAME, New Primitive(name),
@@ -519,7 +519,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("Timer", False)
                     Dim key = WinForms.Form.AddTimer(
                         GW_NAME, New Primitive(name), interval
@@ -551,7 +551,7 @@ Namespace Library
 
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim name = Shapes.GenerateNewName("ToggleButton", True)
                     Dim key = WinForms.Form.AddToggleButton(
                         GW_NAME, New Primitive(name),

@@ -70,12 +70,12 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Property Topmost As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(Sub() Topmost = _window.Topmost)
             End Get
 
             Set(value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(Sub() _window.Topmost = CBool(value))
             End Set
         End Property
@@ -86,7 +86,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property BackgroundColor As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return _backgroundColor
             End Get
 
@@ -105,7 +105,7 @@ Namespace Library
         ''' </summary>
         ''' <param name="endColor">The end color of the gradient brush</param>
         Public Shared Sub FillGradiantBackground(endColor As Primitive)
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                     Sub()
                         If WinForms.Color.IsNone(endColor) Then
@@ -131,12 +131,12 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property BrushColor As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return _brushColor
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 _brushColor = Value
                 CreateBrush()
             End Set
@@ -149,12 +149,12 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property GradientEndColor As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return _gradientEndColor
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 _gradientEndColor = Value
                 CreateBrush()
             End Set
@@ -165,16 +165,16 @@ Namespace Library
                 Sub()
                     'Try
                     If WinForms.Color.IsNone(_gradientEndColor) Then
-                            _fillBrush = WinForms.Color.GetBrush(_brushColor)
-                        Else
-                            _fillBrush = New System.Windows.Media.LinearGradientBrush(
+                        _fillBrush = WinForms.Color.GetBrush(_brushColor)
+                    Else
+                        _fillBrush = New System.Windows.Media.LinearGradientBrush(
                              WinForms.Color.FromString(_brushColor),
                              WinForms.Color.FromString(_gradientEndColor),
                              New System.Windows.Point(0, 0),
                              New System.Windows.Point(1, 0)
                         )
-                        End If
-                        _fillBrush?.Freeze()
+                    End If
+                    _fillBrush?.Freeze()
                     'Catch
                     'End Try
                 End Sub)
@@ -186,7 +186,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Property CanResize As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return InvokeWithReturn(
                      Function() As Primitive
                          Return New Primitive(_window.ResizeMode = ResizeMode.CanResize)
@@ -194,7 +194,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(
                     Sub()
                         If CBool(Value) Then
@@ -214,12 +214,12 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property PenWidth As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return _penWidth
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 _penWidth = Value
                 CreatePen()
             End Set
@@ -233,12 +233,12 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property PenColor As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return _penColor
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 _penColor = Value
                 CreatePen()
             End Set
@@ -335,7 +335,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.String)>
         Public Shared Property Title As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return InvokeWithReturn(
                     Function() As Primitive
                         Return New Primitive(_window.Title)
@@ -343,7 +343,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(Sub() _window.Title = Value)
             End Set
         End Property
@@ -354,7 +354,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Height As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return InvokeWithReturn(
                     Function() As Primitive
                         Return New Primitive(_mainCanvas.ActualHeight)
@@ -362,7 +362,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(
                     Sub()
                         _window.WindowState = WindowState.Normal
@@ -377,7 +377,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Width As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return InvokeWithReturn(
                     Function() As Primitive
                         Return New Primitive(_mainCanvas.ActualWidth)
@@ -385,7 +385,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(
                     Sub()
                         _window.WindowState = WindowState.Normal
@@ -418,7 +418,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Left As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return InvokeWithReturn(
                     Function() As Primitive
                         Return New Primitive(_window.Left)
@@ -426,7 +426,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(Sub() _window.Left = Value)
             End Set
         End Property
@@ -437,7 +437,7 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property Top As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return InvokeWithReturn(
                     Function() As Primitive
                         Return New Primitive(_window.Top)
@@ -445,7 +445,7 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(Sub() _window.Top = Value)
             End Set
         End Property
@@ -464,12 +464,12 @@ Namespace Library
         <WinForms.ReturnValueType(VariableType.Boolean)>
         Public Shared Property FullScreen As Primitive
             Get
-                VerifyAccess()
+                VerifyAccess(False)
                 Return _fullScreen
             End Get
 
             Set(value As Primitive)
-                VerifyAccess()
+                VerifyAccess(False)
                 _fullScreen = value
                 Invoke(
                     Sub()
@@ -550,7 +550,7 @@ Namespace Library
         ''' </summary>
         Public Shared Custom Event KeyDown As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                VerifyAccess()
+                VerifyAccess(False)
                 keyDownHandler = Value
             End AddHandler
 
@@ -570,7 +570,7 @@ Namespace Library
         ''' </summary>
         Public Shared Custom Event KeyUp As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                VerifyAccess()
+                VerifyAccess(False)
                 keyUpHandler = Value
             End AddHandler
 
@@ -590,7 +590,7 @@ Namespace Library
         ''' </summary>
         Public Shared Custom Event MouseDown As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                VerifyAccess()
+                VerifyAccess(False)
                 mouseDownHandler = Value
             End AddHandler
 
@@ -611,7 +611,7 @@ Namespace Library
         ''' </summary>
         Public Shared Custom Event MouseUp As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                VerifyAccess()
+                VerifyAccess(False)
                 mouseUpHandler = Value
             End AddHandler
 
@@ -631,7 +631,7 @@ Namespace Library
         ''' </summary>
         Public Shared Custom Event MouseMove As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                VerifyAccess()
+                VerifyAccess(False)
                 mouseMoveHandler = Value
             End AddHandler
 
@@ -651,7 +651,7 @@ Namespace Library
         ''' </summary>
         Public Shared Custom Event TextInput As SmallVisualBasicCallback
             AddHandler(Value As SmallVisualBasicCallback)
-                VerifyAccess()
+                VerifyAccess(False)
                 textInputHandler = Value
             End AddHandler
 
@@ -707,7 +707,7 @@ Namespace Library
         ''' <param name="width">The width of the rectangle.</param>
         ''' <param name="height">The height of the rectangle.</param>
         Public Shared Sub DrawRectangle(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
@@ -725,7 +725,7 @@ Namespace Library
         ''' <param name="width">The width of the rectangle.</param>
         ''' <param name="height">The height of the rectangle.</param>
         Public Shared Sub FillRectangle(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
@@ -743,7 +743,7 @@ Namespace Library
         ''' <param name="width">The width of the ellipse.</param>
         ''' <param name="height">The height of the ellipse.</param>
         Public Shared Sub DrawEllipse(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
@@ -776,7 +776,7 @@ Namespace Library
                    yScale As Primitive,
                    pointsArr As Primitive)
 
-            VerifyAccess() ' must be here to create the pen
+            VerifyAccess(False) ' must be here to create the pen
             CreatePolygon(xOffset, yOffset, xScale, yScale, pointsArr, _pen, Nothing)
         End Sub
 
@@ -795,7 +795,7 @@ Namespace Library
                    yScale As Primitive,
                    pointsArr As Primitive)
 
-            VerifyAccess() ' must be here to create the brush
+            VerifyAccess(False) ' must be here to create the brush
             CreatePolygon(xOffset, yOffset, xScale, yScale, pointsArr, Nothing, _fillBrush)
         End Sub
 
@@ -868,7 +868,7 @@ Namespace Library
         ''' <param name="width">The width of the ellipse.</param>
         ''' <param name="height">The height of the ellipse.</param>
         Public Shared Sub FillEllipse(x As Primitive, y As Primitive, width As Primitive, height As Primitive)
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(Sub()
                        Dim drawingContext = _mainDrawing.Append()
                        Dim w = CDbl(width) / 2
@@ -899,7 +899,7 @@ Namespace Library
                          x2 As Primitive, y2 As Primitive,
                          x3 As Primitive, y3 As Primitive)
 
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
@@ -931,7 +931,7 @@ Namespace Library
         ''' <param name="x3">The x co-ordinate of the third point.</param>
         ''' <param name="y3">The y co-ordinate of the third point.</param>
         Public Shared Sub FillTriangle(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive, x3 As Primitive, y3 As Primitive)
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                 Sub()
                     Dim dc As DrawingContext = _mainDrawing.Append()
@@ -971,7 +971,7 @@ Namespace Library
                          x4 As Primitive, y4 As Primitive
                    )
 
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
@@ -1012,7 +1012,7 @@ Namespace Library
                          x3 As Primitive, y3 As Primitive
                    )
 
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
@@ -1061,7 +1061,7 @@ Namespace Library
                        isLargArc As Primitive,
                        isClockwise As Primitive
                    )
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                 Sub()
                     Dim dc = _mainDrawing.Append()
@@ -1125,7 +1125,7 @@ Namespace Library
         ''' <param name="x2">The x co-ordinate of the second point.</param>
         ''' <param name="y2">The y co-ordinate of the second point.</param>
         Public Shared Sub DrawLine(x1 As Primitive, y1 As Primitive, x2 As Primitive, y2 As Primitive)
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(
                 Sub()
                     Dim dc As DrawingContext = _mainDrawing.Append()
@@ -1147,7 +1147,7 @@ Namespace Library
         ''' <param name="text">The text to draw</param>
         Public Shared Sub DrawText(x As Primitive, y As Primitive, text As Primitive)
             If Not text.IsEmpty Then
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(
                     Sub()
                         Dim dc = _mainDrawing.Append()
@@ -1175,7 +1175,7 @@ Namespace Library
         ''' <param name="text">The text to draw.</param>
         Public Shared Sub DrawBoundText(x As Primitive, y As Primitive, width As Primitive, text As Primitive)
             If Not text.IsEmpty Then
-                VerifyAccess()
+                VerifyAccess(False)
                 Invoke(
                     Sub()
                         Dim dc = _mainDrawing.Append()
@@ -1218,7 +1218,7 @@ Namespace Library
             If imageName.IsEmpty Then
                 Return
             End If
-            VerifyAccess()
+            VerifyAccess(False)
             Dim image1 As BitmapSource = ImageList.GetBitmap(imageName)
             If image1 IsNot Nothing Then
                 Invoke(
@@ -1240,15 +1240,19 @@ Namespace Library
         Public Shared Sub DrawImage(imageName As Primitive, x As Primitive, y As Primitive)
             If imageName.IsEmpty Then Return
 
-            VerifyAccess()
+            VerifyAccess(False)
             Dim image1 = ImageList.GetBitmap(imageName)
             If image1 IsNot Nothing Then
                 Invoke(
                     Sub()
-                        Dim dc As DrawingContext = _mainDrawing.Append()
-                        dc.DrawImage(image1, New System.Windows.Rect(x, y, image1.PixelWidth, image1.PixelHeight))
-                        dc.Close()
-                        AddRasterizeOperationToQueue()
+                        Try
+                            Dim dc As DrawingContext = _mainDrawing.Append()
+                            dc.DrawImage(image1, New System.Windows.Rect(x, y, image1.PixelWidth, image1.PixelHeight))
+                            dc.Close()
+                            AddRasterizeOperationToQueue()
+                        Catch ex As Exception
+                            ReportError("Calling GW.DrawImage caused an error.", ex)
+                        End Try
                     End Sub)
             End If
         End Sub
@@ -1294,7 +1298,7 @@ Namespace Library
         ''' <param name="y">The y co-ordinate of the pixel.</param>
         ''' <param name="color">The color of the pixel to set.</param>
         Public Shared Sub SetPixel(x As Primitive, y As Primitive, color As Primitive)
-            VerifyAccess()
+            VerifyAccess(False)
             dispatcher.Invoke(Threading.DispatcherPriority.Render,
                 Sub()
                     Dim dc = _mainDrawing.Append()
@@ -1326,7 +1330,7 @@ Namespace Library
         ''' <returns>The color of the pixel.</returns>
         <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Function GetPixel(x As Primitive, y As Primitive) As Primitive
-            VerifyAccess()
+            VerifyAccess(False)
             If x < 0 Then x = 0
             If y < 0 Then y = 0
             If x > Width Then x = Width
@@ -1376,7 +1380,7 @@ Namespace Library
         ''' Clears the window.
         ''' </summary>
         Public Shared Sub Clear()
-            VerifyAccess()
+            VerifyAccess(False)
             If Not _windowCreated Then Return
 
             Invoke(
@@ -1399,7 +1403,7 @@ Namespace Library
         ''' <param name="message">The text to be displayed on the message box.</param>
         ''' <param name="title">The title for the message box.</param>
         Public Shared Sub ShowMessage(message As Primitive, title As Primitive)
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(Sub() MessageBox.Show(message, title))
         End Sub
 
@@ -1412,7 +1416,7 @@ Namespace Library
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Form)>
         Public Shared Function AsForm() As Primitive
-            VerifyAccess()
+            VerifyAccess(False)
             Return Controls.GW_NAME
         End Function
 
@@ -1588,7 +1592,7 @@ Namespace Library
             End If
         End Sub
 
-        Friend Shared Sub VerifyAccess(Optional keepValue As Boolean = False)
+        Friend Shared Sub VerifyAccess(keepValue As Boolean)
             If Not CBool(_AutoShow) Then
                 If _windowCreated Then BeginInvoke(Sub() Return)
             ElseIf _windowCreated Then
@@ -1621,7 +1625,7 @@ Namespace Library
                    shape As FrameworkElement,
                    Optional addToCanvas As Boolean = True)
 
-            VerifyAccess()
+            VerifyAccess(False)
             If name.StartsWith(Controls.GW_NAME) Then
                 shape.Name = name.Substring(Controls.GW_NAME.AsString().Length + 1)
             Else
@@ -1638,7 +1642,7 @@ Namespace Library
                           Optional addToCanvas As Boolean = True
                    )
 
-            VerifyAccess()
+            VerifyAccess(False)
             control.Foreground = _fillBrush
             control.FontFamily = _fontFamily
             control.FontStyle = _fontStyle
@@ -1710,7 +1714,7 @@ Namespace Library
         End Function
 
         Friend Shared Sub SetCursor(cursor1 As Cursor)
-            VerifyAccess()
+            VerifyAccess(False)
             Invoke(Sub() _window.Cursor = cursor1)
         End Sub
 

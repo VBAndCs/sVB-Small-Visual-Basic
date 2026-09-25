@@ -222,7 +222,7 @@ Namespace Library
         ''' </summary>
         Public Shared Sub Hide()
             If IsVisible Then
-                GraphicsWindow.VerifyAccess()
+                GraphicsWindow.VerifyAccess(False)
                 GraphicsWindow.Invoke(Sub() Shapes.Remove(_turtleName))
                 IsVisible = False
             End If
@@ -283,7 +283,7 @@ Namespace Library
             Dim name = Shapes.GenerateNewName("GeoPath")
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     _path.Fill = GraphicsWindow.FillBrush
                     GraphicsWindow.AddShape(name, _path)
                     _path = Nothing
@@ -557,7 +557,7 @@ Namespace Library
         End Sub
 
         Private Shared Sub VerifyAccess()
-            GraphicsWindow.VerifyAccess()
+            GraphicsWindow.VerifyAccess(False)
             If _initialized AndAlso Not _toShow Then Return
             _initialized = True
             If Not IsVisible Then Return

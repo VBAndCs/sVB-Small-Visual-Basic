@@ -4,20 +4,37 @@ Me.Text = Info!Title
 LblMsg.Text = Info!Message
 LblMsg.WordWrap = True
 
-'------------------------------------------------
+BtnYes.OnGotFocus = Button_OnGotFocus
+BtnNo.OnGotFocus = Button_OnGotFocus
+BtnCancel.OnGotFocus = Button_OnGotFocus
+BtnYes.Focus()
+
 Sub BtnYes_OnClick()
    Me.DialogResult = DialogResults.Yes
    Me.Close()
 EndSub
 
-'------------------------------------------------
 Sub BtnNo_OnClick()
    Me.DialogResult = DialogResults.No
    Me.Close()
 EndSub
 
-
-'------------------------------------------------
 Sub BtnCancel_OnClick()
    Me.Close()
+EndSub
+
+Sub Form_OnPreviewKeyDown()
+   If Keyboard.LastKey = Keys.Escape Then
+      Me.Close()
+   EndIf
+EndSub
+
+
+Sub Button_OnGotFocus()
+   BtnYes.FontBold = False
+   BtnNo.FontBold = False
+   BtnCancel.FontBold = False
+   
+   btn = Event.SenderControl
+   btn.FontBold = True
 EndSub

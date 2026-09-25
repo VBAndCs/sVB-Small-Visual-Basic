@@ -18,7 +18,7 @@ EndSub
 
 
 
-'------------------------------------------------
+' ------------------------------------------------
 Sub BtnInput_OnClick()
    name = Global.InputBox("Enter your name: ")
    If name = "" Then

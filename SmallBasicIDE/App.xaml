@@ -19,13 +19,14 @@
                     <ContentControl Content="{Binding Path=EditorControl}">
                         <FrameworkElement.ContextMenu>
                             <ContextMenu Name="CntxMenu" Opened="CntxMenu_Opened" Closed="CntxMenu_Closed">
-                                <MenuItem Command="{x:Static sb:MainWindow.CutCommand}" />
-                                <MenuItem Command="{x:Static sb:MainWindow.CopyCommand}" />
-                                <MenuItem Command="{x:Static sb:MainWindow.PasteCommand}" />
+                                <MenuItem Command="{x:Static sb:MainWindow.CutCommand}" InputGestureText="Ctrl+X"/>
+                                <MenuItem Command="{x:Static sb:MainWindow.CopyCommand}" InputGestureText="Ctrl+C"/>
+                                <MenuItem Command="{x:Static sb:MainWindow.PasteCommand}" InputGestureText="Ctrl+V"/>
                                 <Separator />
-                                <MenuItem Command="{x:Static sb:MainWindow.FindCommand}" />
-                                <MenuItem Command="{x:Static sb:MainWindow.InsertFilePathCommand}" />
+                                <MenuItem Command="{x:Static sb:MainWindow.FindCommand}" InputGestureText="Ctrl+F"/>
+                                <MenuItem Command="{x:Static sb:MainWindow.InsertFilePathCommand}" InputGestureText="F7"/>
                                 <Separator />
+                                <MenuItem Command="{x:Static sb:MainWindow.ChooseEditorFontCommand}" />
                                 <MenuItem Command="{x:Static sb:MainWindow.FormatCommand}" />
                             </ContextMenu>
                         </FrameworkElement.ContextMenu>

@@ -204,11 +204,18 @@ Namespace Library
         ''' </summary>
         ''' <param name="filePath">
         ''' The path for the audio file.  This could either be a local file (e.g.: c:\music\track1.mp3) or a file on the network (e.g.: http://contoso.com/track01.wma).
+        ''' Send an enpty string to stop all sounds.
         ''' </param>
         Public Shared Sub [Stop](filePath As Primitive)
             SmallBasicApplication.Invoke(
                 Sub()
-                    GetMediaPlayer(filePath)?.Stop()
+                    If CStr(filePath) = "" Then ' Stop all
+                        For Each mp In _mediaPlayerMap.Values
+                            mp.Stop()
+                        Next
+                    Else
+                        GetMediaPlayer(filePath)?.Stop()
+                    End If
                 End Sub)
         End Sub
 

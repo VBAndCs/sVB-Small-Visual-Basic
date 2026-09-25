@@ -6,7 +6,7 @@
         xmlns:shell="clr-namespace:Microsoft.SmallVisualBasic.Shell" 
         xmlns:DH="clr-namespace:DiagramHelper;assembly=DiagramHelper"        
         x:Name="ShellWindow" Height="800" Width="1024" 
-        Title="Small Visual Basic v3.5.9" Loaded="Window_Loaded"
+        Title="Small Visual Basic v3.5.9.7" Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen" WindowState="Maximized" ContentRendered ="Window_ContentRendered"
         Icon="smallbasic.ico">
 
@@ -94,7 +94,10 @@
         <CommandBinding Command="{x:Static l:MainWindow.FindCommand}" 
                     Executed="OnFind" />
         <CommandBinding Command="{x:Static l:MainWindow.InsertFilePathCommand}" 
-                    Executed="OnInsertFilePath" />        
+                    Executed="OnInsertFilePath" />
+        <CommandBinding Command="{x:Static l:MainWindow.ChooseEditorFontCommand}" 
+                    Executed="OnChooseEditorFont" />
+
         <CommandBinding Command="{x:Static l:MainWindow.FindNextCommand}" 
                     Executed="OnFindNext" />
         <CommandBinding Command="{x:Static l:MainWindow.SelectNextMatchCommand}" 

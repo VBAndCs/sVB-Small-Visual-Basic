@@ -27,3 +27,4 @@ Control.HandleEvents(BtnInput)
 Control.OnClick = BtnInput_OnClick
 
 
+Form.Show(Me)

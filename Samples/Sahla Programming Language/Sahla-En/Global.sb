@@ -18,6 +18,7 @@ _NotFound = "is not found!"
 _StartsWithDigit = "is not a valid vraiable name because it starts with a digit!"
 _SingleHyphen = "_ alone is not a valid variable name, because it is the line continuity char, but it can be used as a char within varaibel names."
 _InvalidSymbol = "is not a valid variable name because it contains "
+_KeywordsNotAllowed = "You can't use a keyword as a variable name."
 _NoFor = "Can't find the mattching For loop header!"
 _NoWhile = "Can't find the mattching while loop header!"
 _WrongCounterName = "is an incorrect name for the For counter." & Text.NewLine &
@@ -134,12 +135,25 @@ Opertors = {
    "+", "-", "*", "/", _IntegralDivision, "%", "^"
 }
 
+AnimalSounds[_Cat] = "Cat.mp3"
+AnimalSounds[_Crow] = "Crow.mp3"
+AnimalSounds[_Cow] = "Cow.mp3"
+AnimalSounds[_Dog] = "Dog.mp3"
+AnimalSounds[_Donkey] = "Donkey.mp3"
+AnimalSounds[_Duck] = "Duck.mp3"
+AnimalSounds[_Elephant] = "Elephant.mp3"
+AnimalSounds[_Horse] = "Horse.mp3"
+AnimalSounds[_Lion] = "Lion.mp3"
+AnimalSounds[_Rooster] = "Rooster.mp3"
+AnimalSounds[_Sheep] = "Sheep.mp3"
+AnimalSounds[_Wolf] = "Wolf.mp3"
+
 FontNames = Desktop.FontNames
 
 _SettingsFile = "%LOCALAPPDATA%/Sahla.settings"
 _Settings = File.ReadLines(_SettingsFile)
 If _Settings = "" Then
-   Ops!FontName = "Segoe UI"
+   Ops!FontName = "Cascadia Code"
    Ops!FontSize = 20
    Ops!Bold = False
    Ops!Italic = False
@@ -224,6 +238,14 @@ _ColoringRequested = False
 _StillColoring = False
 _Initializing = True
 UseParentFolder = (File.Exists("Animal Sounds") = False)
+GwForm = ""
+_GwFirstTime = True
+
+Sub StopTurtle()
+   GwForm.OnClosing = Nothing
+   Terminated = True
+   TW.Close()
+EndSub
 
 Sub StartColoringTimer()
    _Initializing = False
@@ -323,6 +345,7 @@ Sub Tokenize(line, lineNum, commmentSymbol, ignoreComments)
 EndSub
 
 Sub Run()
+   _GwFirstTime = True
    Terminated = False
    TW.Clear()
    TW.Hide()
@@ -487,15 +510,30 @@ Sub ExecuteLine()
             If arg = "?" Then
                arg = 100
             EndIf
+            If _GwFirstTime Then
+               _GwFirstTime = False
+               GwForm = GW.AsForm()
+               GwForm.OnClosing = StopTurtle
+            EndIf
             Turtle.Move(arg)
          ElseIf Text.AreEquals(command, _Turn, False) Then
             If arg = "?" Then
                arg = 90
             EndIf
+            If _GwFirstTime Then
+               _GwFirstTime = False
+               GwForm = GW.AsForm()
+               GwForm.OnClosing = StopTurtle
+            EndIf
             Turtle.Turn(arg)
          Else
             If arg = "?" Then
                arg = 25
+            EndIf
+            If _GwFirstTime Then
+               _GwFirstTime = False
+               GwForm = GW.AsForm()
+               GwForm.OnClosing = StopTurtle
             EndIf
             Turtle.Speed = arg
          EndIf
@@ -522,6 +560,7 @@ Sub ExecuteLine()
    ElseIf Text.AreEquals(command, _ElseIf, False)
          Or Text.AreEquals(command, _Else, False)
          Or Text.AreEquals(command, _EndIf, False) Then
+      ReportError("'" & _If & "' " & _NotFound & " '" & command & "' " & _Unexpected, LineIndex, 1)
       Return
       
    ElseIf Text.AreEquals(command, _Sound, False) Then
@@ -564,99 +603,26 @@ Sub ExecuteLine()
          EndIf
          Sound.PlayChime()
          
-      ElseIf Text.AreEquals(nextCommand, _Cat, False) Then
+      ElseIf AnimalSounds.ContainsIndex(nextCommand) Then
          If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
+            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
             Return
          EndIf
-         Play("Cat.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Crow, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Crow.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Cow, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Cow.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Dog, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Dog.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Donkey, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Donkey.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Duck, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Duck.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Elephant, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Elephant.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Horse, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Horse.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Lion, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Lion.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Rooster, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Rooster.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Sheep, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Sheep.mp3")
-         
-      ElseIf Text.AreEquals(nextCommand, _Wolf, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Play("Wolf.mp3")
-         
+         Play(AnimalSounds[nextCommand])
       Else
          result = EvaluateExpression(2)
          nextPos = result[2]
          If nextPos < tokensCount Then
-            ReportError("'" & Tokens[nextPos][3] & "' " & _Unexpected, LineIndex, nextPos)
+            ReportError("'" & Tokens[nextPos][3] & "' غير متوقعة هنا", LineIndex, nextPos)
             Return
          EndIf
          
-         Sound.Play(result[1])
+         animalSound = result[1]
+         If AnimalSounds.ContainsIndex(animalSound) Then
+            Play(AnimalSounds[animalSound])
+         Else
+            Sound.Play(animalSound)
+         EndIf
       EndIf
       
    ElseIf tokensCount >= 3 And Text.AreEquals(Tokens[2][3], "=", True) Then ' varName
@@ -795,6 +761,9 @@ Function IsValidVarName(name, line, tokenIndex)
    ElseIf Text.AreEquals(name, "_", True) Then
       ReportError(_SingleHyphen, line, tokenIndex)
       Return False
+   ElseIf GetBasicWordIndex(name) > 0 Then
+      ReportError(_KeywordsNotAllowed, line, tokenIndex)
+      Return False
    Else
       ForEach c In name
          If (c = "_" Or Chars.IsDigit(c) Or Chars.IsLetter(c)) = False Then
@@ -832,6 +801,12 @@ Sub ProcessForLoopNext()
    If Text.AreEquals(loopObj[1], varName, False) = False Then
       ReportError("'" & varName & "' " & _WrongCounterName &
          " '" & loopObj[1] & "'", LineIndex, 2)
+      Return
+   EndIf
+   
+   If Keyboard.LastKey = Keys.Escape And GW.IsClosed = False Then
+      Terminated = True
+      Stack.PopValue(ForStack)
       Return
    EndIf
    
@@ -877,6 +852,12 @@ EndSub
 Sub ProcessWhileLoopEnd()
    If Stack.GetCount(WhileStack) = 0 Then
       ReportError(_NoWhile, LineIndex, 1)
+      Return
+   EndIf
+   
+   If Keyboard.LastKey = Keys.Escape And GW.IsClosed = False Then
+      Terminated = True
+      Stack.PopValue(WhileStack)
       Return
    EndIf
    

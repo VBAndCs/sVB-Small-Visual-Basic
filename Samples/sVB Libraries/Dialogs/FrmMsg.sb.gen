@@ -6,7 +6,7 @@
 '    BtnCancel: Button
 '}
 
-Me = "FrmMsg"
+Me = "frmmsg"
 BtnYes = "frmmsg.btnyes"
 LblMsg = "frmmsg.lblmsg"
 BtnNo = "frmmsg.btnno"
@@ -14,11 +14,11 @@ BtnCancel = "frmmsg.btncancel"
 _path = Program.Directory + "\FrmMsg.xaml"
 FrmMsg = Forms.LoadForm("FrmMsg", _path)
 Form.SetArgsArr(frmmsg, Stack.PopValue("_frmmsg_argsArr"))
-Form.Show(FrmMsg)
 '#Events{
 '    BtnYes: OnClick
 '    BtnNo: OnClick
 '    BtnCancel: OnClick
+'    FrmMsg: OnPreviewKeyDown
 '}
 
 ' BtnYes Events:
@@ -33,4 +33,9 @@ Control.OnClick = BtnNo_OnClick
 Control.HandleEvents(BtnCancel)
 Control.OnClick = BtnCancel_OnClick
 
+' FrmMsg Events:
+Control.HandleEvents(FrmMsg)
+Form.OnPreviewKeyDown = Form_OnPreviewKeyDown
 
+
+Form.Show(Me)

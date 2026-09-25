@@ -6,7 +6,7 @@
 '    LblMsg: Label
 '}
 
-Me = "FrmInput"
+Me = "frminput"
 BtnOK = "frminput.btnok"
 BtnCancel = "frminput.btncancel"
 TxtInput = "frminput.txtinput"
@@ -14,11 +14,11 @@ LblMsg = "frminput.lblmsg"
 _path = Program.Directory + "\FrmInput.xaml"
 FrmInput = Forms.LoadForm("FrmInput", _path)
 Form.SetArgsArr(frminput, Stack.PopValue("_frminput_argsArr"))
-Form.Show(FrmInput)
 '#Events{
 '    BtnOK: OnClick
 '    BtnCancel: OnClick
 '    TxtInput: OnTextChanged
+'    FrmInput: OnPreviewKeyDown
 '}
 
 ' BtnOK Events:
@@ -33,4 +33,9 @@ Control.OnClick = BtnCancel_OnClick
 Control.HandleEvents(TxtInput)
 TextBox.OnTextChanged = TxtInput_OnTextChanged
 
+' FrmInput Events:
+Control.HandleEvents(FrmInput)
+Form.OnPreviewKeyDown = Form_OnPreviewKeyDown
 
+
+Form.Show(Me)

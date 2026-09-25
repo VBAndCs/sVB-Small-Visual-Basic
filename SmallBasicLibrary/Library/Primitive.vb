@@ -104,11 +104,11 @@ Namespace Library
             End Get
 
             Set(Value As Primitive)
-                If IsArray OrElse Not index.IsNumber Then
+                If IsArray OrElse Not index.IsNumber OrElse (Me._stringValue = "" AndAlso Not Me._decimalValue.HasValue) Then
                     Me._decimalValue = Nothing
                     _arrayMap(index) = Value
                 Else
-                    If index.IsNumber And _stringValue = "" Then Me._stringValue = CStr(Me._decimalValue)
+                    If index.IsNumber And Me._decimalValue.HasValue Then Me._stringValue = CStr(Me._decimalValue)
 
                     If index < 1 Then
                         Me._stringValue = CStr(Value) & Space(-index) & _stringValue

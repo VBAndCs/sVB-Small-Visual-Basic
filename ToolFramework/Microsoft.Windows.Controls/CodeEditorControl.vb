@@ -469,5 +469,24 @@ Namespace Microsoft.Windows.Controls
         Public Sub RaiseLineRenderedEvent(line As ITextSnapshotLine, dc As DrawingContext, x As Double, y As Double)
             RaiseEvent LineRendered(line, dc, x, y)
         End Sub
+
+        Public Sub ChangeFont(fontName As String)
+            Dim formatMap = Me.ClassificationFormatMap
+            If fontName = "" Then Return
+
+            For Each classificationType In formatMap.CurrentPriorityOrder
+                Dim props = formatMap.GetTextProperties(classificationType)
+                Dim newProps = props.SetTypeface(New Typeface(
+                    New FontFamily(fontName),
+                    props.Typeface.Style,
+                    props.Typeface.Weight,
+                    props.Typeface.Stretch)
+                )
+                formatMap.SetTextProperties(classificationType, newProps)
+            Next
+            Me.TextView.Invalidate()
+            Me.UpdateLayout()
+        End Sub
+
     End Class
 End Namespace

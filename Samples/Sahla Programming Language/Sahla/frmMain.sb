@@ -53,6 +53,7 @@ GWTimer.Pause()
 Sub EnableMainWindow()
    If GW.IsClosed Then
       GWTimer.Pause()
+      Sound.Stop("")
       Me.Enabled = True
       Me.Focus()
       TxtEditor.Focus()
@@ -175,7 +176,14 @@ Sub Form_OnShown()
 EndSub
 
 Sub FrmMain_OnClosing()
-   Event.Handled = (AskToSave() = False)
+   If Me.Enabled Then
+      Event.Handled = (AskToSave() = False)
+   Else
+      GW.Close()
+      TW.Close()
+      EnableMainWindow()
+      Event.Handled = True
+   EndIf
 EndSub
 
 Sub MnuNew_OnClick()

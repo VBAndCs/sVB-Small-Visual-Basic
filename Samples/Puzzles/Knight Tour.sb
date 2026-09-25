@@ -1,0 +1,159 @@
+' sVB code using Warnsdorff’s Rule Algorithm
+' to solve the Knight's Tour problem
+' on the chess board, animated with red triangle as horse
+
+BoardSize = 8
+CellSize = 60
+Diameter = 40
+JumpDelay = 500
+' Hourse Start position
+X = Math.GetRandomNumber(8)
+Y = Math.GetRandomNumber(8)
+
+GraphicsWindow.BackgroundColor = Colors.LightGray
+GraphicsWindow.Width = CellSize * BoardSize
+GraphicsWindow.Height = CellSize * BoardSize
+GraphicsWindow.Left = (Desktop.Width - GraphicsWindow.Width) / 2
+GraphicsWindow.Top = (Desktop.Height - GraphicsWindow.Height) / 2
+
+DrawBoard()
+
+' Hourse moves array.The housre has 8 possible moves
+' Each move has the form {dx, dy} where:
+' dx and dy are the horizontal and vertical displacments
+Moves = {
+   {1, 2}, {1, -2},
+   {-1, 2}, {-1, -2},
+   {2, 1}, {2, -1},
+   {-2, 1}, {-2, -1}
+}
+
+
+Board[X][Y] = 1
+
+' Add red triangle to represent the horse
+GraphicsWindow.BrushColor = Colors.Red
+HorseShape = Shapes.AddTriangle(
+   0, Diameter,
+   Diameter, Diameter,
+   Diameter / 2, 0)
+
+MoveIndex = 1
+DrawShapes()
+CellCount = BoardSize * BoardSize
+Stuck = False
+
+For MoveIndex = 2 To CellCount
+   MinDeg = 10
+   NextX = -1
+   NextY = -1
+   
+   ' Try all moves
+   ForEach Move In Moves
+      Nx = X + Move[1]
+      Ny = Y + Move[2]
+      If Nx >= 1 And Nx <= BoardSize And
+            Ny >= 1 And Ny <= BoardSize And
+            Board[Nx][Ny] = 0 Then
+         Deg = GetDegree(Nx, Ny)
+         If Deg < MinDeg Then
+            MinDeg = Deg
+            NextX = Nx
+            NextY = Ny
+         EndIf
+      EndIf
+   Next
+   
+   If MinDeg = 10 Then
+      Stuck = True
+      ExitLoop
+   EndIf
+   
+   Program.Delay(JumpDelay)
+   
+   ' Move to the next cell
+   X = NextX
+   Y = NextY
+   Board[X][Y] = MoveIndex
+   DrawShapes()
+Next
+
+If Stuck Then
+   Sound.PlayBellRing()
+   Forms.ShowMessage("Can't find a solution. Change the starting cell!", "Sorry!")
+Else
+   Sound.PlayChime()
+   Forms.ShowMessage("Solved!", "Done")
+EndIf
+
+
+Sub DrawBoard()
+   For i = 1 To BoardSize
+      For j = 1 To BoardSize
+         Board[i][j] = 0
+         If (i + j) Mod 2 = 0 Then
+            GraphicsWindow.BrushColor = Colors.Black
+         Else
+            GraphicsWindow.BrushColor = Colors.White
+         EndIf
+         
+         GraphicsWindow.FillRectangle(
+            (i - 1) * CellSize,
+            (j - 1) * CellSize,
+            CellSize, CellSize)
+         GraphicsWindow.DrawRectangle(
+            (i - 1) * CellSize,
+            (j - 1) * CellSize,
+            CellSize, CellSize)
+      Next
+   Next
+EndSub
+
+' Draws a blue circle in the visited cell, the step number,
+' and moves the red triangle to the current cell
+Sub DrawShapes()
+   ' Draw circle for visited cell
+   GraphicsWindow.BrushColor = Colors.DeepSkyBlue
+   GraphicsWindow.FillEllipse(
+      (X - 1) * CellSize + 10,
+      (Y - 1) * CellSize + 10,
+      Diameter, Diameter)
+   
+   ' Move red triangle to new position
+   HorseShape.Move(
+      (X - 1) * CellSize + 10,
+      (Y - 1) * CellSize + 10)
+   
+   Sound.PlayClick()
+   
+   ' Show step number
+   GraphicsWindow.BrushColor = Colors.White
+   GraphicsWindow.DrawText(
+      (X - 1) * CellSize + 20,
+      (Y - 1) * CellSize + 20,
+      MoveIndex)
+EndSub
+
+
+' Counts possible moves out of the given cell
+Function GetDegree(nx, ny)
+   count = 0
+   ForEach move In Moves
+      tx = nx + move[1]
+      ty = ny + move[2]
+      If tx >= 1 And tx <= BoardSize And
+            ty >= 1 And ty <= BoardSize And
+            Board[tx][ty] = 0 Then
+         count = count + 1
+      EndIf
+   Next
+   
+   If count = 0 And MoveIndex < CellCount Then
+      Return 9 ' a dead cell
+   Else
+      Return count
+   EndIf
+EndFunction
+
+
+

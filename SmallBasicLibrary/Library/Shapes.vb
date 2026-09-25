@@ -30,7 +30,7 @@ Namespace Library
             Dim name As String = GenerateNewName("Rectangle")
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim shape As New Rectangle With {
                             .Width = width,
                             .Height = height,
@@ -57,7 +57,7 @@ Namespace Library
             Dim name = GenerateNewName("GeoPath")
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim path = WinForms.GeometricPath._path
                     path.Fill = GraphicsWindow.FillBrush
                     path.Stroke = GraphicsWindow.Pen.Brush
@@ -86,7 +86,7 @@ Namespace Library
             Dim name As String = GenerateNewName("Ellipse")
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim shape As New Ellipse With {
                             .Width = width,
                             .Height = height,
@@ -269,7 +269,7 @@ Namespace Library
             Dim name As String = GenerateNewName("Text")
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim shape As New TextBlock With {
                         .Text = text,
                         .Foreground = GraphicsWindow.FillBrush,
@@ -651,11 +651,12 @@ Namespace Library
         ''' You can use this returned shape as an object of type Shape, to access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Shape)>
+        <HideFromIntellisense>
         Public Shared Function AddRectangleAt(x As Primitive, y As Primitive, width As Primitive, height As Primitive) As Primitive
             Dim name As String = GenerateNewName("Rectangle")
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim shape As New Rectangle With {
                             .Width = width,
                             .Height = height,
@@ -684,11 +685,12 @@ Namespace Library
         ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Shape)>
+        <HideFromIntellisense>
         Public Shared Function AddEllipseAt(x As Primitive, y As Primitive, width As Primitive, height As Primitive) As Primitive
             Dim name As String = GenerateNewName("Ellipse")
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim shape As New Ellipse With {
                             .Width = width,
                             .Height = height,
@@ -716,6 +718,7 @@ Namespace Library
         ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Shape)>
+        <HideFromIntellisense>
         Public Shared Function AddImageAt(imageName As Primitive, x As Primitive, y As Primitive) As Primitive
             Dim name = GenerateNewName("Image")
             GraphicsWindow.Invoke(
@@ -747,11 +750,12 @@ Namespace Library
         ''' You can use this returned shape as an object of type Shape, and access its methods and properties directly like: s.Move(100, 100)
         ''' </returns>
         <WinForms.ReturnValueType(VariableType.Shape)>
+        <HideFromIntellisense>
         Public Shared Function AddTextAt(x As Primitive, y As Primitive, text As Primitive) As Primitive
             Dim name As String = GenerateNewName("Text")
             GraphicsWindow.Invoke(
                 Sub()
-                    GraphicsWindow.VerifyAccess()
+                    GraphicsWindow.VerifyAccess(False)
                     Dim shape As New TextBlock With {
                         .Text = text,
                         .Foreground = GraphicsWindow.FillBrush,

@@ -36,7 +36,7 @@ Namespace Library
         End Property
 
         ''' <summary>
-        ''' Gets or sets the background color of the text to be output in the text window.
+        ''' Gets or sets the background color of the text window.
         ''' </summary>
         <WinForms.ReturnValueType(VariableType.Color)>
         Public Shared Property BackgroundColor As Primitive
@@ -191,7 +191,7 @@ Namespace Library
         ''' <summary>
         ''' Gets or sets the font size that will be used to write to the TextWindow.
         ''' </summary>
-        <WinForms.ReturnValueType(VariableType.String)>
+        <WinForms.ReturnValueType(VariableType.Double)>
         Public Shared Property FontSize As Primitive
             Get
                 Return _FontSize * 0.75
