@@ -5,14 +5,13 @@
 '    BtnInput: Button
 '}
 
-Me = "FrmMain"
+Me = "frmmain"
 TextBox1 = "frmmain.textbox1"
 BtnMsg = "frmmain.btnmsg"
 BtnInput = "frmmain.btninput"
 _path = Program.Directory + "\FrmMain.xaml"
 FrmMain = Forms.LoadForm("FrmMain", _path)
 Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
-Form.Show(FrmMain)
 '#Events{
 '    BtnMsg: OnClick
 '    BtnInput: OnClick

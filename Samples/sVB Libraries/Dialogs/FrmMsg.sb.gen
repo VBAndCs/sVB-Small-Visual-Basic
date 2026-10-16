@@ -11,7 +11,7 @@ BtnYes = "frmmsg.btnyes"
 LblMsg = "frmmsg.lblmsg"
 BtnNo = "frmmsg.btnno"
 BtnCancel = "frmmsg.btncancel"
-_path = Program.Directory + "\FrmMsg.xaml"
+_path = Program.Directory + "\frmmsg.xaml"
 FrmMsg = Forms.LoadForm("FrmMsg", _path)
 Form.SetArgsArr(frmmsg, Stack.PopValue("_frmmsg_argsArr"))
 '#Events{

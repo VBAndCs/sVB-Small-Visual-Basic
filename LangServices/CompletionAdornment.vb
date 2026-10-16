@@ -1,5 +1,6 @@
 ﻿Imports Microsoft.Nautilus.Text
 Imports Microsoft.Nautilus.Text.AdornmentSystem
+Imports Microsoft.Nautilus.Text.Editor
 Imports Microsoft.SmallVisualBasic.Completion
 
 Namespace Microsoft.SmallVisualBasic.LanguageService
@@ -29,9 +30,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
 
         Public Sub New(
                       provider As CompletionProvider,
-                       completionBag As CompletionBag,
-                       adornmentSpan As ITextSpan,
-                       replaceSpan As ITextSpan
+                      completionBag As CompletionBag,
+                      adornmentSpan As ITextSpan,
+                      replaceSpan As ITextSpan
                    )
 
             _AdornmentProvider = provider
@@ -47,6 +48,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
             _AdornmentSurface = _AdornmentProvider.textView.Properties.GetProperty(Of CompletionSurface)()
             If _AdornmentSurface IsNot Nothing Then
                 _AdornmentSurface.CompletionPopup.IsOpen = False
+                _AdornmentSurface.TextView.VisualElement.Focus()
             End If
         End Sub
     End Class

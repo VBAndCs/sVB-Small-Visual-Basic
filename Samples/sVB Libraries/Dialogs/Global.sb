@@ -1,6 +1,5 @@
 ' Contains methods to show message box and input box dialogs.
 
-'------------------------------------------------
 ' Shows a message box dialog with Yes, No and cancel buttons
 Function MsgBox(
       strTitle, ' The title to show on the form title bar
@@ -15,7 +14,6 @@ Function MsgBox(
 EndFunction
 
 
-'------------------------------------------------
 ' Shows an input box dialog to allow the user to enter some text
 Function InputBox(
       message ' The message to show to the user

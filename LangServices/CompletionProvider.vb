@@ -916,7 +916,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     Dim line = snapshot.GetLineFromPosition(newEnd)
                     Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
                     Dim curToken As Token
-                    Dim index = ParseTokens(tokens, newEnd - line.Start, curToken, Nothing, Nothing)
+                    ParseTokens(tokens, newEnd - line.Start, curToken, Nothing, Nothing)
                     Dim adornmentSpan = GetTextSpanFromToken(line, curToken)
                     Dim replaceSpan = adornmentSpan
 
@@ -942,7 +942,15 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 End If
 
             ElseIf textChange.Delta < 0 Then
-                ShowCompletionAdornment(e.After, newEnd)
+                Dim snapshot = e.After
+                Dim line = snapshot.GetLineFromPosition(newEnd)
+                Dim tokens = LineScanner.GetTokens(line.GetText(), line.LineNumber)
+                Dim curToken As Token
+                ParseTokens(tokens, newEnd - line.Start, curToken, Nothing, Nothing)
+                If curToken.ParseType = ParseType.Identifier OrElse
+                       curToken.ParseType = ParseType.Keyword Then
+                    ShowCompletionAdornment(e.After, newEnd,,, True)
+                End If
 
             ElseIf newText <> "" Then
                 Dim c = newText.Last
@@ -1307,13 +1315,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                            snapshot As ITextSnapshot,
                            caretPosition As Integer,
                            Optional checkEspecialItem As Boolean = False,
-                           Optional ctrlSpace As Boolean = False
+                           Optional ctrlSpace As Boolean = False,
+                           Optional isBackSpace As Boolean = False
                     )
 
-            ' Wait until code editor respond To changes, to avoid any conflicts
+            ' Wait until code editor responds to changes, to avoid any conflicts
             dispatcher.BeginInvoke(
                 DispatcherPriority.Background,
-                Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem, ctrlSpace)
+                Sub() DoShowCompletion(snapshot, caretPosition, checkEspecialItem, ctrlSpace, isBackSpace)
             )
 
         End Sub
@@ -1322,7 +1331,8 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                            snapshot As ITextSnapshot,
                            caretPosition As Integer,
                            checkEspecialItem As Boolean,
-                           ctrlSpace As Boolean
+                           ctrlSpace As Boolean,
+                           isBackSpace As Boolean
                     )
 
             Try
@@ -1383,6 +1393,7 @@ LineShow:
 
                 If bag IsNot Nothing AndAlso bag.CompletionItems.Count > 0 Then
                     bag.CtrlSpace = ctrlSpace
+                    bag.IsBackSpace = isBackSpace
                     ShowCompletionAdornment(snapshot, bag, curToken, line)
                 End If
 

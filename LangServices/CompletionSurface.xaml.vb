@@ -11,7 +11,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         Inherits Canvas
         Implements IAdornmentSurface
 
-        Private textView As IAvalonTextView
+        Friend TextView As IAvalonTextView
         Private filteredCompletionItems As List(Of CompletionItemWrapper)
         Friend IsCommitting As Boolean
         Public ReadOnly Property Adornment As CompletionAdornment
@@ -193,7 +193,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                     filteredCompletionItems.Clear()
                     Return
 
-                ElseIf bag.IsBackSpace Then
+                ElseIf bag.IsBackSpace AndAlso items(0).Name.ToLower() = inputText Then
                     filteredCompletionItems.Clear()
                     _Adornment?.Dismiss(True)
                     Return

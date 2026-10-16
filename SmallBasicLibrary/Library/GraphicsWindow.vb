@@ -1718,6 +1718,27 @@ Namespace Library
             Invoke(Sub() _window.Cursor = cursor1)
         End Sub
 
+        ''' <summary>
+        ''' Takes a screenshot of the current graphics window and copies it directly to the Windows clipboard.
+        ''' </summary>
+        Public Shared Sub CopyScreenshot()
+            VerifyAccess(False)
+            SmallBasicApplication.Invoke(
+                Sub()
+                    Desktop.CaptureWindow(_window, "")
+                End Sub)
+        End Sub
 
+        ''' <summary>
+        ''' Takes a screenshot of the current graphics window and saves it to the specified file path.
+        ''' </summary>
+        ''' <param name="fileName">The full path of the file where the screenshot will be saved (supported formats: .png, .jpg, .bmp, .gif, .tiff, .wdp).</param>
+        Public Shared Sub SaveScreenshot(fileName As Primitive)
+            VerifyAccess(False)
+            SmallBasicApplication.Invoke(
+                Sub()
+                    Desktop.CaptureWindow(_window, fileName)
+                End Sub)
+        End Sub
     End Class
 End Namespace

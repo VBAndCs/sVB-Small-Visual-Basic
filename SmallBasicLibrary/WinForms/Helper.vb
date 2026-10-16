@@ -22,8 +22,9 @@ Module Helper
                 ClearErrors = False
                 File.DeleteFile(errorFile)
             End If
+
             File.AppendContents(errorFile, New Primitive(Now & vbCrLf & msg & vbCrLf))
-            If Program.OnErrorResumeNex = False Then App.ShowErrorWindow(msg, ex.StackTrace)
+            If CBool(Program.OnErrorResumeNext) = False Then App.ShowErrorWindow(msg, ex.StackTrace)
         Catch
         End Try
     End Sub

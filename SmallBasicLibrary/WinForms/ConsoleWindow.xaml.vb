@@ -11,9 +11,30 @@ Imports System.Windows.Threading
 Namespace WinForms
     Partial Public Class ConsoleWindow
         Private Shared _threadTimer As New System.Threading.Timer(AddressOf RespondToUser)
+        Private Shared isDragging As Boolean = False
+
+        Protected Overrides Sub OnSourceInitialized(e As EventArgs)
+            MyBase.OnSourceInitialized(e)
+            Dim helper As New Interop.WindowInteropHelper(Me)
+            Dim source = Interop.HwndSource.FromHwnd(helper.Handle)
+            source.AddHook(AddressOf WindowProc)
+        End Sub
+
+        Private Shared Function WindowProc(hwnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As IntPtr, ByRef handled As Boolean) As IntPtr
+            Const WM_ENTERSIZEMOVE As Integer = &H231
+            Const WM_EXITSIZEMOVE As Integer = &H232
+
+            If msg = WM_ENTERSIZEMOVE Then
+                isDragging = True
+            ElseIf msg = WM_EXITSIZEMOVE Then
+                isDragging = False
+            End If
+
+            Return IntPtr.Zero
+        End Function
 
         Private Shared Sub RespondToUser(state As Object)
-            If Not HandleKey Then
+            If Not HandleKey AndAlso Not isDragging Then
                 SmallBasicApplication.Invoke(Sub() DoEvents())
             End If
         End Sub

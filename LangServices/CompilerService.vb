@@ -108,17 +108,16 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Function
 
         Public Sub FormatDocument(
-                           textBuffer As ITextBuffer,
-                           Optional lineNumber As Integer = -1,
-                           Optional prettyListing As Boolean = True
-                   )
+                   textBuffer As ITextBuffer,
+                   Optional lineNumber As Integer = -1,
+                   Optional prettyListing As Boolean = True)
 
             Try
                 Dim snapshot = textBuffer.CurrentSnapshot
                 Dim source As New TextBufferReader(snapshot)
-
                 Dim indentationLevel = 0
                 Dim start, [end] As Integer
+
                 If lineNumber = -1 Then
                     start = 0
                     [end] = snapshot.LineCount - 1
@@ -279,7 +278,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 Case TokenType.Concatenation, TokenType.Addition,
                                          TokenType.Subtraction, TokenType.Multiplication,
                                          TokenType.Division, TokenType.Mod,
-                                         TokenType.Or, TokenType.And
+                                         TokenType.Or, TokenType.And,
+                                         TokenType.LessThan, TokenType.LessThanOrEqualsTo,
+                                         TokenType.GreaterThan, TokenType.GreaterThanOrEqualsTo
                                     If lineStart Then
                                         subLineOffset = Math.Max(1, subLineOffset)
                                         AdjustIndentation(textEdit, line, indentationLevel + subLineOffset, t.Column)
@@ -317,7 +318,9 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                                 Case TokenType.Addition,
                                          TokenType.Subtraction, TokenType.Multiplication,
                                          TokenType.Division, TokenType.Mod,
-                                         TokenType.And, TokenType.Or, TokenType.LineContinuity
+                                         TokenType.And, TokenType.Or, TokenType.LineContinuity,
+                                         TokenType.LessThan, TokenType.LessThanOrEqualsTo,
+                                         TokenType.GreaterThan, TokenType.GreaterThanOrEqualsTo
                                     subLineOffset = Math.Max(1, subLineOffset)
 
                                 Case TokenType.EqualsTo
@@ -913,16 +916,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
         End Function
 
         Private Sub FormatLine(
-                         textEdit As ITextEdit,
-                         line As ITextSnapshotLine,
-                         tokens As List(Of Token),
-                         startAt As Integer
-                    )
+                    textEdit As ITextEdit,
+                    line As ITextSnapshotLine,
+                    tokens As List(Of Token),
+                    startAt As Integer)
 
             Dim text = line.GetText()
             Dim textLen = text.Length
             Dim endAt = tokens.Count - 1
-
             Dim subLine = tokens(startAt).subLine
 
             For i = startAt To endAt
@@ -1197,7 +1198,7 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 If tokenLine = lineNumber AndAlso (
                         token.Column > column OrElse
                         (token.Type = TokenType.StringLiteral AndAlso token.EndColumn = column AndAlso token.EndColumn - token.Column = 1)
-                    ) Then Exit For
+                   ) Then Exit For
             Next
 
             Return n - 1

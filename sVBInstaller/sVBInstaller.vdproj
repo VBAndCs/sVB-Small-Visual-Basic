@@ -645,6 +645,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_211B5A6EE4C04283828DF4B8DB2F0727"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_2174BF2D680B4DB291EBA6E762D40081"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -742,6 +748,12 @@
         "Entry"
         {
         "MsmKey" = "8:_26C4D68891814543AF48EBA28C978662"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_27396CA3F117445AAD3C214B4635701B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -981,6 +993,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_326C0E4441C74D33BC76DB83F9B07D64"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_32C7133459C44951BD4FE62A880258BD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1144,6 +1162,12 @@
         "Entry"
         {
         "MsmKey" = "8:_3FD879579A614B53BDC943AFC07CCC65"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_41D6E26AB32A41769122563D4C7C72E5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1353,12 +1377,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_506EFE707DF64BCB90AA85F911F9B03E"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_5107AF6AB1994166A0EF35DB1B9737C5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1563,6 +1581,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5B3D7155374B48A5A0EE8978914AD308"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5B4A3B906F2B40A2A418D0FDCA8AFD25"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1654,6 +1678,12 @@
         "Entry"
         {
         "MsmKey" = "8:_5FDD298264F148B9BBB5482041575F4C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_600013221D744545BF9B9550200B5AEE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1821,6 +1851,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_68508F1C8E744071A3E4A93F155983FC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_68768F8FC1F74BC8A5E13135AFB7ABE2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1882,6 +1918,12 @@
         "Entry"
         {
         "MsmKey" = "8:_6A61D6B2CAB74205BF77979DB35E8355"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6A8DFB00C4AD4E368E46EEC6763F47B4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2332,6 +2374,18 @@
         "Entry"
         {
         "MsmKey" = "8:_7F231493E499EACF384B696CF5C3FDEF"
+        "OwnerKey" = "8:_5B3D7155374B48A5A0EE8978914AD308"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7F231493E499EACF384B696CF5C3FDEF"
+        "OwnerKey" = "8:_41D6E26AB32A41769122563D4C7C72E5"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7F231493E499EACF384B696CF5C3FDEF"
         "OwnerKey" = "8:_15A01C7C0B8748758DA54304CE9A2620"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2427,6 +2481,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_833566B1171B46E692946A804F410F78"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8339F064B26E4F9DA0289C35CF10B2A2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2446,6 +2506,12 @@
         "Entry"
         {
         "MsmKey" = "8:_83E7B884A8A74317AC3867A64965BB9A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_846E95DAC60446FCAFB22C07D78E1EC7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2488,6 +2554,12 @@
         "Entry"
         {
         "MsmKey" = "8:_87B69A7F46A349B78AABB542B96616EA"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_883A9AF175C949DB9BDCB26BBBF8415C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2566,6 +2638,12 @@
         "Entry"
         {
         "MsmKey" = "8:_8B1AC9897E60463AB4E54B7D6E978509"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8DD6266D820B492592B97537D54A3C9A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2674,6 +2752,12 @@
         "Entry"
         {
         "MsmKey" = "8:_93157F852A1F4942B2DAC740C9EB3725"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_93936AB1CF8244EFB50522FA545AE9E0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2788,6 +2872,12 @@
         "Entry"
         {
         "MsmKey" = "8:_99D7F29AA317435F94D6021391BAD53C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_99F70FE0EF4643EB91BDADEC257CAAB0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2979,6 +3069,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A3F1149217F14914ADB9AB99D09FE885"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A5D213EC34B94CCE9EFA34B7EE6DBE82"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3106,6 +3202,12 @@
         "Entry"
         {
         "MsmKey" = "8:_ACE1A47DBD1348C795FE9AC071291CA2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AD025DD9A01C4715AEC1ED6BC03C4697"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3549,6 +3651,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C57F35F517A5458D92EFCA884EED9FA7"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C5F5311E9558433DB700CC0787CBA8E3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3604,6 +3712,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C82D95A8A68F42CEA2DF43A362F68350"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C840F5D7AE3248FDA286FCB80C33B018"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3693,6 +3807,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_CC4B90557D5046B52E0A950026CE172B"
+        "OwnerKey" = "8:_41D6E26AB32A41769122563D4C7C72E5"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_CC73851F93C340EEAC99660DA4F05788"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3712,6 +3832,12 @@
         "Entry"
         {
         "MsmKey" = "8:_CD3BEB5E83CE4108ABFEB4E3EC59C54D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CD3CC8425C2642CF8DD07BEECA04F55C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3760,6 +3886,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D06A16652A23428EAB2BEBC443B1E40D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D12A6DACA5894D7F932B32561B06590D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4083,6 +4215,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_DFBF2DA2F13043A299207764164F9C69"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E00CB8087FC346D3B95A8655E43A4CEC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -4210,6 +4348,12 @@
         "Entry"
         {
         "MsmKey" = "8:_E4B92EA345344C2FAA9292E1D0A5E61B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E4C2A1BD8417414B8FDEB211EBDEB20C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4635,6 +4779,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_F7A78018AB4D4EFF9251CF5745700CAF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_F7E3EAAA50AD4908A1F4415E742F1551"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -4846,6 +4996,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_833566B1171B46E692946A804F410F78"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_7E42A9AF731146B08F0C356514A15C4F"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4865,6 +5021,18 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_5D8075FAE6AD404798C101EBA3C6BA52"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5B3D7155374B48A5A0EE8978914AD308"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_41D6E26AB32A41769122563D4C7C72E5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4991,7 +5159,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.5.9.7_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.6_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -7181,6 +7349,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_211B5A6EE4C04283828DF4B8DB2F0727"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\bq.png"
+            "TargetName" = "8:bq.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2174BF2D680B4DB291EBA6E762D40081"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Show Dialogs\\FrmMain.sb.gen"
@@ -7518,6 +7706,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_1A4F0917A4FE47F387CF6333DE5F20E4"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_27396CA3F117445AAD3C214B4635701B"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\chess.ico"
+            "TargetName" = "8:chess.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -8283,6 +8491,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_326C0E4441C74D33BC76DB83F9B07D64"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\Chess.sb"
+            "TargetName" = "8:Chess.sb"
+            "Tag" = "8:"
+            "Folder" = "8:_7B62B774014240B9B7F1FD3FD1055B53"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_32C7133459C44951BD4FE62A880258BD"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Random Buttons 2\\form2.sb"
@@ -8829,6 +9057,37 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_3716C14ED5744E65AF0A4C055A4F7A3B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_41D6E26AB32A41769122563D4C7C72E5"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Chess, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_41D6E26AB32A41769122563D4C7C72E5"
+                    {
+                    "Name" = "8:Chess.exe"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\Chess.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_E19FFE2DE5194AD0BB9C89F07F2A766C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9523,26 +9782,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_506EFE707DF64BCB90AA85F911F9B03E"
-            {
-            "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\Sahla-en.pdb"
-            "TargetName" = "8:Sahla-en.pdb"
-            "Tag" = "8:"
-            "Folder" = "8:_CD706DA7FC664D0FBE935AADF22F8A1E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5107AF6AB1994166A0EF35DB1B9737C5"
             {
             "SourcePath" = "8:..\\Samples\\Sahla Programming Language\\Sahla-En\\bin\\frmMain.xaml"
@@ -10223,6 +10462,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5B3D7155374B48A5A0EE8978914AD308"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Dialogs, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_5B3D7155374B48A5A0EE8978914AD308"
+                    {
+                    "Name" = "8:Dialogs.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\Dialogs.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_E19FFE2DE5194AD0BB9C89F07F2A766C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5B4A3B906F2B40A2A418D0FDCA8AFD25"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\sVB Notepad\\FrmOps.sb.gen"
@@ -10540,6 +10810,26 @@
             "TargetName" = "8:Descendent Odd Numbers.shl"
             "Tag" = "8:"
             "Folder" = "8:_C053F00B9BB1447099B6F148E41CAF84"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_600013221D744545BF9B9550200B5AEE"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\Chess.png"
+            "TargetName" = "8:Chess.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11085,6 +11375,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_68508F1C8E744071A3E4A93F155983FC"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\Chess.xml"
+            "TargetName" = "8:Chess.xml"
+            "Tag" = "8:"
+            "Folder" = "8:_E19FFE2DE5194AD0BB9C89F07F2A766C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_68768F8FC1F74BC8A5E13135AFB7ABE2"
             {
             "SourcePath" = "8:..\\Samples\\WinForms Samples\\Generate VB.NET class\\form3.sb.gen"
@@ -11291,6 +11601,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_F5F05E190F9D49C69A307907112C9CC9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6A8DFB00C4AD4E368E46EEC6763F47B4"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\bb.png"
+            "TargetName" = "8:bb.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -12900,6 +13230,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_833566B1171B46E692946A804F410F78"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:SmallVisualBasicLibrary, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_833566B1171B46E692946A804F410F78"
+                    {
+                    "Name" = "8:SmallVisualBasicLibrary.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\SmallVisualBasicLibrary.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_E19FFE2DE5194AD0BB9C89F07F2A766C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8339F064B26E4F9DA0289C35CF10B2A2"
             {
             "SourcePath" = "8:..\\Samples\\sVB Syntax Samples\\Array performance\\Form1.sb.gen"
@@ -12966,6 +13327,26 @@
             "TargetName" = "8:Form1.xaml"
             "Tag" = "8:"
             "Folder" = "8:_C21E789187B1430D9500D018DD972A7C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_846E95DAC60446FCAFB22C07D78E1EC7"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\br.png"
+            "TargetName" = "8:br.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13106,6 +13487,26 @@
             "TargetName" = "8:Numbers Game.shl"
             "Tag" = "8:"
             "Folder" = "8:_C053F00B9BB1447099B6F148E41CAF84"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_883A9AF175C949DB9BDCB26BBBF8415C"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\FrmInput.xaml"
+            "TargetName" = "8:FrmInput.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_E19FFE2DE5194AD0BB9C89F07F2A766C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13366,6 +13767,26 @@
             "TargetName" = "8:Stars.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_8F26AF1FC6284DB3BF91D96A41618947"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8DD6266D820B492592B97537D54A3C9A"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\ButtonStyles.style"
+            "TargetName" = "8:ButtonStyles.style"
+            "Tag" = "8:"
+            "Folder" = "8:_E19FFE2DE5194AD0BB9C89F07F2A766C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13726,6 +14147,26 @@
             "TargetName" = "8:FrmColorTests.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_93936AB1CF8244EFB50522FA545AE9E0"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\FrmMsg.xaml"
+            "TargetName" = "8:FrmMsg.xaml"
+            "Tag" = "8:"
+            "Folder" = "8:_E19FFE2DE5194AD0BB9C89F07F2A766C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -14106,6 +14547,26 @@
             "TargetName" = "8:form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_E7B6EBB1DC834BC99E21F8391D0F6C7B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_99F70FE0EF4643EB91BDADEC257CAAB0"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\wp.png"
+            "TargetName" = "8:wp.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -14751,6 +15212,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A3F1149217F14914ADB9AB99D09FE885"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\ButtonStyles.style"
+            "TargetName" = "8:ButtonStyles.style"
+            "Tag" = "8:"
+            "Folder" = "8:_7B62B774014240B9B7F1FD3FD1055B53"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5D213EC34B94CCE9EFA34B7EE6DBE82"
             {
             "SourcePath" = "8:..\\Samples\\Turtle Samples\\flower 1.sb"
@@ -15177,6 +15658,26 @@
             "TargetName" = "8:Form1.sb.gen"
             "Tag" = "8:"
             "Folder" = "8:_70CAEB29D0D94445BD0F5B77A0DC2F4F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AD025DD9A01C4715AEC1ED6BC03C4697"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\wk.png"
+            "TargetName" = "8:wk.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -16653,6 +17154,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C57F35F517A5458D92EFCA884EED9FA7"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\wn.png"
+            "TargetName" = "8:wn.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C5F5311E9558433DB700CC0787CBA8E3"
             {
             "SourcePath" = "8:SmallVisualBasicLibrary.sr.xml"
@@ -16839,6 +17360,26 @@
             "TargetName" = "8:Sin & Cos Curves.sb"
             "Tag" = "8:"
             "Folder" = "8:_29351D70CCB044B581F9453C9FD90166"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C840F5D7AE3248FDA286FCB80C33B018"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\wb.png"
+            "TargetName" = "8:wb.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -17224,6 +17765,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD3CC8425C2642CF8DD07BEECA04F55C"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\bn.png"
+            "TargetName" = "8:bn.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CD73A591D58A460589D0C2620671EDB6"
             {
             "SourcePath" = "8:..\\Samples\\Math Samples\\Decimal to Fraction\\Form1.sb.gen"
@@ -17381,6 +17942,26 @@
             "TargetName" = "8:Form1.sb"
             "Tag" = "8:"
             "Folder" = "8:_B4527532134D4DDCA7E674710DF360B5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D12A6DACA5894D7F932B32561B06590D"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\bk.png"
+            "TargetName" = "8:bk.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -18466,6 +19047,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DFBF2DA2F13043A299207764164F9C69"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\bp.png"
+            "TargetName" = "8:bp.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E00CB8087FC346D3B95A8655E43A4CEC"
             {
             "AssemblyRegister" = "3:1"
@@ -18903,6 +19504,26 @@
             "TargetName" = "8:FrmButtonTests.xaml"
             "Tag" = "8:"
             "Folder" = "8:_696EFA6888F24259A902AD40B92E21A8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E4C2A1BD8417414B8FDEB211EBDEB20C"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\wq.png"
+            "TargetName" = "8:wq.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -20265,6 +20886,26 @@
             "TargetName" = "8:1.png"
             "Tag" = "8:"
             "Folder" = "8:_19D98C897CBC44B5BC4A1329C8AA12E6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F7A78018AB4D4EFF9251CF5745700CAF"
+            {
+            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\images\\wr.png"
+            "TargetName" = "8:wr.png"
+            "Tag" = "8:"
+            "Folder" = "8:_22D6E64C76BB49A9B422DCFCF101E641"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -22271,6 +22912,39 @@
                                             }
                                         }
                                     }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_7B62B774014240B9B7F1FD3FD1055B53"
+                                    {
+                                    "Name" = "8:Chess"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_C2E46EC630624179943C28951048914C"
+                                        "Folders"
+                                        {
+                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_E19FFE2DE5194AD0BB9C89F07F2A766C"
+                                            {
+                                            "Name" = "8:bin"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "Condition" = "8:"
+                                            "Transitive" = "11:FALSE"
+                                            "Property" = "8:_04C65B6A342E4801A793ED72D6E10C0A"
+                                                "Folders"
+                                                {
+                                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_22D6E64C76BB49A9B422DCFCF101E641"
+                                                    {
+                                                    "Name" = "8:images"
+                                                    "AlwaysCreate" = "11:FALSE"
+                                                    "Condition" = "8:"
+                                                    "Transitive" = "11:FALSE"
+                                                    "Property" = "8:_320067F747454A50A30DEE7864A60C1F"
+                                                        "Folders"
+                                                        {
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_9498E231301F4FFE8E7488E4131E16D8"
                                     {
                                     "Name" = "8:Tom & Jerry 1"
@@ -22667,16 +23341,16 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.5.9.7"
-        "ProductCode" = "8:{004F0DE1-7938-43C4-9CAC-59D32A7CCCE6}"
-        "PackageCode" = "8:{6EEB4AD6-28A2-40EB-A3B8-407CBAF475F6}"
+        "ProductName" = "8:Small Visual Basic 3.6"
+        "ProductCode" = "8:{1482D060-521B-4E31-9267-9DEFADEF33E0}"
+        "PackageCode" = "8:{9A58CA8A-8147-42F5-896E-D0D9A842FBC9}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:3.5"
+        "ProductVersion" = "8:3.6"
         "Manufacturer" = "8:Modern VB"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/VBAndCs/sVB-Small-Visual-Basic"
@@ -22801,6 +23475,20 @@
             "Folder" = "8:_57E649E5DD7D47328FA49ED3E67CC196"
             "WorkingFolder" = "8:_50EFDBF11FCA4538990B737AF0A702C6"
             "Icon" = "8:_AEA2C095F4A245AB99A489E9380AB74F"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_513B25C04BA54EB1B63A23A02C9768C4"
+            {
+            "Name" = "8:Chess"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_41D6E26AB32A41769122563D4C7C72E5"
+            "Folder" = "8:_45AF70F6A9AB4B84A7B68CC624BC02FD"
+            "WorkingFolder" = "8:_E19FFE2DE5194AD0BB9C89F07F2A766C"
+            "Icon" = "8:_27396CA3F117445AAD3C214B4635701B"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_6B990B2AAB6B47109BEF05330CA62CA2"

@@ -125,9 +125,9 @@ Namespace Microsoft.SmallVisualBasic.Completion
         End Sub
 
         Public Shared Sub FillAllGlobalItems(
-                               completionBag As CompletionBag,
-                               inGlobalScope As Boolean
-                         )
+                  completionBag As CompletionBag,
+                  inGlobalScope As Boolean
+               )
 
             If DoNotAddGlobals Then Return
 
@@ -206,7 +206,7 @@ Namespace Microsoft.SmallVisualBasic.Completion
                 })
             Next
 
-            If addMsgBox AndAlso Not bag.SymbolTable.Subroutines.ContainsKey("msgbox") Then
+            If addMsgBox AndAlso bag.IsFirstToken AndAlso Not bag.SymbolTable.Subroutines.ContainsKey("msgbox") Then
                 bag.CompletionItems.Add(New CompletionItem() With {
                     .Key = "msgbox",
                     .DisplayName = "MsgBox",

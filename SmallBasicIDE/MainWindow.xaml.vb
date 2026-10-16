@@ -2022,6 +2022,7 @@ Namespace Microsoft.SmallVisualBasic
         Private Sub PopHelp_Closed(sender As Object, e As EventArgs)
             closePopHelp.IsEnabled = False
             HelpPanel.DontShowHelp = False
+            ActiveDocument.EditorControl.TextView.VisualElement.Focus()
         End Sub
 
         Private Sub TxtControlName_GotFocus(sender As Object, e As RoutedEventArgs) Handles txtControlName.GotFocus

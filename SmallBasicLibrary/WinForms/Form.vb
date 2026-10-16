@@ -1587,6 +1587,45 @@ Namespace WinForms
                 End Sub)
         End Sub
 
+        ''' <summary>
+        ''' Takes a screenshot of the specified form window and copies it directly to the Windows clipboard.
+        ''' </summary>
+        ''' <param name="formName">The name of the form to capture.</param>
+        <ExMethod>
+        Public Shared Sub CopyScreenshot(formName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim frmName = formName.AsString().ToLower()
+                        Dim wind = CType(Forms._forms(frmName), Window)
+                        Dim canv = GetCanvas(wind)
+                        Desktop.CaptureWindow(canv, "")
+                    Catch ex As Exception
+                        ReportSubError(formName, "CopyScreenshot", ex)
+                    End Try
+                End Sub)
+        End Sub
+
+        ''' <summary>
+        ''' Takes a screenshot of the specified form window and saves it to the specified file path.
+        ''' </summary>
+        ''' <param name="formName">The name of the form to capture.</param>
+        ''' <param name="fileName">The full path of the file where the screenshot will be saved (supported formats: .png, .jpg, .bmp, .gif, .tiff, .wdp).</param>
+        <ExMethod>
+        Public Shared Sub SaveScreenshot(formName As Primitive, fileName As Primitive)
+            App.Invoke(
+                Sub()
+                    Try
+                        Dim frmName = formName.AsString().ToLower()
+                        Dim wind = CType(Forms._forms(frmName), Window)
+                        Dim canv = GetCanvas(wind)
+                        Desktop.CaptureWindow(canv, fileName.AsString())
+                    Catch ex As Exception
+                        ReportSubError(formName, "SaveScreenshot", ex)
+                    End Try
+                End Sub)
+        End Sub
+
 #Region "Events"
         Public Shared ReadOnly OnFormShownEvent As RoutedEvent =
             EventManager.RegisterRoutedEvent(

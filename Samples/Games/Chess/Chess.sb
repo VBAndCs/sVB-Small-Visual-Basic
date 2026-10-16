@@ -1,0 +1,2150 @@
+' Simple program that plays chess
+' Moves are correct and validated, including castlings,
+' en - passants And promotions.
+' AI is able to play weak chess - captures pieces
+' and attacks the king, plays till checkmate.
+' Chess standards FEN and PGN are also implemented.
+' Based on the the original Small Basic program (ID = SJQ481)
+' Proted to sVB and eveolved by M.Hamdy
+' The move evaluation system is rebuilt in sVB be faster and more cliver
+' yet it is still sutable for chess biggeners.
+Ch_TimeOut = 30
+Ch_TimeOutPlay = False
+GW.CanResize = False
+ShowTW = False
+Ch_SquareSize = (Desktop.Height * 0.93) / 8
+Ch_GrH = Ch_SquareSize * 8
+Ch_GrW = Ch_GrH + 106
+GW.Left = 5
+GW.Top = 0
+TW.Left = Ch_GrW + 10
+TW.Top = 5
+
+
+Ch_Turn = 1
+Ch_Side = ((Math.GetRandomNumber(2) - 1) * 2) - 1  ' random white=1, black = -1
+Ch_TwoPlayers = False
+Ch_SharedFilePath = "match.txt"
+Ch_LastMoveTime = Date.Now
+
+If Program.GetArgument(1) = "2players" Then
+   Ch_TwoPlayers = True
+   Ch_SquareSize = Program.GetArgument(2)
+   Ch_Turn = Program.GetArgument(3)
+   Ch_Side = -Ch_Turn
+   GW.Width = Ch_SquareSize * 8
+   GW.Height = GW.Width
+   GW.Left = GW.Width + 10
+   Ch_GrH = Ch_SquareSize * 8
+   Ch_GrW = Ch_GrH
+EndIf
+
+LblMoveNum = ControlTypes.Label
+BtnNewGame = ControlTypes.Button
+BtnAutoPlay = ControlTypes.Button
+BtnTakeBack = ControlTypes.Button
+BtnGetInfo = ControlTypes.Button
+BtnTwoPlayers = ControlTypes.Button
+
+Ch_ValidDots = {}
+Ch_Pieces = " PNBRQKpnbrqk"
+Ch_pieceValues = {100, 300, 300, 500, 900, 10000}
+Ch_PassantCol = 0
+Ch_ImgPc = {}
+Ch_FEN = ""
+Ch_Board = {}
+Ch_CastlingFlags = {}
+Ch_LegalMoves = {}
+Ch_History = {}
+Ch_HistoryCount = 0
+Ch_Move = ""
+Ch_GameOver = 0
+Ch_MoveNumber = 0
+Ch_LegalMoveID = 0
+Ch_Check = 0
+Ch_X = 0
+Ch_Y = 0
+Ch_KingPos = {}
+
+' Game over text
+GW.FontSize = 52
+GW.BrushColor = Colors.Black
+GameOverText1 = Shapes.AddText("Game Over")
+GameOverText1.Hide()
+GameOverText1.Move(130, Ch_GrH / 2 - 40)
+GW.BrushColor = Colors.Red
+GameOverText2 = Shapes.AddText("Game Over")
+GameOverText2.Hide()
+GameOverText2.Move(125, Ch_GrH / 2 - 40)
+GW.FontSize = 12
+Ch_CapturedLegalMoves = {}
+Ch_CapturedBoard = {}
+Ch_CapturedKingPos = {}
+
+' Initialization
+Ch_StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
+' position for checkmate in one move
+' ch_StartFEN = "7k/Q7/5K2/8/8/8/8/8 w - - 1 1"
+
+Ch_DragX = 0  ' mouse cursor on board
+Ch_DragY = 0
+Ch_MovedX = 0 ' to see the last move on board
+Ch_MovedY = 0
+
+Ch_LoadImages()  ' Load them into memory (takes time once)
+Ch_Auto = 0   ' Set autogame on - presentation mode
+Ch_IndicateAutoPlay()
+
+Ch_MovingNow = False
+Ch_Takeback = 0
+Ch_NewGame = 1  ' This will set all other variables on timer tick
+Takingback = False
+
+GraphicsWindow.BrushColor = Colors.None
+GraphicsWindow.PenColor = Colors.Red
+GW.PenWidth = 6
+NextMoveRect = Shapes.AddEllipse(Ch_SquareSize, Ch_SquareSize)
+NextMoveRect.Hide()
+
+' Set event for timer
+Timer.Interval = 1000
+Timer.Tick = Timer_OnTick
+Timer_OnTick()
+
+' Set event for mouse-press
+GraphicsWindow.MouseDown = GraphicsWindow_MouseDown
+
+If ShowTW Then
+   TW.WriteLine("Started - ok.")
+Else
+   TW.Hide()
+EndIf
+
+If Ch_TwoPlayers Then
+   Ch_StartNewGame()
+   If Ch_Turn = 1 And Ch_Side = -1 Then
+      Ch_GetNextMoves()
+      Ch_LastMoveTime = Date.Now
+      GW.Title = "sVB Chess Game"
+   EndIf
+EndIf
+
+Sub Ch_GetOtherPlayerMove()
+   Ch_MovingNow = True
+   
+   lastMove = File.ReadArray(Ch_SharedFilePath)
+   If File.LastError <> "" Then
+      Ch_MovingNow = False
+      Return
+   EndIf
+   
+   If lastMove[1] = -Ch_Turn Then
+      GW.Title = "sVB Chess Game"
+      Ch_LegalMoveID = lastMove[2]
+      Ch_FormateMove(Ch_LegalMoveID)
+      Ch_DoMove()
+      Ch_MovedX = Ch_History[Ch_HistoryCount][3] ' lastmove
+      Ch_MovedY = Ch_History[Ch_HistoryCount][4]
+      Ch_GetFEN()
+      Ch_DrawBoard()
+      Ch_LastMoveTime = Date.Now
+      Ch_GetNextMoves()
+      Ch_CheckGameOver()
+   EndIf
+   Ch_MovingNow = False
+EndSub
+
+Sub Timer_OnTick()
+   If Ch_GameOver Or Ch_MovingNow Or Takingback Or Ch_TimeOutPlay Then
+      Return
+   EndIf
+   
+   If Ch_TwoPlayers Then
+      If (Ch_Turn * Ch_Side) = 1 Then
+         timeout = Math.Truncate(Date.GetTotalSeconds(Date.Now - Ch_LastMoveTime))
+         GW.Title = "sVB Chess Game - " & (Ch_TimeOut - timeout) & " seconds"
+         If timeout >= Ch_TimeOut Then
+            Ch_TimeOutPlay = True
+            GW.Title = "sVB Chess Game - playing one auto move"
+            Ch_ClearCursors()
+            Ch_AutoPlay()
+            Ch_TimeOutPlay = False
+            Ch_WriteMoveToFile()
+            Ch_GetNextMoves() ' Generate legal moves for the other player
+            Ch_CheckGameOver()
+            Ch_LastMoveTime = Date.Now
+            GW.Title = "sVB Chess Game"
+         EndIf
+      Else
+         Ch_GetOtherPlayerMove()
+      EndIf
+      
+   ElseIf Ch_NewGame = 1 Then
+      Ch_StartNewGame()
+      
+   ElseIf Ch_Takeback = 1 Then
+      Takingback = True
+      Ch_DoTakeBack()     ' take back move
+      Takingback = False
+      
+   ElseIf (Ch_Auto = 1 Or Ch_Turn <> Ch_Side) Then ' Automatic gameplay mode
+      Ch_AutoPlay()
+   EndIf
+EndSub
+
+Sub Ch_WriteMoveToFile()
+   For i = 1 To 10
+      File.WriteArray(Ch_SharedFilePath, {Ch_Turn, Ch_LegalMoveID})
+      If File.LastError = "" Then
+         ExitLoop
+      EndIf
+      Program.Delay(100)
+   Next
+EndSub
+
+Sub Ch_CheckGameOver()
+   status = Ch_CheckMateAndStalemate()
+   If status <> "" Then
+      If ShowTW Then
+         TW.WriteLine(status)
+      EndIf
+      Ch_GameOver = 1
+      
+   Else ' Check Draw Due toInsufficient Material
+      If Ch_CheckInsufficientMaterial() Then
+         Sound.PlayBellRing()
+         If ShowTW Then
+            TextWindow.WriteLine("GAME OVER - DRAW!")
+         EndIf
+         Ch_GameOver = 1
+      EndIf
+   EndIf
+   
+   If Ch_GameOver = 1 Then
+      Timer.Pause()
+      GameOverText1.Show()
+      GameOverText2.Show()
+   EndIf
+EndSub
+
+Sub Ch_AutoPlay()
+   BtnNewGame.Enabled = False
+   BtnTwoPlayers.Enabled = False
+   Ch_MovingNow = True    ' to disable event
+   Ch_GetNextMoves()   ' Next moves list
+   Ch_CapturedLegalMoves = Ch_LegalMoves
+   Ch_CapturedKingPos = Ch_KingPos
+   Ch_CapturedBoard = Ch_Board
+   
+   If Ch_LegalMoves.Count > 0 Then
+      Ch_LegalMoveID = Ch_FindBestMove(1, 0, 0, 0, 0)
+      Ch_FormateMove(Ch_LegalMoveID)
+      Ch_DoMove()
+      Ch_MovedX = Ch_History[Ch_HistoryCount][3] ' lastmove
+      Ch_MovedY = Ch_History[Ch_HistoryCount][4]
+   EndIf
+   
+   Ch_GetFEN()
+   If ShowTW Then
+      TextWindow.WriteLine("FEN:" + Ch_FEN)
+      TextWindow.WriteLine("PGN:" + Ch_HistToPgn())
+   EndIf
+   Ch_CheckGameOver()
+   Ch_DrawBoard()
+   Ch_MovingNow = False
+   BtnTwoPlayers.Enabled = True
+   BtnNewGame.Enabled = True
+EndSub
+
+Sub Ch_StartNewGame()
+   Ch_Board = {}
+   Ch_LegalMoveID = 0
+   Ch_LegalMoves = {}
+   Ch_KingPos[1] = {5, 1}
+   Ch_KingPos[-1] = {5, 8}
+   Ch_Side = -Ch_Side
+   Ch_Turn = 1
+   Ch_FEN = Ch_StartFEN
+   Ch_SetFEN()         ' set starting position
+   If ShowTW Then
+      TextWindow.WriteLine("NEW GAME")
+   EndIf
+   Ch_ClearCursors()
+   Stack.Clear("Board State")
+   Ch_DrawBoard()
+   LblMoveNum.Text = Text.Replace(Text.PadLeft(Ch_MoveNumber - 1, 3), " ", "0")
+EndSub
+
+Function Ch_CheckInsufficientMaterial()
+   ' 1. Collect precise statistics of remaining pieces on the board
+   wPieces = {}
+   bPieces = {}
+   totalPiecesCount = 0
+   
+   For x = 1 To 8
+      For y = 1 To 8
+         p = Ch_Board[x][y]
+         If p <> " " Then
+            totalPiecesCount = totalPiecesCount + 1
+            If totalPiecesCount > 4 Then
+               Return False
+            EndIf
+            
+            If p = p.ToUpper() Then
+               wPieces[p] = wPieces[p] + 1
+            Else
+               bPieces[p] = bPieces[p] + 1
+            EndIf
+         EndIf
+      Next
+   Next
+   
+   ' 2. Check for insufficient material cases that automatically result in a draw:
+   
+   ' Case A: Lone king vs lone king (total of 2 pieces)
+   If totalPiecesCount = 2 Then
+      Return True
+      
+      ' Case B: King and a single knight or bishop vs lone king (total of 3 pieces)
+   ElseIf totalPiecesCount = 3 Then
+      Return wPieces["N"] = 1 Or wPieces["B"] = 1 Or
+         bPieces["n"] = 1 Or bPieces["b"] = 1
+      
+      ' Case C: King and bishop vs king and bishop (4 pieces)
+   ElseIf totalPiecesCount = 4 Then
+      Return (wPieces["N"] = 1 Or wPieces["B"] = 1) And
+         (bPieces["n"] = 1 Or bPieces["b"] = 1)
+   EndIf
+   
+   Return False
+EndFunction
+
+Function Ch_CheckMateAndStalemate()
+   If Ch_LegalMoves.Count > 0 Or Ch_MoveNumber < 4 Then
+      Return ""
+   EndIf
+   
+   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+   If Ch_Check = 1 Then
+      Ch_History[Ch_HistoryCount][8] = "#"   ' checkmate
+      status = Text.GetSubText("1-0,0-1", 1 + ((Ch_Turn + 1) * 2), 3)
+      Sound.PlayChime()
+   Else
+      status = "{Stalemate} 1/2-1/2"
+      Sound.PlayBellRing()
+   EndIf
+   
+   If ShowTW Then
+      TextWindow.WriteLine("GAME OVER! " + status)
+   EndIf
+   
+   Ch_GameOver = 1
+   Return status
+EndFunction
+
+' -- clears cursors on board
+Sub Ch_ClearCursors()
+   Ch_DragX = 0  ' mouse cursor on board
+   Ch_DragY = 0
+   Ch_MovedX = 0 ' lastmove
+   Ch_MovedY = 0
+   ForEach dot In Ch_ValidDots
+      Shapes.HideShape(dot)
+   Next
+   GameOverText1.Hide()
+   GameOverText2.Hide()
+EndSub
+
+' -- Handler for New Game button click
+Sub BtnNewGame_OnClick()
+   Ch_NewGame = 1  ' Processed on timer tick
+   Ch_GameOver = 0
+   GameOverText1.Hide()
+   GameOverText2.Hide()
+   Ch_LastMoveTime = Date.Now
+   Timer.Resume()
+EndSub
+
+' -- Handler for AutoPlay button click
+Sub BtnAutoPlay_OnClick()
+   Ch_Auto = 1 - Ch_Auto  ' Toggle auto-play state
+   Ch_IndicateAutoPlay()
+EndSub
+
+' -- Handler for TakeBack button click
+Sub BtnTakeBack_OnClick()
+   Ch_Takeback = 1  ' Processed on timer tick
+EndSub
+
+Sub BtnTwoPlayers_OnClick()
+   File.WriteArray(Ch_SharedFilePath, {})
+   Ch_TwoPlayers = True
+   Ch_SquareSize = Math.Truncate(Desktop.Width / 16) - 1
+   GW.Width = Ch_SquareSize * 8
+   GW.Height = GW.Width
+   GW.Left = 0
+   Ch_StartNewGame()
+   If Ch_Turn = 1 And Ch_Side = -1 Then
+      Ch_GetNextMoves()
+   Else
+      Ch_LastMoveTime = Date.Now
+   EndIf
+   
+   LDProcess.Start(Program.Directory + "\" + Program.Name,
+      "2players " &
+      Ch_SquareSize & " " &
+      -Ch_Side)
+EndSub
+
+' -- Handler for Get Data button click (Captures game state and generates test function)
+Sub BtnGetInfo_OnClick()
+   res = Array.Join({
+         "Function Test_Name()",
+         "   Ch_Board = " & ToStr(Ch_CapturedBoard),
+         "   Ch_LegalMoves = " & ToStr(Ch_CapturedLegalMoves),
+         "   Ch_turn = " & -Ch_Turn,
+         "   Ch_MoveNumber = " & Ch_MoveNumber,
+         "   kingPos[1] = {" & Ch_CapturedKingPos[1][1] & ", " & Ch_CapturedKingPos[1][2] & "}",
+         "   kingPos[-1] = {" & Ch_CapturedKingPos[-1][1] & ", " & Ch_CapturedKingPos[-1][2] & "}",
+         "   Ch_KingPos = kingPos",
+         "   bestIdx = Ch_FindBestMove(1, 0, 0, 0, 0)",
+         "   Return UnitTest.AssertEqual(",
+         "      bestIdx, 1,",
+         "      Rename_the_test",
+         "   )",
+         "EndFunction"
+      }, Text.NewLine)
+   Desktop.SetClipboardText(res)
+   fileName = Text.Replace(Date.Now, " ", "")
+   fileName = fileName.Replace("\", "-")
+   fileName = fileName.Replace("/", "-")
+   fileName = fileName.Replace(":", "-")
+   GW.SaveScreenshot(fileName & ".png")
+   If ShowTW Then
+      TW.WriteLine("Move data copied to clipboard, and a screenshot is saved to the exe directory.")
+   EndIf
+EndSub
+
+' -- Handles chess board mouse click events for manual play
+Sub GraphicsWindow_MouseDown()
+   If Ch_MovingNow Or Ch_GameOver = 1 Or Mouse.IsLeftButtonDown = False Then
+      Return
+   EndIf
+   
+   buttonIsDown = True
+   mX = GraphicsWindow.MouseX
+   mY = GraphicsWindow.MouseY
+   
+   ' Chess Board Interaction
+   If Ch_Auto = 0 And Ch_MovingNow = False Then ' manual play
+      If Ch_Turn = Ch_Side Then   ' Check if it's player's turn
+         Ch_MovingNow = True    ' Lock event processing
+         
+         ' Calculate clicked board square coordinates dynamically
+         matX = Math.Floor(mX / Ch_SquareSize) + 1
+         matY = 8 - Math.Floor(mY / Ch_SquareSize)
+         
+         ' Flip coordinates if playing as Black
+         If Ch_Side < 0 Then
+            matX = 9 - matX
+            matY = 9 - matY
+         EndIf
+         
+         ' Verify mouse click is within legal board bounds (1 to 8)
+         If matX >= 1 And matX <= 8 And matY >= 1 And matY <= 8 Then
+            Ch_GetNextMoves() ' Generate legal moves list
+            
+            If Ch_LegalMoves.Count = 0 Then
+               Ch_MovingNow = False
+               Return
+            EndIf
+            
+            For i = 1 To Ch_LegalMoves.Count
+               ' Select piece if the square contains valid moves
+               If matX = Ch_LegalMoves[i][1] And matY = Ch_LegalMoves[i][2] Then
+                  Ch_DragX = matX
+                  Ch_DragY = matY
+               EndIf
+               
+               ' Execute move if the clicked target square is legal for the selected piece
+               If Ch_DragX > 0 Then
+                  If matX = Ch_LegalMoves[i][3] And matY = Ch_LegalMoves[i][4] Then
+                     If Ch_DragX = Ch_LegalMoves[i][1] And Ch_DragY = Ch_LegalMoves[i][2] Then
+                        Ch_FormateMove(i)
+                        Ch_LegalMoveID = i
+                        Ch_DoMove()
+                        Ch_ClearCursors()
+                        Ch_MovedX = matX
+                        Ch_MovedY = matY
+                        
+                        If Ch_TwoPlayers Then
+                           Ch_WriteMoveToFile()
+                           Ch_GetNextMoves() ' Generate legal moves for the other player
+                           Ch_CheckGameOver()
+                           GW.Title = "sVB Chess Game"
+                           Ch_LastMoveTime = Date.Now
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            Next
+            
+            ' Update board graphics and display valid move dots
+            Ch_DrawBoard()
+            Ch_ShowValidMoves()
+         EndIf
+         
+         Ch_MovingNow = False
+      EndIf
+   EndIf
+EndSub
+
+
+Function ToStr(arr)
+   s = "{"
+   ForEach item In arr
+      If Array.IsArray(item) Then
+         s = s.Append(Text.NewLine)
+         s = s.Append(ToStr(item))
+      ElseIf item.IsNumeric Then
+         s = s.Append(item)
+      Else
+         s = s.Append("""")
+         s = s.Append(item)
+         s = s.Append("""")
+      EndIf
+      s = s.Append(", ")
+   Next
+   
+   s = s.SubText(1, s.Length - 2)
+   If s.EndsWith("}") Then
+      s = s.Append(Text.NewLine)
+   EndIf
+   s = s.Append("}")
+   Return s
+EndFunction
+
+' -- sets position from FEN
+Sub Ch_SetFEN()
+   q = 1
+   For x = 1 To 8
+      For y = 1 To 8
+         Ch_Board[x][y] = " "
+      Next
+   Next
+   
+   Ch_CastlingFlags = {
+      {0, 0}, ' wK castling , wQ castling
+      {0, 0} ' bK castling , bQ castling
+   }
+   
+   Ch_MoveNumber = 0  ' move number
+   Ch_X = 1
+   Ch_Y = 8
+   n = 0
+   For i = 1 To Text.GetLength(Ch_FEN)
+      c = Ch_FEN[i]
+      If c = " " Then
+         q = q + 1
+      ElseIf q = 1 Then    ' reading board
+         If Text.Contains("pnbrqkPNBRQK", c) Then
+            Ch_Board[Ch_X][Ch_Y] = c
+            Ch_X = Ch_X + 1
+         ElseIf c = "/" Then
+            Ch_Y = Ch_Y - 1
+            Ch_X = 1
+         Else
+            n = c - 1
+            Ch_X = Ch_X + n
+         EndIf
+      ElseIf q = 2 Then    ' reading turn info
+         If c = "w" Then
+            Ch_Turn = 1
+         Else
+            Ch_Turn = -1
+         EndIf
+      ElseIf q = 3 Then    ' reading castling info
+         If c = "K" Then
+            Ch_CastlingFlags[1][1] = 1
+         ElseIf c = "Q" Then
+            Ch_CastlingFlags[1][2] = 1
+         ElseIf c = "k" Then
+            Ch_CastlingFlags[2][1] = 1
+         ElseIf c = "q" Then
+            Ch_CastlingFlags[2][2] = 1
+         EndIf
+      ElseIf q = 4 Then    ' reading en-passant info
+         n = Text.IndexOf("abcdefgh", c, 1, False)
+         If n > 0 Then
+            Ch_PassantCol = n
+         EndIf
+      ElseIf q = 6 Then ' ignore 50-move info
+         Ch_MoveNumber = Ch_MoveNumber * 10 + c
+      EndIf
+   Next
+   
+   ' prepares for new game
+   Ch_HistoryCount = 0
+   Ch_GameOver = 0
+   Ch_MovingNow = False
+   Ch_NewGame = 0
+   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+EndSub
+
+' -- gets FEN from position
+Sub Ch_GetFEN()
+   Ch_FEN = ""
+   q = 0
+   For y = 8 To 1 Step -1
+      Ch_Y = y
+      For x = 1 To 8
+         Ch_X = x
+         c = Ch_Board[Ch_X][Ch_Y]
+         If c = " " Then
+            q = q + 1
+         Else
+            If q > 0 Then
+               Ch_FEN = Ch_FEN + q
+               q = 0
+            EndIf
+            Ch_FEN = Ch_FEN + c
+         EndIf
+      Next
+      
+      If q > 0 Then
+         Ch_FEN = Ch_FEN + q
+         q = 0
+      EndIf
+      
+      If Ch_Y > 1 Then
+         Ch_FEN = Ch_FEN & "/"
+      EndIf
+   Next
+   
+   Ch_FEN = Ch_FEN & " "
+   If Ch_Turn > 0 Then     ' turn
+      Ch_FEN = Ch_FEN & "w"
+   Else
+      Ch_FEN = Ch_FEN & "b"
+   EndIf
+   Ch_FEN = Ch_FEN & " "
+   
+   c = ""    ' castling info
+   If Ch_CastlingFlags[1][1] > 0 Then
+      c = c + "K"
+   EndIf
+   If Ch_CastlingFlags[1][2] > 0 Then
+      c = c + "Q"
+   EndIf
+   If Ch_CastlingFlags[2][1] > 0 Then
+      c = c + "k"
+   EndIf
+   If Ch_CastlingFlags[2][2] > 0 Then
+      c = c + "q"
+   EndIf
+   
+   If c.Length = 0 Then
+      c = "-"
+   EndIf
+   
+   Ch_FEN = Ch_FEN + c + " "
+   
+   If Ch_PassantCol > 0 Then    ' en-passant info
+      c = Text.GetSubText("abcdefgh", Ch_PassantCol, 1)
+      If Ch_Turn > 0 Then
+         c = c & "6"
+      Else
+         c = c & "3"
+      EndIf
+   Else
+      c = "-"
+   EndIf
+   Ch_FEN = Ch_FEN & c & " 0 " & Ch_MoveNumber
+EndSub
+
+
+' -- formates a move
+Sub Ch_FormateMove(i)
+   move = Ch_LegalMoves[i]
+   destX = move[3]
+   destY = move[4]
+   nums = "abcdefgh"
+   Ch_Move = Text.Append("", {
+         nums[move[1]],
+         move[2],
+         nums[destX],
+         destY,
+         move[5]
+      })
+EndSub
+
+' -- convert saved history to normal chess game notation format (pgn)
+Function Ch_HistToPgn()
+   pgn = ""
+   For i = 1 To Ch_HistoryCount
+      history = Ch_History[i]
+      
+      If i Mod 2 > 0 Then
+         pgn = pgn + (i + 1) / 2 + "."
+      EndIf
+      
+      c = history[6]
+      If c.Contains("0-") Then
+         pgn = pgn + c
+      Else
+         If c <> "p" Then
+            pgn = pgn + c  ' piece
+         EndIf
+         pgn = pgn.Append({
+               Text.GetSubText("abcdefgh", history[1], 1),
+               history[2],
+               history[7],  ' goes to
+               Text.GetSubText("abcdefgh", history[3], 1),
+               history[4],
+               history[5],  ' promotes
+               history[8]  ' check
+            })
+      EndIf
+      pgn = pgn + " "
+   Next
+   Return pgn
+EndFunction
+
+' -- Generates array of all current legal moves that are possible
+Sub Ch_GetNextMoves()
+   Stack.PushValue("p", Ch_Move)
+   Ch_Move = ""
+   Ch_LegalMoves = {}
+   
+   For x = 1 To 8
+      Ch_X = x
+      For y = 1 To 8
+         Ch_Y = y
+         targetPiece = Ch_Board[Ch_X][Ch_Y]
+         If targetPiece <> " " Then
+            n = Ch_Pieces.IndexOf(targetPiece, 1, False) - 1
+            enemyPieces = Text.GetSubText("pnbrqkPNBRQK", n - (n - 1) Mod 6, 6)
+            If Ch_Turn < 0 Then
+               n = n - 6 ' The same for both sides
+            EndIf
+            
+            If n = 1 Then
+               Ch_GenNpawn(enemyPieces)
+            ElseIf n = 2 Then
+               Ch_GenNknight(enemyPieces)
+            ElseIf n = 3 Then
+               Ch_GenNbishop(enemyPieces)
+            ElseIf n = 4 Then
+               Ch_GenNrook(enemyPieces)
+            ElseIf n = 5 Then
+               Ch_GenNbishop(enemyPieces)
+               Ch_GenNrook(enemyPieces)
+            ElseIf n = 6 Then
+               Ch_GenNking(enemyPieces)
+            EndIf
+         EndIf
+      Next
+   Next
+   Ch_Move = Stack.PopValue("p")
+EndSub
+
+
+' -- Detects If king's square is under attack
+Sub Ch_IsCheck(x, y)
+   Ch_Check = 0
+   For di1 = -1 To 1
+      For di2 = -1 To 1
+         If di1 <> 0 Or di2 <> 0 Then
+            dx = 0
+            dy = 0
+            For di3 = 1 To 7
+               dx = dx + di1 ' diognals, verticals and horizontals
+               dy = dy + di2
+               If x + dx < 1 Or x + dx > 8 Or y + dy < 1 Or y + dy > 8 Then
+                  ExitLoop
+               Else
+                  n = Ch_Pieces.IndexOf(Ch_Board[x + dx][y + dy], 1, False) - 1
+                  If n <> 0 Then
+                     n = n - ((Ch_Turn + 1) * 3)
+                     If n = 1 Then ' oponent's pawn
+                        If Math.Abs(dx) = 1 And dy = Ch_Turn Then
+                           Ch_Check = 1
+                        EndIf
+                     ElseIf n = 3 Then ' oponent's bishop
+                        If Math.Abs(di1) + Math.Abs(di2) = 2 Then
+                           Ch_Check = 1
+                        EndIf
+                     ElseIf n = 4 Then ' oponent's rook
+                        If Math.Abs(di1) + Math.Abs(di2) = 1 Then
+                           Ch_Check = 1
+                        EndIf
+                     ElseIf n = 5 Then ' oponent's queen
+                        Ch_Check = 1
+                     ElseIf n = 6 Then ' oponent's king
+                        If Math.Abs(dx) < 2 And Math.Abs(dy) < 2 Then
+                           Ch_Check = 1
+                        EndIf
+                     EndIf
+                     
+                     If Ch_Check Then
+                        ExitLoop --
+                     Else
+                        ExitLoop
+                     EndIf
+                  EndIf
+               EndIf
+            Next
+         EndIf
+      Next
+   Next
+   
+   If Ch_Check = 0 Then    ' maybe oponent's knight's check
+      For dx = -2 To 2
+         If x + dx > 0 And x + dx < 9 Then
+            For dy = -2 To 2
+               If y + dy > 0 And y + dy < 9 Then
+                  If Math.Abs(dx) + Math.Abs(dy) = 3 Then
+                     n = Text.GetIndexOf(Ch_Pieces, Ch_Board[x + dx][y + dy], 1, False) - 1
+                     If n > 1 Then
+                        n = n - ((Ch_Turn + 1) * 3)
+                        If n = 2 Then ' oponent's knight
+                           Ch_Check = 1
+                           Return
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+            Next
+         EndIf
+      Next
+   EndIf
+EndSub
+
+' -- add and verify king's threat before put this move into the list (heavy, but proper)
+Function Ch_AddMoveV(dx, dy)
+   tmp_check = Ch_Check
+   tmp_Board = Ch_Board
+   
+   Ch_Board[Ch_X + dx][Ch_Y + dy] = Ch_Board[Ch_X][Ch_Y]
+   Ch_Board[Ch_X][Ch_Y] = " "
+   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+   
+   Ch_Board = tmp_Board
+   If Ch_Check = 0 Then
+      Ch_AddMove(dx, dy)
+   EndIf
+   Ch_Check = tmp_check
+   Return Ch_Check
+EndFunction
+
+' -- add this legal move to the list
+Sub Ch_AddMove(dx, dy)
+   Ch_LegalMoves = Ch_LegalMoves.AddItem({Ch_X, Ch_Y, Ch_X + dx, Ch_Y + dy})
+EndSub
+
+' -- Process move from the list for normal notation ("e2e4")
+Sub Ch_DoMove()
+   move = Ch_LegalMoves[Ch_LegalMoveID]
+   ' save to history
+   Ch_HistoryCount = Ch_HistoryCount + 1
+   Ch_History[Ch_HistoryCount] = {
+      move[1], ' from x
+      move[2], ' from y
+      move[3], ' to x
+      move[4], ' to y
+      move[5], ' promo
+      "",  ' piece, or 0-0, or 0-0-0
+      "-", ' move, capture
+      "",  ' check
+      Ch_Move ' save move text
+   }
+   
+   If Ch_Takeback = 0 Then
+      If (Ch_Side * Ch_Turn) = 1 Then
+         ' Save Board State
+         Stack.PushValue("Board State", Ch_KingPos)
+         Stack.PushValue("Board State", Ch_Board)
+         Stack.PushValue("Board State", Ch_CastlingFlags)
+         Stack.PushValue("Board State", Ch_PassantCol)
+         If Ch_Auto = 1 Or Ch_TimeOutPlay Then
+            Ch_ShowNextMoveRect(move[1], move[2])
+         EndIf
+      Else
+         Ch_ShowNextMoveRect(move[1], move[2])
+      EndIf
+   EndIf
+   
+   Ch_MovePiece()
+   
+   If Ch_Check Then
+      If Ch_History[Ch_HistoryCount][7] = "x" Then
+         Sound.PlayChimes()
+      EndIf
+      Sound.PlayDing()
+      
+   ElseIf Ch_Takeback = 0 Then
+      Sound.PlayClick()
+      If Ch_History[Ch_HistoryCount][7] = "x" Then
+         Sound.PlayChimes()
+      EndIf
+   EndIf
+EndSub
+
+Sub Ch_ShowNextMoveRect(x, y)
+   Ch_ShowShape(NextMoveRect, x, y)
+   
+   For i = 1 To 2
+      Program.Delay(100)
+      NextMoveRect.Hide()
+      Program.Delay(100)
+      NextMoveRect.Show()
+   Next
+   
+   Program.Delay(100)
+   NextMoveRect.Hide()
+EndSub
+
+Sub Ch_DoTakeBack()
+   If Stack.GetCount("Board State") > 1 Then
+      Ch_PassantCol = Stack.PopValue("Board State")
+      Ch_CastlingFlags = Stack.PopValue("Board State")
+      Ch_Board = Stack.PopValue("Board State")
+      Ch_KingPos = Stack.PopValue("Board State")
+      
+      Ch_MoveNumber = Ch_MoveNumber - 1
+      LblMoveNum.Text = Text.Replace(Text.PadLeft(Ch_MoveNumber - 1, 3), " ", "0")
+      If Ch_HistoryCount >= 2 Then
+         Ch_HistoryCount = Ch_HistoryCount - 2
+      Else
+         Ch_HistoryCount = 0
+      EndIf
+      Ch_GetNextMoves()
+      
+      If ShowTW Then
+         TextWindow.WriteLine("TAKEBACK")
+      EndIf
+      
+      Ch_ClearCursors()
+      Ch_DrawBoard()
+   EndIf
+   Ch_Takeback = 0
+EndSub
+
+Sub Ch_LoadImages()
+   GraphicsWindow.Title = "sVB Chess Game"
+   GraphicsWindow.Height = Ch_GrH
+   GraphicsWindow.Width = Ch_GrW
+   GraphicsWindow.DrawBoundText(Ch_GrW / 2.2, Ch_GrH / 2.2, 100, "Loading...")
+   pieces = "pnbrqk"
+   images = {"images/w", "images/b"}
+   For i = 1 To 6
+      p = pieces[i]
+      For n = 1 To 2
+         Ch_ImgPc[i][n] = ImageList.LoadImage(images[n] + p + ".png")
+      Next
+   Next
+   
+   GraphicsWindow.BackgroundColor = Colors.DarkRed
+   
+   If Ch_TwoPlayers Then
+      Return
+   EndIf
+   
+   foreColor = Colors.White
+   LblMoveNum = Controls.AddLabel("000", Ch_GrH + 15, 5)
+   LblMoveNum.FontName = "Consolas"
+   LblMoveNum.FontSize = 24
+   LblMoveNum.FontBold = True
+   LblMoveNum.ForeColor = foreColor
+   
+   ' Create clean UI buttons instead of manual drawings
+   BtnNewGame = Controls.AddButton("New Game", Ch_GrH + 10, Ch_SquareSize)
+   BtnNewGame.ForeColor = foreColor
+   BtnNewGame.OnClick = BtnNewGame_OnClick
+   
+   BtnAutoPlay = Controls.AddButton("AutoPlay", Ch_GrH + 10, (Ch_SquareSize * 2) - 4)
+   BtnAutoPlay.ForeColor = foreColor
+   BtnAutoPlay.OnClick = BtnAutoPlay_OnClick
+   
+   BtnTakeBack = Controls.AddButton("TakeBack", Ch_GrH + 10, (Ch_SquareSize * 3) - 8)
+   BtnTakeBack.ForeColor = foreColor
+   BtnTakeBack.OnClick = BtnTakeBack_OnClick
+   
+   BtnGetInfo = Controls.AddButton("Get Data", Ch_GrH + 10, (Ch_SquareSize * 4) - 8)
+   BtnGetInfo.ForeColor = foreColor
+   BtnGetInfo.OnClick = BtnGetInfo_OnClick
+   
+   BtnTwoPlayers = Controls.AddButton("2 Players", Ch_GrH + 10, (Ch_SquareSize * 5) - 8)
+   BtnTwoPlayers.ForeColor = foreColor
+   BtnTwoPlayers.OnClick = BtnTwoPlayers_OnClick
+   
+   ' Set global XAML resource dictionary for all buttons styling
+   gwForm = GW.AsForm()
+   gwForm.SetResourceDictionary("ButtonStyles.style")
+EndSub
+
+' Turtle draws or clears a mark
+Sub Ch_IndicateAutoPlay()
+   Turtle.X = Ch_GrH + 76
+   Turtle.Y = 111
+   Stack.PushValue("g", GraphicsWindow.PenColor)
+   Stack.PushValue("g", GraphicsWindow.PenWidth)
+   i = 5 + (Ch_Auto * 11)
+   GraphicsWindow.PenColor = Text.GetSubText("OFF:#DDDDDD,ON:#FF0000", i, 7)
+   GraphicsWindow.PenWidth = 3
+   Turtle.Angle = 180
+   Turtle.Move(12)
+   Turtle.Angle = Turtle.Angle - 155
+   Turtle.Move(18)
+   ' Turtle.Hide()
+   GraphicsWindow.PenWidth = Stack.PopValue("g")
+   GraphicsWindow.PenColor = Stack.PopValue("g")
+EndSub
+
+' Redraws the chess board
+Sub Ch_DrawBoard()
+   margin = (Ch_SquareSize - 60) / 2
+   
+   GW.FontSize = 11
+   GW.FontBold = True
+   
+   For col = 1 To 8
+      For row = 1 To 8
+         screenCol = (col - 1)
+         screenRow = (8 - row)
+         If Ch_Side < 0 Then
+            screenCol = 7 - screenCol
+            screenRow = 7 - screenRow
+         EndIf
+         
+         ' Board squares
+         i = 7 + ((1 - (col + row) Mod 2) * 14)
+         Stack.PushValue("g", GraphicsWindow.BrushColor)
+         GW.BrushColor = Text.GetSubText("white:#E7CEA5,black:#A57B5A", i, 7)
+         GW.FillRectangle(screenCol * Ch_SquareSize, screenRow * Ch_SquareSize, Ch_SquareSize, Ch_SquareSize)
+         
+         If screenCol = 0 Then
+            Stack.PushValue("gRank", GW.BrushColor)
+            GW.BrushColor = Colors.DarkSlateGray
+            GW.DrawText(screenCol * Ch_SquareSize + 3, screenRow * Ch_SquareSize + 3, row)
+            GW.BrushColor = Stack.PopValue("gRank")
+         EndIf
+         
+         If screenRow = 7 Then
+            Stack.PushValue("gFile", GW.BrushColor)
+            GW.BrushColor = Colors.DarkSlateGray
+            fileLetter = Text.GetSubText("ABCDEFGH", col, 1)
+            GW.DrawText(screenCol * Ch_SquareSize + Ch_SquareSize - 15, screenRow * Ch_SquareSize + Ch_SquareSize - 18, fileLetter)
+            GW.BrushColor = Stack.PopValue("gFile")
+         EndIf
+         
+         c = Ch_Board[col][row] ' Pieces on board
+         If c <> " " Then
+            i = Text.IndexOf("pnbrqkPNBRQK", c, 1, False)
+            n = 2
+            If i > 6 Then
+               i = i - 6
+               n = 1
+               GW.BrushColor = Colors.Red
+            Else
+               GW.BrushColor = Colors.Blue
+            EndIf
+            
+            GW.DrawImage(Ch_ImgPc[i][n],
+               screenCol * Ch_SquareSize + margin - 3,
+               screenRow * Ch_SquareSize + margin)
+            GW.BrushColor = Stack.PopValue("g")
+         EndIf
+         
+         ' cursor for mouse drags
+         If col = Ch_DragX And row = Ch_DragY Then
+            Ch_DrawCursor(screenCol, screenRow, Colors.Red)
+         EndIf
+         ' last move on board
+         If col = Ch_MovedX And row = Ch_MovedY Then
+            Ch_DrawCursor(screenCol, screenRow, Colors.Yellow)
+         EndIf
+      Next
+   Next
+EndSub
+
+' Draws rectangle
+Sub Ch_DrawCursor(col, row, penColor)
+   Stack.PushValue("g", GraphicsWindow.PenColor)
+   GraphicsWindow.PenColor = penColor
+   GW.PenWidth = 6
+   GW.DrawRectangle((col * Ch_SquareSize) + 1, (row * Ch_SquareSize) + 1, Ch_SquareSize - 2, Ch_SquareSize - 2)
+   GW.PenColor = Stack.PopValue("g")
+EndSub
+
+' -- Displays visual indicators for valid moves using a dynamic shape cache
+Sub Ch_ShowValidMoves()
+   ' Hide all existing dots using sVB ForEach loop
+   ForEach dot In Ch_ValidDots
+      Shapes.HideShape(dot)
+   Next
+   
+   ' Process legal target moves for the selected piece
+   If Ch_DragX > 0 Then
+      dotIndex = 0
+      
+      For i = 1 To Ch_LegalMoves.Count
+         move = Ch_LegalMoves[i]
+         If move[1] = Ch_DragX And move[2] = Ch_DragY Then
+            dotIndex = dotIndex + 1
+            
+            ' Dynamic shape allocation (Lazy Caching)
+            If dotIndex > Ch_ValidDots.Count Then
+               GraphicsWindow.BrushColor = Colors.None
+               GraphicsWindow.PenColor = Colors.Gold
+               GW.PenWidth = 6
+               Ch_ValidDots[dotIndex] = Shapes.AddEllipse(Ch_SquareSize, Ch_SquareSize)
+            EndIf
+            
+            Ch_ShowShape(Ch_ValidDots[dotIndex], move[3], move[4])
+         EndIf
+      Next
+   EndIf
+EndSub
+
+Sub Ch_ShowShape(shapeName, x, y)
+   ' Map board position to screen coordinates
+   mX = x - 1
+   mY = 8 - y
+   If Ch_Side < 0 Then
+      mX = 7 - mX
+      mY = 7 - mY
+   EndIf
+   
+   cX = mX * Ch_SquareSize
+   cY = mY * Ch_SquareSize
+   Shapes.Move(shapeName, cX, cY)
+   Shapes.ShowShape(shapeName)
+EndSub
+
+GraphicsWindow.BrushColor = "#33FFD700"  ' Semi-transparent yellow fill
+GraphicsWindow.PenColor = Colors.Gold
+GraphicsWindow.PenWidth = 2            ' Border thickness
+' Add the highlight shape (86 width x 26 height matching button size)
+Ch_BtnHoverShape = Shapes.AddEllipse(86, 26)
+Ch_BtnHoverShape.Hide()
+
+' -- Pawn's moves and impact generation
+Sub Ch_GenNpawn(ch_enm)
+   dy = Ch_Turn
+   targetY = Ch_Y + dy
+   If Ch_Board[Ch_X][targetY] = " " Then   ' go square forward
+      dx = 0
+      Ch_AddMoveV(dx, dy)
+      dy = dy + Ch_Turn
+      targetY = targetY + Ch_Turn
+      If (Ch_Y - 2 * Ch_Turn) Mod 9 = 0 Then ' 2,7 horiz.
+         ' try 2nd square forward
+         If Ch_Board[Ch_X][targetY] = " " Then
+            Ch_AddMoveV(dx, dy)
+         EndIf
+      EndIf
+      dy = dy - Ch_Turn
+   EndIf
+   
+   For dx = -1 To 1 Step 2  ' try to capture
+      If Ch_X + dx > 0 And Ch_X + dx < 9 Then
+         targetX = Ch_X + dx
+         targetY = Ch_Y + dy
+         targetPiece = Ch_Board[targetX][targetY]
+         
+         ' Build the key including the piece character (type and color) and coordinates
+         key = targetPiece + "_" + targetX + "_" + targetY
+         
+         If targetPiece <> " " Then
+            If ch_enm.Contains(targetPiece) Then
+               Ch_AddMoveV(dx, dy)
+            EndIf
+         ElseIf targetX = Ch_PassantCol ' En-Passant check
+               And (Ch_Y - (5 * dy)) Mod 9 = 0   ' 4, 5 horiz.
+               And ch_enm.Contains(Ch_Board[targetX][Ch_Y]) Then
+            Ch_AddMoveV(dx, dy) ' en-passant
+         EndIf
+      EndIf
+   Next
+EndSub
+
+' -- Bishop's moves and impact generation
+Sub Ch_GenNbishop(ch_enm)
+   For di1 = -1 To 1 Step 2
+      For di2 = -1 To 1 Step 2
+         dx = 0
+         dy = 0
+         For di3 = 1 To 7
+            dx = dx + di1 ' diagonals
+            dy = dy + di2
+            targetX = Ch_X + dx
+            targetY = Ch_Y + dy
+            
+            If targetX < 1 Or targetX > 8 Or targetY < 1 Or targetY > 8 Then
+               ExitLoop
+            Else
+               targetPiece = Ch_Board[targetX][targetY]
+               If targetPiece = " " Then
+                  Ch_AddMoveV(dx, dy)
+               ElseIf ch_enm.Contains(targetPiece) Then
+                  Ch_AddMoveV(dx, dy)
+                  ExitLoop
+               Else
+                  ExitLoop
+               EndIf
+            EndIf
+         Next
+      Next
+   Next
+EndSub
+
+
+' -- Rook's (and rook part of queen's) moves and impact generation
+Sub Ch_GenNrook(ch_enm)
+   For di1 = -1 To 1
+      For di2 = -1 To 1
+         If (di1 = 0 And di2 <> 0) Or (di1 <> 0 And di2 = 0) Then
+            dx = 0
+            dy = 0
+            For di3 = 1 To 7
+               dx = dx + di1 ' orthogonals
+               dy = dy + di2
+               targetX = Ch_X + dx
+               targetY = Ch_Y + dy
+               
+               If targetX < 1 Or targetX > 8 Or targetY < 1 Or targetY > 8 Then
+                  ExitLoop
+               Else
+                  targetPiece = Ch_Board[targetX][targetY]
+                  If targetPiece = " " Then
+                     Ch_AddMoveV(dx, dy)
+                     
+                  ElseIf ch_enm.Contains(targetPiece) Then
+                     Ch_AddMoveV(dx, dy)
+                     ExitLoop
+                  Else
+                     ExitLoop
+                  EndIf
+               EndIf
+            Next
+         EndIf
+      Next
+   Next
+EndSub
+
+
+' -- Knight's moves and impact generation
+Sub Ch_GenNknight(ch_enm)
+   For dx = -2 To 2
+      targetX = Ch_X + dx
+      If targetX > 0 And targetX < 9 Then
+         For dy = -2 To 2
+            targetY = Ch_Y + dy
+            If targetY > 0 And targetY < 9 Then
+               ' Check for valid knight move (2+1 combination)
+               If dx.Abs + dy.Abs = 3 Then
+                  targetPiece = Ch_Board[targetX][targetY]
+                  If targetPiece = " " Then
+                     Ch_AddMoveV(dx, dy)
+                  ElseIf ch_enm.Contains(targetPiece) Then
+                     Ch_AddMoveV(dx, dy)
+                  EndIf
+               EndIf
+            EndIf
+         Next
+      EndIf
+   Next
+EndSub
+
+' -- King's moves
+Sub Ch_GenNking(ch_enm)
+   For dj1 = -1 To 1
+      If Ch_X + dj1 > 0 And Ch_X + dj1 < 9 Then
+         For dj2 = -1 To 1
+            If Ch_Y + dj2 > 0 And Ch_Y + dj2 < 9 Then
+               If dj1 <> 0 Or dj2 <> 0 Then
+                  targetX = Ch_X + dj1
+                  targetY = Ch_Y + dj2
+                  targetPiece = Ch_Board[targetX][targetY]
+                  
+                  If Text.IsSubText(" " + ch_enm, targetPiece) Then
+                     ' Temporarily move King on the actual board array
+                     oldTargetPiece = targetPiece
+                     oldKingPos = Ch_KingPos[Ch_Turn]
+                     kingPiece = Ch_Board[Ch_X][Ch_Y]
+                     Ch_Board[targetX][targetY] = kingPiece
+                     Ch_Board[Ch_X][Ch_Y] = " "
+                     Ch_X = targetX
+                     Ch_Y = targetY
+                     Ch_IsCheck(targetX, targetY)
+                     
+                     ' Restore actual board array and coordinates
+                     Ch_X = Ch_X - dj1
+                     Ch_Y = Ch_Y - dj2
+                     Ch_Board[Ch_X][Ch_Y] = kingPiece
+                     Ch_Board[targetX][targetY] = oldTargetPiece
+                     Ch_KingPos[Ch_Turn] = oldKingPos
+                     
+                     If Ch_Check = 0 Then
+                        Ch_AddMove(dj1, dj2)
+                     EndIf
+                  EndIf
+               EndIf
+            EndIf
+         Next
+      EndIf
+   Next
+   
+   ' Add castling moves, If no check and castling possible
+   colorIndex = 1 + ((1 - Ch_Turn) / 2)   ' 1 for White, 2 for Black (for castling flags)
+   
+   If (Ch_CastlingFlags[colorIndex][1] + Ch_CastlingFlags[colorIndex][2]) <= 0 Then
+      Return
+   EndIf
+   
+   kingLine = ((colorIndex - 1) * 7) + 1   ' 1 or 8 - king's line (row)
+   sideIndex = 0
+   
+   For castlingDir = -1 To 1 Step 2  ' -1 for Queenside (left), 1 for Kingside (right)
+      kingStep = castlingDir * 2
+      sideIndex = sideIndex + 1
+      Ch_Check = -9
+      
+      If Ch_CastlingFlags[colorIndex][sideIndex] > 0 Then   ' castling flag allows
+         squaresCount = 3 - ((castlingDir + 1) / 2)
+         empty = True
+         For i = 1 To squaresCount
+            If Ch_Board[5 + (castlingDir * i)][kingLine] <> " " Then  ' square is not empty
+               empty = False
+               ExitLoop
+            EndIf
+         Next
+         
+         If empty Then
+            If Ch_Check = -9 Then
+               Ch_IsCheck(Ch_X, Ch_Y)
+            EndIf
+            
+            If Ch_Check = 0 Then
+               For i = 1 To 2
+                  Ch_X = Ch_X + castlingDir
+                  If Ch_Check = 0 Then
+                     Ch_IsCheck(Ch_X, Ch_Y)
+                  EndIf
+               Next
+               Ch_X = Ch_X - kingStep
+            EndIf
+            
+            If Ch_Check = 0 Then
+               Ch_AddMove(kingStep, 0)
+            EndIf
+         EndIf
+      EndIf
+   Next
+EndSub
+
+
+Function Ch_GetPieceValue(piece, col)
+   pType = Text.GetIndexOf(" pnbrqk", piece.ToLower(), 1, False) - 1
+   If pType = 0 Then
+      Return 0
+   Else
+      isWhite = (piece = piece.ToUpper())
+      If pType = 1 And ((isWhite And col = 8) Or (isWhite = False And col = 1)) Then
+         pType = 5
+      EndIf
+      Return Ch_pieceValues[pType]
+   EndIf
+EndFunction
+
+Function Ch_SortArray(arr)
+   count = Array.GetItemCount(arr)
+   For i = 1 To count - 1
+      For j = i + 1 To count
+         If arr[i] > arr[j] Then
+            temp = arr[i]
+            arr[i] = arr[j]
+            arr[j] = temp
+         EndIf
+      Next
+   Next
+   Return arr
+EndFunction
+
+
+
+' Function to find the best move balancing defense (escape/eliminate) and general tactical offense
+Function Ch_FindBestMove(depth, checkedX, checkedY, protextedX, protextedY)
+   bestEscapeIndex = 0
+   bestEscapeScore = -99999
+   
+   bestEliminateIndex = 0
+   bestEliminateScore = -99999
+   
+   bestGeneralIndex = 0
+   bestGeneralScore = -99999
+   
+   threatenedValue = 0
+   threatenedX = 0
+   threatenedY = 0
+   bestThreatsAndScore = ""
+   
+   ' 1. Scan the board to find the most valuable threatened piece and its attackers
+   For x = 1 To 8
+      For y = 1 To 8
+         currPiece = Ch_Board[x][y]
+         If currPiece = " " Or
+               (x = checkedX And y = checkedY) Or
+               (x = protextedX And y = protextedY) Then
+            ContinueLoop
+         EndIf
+         
+         pType = Text.GetIndexOf(Ch_Pieces, currPiece, 1, False) - 1
+         If Ch_Turn > 0 And pType < 7 Then
+            ' OK - White piece and white's turn
+         ElseIf Ch_Turn < 0 And pType > 6 Then
+            pType = pType - 6  ' Normalize black piece index
+         Else
+            ContinueLoop       ' Not this player's piece
+         EndIf
+         
+         If pType = 6 Then   ' King
+            ContinueLoop
+         EndIf
+         
+         dx = Math.Abs(x - Ch_KingPos[Ch_Turn][1])
+         dy = Math.Abs(y - Ch_KingPos[Ch_Turn][2])
+         defensBonus = Math.Max(0, 100 - (dx + dy) * 25)
+         pVal = Ch_pieceValues[pType] + defensBonus
+         
+         threatsAndScore = Ch_EvalMoveOrThreats(x, y, x, y, True)
+         scoreIndex = Array.GetItemCount(threatsAndScore)
+         safetyScore = threatsAndScore[scoreIndex]
+         If safetyScore < 0 Then
+            If pVal > threatenedValue Or
+                  (pVal = threatenedValue And Math.GetRandomNumber(100) > 50) Then
+               threatenedValue = pVal
+               threatenedX = x
+               threatenedY = y
+               bestThreatsAndScore = threatsAndScore
+            EndIf
+         EndIf
+      Next
+   Next
+   
+   If depth = 2 Then
+      If threatenedValue > 0 Then
+         scoreIndex = Array.GetItemCount(bestThreatsAndScore)
+         Return bestThreatsAndScore[scoreIndex]
+      Else
+         Return 0
+      EndIf
+   EndIf
+   
+   ' 2. Iterate through legal moves using index to evaluate escapes, eliminations, and general moves
+   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+   
+   For mi = 1 To Ch_LegalMoves.Count
+      move = Ch_LegalMoves[mi]
+      srcX = move[1]
+      srcY = move[2]
+      dstX = move[3]
+      dstY = move[4]
+      
+      moveScore = Ch_EvalMoveOrThreats(srcX, srcY, dstX, dstY, False)
+      
+      ' The move can lead to capture a more valuable piece
+      ' Or checkmate
+      ' We will scan for that
+      If depth = 1 Then
+         orgBoard = Ch_Board
+         Ch_Board[dstX][dstY] = Ch_Board[srcX][srcY]
+         Ch_Board[srcX][srcY] = " "
+         
+         ' Is checkmate?
+         orgMoves = Ch_LegalMoves
+         orgKingPos = Ch_KingPos
+         orgCheck = Ch_Check
+         
+         If Text.ToLower(Ch_Board[dstX][dstY]) = "k" Then
+            Ch_KingPos[Ch_Turn][1] = dstX
+            Ch_KingPos[Ch_Turn][2] = dstY
+         EndIf
+         
+         Ch_Turn = -Ch_Turn
+         Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+         Ch_GetNextMoves()
+         
+         If Ch_LegalMoves.Count = 0 Then
+            If Ch_Check = 1 Then ' You found a checkmate
+               Ch_LegalMoves = orgMoves
+               Ch_Board = orgBoard
+               Ch_Turn = -Ch_Turn
+               Ch_KingPos = orgKingPos
+               Ch_Check = orgCheck
+               Return mi
+            Else ' Avoid stalemate
+               moveScore = moveScore - 5000
+            EndIf
+         EndIf
+         
+         moveScore = moveScore + Ch_GetAdvancedPawnPenalty()
+         moveScore = moveScore + Ch_IsCheckmate()
+         
+         Ch_LegalMoves = orgMoves
+         Ch_Turn = -Ch_Turn
+         Ch_KingPos = orgKingPos
+         Ch_Check = orgCheck
+         
+         moveScore2 = Ch_FindBestMove(2, dstX, dstY, threatenedX, threatenedY)
+         ' The move can cause more damage!
+         If moveScore2 < 0 And moveScore2 < moveScore Then
+            moveScore = moveScore + moveScore2
+         EndIf
+         
+         If threatenedValue > 0 Then
+            ' The move can protect the thretened piece
+            If moveScore + threatenedValue <> 0 And
+                  Ch_EvalMoveOrThreats(threatenedX, threatenedY, threatenedX, threatenedY, False) >= 0 Then
+               moveScore = moveScore + threatenedValue
+            EndIf
+         EndIf
+         
+         If moveScore >= 0 Then
+            moveScore = moveScore + Ch_GetAttackingBonus()
+         EndIf
+         
+         Ch_Board = orgBoard
+      EndIf
+      
+      ' Track best general move index across all legal options
+      If moveScore > bestGeneralScore Or
+            (moveScore = bestGeneralScore And Math.GetRandomNumber(100) > 50) Then
+         bestGeneralScore = moveScore
+         bestGeneralIndex = mi
+      EndIf
+      
+      ' Case A: Escape move for the threatened piece
+      If threatenedValue > 0 And srcX = threatenedX And srcY = threatenedY Then
+         If moveScore > bestEscapeScore Or
+               (moveScore = bestEscapeScore And Math.GetRandomNumber(100) > 50) Then
+            bestEscapeScore = moveScore
+            bestEscapeIndex = mi
+         EndIf
+      EndIf
+      
+      ' Case B: Threat elimination move (attacking or capturing any threatening source)
+      If threatenedValue > 0 Then
+         For i = 1 To Array.GetItemCount(bestThreatsAndScore) - 1
+            attackerCoord = bestThreatsAndScore[i]
+            If dstX = attackerCoord[1] And dstY = attackerCoord[2] Then
+               If moveScore > bestEliminateScore Or
+                     (moveScore = bestEliminateScore And Math.GetRandomNumber(100) > 50) Then
+                  bestEliminateScore = moveScore
+                  bestEliminateIndex = mi
+               EndIf
+               ExitLoop
+            EndIf
+         Next
+      EndIf
+   Next
+   
+   ' If no piece is threatened, simply return the best general move index found
+   If threatenedValue = 0 Then
+      Return bestGeneralIndex
+   EndIf
+   
+   ' 3. Determine the best defensive option index (Escape vs Eliminate Threat)
+   bestDefenseScore = -99999
+   bestDefenseIndex = 0
+   If bestEliminateScore > bestEscapeScore Then
+      bestDefenseScore = bestEliminateScore
+      bestDefenseIndex = bestEliminateIndex
+   ElseIf bestEscapeScore > -99999 Then
+      bestDefenseScore = bestEscapeScore
+      bestDefenseIndex = bestEscapeIndex
+   EndIf
+   
+   If bestDefenseIndex > 0 And bestDefenseScore >= bestGeneralScore Then
+      Return bestDefenseIndex
+   ElseIf bestGeneralIndex > 0 Then
+      Return bestGeneralIndex
+   EndIf
+   
+   Return bestDefenseIndex
+EndFunction
+
+' -- Calculates strategic threat bonus by checking all active threats after the move
+Function Ch_GetAttackingBonus()
+   bonus = 0
+   
+   ' Save original legal moves and generate new moves based on current board state
+   orgMoves = Ch_LegalMoves
+   Ch_GetNextMoves()
+   
+   For i = 1 To Ch_LegalMoves.Count
+      move = Ch_LegalMoves[i]
+      attackingPiece = Text.ToLower(Ch_Board[move[1]][move[2]])
+      targetPiece = Text.ToLower(Ch_Board[move[3]][move[4]])
+      If targetPiece <> " " And targetPiece <> "k"
+            And attackingPiece <> targetPiece
+            And Ch_IsFriend(targetPiece) = False Then
+         enemyVal = Ch_GetPieceValue(targetPiece, move[4])
+         ' Add a fraction (one-fifth) of the threatened piece value as bonus
+         bonus = Math.Max(bonus, Math.Floor(enemyVal / 5))
+      EndIf
+   Next
+   
+   Ch_LegalMoves = orgMoves
+   Return bonus
+EndFunction
+
+' -- Deep search function to check if a move can lead to a checkmate or force a decisive advantage
+Function Ch_IsCheckmate()
+   For mi = 1 To Ch_LegalMoves.Count
+      move = Ch_LegalMoves[mi]
+      srcX = move[1]
+      srcY = move[2]
+      dstX = move[3]
+      dstY = move[4]
+      ' Save current state
+      orgBoard = Ch_Board
+      orgMoves = Ch_LegalMoves
+      
+      ' Apply the move virtually
+      movingPiece = Ch_Board[srcX][srcY]
+      Ch_Board[dstX][dstY] = movingPiece
+      Ch_Board[srcX][srcY] = " "
+      
+      ' Switch turn to opponent
+      orgKingPos = Ch_KingPos
+      orgCheck = Ch_Check
+      If movingPiece.ToLower() = "k" Then
+         Ch_KingPos[Ch_Turn][1] = dstX
+         Ch_KingPos[Ch_Turn][2] = dstY
+      EndIf
+      
+      Ch_Turn = -Ch_Turn
+      Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+      If Ch_Check = 0 Then
+         Ch_Turn = -Ch_Turn
+         Ch_Board = orgBoard
+         Ch_LegalMoves = orgMoves
+         Ch_KingPos = orgKingPos
+         Ch_Check = orgCheck
+         ContinueLoop
+      EndIf
+      
+      Ch_GetNextMoves()
+      
+      Ch_Turn = -Ch_Turn
+      Ch_KingPos = orgKingPos
+      Ch_Check = orgCheck
+      Ch_Board = orgBoard
+      
+      If Ch_LegalMoves.Count = 0 Then
+         Ch_LegalMoves = orgMoves
+         Return -10000
+      EndIf
+      
+      Ch_LegalMoves = orgMoves
+   Next
+   
+   Return 0
+EndFunction
+
+
+' Function to evaluate and penalize advanced pawns near promotion
+Function Ch_GetAdvancedPawnPenalty()
+   maxPenalty = 0
+   penaltyTable = {25, 50, 100, 200}
+   
+   For i = 1 To Ch_LegalMoves.Count
+      move = Ch_LegalMoves[i]
+      srcX = move[1]
+      srcY = move[2]
+      dstX = move[3]
+      dstY = move[4]
+      
+      ' Check if the moving piece is a pawn
+      piece = Text.ToLower(Ch_Board[srcX][srcY])
+      If Text.ToLower(piece) <> "p" Then
+         ContinueLoop
+      EndIf
+      
+      ' Calculate advancement depth based on current player direction
+      advancedRow = 0
+      If Ch_Turn > 0 Then
+         ' White player moves upwards (row 5 to 8)
+         If dstY >= 5 Then
+            advancedRow = dstY
+         EndIf
+      Else
+         ' Black player moves downwards (row 4 to 1 from perspective)
+         If dstY <= 4 Then
+            advancedRow = 9 - dstY
+         EndIf
+      EndIf
+      
+      ' Apply penalty based on advanced row depth
+      If advancedRow >= 5 Then
+         penalty = -penaltyTable[advancedRow - 4]
+         If penalty < maxPenalty Then
+            maxPenalty = penalty
+         EndIf
+      EndIf
+   Next
+   
+   Return maxPenalty
+EndFunction
+
+Function Ch_CanReachCell(piece, n, dx, dy, di1, di2)
+   If n = 1 Then
+      isWhitePawn = (piece = piece.ToUpper())
+      If Math.Abs(dx) = 1 And ((isWhitePawn And dy = -1) Or (isWhitePawn = False And dy = 1)) Then
+         Return True
+      EndIf
+   ElseIf n = 3 Then ' Bishop
+      If Math.Abs(di1) + Math.Abs(di2) = 2 Then
+         Return True
+      EndIf
+   ElseIf n = 4 Then ' Rook
+      If Math.Abs(di1) + Math.Abs(di2) = 1 Then
+         Return True
+      EndIf
+   ElseIf n = 5 Then ' Queen
+      Return True
+   ElseIf n = 6 Then ' King
+      If Math.Abs(dx) < 2 And Math.Abs(dy) < 2 Then
+         Return True
+      EndIf
+   EndIf
+   
+   Return False
+EndFunction
+
+Function Ch_IsFriend(piece)
+   isWhite = (piece = piece.ToUpper())
+   Return (Ch_Turn = 1 And isWhite) Or (Ch_Turn = -1 And isWhite = False)
+EndFunction
+
+' -- Evaluates pure positive strategic rules including center control, king tracking, and check bonus
+Function Ch_EvaluateStrategicRules(fromX, fromY, targetX, targetY, n)
+   strategicE = 0
+   
+   ' Penalty for moving the king early before castling, preventing loss of castling rights
+   If n = 6 Then ' King
+      ' Pure positive castling incentive for King safety and rook activation
+      If fromX = 5 And Math.Abs(targetX - fromX) > 1 Then
+         Return 40
+      EndIf
+      
+      If Ch_MoveNumber < 15 Then
+         ' If the king moves from its starting square (e.g., e1 or e8) without castling, penalize it
+         If (Ch_Turn > 0 And fromX = 5 And fromY = 1) Or (Ch_Turn < 0 And fromX = 5 And fromY = 8) Then
+            Return -100 ' penalty to discourage early king walks
+         EndIf
+      EndIf
+      
+      Return 0
+   EndIf
+   
+   ' 1. Tiny advancement bonus (max ~6 points)
+   positionWeightY = {1, 1, 1, 1, 2, 0}
+   
+   If n = 1 And Ch_MoveNumber > 8 And Ch_LegalMoves.Count > 5 Then ' pwan
+      kingX = Ch_KingPos[Ch_Turn][1]
+      kingY = Ch_KingPos[Ch_Turn][2]
+      If Math.Abs(fromX - kingX) <= 2 And Math.Abs(fromY - kingY) <= 2 Then
+         stepDiff = Math.Abs(targetY - fromY)
+         If stepDiff = 1 Then
+            strategicE = strategicE - 25
+         ElseIf stepDiff = 2 Then
+            strategicE = strategicE - 50
+         EndIf
+      EndIf
+   EndIf
+   
+   If targetY > fromY And Ch_Turn > 0 Then
+      strategicE = strategicE + ((targetY - fromY) * positionWeightY[n])
+   ElseIf targetY < fromY And Ch_Turn < 0 Then
+      strategicE = strategicE + ((fromY - targetY) * positionWeightY[n])
+   EndIf
+   
+   ' 2. Expanded center control bonus using a nested lookup array (White perspective)
+   If targetX >= 3 And targetX <= 6 And targetY >= 2 And targetY <= 5 Then
+      evalY = targetY
+      If Ch_Turn < 0 Then
+         evalY = 9 - targetY
+      EndIf
+      
+      centerGrid = {
+         {3, 2, 2, 0},
+         {6, 8, 8, 6},
+         {6, 8, 8, 6},
+         {8, 10, 10, 8}
+      }
+      
+      gridRowIdx = evalY - 2
+      gridColIdx = targetX - 3
+      strategicE = strategicE + centerGrid[gridRowIdx][gridColIdx]
+   EndIf
+   
+   ' 3. Dynamic magnetic attraction towards the enemy king based on precise distances
+   enemyTurn = -Ch_Turn
+   enemyKingX = Ch_KingPos[enemyTurn][1]
+   enemyKingY = Ch_KingPos[enemyTurn][2]
+   
+   distToEnemyKing = Math.Abs(targetX - enemyKingX) + Math.Abs(targetY - enemyKingY)
+   
+   If distToEnemyKing <= 1 Then
+      strategicE = strategicE + 25 ' Close proximity or direct adjacency to the king
+   ElseIf distToEnemyKing = 2 Then
+      strategicE = strategicE + 10 ' Square at distance 2 from the king in any direction
+   ElseIf distToEnemyKing = 3 Then
+      strategicE = strategicE + 8  ' Square at distance 3 from the king in any direction
+   EndIf
+   
+   ' 4. Opening development incentives (< 10 moves) - kept very small
+   If Ch_MoveNumber < 10 Then
+      dj23 = 8 - (((Ch_Turn + 1) / 2) * 7)
+      
+      ' Small reward for developing minor pieces out of home rank (10 points)
+      If (n = 2 Or n = 3) And fromY = dj23 Then
+         strategicE = strategicE + 10
+      EndIf
+      
+      ' Small reward for early central pawn pushes (12 points max)
+      If Ch_MoveNumber < 8 And n = 1 Then
+         If targetX = 4 Or targetX = 5 Then
+            strategicE = strategicE + 12
+         EndIf
+      EndIf
+   EndIf
+   
+   
+   ' 6. Check bonus incentive if the move puts the enemy king in check
+   orgBoard = Ch_Board
+   Ch_Board[targetX][targetY] = Ch_Board[fromX][fromY]
+   Ch_Board[fromX][fromY] = " "
+   Ch_Turn = -Ch_Turn
+   check = Ch_Check
+   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+   If Ch_Check = 1 Then
+      strategicE = strategicE + 40
+   EndIf
+   Ch_Turn = -Ch_Turn
+   Ch_Check = check
+   Ch_Board = orgBoard
+   
+   Return strategicE
+EndFunction
+
+' Unified function to evaluate moves or collect threats based on the getAttackers flag
+Function Ch_EvalMoveOrThreats(fromX, fromY, targetX, targetY, getAttackers)
+   evalResult = 0
+   movingPiece = Ch_Board[fromX][fromY]
+   playerVal = Ch_GetPieceValue(movingPiece, targetY)
+   targetPiece = Ch_Board[targetX][targetY]
+   
+   If fromX = targetX And fromY = targetY Then
+      targetVal = 0
+   Else
+      targetVal = Ch_GetPieceValue(targetPiece, targetY)
+   EndIf
+   
+   enemies = {}
+   friends = {}
+   enemyCoords = {}
+   enemyCount = 0
+   friendCount = 0
+   
+   ' 1. Scan sliding pieces along the 8 ray directions
+   For di1 = -1 To 1
+      For di2 = -1 To 1
+         If di1 <> 0 Or di2 <> 0 Then
+            dx = 0
+            dy = 0
+            
+            For di3 = 1 To 7
+               dx = dx + di1
+               dy = dy + di2
+               
+               scanX = targetX + dx
+               scanY = targetY + dy
+               
+               If scanX < 1 Or scanX > 8 Or scanY < 1 Or scanY > 8 Then
+                  ExitLoop
+               EndIf
+               
+               ' If the piece leavee this cell, it'll be empty
+               If (scanX = fromX And scanY = fromY) And (fromX <> targetX Or fromY <> targetY) Then
+                  ContinueLoop
+               EndIf
+               
+               piece = Ch_Board[scanX][scanY]
+               If piece = " " Then
+                  ContinueLoop
+               EndIf
+               
+               n = Text.GetIndexOf(" pnbrqk", piece.ToLower(), 1, False) - 1
+               If n = 0 Then
+                  ContinueLoop
+               EndIf
+               
+               If Ch_CanReachCell(piece, n, dx, dy, di1, di2) Then
+                  pVal = Ch_GetPieceValue(piece, targetY)
+                  If Ch_IsFriend(piece) Then
+                     friendCount = friendCount + 1
+                     friends[friendCount] = pVal
+                  Else
+                     enemyCount = enemyCount + 1
+                     enemies[enemyCount] = pVal
+                     If getAttackers Then
+                        enemyCoords[enemyCount] = {scanX, scanY}
+                     EndIf
+                  EndIf
+               Else
+                  ExitLoop
+               EndIf
+            Next
+         EndIf
+      Next
+   Next
+   
+   ' 2. Scan Knight attacks/defenders
+   For dx = -2 To 2
+      If targetX + dx < 1 Or targetX + dx > 8 Then
+         ContinueLoop
+      EndIf
+      
+      For dy = -2 To 2
+         If targetY + dy < 1 Or targetY + dy > 8 Then
+            ContinueLoop
+         EndIf
+         
+         If Math.Abs(dx) + Math.Abs(dy) = 3 Then
+            scanX = targetX + dx
+            scanY = targetY + dy
+            piece = Ch_Board[scanX][scanY]
+            
+            If piece = " " Or (scanX = fromX And scanY = fromY) Then
+               ContinueLoop
+            EndIf
+            
+            n = Text.GetIndexOf(" pnbrqk", piece.ToLower(), 1, False) - 1
+            If n = 2 Then ' Knight
+               pVal = Ch_GetPieceValue(piece, targetY)
+               If Ch_IsFriend(piece) Then
+                  friendCount = friendCount + 1
+                  friends[friendCount] = pVal
+               Else
+                  enemyCount = enemyCount + 1
+                  enemies[enemyCount] = pVal
+                  If getAttackers Then
+                     enemyCoords[enemyCount] = {scanX, scanY}
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+      Next
+   Next
+   
+   ' 3. Calculate SEE Evaluation Score
+   minEnemyVal = 0
+   If enemyCount > 0 Then
+      enemies = Ch_SortArray(enemies)
+      minEnemyVal = enemies[1]
+   EndIf
+   
+   If minEnemyVal = 0 Then
+      evalResult = targetVal
+   ElseIf friendCount = 0 Then
+      evalResult = targetVal - playerVal
+   Else
+      friendCount = friends.Count
+      If friendCount > 1 Then
+         friends = Ch_SortArray(friends)
+      EndIf
+      
+      exchangeBalance = targetVal
+      prevFriendVal = playerVal
+      idx = 1
+      
+      While idx <= enemyCount
+         friendVal = friends[idx]
+         enemyVal = enemies[idx]
+         nextEnemyVal = enemies[idx + 1]
+         nextFriendVal = friends[idx + 1]
+         
+         If enemyVal <= prevFriendVal Or (
+               nextEnemyVal <> "" And (friendVal = 10000 Or nextEnemyVal < friendVal)
+            ) Then
+            exchangeBalance = exchangeBalance - prevFriendVal
+            If friendVal = "" Then
+               ExitLoop
+            EndIf
+            
+            If friendVal <= enemyVal Or (
+                  nextFriendVal <> "" And (nextEnemyVal = 10000 Or friendVal <= nextEnemyVal)
+               ) Then
+               exchangeBalance = exchangeBalance + enemyVal
+            Else
+               If idx = enemyCount Then
+                  exchangeBalance = exchangeBalance + enemyVal
+               EndIf
+               ExitLoop
+            EndIf
+            
+         Else
+            If idx > friendCount Then
+               exchangeBalance = exchangeBalance - prevFriendVal
+            EndIf
+            ExitLoop
+         EndIf
+         
+         idx = idx + 1
+         prevFriendVal = friendVal
+      Wend
+      
+      evalResult = exchangeBalance
+   EndIf
+   
+   ' 4. Apply strategic positional rules using Ch_EvaluateStrategicRules for actual moves
+   If getAttackers = False Then
+      movingType = Text.GetIndexOf(Ch_Pieces, movingPiece, 1, False) - 1
+      If movingType > 0 Then
+         If Ch_Turn < 0 Then
+            movingType = movingType - 6
+         EndIf
+         evalResult = evalResult + Ch_EvaluateStrategicRules(fromX, fromY, targetX, targetY, movingType)
+      EndIf
+   EndIf
+   
+   ' 5. Return format based on getAttackers flag
+   If getAttackers Then
+      enemyCoords[enemyCount + 1] = evalResult
+      Return enemyCoords
+   Else
+      Return evalResult
+   EndIf
+EndFunction
+
+Sub Ch_MovePiece()
+   Ch_PassantCol = 0
+   move = Ch_LegalMoves[Ch_LegalMoveID]
+   fromX = move[1]
+   fromY = move[2]
+   targetX = move[3]
+   targetY = move[4]
+   
+   ' 1. Detect captured piece and record history
+   capturedPiece = Ch_Board[targetX][targetY]
+   If capturedPiece <> " " Then
+      Ch_History[Ch_HistoryCount][7] = "x"
+   EndIf
+   
+   ' 2. Moving piece details
+   movingPiece = Ch_Board[fromX][fromY]
+   movingType = Text.GetIndexOf(Ch_Pieces, movingPiece, 1, False) - 1
+   If movingType > 0 Then
+      If Ch_Turn < 0 Then
+         movingType = movingType - 6
+      EndIf
+      
+      Ch_History[Ch_HistoryCount][6] = Text.GetSubText("pNBRQK", movingType, 1)
+      
+      ' Handle pawns, en-passant, and promotion
+      If movingType = 1 Then
+         If fromX <> targetX And Ch_Board[targetX][targetY] = " " Then
+            Ch_Board[targetX][fromY] = " "   ' En-passant capture
+            Ch_History[Ch_HistoryCount][7] = "x"
+         Else
+            If Math.Abs(targetY - fromY) = 2 Then
+               Ch_PassantCol = fromX
+            EndIf
+         EndIf
+         
+         For promotionRow = 1 To 8 Step 7
+            If targetY = promotionRow Then
+               If Ch_Turn * Ch_Side = 1 And Ch_Auto = 0 Then
+                  peice = Dialogs.InputBox(
+                     "Enter the name of the promoted piece, where:" & Text.NewLine &
+                     "    n: means knight," & Text.NewLine &
+                     "    b: mean bishop," & Text.NewLine &
+                     "    r: maeans rook," & Text.NewLine &
+                     "    q: means queen." & Text.NewLine &
+                     "Any other answer will be treated as q (queen).")
+                  
+                  peice = peice[1]
+                  promotedPieceIndex = Text.GetIndexOf("nbrq", peice.ToLower(), 1, False)
+                  If promotedPieceIndex = 0 Then
+                     promotedPieceIndex = 4   ' Queen promotion default
+                  EndIf
+               Else
+                  promotedPieceIndex = 4   ' Queen promotion default
+               EndIf
+               
+               move[5] = Text.GetSubText("nbrq", promotedPieceIndex, 1)
+               Ch_History[Ch_HistoryCount][5] = "=" + move[5]
+               Ch_Board[fromX][fromY] = Text.GetSubText("-nbrq---NBRQ", promotionRow + promotedPieceIndex, 1)
+            EndIf
+         Next
+      EndIf
+      
+      ' Handle king moves and castling
+      If movingType = 6 Then
+         If fromX = 5 Then
+            kingStepX = targetX - fromX
+            colorIndex = 1 + ((1 - Ch_Turn) / 2)
+            If Math.Abs(kingStepX) > 1 Then
+               kingRow = fromY
+               rookOriginalCol = 1 + (7 * ((kingStepX + 2) / 4))
+               
+               ' Move the rook during castling
+               Ch_Board[5 + (kingStepX / 2)][kingRow] = Ch_Board[rookOriginalCol][kingRow]
+               Ch_Board[rookOriginalCol][kingRow] = " "
+               
+               castlingNotationIndex = 5 - (((kingStepX + 2) / 4) * 2)
+               Ch_History[Ch_HistoryCount][6] = Text.GetSubText("0-0-0", 1, castlingNotationIndex)
+            EndIf
+            ' Invalidate both castling rights for the current player as the king moves
+            Ch_CastlingFlags[colorIndex][1] = 0
+            Ch_CastlingFlags[colorIndex][2] = 0
+         EndIf
+      EndIf
+      
+      ' Physically update piece position on board array
+      Ch_Board[targetX][targetY] = Ch_Board[fromX][fromY]
+      Ch_Board[fromX][fromY] = " "
+      If Text.ToLower(Ch_Board[targetX][targetY]) = "k" Then
+         Ch_KingPos[Ch_Turn] = {targetX, targetY}
+      EndIf
+      
+      ' Rook movement tracking for castling rights
+      For rookCol = 1 To 8 Step 7
+         castlingSide = 1 + ((rookCol - 1) / 7)
+         For rookRow = 1 To 8 Step 7
+            colorIndex = 1 + ((rookRow - 1) / 7)
+            If (fromX = rookCol And fromY = rookRow) Or (targetX = rookCol And targetY = rookRow) Then
+               Ch_CastlingFlags[colorIndex][castlingSide] = 0
+            EndIf
+         Next
+      Next
+   EndIf
+   
+   ' Toggle turn and update move number
+   Ch_Turn = -Ch_Turn
+   If Ch_Turn > 0 Then
+      Ch_MoveNumber = Ch_MoveNumber + 1
+      LblMoveNum.Text = Text.Replace(Text.PadLeft(Ch_MoveNumber - 1, 3), " ", "0")
+   EndIf
+   
+   ' Check status update for history
+   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+   If Ch_Check > 0 Then
+      Ch_History[Ch_HistoryCount][8] = "+"
+   EndIf
+EndSub

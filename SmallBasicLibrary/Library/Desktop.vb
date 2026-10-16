@@ -1,5 +1,6 @@
 Imports System.IO
 Imports System.Windows
+Imports System.Windows.Media
 Imports System.Windows.Media.Imaging
 Imports Microsoft.SmallVisualBasic.Library.Internal
 
@@ -72,20 +73,20 @@ Namespace Library
         Public Shared Function ShowFontDialog(font As Primitive) As Primitive
             Dim key As New Primitive("Color")
             Dim wpfColor = WinForms.Color.FromString(font.Items(key))
-            Dim color = Drawing.Color.FromArgb(wpfColor.A, wpfColor.R, wpfColor.G, wpfColor.B)
+            Dim color = System.Drawing.Color.FromArgb(wpfColor.A, wpfColor.R, wpfColor.G, wpfColor.B)
 
             key._stringValue = "Name"
-            Dim family As New Drawing.FontFamily(font.Items(key))
+            Dim family As New System.Drawing.FontFamily(font.Items(key))
 
-            Dim style As New Drawing.FontStyle
+            Dim style As New System.Drawing.FontStyle
             key._stringValue = "Bold"
-            If font.Items(key) Then style = style Or Drawing.FontStyle.Bold
+            If font.Items(key) Then style = style Or System.Drawing.FontStyle.Bold
 
             key._stringValue = "Italic"
-            If font.Items(key) Then style = style Or Drawing.FontStyle.Italic
+            If font.Items(key) Then style = style Or System.Drawing.FontStyle.Italic
 
             key._stringValue = "Underlined"
-            If font.Items(key) Then style = style Or Drawing.FontStyle.Underline
+            If font.Items(key) Then style = style Or System.Drawing.FontStyle.Underline
 
             key._stringValue = "Size"
             Dim dlg As New Forms.FontDialog() With {
@@ -97,7 +98,7 @@ Namespace Library
                 .ShowColor = True,
                 .ShowHelp = True,
                 .ShowEffects = True,
-                .Font = New Drawing.Font(family, font.Items(key), style),
+                .Font = New System.Drawing.Font(family, font.Items(key), style),
                 .Color = color
             }
 
@@ -111,13 +112,13 @@ Namespace Library
                 font.Items(key) = f.Size
 
                 key._stringValue = "Bold"
-                font.Items(key) = (f.Style And Drawing.FontStyle.Bold) > 0
+                font.Items(key) = (f.Style And System.Drawing.FontStyle.Bold) > 0
 
                 key._stringValue = "Italic"
-                font.Items(key) = (f.Style And Drawing.FontStyle.Italic) > 0
+                font.Items(key) = (f.Style And System.Drawing.FontStyle.Italic) > 0
 
                 key._stringValue = "Underlined"
-                font.Items(key) = (f.Style And Drawing.FontStyle.Underline) > 0
+                font.Items(key) = (f.Style And System.Drawing.FontStyle.Underline) > 0
 
                 key._stringValue = "Color"
                 font.Items(key) = WinForms.Color.FromARGB(dlg.Color.A, dlg.Color.R, dlg.Color.G, dlg.Color.B)
@@ -150,5 +151,93 @@ Namespace Library
                 Return New Primitive() With {.ArrayMap = fonts}
             End Get
         End Property
+
+
+        ''' <summary>
+        ''' Copies the specified text to the Windows clipboard.
+        ''' </summary>
+        ''' <param name="text">The text to copy to the clipboard.</param>
+        Public Shared Sub SetClipboardText(text As Primitive)
+            SmallBasicApplication.Invoke(
+                Sub() If Not text.IsEmpty Then Clipboard.SetText(text)
+            )
+        End Sub
+
+        ''' <summary>
+        ''' Gets the text currently stored in the Windows clipboard.
+        ''' </summary>
+        ''' <returns>The text from the clipboard, or an empty string if no text is available.</returns>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared Function GetClipboardText() As Primitive
+            Return New Primitive(SmallBasicApplication.InvokeWithReturn(
+                Function()
+                    If Clipboard.ContainsText() Then
+                        Return Clipboard.GetText()
+                    End If
+                    Return ""
+                End Function))
+        End Function
+
+        Friend Shared Sub CaptureWindow(visual As FrameworkElement, fileName As String)
+            If visual Is Nothing Then Return
+
+            Dim w = visual.ActualWidth
+            Dim h = visual.ActualHeight
+
+            If w <= 0 OrElse h <= 0 Then Return
+
+            Try
+                ' High DPI scaling factor (e.g., 300 DPI instead of standard 96 DPI for crisp scaling)
+                Dim dpiX As Double = 300.0
+                Dim dpiY As Double = 300.0
+
+                Dim scaleX As Double = dpiX / 96.0
+                Dim scaleY As Double = dpiY / 96.0
+
+                Dim bitmap As New RenderTargetBitmap(CInt(w * scaleX), CInt(h * scaleY), dpiX, dpiX, PixelFormats.Pbgra32)
+                Dim dv As New DrawingVisual()
+
+                Using dc As DrawingContext = dv.RenderOpen()
+                    Dim vb As New VisualBrush(visual)
+                    dc.DrawRectangle(vb, Nothing, New System.Windows.Rect(0, 0, w, h))
+                End Using
+
+                bitmap.Render(dv)
+
+                If String.IsNullOrEmpty(fileName) Then
+                    ' Copy the rendered high-DPI image to the Windows clipboard safely
+                    Clipboard.SetImage(bitmap)
+                Else
+                    fileName = Network.GetLocalFile(fileName)
+                    ' Determine the appropriate encoder based on the file extension
+                    Dim encoder As BitmapEncoder
+                    Select Case IO.Path.GetExtension(fileName).ToLower()
+                        Case ".bmp"
+                            encoder = New BmpBitmapEncoder()
+                        Case ".png"
+                            encoder = New PngBitmapEncoder()
+                        Case ".gif"
+                            encoder = New GifBitmapEncoder()
+                        Case ".jpg", ".jpeg"
+                            encoder = New JpegBitmapEncoder()
+                        Case ".tiff"
+                            encoder = New TiffBitmapEncoder()
+                        Case ".wdp"
+                            encoder = New WmpBitmapEncoder()
+                        Case Else
+                            encoder = New PngBitmapEncoder()
+                    End Select
+
+                    encoder.Frames.Add(BitmapFrame.Create(bitmap))
+
+                    Using stream As IO.Stream = IO.File.Create(fileName)
+                        encoder.Save(stream)
+                    End Using
+                End If
+
+            Catch ex As Exception
+                WinForms.Control.ReportSubError(fileName, "SaveScreen", ex)
+            End Try
+        End Sub
     End Class
 End Namespace

@@ -2,6 +2,13 @@ TxtInput.MultiLine = True
 BtnOK.Enabled = False
 LblMsg.Text = Me.ArgsArr
 LblMsg.WordWrap = True
+LblMsg.Height = -1 ' Auto
+
+LblMsg.Top = 10
+TxtInput.Top = LblMsg.Bottom + 10
+BtnOK.Top = TxtInput.Bottom + 10
+BtnCancel.Top = BtnOK.Top
+Me.Height = BtnOK.Bottom + 10
 
 BtnOK.OnGotFocus = Button_OnGotFocus
 BtnCancel.OnGotFocus = Button_OnGotFocus

@@ -20,7 +20,13 @@ EndSub
 
 ' ------------------------------------------------
 Sub BtnInput_OnClick()
-   name = Global.InputBox("Enter your name: ")
+   name = Dialogs.InputBox(
+      "Enter the name of the promoted piece, where:" & Text.NewLine &
+      "  n: means knight," & Text.NewLine &
+      "  b: mean bishop," & Text.NewLine &
+      "  r: maeans rook," & Text.NewLine &
+      "  q: means queen." & Text.NewLine &
+      "Any other answer will be treated as q (queen).")
    If name = "" Then
       TextBox1.Text = "User canceled the input box."
    Else

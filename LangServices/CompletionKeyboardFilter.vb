@@ -24,12 +24,10 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Select Case args.Key
                     Case Key.Escape
                         completionSurface.Adornment.Dismiss(force:=True)
-                        textView.VisualElement.Focus()
                         args.Handled = True
 
                     Case Key.OemQuotes
                         completionSurface.Adornment.Dismiss(force:=True)
-                        textView.VisualElement.Focus()
 
                     Case Key.Up
                         completionListBox.MoveUp()
@@ -189,6 +187,14 @@ Namespace Microsoft.SmallVisualBasic.LanguageService
                 Dim repWith = itemWrapper.ReplacementText
                 Dim provider = textView.Properties.GetProperty(Of CompletionProvider)()
                 Dim replaceSpan = provider.GetReplacementSpan()
+                Dim itemType = itemWrapper.CompletionItem.ItemType
+                If extraText.Trim() <> "" And
+                    (itemType = Completion.CompletionItemType.Keyword Or
+                     itemType = Completion.CompletionItemType.TypeName Or
+                     itemType = Completion.CompletionItemType.Control Or
+                     itemType = Completion.CompletionItemType.ModuleName) Then
+                    repWith = replaceSpan.GetText()
+                End If
 
                 Dim key = item.GetHistoryKey()
                 If key <> "" Then

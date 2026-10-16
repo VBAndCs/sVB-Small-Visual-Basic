@@ -28,10 +28,11 @@ Namespace Library
         End Sub
 
         ''' <summary>
-        ''' The default value is true (which is the default valiue), which prevents the errors from stopping the program when it runs in noraml mode. This property has no effect in debugging mode.
+        ''' The default value is True, which prevents the errors from stopping the program when it runs in noraml mode. This property has no effect in debugging mode.
         ''' You still can see the errors report in the RuntimeErrors.txt file in the bin folder of your program.
         ''' </summary>
-        Public Shared Property OnErrorResumeNex As Primitive = True
+        <WinForms.ReturnValueType(VariableType.Boolean)>
+        Public Shared Property OnErrorResumeNext As Primitive = True
 
         ''' <summary>
         ''' Gets the number of command-line arguments passed to this program.
@@ -199,5 +200,45 @@ Namespace Library
                     End Sub)
             End Set
         End Property
+
+        ''' <summary>
+        ''' Gets the name of the executing program, such as Program1.exe.
+        ''' </summary>
+        <WinForms.ReturnValueType(VariableType.String)>
+        Public Shared ReadOnly Property Name As Primitive
+            Get
+                If SmallBasicApplication.IsDebugging Then
+                    Return New Primitive(Path.GetFileName(AppExe))
+                Else
+                    Dim asm = Assembly.GetCallingAssembly()
+                    Return New Primitive(Path.GetFileName(asm.Location))
+                End If
+            End Get
+        End Property
+
+        ''' <summary>
+        ''' Start an external application.
+        ''' </summary>
+        ''' <param name="appName">The full path of the application to start.</param>
+        ''' <param name="arguments">Arguments to give to the command or "" if none.</param>
+        ''' <returns>Process ID of started application, or -1 if failed or -2 if attached to existing process.</returns>
+        Public Shared Function Run(appName As Primitive, arguments As Primitive) As Primitive
+            Try
+                Dim process As New Process()
+                process.StartInfo.FileName = appName
+                process.StartInfo.Arguments = arguments
+                process.Start()
+
+                If process IsNot Nothing Then
+                    Return process.Id
+                Else
+                    Return -2
+                End If
+
+            Catch ex As Exception
+                WinForms.Control.ReportSubError("Program", NameOf(Program.Run), ex)
+                Return -1
+            End Try
+        End Function
     End Class
 End Namespace
