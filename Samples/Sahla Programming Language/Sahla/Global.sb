@@ -433,6 +433,7 @@ Sub ExecuteLine()
                GwForm = GW.AsForm()
                GwForm.OnClosing = StopTurtle
             EndIf
+            TW.Hide()
             Turtle.Move(arg)
          ElseIf command = _Turn Then
             If arg = "?" Then
@@ -443,6 +444,7 @@ Sub ExecuteLine()
                GwForm = GW.AsForm()
                GwForm.OnClosing = StopTurtle
             EndIf
+            TW.Hide()
             Turtle.Turn(arg)
          Else
             If arg = "?" Then

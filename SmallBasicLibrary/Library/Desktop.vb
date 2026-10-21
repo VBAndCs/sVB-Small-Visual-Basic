@@ -178,7 +178,7 @@ Namespace Library
                 End Function))
         End Function
 
-        Friend Shared Sub CaptureWindow(visual As FrameworkElement, fileName As String)
+        Friend Shared Sub CaptureWindow(visual As FrameworkElement, dpi As Double, fileName As String)
             If visual Is Nothing Then Return
 
             Dim w = visual.ActualWidth
@@ -188,21 +188,20 @@ Namespace Library
 
             Try
                 ' High DPI scaling factor (e.g., 300 DPI instead of standard 96 DPI for crisp scaling)
-                Dim dpiX As Double = 300.0
-                Dim dpiY As Double = 300.0
+                Dim dpiX = dpi
+                Dim dpiY = dpi
 
-                Dim scaleX As Double = dpiX / 96.0
-                Dim scaleY As Double = dpiY / 96.0
+                Dim scaleX = dpiX / 96.0
+                Dim scaleY = dpiY / 96.0
 
-                Dim bitmap As New RenderTargetBitmap(CInt(w * scaleX), CInt(h * scaleY), dpiX, dpiX, PixelFormats.Pbgra32)
-                Dim dv As New DrawingVisual()
+                Dim bitmap As New RenderTargetBitmap(
+                    CInt(w * scaleX), CInt(h * scaleY),
+                    dpiX, dpiX, PixelFormats.Pbgra32)
+                bitmap.Render(visual)
 
-                Using dc As DrawingContext = dv.RenderOpen()
-                    Dim vb As New VisualBrush(visual)
-                    dc.DrawRectangle(vb, Nothing, New System.Windows.Rect(0, 0, w, h))
-                End Using
-
-                bitmap.Render(dv)
+                If bitmap.CanFreeze Then
+                    bitmap.Freeze()
+                End If
 
                 If String.IsNullOrEmpty(fileName) Then
                     ' Copy the rendered high-DPI image to the Windows clipboard safely

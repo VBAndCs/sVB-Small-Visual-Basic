@@ -1591,15 +1591,18 @@ Namespace WinForms
         ''' Takes a screenshot of the specified form window and copies it directly to the Windows clipboard.
         ''' </summary>
         ''' <param name="formName">The name of the form to capture.</param>
+        ''' <param name="dpi">A scaling factor, between 96 and 600. Higher values increase image quality and file size.</param>
         <ExMethod>
-        Public Shared Sub CopyScreenshot(formName As Primitive)
+        Public Shared Sub CopyScreenshot(formName As Primitive, dpi As Primitive)
+            Dim _dpi = Math.Max(96, dpi.AsDecimal)
+            _dpi = Math.Min(_dpi, 600)
             App.Invoke(
                 Sub()
                     Try
                         Dim frmName = formName.AsString().ToLower()
                         Dim wind = CType(Forms._forms(frmName), Window)
                         Dim canv = GetCanvas(wind)
-                        Desktop.CaptureWindow(canv, "")
+                        Desktop.CaptureWindow(canv, _dpi, "")
                     Catch ex As Exception
                         ReportSubError(formName, "CopyScreenshot", ex)
                     End Try
@@ -1610,16 +1613,19 @@ Namespace WinForms
         ''' Takes a screenshot of the specified form window and saves it to the specified file path.
         ''' </summary>
         ''' <param name="formName">The name of the form to capture.</param>
+        ''' <param name="dpi">A scaling factor, between 96 and 600. Higher values increase image quality and file size.</param>
         ''' <param name="fileName">The full path of the file where the screenshot will be saved (supported formats: .png, .jpg, .bmp, .gif, .tiff, .wdp).</param>
         <ExMethod>
-        Public Shared Sub SaveScreenshot(formName As Primitive, fileName As Primitive)
+        Public Shared Sub SaveScreenshot(formName As Primitive, dpi As Primitive, fileName As Primitive)
+            Dim _dpi = Math.Max(96, dpi.AsDecimal)
+            _dpi = Math.Min(_dpi, 600)
             App.Invoke(
                 Sub()
                     Try
                         Dim frmName = formName.AsString().ToLower()
                         Dim wind = CType(Forms._forms(frmName), Window)
                         Dim canv = GetCanvas(wind)
-                        Desktop.CaptureWindow(canv, fileName.AsString())
+                        Desktop.CaptureWindow(canv, _dpi, fileName.AsString())
                     Catch ex As Exception
                         ReportSubError(formName, "SaveScreenshot", ex)
                     End Try

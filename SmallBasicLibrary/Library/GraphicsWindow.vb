@@ -1721,23 +1721,29 @@ Namespace Library
         ''' <summary>
         ''' Takes a screenshot of the current graphics window and copies it directly to the Windows clipboard.
         ''' </summary>
-        Public Shared Sub CopyScreenshot()
+        ''' <param name="dpi">A scaling factor, between 96 and 600. Higher values increase image quality and file size.</param>
+        Public Shared Sub CopyScreenshot(dpi As Primitive)
             VerifyAccess(False)
+            Dim _dpi = Math.Max(96, dpi.AsDecimal)
+            _dpi = Math.Min(_dpi, 600)
             SmallBasicApplication.Invoke(
                 Sub()
-                    Desktop.CaptureWindow(_window, "")
+                    Desktop.CaptureWindow(_window, _dpi, "")
                 End Sub)
         End Sub
 
         ''' <summary>
         ''' Takes a screenshot of the current graphics window and saves it to the specified file path.
         ''' </summary>
+        ''' <param name="dpi">A scaling factor, between 96 and 600. Higher values increase image quality and file size.</param>
         ''' <param name="fileName">The full path of the file where the screenshot will be saved (supported formats: .png, .jpg, .bmp, .gif, .tiff, .wdp).</param>
-        Public Shared Sub SaveScreenshot(fileName As Primitive)
+        Public Shared Sub SaveScreenshot(dpi As Primitive, fileName As Primitive)
             VerifyAccess(False)
+            Dim _dpi = Math.Max(96, dpi.AsDecimal)
+            _dpi = Math.Min(_dpi, 600)
             SmallBasicApplication.Invoke(
                 Sub()
-                    Desktop.CaptureWindow(_window, fileName)
+                    Desktop.CaptureWindow(_window, _dpi, fileName)
                 End Sub)
         End Sub
     End Class

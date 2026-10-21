@@ -1851,12 +1851,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_68508F1C8E744071A3E4A93F155983FC"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_68768F8FC1F74BC8A5E13135AFB7ABE2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -5159,7 +5153,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\sVB_3.6_Installer.msi"
+        "OutputFilename" = "8:Release\\sVB_3.6.0.2_Installer.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -11361,26 +11355,6 @@
             "TargetName" = "8:Donkey.mp3"
             "Tag" = "8:"
             "Folder" = "8:_0B4ACD19E6924BDFA51BD795C6DA2E10"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_68508F1C8E744071A3E4A93F155983FC"
-            {
-            "SourcePath" = "8:..\\Samples\\Games\\Chess\\bin\\Chess.xml"
-            "TargetName" = "8:Chess.xml"
-            "Tag" = "8:"
-            "Folder" = "8:_E19FFE2DE5194AD0BB9C89F07F2A766C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -23341,7 +23315,7 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Small Visual Basic 3.6"
+        "ProductName" = "8:Small Visual Basic 3.6.0.2"
         "ProductCode" = "8:{1482D060-521B-4E31-9267-9DEFADEF33E0}"
         "PackageCode" = "8:{9A58CA8A-8147-42F5-896E-D0D9A842FBC9}"
         "UpgradeCode" = "8:{9A506EF4-5C26-4D16-87F6-0EB9D5580DD9}"

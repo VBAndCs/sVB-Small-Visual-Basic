@@ -10,6 +10,11 @@ Imports System.Windows.Threading
 
 Namespace WinForms
     Partial Public Class ConsoleWindow
+        ' Background thread timer acts as a UI heartbeat. It periodically calls DoEvents 
+        ' to keep the WPF window responsive during tight or infinite user loops (common with kids 
+        ' learning to code). This allows the window to safely process close requests and exit 
+        ' gracefully without Windows marking it "Not Responding" and force-killing the app, 
+        ' preventing the loss of unsaved work.
         Private Shared _threadTimer As New System.Threading.Timer(AddressOf RespondToUser)
         Private Shared isDragging As Boolean = False
 
@@ -20,10 +25,9 @@ Namespace WinForms
             source.AddHook(AddressOf WindowProc)
         End Sub
 
+        Const WM_ENTERSIZEMOVE As Integer = &H231
+        Const WM_EXITSIZEMOVE As Integer = &H232
         Private Shared Function WindowProc(hwnd As IntPtr, msg As Integer, wParam As IntPtr, lParam As IntPtr, ByRef handled As Boolean) As IntPtr
-            Const WM_ENTERSIZEMOVE As Integer = &H231
-            Const WM_EXITSIZEMOVE As Integer = &H232
-
             If msg = WM_ENTERSIZEMOVE Then
                 isDragging = True
             ElseIf msg = WM_EXITSIZEMOVE Then
@@ -79,8 +83,9 @@ Namespace WinForms
         Public Function ReadLine() As String
             ShowInputTextBox()
             Do Until InputTextBox.Visibility = Visibility.Collapsed
-                DoEvents()
+                If Not isDragging Then DoEvents()
                 If isWindowClosed Then Return ""
+                System.Threading.Thread.Sleep(50)
             Loop
             Return InputTextBox.Text
         End Function
@@ -200,11 +205,12 @@ Namespace WinForms
             isKeyPressed = False
             HandleKey = True
             Do
-                DoEvents()
+                If Not isDragging Then DoEvents()
                 If isKeyPressed OrElse isWindowClosed Then
                     HandleKey = False
                     Return
                 End If
+                System.Threading.Thread.Sleep(50)
             Loop
         End Sub
 
@@ -308,8 +314,9 @@ Namespace WinForms
         Friend Function ReadDate() As Primitive
             ShowDatePicker()
             Do Until InputDatePicker.Visibility = Visibility.Collapsed
-                DoEvents()
+                If Not isDragging Then DoEvents()
                 If isWindowClosed Then Return ""
+                System.Threading.Thread.Sleep(50)
             Loop
 
             Dim d = InputDatePicker.SelectedDate

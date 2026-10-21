@@ -9,12 +9,13 @@
 ' The move evaluation system is rebuilt in sVB be faster and more cliver
 ' yet it is still sutable for chess biggeners.
 Ch_TimeOut = 30
+Ch_CheckTimeout = False
 Ch_TimeOutPlay = False
 GW.CanResize = False
 ShowTW = False
 Ch_SquareSize = (Desktop.Height * 0.93) / 8
 Ch_GrH = Ch_SquareSize * 8
-Ch_GrW = Ch_GrH + 106
+Ch_GrW = Ch_GrH + 130
 GW.Left = 5
 GW.Top = 0
 TW.Left = Ch_GrW + 10
@@ -41,7 +42,7 @@ EndIf
 
 LblMoveNum = ControlTypes.Label
 BtnNewGame = ControlTypes.Button
-BtnAutoPlay = ControlTypes.Button
+BtnAutoPlay = ControlTypes.ToggleButton
 BtnTakeBack = ControlTypes.Button
 BtnGetInfo = ControlTypes.Button
 BtnTwoPlayers = ControlTypes.Button
@@ -94,7 +95,6 @@ Ch_MovedY = 0
 
 Ch_LoadImages()  ' Load them into memory (takes time once)
 Ch_Auto = 0   ' Set autogame on - presentation mode
-Ch_IndicateAutoPlay()
 
 Ch_MovingNow = False
 Ch_Takeback = 0
@@ -132,6 +132,14 @@ EndIf
 
 Sub Ch_GetOtherPlayerMove()
    Ch_MovingNow = True
+   If File.Exists(Ch_SharedFilePath) = False Then
+      ' Player exited the game
+      Forms.ShowMessage("The onther player quitted. You can continue the game against the auto player", "Message")
+      Ch_TwoPlayers = False ' Switch to Auto player
+      Ch_CheckTimeout = True
+      Ch_MovingNow = False
+      Return
+   EndIf
    
    lastMove = File.ReadArray(Ch_SharedFilePath)
    If File.LastError <> "" Then
@@ -162,20 +170,7 @@ Sub Timer_OnTick()
    
    If Ch_TwoPlayers Then
       If (Ch_Turn * Ch_Side) = 1 Then
-         timeout = Math.Truncate(Date.GetTotalSeconds(Date.Now - Ch_LastMoveTime))
-         GW.Title = "sVB Chess Game - " & (Ch_TimeOut - timeout) & " seconds"
-         If timeout >= Ch_TimeOut Then
-            Ch_TimeOutPlay = True
-            GW.Title = "sVB Chess Game - playing one auto move"
-            Ch_ClearCursors()
-            Ch_AutoPlay()
-            Ch_TimeOutPlay = False
-            Ch_WriteMoveToFile()
-            Ch_GetNextMoves() ' Generate legal moves for the other player
-            Ch_CheckGameOver()
-            Ch_LastMoveTime = Date.Now
-            GW.Title = "sVB Chess Game"
-         EndIf
+         Ch_ForcAutoPlayWhenTimeout()
       Else
          Ch_GetOtherPlayerMove()
       EndIf
@@ -190,11 +185,42 @@ Sub Timer_OnTick()
       
    ElseIf (Ch_Auto = 1 Or Ch_Turn <> Ch_Side) Then ' Automatic gameplay mode
       Ch_AutoPlay()
+      Ch_GetNextMoves() ' Generate legal moves for the other player
+      Ch_CheckGameOver()
+      Ch_LastMoveTime = Date.Now
+      
+   ElseIf Ch_CheckTimeout Then
+      Ch_ForcAutoPlayWhenTimeout()
    EndIf
 EndSub
 
+Sub Ch_ForcAutoPlayWhenTimeout()
+   timeout = Math.Truncate(Date.GetTotalSeconds(Date.Now - Ch_LastMoveTime))
+   GW.Title = "sVB Chess Game - " & (Ch_TimeOut - timeout) & " seconds"
+   If timeout >= Ch_TimeOut Then
+      Ch_TimeOutPlay = True
+      GW.Title = "sVB Chess Game - playing one auto move"
+      Ch_ClearCursors()
+      Ch_AutoPlay()
+      Ch_TimeOutPlay = False
+      Ch_WriteMoveToFile()
+      Ch_GetNextMoves() ' Generate legal moves for the other player
+      Ch_CheckGameOver()
+      Ch_LastMoveTime = Date.Now
+      GW.Title = "sVB Chess Game"
+   EndIf
+EndSub
 Sub Ch_WriteMoveToFile()
-   For i = 1 To 10
+   If File.Exists(Ch_SharedFilePath) = False Then
+      ' Player exited the game
+      Ch_TwoPlayers = False ' Switch to Auto player
+      Forms.ShowMessage("The onther player quitted. You can continue the game against the auto player", "Message")
+      Ch_CheckTimeout = True
+      Ch_LastMoveTime = Date.Now
+      Return
+   EndIf
+   
+   For i = 1 To 30
       File.WriteArray(Ch_SharedFilePath, {Ch_Turn, Ch_LegalMoveID})
       If File.LastError = "" Then
          ExitLoop
@@ -231,6 +257,7 @@ EndSub
 Sub Ch_AutoPlay()
    BtnNewGame.Enabled = False
    BtnTwoPlayers.Enabled = False
+   BtnGetInfo.Enabled = False
    Ch_MovingNow = True    ' to disable event
    Ch_GetNextMoves()   ' Next moves list
    Ch_CapturedLegalMoves = Ch_LegalMoves
@@ -255,6 +282,7 @@ Sub Ch_AutoPlay()
    Ch_MovingNow = False
    BtnTwoPlayers.Enabled = True
    BtnNewGame.Enabled = True
+   BtnGetInfo.Enabled = True
 EndSub
 
 Sub Ch_StartNewGame()
@@ -369,32 +397,46 @@ EndSub
 ' -- Handler for AutoPlay button click
 Sub BtnAutoPlay_OnClick()
    Ch_Auto = 1 - Ch_Auto  ' Toggle auto-play state
-   Ch_IndicateAutoPlay()
 EndSub
 
 ' -- Handler for TakeBack button click
 Sub BtnTakeBack_OnClick()
    Ch_Takeback = 1  ' Processed on timer tick
+   If Ch_GameOver = 1 Then
+      Ch_GameOver = 0
+      If Ch_Side <> Ch_Turn Then
+         Ch_Turn = -Ch_Turn
+      EndIf
+      Timer.Resume()
+   EndIf
 EndSub
 
 Sub BtnTwoPlayers_OnClick()
-   File.WriteArray(Ch_SharedFilePath, {})
    Ch_TwoPlayers = True
+   File.WriteArray(Ch_SharedFilePath, {})
+   If File.LastError <> "" Then
+      Forms.ShowMessage("Can't write to the match.txt file." & Text.NewLine &
+         "Exclude the folder '" & Program.Directory & "' from your antivius checks.", "Message")
+      Ch_TwoPlayers = False
+      Return
+   EndIf
+   
    Ch_SquareSize = Math.Truncate(Desktop.Width / 16) - 1
    GW.Width = Ch_SquareSize * 8
    GW.Height = GW.Width
    GW.Left = 0
    Ch_StartNewGame()
-   If Ch_Turn = 1 And Ch_Side = -1 Then
+   If Ch_Side = -1 Then
       Ch_GetNextMoves()
    Else
       Ch_LastMoveTime = Date.Now
    EndIf
    
-   LDProcess.Start(Program.Directory + "\" + Program.Name,
-      "2players " &
-      Ch_SquareSize & " " &
-      -Ch_Side)
+   Program.Run(
+      Program.Directory + "\" + Program.Name,
+      "2players " & Ch_SquareSize & " " & -Ch_Side)
+   
+   Timer.Resume()
 EndSub
 
 ' -- Handler for Get Data button click (Captures game state and generates test function)
@@ -420,7 +462,7 @@ Sub BtnGetInfo_OnClick()
    fileName = fileName.Replace("\", "-")
    fileName = fileName.Replace("/", "-")
    fileName = fileName.Replace(":", "-")
-   GW.SaveScreenshot(fileName & ".png")
+   GW.SaveScreenshot(150, fileName & ".png")
    If ShowTW Then
       TW.WriteLine("Move data copied to clipboard, and a screenshot is saved to the exe directory.")
    EndIf
@@ -482,9 +524,10 @@ Sub GraphicsWindow_MouseDown()
                            Ch_WriteMoveToFile()
                            Ch_GetNextMoves() ' Generate legal moves for the other player
                            Ch_CheckGameOver()
-                           GW.Title = "sVB Chess Game"
-                           Ch_LastMoveTime = Date.Now
                         EndIf
+                        
+                        GW.Title = "sVB Chess Game"
+                        Ch_LastMoveTime = Date.Now
                      EndIf
                   EndIf
                EndIf
@@ -862,11 +905,7 @@ Sub Ch_DoMove()
    
    If Ch_Takeback = 0 Then
       If (Ch_Side * Ch_Turn) = 1 Then
-         ' Save Board State
-         Stack.PushValue("Board State", Ch_KingPos)
-         Stack.PushValue("Board State", Ch_Board)
-         Stack.PushValue("Board State", Ch_CastlingFlags)
-         Stack.PushValue("Board State", Ch_PassantCol)
+         Ch_SaveBoardState()
          If Ch_Auto = 1 Or Ch_TimeOutPlay Then
             Ch_ShowNextMoveRect(move[1], move[2])
          EndIf
@@ -903,6 +942,13 @@ Sub Ch_ShowNextMoveRect(x, y)
    
    Program.Delay(100)
    NextMoveRect.Hide()
+EndSub
+
+Sub Ch_SaveBoardState()
+   Stack.PushValue("Board State", Ch_KingPos)
+   Stack.PushValue("Board State", Ch_Board)
+   Stack.PushValue("Board State", Ch_CastlingFlags)
+   Stack.PushValue("Board State", Ch_PassantCol)
 EndSub
 
 Sub Ch_DoTakeBack()
@@ -946,60 +992,53 @@ Sub Ch_LoadImages()
    Next
    
    GraphicsWindow.BackgroundColor = Colors.DarkRed
+   ' Set global XAML resource dictionary for all buttons styling
+   gwForm = GW.AsForm()
+   gwForm.SetResourceDictionary("ButtonStyles.style")
+   gwForm.Icon = "images\chess.png"
+   gwForm.OnClosing = GraphicsWindow_OnClosing
    
    If Ch_TwoPlayers Then
       Return
    EndIf
    
+   GW.PenColor = Colors.Black
+   GW.BrushColor = Colors.DarkRed
+   GW.PenWidth = 2
+   frame = Shapes.AddRectangle(Ch_GrW - Ch_SquareSize * 8, Ch_GrH)
+   frame.Move(Ch_SquareSize * 8, 0)
+   
    foreColor = Colors.White
-   LblMoveNum = Controls.AddLabel("000", Ch_GrH + 15, 5)
+   LblMoveNum = Controls.AddLabel("000", Ch_GrH + 27, 5)
    LblMoveNum.FontName = "Consolas"
    LblMoveNum.FontSize = 24
    LblMoveNum.FontBold = True
    LblMoveNum.ForeColor = foreColor
    
-   ' Create clean UI buttons instead of manual drawings
+   GW.FontBold = True
+   GW.FontSize = 14
+   
    BtnNewGame = Controls.AddButton("New Game", Ch_GrH + 10, Ch_SquareSize)
    BtnNewGame.ForeColor = foreColor
    BtnNewGame.OnClick = BtnNewGame_OnClick
    
-   BtnAutoPlay = Controls.AddButton("AutoPlay", Ch_GrH + 10, (Ch_SquareSize * 2) - 4)
-   BtnAutoPlay.ForeColor = foreColor
-   BtnAutoPlay.OnClick = BtnAutoPlay_OnClick
-   
-   BtnTakeBack = Controls.AddButton("TakeBack", Ch_GrH + 10, (Ch_SquareSize * 3) - 8)
-   BtnTakeBack.ForeColor = foreColor
-   BtnTakeBack.OnClick = BtnTakeBack_OnClick
-   
-   BtnGetInfo = Controls.AddButton("Get Data", Ch_GrH + 10, (Ch_SquareSize * 4) - 8)
-   BtnGetInfo.ForeColor = foreColor
-   BtnGetInfo.OnClick = BtnGetInfo_OnClick
-   
-   BtnTwoPlayers = Controls.AddButton("2 Players", Ch_GrH + 10, (Ch_SquareSize * 5) - 8)
+   BtnTwoPlayers = Controls.AddButton("2 Players", Ch_GrH + 10, BtnNewGame.Bottom + 10)
    BtnTwoPlayers.ForeColor = foreColor
    BtnTwoPlayers.OnClick = BtnTwoPlayers_OnClick
    
-   ' Set global XAML resource dictionary for all buttons styling
-   gwForm = GW.AsForm()
-   gwForm.SetResourceDictionary("ButtonStyles.style")
-EndSub
-
-' Turtle draws or clears a mark
-Sub Ch_IndicateAutoPlay()
-   Turtle.X = Ch_GrH + 76
-   Turtle.Y = 111
-   Stack.PushValue("g", GraphicsWindow.PenColor)
-   Stack.PushValue("g", GraphicsWindow.PenWidth)
-   i = 5 + (Ch_Auto * 11)
-   GraphicsWindow.PenColor = Text.GetSubText("OFF:#DDDDDD,ON:#FF0000", i, 7)
-   GraphicsWindow.PenWidth = 3
-   Turtle.Angle = 180
-   Turtle.Move(12)
-   Turtle.Angle = Turtle.Angle - 155
-   Turtle.Move(18)
-   ' Turtle.Hide()
-   GraphicsWindow.PenWidth = Stack.PopValue("g")
-   GraphicsWindow.PenColor = Stack.PopValue("g")
+   BtnAutoPlay = Controls.AddToggleButton("Auto Play", Ch_GrH + 10, BtnTwoPlayers.Bottom + 30, BtnNewGame.Width, BtnNewGame.Height)
+   BtnAutoPlay.ForeColor = foreColor
+   BtnAutoPlay.OnClick = BtnAutoPlay_OnClick
+   
+   BtnTakeBack = Controls.AddButton("Take Back", Ch_GrH + 10, BtnAutoPlay.Bottom + 10)
+   BtnTakeBack.ForeColor = foreColor
+   BtnTakeBack.OnClick = BtnTakeBack_OnClick
+   
+   BtnGetInfo = Controls.AddButton("Get Data", Ch_GrH + 10, BtnTakeBack.Bottom + 30)
+   BtnGetInfo.ForeColor = foreColor
+   BtnGetInfo.OnClick = BtnGetInfo_OnClick
+   
+   
 EndSub
 
 ' Redraws the chess board
@@ -1372,7 +1411,6 @@ Function Ch_SortArray(arr)
    Next
    Return arr
 EndFunction
-
 
 
 ' Function to find the best move balancing defense (escape/eliminate) and general tactical offense
@@ -1906,6 +1944,12 @@ Function Ch_EvalMoveOrThreats(fromX, fromY, targetX, targetY, getAttackers)
                         enemyCoords[enemyCount] = {scanX, scanY}
                      EndIf
                   EndIf
+                  
+                  ' King hides any support behind him
+                  If piece.ToLower() = "k" Then
+                     ExitLoop
+                  EndIf
+                  
                Else
                   ExitLoop
                EndIf
@@ -2146,5 +2190,13 @@ Sub Ch_MovePiece()
    Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
    If Ch_Check > 0 Then
       Ch_History[Ch_HistoryCount][8] = "+"
+   EndIf
+EndSub
+
+Sub GraphicsWindow_OnClosing()
+   If File.Exists(Ch_SharedFilePath) Then
+      While File.DeleteFile(Ch_SharedFilePath) = False
+         Program.Delay(20)
+      Wend
    EndIf
 EndSub

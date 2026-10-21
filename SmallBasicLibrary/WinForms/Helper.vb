@@ -41,7 +41,6 @@ Module Helper
         dt.Start()
     End Sub
 
-
     Public Sub DoEvents()
         Dim frame As New DispatcherFrame()
         Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, New DispatcherOperationCallback(AddressOf ExitFrame), frame)
