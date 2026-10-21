@@ -48,7 +48,7 @@
 ## ♟️ Play Chess Too!
 
 <p align="center">
-  <img src=" https://modernvbnet.gallerycdn.vsassets.io/extensions/modernvbnet/svbinstaller/3.6.0.2/1792538099755/Chess.png"/>
+  <img src="https://modernvbnet.gallerycdn.vsassets.io/extensions/modernvbnet/svbinstaller/3.6.0.2/1792538099755/Chess.png"/>
 </p>
 
 - A shortcut for Chess is installed on your desktop.  
