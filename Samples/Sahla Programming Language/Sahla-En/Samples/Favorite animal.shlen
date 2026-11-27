@@ -1,0 +1,21 @@
+﻿Simplified Arabic
+16
+True
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+For n = 6 To 17
+    Show n
+Next n
+
+Write Line
+Write "What's your favorite animal?"
+animal = Read Text
+Show animal
+Write Line
+Write Line "For me, I like cats."
+Show Cat

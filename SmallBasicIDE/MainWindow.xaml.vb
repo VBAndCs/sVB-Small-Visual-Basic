@@ -2134,19 +2134,21 @@ Namespace Microsoft.SmallVisualBasic
 
             If openFileDialog.ShowDialog() = True Then
                 Dim doc = ActiveDocument
-                Dim fileName = IO.Path.GetFileName(openFileDialog.FileName)
-
-                Dim dir = Path.GetDirectoryName(doc.File)
-                Dim newFileName = Path.Combine(dir, fileName)
-                If Not IO.File.Exists(newFileName) Then
-                    Try
-                        IO.File.Copy(openFileDialog.FileName, newFileName)
-                    Catch ex As Exception
-                        MsgBox(ex.Message)
-                    End Try
+                If doc.File = "" Then
+                    doc.EditorControl.EditorOperations.InsertText("""" & openFileDialog.FileName & """", doc.UndoHistory)
+                Else
+                    Dim fileName = IO.Path.GetFileName(openFileDialog.FileName)
+                    Dim dir = Path.GetDirectoryName(doc.File)
+                    Dim newFileName = Path.Combine(dir, fileName)
+                    If Not IO.File.Exists(newFileName) Then
+                        Try
+                            IO.File.Copy(openFileDialog.FileName, newFileName)
+                        Catch ex As Exception
+                            MsgBox(ex.Message)
+                        End Try
+                    End If
+                    doc.EditorControl.EditorOperations.InsertText("""" & fileName & """", doc.UndoHistory)
                 End If
-
-                doc.EditorControl.EditorOperations.InsertText("""" & fileName & """", doc.UndoHistory)
             End If
         End Sub
 

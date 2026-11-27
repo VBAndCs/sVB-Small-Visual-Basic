@@ -91,7 +91,10 @@ Namespace Microsoft.SmallVisualBasic.Statements
         End Function
 
         Public Overrides Function Execute(runner As ProgramRunner) As Statement
-            Return Me
+            Return New JumpLoopStatement With {
+                        .StartToken = Me.StartToken,
+                        .UpLevel = Me.UpLevel
+                    }
         End Function
 
         Public Overrides Function ToVB(symbolTable As SymbolTable) As String

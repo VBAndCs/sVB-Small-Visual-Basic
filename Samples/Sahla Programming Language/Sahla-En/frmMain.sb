@@ -1,30 +1,66 @@
+ExitShowLineNumbers = True
+Me.ShowTitlebar = False
 Program.UseLocalCulture = False
 RightToLeft = False
+
 ' The "shl" extension is for the Arabic version
 ' The Engkish version uses "shlen"
 ' You should use the same formula for other langauges like "shlfr"
 SahlaFilesExtension = "shlen"
 Ops = Global.Ops
+
+LblNew = ControlTypes.Label
+LblOpen = ControlTypes.Label
+LblSave = ControlTypes.Label
+LblCopy = ControlTypes.Label
+LblCut = ControlTypes.Label
+LblPaste = ControlTypes.Label
+LblUndo = ControlTypes.Label
+LblRedo = ControlTypes.Label
+LblRun = ControlTypes.Label
+LblStop = ControlTypes.Label
+SetMenuStyles()
 SetProperties(Ops)
 
-MainMenu1.BringToFront()
-MainMenu1.FontSize = 12
-TxtEditor.SetContextMenu(MnuEdit, True)
+LblNum.OnMouseLeftDown = Margin_OnMouseLeftDown
+LblNum.OnMouseMove = Margin_OnMouseMove
+LblNum.OnMouseWheel = LblMargin_OnMouseWheel
 
-LblNum.OnMouseLeftDown = LblMargin_OnMouseLeftDown
-LblNum.OnMouseMove = LblMargin_OnMouseMove
-LblNum.OnMouseLeftUp = ExtendSelection
+MainMenu1.BringToFront()
+TxtEditor.SetContextMenu(MnuEdit, True)
 
 Me.Icon = "s.ico"
 SavedFile = ""
-
-TxtEditor.Visible = True
-LblFormat.Visible = True
-LblLine.Visible = True
-LblBackground.Visible = True
-LblMargin.Visible = True
-LblNum.Visible = True
 UseParentFolder = (File.Exists("Syntax") = False)
+
+ExitSelection = False
+ExitTextChanged = False
+IsIndented = False
+FixLA = False
+AlreadyFixedLA = False
+AutoCompToken = ""
+LastlineStart = 0
+LastLineIndex = 0
+LastlinesCount = 0
+StartSelectionIndex = 0
+IsModified = False
+GWTimer = Me.AddTimer("GWTimer", 20)
+GWTimer.OnTick = StopProgram
+GWTimer.Pause()
+
+UndoMonitor = Me.AddTimer("UndoMonitor", 2000)
+UndoMonitor.OnTick = UndoMonitor_OnTick
+LastKey = ""
+JustFormatting = False
+LastTextB4Format = ""
+LineLabels = {}
+ResetUndo()
+IsRunning = False
+
+ExitShowLineNumbers = False
+ShowLineBumbersTimer = Me.AddTimer("UndoMonitor", 100)
+ShowLineBumbersTimer.OnTick = ShowLineNumbers
+ShowLineBumbersTimer.Pause()
 
 ' Open .SahlaFilesExtension files  with Sahla
 If Program.ArgumentCount = 0 Then
@@ -38,32 +74,122 @@ Else
    Open(Program.GetArgument(1))
 EndIf
 
-ExitSelection = False
-ExitTextChanged = False
-IsIndented = False
-FixLA = False
-AlreadyFixedLA = False
-AutoCompToken = ""
-LastlineStart = 0
-LastLineIndex = 0
-LastlinesCount = 0
-StartSelectionIndex = 0
-IsModified = False
 TxtEditor.Focus()
 Global.StartColoringTimer()
-OnScroll()
-GWTimer = Me.AddTimer("GWTimer", 20)
-GWTimer.OnTick = EnableMainWindow
-GWTimer.Pause()
+TxtEditor.CaretIndex = TxtEditor.Length
+TxtEditor.CaretIndex = 0
 
-Sub EnableMainWindow()
-   If GW.IsClosed Then
+Sub UndoMonitor_OnTick()
+   UndoMonitor.Pause()
+   AddUndoPoint(True)
+   UndoMonitor.Resume()
+EndSub
+
+Sub ResetUndo()
+   UndoMonitor.Pause()
+   Stack.Clear("undo")
+   Stack.Clear("redo")
+   TxtEditor.CaretIndex = TxtEditor.Length
+   TxtEditor.CaretIndex = 1
+   JustFormatting = False
+   AddUndoPoint(False)
+EndSub
+
+
+Sub TxtEditor_OnGotFocus()
+   UndoMonitor.Resume()
+EndSub
+
+Sub TxtEditor_OnLostFocus()
+   AddUndoPoint(True)
+   UndoMonitor.Pause()
+EndSub
+
+Sub ReportUndoChanges()
+   UndoMonitor.Pause()
+   key = Keyboard.LastKey
+   If TxtEditor.SelectionLength > 0 Then
+      AddUndoPoint(True)
+   ElseIf Keyboard.CtrlPressed And key = Keys.V Then
+      AddUndoPoint(True)
+   ElseIf key <> LastKey Then
+      If key = Keys.Space Or key = Keys.Enter Or key = Keys.Delete Or key = Keys.Back Then
+         AddUndoPoint(True)
+      EndIf
+   EndIf
+   
+   LastKey = key
+   UndoMonitor.Resume()
+EndSub
+
+Sub AddUndoPoint(updateSelection)
+   UndoMonitor.Pause()
+   If JustFormatting Then
+      JustFormatting = False
+      currentText = LastTextB4Format
+   Else
+      currentText = TxtEditor.Text
+   EndIf
+   
+   lastState = Stack.PeekValue("undo")
+   If lastState = "" Or currentText <> lastState[1] Then
+      Stack.PushValue("undo", {currentText, TxtEditor.SelectionStart, TxtEditor.SelectionLength})
+      Stack.Clear("redo")
+   ElseIf updateSelection And (TxtEditor.SelectionStart <> lastState[2] Or TxtEditor.SelectionLength <> lastState[3]) Then
+      Stack.PopValue("undo")
+      Stack.PushValue("undo", {currentText, TxtEditor.SelectionStart, TxtEditor.SelectionLength})
+   EndIf
+   
+   UndoMonitor.Resume()
+EndSub
+
+Sub Undo()
+   AddUndoPoint(False)
+   If Stack.GetCount("undo") > 1 Then
+      Stack.PushValue("redo", Stack.PopValue("undo"))
+      prevState = Stack.PeekValue("undo")
+      TxtEditor.Text = prevState[1]
+      TxtEditor.SelectionStart = prevState[2]
+      TxtEditor.SelectionLength = prevState[3]
+      LastLineIndex = LastLineIndex - 1
+   EndIf
+EndSub
+
+Sub Redo()
+   AddUndoPoint(False)
+   If Stack.GetCount("redo") > 0 Then
+      nextState = Stack.PopValue("redo")
+      Stack.PushValue("undo", nextState)
+      TxtEditor.Text = nextState[1]
+      TxtEditor.SelectionStart = nextState[2]
+      TxtEditor.SelectionLength = nextState[3]
+      LastLineIndex = LastLineIndex - 1
+   EndIf
+EndSub
+
+Sub StopProgram()
+   If IsRunning = False And GW.IsClosed Then
       GWTimer.Pause()
       Sound.Stop("")
-      Me.Enabled = True
+      ChangeState()
       Me.Focus()
       TxtEditor.Focus()
+      MnuFile_OnOpen()
+      MnuEdit_OnOpen()
+      LblOpen.Enabled = True
    EndIf
+EndSub
+
+Sub ChangeState()
+   state = (IsRunning = False)
+   MnuFile.Enabled = state
+   MnuEdit.Enabled = state
+   MnuView.Enabled = state
+   MnuRun.Enabled = state
+   LblRun.Visible = state
+   LblStop.Visible = IsRunning
+   MnuStop.Enabled = IsRunning
+   TxtEditor.ReadOnly = IsRunning
 EndSub
 
 Sub Form_OnShown()
@@ -73,13 +199,14 @@ Sub Form_OnShown()
 EndSub
 
 Sub SetProperties(ops)
+   MnuStop.Enabled = False
    LblFormat.Text = ""
    LblLine.Text = ""
    LblBackground.Text = ""
    TxtEditor.Left = LblMargin.Width
    TxtEditor.Top = 0
    w = Desktop.Width - 4
-   h = Desktop.Height - 60
+   h = Desktop.Height - MainMenu1.Height - 5
    LblMargin.Left = 0
    LblMargin.Top = 0
    LblMargin.Height = h
@@ -96,14 +223,14 @@ Sub SetProperties(ops)
    TxtEditor.FontBold = ops!Bold
    TxtEditor.FontItalic = ops!Italic
    TxtEditor.Underlined = ops!Underlined
+   
    font = TxtEditor.Font
    LblFormat.Font = font
    LblLine.Font = font
    LblBackground.Font = font
    LblMargin.Font = font
-   LblNum.Width = 0
-   LblNum.Height = 0
-   LblNum.Left = LblMargin.Left
+   
+   LblNum.Left = LblMargin.Left + (LblMargin.Width - LblNum.Width) / 2
    LblNum.Top = 10
    
    TxtEditor.ForeColor = Colors.Transparent
@@ -131,8 +258,6 @@ Sub SetProperties(ops)
    
    TxtEditor.Padding = 10
    LblFormat.Padding = 10
-   LblLine.Padding = 0
-   LblBackground.Padding = 0
    
    TW.RightToLeft = RightToLeft
    TW.FontName = "Segoe UI"
@@ -144,9 +269,154 @@ Sub SetProperties(ops)
    LstCompletion.Padding = 10
    LstCompletion.RightToLeft = RightToLeft
    
+   LblNum.SetStyle("LabelStyles.style", "SelectedNumber")
+   LblBackground.SetStyle("LabelStyles.style", "CodeBackground")
+   LblLine.SetStyle("LabelStyles.style", "CodeBackground")
+   
    Global.EditorTextBox = TxtEditor
    Global.LblFormat = LblFormat
    Global.LblLine = LblLine
+   
+   TxtEditor.Visible = True
+   LblFormat.Visible = True
+   LblLine.Visible = True
+   LblBackground.Visible = True
+   LblMargin.Visible = True
+   LblNum.Visible = True
+EndSub
+
+Sub SetMenuStyles()
+   Me.SetResourceDictionary("Menus.style")
+   MainMenu1.SetStyle("Menus.style", "MainMenuStyle")
+   MnuFile.SetStyle("Menus.style", "MainMenuItemStyle")
+   MnuEdit.SetStyle("Menus.style", "MainMenuItemStyle")
+   MnuProgram.SetStyle("Menus.style", "MainMenuItemStyle")
+   MnuView.SetStyle("Menus.style", "MainMenuItemStyle")
+   MnuHelp.SetStyle("Menus.style", "MainMenuItemStyle")
+   
+   MnuNew.SetStyle("Menus.style", "MenuItemStyle")
+   MnuOpen.SetStyle("Menus.style", "MenuItemStyle")
+   MnuSave.SetStyle("Menus.style", "MenuItemStyle")
+   MnuSaveAs.SetStyle("Menus.style", "MenuItemStyle")
+   MnuClose.SetStyle("Menus.style", "MenuItemStyle")
+   MnuUndo.SetStyle("Menus.style", "MenuItemStyle")
+   MnuRedo.SetStyle("Menus.style", "MenuItemStyle")
+   MnuCopy.SetStyle("Menus.style", "MenuItemStyle")
+   MnuCut.SetStyle("Menus.style", "MenuItemStyle")
+   MnuPaste.SetStyle("Menus.style", "MenuItemStyle")
+   MnuDelete.SetStyle("Menus.style", "MenuItemStyle")
+   MnuSelAll.SetStyle("Menus.style", "MenuItemStyle")
+   MnuAddSoundPath.SetStyle("Menus.style", "MenuItemStyle")
+   MnuFind.SetStyle("Menus.style", "MenuItemStyle")
+   MnuRun.SetStyle("Menus.style", "MenuItemStyle")
+   MnuStop.SetStyle("Menus.style", "MenuItemStyle")
+   MnuBold.SetStyle("Menus.style", "MenuItemStyle")
+   MnuItalic.SetStyle("Menus.style", "MenuItemStyle")
+   MnuUnderline.SetStyle("Menus.style", "MenuItemStyle")
+   MnuFont.SetStyle("Menus.style", "MenuItemStyle")
+   MnuColors.SetStyle("Menus.style", "MenuItemStyle")
+   MnuOptions.SetStyle("Menus.style", "MenuItemStyle")
+   MnuSyntax.SetStyle("Menus.style", "MenuItemStyle")
+   MnuLocalize.SetStyle("Menus.style", "MenuItemStyle")
+   MnuAbout.SetStyle("Menus.style", "MenuItemStyle")
+   
+   MnuForeColor.SetStyle("Menus.style", "SubMenuItemStyle")
+   MnuBackColor.SetStyle("Menus.style", "SubMenuItemStyle")
+   MnuOutput.SetStyle("Menus.style", "SubMenuItemStyle")
+   MnuVars.SetStyle("Menus.style", "SubMenuItemStyle")
+   MnuOps.SetStyle("Menus.style", "SubMenuItemStyle")
+   MnuInput.SetStyle("Menus.style", "SubMenuItemStyle")
+   MnuConditions.SetStyle("Menus.style", "SubMenuItemStyle")
+   MnuLoops.SetStyle("Menus.style", "SubMenuItemStyle")
+   MnuSounds.SetStyle("Menus.style", "SubMenuItemStyle")
+   MnuTurtle.SetStyle("Menus.style", "SubMenuItemStyle")
+   
+   
+   btnClose = Me.AddControl("BtnClose")
+   btnClose.OnClick = BtnClose_OnClick
+   
+   btnMinimize = Me.AddControl("BtnMinimize")
+   btnMinimize.OnClick = BtnMinimize_OnClick
+   
+   
+   ' Toolbar
+   LblNew = Me.AddControl("LblNew")
+   LblNew.OnClick = LblNew_OnClick
+   
+   LblOpen = Me.AddControl("LblOpen")
+   LblOpen.OnClick = LblOpen_OnClick
+   
+   LblSave = Me.AddControl("LblSave")
+   LblSave.OnClick = LblSave_OnClick
+   
+   LblCopy = Me.AddControl("LblCopy")
+   LblCopy.OnClick = LblCopy_OnClick
+   
+   LblCut = Me.AddControl("LblCut")
+   LblCut.OnClick = LblCut_OnClick
+   
+   LblPaste = Me.AddControl("LblPaste")
+   LblPaste.OnClick = LblPaste_OnClick
+   
+   LblUndo = Me.AddControl("LblUndo")
+   LblUndo.OnClick = LblUndo_OnClick
+   
+   LblRedo = Me.AddControl("LblRedo")
+   LblRedo.OnClick = LblRedo_OnClick
+   
+   LblRun = Me.AddControl("LblRun")
+   LblRun.OnClick = LblRun_OnClick
+   
+   LblStop = Me.AddControl("LblStop")
+   LblStop.OnClick = LblStop_OnClick
+EndSub
+
+Sub BtnClose_OnClick()
+   Me.Close()
+EndSub
+
+Sub BtnMinimize_OnClick()
+   Me.Minimize()
+EndSub
+
+Sub LblNew_OnClick()
+   MnuNew_OnClick()
+EndSub
+
+Sub LblOpen_OnClick()
+   MnuOpen_OnClick()
+EndSub
+
+Sub LblSave_OnClick()
+   MnuSave_OnClick()
+EndSub
+
+Sub LblCopy_OnClick()
+   MnuCopy_OnClick()
+EndSub
+
+Sub LblCut_OnClick()
+   MnuCut_OnClick()
+EndSub
+
+Sub LblPaste_OnClick()
+   MnuPaste_OnClick()
+EndSub
+
+Sub LblUndo_OnClick()
+   MnuUndo_OnClick()
+EndSub
+
+Sub LblRedo_OnClick()
+   MnuRedo_OnClick()
+EndSub
+
+Sub LblRun_OnClick()
+   MnuRun_OnClick()
+EndSub
+
+Sub LblStop_OnClick()
+   MnuStop_OnClick()
 EndSub
 
 Sub OnScroll()
@@ -167,8 +437,8 @@ Sub AdjustLabels()
    LblFormat.Top = -v
    
    w = TxtEditor.Width + 2 * horizontalScrollOffset
-   LblLine.Width = w
-   LblBackground.Width = w
+   LblLine.Width = w - 20
+   LblBackground.Width = w - 20
    
    If RightToLeft Then
       x = TxtEditor.Left - horizontalScrollOffset - 3
@@ -179,36 +449,102 @@ Sub AdjustLabels()
    EndIf
    
    LblFormat.Left = x
-   LblLine.Left = x1
-   LblBackground.Left = x1
+   LblLine.Left = x1 - 5
+   LblBackground.Left = x1 - 5
    
    top = TxtEditor.CaretTop
-   LblLine.Top = top
-   LblBackground.Top = top
+   LblLine.Top = top - 1
+   LblBackground.Top = top - 1
    LblNum.Top = top + (LblLine.Height - LblNum.Height) / 2
+   
+   ShowLineBumbersTimer.Pause()
+   ShowLineBumbersTimer.Resume()
+EndSub
+
+Sub ShowLineNumbers()
+   ShowLineBumbersTimer.Pause()
+   If ExitShowLineNumbers Then
+      Return
+   EndIf
+   
+   ExitShowLineNumbers = True
+   
+   marginTop = LblMargin.Top
+   marginBottom = LblMargin.Bottom
+   lineHeight = LblLine.Height - 2
+   offset = TxtEditor.VerticalScrollOffset Mod lineHeight
+   top = TxtEditor.Padding - offset + (lineHeight - LblNum.Height) / 2
+   n = Math.Truncate(TxtEditor.VerticalScrollOffset / lineHeight) + 1
+   left = LblNum.Left
+   width = LblNum.Width
+   height = LblNum.Height
+   arrayIndex = 1
+   currentLine = LblNum.Text
+   
+   For number = n To TxtEditor.LineCount
+      If number <> currentLine Then
+         lineNumLabel = LineLabels[arrayIndex]
+         If lineNumLabel = "" Then
+            lineNumLabel = Me.AddLabel(
+               "lineNumLabel" & arrayIndex,
+               left, top,
+               width, height)
+            LineLabels[arrayIndex] = lineNumLabel
+            lineNumLabel.Text = number
+            lineNumLabel.OnMouseLeftDown = Margin_OnMouseLeftDown
+            lineNumLabel.OnMouseMove = Margin_OnMouseMove
+            lineNumLabel.OnMouseWheel = LblMargin_OnMouseWheel
+            lineNumLabel.SetStyle("LabelStyles.style", "NormalNumber")
+            lineNumLabel.WordWrap = False
+         Else
+            lineNumLabel.Visible = True
+            lineNumLabel.Left = left
+            lineNumLabel.Top = top
+            lineNumLabel.Text = number
+         EndIf
+         lineNumLabel.BringToFront()
+         arrayIndex = arrayIndex + 1
+      EndIf
+      
+      top = top + lineHeight
+      If top > marginBottom Then
+         ExitLoop
+      EndIf
+   Next
+   
+   For i = arrayIndex To LineLabels.Count
+      lineNumLabel = LineLabels[i]
+      lineNumLabel.Visible = False
+   Next
+   
+   LblNum.BringToFront()
+   ExitShowLineNumbers = False
 EndSub
 
 Sub FrmMain_OnClosing()
-   If Me.Enabled Then
+   If IsRunning = False Then
       Event.Handled = (AskToSave() = False)
    Else
       GW.Close()
       TW.Close()
-      EnableMainWindow()
+      IsRunning = False
       Event.Handled = True
    EndIf
 EndSub
 
 Sub MnuNew_OnClick()
-   If AskToSave() = False Then
-      Return
+   If AskToSave() Then
+      TxtEditor.Text = ""
+      IsModified = False
+      SavedFile = ""
+      SetProperties(Global.Ops)
+      ResetUndo()
+      LblNew.Enabled = False
+      LblSave.Enabled = False
    EndIf
    
-   TxtEditor.Text = ""
-   IsModified = False
-   SavedFile = ""
-   SetProperties(Global.Ops)
-   TxtEditor.RestUndo()
+   Me.Focus()
+   TxtEditor.Focus()
 EndSub
 
 Sub MnuOpen_OnClick()
@@ -224,9 +560,13 @@ Sub MnuOpen_OnClick()
       fileName = File.OpenFileDialog(filters)
       If fileName <> "" Then
          Open(fileName)
-         TxtEditor.Focus()
+         LblNew.Enabled = True
+         LblSave.Enabled = False
       EndIf
    EndIf
+   
+   Me.Focus()
+   TxtEditor.Focus()
 EndSub
 
 Sub Open(fileName)
@@ -263,9 +603,7 @@ Sub Open(fileName)
       IsModified = False
    EndIf
    
-   TxtEditor.RestUndo()
-   TxtEditor.CaretIndex = TxtEditor.Length
-   TxtEditor.CaretIndex = 1
+   ResetUndo()
    TxtEditor.Focus()
 EndSub
 
@@ -331,6 +669,8 @@ Function Save(fileName)
       IsModified = False
    EndIf
    
+   LblNew.Enabled = True
+   LblSave.Enabled = False
    Return True
 EndFunction
 
@@ -381,18 +721,26 @@ EndSub
 Sub MnuFile_OnOpen()
    state = (SavedFile <> "")
    MnuNew.Enabled = state Or IsModified
+   LblNew.Enabled = MnuNew.Enabled
+   
    MnuSaveAs.Enabled = state
+   
    MnuSave.Enabled = IsModified
+   LblSave.Enabled = IsModified
 EndSub
 
 Sub MnuUndo_OnClick()
-   TxtEditor.Undo()
+   Undo()
+   selLength = TxtEditor.SelectionLength
    FormatCode()
+   TxtEditor.SelectionLength = selLength
 EndSub
 
 Sub MnuRedo_OnClick()
-   TxtEditor.Redo()
+   Redo()
+   selLength = TxtEditor.SelectionLength
    FormatCode()
+   TxtEditor.SelectionLength = selLength
 EndSub
 
 
@@ -403,20 +751,24 @@ EndSub
 
 
 Sub MnuCut_OnClick()
+   AddUndoPoint(True)
    MnuCopy_OnClick()
    TxtEditor.SelectedText = ""
 EndSub
 
 
 Sub MnuPaste_OnClick()
+   AddUndoPoint(True)
    TxtEditor.Paste()
 EndSub
 
 Sub MnuDelete_OnClick()
+   AddUndoPoint(True)
    TxtEditor.SelectedText = ""
 EndSub
 
 Sub MnuSelAll_OnClick()
+   TxtEditor.CaretIndex = 1
    FormatCode()
    TxtEditor.SelectAll()
 EndSub
@@ -443,12 +795,25 @@ Sub MnuUnderline_OnCheck()
 EndSub
 
 Sub MnuEdit_OnOpen()
-   MnuUndo.Enabled = TxtEditor.CanUndo
-   MnuRedo.Enabled = TxtEditor.CanRedo
+   notRunning = (IsRunning = False)
+   MnuUndo.Enabled = (Stack.GetCount("undo") > 1) And notRunning
+   LblUndo.Enabled = MnuUndo.Enabled
    
-   hasSelection = TxtEditor.SelectionLength > 0
+   MnuRedo.Enabled = (Stack.GetCount("redo") > 0) And notRunning
+   LblRedo.Enabled = MnuRedo.Enabled
+   
+   hasSelection = TxtEditor.SelectionLength > 0 And notRunning
+   
    MnuCopy.Enabled = hasSelection
+   LblCopy.Enabled = hasSelection
+   
    MnuCut.Enabled = hasSelection
+   LblCut.Enabled = hasSelection
+   
+   MnuPaste.Enabled = notRunning
+   LblPaste.Enabled = notRunning
+   MnuAddSoundPath.Enabled = notRunning
+   
    MnuDelete.Enabled = hasSelection
    MnuSelAll.Enabled = (TxtEditor.Text <> "")
 EndSub
@@ -489,11 +854,28 @@ Sub MnuFind_OnClick()
 EndSub
 
 Sub MnuRun_OnClick()
+   UndoMonitor.Pause()
+   AddUndoPoint(True)
    FormatCode()
-   Me.Enabled = False
+   IsRunning = True
+   ChangeState()
+   LblNew.Enabled = False
+   LblOpen.Enabled = False
+   LblSave.Enabled = False
+   LblCopy.Enabled = False
+   LblCut.Enabled = False
+   LblUndo.Enabled = False
+   LblRedo.Enabled = False
    TW.Title = "Text Window"
    Global.Run()
+   IsRunning = False
    GWTimer.Resume()
+EndSub
+
+Sub MnuStop_OnClick()
+   GW.Close()
+   TW.Close()
+   IsRunning = False
 EndSub
 
 Function GetPath(filePath)
@@ -560,14 +942,9 @@ Sub MnuAbout_OnClick()
    Forms.ShowDialog("FrmAbout", "")
 EndSub
 
-Sub MnuFormat_OnClick()
-   FormatCode()
-EndSub
-
-
 Sub LstCompletion_OnKeyDown()
    k = Event.LastKey
-   If k = Keys.Enter Then
+   If k = Keys.Enter Or k = Keys.Space Then
       AutoCompleteWord()
    ElseIf k = Keys.Escape Then
       LstCompletion.Visible = False
@@ -579,20 +956,25 @@ Sub LstCompletion_OnDoubleClick()
    AutoCompleteWord()
 EndSub
 
-Sub LblMargin_OnMouseLeftDown()
+Sub Margin_OnMouseLeftDown()
+   targetLabel = Event.SenderControl
+   TxtEditor.Enabled = False
    FormatCode()
    If Keyboard.ShiftPressed Then
       StartSelectionIndex = TxtEditor.CaretIndex
-      ExtendSelection()
+      ExtendSelection(GetLineStartIndex(targetLabel.Text))
    Else
-      StartSelectionIndex = GetLineStartIndex(LblMargin.MouseY)
+      StartSelectionIndex = GetLineStartIndex(targetLabel.Text)
       TxtEditor.CaretIndex = StartSelectionIndex
+      ExtendSelection(StartSelectionIndex)
    EndIf
+   TxtEditor.Enabled = True
 EndSub
 
-Sub LblMargin_OnMouseMove()
+Sub Margin_OnMouseMove()
    If Mouse.IsLeftButtonDown Then
-      ExtendSelection()
+      targetLabel = Event.SenderControl
+      ExtendSelection(GetLineStartIndex(targetLabel.Text))
    EndIf
 EndSub
 
@@ -665,6 +1047,8 @@ EndSub
 
 
 Sub TxtEditor_OnKeyDown()
+   ReportUndoChanges()
+   
    FixLA = False
    k = Event.LastKey
    
@@ -717,6 +1101,8 @@ Sub TxtEditor_OnKeyDown()
 EndSub
 
 Sub TxtEditor_OnSelection()
+   MnuEdit_OnOpen()
+   
    If ExitSelection Or TxtEditor.SelectionLength > 1 Then
       Return
    EndIf
@@ -727,20 +1113,6 @@ Sub TxtEditor_OnSelection()
    EndIf
    
    UpdateLine()
-EndSub
-
-Sub TxtEditor_OnMouseWheel()
-   If Keyboard.CtrlPressed Then
-      size = TxtEditor.FontSize + Event.LastMouseWheelDirection
-      If size < 50 And size > 10 Then
-         TxtEditor.FontSize = size
-         LblFormat.FontSize = size
-         LblLine.FontSize = size
-         LblBackground.FontSize = size
-         TW.FontSize = TxtEditor.FontSize
-      EndIf
-      Event.Handled = True
-   EndIf
 EndSub
 
 Sub ShowAutoComp()
@@ -847,6 +1219,15 @@ Sub ShowAutoComp()
 EndSub
 
 Sub FormatCode()
+   If IsRunning Then
+      Return
+   EndIf
+   
+   If JustFormatting = False Then
+      LastTextB4Format = TxtEditor.Text
+      JustFormatting = True
+   EndIf
+   
    IsIndented = True
    ExitTextChanged = True
    Global.IndentCode()
@@ -895,10 +1276,12 @@ Sub UpdateLine()
    EndIf
    
    lastLineText = LblLine.Text
+   AdjustLabels()
    
    If lineText = "" Then
       LblLine.Text = ""
    Else
+      Global.ColorLine(lineText)
       ' Skip leading spaces
       indentationPart = code.SubText(lineStart, pos - lineStart + 1)
       If indentationPart.Trim() = "" Then
@@ -911,8 +1294,6 @@ Sub UpdateLine()
             EndIf
          Next
       EndIf
-      
-      Global.ColorLine(lineText)
    EndIf
    
    If linesCount <> LastlinesCount Or lineIndex <> LastLineIndex Then
@@ -922,14 +1303,18 @@ Sub UpdateLine()
       IsIndented = True
       ExitTextChanged = True
       Global.FixNextVarName(LastlineStart, lastLineText)
-      Global.IndentCode()
+      If JustFormatting = False Then
+         LastTextB4Format = TxtEditor.Text
+         JustFormatting = True
+      EndIf
+      If IsRunning = False Then
+         Global.IndentCode()
+      EndIf
       ExitTextChanged = False
    EndIf
    
-   AdjustLabels()
    LastlineStart = lineStart
 EndSub
-
 
 Sub AutoCompleteWord()
    ' Forms.ShowMessage(debug, "Message")
@@ -952,30 +1337,36 @@ Sub AutoCompleteWord()
    EndIf
 EndSub
 
-Function GetLineStartIndex(y)
+Function GetLineStartIndex(targetLine)
    lineHeight = LblLine.Height
    code = TxtEditor.Text
-   visibleIndex = TxtEditor.GetFirstVisibleLineStartPos()
-   fractionalPart = TxtEditor.VerticalScrollOffset - Math.Truncate(TxtEditor.VerticalScrollOffset)
-   offsetPixels = fractionalPart * lineHeight
-   h = TxtEditor.Padding + lineHeight - offsetPixels
    
-   For i = visibleIndex To code.Length
-      If h >= y Then
-         Return i
-      EndIf
-      
+   If targetLine <= 1 Then
+      Return 1
+   EndIf
+   
+   If targetLine > TxtEditor.LineCount Then
+      targetLine = TxtEditor.LineCount
+   EndIf
+   
+   If targetLine = 1 Then
+      Return 1
+   EndIf
+   
+   currentLine = 1
+   For i = 1 To code.Length
       If code[i] = Chars.Lf Then
-         h = h + lineHeight
+         currentLine = currentLine + 1
+         If currentLine = targetLine Then
+            Return i + 1
+         EndIf
       EndIf
    Next
    
-   Return 0
+   Return code.Length
 EndFunction
 
-Sub ExtendSelection()
-   currentIndex = GetLineStartIndex(LblMargin.MouseY)
-   
+Sub ExtendSelection(currentIndex)
    If StartSelectionIndex < currentIndex Then
       lowerIndex = StartSelectionIndex
       upperIndex = currentIndex
@@ -999,6 +1390,7 @@ EndSub
 Sub MnuAddSoundPath_OnClick()
    fileName = File.OpenFileDialog({"Sound Files", "wav", "mp3"})
    If fileName <> "" Then
+      AddUndoPoint(True)
       TxtEditor.SelectedText = """" & fileName & """"
       TxtEditor.Focus()
       TxtEditor.SelectionStart = TxtEditor.SelectionStart + TxtEditor.SelectionLength
@@ -1008,6 +1400,62 @@ EndSub
 
 Sub MnuTurtle_OnClick()
    If AskToSave() Then
-      Open(GetPath("Syntax/9.shlen"))
+      Open(GetPath("Syntax/9." & SahlaFilesExtension))
+   EndIf
+EndSub
+
+
+Sub Form_OnPreviewKeyDown()
+   If Keyboard.CtrlPressed Then
+      key = Event.LastKey
+      size = 0
+      If key = Keys.OemPlus Then
+         size = TxtEditor.FontSize + 1
+         Event.Handled = True
+      ElseIf key = Keys.OemMinus Then
+         size = TxtEditor.FontSize - 1
+         Event.Handled = True
+      EndIf
+      ChangeFontSize(size)
+   EndIf
+EndSub
+
+
+Sub TxtEditor_OnMouseWheel()
+   If Keyboard.CtrlPressed Then
+      Event.Handled = True
+      size = TxtEditor.FontSize + Event.LastMouseWheelDirection
+      ChangeFontSize(size)
+   EndIf
+EndSub
+
+Sub ChangeFontSize(size)
+   If size < 50 And size > 10 Then
+      oldLineHeight = LblLine.Height
+      oldScroll = TxtEditor.VerticalScrollOffset
+      If oldLineHeight > 0 Then
+         scrollRatio = oldScroll / oldLineHeight
+      Else
+         scrollRatio = 0
+      EndIf
+      TxtEditor.FontSize = size
+      LblFormat.FontSize = size
+      LblLine.FontSize = size
+      LblBackground.FontSize = size
+      TW.FontSize = TxtEditor.FontSize
+      TxtEditor.VerticalScrollOffset = scrollRatio * LblLine.Height
+   EndIf
+EndSub
+
+Sub LblMargin_OnMouseWheel()
+   direction = Event.LastMouseWheelDirection
+   lineHeight = LblLine.Height
+   If Keyboard.CtrlPressed Then
+      size = TxtEditor.FontSize + Event.LastMouseWheelDirection
+      ChangeFontSize(size)
+   ElseIf direction > 0 Then
+      TxtEditor.VerticalScrollOffset = TxtEditor.VerticalScrollOffset - lineHeight
+   Else
+      TxtEditor.VerticalScrollOffset = TxtEditor.VerticalScrollOffset + lineHeight
    EndIf
 EndSub

@@ -28,7 +28,6 @@ Namespace Microsoft.SmallVisualBasic.Expressions
         End Sub
 
         Public Overrides Sub EmitIL(scope As CodeGenScope)
-
             Dim methodInfo As MethodInfo = Nothing
 
             Select Case [Operator].Type
@@ -56,10 +55,9 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                     methodInfo = scope.TypeInfoBag.LessThan
                 Case TokenType.LessThanOrEqualsTo
                     methodInfo = scope.TypeInfoBag.LessThanOrEqualTo
-                Case TokenType.And
-                    methodInfo = scope.TypeInfoBag.And
-                Case TokenType.Or
-                    methodInfo = scope.TypeInfoBag.Or
+                Case TokenType.And, TokenType.Or
+                    EmitShortCircuit([Operator].Type, scope)
+                    Return
             End Select
 
             If LeftHandSide Is Nothing Then
@@ -78,6 +76,37 @@ Namespace Microsoft.SmallVisualBasic.Expressions
             End If
 
             scope.ILGenerator.EmitCall(OpCodes.Call, methodInfo, Nothing)
+        End Sub
+
+        Private Sub EmitShortCircuit(tokenType As TokenType, scope As CodeGenScope)
+            Dim il = scope.ILGenerator
+
+            If LeftHandSide Is Nothing Then
+                LiteralExpression.Zero.EmitIL(scope)
+            Else
+                LeftHandSide.EmitIL(scope)
+            End If
+
+            il.Emit(OpCodes.Dup)
+            il.EmitCall(OpCodes.Call, scope.TypeInfoBag.PrimitiveToBoolean, Nothing)
+
+            Dim shortCircuitLabel = il.DefineLabel()
+
+            If tokenType = TokenType.And Then
+                il.Emit(OpCodes.Brfalse, shortCircuitLabel)
+            Else
+                il.Emit(OpCodes.Brtrue, shortCircuitLabel)
+            End If
+
+            il.Emit(OpCodes.Pop)
+
+            If RightHandSide Is Nothing Then
+                LiteralExpression.Zero.EmitIL(scope)
+            Else
+                RightHandSide.EmitIL(scope)
+            End If
+
+            il.MarkLabel(shortCircuitLabel)
         End Sub
 
         Public Overrides Function ToString() As String
@@ -135,15 +164,27 @@ Namespace Microsoft.SmallVisualBasic.Expressions
 
         Public Overrides Function Evaluate(runner As Engine.ProgramRunner) As Primitive
             Dim leftExpr = LeftHandSide.Evaluate(runner)
-            Dim rightExpr = RightHandSide.Evaluate(runner)
 
+            Select Case _Operator.Type
+                Case TokenType.Or
+                    If CBool(leftExpr) Then
+                        Return New Primitive(True)
+                    End If
+                    Return RightHandSide.Evaluate(runner)
+
+                Case TokenType.And
+                    If CBool(leftExpr) Then
+                        Return RightHandSide.Evaluate(runner)
+                    End If
+                    Return New Primitive(False)
+            End Select
+
+            Dim rightExpr = RightHandSide.Evaluate(runner)
             Select Case _Operator.Type
                 Case TokenType.Concatenation
                     Return leftExpr.Concat(rightExpr)
                 Case TokenType.Addition
                     Return leftExpr.Add(rightExpr)
-                Case TokenType.And
-                    Return Primitive.op_And(leftExpr, rightExpr)
                 Case TokenType.Division
                     Return leftExpr.Divide(rightExpr)
                 Case TokenType.Mod
@@ -162,8 +203,6 @@ Namespace Microsoft.SmallVisualBasic.Expressions
                     Return leftExpr.Multiply(rightExpr)
                 Case TokenType.NotEqualsTo
                     Return leftExpr.NotEqualTo(rightExpr)
-                Case TokenType.Or
-                    Return Primitive.op_Or(leftExpr, rightExpr)
                 Case TokenType.Subtraction
                     Return leftExpr.Subtract(rightExpr)
                 Case Else

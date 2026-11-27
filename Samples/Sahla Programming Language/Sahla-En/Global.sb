@@ -10,6 +10,7 @@ _Unexpected = "is not expected here!"
 _InvalidDuration = "is not a valid duration!"
 _NoMsg = "Please provide the output text after"
 _NoSound = "Please provied a sound name or a file path"
+_NoImage = "Please provied an image name or a file path"
 _NoLoop = "There is no loop to exit!"
 _ForNotComplete = "The for loop header is too short!"
 _IsExpected = "is expected here!"
@@ -68,22 +69,43 @@ _Bell = "Bell"
 _Ding = "Ding"
 _Click = "Click"
 _Chime = "Chime"
-_Cat = "Meow"
-_Crow = "Caw"
-_Cow = "Moo"
-_Dog = "Bark"
-_Donkey = "Bray"
-_Duck = "Quack"
-_Elephant = "Trumpet"
-_Horse = "Neigh"
-_Lion = "Roar"
-_Rooster = "Crowing"
-_Sheep = "Baa"
-_Wolf = "Howl"
+_Meow = "Meow"
+_Caw = "Caw"
+_Moo = "Moo"
+_Bark = "Bark"
+_Bray = "Bray"
+_Quack = "Quack"
+_Trumpet = "Trumpet"
+_Neigh = "Neigh"
+_Roar = "Roar"
+_Crowing = "Crowing"
+_Baa = "Baa"
+_Howl = "Howl"
+
+_Image = "Show"
+_ImageSize = "Size"
+_Orange = "Orange"
+_Banana = "Banana"
+_Apple = "Apple"
+_Plum = "Plum"
+_Fig = "Fig"
+_Cat = "Cat"
+_Crow = "Crow"
+_Cow = "Cow"
+_Dog = "Dog"
+_Donkey = "Donkey"
+_Duck = "Duck"
+_Elephant = "Elephant"
+_Horse = "Horse"
+_Lion = "Lion"
+_Rooster = "Rooster"
+_Sheep = "Sheep"
+_Wolf = "Wolf"
 _IntegralDivision = "\"
 _CommentSymbol = "'"
 ' ================================================================
 ' ================================================================
+
 
 BasicWords = {
    _True, _False, _If, _Else, _ElseIf, _EndIf, _And, _Or,
@@ -91,7 +113,10 @@ BasicWords = {
    _Write, _Line, _Read, _Text, _Number,
    _Move, _Turn, _Speed, _Turtle,
    _Wait, _Random, _Sound, _Beep, _Bell, _Ding, _Click, _Chime,
-   _Sheep, _Dog, _Donkey, _Crow, _Rooster, _Wolf, _Cat, _Cow, _Horse, _Duck, _Lion, _Elephant
+   _Baa, _Bark, _Bray, _Caw, _Crowing, _Howl, _Meow, _Moo, _Neigh, _Quack, _Roar, _Trumpet,
+   _Image,
+   _Apple, _Banana, _Fig, _Orange, _Plum,
+   _Cat, _Crow, _Cow, _Dog, _Donkey, _Duck, _Elephant, _Horse, _Lion, _Rooster, _Sheep, _Wolf
 }
 
 CommandsCompletionList = {
@@ -109,18 +134,36 @@ CommandsCompletionList = {
    _Sound & " " & _Ding,
    _Sound & " " & _Click,
    _Sound & " " & _Chime,
-   _Sound & " " & _Sheep,
-   _Sound & " " & _Dog,
-   _Sound & " " & _Donkey,
-   _Sound & " " & _Crow,
-   _Sound & " " & _Rooster,
-   _Sound & " " & _Wolf,
-   _Sound & " " & _Cat,
-   _Sound & " " & _Cow,
-   _Sound & " " & _Horse,
-   _Sound & " " & _Duck,
-   _Sound & " " & _Lion,
-   _Sound & " " & _Elephant
+   _Sound & " " & _Baa,
+   _Sound & " " & _Bark,
+   _Sound & " " & _Bray,
+   _Sound & " " & _Caw,
+   _Sound & " " & _Crowing,
+   _Sound & " " & _Howl,
+   _Sound & " " & _Meow,
+   _Sound & " " & _Moo,
+   _Sound & " " & _Neigh,
+   _Sound & " " & _Quack,
+   _Sound & " " & _Roar,
+   _Sound & " " & _Trumpet,
+   _Image,
+   _Image & " " & _Apple,
+   _Image & " " & _Banana,
+   _Image & " " & _Fig,
+   _Image & " " & _Orange,
+   _Image & " " & _Plum,
+   _Image & " " & _Cat,
+   _Image & " " & _Cow,
+   _Image & " " & _Crow,
+   _Image & " " & _Dog,
+   _Image & " " & _Donkey,
+   _Image & " " & _Duck,
+   _Image & " " & _Elephant,
+   _Image & " " & _Horse,
+   _Image & " " & _Lion,
+   _Image & " " & _Rooster,
+   _Image & " " & _Sheep,
+   _Image & " " & _Wolf
 }
 
 OperatorsCompletionList = {
@@ -135,27 +178,46 @@ Opertors = {
    "+", "-", "*", "/", _IntegralDivision, "%", "^"
 }
 
-AnimalSounds[_Cat] = "Cat.mp3"
-AnimalSounds[_Crow] = "Crow.mp3"
-AnimalSounds[_Cow] = "Cow.mp3"
-AnimalSounds[_Dog] = "Dog.mp3"
-AnimalSounds[_Donkey] = "Donkey.mp3"
-AnimalSounds[_Duck] = "Duck.mp3"
-AnimalSounds[_Elephant] = "Elephant.mp3"
-AnimalSounds[_Horse] = "Horse.mp3"
-AnimalSounds[_Lion] = "Lion.mp3"
-AnimalSounds[_Rooster] = "Rooster.mp3"
-AnimalSounds[_Sheep] = "Sheep.mp3"
-AnimalSounds[_Wolf] = "Wolf.mp3"
+AnimalSounds[_Meow] = "Cat.mp3"
+AnimalSounds[_Caw] = "Crow.mp3"
+AnimalSounds[_Moo] = "Cow.mp3"
+AnimalSounds[_Bark] = "Dog.mp3"
+AnimalSounds[_Bray] = "Donkey.mp3"
+AnimalSounds[_Quack] = "Duck.mp3"
+AnimalSounds[_Trumpet] = "Elephant.mp3"
+AnimalSounds[_Neigh] = "Horse.mp3"
+AnimalSounds[_Roar] = "Lion.mp3"
+AnimalSounds[_Crowing] = "Rooster.mp3"
+AnimalSounds[_Baa] = "Sheep.mp3"
+AnimalSounds[_Howl] = "Wolf.mp3"
+
+ImageNames[_Orange] = "Orange.png"
+ImageNames[_Banana] = "Banana.png"
+ImageNames[_Apple] = "Apple.png"
+ImageNames[_Plum] = "Plum.png"
+ImageNames[_Fig] = "Fig.png"
+ImageNames[_Cat] = "Cat.png"
+ImageNames[_Crow] = "Crow.png"
+ImageNames[_Cow] = "Cow.png"
+ImageNames[_Dog] = "Dog.png"
+ImageNames[_Donkey] = "Donkey.png"
+ImageNames[_Duck] = "Duck.png"
+ImageNames[_Elephant] = "Elephant.png"
+ImageNames[_Horse] = "Horse.png"
+ImageNames[_Lion] = "Lion.png"
+ImageNames[_Rooster] = "Rooster.png"
+ImageNames[_Sheep] = "Sheep.png"
+ImageNames[_Wolf] = "Wolf.png"
+
+ImageOrder = {_Apple, _Banana, _Fig, _Orange, _Plum, _Cat, _Cow, _Crow, _Dog, _Donkey, _Duck, _Elephant, _Horse, _Lion, _Rooster, _Sheep, _Wolf}
 
 FontNames = Desktop.FontNames
-
-_SettingsFile = "%LOCALAPPDATA%/Sahla.settings"
+_SettingsFile = "%LOCALAPPDATA%/" & Program.Name & ".settings"
 _Settings = File.ReadLines(_SettingsFile)
 If _Settings = "" Then
    Ops!FontName = "Cascadia Code"
-   Ops!FontSize = 20
-   Ops!Bold = False
+   Ops!FontSize = 16
+   Ops!Bold = True
    Ops!Italic = False
    Ops!Underlined = False
    Ops!ForeColor = Colors.Black
@@ -205,20 +267,52 @@ _EnBell = "Bell"
 _EnDing = "Ding"
 _EnClick = "Click"
 _EnChime = "Chime"
-_EnCat = "Meow"
-_EnCrow = "Caw"
-_EnCow = "Moo"
-_EnDog = "Bark"
-_EnDonkey = "Bray"
-_EnDuck = "Quack"
-_EnElephant = "Trumpet"
-_EnHorse = "Neigh"
-_EnLion = "Roar"
-_EnRooster = "Crowing"
-_EnSheep = "Baa"
-_EnWolf = "Howl"
+_EnMeow = "Meow"
+_EnCaw = "Caw"
+_EnMoo = "Moo"
+_EnBark = "Bark"
+_EnBray = "Bray"
+_EnQuack = "Quack"
+_EnTrumpet = "Trumpet"
+_EnNeigh = "Neigh"
+_EnRoar = "Roar"
+_EnCrowing = "Crowing"
+_EnBaa = "Baa"
+_EnHowl = "Howl"
+_EnImage = "Show"
+_EnImageSize = "Size"
+_EnOrange = "Orange"
+_EnBanana = "Banana"
+_EnApple = "Apple"
+_EnPlum = "Plum"
+_EnFig = "Fig"
+_EnCat = "Cat"
+_EnCrow = "Crow"
+_EnCow = "Cow"
+_EnDog = "Dog"
+_EnDonkey = "Donkey"
+_EnDuck = "Duck"
+_EnElephant = "Elephant"
+_EnHorse = "Horse"
+_EnLion = "Lion"
+_EnRooster = "Rooster"
+_EnSheep = "Sheep"
+_EnWolf = "Wolf"
+
 _EnIntegralDivision = "\"
 _EnCommmentSymbol = "'"
+
+EnBasicWords = {
+   _EnTrue, _EnFalse, _EnIf, _EnElse, _EnElseIf, _EnEndIf, _EnAnd, _EnOr,
+   _EnWhile, _EnWend, _EnFor, _EnTo, _EnStep, _EnNext, _EnExitLoop,
+   _EnWrite, _EnLine, _EnRead, _EnText, _EnNumber,
+   _EnMove, _EnTurn, _EnSpeed, _EnTurtle,
+   _EnWait, _EnRandom, _EnSound, _EnBeep, _EnBell, _EnDing, _EnClick, _EnChime,
+   _EnBaa, _EnBark, _EnBray, _EnCaw, _EnCrowing, _EnHowl, _EnMeow, _EnMoo, _EnNeigh, _EnQuack, _EnRoar, _EnTrumpet,
+   _EnImage,
+   _EnApple, _EnBanana, _EnFig, _EnOrange, _EnPlum,
+   _EnCat, _EnCrow, _EnCow, _EnDog, _EnDonkey, _EnDuck, _EnElephant, _EnHorse, _EnLion, _EnRooster, _EnSheep, _EnWolf
+}
 
 OrgTokes = {}
 DestTokes = {}
@@ -239,6 +333,7 @@ _StillColoring = False
 _Initializing = True
 UseParentFolder = (File.Exists("Animal Sounds") = False)
 GwForm = ""
+_TwFirstTime = True
 _GwFirstTime = True
 
 Sub StopTurtle()
@@ -249,7 +344,7 @@ EndSub
 
 Sub StartColoringTimer()
    _Initializing = False
-   Timer.Interval = 20
+   Timer.Interval = 25
    Timer.Tick = ManageCodeColoring
 EndSub
 
@@ -345,11 +440,13 @@ Sub Tokenize(line, lineNum, commmentSymbol, ignoreComments)
 EndSub
 
 Sub Run()
+   _TwFirstTime = True
    _GwFirstTime = True
    Terminated = False
    TW.Clear()
    TW.Hide()
    Vars = {}
+   Vars[_ImageSize] = 100
    Stack.Clear(WhileStack)
    Stack.Clear(ForStack)
    
@@ -416,6 +513,23 @@ Function GetSoundFile(animal)
       Return Program.Directory + "\..\Animal Sounds\" & animal & ".mp3"
    Else
       Return Program.Directory + "\Animal Sounds\" & animal & ".mp3"
+   EndIf
+EndFunction
+
+Sub ShowImage(filePath)
+   If UseParentFolder Then
+      filePath = "../Images/" & filePath
+   Else
+      filePath = "Images/" & filePath
+   EndIf
+   TW.InsertImage(filePath, 0, Vars[_ImageSize])
+EndSub
+
+Function GetImageFile(name)
+   If UseParentFolder Then
+      Return Program.Directory + "\..\Images\" & name & ".png"
+   Else
+      Return Program.Directory + "\Images\" & name & ".png"
    EndIf
 EndFunction
 
@@ -569,62 +683,57 @@ Sub ExecuteLine()
       nextCommand = Tokens[2][3]
       If tokensCount = 1 Then
          ReportError(_NoSound, LineIndex, 1)
+         Return
          
-      ElseIf Text.AreEquals(nextCommand, _Beep, False) Then
+      ElseIf CkeckSound(nextCommand) Then
          If tokensCount > 2 Then
             ReportError("'" & Tokens[3][3] & "' " & _Unexpected, LineIndex, 3)
-            Return
          EndIf
-         Sound.PlayBeep()
-         
-      ElseIf Text.AreEquals(nextCommand, _Bell, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' " & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Sound.PlayBellRing()
-         
-      ElseIf Text.AreEquals(nextCommand, _Ding, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' " & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Sound.PlayDing()
-         
-      ElseIf Text.AreEquals(nextCommand, _Click, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' " & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Sound.PlayClick()
-         
-      ElseIf Text.AreEquals(nextCommand, _Chime, False) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' " & _Unexpected, LineIndex, 3)
-            Return
-         EndIf
-         Sound.PlayChime()
-         
-      ElseIf AnimalSounds.ContainsIndex(nextCommand) Then
-         If tokensCount > 2 Then
-            ReportError("'" & Tokens[3][3] & "' غير متوقعة هنا", LineIndex, 3)
-            Return
-         EndIf
-         Play(AnimalSounds[nextCommand])
+         Return
+      EndIf
+      
+      result = EvaluateExpression(2)
+      nextPos = result[2]
+      If nextPos <= tokensCount Then
+         ReportError("'" & Tokens[nextPos][3] & "' " & _Unexpected, LineIndex, nextPos)
+         Return
+      EndIf
+      
+      animalSound = result[1]
+      If CkeckSound(animalSound) Then
+         Return
       Else
-         result = EvaluateExpression(2)
-         nextPos = result[2]
-         If nextPos < tokensCount Then
-            ReportError("'" & Tokens[nextPos][3] & "' غير متوقعة هنا", LineIndex, nextPos)
-            Return
+         Sound.Play(animalSound)
+      EndIf
+      
+   ElseIf Text.AreEquals(command, _Image, False) Then
+      nextCommand = Tokens[2][3]
+      If tokensCount = 1 Then
+         ReportError(_NoImage, LineIndex, 1)
+         Return
+      ElseIf ImageNames.ContainsIndex(nextCommand) Then
+         ShowImage(ImageNames[nextCommand])
+         If tokensCount > 2 Then
+            ReportError("'" & Tokens[3][3] & "' " & _Unexpected, LineIndex, 3)
          EndIf
-         
-         animalSound = result[1]
-         If AnimalSounds.ContainsIndex(animalSound) Then
-            Play(AnimalSounds[animalSound])
-         Else
-            Sound.Play(animalSound)
-         EndIf
+         Return
+      EndIf
+      
+      result = EvaluateExpression(2)
+      nextPos = result[2]
+      If nextPos <= tokensCount Then
+         ReportError("'" & Tokens[nextPos][3] & "' " & _Unexpected, LineIndex, nextPos)
+         Return
+      EndIf
+      
+      image = result[1]
+      If image.IsNumeric Then
+         ShowImage(ImageNames[ImageOrder[image]])
+      ElseIf ImageNames.ContainsIndex(image) Then
+         ShowImage(ImageNames[image])
+         Return
+      Else
+         TW.InsertImage(image, 0, Vars[_ImageSize])
       EndIf
       
    ElseIf tokensCount >= 3 And Text.AreEquals(Tokens[2][3], "=", True) Then ' varName
@@ -644,6 +753,35 @@ Sub ExecuteLine()
       ReportError("'" & command & "' " & _UnknownCommand, LineIndex, 1)
    EndIf
 EndSub
+
+Function CkeckSound(soundToken)
+   If Text.AreEquals(soundToken, _Beep, False) Then
+      Sound.PlayBeep()
+      Return True
+      
+   ElseIf Text.AreEquals(soundToken, _Bell, False) Then
+      Sound.PlayBellRing()
+      Return True
+      
+   ElseIf Text.AreEquals(soundToken, _Ding, False) Then
+      Sound.PlayDing()
+      Return True
+      
+   ElseIf Text.AreEquals(soundToken, _Click, False) Then
+      Sound.PlayClick()
+      Return True
+      
+   ElseIf Text.AreEquals(soundToken, _Chime, False) Then
+      Sound.PlayChime()
+      Return True
+      
+   ElseIf AnimalSounds.ContainsIndex(soundToken) Then
+      Play(AnimalSounds[soundToken])
+      Return True
+   EndIf
+   
+   Return False
+EndFunction
 
 Function FixBool(strValue)
    strValue = strValue.Replace("True", _True)
@@ -806,7 +944,12 @@ Sub ProcessForLoopNext()
       Return
    EndIf
    
-   If Keyboard.LastKey = Keys.Escape And GW.IsClosed = False Then
+   If GW.IsClosed Then
+      If _TwFirstTime Then
+         _TwFirstTime = False
+         TW.Show() ' Make sure TW is visible to avoid infinite loop hanging
+      EndIf
+   ElseIf Keyboard.LastKey = Keys.Escape Then
       Terminated = True
       Stack.PopValue(ForStack)
       Return
@@ -857,7 +1000,12 @@ Sub ProcessWhileLoopEnd()
       Return
    EndIf
    
-   If Keyboard.LastKey = Keys.Escape And GW.IsClosed = False Then
+   If GW.IsClosed Then
+      If _TwFirstTime Then
+         _TwFirstTime = False
+         TW.Show() ' Make sure TW is visible to avoid infinite loop hanging
+      EndIf
+   ElseIf Keyboard.LastKey = Keys.Escape Then
       Terminated = True
       Stack.PopValue(WhileStack)
       Return
@@ -1223,6 +1371,9 @@ Function ParseTerm(pos)
       
       If op = "*" Then
          leftValue = leftValue * rightValue
+      ElseIf rightValue = 0 Then
+         ReportError("Can't divide by zero!", LineIndex, pos)
+         Return {leftValue, pos}
       ElseIf op = "/" Then
          leftValue = leftValue / rightValue
       ElseIf op = _IntegralDivision Then
@@ -1755,14 +1906,16 @@ Sub FixNextVarName(ixdex, lineText)
 EndSub
 
 Function GetVarNames()
+   Vars = {}
+   Vars.Append(_ImageSize)
+   
    code = EditorTextBox.Text
    end = code.IndexOf(Chars.Lf, EditorTextBox.CaretIndex, True)
    If end = 0 Then
-      Return {}
+      Return Vars
    EndIf
    
    lines = Text.Split(code.SubText(1, end - 1), Chars.Lf, True, True)
-   Vars = {}
    
    ForEach line In lines
       lcLine = line.ToLower()
@@ -1848,139 +2001,16 @@ ConvertToEnSahla = False
 
 
 Sub InitTransTokes(forwardConversion)
+   count = EnBasicWords.Count
    If forwardConversion Then
-      OrgTokes[_EnTrue] = _True
-      DestTokes[_EnTrue] = _EnTrue
+      For i = 1 To count
+         enTok = EnBasicWords[i]
+         OrgTokes[enTok] = BasicWords[i]
+         DestTokes[enTok] = enTok
+      Next
       
-      OrgTokes[_EnFalse] = _False
-      DestTokes[_EnFalse] = _EnFalse
-      
-      OrgTokes[_EnIf] = _If
-      DestTokes[_EnIf] = _EnIf
-      
-      OrgTokes[_EnElseIf] = _ElseIf
-      DestTokes[_EnElseIf] = _EnElseIf
-      
-      OrgTokes[_EnElse] = _Else
-      DestTokes[_EnElse] = _EnElse
-      
-      OrgTokes[_EnEndIf] = _EndIf
-      DestTokes[_EnEndIf] = _EnEndIf
-      
-      OrgTokes[_EnAnd] = _And
-      DestTokes[_EnAnd] = _EnAnd
-      
-      OrgTokes[_EnOr] = _Or
-      DestTokes[_EnOr] = _EnOr
-      
-      OrgTokes[_EnWhile] = _While
-      DestTokes[_EnWhile] = _EnWhile
-      
-      OrgTokes[_EnWend] = _Wend
-      DestTokes[_EnWend] = _EnWend
-      
-      OrgTokes[_EnFor] = _For
-      DestTokes[_EnFor] = _EnFor
-      
-      OrgTokes[_EnTo] = _To
-      DestTokes[_EnTo] = _EnTo
-      
-      OrgTokes[_EnStep] = _Step
-      DestTokes[_EnStep] = _EnStep
-      
-      OrgTokes[_EnNext] = _Next
-      DestTokes[_EnNext] = _EnNext
-      
-      OrgTokes[_EnExitLoop] = _ExitLoop
-      DestTokes[_EnExitLoop] = _EnExitLoop
-      
-      OrgTokes[_EnWrite] = _Write
-      DestTokes[_EnWrite] = _EnWrite
-      
-      OrgTokes[_EnLine] = _Line
-      DestTokes[_EnLine] = _EnLine
-      
-      OrgTokes[_EnRead] = _Read
-      DestTokes[_EnRead] = _EnRead
-      
-      OrgTokes[_EnText] = _Text
-      DestTokes[_EnText] = _EnText
-      
-      OrgTokes[_EnNumber] = _Number
-      DestTokes[_EnNumber] = _EnNumber
-      
-      OrgTokes[_EnMove] = _Move
-      DestTokes[_EnMove] = _EnMove
-      
-      OrgTokes[_EnTurn] = _Turn
-      DestTokes[_EnTurn] = _EnTurn
-      
-      OrgTokes[_EnSpeed] = _Speed
-      DestTokes[_EnSpeed] = _EnSpeed
-      
-      OrgTokes[_EnTurtle] = _Turtle
-      DestTokes[_EnTurtle] = _EnTurtle
-      
-      OrgTokes[_EnRandom] = _Random
-      DestTokes[_EnRandom] = _EnRandom
-      
-      OrgTokes[_EnWait] = _Wait
-      DestTokes[_EnWait] = _EnWait
-      
-      OrgTokes[_EnSound] = _Sound
-      DestTokes[_EnSound] = _EnSound
-      
-      OrgTokes[_EnBeep] = _Beep
-      DestTokes[_EnBeep] = _EnBeep
-      
-      OrgTokes[_EnBell] = _Bell
-      DestTokes[_EnBell] = _EnBell
-      
-      OrgTokes[_EnDing] = _Ding
-      DestTokes[_EnDing] = _EnDing
-      
-      OrgTokes[_EnClick] = _Click
-      DestTokes[_EnClick] = _EnClick
-      
-      OrgTokes[_EnChime] = _Chime
-      DestTokes[_EnChime] = _EnChime
-      
-      
-      OrgTokes[_EnCat] = _Cat
-      DestTokes[_EnCat] = _EnCat
-      
-      OrgTokes[_EnCrow] = _Crow
-      DestTokes[_EnCrow] = _EnCrow
-      
-      OrgTokes[_EnCow] = _Cow
-      DestTokes[_EnCow] = _EnCow
-      
-      OrgTokes[_EnDog] = _Dog
-      DestTokes[_EnDog] = _EnDog
-      
-      OrgTokes[_EnDonkey] = _Donkey
-      DestTokes[_EnDonkey] = _EnDonkey
-      
-      OrgTokes[_EnDuck] = _Duck
-      DestTokes[_EnDuck] = _EnDuck
-      
-      OrgTokes[_EnElephant] = _Elephant
-      DestTokes[_EnElephant] = _EnElephant
-      
-      OrgTokes[_EnHorse] = _Horse
-      DestTokes[_EnHorse] = _EnHorse
-      
-      OrgTokes[_EnLion] = _Lion
-      DestTokes[_EnLion] = _EnLion
-      
-      OrgTokes[_EnRooster] = _Rooster
-      DestTokes[_EnRooster] = _EnRooster
-      
-      OrgTokes[_EnSheep] = _Sheep
-      DestTokes[_EnSheep] = _EnSheep
-      
-      OrgTokes[_EnWolf] = _Wolf
-      DestTokes[_EnWolf] = _EnWolf
+      OrgTokes[_EnImageSize] = _ImageSize
+      DestTokes[_EnImageSize] = _EnImageSize
       
       OrgTokes[_EnIntegralDivision] = _IntegralDivision
       DestTokes[_EnIntegralDivision] = _EnIntegralDivision
@@ -1990,139 +2020,14 @@ Sub InitTransTokes(forwardConversion)
       
    Else
       ' Reverse conversion: English → native.
-      OrgTokes[_EnTrue] = _EnTrue
-      DestTokes[_EnTrue] = _True
+      For i = 1 To count
+         enTok = EnBasicWords[i]
+         OrgTokes[enTok] = enTok
+         DestTokes[enTok] = BasicWords[i]
+      Next
       
-      OrgTokes[_EnFalse] = _EnFalse
-      DestTokes[_EnFalse] = _False
-      
-      OrgTokes[_EnIf] = _EnIf
-      DestTokes[_EnIf] = _If
-      
-      OrgTokes[_EnElseIf] = _EnElseIf
-      DestTokes[_EnElseIf] = _ElseIf
-      
-      OrgTokes[_EnElse] = _EnElse
-      DestTokes[_EnElse] = _Else
-      
-      OrgTokes[_EnEndIf] = _EnEndIf
-      DestTokes[_EnEndIf] = _EndIf
-      
-      OrgTokes[_EnAnd] = _EnAnd
-      DestTokes[_EnAnd] = _And
-      
-      OrgTokes[_EnOr] = _EnOr
-      DestTokes[_EnOr] = _Or
-      
-      OrgTokes[_EnWhile] = _EnWhile
-      DestTokes[_EnWhile] = _While
-      
-      OrgTokes[_EnWend] = _EnWend
-      DestTokes[_EnWend] = _Wend
-      
-      OrgTokes[_EnFor] = _EnFor
-      DestTokes[_EnFor] = _For
-      
-      OrgTokes[_EnTo] = _EnTo
-      DestTokes[_EnTo] = _To
-      
-      OrgTokes[_EnStep] = _EnStep
-      DestTokes[_EnStep] = _Step
-      
-      OrgTokes[_EnNext] = _EnNext
-      DestTokes[_EnNext] = _Next
-      
-      OrgTokes[_EnExitLoop] = _EnExitLoop
-      DestTokes[_EnExitLoop] = _ExitLoop
-      
-      OrgTokes[_EnWrite] = _EnWrite
-      DestTokes[_EnWrite] = _Write
-      
-      OrgTokes[_EnLine] = _EnLine
-      DestTokes[_EnLine] = _Line
-      
-      OrgTokes[_EnRead] = _EnRead
-      DestTokes[_EnRead] = _Read
-      
-      OrgTokes[_EnText] = _EnText
-      DestTokes[_EnText] = _Text
-      
-      OrgTokes[_EnNumber] = _EnNumber
-      DestTokes[_EnNumber] = _Number
-      
-      
-      OrgTokes[_EnMove] = _EnMove
-      DestTokes[_EnMove] = _Move
-      
-      OrgTokes[_EnTurn] = _EnTurn
-      DestTokes[_EnTurn] = _Turn
-      
-      OrgTokes[_EnSpeed] = _EnSpeed
-      DestTokes[_EnSpeed] = _Speed
-      
-      OrgTokes[_EnTurtle] = _EnTurtle
-      DestTokes[_EnTurtle] = _Turtle
-      
-      OrgTokes[_EnRandom] = _EnRandom
-      DestTokes[_EnRandom] = _Random
-      
-      OrgTokes[_EnWait] = _EnWait
-      DestTokes[_EnWait] = _Wait
-      
-      OrgTokes[_EnSound] = _EnSound
-      DestTokes[_EnSound] = _Sound
-      
-      OrgTokes[_EnBeep] = _EnBeep
-      DestTokes[_EnBeep] = _Beep
-      
-      OrgTokes[_EnBell] = _EnBell
-      DestTokes[_EnBell] = _Bell
-      
-      OrgTokes[_EnDing] = _EnDing
-      DestTokes[_EnDing] = _Ding
-      
-      OrgTokes[_EnClick] = _EnClick
-      DestTokes[_EnClick] = _Click
-      
-      OrgTokes[_EnChime] = _EnChime
-      DestTokes[_EnChime] = _Chime
-      
-      
-      OrgTokes[_EnCat] = _EnCat
-      DestTokes[_EnCat] = _Cat
-      
-      OrgTokes[_EnCrow] = _EnCrow
-      DestTokes[_EnCrow] = _Crow
-      
-      OrgTokes[_EnCow] = _EnCow
-      DestTokes[_EnCow] = _Cow
-      
-      OrgTokes[_EnDog] = _EnDog
-      DestTokes[_EnDog] = _Dog
-      
-      OrgTokes[_EnDonkey] = _EnDonkey
-      DestTokes[_EnDonkey] = _Donkey
-      
-      OrgTokes[_EnDuck] = _EnDuck
-      DestTokes[_EnDuck] = _Duck
-      
-      OrgTokes[_EnElephant] = _EnElephant
-      DestTokes[_EnElephant] = _Elephant
-      
-      OrgTokes[_EnHorse] = _EnHorse
-      DestTokes[_EnHorse] = _Horse
-      
-      OrgTokes[_EnLion] = _EnLion
-      DestTokes[_EnLion] = _Lion
-      
-      OrgTokes[_EnRooster] = _EnRooster
-      DestTokes[_EnRooster] = _Rooster
-      
-      OrgTokes[_EnSheep] = _EnSheep
-      DestTokes[_EnSheep] = _Sheep
-      
-      OrgTokes[_EnWolf] = _EnWolf
-      DestTokes[_EnWolf] = _Wolf
+      OrgTokes[_EnImageSize] = _EnImageSize
+      DestTokes[_EnImageSize] = _ImageSize
       
       OrgTokes[_EnIntegralDivision] = _EnIntegralDivision
       DestTokes[_EnIntegralDivision] = _IntegralDivision
@@ -2141,7 +2046,12 @@ Function ConvertSahlaCode(toEnSahla)
    Return _ConvertSahlaCode(code, toEnSahla, True)
 EndFunction
 
+ImageCommandLine = 0
+SizeAssignmentLine = 0
+
 Function _ConvertSahlaCode(code, toEnSahla, forwardConversion)
+   ImageCommandLine = 0
+   SizeAssignmentLine = 0
    ConvertToEnSahla = toEnSahla
    InitTransTokes(forwardConversion)
    MapLetters(forwardConversion)
@@ -2166,9 +2076,13 @@ Function _ConvertSahlaCode(code, toEnSahla, forwardConversion)
       LineIndex = LineIndex + 1
    Next
    
-   Return sVBLines.Join(Chars.CrLf)
+   If ConvertToEnSahla = False And ImageCommandLine > 0 And (SizeAssignmentLine = 0 Or SizeAssignmentLine > ImageCommandLine) Then
+      setsize = _EnImageSize & " = 100"
+      Return setsize & Text.NewLine & sVBLines.Join(Chars.CrLf)
+   Else
+      Return sVBLines.Join(Chars.CrLf)
+   EndIf
 EndFunction
-
 
 Sub MapLetters(forwardConversion)
    ' You may also need to modify the ConvertVarName subroutine
@@ -2424,75 +2338,75 @@ Function ConvertLine()
          Return "Sound.PlayChime()"
          
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCat], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnMeow], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnCat]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnMeow]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Cat") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCrow], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCaw], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnCrow]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnCaw]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Crow") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCow], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnMoo], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnCow]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnMoo]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Cow") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDog], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnBark], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnDog]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnBark]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Dog") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDonkey], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnBray], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnDonkey]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnBray]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Donkey") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDuck], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnQuack], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnDuck]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnQuack]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Duck") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnElephant], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnTrumpet], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnElephant]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnTrumpet]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Elephant") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnHorse], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnNeigh], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnHorse]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnNeigh]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Horse") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnLion], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnRoar], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnLion]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnRoar]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Lion") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnRooster], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCrowing], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnRooster]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnCrowing]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Rooster") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnSheep], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnBaa], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnSheep]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnBaa]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Sheep") & """)"
          
-      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnWolf], False) Then
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnHowl], False) Then
          If ConvertToEnSahla Then
-            Return DestTokes[_EnSound] & " " & DestTokes[_EnWolf]
+            Return DestTokes[_EnSound] & " " & DestTokes[_EnHowl]
          EndIf
          Return "Sound.Play(""" & GetSoundFile("Wolf") & """)"
       Else
@@ -2503,16 +2417,133 @@ Function ConvertLine()
          Return "Sound.Play(" & result[1] & ")"
       EndIf
       
+   ElseIf Text.AreEquals(command, OrgTokes[_EnImage], False) Then
+      If ImageCommandLine = 0 Then
+         ImageCommandLine = LineIndex
+      EndIf
+      nextCommand = Tokens[2][3]
+      If Text.AreEquals(nextCommand, OrgTokes[_EnOrange], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnOrange]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Orange") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnBanana], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnBanana]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Banana") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnApple], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnApple]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Apple") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnPlum], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnPlum]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Plum") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnFig], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnFig]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Fig") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCat], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnCat]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Cat") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCrow], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnCrow]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Crow") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnCow], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnCow]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Cow") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDog], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnDog]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Dog") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDonkey], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnDonkey]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Donkey") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnDuck], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnDuck]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Duck") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnElephant], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnElephant]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Elephant") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnHorse], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnHorse]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Horse") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnLion], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnLion]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Lion") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnRooster], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnRooster]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Rooster") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnSheep], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnSheep]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Sheep") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      ElseIf Text.AreEquals(nextCommand, OrgTokes[_EnWolf], False) Then
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & DestTokes[_EnWolf]
+         EndIf
+         Return "TW.InsertImage(""" & GetImageFile("Wolf") & """, 0, " & DestTokes[_EnImageSize] & ")"
+         
+      Else
+         result = BuildExpressionText(2)
+         If ConvertToEnSahla Then
+            Return DestTokes[_EnImage] & " " & result[1]
+         EndIf
+         Return "TW.InsertImage(" & result[1] & ", 0, " & DestTokes[_EnImageSize] & ")"
+      EndIf
+      
    ElseIf tokensCount >= 3 And Text.AreEquals(Tokens[2][3], "=", True) Then ' varName
       result = BuildExpressionText(3)
       Vars[command] = ConvertVarName(command)
+      If SizeAssignmentLine = 0 And Vars[command] = _EnImageSize Then
+         SizeAssignmentLine = LineIndex
+      EndIf
       Return Vars[command] & " = " & result[1]
       
    Else
       Return Statements[LineIndex]
    EndIf
 EndFunction
-
 
 Function ConvertForLoopHeader()
    tokensCount = Tokens.Count
@@ -2790,10 +2821,14 @@ Function ConvertFactor(pos)
 EndFunction
 
 Function ConvertVarName(varName)
-   ' In Sahal-En, we don't need to change variable names,
-   ' but in your native Sahal, tou may need to remove the next code line,
+   ' In Sahla-En, we don't need to change variable names,
+   ' but in your native Sahla, tou may need to remove the next code line,
    ' and modfy the provided converter to fit your needs:
    Return varName
+   
+   If Text.AreEquals(varName, OrgTokes[_EnImageSize], False) Then
+      Return DestTokes[_EnImageSize]
+   EndIf
    
    toNative = LettersMap["a"] <> ""
    If toNative Then
@@ -2817,6 +2852,8 @@ Function ConvertVarName(varName)
    
    For i = 1 To len
       c = varName[i]
+      nextC = varName[i + 1]
+      
       If toNative Then
          If i = 1 Then
             If c = "a" Then
@@ -2824,7 +2861,6 @@ Function ConvertVarName(varName)
                ContinueLoop
                
             ElseIf c = "o" Then
-               nextC = varName[i + 1]
                If nextC = "u" Then
                   newName = newName + "آو"
                ElseIf nextC = "w" Then

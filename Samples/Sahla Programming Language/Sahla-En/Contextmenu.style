@@ -1,0 +1,184 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style TargetType="ContextMenu">
+        <Setter Property="Background" Value="#FFF8FAFC"/>
+        <Setter Property="BorderBrush" Value="#FF38BDF8"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="10"
+                            Padding="8">
+                        <Border.Effect>
+                            <DropShadowEffect Color="#330284C7" BlurRadius="16" ShadowDepth="4" Opacity="0.3"/>
+                        </Border.Effect>
+                        <StackPanel IsItemsHost="True" FlowDirection="LeftToRight" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="MenuItem">
+        <Setter Property="FlowDirection" Value="LeftToRight"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="#FF0F172A"/>
+        <Setter Property="Padding" Value="14,4"/>
+        <Setter Property="Margin" Value="4,5"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="templateBorder"
+                            Background="#FFFFFFFF"
+                            BorderBrush="#FFBAE6FD"
+                            BorderThickness="1.5"
+                            CornerRadius="10"
+                            SnapsToDevicePixels="True"
+                            Padding="{TemplateBinding Padding}">
+
+                        <Border.Effect>
+                            <DropShadowEffect Color="#15000000" BlurRadius="4" ShadowDepth="1" Opacity="0.2"/>
+                        </Border.Effect>
+
+                        <Grid x:Name="ParentGrid" FlowDirection="LeftToRight">
+                            <Grid.ColumnDefinitions>
+                                <!-- Column 0: Icon placeholder with SharedSizeGroup to maintain consistent alignment -->
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
+                                <!-- Column 1: Fixed-width slot for checkmark to keep all text titles aligned at the exact same horizontal position -->
+                                <ColumnDefinition Width="24" SharedSizeGroup="MenuItemCheckColumnGroup"/>
+                                <!-- Column 2: Main title text spanning all available space, left-aligned -->
+                                <ColumnDefinition Width="*"/>
+                                <!-- Column 3: Keyboard shortcut gesture text -->
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemGestureColumnGroup"/>
+                                <!-- Column 4: Submenu arrow indicator -->
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemPopupColumnGroup"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Checkmark for checked menu items centered within its dedicated column slot -->
+                            <TextBlock x:Name="CheckMark" Grid.Column="1" Text="✔" Foreground="#FF0284C7" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed"/>
+
+                            <!-- Main Header Content Presenter aligned strictly to the Left -->
+                            <ContentPresenter x:Name="headerContentPresenter" 
+                                            Grid.Column="2"
+                                            ContentSource="Header"
+                                            RecognizesAccessKey="True"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Left"
+                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                            <!-- Keyboard Shortcut Gesture Text -->
+                            <TextBlock x:Name="GestureText"
+                                       Grid.Column="3"
+                                       Text="{TemplateBinding InputGestureText}"
+                                       Foreground="#FF64748B"
+                                       FontSize="13"
+                                       FontWeight="Normal"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right"
+                                       Margin="16,0,8,0"
+                                       SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                            <!-- Submenu Arrow Indicator -->
+                            <Path x:Name="Arrow" Grid.Column="4" Data="M 0,0 L 4,4 L 0,8 Z" Fill="#FF0284C7" Margin="8,0,0,0" VerticalAlignment="Center" Visibility="Collapsed"/>
+
+                            <!-- Submenu Popup Container -->
+                            <Popup x:Name="PART_Popup"
+                                   IsOpen="{TemplateBinding IsSubmenuOpen}" 
+                                   Placement="Right"
+                                   PlacementTarget="{Binding ElementName=Arrow}"
+                                   Focusable="False"
+                                   HorizontalOffset="14"
+                                   PopupAnimation="Slide">
+                                <Border x:Name="SubMenuBorder"
+                                        Background="#FFF8FAFC"
+                                        BorderBrush="#FF38BDF8"
+                                        BorderThickness="2"
+                                        CornerRadius="10"
+                                        Padding="8">
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="#330284C7" BlurRadius="16" ShadowDepth="4" Opacity="0.3"/>
+                                    </Border.Effect>
+                                    <StackPanel IsItemsHost="True" FlowDirection="LeftToRight" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <!-- Mouse Over Trigger -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="templateBorder" Property="Background">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#FF38BDF8" Offset="0"/>
+                                        <GradientStop Color="#FF0284C7" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="templateBorder" Property="BorderBrush" Value="#FF0284C7"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter TargetName="Arrow" Property="Fill" Value="White"/>
+                            <Setter TargetName="CheckMark" Property="Foreground" Value="White"/>
+                            <Setter TargetName="GestureText" Property="Foreground" Value="#FFE2E8F0"/>
+                        </Trigger>
+
+                        <!-- Submenu Open Trigger -->
+                        <Trigger Property="IsSubmenuOpen" Value="True">
+                            <Setter TargetName="templateBorder" Property="Background" Value="#FF0284C7"/>
+                            <Setter TargetName="templateBorder" Property="BorderBrush" Value="#FF0369A1"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter TargetName="Arrow" Property="Fill" Value="White"/>
+                            <Setter TargetName="GestureText" Property="Foreground" Value="#FFE2E8F0"/>
+                        </Trigger>
+
+                        <!-- Is Checked Trigger -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="templateBorder" Property="Background" Value="#FFE0E7FF"/>
+                            <Setter TargetName="templateBorder" Property="BorderBrush" Value="#FF3B82F6"/>
+                            <Setter Property="Foreground" Value="#FF1E3A8A"/>
+                        </Trigger>
+
+                        <!-- Has Items Trigger -->
+                        <Trigger Property="HasItems" Value="True">
+                            <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+
+                        <!-- Is Enabled Trigger -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#FF94A3B8"/>
+                            <Setter TargetName="templateBorder" Property="Background" Value="#FFF1F5F9"/>
+                            <Setter TargetName="templateBorder" Property="BorderBrush" Value="#FFE2E8F0"/>
+                            <Setter TargetName="templateBorder" Property="Opacity" Value="0.75"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+<Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="Separator">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Grid Height="6" Margin="0,4" HorizontalAlignment="Stretch">
+                        <Line X1="0" Y1="3" 
+                              X2="1" Y2="3"
+                              Stretch="Fill"
+                              Stroke="#FFE2E8F0" 
+                              StrokeThickness="2" 
+                              SnapsToDevicePixels="True"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,26 @@
+﻿Simplified Arabic
+16
+True
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write Line "I had 5 bananas:"
+Show Banana
+Show Banana
+Show Banana
+Show Banana
+Show Banana
+Write Line
+Write Line "I ate 2 of them:"
+Show Banana
+Show Banana
+Write Line
+Write Line "so I still have 3:"
+Write "                         "
+Show Banana
+Show Banana
+Show Banana

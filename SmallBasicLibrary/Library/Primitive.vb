@@ -401,8 +401,16 @@ Namespace Library
         End Function
 
         Public Function Divide(divisor As Primitive) As Primitive
-            Return New Primitive(AsDecimal() / divisor.AsDecimal())
+            Dim d = divisor.AsDecimal()
+            If d = 0 Then
+                Dim msg = "Can't divide by 0"
+                ReportError(msg, New DivideByZeroException())
+                Return New Primitive(msg)
+            Else
+                Return New Primitive(AsDecimal() / d)
+            End If
         End Function
+
         Public Function Remainder(divisor As Primitive) As Primitive
             Dim d = divisor.AsDecimal
             If d = 0 Then Return Me

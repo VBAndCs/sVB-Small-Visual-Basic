@@ -26,7 +26,7 @@
 '    MnuFind: MenuItem
 '    MnuProgram: MenuItem
 '    MnuRun: MenuItem
-'    MnuFormat: MenuItem
+'    MnuStop: MenuItem
 '    MnuView: MenuItem
 '    MnuBold: MenuItem
 '    MnuItalic: MenuItem
@@ -76,7 +76,7 @@ MnuAddFilePath = "frmmain.mnuaddfilepath"
 MnuFind = "frmmain.mnufind"
 MnuProgram = "frmmain.mnuprogram"
 MnuRun = "frmmain.mnurun"
-MnuFormat = "frmmain.mnuformat"
+MnuStop = "frmmain.mnustop"
 MnuView = "frmmain.mnuview"
 MnuBold = "frmmain.mnubold"
 MnuItalic = "frmmain.mnuitalic"
@@ -125,14 +125,14 @@ Form.SetArgsArr(frmmain, Stack.PopValue("_frmmain_argsArr"))
 '    MnuView: OnOpen
 '    MnuFind: OnClick
 '    MnuRun: OnClick
-'    TxtEditor: OnTextChanged OnTextInput OnKeyDown OnSelection OnMouseWheel OnMouseRightDown OnMouseLeftDown
+'    TxtEditor: OnTextChanged OnTextInput OnKeyDown OnSelection OnMouseRightDown OnMouseLeftDown OnGotFocus OnLostFocus OnMouseWheel
 '    MnuAbout: OnClick
-'    FrmMain: OnClosing OnShown
+'    FrmMain: OnClosing OnShown OnPreviewKeyDown
 '    MnuAddFilePath: OnClick
 '    MnuSounds: OnClick
-'    LblMargin: OnMouseLeftDown OnMouseMove
+'    LblMargin: OnMouseWheel
 '    LstCompletion: OnKeyDown OnDoubleClick
-'    MnuFormat: OnClick
+'    MnuStop: OnClick
 '    MnuOutput: OnClick
 '    MnuVars: OnClick
 '    MnuOps: OnClick
@@ -244,9 +244,11 @@ TextBox.OnTextChanged = TxtEditor_OnTextChanged
 TextBox.OnTextInput = TxtEditor_OnTextInput
 Control.OnKeyDown = TxtEditor_OnKeyDown
 TextBox.OnSelection = TxtEditor_OnSelection
-Control.OnMouseWheel = TxtEditor_OnMouseWheel
 Control.OnMouseRightDown = TxtEditor_OnMouseRightDown
 Control.OnMouseLeftDown = TxtEditor_OnMouseLeftDown
+Control.OnGotFocus = TxtEditor_OnGotFocus
+Control.OnLostFocus = TxtEditor_OnLostFocus
+Control.OnMouseWheel = TxtEditor_OnMouseWheel
 
 ' MnuAbout Events:
 Control.HandleEvents(MnuAbout)
@@ -256,6 +258,7 @@ MenuItem.OnClick = MnuAbout_OnClick
 Control.HandleEvents(FrmMain)
 Form.OnClosing = FrmMain_OnClosing
 Form.OnShown = Form_OnShown
+Form.OnPreviewKeyDown = Form_OnPreviewKeyDown
 
 ' MnuAddFilePath Events:
 Control.HandleEvents(MnuAddFilePath)
@@ -267,17 +270,16 @@ MenuItem.OnClick = MnuSounds_OnClick
 
 ' LblMargin Events:
 Control.HandleEvents(LblMargin)
-Control.OnMouseLeftDown = LblMargin_OnMouseLeftDown
-Control.OnMouseMove = LblMargin_OnMouseMove
+Control.OnMouseWheel = LblMargin_OnMouseWheel
 
 ' LstCompletion Events:
 Control.HandleEvents(LstCompletion)
 Control.OnKeyDown = LstCompletion_OnKeyDown
 Control.OnDoubleClick = LstCompletion_OnDoubleClick
 
-' MnuFormat Events:
-Control.HandleEvents(MnuFormat)
-MenuItem.OnClick = MnuFormat_OnClick
+' MnuStop Events:
+Control.HandleEvents(MnuStop)
+MenuItem.OnClick = MnuStop_OnClick
 
 ' MnuOutput Events:
 Control.HandleEvents(MnuOutput)

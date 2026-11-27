@@ -14,7 +14,6 @@ Namespace Library
         Friend Shared _windowVisible As Boolean
         Private Shared addLine As Boolean = False
 
-
         ''' <summary>
         ''' Gets or sets the foreground color of the text to be output in the text window.
         ''' </summary>
@@ -592,5 +591,80 @@ Namespace Library
                 )
             End Get
         End Property
+
+        ''' <summary>
+        ''' Inserts an image into the text window at the current position, with the given width and height.
+        ''' </summary>
+        ''' <param name="imagePath">The file path or image key in image list to load.</param>
+        ''' <param name="width">
+        ''' The desired width. 
+        '''   * Use "" to keep original image width, 
+        '''   * Use 0 to auto resize witdth to keep the aspect ratio to height.
+        '''   * Use a negative value to mirror the image horizontally.
+        '''   * Any other bumeric value will be applied as it is.
+        ''' </param>
+        ''' <param name="height">
+        ''' The desired height. 
+        '''   * Use "" to keep original image height. 
+        '''   * Use 0, for one of these two cases:
+        '''     - If width is 0, the line height will be used.
+        '''     - Otherwise, the height will be auto-resized to keep the aspect ratio to width.
+        '''   * Use a negative value to mirror the image vertically.
+        '''   * Any other bumeric value will be applied as it is.
+        ''' </param>
+        Public Shared Sub InsertImage(imagePath As Primitive, width As Primitive, height As Primitive)
+            VerifyAccess()
+            Dim w = width.AsString
+            Dim h = height.AsString
+            Dim resolvedWidth = 0
+            Dim resolvedHeight = 0
+
+            If h = "0" Then
+                If w = "0" Then
+                    resolvedHeight = ResolveImageDimension(height)
+                Else
+                    resolvedWidth = ResolveImageDimension(width)
+                End If
+            ElseIf w = "0" Then
+                resolvedHeight = ResolveImageDimension(height)
+            Else
+                resolvedWidth = ResolveImageDimension(width)
+                resolvedHeight = ResolveImageDimension(height)
+            End If
+
+            SmallBasicApplication.Invoke(
+                Sub() consoleWindow.InsertImage(imagePath.AsString(), resolvedWidth, resolvedHeight)
+            )
+            addLine = True
+        End Sub
+
+        Private Shared Function ResolveImageDimension(value As Primitive) As Double
+            Dim rawText = value.AsString().Trim()
+            If rawText = "" Then Return 0
+
+            Dim numericVal = value.AsDecimal
+            If numericVal = 0 Then
+                Return GetCurrentLineHeight()
+            Else
+                Return numericVal
+            End If
+        End Function
+
+        Private Shared Function GetCurrentLineHeight() As Double
+            Dim fontNameStr = FontName.AsString()
+            Dim fontSizeVal = CDbl(FontSize)
+            Dim family As New System.Windows.Media.FontFamily(fontNameStr)
+            Dim weight As System.Windows.FontWeight =
+                If(CBool(FontBold),
+                    System.Windows.FontWeights.Bold,
+                    System.Windows.FontWeights.Normal)
+
+            Dim lineHeight = family.LineSpacing * fontSizeVal
+            If Double.IsNaN(lineHeight) OrElse lineHeight <= 0 Then
+                lineHeight = fontSizeVal * 1.2
+            End If
+
+            Return System.Math.Round(lineHeight, 2)
+        End Function
     End Class
 End Namespace

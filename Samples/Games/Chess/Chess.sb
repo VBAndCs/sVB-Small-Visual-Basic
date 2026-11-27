@@ -59,10 +59,9 @@ Ch_LegalMoves = {}
 Ch_History = {}
 Ch_HistoryCount = 0
 Ch_Move = ""
-Ch_GameOver = 0
+Ch_GameOver = False
 Ch_MoveNumber = 0
 Ch_LegalMoveID = 0
-Ch_Check = 0
 Ch_X = 0
 Ch_Y = 0
 Ch_KingPos = {}
@@ -130,14 +129,25 @@ If Ch_TwoPlayers Then
    EndIf
 EndIf
 
+Sub Ch_ContinueAlone()
+   Forms.ShowMessage("The onther player quitted. You can continue the game against the auto player", "Message")
+   Ch_TwoPlayers = False ' Switch to Auto player
+   Ch_CheckTimeout = True
+   Ch_MovingNow = False
+   Ch_LastMoveTime = Date.Now
+   Ch_SquareSize = (Desktop.Height * 0.93) / 8
+   Ch_GrH = Ch_SquareSize * 8
+   Ch_GrW = Ch_GrH
+   GraphicsWindow.Height = Ch_GrH
+   GraphicsWindow.Width = Ch_GrW
+   GW.Left = (Desktop.Width - Ch_GrW) / 2
+   Ch_DrawBoard()
+EndSub
+
 Sub Ch_GetOtherPlayerMove()
    Ch_MovingNow = True
    If File.Exists(Ch_SharedFilePath) = False Then
-      ' Player exited the game
-      Forms.ShowMessage("The onther player quitted. You can continue the game against the auto player", "Message")
-      Ch_TwoPlayers = False ' Switch to Auto player
-      Ch_CheckTimeout = True
-      Ch_MovingNow = False
+      Ch_ContinueAlone() ' Player exited the game
       Return
    EndIf
    
@@ -168,6 +178,8 @@ Sub Timer_OnTick()
       Return
    EndIf
    
+   Timer.Pause()
+   
    If Ch_TwoPlayers Then
       If (Ch_Turn * Ch_Side) = 1 Then
          Ch_ForcAutoPlayWhenTimeout()
@@ -192,6 +204,8 @@ Sub Timer_OnTick()
    ElseIf Ch_CheckTimeout Then
       Ch_ForcAutoPlayWhenTimeout()
    EndIf
+   
+   Timer.Resume()
 EndSub
 
 Sub Ch_ForcAutoPlayWhenTimeout()
@@ -212,11 +226,7 @@ Sub Ch_ForcAutoPlayWhenTimeout()
 EndSub
 Sub Ch_WriteMoveToFile()
    If File.Exists(Ch_SharedFilePath) = False Then
-      ' Player exited the game
-      Ch_TwoPlayers = False ' Switch to Auto player
-      Forms.ShowMessage("The onther player quitted. You can continue the game against the auto player", "Message")
-      Ch_CheckTimeout = True
-      Ch_LastMoveTime = Date.Now
+      Ch_ContinueAlone() ' Player exited the game
       Return
    EndIf
    
@@ -235,7 +245,7 @@ Sub Ch_CheckGameOver()
       If ShowTW Then
          TW.WriteLine(status)
       EndIf
-      Ch_GameOver = 1
+      Ch_GameOver = True
       
    Else ' Check Draw Due toInsufficient Material
       If Ch_CheckInsufficientMaterial() Then
@@ -243,29 +253,57 @@ Sub Ch_CheckGameOver()
          If ShowTW Then
             TextWindow.WriteLine("GAME OVER - DRAW!")
          EndIf
-         Ch_GameOver = 1
+         Ch_GameOver = True
       EndIf
    EndIf
    
-   If Ch_GameOver = 1 Then
+   If Ch_GameOver Then
       Timer.Pause()
       GameOverText1.Show()
       GameOverText2.Show()
    EndIf
 EndSub
 
+StartMoves[1] = {
+   {5, 2, 5, 3},
+   {4, 2, 4, 3},
+   {5, 2, 5, 4},
+   {4, 2, 4, 4},
+   {7, 1, 6, 3},
+   {2, 1, 3, 3}
+}
+
+StartMoves[-1] = {
+   {5, 7, 5, 6},
+   {3, 7, 3, 6},
+   {5, 7, 5, 5},
+   {3, 7, 3, 5},
+   {4, 7, 4, 5}, '
+   {7, 8, 6, 6}
+}
+
 Sub Ch_AutoPlay()
+   Ch_MovingNow = True    ' to disable event
    BtnNewGame.Enabled = False
    BtnTwoPlayers.Enabled = False
    BtnGetInfo.Enabled = False
-   Ch_MovingNow = True    ' to disable event
-   Ch_GetNextMoves()   ' Next moves list
+   If Ch_MoveNumber = 1 Then
+      Ch_LegalMoves = StartMoves[Ch_Turn]
+   Else
+      Ch_GetNextMoves()   ' Next moves list
+   EndIf
+   
    Ch_CapturedLegalMoves = Ch_LegalMoves
    Ch_CapturedKingPos = Ch_KingPos
    Ch_CapturedBoard = Ch_Board
    
    If Ch_LegalMoves.Count > 0 Then
-      Ch_LegalMoveID = Ch_FindBestMove(1, 0, 0, 0, 0)
+      If Ch_MoveNumber = 1 And Ch_Turn = 1 Then
+         Ch_LegalMoveID = Math.GetRandomNumber(Ch_LegalMoves.Count)
+      Else
+         Ch_LegalMoveID = Ch_FindBestMove(1, 0, 0, 0, 0)
+      EndIf
+      
       Ch_FormateMove(Ch_LegalMoveID)
       Ch_DoMove()
       Ch_MovedX = Ch_History[Ch_HistoryCount][3] ' lastmove
@@ -279,10 +317,10 @@ Sub Ch_AutoPlay()
    EndIf
    Ch_CheckGameOver()
    Ch_DrawBoard()
-   Ch_MovingNow = False
    BtnTwoPlayers.Enabled = True
    BtnNewGame.Enabled = True
    BtnGetInfo.Enabled = True
+   Ch_MovingNow = False
 EndSub
 
 Sub Ch_StartNewGame()
@@ -353,8 +391,7 @@ Function Ch_CheckMateAndStalemate()
       Return ""
    EndIf
    
-   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
-   If Ch_Check = 1 Then
+   If Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2]) Then
       Ch_History[Ch_HistoryCount][8] = "#"   ' checkmate
       status = Text.GetSubText("1-0,0-1", 1 + ((Ch_Turn + 1) * 2), 3)
       Sound.PlayChime()
@@ -367,7 +404,7 @@ Function Ch_CheckMateAndStalemate()
       TextWindow.WriteLine("GAME OVER! " + status)
    EndIf
    
-   Ch_GameOver = 1
+   Ch_GameOver = True
    Return status
 EndFunction
 
@@ -387,7 +424,7 @@ EndSub
 ' -- Handler for New Game button click
 Sub BtnNewGame_OnClick()
    Ch_NewGame = 1  ' Processed on timer tick
-   Ch_GameOver = 0
+   Ch_GameOver = False
    GameOverText1.Hide()
    GameOverText2.Hide()
    Ch_LastMoveTime = Date.Now
@@ -402,8 +439,8 @@ EndSub
 ' -- Handler for TakeBack button click
 Sub BtnTakeBack_OnClick()
    Ch_Takeback = 1  ' Processed on timer tick
-   If Ch_GameOver = 1 Then
-      Ch_GameOver = 0
+   If Ch_GameOver Then
+      Ch_GameOver = False
       If Ch_Side <> Ch_Turn Then
          Ch_Turn = -Ch_Turn
       EndIf
@@ -470,7 +507,7 @@ EndSub
 
 ' -- Handles chess board mouse click events for manual play
 Sub GraphicsWindow_MouseDown()
-   If Ch_MovingNow Or Ch_GameOver = 1 Or Mouse.IsLeftButtonDown = False Then
+   If Ch_MovingNow Or Ch_GameOver Or Mouse.IsLeftButtonDown = False Then
       Return
    EndIf
    
@@ -629,10 +666,9 @@ Sub Ch_SetFEN()
    
    ' prepares for new game
    Ch_HistoryCount = 0
-   Ch_GameOver = 0
+   Ch_GameOver = False
    Ch_MovingNow = False
    Ch_NewGame = 0
-   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
 EndSub
 
 ' -- gets FEN from position
@@ -794,96 +830,83 @@ EndSub
 
 
 ' -- Detects If king's square is under attack
-Sub Ch_IsCheck(x, y)
-   Ch_Check = 0
+Function Ch_IsCheck(x, y)
    For di1 = -1 To 1
       For di2 = -1 To 1
-         If di1 <> 0 Or di2 <> 0 Then
-            dx = 0
-            dy = 0
-            For di3 = 1 To 7
-               dx = dx + di1 ' diognals, verticals and horizontals
-               dy = dy + di2
-               If x + dx < 1 Or x + dx > 8 Or y + dy < 1 Or y + dy > 8 Then
-                  ExitLoop
-               Else
-                  n = Ch_Pieces.IndexOf(Ch_Board[x + dx][y + dy], 1, False) - 1
-                  If n <> 0 Then
-                     n = n - ((Ch_Turn + 1) * 3)
-                     If n = 1 Then ' oponent's pawn
-                        If Math.Abs(dx) = 1 And dy = Ch_Turn Then
-                           Ch_Check = 1
-                        EndIf
-                     ElseIf n = 3 Then ' oponent's bishop
-                        If Math.Abs(di1) + Math.Abs(di2) = 2 Then
-                           Ch_Check = 1
-                        EndIf
-                     ElseIf n = 4 Then ' oponent's rook
-                        If Math.Abs(di1) + Math.Abs(di2) = 1 Then
-                           Ch_Check = 1
-                        EndIf
-                     ElseIf n = 5 Then ' oponent's queen
-                        Ch_Check = 1
-                     ElseIf n = 6 Then ' oponent's king
-                        If Math.Abs(dx) < 2 And Math.Abs(dy) < 2 Then
-                           Ch_Check = 1
-                        EndIf
-                     EndIf
-                     
-                     If Ch_Check Then
-                        ExitLoop --
-                     Else
-                        ExitLoop
-                     EndIf
+         If di1 = 0 And di2 = 0 Then
+            ContinueLoop
+         EndIf
+         
+         dx = 0
+         dy = 0
+         For di3 = 1 To 7
+            dx = dx + di1 ' diognals, verticals and horizontals
+            dy = dy + di2
+            If x + dx < 1 Or x + dx > 8 Or y + dy < 1 Or y + dy > 8 Then
+               ExitLoop
+            EndIf
+            
+            n = Ch_Pieces.IndexOf(Ch_Board[x + dx][y + dy], 1, False) - 1
+            If n <> 0 Then
+               n = n - ((Ch_Turn + 1) * 3)
+               If n = 1 Then ' oponent's pawn
+                  If Math.Abs(dx) = 1 And dy = Ch_Turn Then
+                     Return True
+                  EndIf
+               ElseIf n = 3 Then ' oponent's bishop
+                  If Math.Abs(di1) + Math.Abs(di2) = 2 Then
+                     Return True
+                  EndIf
+               ElseIf n = 4 Then ' oponent's rook
+                  If Math.Abs(di1) + Math.Abs(di2) = 1 Then
+                     Return True
+                  EndIf
+               ElseIf n = 5 Then ' oponent's queen
+                  Return True
+               ElseIf n = 6 Then ' oponent's king
+                  If Math.Abs(dx) < 2 And Math.Abs(dy) < 2 Then
+                     Return True
                   EndIf
                EndIf
-            Next
-         EndIf
+               
+               ExitLoop
+            EndIf
+         Next
       Next
    Next
    
-   If Ch_Check = 0 Then    ' maybe oponent's knight's check
-      For dx = -2 To 2
-         If x + dx > 0 And x + dx < 9 Then
-            For dy = -2 To 2
-               If y + dy > 0 And y + dy < 9 Then
-                  If Math.Abs(dx) + Math.Abs(dy) = 3 Then
-                     n = Text.GetIndexOf(Ch_Pieces, Ch_Board[x + dx][y + dy], 1, False) - 1
-                     If n > 1 Then
-                        n = n - ((Ch_Turn + 1) * 3)
-                        If n = 2 Then ' oponent's knight
-                           Ch_Check = 1
-                           Return
-                        EndIf
-                     EndIf
+   ' maybe oponent's knight's check
+   For dx = -2 To 2
+      If x + dx > 0 And x + dx < 9 Then
+         For dy = -2 To 2
+            If y + dy > 0 And y + dy < 9 And Math.Abs(dx) + Math.Abs(dy) = 3 Then
+               n = Text.GetIndexOf(Ch_Pieces, Ch_Board[x + dx][y + dy], 1, False) - 1
+               If n > 1 Then
+                  n = n - ((Ch_Turn + 1) * 3)
+                  If n = 2 Then ' oponent's knight
+                     Return True
                   EndIf
                EndIf
-            Next
-         EndIf
-      Next
-   EndIf
-EndSub
+            EndIf
+         Next
+      EndIf
+   Next
+   
+   Return False
+EndFunction
 
 ' -- add and verify king's threat before put this move into the list (heavy, but proper)
-Function Ch_AddMoveV(dx, dy)
-   tmp_check = Ch_Check
+Sub Ch_TryAddMove(dx, dy)
    tmp_Board = Ch_Board
    
    Ch_Board[Ch_X + dx][Ch_Y + dy] = Ch_Board[Ch_X][Ch_Y]
    Ch_Board[Ch_X][Ch_Y] = " "
-   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+   check = Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
    
    Ch_Board = tmp_Board
-   If Ch_Check = 0 Then
-      Ch_AddMove(dx, dy)
+   If check = False Then
+      Ch_LegalMoves = Ch_LegalMoves.AddItem({Ch_X, Ch_Y, Ch_X + dx, Ch_Y + dy})
    EndIf
-   Ch_Check = tmp_check
-   Return Ch_Check
-EndFunction
-
-' -- add this legal move to the list
-Sub Ch_AddMove(dx, dy)
-   Ch_LegalMoves = Ch_LegalMoves.AddItem({Ch_X, Ch_Y, Ch_X + dx, Ch_Y + dy})
 EndSub
 
 ' -- Process move from the list for normal notation ("e2e4")
@@ -916,18 +939,6 @@ Sub Ch_DoMove()
    
    Ch_MovePiece()
    
-   If Ch_Check Then
-      If Ch_History[Ch_HistoryCount][7] = "x" Then
-         Sound.PlayChimes()
-      EndIf
-      Sound.PlayDing()
-      
-   ElseIf Ch_Takeback = 0 Then
-      Sound.PlayClick()
-      If Ch_History[Ch_HistoryCount][7] = "x" Then
-         Sound.PlayChimes()
-      EndIf
-   EndIf
 EndSub
 
 Sub Ch_ShowNextMoveRect(x, y)
@@ -1175,13 +1186,13 @@ Sub Ch_GenNpawn(ch_enm)
    targetY = Ch_Y + dy
    If Ch_Board[Ch_X][targetY] = " " Then   ' go square forward
       dx = 0
-      Ch_AddMoveV(dx, dy)
+      Ch_TryAddMove(dx, dy)
       dy = dy + Ch_Turn
       targetY = targetY + Ch_Turn
       If (Ch_Y - 2 * Ch_Turn) Mod 9 = 0 Then ' 2,7 horiz.
          ' try 2nd square forward
          If Ch_Board[Ch_X][targetY] = " " Then
-            Ch_AddMoveV(dx, dy)
+            Ch_TryAddMove(dx, dy)
          EndIf
       EndIf
       dy = dy - Ch_Turn
@@ -1198,12 +1209,12 @@ Sub Ch_GenNpawn(ch_enm)
          
          If targetPiece <> " " Then
             If ch_enm.Contains(targetPiece) Then
-               Ch_AddMoveV(dx, dy)
+               Ch_TryAddMove(dx, dy)
             EndIf
          ElseIf targetX = Ch_PassantCol ' En-Passant check
                And (Ch_Y - (5 * dy)) Mod 9 = 0   ' 4, 5 horiz.
                And ch_enm.Contains(Ch_Board[targetX][Ch_Y]) Then
-            Ch_AddMoveV(dx, dy) ' en-passant
+            Ch_TryAddMove(dx, dy) ' en-passant
          EndIf
       EndIf
    Next
@@ -1226,9 +1237,9 @@ Sub Ch_GenNbishop(ch_enm)
             Else
                targetPiece = Ch_Board[targetX][targetY]
                If targetPiece = " " Then
-                  Ch_AddMoveV(dx, dy)
+                  Ch_TryAddMove(dx, dy)
                ElseIf ch_enm.Contains(targetPiece) Then
-                  Ch_AddMoveV(dx, dy)
+                  Ch_TryAddMove(dx, dy)
                   ExitLoop
                Else
                   ExitLoop
@@ -1258,10 +1269,10 @@ Sub Ch_GenNrook(ch_enm)
                Else
                   targetPiece = Ch_Board[targetX][targetY]
                   If targetPiece = " " Then
-                     Ch_AddMoveV(dx, dy)
+                     Ch_TryAddMove(dx, dy)
                      
                   ElseIf ch_enm.Contains(targetPiece) Then
-                     Ch_AddMoveV(dx, dy)
+                     Ch_TryAddMove(dx, dy)
                      ExitLoop
                   Else
                      ExitLoop
@@ -1281,15 +1292,12 @@ Sub Ch_GenNknight(ch_enm)
       If targetX > 0 And targetX < 9 Then
          For dy = -2 To 2
             targetY = Ch_Y + dy
-            If targetY > 0 And targetY < 9 Then
-               ' Check for valid knight move (2+1 combination)
-               If dx.Abs + dy.Abs = 3 Then
-                  targetPiece = Ch_Board[targetX][targetY]
-                  If targetPiece = " " Then
-                     Ch_AddMoveV(dx, dy)
-                  ElseIf ch_enm.Contains(targetPiece) Then
-                     Ch_AddMoveV(dx, dy)
-                  EndIf
+            If targetY > 0 And targetY < 9 And dx.Abs + dy.Abs = 3 Then
+               targetPiece = Ch_Board[targetX][targetY]
+               If targetPiece = " " Then
+                  Ch_TryAddMove(dx, dy)
+               ElseIf ch_enm.Contains(targetPiece) Then
+                  Ch_TryAddMove(dx, dy)
                EndIf
             EndIf
          Next
@@ -1302,33 +1310,30 @@ Sub Ch_GenNking(ch_enm)
    For dj1 = -1 To 1
       If Ch_X + dj1 > 0 And Ch_X + dj1 < 9 Then
          For dj2 = -1 To 1
-            If Ch_Y + dj2 > 0 And Ch_Y + dj2 < 9 Then
-               If dj1 <> 0 Or dj2 <> 0 Then
-                  targetX = Ch_X + dj1
-                  targetY = Ch_Y + dj2
-                  targetPiece = Ch_Board[targetX][targetY]
+            If Ch_Y + dj2 > 0 And Ch_Y + dj2 < 9 And dj1 <> 0 Or dj2 <> 0 Then
+               targetX = Ch_X + dj1
+               targetY = Ch_Y + dj2
+               targetPiece = Ch_Board[targetX][targetY]
+               
+               If Text.IsSubText(" " + ch_enm, targetPiece) Then
+                  ' Temporarily move King on the actual board array
+                  oldTargetPiece = targetPiece
+                  oldKingPos = Ch_KingPos[Ch_Turn]
+                  kingPiece = Ch_Board[Ch_X][Ch_Y]
+                  Ch_Board[targetX][targetY] = kingPiece
+                  Ch_Board[Ch_X][Ch_Y] = " "
+                  Ch_X = targetX
+                  Ch_Y = targetY
+                  check = Ch_IsCheck(targetX, targetY)
                   
-                  If Text.IsSubText(" " + ch_enm, targetPiece) Then
-                     ' Temporarily move King on the actual board array
-                     oldTargetPiece = targetPiece
-                     oldKingPos = Ch_KingPos[Ch_Turn]
-                     kingPiece = Ch_Board[Ch_X][Ch_Y]
-                     Ch_Board[targetX][targetY] = kingPiece
-                     Ch_Board[Ch_X][Ch_Y] = " "
-                     Ch_X = targetX
-                     Ch_Y = targetY
-                     Ch_IsCheck(targetX, targetY)
-                     
-                     ' Restore actual board array and coordinates
-                     Ch_X = Ch_X - dj1
-                     Ch_Y = Ch_Y - dj2
-                     Ch_Board[Ch_X][Ch_Y] = kingPiece
-                     Ch_Board[targetX][targetY] = oldTargetPiece
-                     Ch_KingPos[Ch_Turn] = oldKingPos
-                     
-                     If Ch_Check = 0 Then
-                        Ch_AddMove(dj1, dj2)
-                     EndIf
+                  ' Restore actual board array and coordinates
+                  Ch_X = Ch_X - dj1
+                  Ch_Y = Ch_Y - dj2
+                  Ch_Board[Ch_X][Ch_Y] = kingPiece
+                  Ch_Board[targetX][targetY] = oldTargetPiece
+                  Ch_KingPos[Ch_Turn] = oldKingPos
+                  If check = False Then
+                     Ch_LegalMoves = Ch_LegalMoves.AddItem({Ch_X, Ch_Y, Ch_X + dj1, Ch_Y + dj2})
                   EndIf
                EndIf
             EndIf
@@ -1349,7 +1354,6 @@ Sub Ch_GenNking(ch_enm)
    For castlingDir = -1 To 1 Step 2  ' -1 for Queenside (left), 1 for Kingside (right)
       kingStep = castlingDir * 2
       sideIndex = sideIndex + 1
-      Ch_Check = -9
       
       If Ch_CastlingFlags[colorIndex][sideIndex] > 0 Then   ' castling flag allows
          squaresCount = 3 - ((castlingDir + 1) / 2)
@@ -1362,22 +1366,19 @@ Sub Ch_GenNking(ch_enm)
          Next
          
          If empty Then
-            If Ch_Check = -9 Then
-               Ch_IsCheck(Ch_X, Ch_Y)
-            EndIf
-            
-            If Ch_Check = 0 Then
+            check = Ch_IsCheck(Ch_X, Ch_Y)
+            If check = False Then
                For i = 1 To 2
                   Ch_X = Ch_X + castlingDir
-                  If Ch_Check = 0 Then
-                     Ch_IsCheck(Ch_X, Ch_Y)
+                  If check = False Then
+                     check = Ch_IsCheck(Ch_X, Ch_Y)
                   EndIf
                Next
                Ch_X = Ch_X - kingStep
             EndIf
             
-            If Ch_Check = 0 Then
-               Ch_AddMove(kingStep, 0)
+            If check = False Then
+               Ch_LegalMoves = Ch_LegalMoves.AddItem({Ch_X, Ch_Y, Ch_X + kingStep, Ch_Y})
             EndIf
          EndIf
       EndIf
@@ -1427,7 +1428,8 @@ Function Ch_FindBestMove(depth, checkedX, checkedY, protextedX, protextedY)
    threatenedValue = 0
    threatenedX = 0
    threatenedY = 0
-   bestThreatsAndScore = ""
+   worstScore = 0
+   bestThreatsAndScore = {}
    
    ' 1. Scan the board to find the most valuable threatened piece and its attackers
    For x = 1 To 8
@@ -1452,18 +1454,25 @@ Function Ch_FindBestMove(depth, checkedX, checkedY, protextedX, protextedY)
             ContinueLoop
          EndIf
          
-         dx = Math.Abs(x - Ch_KingPos[Ch_Turn][1])
-         dy = Math.Abs(y - Ch_KingPos[Ch_Turn][2])
-         defensBonus = Math.Max(0, 100 - (dx + dy) * 25)
-         pVal = Ch_pieceValues[pType] + defensBonus
+         
+         If currPiece.ToLower() = "p" Then
+            dx = Math.Abs(x - Ch_KingPos[Ch_Turn][1])
+            dy = Math.Abs(y - Ch_KingPos[Ch_Turn][2])
+            defensBonus = Math.Max(0, 100 - (dx + dy) * 25)
+         Else
+            defensBonus = 0
+         EndIf
+         
+         pVal = Ch_GetPieceValue(currPiece, y) + defensBonus
          
          threatsAndScore = Ch_EvalMoveOrThreats(x, y, x, y, True)
          scoreIndex = Array.GetItemCount(threatsAndScore)
          safetyScore = threatsAndScore[scoreIndex]
          If safetyScore < 0 Then
-            If pVal > threatenedValue Or
+            If pVal > threatenedValue Or safetyScore < worstScore Or
                   (pVal = threatenedValue And Math.GetRandomNumber(100) > 50) Then
                threatenedValue = pVal
+               worstScore = safetyScore
                threatenedX = x
                threatenedY = y
                bestThreatsAndScore = threatsAndScore
@@ -1482,7 +1491,6 @@ Function Ch_FindBestMove(depth, checkedX, checkedY, protextedX, protextedY)
    EndIf
    
    ' 2. Iterate through legal moves using index to evaluate escapes, eliminations, and general moves
-   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
    
    For mi = 1 To Ch_LegalMoves.Count
       move = Ch_LegalMoves[mi]
@@ -1504,7 +1512,6 @@ Function Ch_FindBestMove(depth, checkedX, checkedY, protextedX, protextedY)
          ' Is checkmate?
          orgMoves = Ch_LegalMoves
          orgKingPos = Ch_KingPos
-         orgCheck = Ch_Check
          
          If Text.ToLower(Ch_Board[dstX][dstY]) = "k" Then
             Ch_KingPos[Ch_Turn][1] = dstX
@@ -1512,29 +1519,26 @@ Function Ch_FindBestMove(depth, checkedX, checkedY, protextedX, protextedY)
          EndIf
          
          Ch_Turn = -Ch_Turn
-         Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
+         check = Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
          Ch_GetNextMoves()
          
          If Ch_LegalMoves.Count = 0 Then
-            If Ch_Check = 1 Then ' You found a checkmate
+            If check Then ' You found a checkmate
                Ch_LegalMoves = orgMoves
                Ch_Board = orgBoard
                Ch_Turn = -Ch_Turn
                Ch_KingPos = orgKingPos
-               Ch_Check = orgCheck
                Return mi
             Else ' Avoid stalemate
                moveScore = moveScore - 5000
             EndIf
          EndIf
          
-         moveScore = moveScore + Ch_GetAdvancedPawnPenalty()
-         moveScore = moveScore + Ch_IsCheckmate()
+         penalty = Ch_IsCheckmate() + Ch_GetAdvancedPawnPenalty()
          
          Ch_LegalMoves = orgMoves
          Ch_Turn = -Ch_Turn
          Ch_KingPos = orgKingPos
-         Ch_Check = orgCheck
          
          moveScore2 = Ch_FindBestMove(2, dstX, dstY, threatenedX, threatenedY)
          ' The move can cause more damage!
@@ -1542,11 +1546,15 @@ Function Ch_FindBestMove(depth, checkedX, checkedY, protextedX, protextedY)
             moveScore = moveScore + moveScore2
          EndIf
          
-         If threatenedValue > 0 Then
+         moveScore = moveScore + penalty
+         
+         If threatenedValue > 0 And moveScore >= -500 Then
             ' The move can protect the thretened piece
             If moveScore + threatenedValue <> 0 And
                   Ch_EvalMoveOrThreats(threatenedX, threatenedY, threatenedX, threatenedY, False) >= 0 Then
                moveScore = moveScore + threatenedValue
+            Else
+               moveScore = moveScore - threatenedValue
             EndIf
          EndIf
          
@@ -1658,20 +1666,17 @@ Function Ch_IsCheckmate()
       
       ' Switch turn to opponent
       orgKingPos = Ch_KingPos
-      orgCheck = Ch_Check
       If movingPiece.ToLower() = "k" Then
          Ch_KingPos[Ch_Turn][1] = dstX
          Ch_KingPos[Ch_Turn][2] = dstY
       EndIf
       
       Ch_Turn = -Ch_Turn
-      Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
-      If Ch_Check = 0 Then
+      If Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2]) = False Then
          Ch_Turn = -Ch_Turn
          Ch_Board = orgBoard
          Ch_LegalMoves = orgMoves
          Ch_KingPos = orgKingPos
-         Ch_Check = orgCheck
          ContinueLoop
       EndIf
       
@@ -1679,7 +1684,6 @@ Function Ch_IsCheckmate()
       
       Ch_Turn = -Ch_Turn
       Ch_KingPos = orgKingPos
-      Ch_Check = orgCheck
       Ch_Board = orgBoard
       
       If Ch_LegalMoves.Count = 0 Then
@@ -1692,7 +1696,6 @@ Function Ch_IsCheckmate()
    
    Return 0
 EndFunction
-
 
 ' Function to evaluate and penalize advanced pawns near promotion
 Function Ch_GetAdvancedPawnPenalty()
@@ -1712,22 +1715,26 @@ Function Ch_GetAdvancedPawnPenalty()
          ContinueLoop
       EndIf
       
-      ' Calculate advancement depth based on current player direction
+      dir = 1
       advancedRow = 0
+      ' Calculate advancement depth based on current player direction
       If Ch_Turn > 0 Then
-         ' White player moves upwards (row 5 to 8)
-         If dstY >= 5 Then
+         If dstY >= 5 Then ' White player moves upwards (row 5 to 8)
             advancedRow = dstY
          EndIf
-      Else
-         ' Black player moves downwards (row 4 to 1 from perspective)
-         If dstY <= 4 Then
-            advancedRow = 9 - dstY
-         EndIf
+      ElseIf dstY <= 4 Then  ' Black player moves downwards (row 4 to 1 from perspective)
+         advancedRow = 9 - dstY
+         dir = -1
       EndIf
       
       ' Apply penalty based on advanced row depth
       If advancedRow >= 5 Then
+         For j = 1 To 8 - advancedRow
+            If Ch_Board[dstX][dstY + j * dir] <> " " Then
+               ContinueLoop - ' blocled path, no danger
+            EndIf
+         Next
+         
          penalty = -penaltyTable[advancedRow - 4]
          If penalty < maxPenalty Then
             maxPenalty = penalty
@@ -1776,12 +1783,11 @@ Function Ch_EvaluateStrategicRules(fromX, fromY, targetX, targetY, n)
    If n = 6 Then ' King
       ' Pure positive castling incentive for King safety and rook activation
       If fromX = 5 And Math.Abs(targetX - fromX) > 1 Then
-         Return 40
-      EndIf
-      
-      If Ch_MoveNumber < 15 Then
-         ' If the king moves from its starting square (e.g., e1 or e8) without castling, penalize it
-         If (Ch_Turn > 0 And fromX = 5 And fromY = 1) Or (Ch_Turn < 0 And fromX = 5 And fromY = 8) Then
+         If Ch_MoveNumber >= 15 Then
+            Return 40
+         EndIf
+      ElseIf (Ch_Turn > 0 And fromX = 5 And fromY = 1) Or (Ch_Turn < 0 And fromX = 5 And fromY = 8) Then
+         If Ch_MoveNumber < 15 Then
             Return -100 ' penalty to discourage early king walks
          EndIf
       EndIf
@@ -1789,7 +1795,20 @@ Function Ch_EvaluateStrategicRules(fromX, fromY, targetX, targetY, n)
       Return 0
    EndIf
    
-   ' 1. Tiny advancement bonus (max ~6 points)
+   ' Penalty for Rook moves that forfeit active castling rights early
+   If n = 4 Then ' Rook
+      ' Determine player color index for castling flags (1 for White, 2 for Black)
+      colorIndex = 1 + ((1 - Ch_Turn) / 2)
+      If fromX = 1 Or fromX = 8 Then
+         ' Map column to castling side index (1 for Kingside/column 8, 2 for Queenside/column 1)
+         sideIndex = 1 + ((8 - fromX) / 7)
+         If Ch_CastlingFlags[colorIndex][sideIndex] = 1 Then
+            Return -50
+         EndIf
+      EndIf
+   EndIf
+   
+   ' Tiny advancement bonus (max ~6 points)
    positionWeightY = {1, 1, 1, 1, 2, 0}
    
    If n = 1 And Ch_MoveNumber > 8 And Ch_LegalMoves.Count > 5 Then ' pwan
@@ -1811,7 +1830,7 @@ Function Ch_EvaluateStrategicRules(fromX, fromY, targetX, targetY, n)
       strategicE = strategicE + ((fromY - targetY) * positionWeightY[n])
    EndIf
    
-   ' 2. Expanded center control bonus using a nested lookup array (White perspective)
+   ' Expanded center control bonus using a nested lookup array (White perspective)
    If targetX >= 3 And targetX <= 6 And targetY >= 2 And targetY <= 5 Then
       evalY = targetY
       If Ch_Turn < 0 Then
@@ -1819,18 +1838,17 @@ Function Ch_EvaluateStrategicRules(fromX, fromY, targetX, targetY, n)
       EndIf
       
       centerGrid = {
-         {3, 2, 2, 0},
-         {6, 8, 8, 6},
-         {6, 8, 8, 6},
-         {8, 10, 10, 8}
+         {3, 6, 6, 8},
+         {2, 8, 8, 10},
+         {2, 8, 8, 10},
+         {3, 6, 6, 8}
       }
-      
-      gridRowIdx = evalY - 2
-      gridColIdx = targetX - 3
-      strategicE = strategicE + centerGrid[gridRowIdx][gridColIdx]
+      col = evalY - 1
+      row = targetX - 2
+      strategicE = strategicE + centerGrid[row][col]
    EndIf
    
-   ' 3. Dynamic magnetic attraction towards the enemy king based on precise distances
+   ' Dynamic magnetic attraction towards the enemy king based on precise distances
    enemyTurn = -Ch_Turn
    enemyKingX = Ch_KingPos[enemyTurn][1]
    enemyKingY = Ch_KingPos[enemyTurn][2]
@@ -1845,7 +1863,7 @@ Function Ch_EvaluateStrategicRules(fromX, fromY, targetX, targetY, n)
       strategicE = strategicE + 8  ' Square at distance 3 from the king in any direction
    EndIf
    
-   ' 4. Opening development incentives (< 10 moves) - kept very small
+   ' Opening development incentives (< 10 moves) - kept very small
    If Ch_MoveNumber < 10 Then
       dj23 = 8 - (((Ch_Turn + 1) / 2) * 7)
       
@@ -1863,18 +1881,15 @@ Function Ch_EvaluateStrategicRules(fromX, fromY, targetX, targetY, n)
    EndIf
    
    
-   ' 6. Check bonus incentive if the move puts the enemy king in check
+   ' Check bonus incentive if the move puts the enemy king in check
    orgBoard = Ch_Board
    Ch_Board[targetX][targetY] = Ch_Board[fromX][fromY]
    Ch_Board[fromX][fromY] = " "
    Ch_Turn = -Ch_Turn
-   check = Ch_Check
-   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
-   If Ch_Check = 1 Then
+   If Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2]) Then
       strategicE = strategicE + 40
    EndIf
    Ch_Turn = -Ch_Turn
-   Ch_Check = check
    Ch_Board = orgBoard
    
    Return strategicE
@@ -2024,7 +2039,7 @@ Function Ch_EvalMoveOrThreats(fromX, fromY, targetX, targetY, getAttackers)
          nextFriendVal = friends[idx + 1]
          
          If enemyVal <= prevFriendVal Or (
-               nextEnemyVal <> "" And (friendVal = 10000 Or nextEnemyVal < friendVal)
+               nextEnemyVal <> "" And (friendVal = 10000 Or nextEnemyVal <= friendVal)
             ) Then
             exchangeBalance = exchangeBalance - prevFriendVal
             If friendVal = "" Then
@@ -2186,10 +2201,18 @@ Sub Ch_MovePiece()
       LblMoveNum.Text = Text.Replace(Text.PadLeft(Ch_MoveNumber - 1, 3), " ", "0")
    EndIf
    
-   ' Check status update for history
-   Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2])
-   If Ch_Check > 0 Then
+   If Ch_IsCheck(Ch_KingPos[Ch_Turn][1], Ch_KingPos[Ch_Turn][2]) Then
       Ch_History[Ch_HistoryCount][8] = "+"
+      If Ch_History[Ch_HistoryCount][7] = "x" Then
+         Sound.PlayChimes()
+      EndIf
+      Sound.PlayDing()
+      
+   ElseIf Ch_Takeback = 0 Then
+      Sound.PlayClick()
+      If Ch_History[Ch_HistoryCount][7] = "x" Then
+         Sound.PlayChimes()
+      EndIf
    EndIf
 EndSub
 

@@ -192,18 +192,18 @@ Namespace Library
         End Function
 
         Private Shared CollisionMasks As New Dictionary(Of String, Boolean(,))()
-        Private Shared DpiX As Double
-        Private Shared DpiY As Double
-
-        Shared Sub New()
-            Dim matrix = GetDpiMatrix()
-            DpiX = matrix.M11
-            DpiY = matrix.M22
-        End Sub
+        Private Shared DpiX As Double = -1
+        Private Shared DpiY As Double = -1
 
         Shared Function GetDpiMatrix() As Media.Matrix
             SmallBasicApplication.Invoke(
                 Sub()
+                    If DpiX = 0 Then
+                        Dim matrix = GetDpiMatrix()
+                        DpiX = matrix.M11
+                        DpiY = matrix.M22
+                    End If
+
                     Dim wind = Application.Current.MainWindow
                     If wind Is Nothing Then
                         GraphicsWindow.VerifyAccess(False)

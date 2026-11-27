@@ -1,0 +1,17 @@
+﻿Simplified Arabic
+19
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Play Trumpet
+Write Line "Elephents:"
+Size = 110
+For n = 1 To 11
+    Show Elephant
+    Size =  Size - 10
+Next n

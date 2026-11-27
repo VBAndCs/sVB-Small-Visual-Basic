@@ -1,0 +1,16 @@
+﻿Cascadia Code
+17
+False
+False
+False
+#FF000000
+#FFFFFFFF
+False
+True
+False
+Write Line "The elephant was watching its reflection in the water: "
+Size = 150
+Show Elephant
+Write Line
+Size =  0 - 150
+Show Elephant
